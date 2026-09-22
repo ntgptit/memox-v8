@@ -1,0 +1,261 @@
+# Master flow — memox (MVP)
+
+| | |
+|---|---|
+| **Status** | active |
+| **Purpose** | Cho thấy các use case nối vào nhau thành hành trình nào, thứ mà đọc từng UC riêng lẻ không thấy được |
+| **Scope** | Đồ thị chuyển tiếp giữa UC-01…UC-20 và ánh xạ UC-01…UC-22 → milestone, tách theo đối tượng nghiệp vụ. Ngoài phạm vi: nội dung của từng UC, mọi luật nghiệp vụ, và mọi chi tiết màn hình |
+| **Source of truth for** | Đồ thị chuyển tiếp giữa các UC · điểm vào của từng luồng · ánh xạ UC → milestone xây nó |
+| **Depends on** | `document-conventions.md`, `product.md`, `business-rules.md`, `use-cases.md` |
+| **Updated by task** | M100.96 — sơ đồ xoá deck theo Trash; UC-04 đã nêu cờ và tag, mục "chỗ lệch" không còn gì mở; trước đó M100.95 — bảng §6 theo code: UC-01, UC-03, UC-05, UC-07 đã xây; thêm UC-12…UC-17, UC-21, UC-22; hai chỗ lệch đã hết hiệu lực; trước đó M99.32 — UC-20 vào bảng §6: tìm kiếm toàn thư viện từ header Library, kết quả card mở chi tiết chỉ đọc UC-19; UC-06 thôi quảng cáo tìm kiếm theo subtree đã bị thay thế; trước đó M99.31 — nhánh `J`: chạm một hàng card mở chi tiết chỉ đọc (UC-19), Edit thành action tường minh; bảng §6 bổ sung UC-10…UC-19 |
+| **Last updated** | 2026-09-16 |
+
+---
+
+## 1. Tài liệu này là gì, và không là gì
+
+`use-cases.md` đặc tả **từng** UC đầy đủ chín mục. Nó cố ý không vẽ đồ thị nối
+chúng lại, nên câu "sau khi tạo deck xong thì người dùng đi đâu" không có chỗ nào
+trả lời — mỗi UC tự mô tả mình và im lặng về những UC bên cạnh.
+
+Tài liệu này chỉ giữ **các cạnh của đồ thị đó**. Mọi đỉnh đều trỏ về một UC hoặc
+một BR bằng ID.
+
+**MUST NOT** đọc sơ đồ ở đây như một đặc tả. Theo `document-conventions.md` §5,
+luật nghiệp vụ sống ở `business-rules.md` và luồng sống ở `use-cases.md`; nhãn
+trong sơ đồ là **rút gọn để đọc được**, không phải bản gốc. Khi sơ đồ và UC/BR
+mâu thuẫn, **UC/BR thắng**, và sơ đồ sai là một defect phải sửa.
+
+**Tách theo đối tượng, không theo hành động.** Mục 3–5 chia theo *deck*, *card*,
+*review* — không có mục riêng cho "tạo deck" hay "xoá deck". Một tài liệu cho mỗi
+hành động sẽ nhân số file theo số nút bấm, và phần lớn chúng sẽ chỉ có một sơ đồ
+ba đỉnh.
+
+---
+
+## 2. Master flow — toàn app
+
+Hành trình từ lúc mở app tới lúc vào được một phiên ôn tập. Nhánh nào đi sâu vào
+một đối tượng thì dừng ở đó và tiếp tục ở mục tương ứng.
+
+```mermaid
+flowchart TD
+    A["Mở app"] --> B["Khởi tạo database"]
+    B -->|"Thất bại"| B1["Màn hình lỗi có nút thử lại · UC-01 E1"]
+    B --> C{"Đã có deck nào chưa?"}
+
+    C -->|"Chưa"| D["Empty state, hai lối đi · UC-06 A1"]
+    D -->|"Thư viện starter"| E["Chọn starter deck và chế độ ôn tập · UC-01"]
+    D -->|"Tạo deck mới"| F["Tạo root deck · UC-02"]
+
+    C -->|"Rồi"| G["Danh sách deck kèm tiến độ · UC-06"]
+    E --> G
+    F --> G
+
+    G --> H["Mở một deck"]
+    H --> I{"content_type của deck"}
+    I -->|"deck"| J["Danh sách deck con · UC-06 A3"]
+    I -->|"card"| K["Danh sách card · UC-04"]
+    I -->|"unset"| L["Deck rỗng, tạo được cả hai loại · UC-08"]
+
+    J --> H
+    L -->|"Tạo deck con"| J
+    L -->|"Tạo card"| K
+
+    H --> M["Quản lý deck: đổi tên, xoá, di chuyển · mục 3"]
+    G --> N["Bắt đầu phiên ôn tập · mục 5"]
+    K --> N
+    N --> G
+```
+
+**`J --> H` là vòng lặp cố ý.** Deck lồng tới 10 cấp (BR-55) và một cấp bất kỳ
+lại là "mở một deck" của cấp trên nó; màn hình là **một** màn đệ quy chứ không
+phải hai màn khác nhau cho root và cho deck con.
+
+---
+
+## 3. Deck
+
+Mọi thao tác trên cây deck. Điểm vào là một deck bất kỳ đang mở.
+
+```mermaid
+flowchart TD
+    A["Một deck đang mở"] --> B{"Người dùng chọn gì"}
+
+    B -->|"Bấm Create"| C{"Deck này là gì"}
+    C -->|"root"| C1["Chỉ Create deck · BR-59"]
+    C -->|"con · unset"| C2["Create card và Create deck · BR-61"]
+    C -->|"con · card"| C3["Chỉ Create card · BR-66"]
+    C -->|"con · deck"| C4["Chỉ Create deck · BR-66"]
+    C1 --> D["Tạo phần tử con và xác lập content_type trong một transaction · UC-08"]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    D -->|"Cha đã ở cấp 10"| D1["Chặn trước khi ghi · UC-08 E4, BR-55"]
+    D -->|"Huỷ giữa chừng"| D2["Không tạo gì và content_type không đổi · UC-08 A4"]
+    D -->|"Thành công"| D3["Cây được vẽ lại"]
+
+    B -->|"Đổi tên"| E["Validate rồi lưu · UC-03, BR-01"]
+
+    B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ cùng vào Trash · UC-03, BR-04"]
+    F -->|"Đồng ý"| F1["Chuyển cả cây vào Trash dưới một batch · BR-03, BR-256 · khôi phục ở UC-21"]
+    F -->|"Huỷ"| F2["Không xảy ra gì · UC-03 A4"]
+
+    B -->|"Di chuyển"| G{"Bốn phép kiểm, theo thứ tự · UC-09"}
+    G -->|"Đích là chính nó hoặc descendant"| G1["Chặn · E1, BR-70"]
+    G -->|"Đích có content_type card"| G2["Chặn · E2, BR-64"]
+    G -->|"Root đích khác scheduler hoặc generation"| G3["Chặn, đề nghị reset tường minh · E3, BR-74"]
+    G -->|"Vượt cấp 10"| G4["Chặn · E5, BR-55"]
+    G -->|"Hợp lệ"| G5["Đổi parent và root_deck_id toàn subtree trong một transaction · BR-71"]
+
+    B -->|"Đưa content_type về unset"| H{"Deck có rỗng không"}
+    H -->|"Không"| H1["Không có nhánh này: content_type do hệ thống tự duy trì · BR-163"]
+    H -->|"Rỗng"| H2["Xác nhận rồi đặt unset · UC-03 A3"]
+
+    B -->|"Đổi chế độ ôn tập · chỉ root"| I{"first_answered_at"}
+    I -->|"NULL"| I1["Mở khoá: cảnh báo rồi khởi tạo lại study state toàn cây, generation giữ nguyên, session đang mở → invalidated · UC-03, BR-12, BR-14, BR-164"]
+    I -->|"Đã có"| I2["Khoá, hiện kèm lối đi sang Reset learning progress · UC-03 A1, BR-13"]
+    I2 --> I3["UC-07 · mục 5"]
+```
+
+**Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của deck
+nhưng bị khoá bởi một sự kiện của review, nên đường thoát duy nhất khi đã khoá
+nằm ở mục 5. Ẩn nó đi thay vì hiện trạng thái khoá là điều BR-13 cấm.
+
+**`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả hai
+ghi scheduler và khởi tạo lại toàn cây; chỉ `I3` tiêu một generation, vì chỉ nó
+vứt đi một chu kỳ học. Cho `I1` chạy qua Reset sẽ đánh số lịch sử rỗng thành "đã
+bị thay thế" và bắt người dùng xác nhận một cảnh báo phá huỷ về thứ không tồn tại
+(BR-12, UC-03).
+
+**Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng
+transaction với lần hoàn tất đó (mục 5, bước 10–11 của UC-05; BR-13, BR-144).
+Không thao tác nào của deck ghi cột này.
+
+---
+
+## 4. Card
+
+Điểm vào là một deck đã có `content_type = 'card'` (BR-63). Card **đầu tiên** của
+một deck `unset` không đi qua đây — nó được tạo ở UC-08 và chính nó xác lập
+`content_type`.
+
+```mermaid
+flowchart TD
+    A["Deck có content_type = card"] --> B["Danh sách card · UC-04"]
+    B -->|"Chưa có card nào"| B1["Empty state kèm hành động Thêm card · UC-04 A3"]
+
+    B --> C{"Người dùng chọn gì"}
+
+    C -->|"Thêm"| D["Nhập mặt trước và mặt sau"]
+    D --> E{"Validate · BR-07, BR-08"}
+    E -->|"Rỗng hoặc quá dài"| E1["Lỗi inline ở đúng ô · UC-04 E1, E2"]
+    E -->|"Hợp lệ"| F["Tạo card và study state trong cùng transaction, theo scheduler của root · BR-09"]
+    F -->|"Ghi thất bại"| F1["Hiện lỗi, giữ nội dung, không tạo card thiếu study state · UC-04 E3"]
+    F -->|"Thành công"| G["Giữ form mở và xoá trống các ô · UC-04 A4"]
+    G --> B
+
+    C -->|"Chạm một hàng"| J["Chi tiết card, chỉ đọc · UC-19"]
+    J --> J1["Lịch sử học phân trang keyset, nhóm theo generation · UC-19, BR-241, BR-243"]
+    J -->|"Edit — action riêng, không phải cử chỉ chạm"| H
+    J -->|"Back"| B
+
+    C -->|"Sửa"| H["Đổi nội dung; study state và history không đổi · UC-04 A1, BR-10"]
+    C -->|"Xoá"| I["Xác nhận, xoá kèm study state và history của card đó · UC-04 A2"]
+    I --> I1["Card cuối cùng bị xoá → deck tự về unset trong cùng transaction · BR-163"]
+```
+
+**`J` đổi nghĩa của một lần chạm, và đó là cạnh dễ nhớ sai thứ hai ở đây.** Từ
+M99.31, chạm một hàng ở chế độ thường mở **chi tiết chỉ đọc**, không mở editor
+nữa; đường tới `H` đi qua một action `Edit` tường minh. Trong chế độ chọn nhiều
+thì chạm vẫn chỉ là chọn/bỏ chọn và **không** có đường nào tới `J` (BR-246).
+
+**`I1` là cạnh dễ vẽ sai nhất trong tài liệu này.** Xoá hết card **không** đưa
+deck về `unset`; muốn đổi loại phải qua nhánh `H` ở mục 3, và đó là một hành động
+do hệ thống tự duy trì cùng mutation direct children (BR-163).
+
+---
+
+## 5. Review
+
+Hai UC dùng chung một đối tượng: phiên ôn tập (UC-05) và việc đặt lại tiến độ học
+(UC-07). Chúng nằm chung mục vì generation là thứ nối chúng — và là thứ khiến một
+phiên đang mở có thể bị vô hiệu hoá từ màn khác.
+
+```mermaid
+flowchart TD
+    A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-142, BR-145"}
+    B -->|"Không"| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạo session · UC-05 E1, BR-29"]
+    B -->|"Còn"| C["Tạo study_session in_progress mang root_deck_id và generation hiện tại · BR-45, BR-79"]
+    C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-142, BR-24"]
+    D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · BR-30"]
+    E --> F["Hiện mặt trước và tiến độ phiên"]
+    F --> G["Người dùng lật rồi chọn một action"]
+
+    G --> H{"session.generation còn khớp root không · BR-46"}
+    H -->|"Lệch"| H1["Từ chối ghi; session invalidated, end_reason stale_generation · UC-05 E4, BR-84"]
+    H -->|"Khớp"| I{"Lượt đầu tiên của card này trong phiên"}
+    I -->|"Đúng"| J["kind = scheduled: tính lịch mới rồi ghi history · BR-77"]
+    I -->|"Không"| K["kind = relearning: chỉ cập nhật last_answered_at · BR-78"]
+
+    J --> L{"Action có phải forgotten hoặc again"}
+    K --> L
+    L -->|"Đúng"| M["Card quay lại trong phiên sau ít nhất 3 card khác · UC-05 A1, BR-26"]
+    L -->|"Không"| N["Card rời hàng đợi · BR-28"]
+    M --> F
+    N --> O{"Hàng đợi còn card không"}
+    O -->|"Còn"| F
+    O -->|"Hết"| P["session completed, end_reason NULL; hiện tổng kết · BR-81"]
+
+    G -->|"Thoát giữa phiên"| Q["session abandoned, end_reason user_exit; mọi đánh giá đã ghi vẫn giữ · UC-05 A3, BR-82, BR-86"]
+
+    R["Đặt lại tiến độ học trên root · UC-07"] --> S["Xác nhận, nêu rõ giữ gì và mất gì; chọn chế độ mới ngay tại đây"]
+    S --> T["Một transaction: generation +1, first_answered_at NULL, khởi tạo lại study state toàn cây, mọi session in_progress → invalidated · BR-40, BR-42, BR-44, BR-47, BR-83"]
+    T --> U["study_answers giữ nguyên, mang generation cũ · BR-43"]
+    T -.->|"Phiên đang mở ở màn khác"| H1
+```
+
+**Cạnh nét đứt `T -.-> H1` là lý do hai UC này ở chung một mục.** Reset chạy ở màn
+hình A làm mọi phiên đang mở ở màn hình B hết hiệu lực; người dùng ở B chỉ biết
+điều đó khi bấm đánh giá lần tiếp theo. Đọc riêng UC-05 hoặc riêng UC-07 đều không
+thấy được cạnh này.
+
+---
+
+## 6. UC nào được xây ở đâu
+
+Ánh xạ UC → milestone. **Trạng thái của milestone sống ở `wbs.md`**, không lặp
+lại ở đây; cột cuối chỉ nói cái gì đã có trong `lib/` hôm nay, vì đó là thứ sơ đồ
+ở trên không thể hiện.
+
+| UC | Đối tượng | Xây ở | Có trong `lib/` hôm nay |
+|---|---|---|---|
+| UC-01 | deck | M4.12a / M99.9 | Đủ — màn Starter library cho duyệt template, chọn chế độ ôn tập cho bản sao và thêm bản thứ hai có xác nhận. `app/startup/fixture_seeder_widget.dart` chỉ tự cài template ở môi trường development |
+| UC-02 | deck | M4.10 | Đủ |
+| UC-03 | deck | M4.10 / M99.16 / M99.33 | Đủ — đổi tên; xoá vào Trash kèm impact; đổi chế độ ôn tập khi chưa khoá (M99.16). `content_type` về `unset` do hệ thống tự làm (BR-163) |
+| UC-04 | card | M4.11 | Đủ — gồm cờ, tag và ba trường phụ (BR-92…BR-95) |
+| UC-05 | review | M5.0…M5.20 | Đủ — phiên học mới theo chuỗi stage và phiên ôn tập một mode, sáu mode, tổng kết phiên |
+| UC-06 | deck | M4.10 | Đủ. Tìm kiếm theo subtree từng là phần thêm ngoài UC-06, đã bị thay bằng tìm kiếm toàn thư viện (UC-20, M99.32) |
+| UC-07 | review | M5.21 | Đủ — reset kèm chọn thuật toán cho chu kỳ mới |
+| UC-08 | deck | M4.10 | Đủ |
+| UC-09 | deck | M4.10 | Đủ |
+| UC-10 | card | M4.12 / M99.19 | Đủ — wizard import ba bước |
+| UC-11 | card | M99.21 | Đủ — sheet export ba format |
+| UC-12 | progress | M99.23 | Đủ — streak, hôm nay, bảy ngày gần nhất |
+| UC-13 | progress | M99.24 | Đủ — hai khoảng 7/30 ngày, drill-down theo cây deck |
+| UC-14 | review | M5.26 | Có — tab Study liệt kê root deck theo workload và cho tiếp tục phiên dở trong ngày |
+| UC-15 | review | M99.27 | Đủ — chọn chiều hỏi cho phiên ôn `self_assess` của deck `sm2` |
+| UC-16 | settings | M99.28 | Đủ — mặc định học, theme, ngôn ngữ, reset tùy chọn |
+| UC-17 | settings | M99.29 | Có — nhắc học hằng ngày, xin quyền notification sau khi bật |
+| UC-18 | card | M99.30 | Đủ — catalog tag ở `/tags`, lọc nhiều tag trên card list, rename/gộp và xoá |
+| UC-19 | card | M99.31 | Đủ — chi tiết chỉ đọc cộng lịch sử phân trang keyset |
+| UC-20 | search | M99.32 | Đủ — tìm kiếm deck, hai mặt card và tag từ header Library; kết quả deck mở màn deck, kết quả card mở chi tiết chỉ đọc (UC-19) |
+| UC-21 | trash | M99.33 | Đủ — xoá vào Trash, restore có chọn đích, undo, purge |
+| UC-22 | deck | M100.15 | Đủ — sắp xếp deck cùng cấp |
+
+### Chỗ tài liệu và code từng lệch
+
+Không còn chỗ nào mở. Ba chỗ từng ghi ở đây đã đóng: tìm kiếm không còn là phần
+thêm ngoài UC-06 mà là UC-20 (M99.32), màn thư viện starter mà UC-01 mô tả đã
+được xây ở M99.9 (cả hai ghi nhận ở M100.95), và UC-04 đã nêu cờ, tag và ba
+trường phụ cùng BR-92…BR-95 (M100.96).

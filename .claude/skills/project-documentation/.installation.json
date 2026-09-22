@@ -1,0 +1,11 @@
+{
+  "canonical_source": "C:\\Users\\ntgpt\\.codex\\worktrees\\616d\\memox-v7\\.agents\\skills\\project-documentation",
+  "notice": "Generated installation receipt; edit only canonical skill source.",
+  "release": {
+    "digest": "f0d2dcff78bbd55ced2ed08143a669423b2467077c351ec5a88c1458282f2055",
+    "name": "project-documentation",
+    "source_id": "urn:agent-skill:project-documentation",
+    "version": "2.3.0"
+  },
+  "scope": "repository"
+}

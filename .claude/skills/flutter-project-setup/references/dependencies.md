@@ -1,0 +1,102 @@
+# Dependencies
+
+Add with `flutter pub add <pkg>` / `flutter pub add --dev <pkg>` so version
+constraints are written correctly, then commit `pubspec.lock`.
+
+Do not hardcode versions from memory — check pub.dev for the current release
+that matches the Flutter version in use. Versions below are the major line this
+project targets, not exact pins.
+
+## Runtime
+
+**Not yet for memox:** `dio` is deliberately absent until the Spring Boot
+integration begins (AD-05 in `docs/architecture.md`) — the MVP makes no network
+calls, and an unused HTTP client still costs build time, still needs upgrading,
+and still suggests a network layer exists. Add it when the first real request
+does.
+
+| Package | Line | Why it is here |
+|---|---|---|
+| `flutter_riverpod` | 3.x | State + DI. Compile-safe, testable without a widget tree. |
+| `riverpod_annotation` | 3.x | Annotations for the generator. |
+| `go_router` | 14+ | Declarative routing, deep links, redirect guards. |
+| `dio` | 5.x | HTTP with interceptors, cancellation and typed errors. **Deferred — see above.** |
+| `drift` | 2.x | Typed SQLite with migrations and reactive queries. |
+| ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. Removed from this project at M2.2; the row is struck rather than deleted because a session that has seen the old advice will look for it here. |
+| `path_provider` | — | Locates the database directory. |
+| `path` | — | Joins that path portably. |
+| `freezed_annotation` | — | Immutable data classes, unions, `copyWith`. |
+| `json_annotation` | — | JSON codegen annotations. |
+| `intl` | — | Locale-aware dates and numbers. |
+| `collection` | — | `firstWhereOrNull`, equality helpers. Avoids hand-rolled bugs. |
+| `uuid` | — | Client-generated IDs. Needed **from day one** even without sync: changing the primary-key strategy later means rewriting every foreign key (AD-03). |
+| `flutter_secure_storage` | — | Keychain / EncryptedSharedPreferences for tokens. **Deferred** — memox has no tokens until auth arrives. |
+
+Add only when the need is real:
+
+| Package | Add when |
+|---|---|
+| `connectivity_plus` | You show an offline state or trigger sync on reconnect. Note it reports link state, not reachability — a captive portal reads as online. |
+| `cached_network_image` | You render remote images in lists. |
+| `sentry_flutter` / `firebase_crashlytics` | Phase 18, entering release. Not before. |
+| `flutter_localizations` + `intl` ARB | Phase 12. It ships with Flutter — enable via `flutter: generate: true`. |
+
+## Dev
+
+| Package | Why |
+|---|---|
+| `build_runner` | Runs all generators. |
+| `riverpod_generator` | `@riverpod` → providers. |
+| ~~`riverpod_lint`~~ | **Descoped** — it needs `custom_lint` as its host. Its checks moved to code-verification-guard. |
+| ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `json_serializable`, `freezed` and `drift_dev` all require. Its job is now code-verification-guard's — see `docs/wbs.md`. |
+| `drift_dev` | Drift table and DAO codegen. |
+| `freezed` | Data class codegen. |
+| `json_serializable` | `fromJson` / `toJson`. |
+| `mocktail` | Mocks without codegen — less friction than `mockito`. |
+| `golden_toolkit` *or* `alchemist` | Golden tests with stable fonts. Pick one, only when Phase 15.4 starts. |
+| `flutter_lints` | Baseline rule set that `analysis_options.yaml` extends. |
+
+## Code generation
+
+```bash
+dart run build_runner build --delete-conflicting-outputs   # one-shot
+dart run build_runner watch --delete-conflicting-outputs   # while developing
+```
+
+`--delete-conflicting-outputs` is nearly always what you want; without it a
+renamed file leaves a stale generated file that then fails the build in a way
+that points at the wrong place.
+
+CI must run codegen and then fail if the tree is dirty — that is what catches a
+generated file committed stale (Phase 19.1).
+
+## Traps worth knowing before you hit them
+
+- **Riverpod 3 dropped the generated per-provider `Ref` subclasses.** Write
+  `Ref ref`, not `MyThingRef ref`. Examples written for 2.x will not compile.
+- **`riverpod_lint` and `custom_lint` are descoped** — do not try to add them.
+  Every published `custom_lint` caps at `analyzer ^8`, while the generator stack
+  needs `analyzer >=10`; installing them means downgrading `freezed_annotation`
+  to `^2.2.0` and `uuid` to `^3.0.6`, which contradicts AD-03. Their checks are
+  owned by **code-verification-guard** — see `docs/wbs.md`.
+  Do **not** put `analyzer: plugins: - custom_lint` in `analysis_options.yaml`:
+  a plugin declared but not installed is silently ignored, so the rules look
+  configured and never run.
+- **Drift does NOT need `sqlite3_flutter_libs`** any more, and adding it is the
+  mistake this line used to cause. That package is now `0.6.0+eol` — a tombstone
+  that ships no native code — and `sqlite3` 3.x supplies the native library
+  through native assets. On mobile Drift works with `sqlite3` alone. If a
+  runtime failure to open the database sends you looking for a missing native
+  lib, check the `sqlite3` version rather than reaching for the dead package.
+
+## Auditing what is already there
+
+```bash
+flutter pub outdated
+flutter pub deps --style=compact
+```
+
+For each direct dependency ask: is it still used, is it still maintained, is
+there a second package doing the same job, and is the licence acceptable? Drop
+what fails. An unused dependency still costs build time and still breaks on
+upgrade.

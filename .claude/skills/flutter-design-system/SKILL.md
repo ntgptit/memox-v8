@@ -1,0 +1,217 @@
+---
+name: flutter-design-system
+description: Design tokens, Material 3 theming, the shared component library, responsive layout, localization and accessibility for this Flutter app. Use this skill whenever UI is being built or reviewed — creating or changing a widget, picking a colour/spacing/text style, adding a shared component, wiring light and dark themes, handling small screens or large text scale, adding user-facing strings or ARB entries, or checking semantic labels and contrast. Also use it when reviewing UI code for hardcoded colours, hardcoded padding, or untranslated strings, which are the most common violations in this codebase. Covers checklist phases 7, 12 and 13.
+---
+
+# Design system, localization and accessibility
+
+Covers checklist Phases 7 (tokens, theme, components, responsive), 12
+(localization) and 13 (accessibility).
+
+These three are one skill because they are all properties of *how a component is
+written*. A component built with a hardcoded colour, a literal string, or no
+semantic label has to be reopened later; treating them as one job means they get
+done once.
+
+## Tokens come first
+
+Nothing in `features/` may contain a raw colour, text style, padding value,
+radius, elevation, icon size or duration. Those live in `core/theme/` as tokens
+and reach widgets through the theme.
+
+Token names are **semantic**, not physical. `AppColors.danger`, not
+`AppColors.red`; `AppSpacing.md`, not `AppSpacing.sixteen`. The reason is that
+physical names lie the first time the design changes — a `red` token that has
+become orange is worse than no token, because now nobody trusts the names.
+
+Read `references/tokens.md` for the token set and the code shape.
+
+Spacing uses one scale: 4 / 8 / 12 / 16 / 24 / 32. A layout that needs 15 is
+telling you a constraint is wrong somewhere else; reach for the neighbouring
+step rather than adding a value to the scale.
+
+## Theme
+
+Material 3 on. Build `ColorScheme` from a seed and then override deliberately —
+seeding alone gives a coherent palette, but the semantic colours (success,
+warning, info) are not part of `ColorScheme` and need a theme extension.
+
+Configure component themes centrally: AppBar, NavigationBar, Card, Dialog,
+BottomSheet, Input, Button, Chip, Snackbar. Setting these once is what stops
+every screen re-specifying them slightly differently.
+
+Light and dark are both first-class. Dark is not "light with inverted colours" —
+elevation reads through surface tint rather than shadow, and a colour that
+passes contrast on white can fail on a dark surface.
+
+Check every interactive component in disabled, pressed, focused and selected
+states. Focused especially: it is invisible to mouse users and essential for
+keyboard and switch-access users, and it is the state most often left unstyled.
+
+## Components
+
+**The per-component contract lives in `flutter-theme-design`, not here.** This
+skill says *that* a component gets tokens, both themes and every state; that
+skill says *which* checklist a specific ThemeData slot and its `Mx*` wrapper
+must clear before the component counts as supported — including the admission
+rule for Material widgets the system does not support yet, and the banned-raw-
+widget list the guard enforces. Load it whenever the work is one component
+deep. One fact, one place: this file deliberately does not restate its lists.
+
+Build the base set once, in `shared/widgets/`: app scaffold, app bar, primary
+button, secondary button, icon button, text field, search field, card, list
+item, empty state, error state, loading state, confirmation dialog, bottom
+sheet.
+
+Each needs light, dark, enabled, disabled, loading, and error where it applies.
+A button without a loading state means every caller invents its own, and they
+will not match.
+
+A new shared component is not done until it has a knob-driven playground in the
+Widgetbook catalog (`widgetbook/lib/components/`, registered in
+`widgetbook/lib/main.dart`) — the catalog is where every state is inspected
+under both themes, text scales and viewports without hunting through screens,
+and the CI smoke test fails if the tree stops building. New screens go in too,
+mounted with their domain contract faked; `widgetbook/README.md` has the
+how-to.
+
+**A component that can be tapped is a surface with a target composed into it, not
+a control that happens to look like a surface.** A surface that *is* the control
+can hold no other control, so the first caller needing one wraps a region of the
+content instead — and every region left over then looks tappable and is not. This
+is the shape both kits got wrong independently; the contract and the Flutter ink
+paint-order trap behind it are in `references/components.md`.
+
+Two further failure modes to avoid, in tension with each other:
+
+- **The god component.** Twenty optional parameters, half mutually exclusive.
+  When a component needs a flag that changes its layout structure, that is a
+  second component. Sharing a name is not sharing a purpose.
+- **Premature sharing.** Two screens looking similar is not a reason to merge
+  them. Wait for the second real caller before abstracting — the second caller
+  is what tells you which parts actually vary. This is the checklist's "không
+  tạo shared widget chỉ vì hai đoạn UI trông gần giống nhau".
+
+Read `references/components.md` for the API conventions.
+
+## Responsive
+
+Mobile-first, then adapt. Use `LayoutBuilder` and the breakpoint tokens; reach
+for `MediaQuery` only when you genuinely need screen-level information such as
+`viewInsets` for the keyboard. Scattered `MediaQuery.of(context).size` reads
+rebuild on every keyboard animation frame and hardcode assumptions about what
+"the screen" means.
+
+The four checks that catch nearly everything:
+
+1. **Small screen** — 320×568 logical. Overflow shows here first.
+2. **Large text scale** — 1.5× minimum, 2.0× ideally. Fixed-height containers
+   with text inside break here.
+3. **Keyboard open** — does the focused field stay visible, does the submit
+   button stay reachable.
+4. **Landscape** — usually a scroll problem.
+
+Also: nothing important within reach of the bottom navigation or the home
+indicator, and no action flush against a screen edge.
+
+### Declare the horizontal layout contract, then prove it by measuring
+
+A **band** is anything the reader sees as a full-width step down the page: a
+section heading, a card, a panel, a row of cards. Bands declared to share one
+content column start and end on the same two x-coordinates. A screen MAY have
+an intentionally nested or asymmetric column, but that is a second declared
+alignment group, not an accidental inset. A widget that is narrower *on
+purpose* — a chip hugging its text, a button inside a card, a heading sharing
+its row with a counter — is not a band and is not held to this.
+
+**The trap is a container that is full-width while its children are not.**
+`Wrap` sizes its children to their intrinsic width; `Row` without `Expanded`
+does the same. Two cards meant to be halves of a row then sit inboard of the
+column with dead space at the right, and the band above them measures
+perfectly because *the Wrap* is full-width — only the cards are not. This
+shipped in Card Import (M99.19a finding V9) and no gate saw it.
+
+So when a band is a row of cards, give each child an `Expanded` (with
+`IntrinsicHeight` if they must be equal height) and pick the one-column
+fallback with a measured `LayoutBuilder` threshold, not a device guess.
+
+**Extract the geometry contract before implementation.** For a concept-driven
+screen, record the content gutters, alignment groups, relative widths/heights,
+grid gaps and important baselines in its wireframe or UI contract. Calling a
+concept "hierarchy only" MUST NOT discard these layout relationships; theme
+tokens own the exact spacing values, while the concept still owns which edges
+and proportions relate.
+
+**The visual audit can enforce a declared row-of-surfaces contract.**
+For screens whose wireframe declares one surface column, opt that screen into
+`SurfaceColumnRule` and provide the production-surface finder explicitly. The
+rule groups those surfaces into rows by vertical overlap and fails when a
+row's union stops short of the column the other surfaces establish. It is not
+global: another screen may intentionally contain nested or asymmetric card
+groups, and the harness must not invent a layout contract merely because it
+sees an `MxCard`. Its synthetic unit tests pin what it catches, while the
+screen's `getRect` tests remain the primary proof of the declared geometry.
+
+**Assert the rest in a widget test, because nothing else can.** The audit
+knows about surfaces, not about headings, text fields or the gap between a
+title and its metadata. `flutter analyze` and the guard read source text and
+cannot see a laid-out rectangle. A golden compares a screen with yesterday's
+copy of itself, so an edge that is wrong but stable passes forever — and the
+eye misses a few logical pixels on a scaled-down PNG.
+An updated golden is therefore a regression baseline only; compare it with the
+concept separately and list approved divergences before accepting it.
+
+```dart
+final heading = tester.getRect(find.text(l10n.someSectionHeading));
+final card = tester.getRect(find.byType(SomeCard));
+expect(card.left, moreOrLessEquals(heading.left, epsilon: 0.5));
+expect(card.right, moreOrLessEquals(heading.right, epsilon: 0.5));
+```
+
+`test/features/card/presentation/card_import_alignment_test.dart` is the
+worked example: one helper, every band of every state, plus the stacked case
+at 320dp. Measure the widgets a reader sees — a card, a panel — never the
+invisible box that holds them, which is what hid the original defect.
+
+## Localization
+
+Every user-visible string comes from ARB. No exceptions — a "temporary"
+hardcoded string is one nobody finds again.
+
+Support plurals and placeholders properly. Do **not** assemble sentences from
+fragments: `"You have" + count + "items"` is untranslatable, because word order
+and pluralisation differ per language. One key, one complete sentence, with
+placeholders.
+
+Dates and numbers go through `intl` with the active locale — never
+`toString()` on a `DateTime`, and never manual thousands separators.
+
+Plan for text expansion: German and Vietnamese commonly run 30% longer than
+English. Test with the longest locale you ship, not the shortest. Check RTL if
+it is in scope.
+
+Provide a fallback locale so a missing translation degrades to readable text
+rather than a blank or a key name.
+
+## Accessibility
+
+Not a final pass — it is part of writing a component, which is why it lives
+here.
+
+- Icon-only controls get a `Semantics` label or `tooltip`. An `IconButton` with
+  no label is an unlabelled button to a screen reader.
+- Touch targets at least 48×48 logical, even when the icon is smaller.
+- Contrast: 4.5:1 for body text, 3:1 for large text and meaningful icons —
+  in both themes.
+- Never encode information in colour alone. A red border needs an error message
+  or an icon beside it; roughly 1 in 12 men cannot distinguish it otherwise.
+- Form fields have programmatic labels and error text tied to them, so a screen
+  reader announces the field and its error together.
+- Respect text scaling. Never clamp `textScaler` to 1.0 to fix an overflow —
+  that breaks the layout for the users who need it most. Fix the layout.
+- Check `MediaQuery.disableAnimations` for reduced-motion before running a large
+  animation.
+- Verify with TalkBack or VoiceOver, and with the platform accessibility
+  scanner. Semantics bugs are close to invisible when reading code.
+
+Read `references/a11y-and-l10n.md` for the concrete patterns and test setup.

@@ -1,0 +1,223 @@
+# CI pipeline and release builds
+
+## GitHub Actions
+
+> **The block below is a reference template, not the live workflow.** The real
+> pipeline is a *pair*: `.github/workflows/ci.yml` (per PR, one stable `CI gate`
+> result) and `.github/workflows/ci-full.yml` (manual milestone/release gate).
+> When they disagree with this template, **the workflow files win** — update
+> this file when the pipeline changes rather than the other way round.
+
+The live PR workflow builds an immutable verification plan before installing
+Flutter:
+
+- The planner classifies each path by feature, architecture layer, public
+  contract impact and risk. Scope grows monotonically through the declared
+  downstream feature graph; no rule can remove checks selected earlier.
+- Prompt and documentation changes stay on the Python contract path. Missing
+  review files, malformed seven-field headers and incomplete prompt phases fail
+  there without installing Flutter.
+- A feature `data` change starts with its data tests, a `presentation` change
+  with its presentation tests plus Widgetbook, and a domain contract expands
+  through downstream features. A reverse Dart-import closure then adds every
+  runnable transitive test consumer, including app, integration and
+  cross-feature harness tests that do not live under the owning layer.
+- Drift query changes additionally select database and integration contract
+  suites declaratively. Generated DAO code is ignored, so those edges cannot be
+  recovered from the source-level Dart import graph.
+- Golden-only files are never sent to a Linux shard that excludes the `golden`
+  tag; their changes select non-golden presentation surrogates plus Widgetbook,
+  while `ci-full.yml` remains the Windows pixel-comparison owner. Existing
+  untracked tests are part of the local changed-plan discovery universe.
+- The resulting runnable file list is balanced across one, two or five atomic
+  file-level shards according to measured test declarations.
+- Schema/migration, shared UI/theme, app router/DI, native/dependency, CI
+  tooling, empty and unknown change sets fail safe to all non-golden host tests
+  across five shards. This is also how the planner validates changes to itself.
+- Static verification remains global for every code path. Each selected host
+  shard generates ignored code locally and uses `--reporter failures-only` to
+  avoid printing thousands of successful test events.
+- The final `CI gate` job inspects every selected job result. It is the stable
+  check a repository ruleset should require; conditional jobs are implementation
+  details and may legitimately show as skipped.
+- The workflow does not run again on `push` to `main`. A pull request already
+  verified its exact head, so the former post-merge duplicate spent another
+  full runner window without increasing coverage.
+
+`ci-full.yml` remains deliberately serial/from-cold where that is the evidence
+being sought: codegen reproducibility, the complete monolithic suite + count
+floor, Windows goldens and the web build. It proves global coverage independently
+of the PR planner and is required at milestones/releases; it is not a substitute
+for the per-PR aggregate gate.
+
+Reference template:
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x.x'    # pin — must match the version in docs/architecture.md
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # Codegen first: analyze and test both need the generated files, and
+      # running it here is also what detects stale committed output below.
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Fail if generated code is stale
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Generated code differs from what is committed:"
+            git status --porcelain
+            git diff
+            exit 1
+          fi
+
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze
+
+      # Separate step on purpose: flutter analyze cannot express these rules.
+      # This is the project's main guard; it replaced custom_lint/riverpod_lint.
+      - name: Code verification guard
+        run: python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7 --profile ci
+
+      - name: Architecture boundaries
+        run: .claude/skills/flutter-architecture/scripts/check_architecture.sh
+
+      - name: Test
+        run: flutter test --coverage
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failed-golden-diffs
+          path: '**/failures/**'
+
+  build-android:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: subosito/flutter-action@v2
+        with: { flutter-version: '3.x.x', channel: stable, cache: true }
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter build apk --debug --flavor development -t lib/main_development.dart
+
+  # Web is not a release target for memox, but it IS the E2E channel
+  # (Flutter Web + Playwright, AD-04). This job exists to catch a dependency
+  # that breaks the web build — which would cost the test channel, not a
+  # platform.
+  build-web:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: { flutter-version: '3.x.x', channel: stable, cache: true }
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter build web
+
+  # Not enabled for memox yet — iOS is deferred until Android is stable
+  # (AD-04). macos-latest bills at several times the Linux rate, so leaving
+  # this out is a deliberate saving, not an oversight. Enable when iOS enters
+  # scope.
+  #
+  # build-ios:
+  #   needs: verify
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: subosito/flutter-action@v2
+  #       with: { flutter-version: '3.x.x', channel: stable, cache: true }
+  #     - run: flutter pub get
+  #     - run: dart run build_runner build --delete-conflicting-outputs
+  #     # --no-codesign: PR validation needs a compile check, not a signed artifact.
+  #     - run: flutter build ios --no-codesign --flavor development -t lib/main_development.dart
+```
+
+Notes on choices that are easy to get wrong:
+
+- **Pin the Flutter version.** `channel: stable` alone means the pipeline
+  silently changes under you, and a stable release eventually breaks something.
+- **Uploading golden failure diffs on failure** is what makes a golden failure
+  diagnosable in CI. Without it you get "goldens differ" and no image.
+- **Cache `~/.pub-cache`** via the action's `cache: true`; it is most of the
+  pipeline's wall time.
+- **iOS on `macos-latest`** costs several times more runner minutes. Running it
+  only on the main branch is a reasonable trade if minutes are limited.
+
+## Release builds
+
+```bash
+# Android App Bundle for the store
+flutter build appbundle \
+  --release \
+  --flavor production \
+  -t lib/main_production.dart \
+  --dart-define-from-file=env/prod.json \
+  --obfuscate --split-debug-info=build/symbols/android
+
+# iOS archive
+flutter build ipa \
+  --release \
+  --flavor production \
+  -t lib/main_production.dart \
+  --dart-define-from-file=env/prod.json \
+  --obfuscate --split-debug-info=build/symbols/ios
+```
+
+**Keep `build/symbols/`.** Obfuscated crash reports are unreadable without the
+matching symbol files, and they must match that exact build — archive them
+alongside the artifact, per version.
+
+## Signing
+
+Android: keystore from CI secrets, decoded at build time into a path referenced
+by `key.properties`. Never commit the keystore or `key.properties`.
+
+```yaml
+- name: Decode keystore
+  run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+```
+
+iOS: certificate and provisioning profile from secrets into a temporary keychain
+— `apple-actions/import-codesign-certs` handles the fiddly parts.
+
+Losing the Android upload key means you cannot update the listing without Play's
+key-reset process. Back it up somewhere durable and outside the repo.
+
+## Versioning
+
+`version: 1.4.2+87` in `pubspec.yaml` — name plus build number. The build number
+must increase on every store upload; both stores reject a repeat. Deriving it
+from the CI run number removes the manual step and the duplicate-rejection
+round-trip.
+
+## Deployment
+
+`fastlane`, or the store CLIs, from a tag-triggered workflow. Always to internal
+testing first, then staged rollout: 10% → 50% → 100%, watching crash-free
+percentage between steps. A staged rollout is the rollback plan — a bad release
+caught at 10% affects a tenth of the users.
