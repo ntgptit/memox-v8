@@ -43,6 +43,10 @@ BANNED = [
     (re.compile(r"\b[\w./-]+\.(?:dart|drift)\b"), "V7 source file — V8 has no code yet"),
     (re.compile(r"\b(?:integration_)?test/"), "V7 test path — V8 has no tests yet"),
     (re.compile(r"\b[Ss]chema v\d+\b"), "V7 schema version — V8 has no migration path from V7"),
+    (
+        re.compile(r"\b(?:card_study_states|study_answers|study_sessions|parent_deck_id|root_deck_id|scheduler_generation)\b"),
+        "V7 identifier — V8 renamed it (see data-model.md)",
+    ),
 ]
 
 BR_DEF = re.compile(r"^(?:\|\s*|#+\s*)BR-(\d+)\b", re.M)
