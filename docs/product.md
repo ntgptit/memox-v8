@@ -135,6 +135,10 @@ thế nào (BR-141, BR-144). Màn chọn mode ôn tập chỉ xuất hiện khi 
 từ hai mode ôn tập: `eight_box` có bốn, `sm2` chỉ có `self_assess` nên vào
 thẳng (BR-146).
 
+Mode nào trong sáu mode này thực sự ship ở V8.0 vẫn là open question, do
+product definition (sub-project 2) quyết định — xem
+`superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10.
+
 ## Should-have
 
 | # | Feature | Done when |
