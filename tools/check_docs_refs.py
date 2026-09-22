@@ -42,10 +42,10 @@ BANNED = [
     ),
     (re.compile(r"\b[\w./-]+\.dart\b"), "V7 source file — V8 has no code yet"),
     (re.compile(r"\b(?:integration_)?test/"), "V7 test path — V8 has no tests yet"),
-    (re.compile(r"\bschema v\d+\b"), "V7 schema version — V8 has no migration path from V7"),
+    (re.compile(r"\b[Ss]chema v\d+\b"), "V7 schema version — V8 has no migration path from V7"),
 ]
 
-BR_DEF = re.compile(r"^\|\s*BR-(\d+)\s*\|", re.M)
+BR_DEF = re.compile(r"^(?:\|\s*|#+\s*)BR-(\d+)\b", re.M)
 UC_DEF = re.compile(r"^#+\s*UC-(\d+)\b", re.M)
 INV_DEF = re.compile(r"^--\s*(\d+)\.", re.M)
 BR_ROW = re.compile(r"^\|\s*BR-\d+\s*\|")
@@ -54,7 +54,8 @@ problems: list[str] = []
 
 
 def fail(path: Path, line_no: int, reason: str) -> None:
-    problems.append(f"{path.relative_to(ROOT).as_posix()}:{line_no}: {reason}")
+    shown = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+    problems.append(f"{shown.as_posix()}:{line_no}: {reason}")
 
 
 def defined_ids(path: Path, pattern: re.Pattern[str]) -> set[int]:
