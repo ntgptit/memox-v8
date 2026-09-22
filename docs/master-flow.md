@@ -7,7 +7,7 @@
 | **Scope** | Đồ thị chuyển tiếp giữa UC-01…UC-20 và phân loại UC-01…UC-22 theo đối tượng nghiệp vụ. Ngoài phạm vi: nội dung của từng UC, mọi luật nghiệp vụ, và mọi chi tiết màn hình |
 | **Source of truth for** | Đồ thị chuyển tiếp giữa các UC · điểm vào của từng luồng · đối tượng nghiệp vụ của từng UC |
 | **Depends on** | `document-conventions.md`, `product.md`, `business-rules.md`, `use-cases.md` |
-| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: V7 implementation status and references removed |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trạng thái triển khai và tham chiếu V7 |
 | **Last updated** | 2026-09-23 |
 
 ---

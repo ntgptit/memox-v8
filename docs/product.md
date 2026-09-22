@@ -7,7 +7,7 @@
 | **Scope** | Vấn đề, người dùng, quyết định nền tảng, phạm vi MVP, luồng nghiệp vụ chính. Ngoài phạm vi: cách triển khai |
 | **Source of truth for** | Phạm vi MVP · phân loại must/should/nice/out · quyết định platform, data posture, auth, dữ liệu nhạy cảm |
 | **Depends on** | `document-conventions.md` |
-| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: V7 implementation status and references removed |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trạng thái triển khai và tham chiếu V7 |
 | **Last updated** | 2026-09-23 |
 
 ## Problem
@@ -77,8 +77,8 @@ này nếu app hỗ trợ ghi chú cá nhân tự do hoặc tài liệu công vi
 # MVP scope
 
 Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để
-chứng minh kiến trúc local-first và migration hoạt động. Không phải bản đầy đủ
-tính năng.
+chứng minh kiến trúc local-only (không network) và cơ chế Drift migration hoạt
+động. Không phải bản đầy đủ tính năng.
 
 ## Must-have
 
