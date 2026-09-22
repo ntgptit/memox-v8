@@ -7,8 +7,8 @@
 | **Scope** | Màn vào học, hai tập thẻ mới/đến hạn, màn chọn chế độ, giới hạn thẻ, thứ tự thẻ mới, tùy chọn toàn ứng dụng và ghi đè ở bộ thẻ gốc |
 | **Source of truth for** | Kịch bản IT về điểm vào và tùy chọn học |
 | **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-24, BR-29, BR-99, BR-101, BR-139, BR-142, BR-145…BR-154), `../use-cases.md` (UC-05) |
-| **Updated by task** | Bổ sung kịch bản IT cho chức năng học, rà soát đệ quy ba vòng và chuẩn hóa tiếng Việt ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 ## IT-STUDY-001 — Màn vào học tách thẻ mới và thẻ đến hạn thành hai tập rời nhau
 

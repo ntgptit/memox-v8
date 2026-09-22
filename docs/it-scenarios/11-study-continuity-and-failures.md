@@ -6,9 +6,9 @@
 | **Purpose** | Chứng minh phiên học tồn tại đúng qua vòng đời ứng dụng và kết thúc trung thực khi người dùng, thao tác đặt lại hoặc lỗi lưu trữ làm gián đoạn |
 | **Scope** | Tiếp tục phiên, thoát chủ động, gián đoạn qua ngày, hàng đợi bất biến, xóa bộ thẻ, ngoại tuyến, lỗi ghi có thể/không thể phục hồi và thế hệ dữ liệu cũ |
 | **Source of truth for** | Kịch bản IT về khả năng tiếp tục và xử lý lỗi của chức năng học |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-25, BR-79…86, BR-102…105, BR-127, BR-133), `../use-cases.md` (UC-05, UC-07), `../wbs-study.md` (M5.9, M5.10, M5.14) |
-| **Updated by task** | Bổ sung nhánh Ôn tập khi khôi phục phiên cùng ngày ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-25, BR-79…86, BR-102…105, BR-127, BR-133), `../use-cases.md` (UC-05, UC-07) |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ task ID V7 và tài liệu ledger đã xoá khỏi phần phụ thuộc |
+| **Last updated** | 2026-09-23 |
 
 ## IT-CONT-001 — Tiến trình bị hệ điều hành thu hồi trong cùng ngày vẫn Tiếp tục đúng điểm dừng
 

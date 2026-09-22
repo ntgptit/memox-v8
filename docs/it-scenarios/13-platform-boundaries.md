@@ -7,8 +7,8 @@
 | **Scope** | Cold start · chết tiến trình · deep link từ hệ điều hành · cử chỉ back của Android · smoke trước phát hành |
 | **Source of truth for** | Các kịch bản `IT-PLAT-xx` |
 | **Depends on** | `12-testing-pyramid-audit.md`, `scenario-catalog.md`, `00-agent-execution-guide.md` |
-| **Updated by task** | Refactor IT theo Testing Pyramid |
-| **Last updated** | 2026-08-09 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 **Đây là toàn bộ những gì còn cần thiết bị.** Mọi luật nghiệp vụ mà các kịch bản
 dưới đây đi qua đã được chứng minh ở `HOST-FLOW` hoặc `HOST-WIDGET`; phần việc

@@ -6,9 +6,9 @@
 | **Purpose** | Kiểm tra người dùng đi vào đúng điểm bắt đầu, di chuyển giữa các nhánh và không mất ngữ cảnh bộ thẻ, thẻ hoặc phiên học |
 | **Scope** | Khởi động nguội, thanh điều hướng dưới, Back, đường dẫn phân cấp, route không hợp lệ và hành trình bộ thẻ/thẻ/Study xuyên suốt |
 | **Source of truth for** | Kịch bản IT về điều hướng và khả năng tiếp tục của chức năng hiện có |
-| **Depends on** | `README.md`, `../use-cases.md` (UC-04, UC-05, UC-06, UC-12), `../business-rules.md` (BR-82, BR-101, BR-103, BR-190), `../architecture.md` (AD-19), `../wbs.md` (M4.10a, M4.11, M4.12, M99.7, M99.23), `../wbs-study.md` (M5.7, M5.9, M5.15), `../wireframes/m5-study-modes.md` |
-| **Updated by task** | M99.23 (branch Tiến độ thay placeholder bằng màn đọc lịch sử thật) |
-| **Last updated** | 2026-08-14 |
+| **Depends on** | `README.md`, `../use-cases.md` (UC-04, UC-05, UC-06, UC-12), `../business-rules.md` (BR-82, BR-101, BR-103, BR-190) |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trích dẫn AD, task ID V7 và tài liệu đã xoá khỏi kịch bản điều hướng |
+| **Last updated** | 2026-09-23 |
 
 ## IT-NAV-001 — Cold start mở đúng danh sách Deck
 
@@ -74,7 +74,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** App ở trạng thái trống; có thể đóng hẳn và mở lại app.
-- **Liên kết:** UC-02, UC-03, UC-04, UC-08; luồng E2E bắt buộc của M4.12.
+- **Liên kết:** UC-02, UC-03, UC-04, UC-08.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -143,7 +143,7 @@
 
 - **Ưu tiên:** P1
 - **Tiền điều kiện:** App đã cài, dữ liệu bất kỳ; không có phiên Study đang dở.
-- **Liên kết:** AD-19; UC-06 cho cold start; UC-12 và BR-190 cho branch Tiến độ.
+- **Liên kết:** UC-06 cho cold start; UC-12 và BR-190 cho branch Tiến độ.
 - **Phạm vi deep link:** các bước 4–5 là điều hướng **in-process** — router phân
   giải `/progress`/`/settings` làm initial location (URL development, cùng cơ
   chế IT-NAV-005). App **chưa** khai báo `ACTION_VIEW` intent filter, nên OS
@@ -160,7 +160,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck loại card có card, và một sub-deck `unset` cùng cây.
-- **Liên kết:** UC-10, AD-20, M4.12 W5/W6.
+- **Liên kết:** UC-10, BR-175.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

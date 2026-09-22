@@ -7,8 +7,8 @@
 | **Scope** | Hàng đợi thẻ đến hạn, chế độ ôn, lượt theo lịch/học lại, Eight Box, SM-2, thứ tự hạn, tổng kết và phiên kế tiếp |
 | **Source of truth for** | Kịch bản IT về phiên Ôn tập của UC-05 |
 | **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-15…30, BR-75…78, BR-105, BR-139…149, BR-154), `../use-cases.md` (UC-05) |
-| **Updated by task** | Bổ sung kịch bản IT cho chức năng học, rà soát đệ quy ba vòng và chuẩn hóa tiếng Việt ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 ## IT-REVIEW-001 — Hàng đợi ôn tập chỉ lấy thẻ đã học và đang đến hạn
 

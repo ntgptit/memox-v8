@@ -7,10 +7,10 @@
 | **Scope** | Toàn bộ kịch bản IT hiện có trong `docs/it-scenarios`; không lặp lại các bước thao tác |
 | **Source of truth for** | Mức sẵn sàng, hồ sơ thực thi, chuẩn bị, dọn dẹp và truy vết theo từng ID kịch bản IT |
 | **Depends on** | `README.md`, `00-agent-execution-guide.md`, mười một tệp kịch bản theo nhóm chức năng |
-| **Updated by task** | M99.18 (Card bulk management — IT-CARD-012/013, IT-ORG-013/014) |
-| **Last updated** | 2026-08-12 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trích dẫn AD và task ID V7 khỏi cột truy vết |
+| **Last updated** | 2026-09-23 |
 
-Agent MUST tìm ID ở danh mục này trước khi chạy. **Cột `Profile` quyết định lệnh chạy**: `HOST-FLOW` và `HOST-WIDGET` chạy bằng `flutter test`, chỉ `DEVICE-E2E` cần emulator hoặc thiết bị. Bảng ánh xạ hồ sơ cũ sang mới và lý do từng dòng nằm ở [`12-testing-pyramid-audit.md`](12-testing-pyramid-audit.md). Cột tệp chỉ tới tài liệu chứa
+Agent MUST tìm ID ở danh mục này trước khi chạy. **Cột `Profile` quyết định lệnh chạy**: `HOST-FLOW` và `HOST-WIDGET` chạy bằng `flutter test`, chỉ `DEVICE-E2E` cần emulator hoặc thiết bị. Bảng phân loại từng kịch bản theo hồ sơ thực thi kèm lý do nằm ở [`12-testing-pyramid-audit.md`](12-testing-pyramid-audit.md). Cột tệp chỉ tới tài liệu chứa
 các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn bị và dọn dẹp nằm trong
 [`00-agent-execution-guide.md`](00-agent-execution-guide.md).
 
@@ -19,17 +19,17 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
 | IT-NAV-001 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-06 |
-| IT-NAV-002 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | BR-101, M4.10a, M5.7 |
+| IT-NAV-002 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | BR-101 |
 | IT-NAV-003 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-06 |
 | IT-NAV-004 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-06 |
-| IT-NAV-005 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-004 | SETUP-EMPTY | CLEAN-RESET | M4.1 |
-| IT-NAV-006 | `01-navigation-and-continuity.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-03, UC-04, UC-08, M4.12 |
-| IT-NAV-007 | `01-navigation-and-continuity.md` | READY | `DEVICE-E2E` | — | SETUP-TREE-CARD | CLEAN-RESET | M5, AD-01 |
-| IT-NAV-008 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-05, BR-101, M5.15 |
-| IT-NAV-009 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05, BR-101, BR-146, M5.15 |
-| IT-NAV-010 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-005 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82, docs/wireframes/m5-study-modes.md |
-| IT-NAV-011 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | AD-19, UC-12, BR-190, M99.7 |
-| IT-NAV-012 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-10, AD-20 |
+| IT-NAV-005 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-004 | SETUP-EMPTY | CLEAN-RESET | — |
+| IT-NAV-006 | `01-navigation-and-continuity.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-03, UC-04, UC-08 |
+| IT-NAV-007 | `01-navigation-and-continuity.md` | READY | `DEVICE-E2E` | — | SETUP-TREE-CARD | CLEAN-RESET | — |
+| IT-NAV-008 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-05, BR-101 |
+| IT-NAV-009 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05, BR-101, BR-146 |
+| IT-NAV-010 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-005 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82 |
+| IT-NAV-011 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-12, BR-190 |
+| IT-NAV-012 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-10, BR-175 |
 
 ## Vòng đời bộ thẻ gốc
 
@@ -111,7 +111,7 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | IT-ORG-009 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-SINGLE | CLEAN-RESET | BR-93, BR-94 |
 | IT-ORG-010 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-010F | S-PROGRESS | CLEAN-RESET | BR-89, BR-90, BR-91 |
 | IT-ORG-011 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-04, UC-06 |
-| IT-ORG-012 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | M4.11 W1b |
+| IT-ORG-012 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | — |
 | IT-ORG-013 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | UC-04 A6, BR-167 |
 | IT-ORG-014 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-04 A6, UC-04 E6, BR-166 |
 
@@ -131,7 +131,7 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | IT-STUDY-010 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-24, BR-139 |
 | IT-STUDY-011 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-05, BR-23, BR-142 |
 | IT-STUDY-012 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-102, BR-139, BR-148 |
-| IT-STUDY-013 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-BROKEN-OPTIONS-V2 | CLEAN-RESET | BR-24, BR-147, BR-148, M5.11 |
+| IT-STUDY-013 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-BROKEN-OPTIONS-V2 | CLEAN-RESET | BR-24, BR-147, BR-148 |
 
 ## Phiên học thẻ mới
 
@@ -171,7 +171,7 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 |---|---|---|---|---|---|---|---|
 | IT-MODE-001 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-05, BR-98, BR-142 |
 | IT-MODE-002 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-111, BR-112 |
-| IT-MODE-003 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-115, docs/wireframes/m5-study-modes.md |
+| IT-MODE-003 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-115 |
 | IT-MODE-004 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-004F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-107, BR-116, BR-118, BR-120 |
 | IT-MODE-005 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-005F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-121, BR-125, BR-126 |
 | IT-MODE-006 | `10-study-modes.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-4 | CLEAN-RESET | BR-99, BR-121, BR-124 |
@@ -181,7 +181,7 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | IT-MODE-010 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-134, BR-137, BR-138 |
 | IT-MODE-011 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-135, BR-136, BR-137, BR-138 |
 | IT-MODE-012 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | BR-30, BR-106, BR-112, BR-146 |
-| IT-MODE-013 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | M5.16, docs/wireframes/m5-study-modes.md |
+| IT-MODE-013 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | — |
 | IT-MODE-014 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-BLOCKED-V2 | CLEAN-RESET | BR-121, BR-124 |
 | IT-MODE-015 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-SOURCE-V2 | CLEAN-RESET | BR-121, BR-122, BR-123 |
 
@@ -193,11 +193,11 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | IT-CONT-002 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-82, BR-103 |
 | IT-CONT-003 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3b, BR-80, BR-86, BR-103 |
 | IT-CONT-004 | `11-study-continuity-and-failures.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82, BR-86 |
-| IT-CONT-005 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-81, M5.10 |
+| IT-CONT-005 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-81 |
 | IT-CONT-006 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | BR-102, BR-139 |
 | IT-CONT-007 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-CONT-007W | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-05 A5 |
-| IT-CONT-008 | `11-study-continuity-and-failures.md` | READY | `DEVICE-E2E` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | AD-01, UC-05 |
-| IT-CONT-009 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-07, BR-83, BR-152, M5.14 |
+| IT-CONT-008 | `11-study-continuity-and-failures.md` | READY | `DEVICE-E2E` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 |
+| IT-CONT-009 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-07, BR-83, BR-152 |
 | IT-CONT-010 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-05 E4, BR-46, BR-84 |
 | IT-CONT-011 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-05 E2, BR-25 |
 | IT-CONT-012 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-05 E3, BR-85, BR-86 |
@@ -208,13 +208,13 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-PLAT-001 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-001 | SETUP-EMPTY | CLEAN-RESET | UC-06, AD-04 |
-| IT-PLAT-002 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-006 · IT-DECK-001 · IT-CARD-002 · IT-CARD-008 · IT-CARD-010 · IT-ORG-004 · IT-STUDY-008 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04, AD-01, AD-04 |
+| IT-PLAT-001 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-001 | SETUP-EMPTY | CLEAN-RESET | UC-06 |
+| IT-PLAT-002 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-006 · IT-DECK-001 · IT-CARD-002 · IT-CARD-008 · IT-CARD-010 · IT-ORG-004 · IT-STUDY-008 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04 |
 | IT-PLAT-003 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-CONT-001 | SETUP-EMPTY | CLEAN-RESET | UC-05 A3b, BR-79, BR-102, BR-103 |
-| IT-PLAT-004 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-005 | SETUP-EMPTY | CLEAN-RESET | M4.1, UC-06 |
+| IT-PLAT-004 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-005 | SETUP-EMPTY | CLEAN-RESET | UC-06 |
 | IT-PLAT-005 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-010 | SETUP-EMPTY | CLEAN-RESET | UC-05 A3, BR-82 |
-| IT-PLAT-006 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04, UC-05, AD-04 |
-| IT-PLAT-009 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | AD-04 |
+| IT-PLAT-006 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04, UC-05 |
+| IT-PLAT-009 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | — |
 
 ## Bất biến của danh mục
 
@@ -224,5 +224,7 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 - Danh mục MUST NOT chứa ID không có kịch bản gốc.
 - Mức sẵn sàng, hồ sơ thực thi, chuẩn bị và dọn dẹp MUST dùng giá trị được định nghĩa
   trong hướng dẫn thực thi.
-- Cột truy vết MUST có ít nhất một UC, BR, AD, nhiệm vụ WBS hoặc ID phạm vi đã chốt.
+- Cột truy vết MUST liệt kê UC hoặc BR khi kịch bản kiểm một luật nghiệp vụ cụ
+  thể. Kịch bản chỉ kiểm ranh giới nền tảng hoặc trải nghiệm thuần UI, không
+  gắn với một UC/BR đơn lẻ, MAY để `—`.
 - Khi thêm kịch bản, agent MUST cập nhật danh mục trong cùng thay đổi.
