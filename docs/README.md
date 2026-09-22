@@ -20,11 +20,11 @@ Format và thứ tự đọc: [`document-conventions.md`](document-conventions.m
 | [`product.md`](product.md) | Vấn đề, người dùng, quyết định nền tảng, và phạm vi MVP | frozen for MVP |
 | [`superpowers/specs/2026-09-21-memox-v8-foundation-design.md`](superpowers/specs/2026-09-21-memox-v8-foundation-design.md) | Kiến trúc nền tảng V8: Flutter viết lại từ đầu, giữ nghiệp vụ học của V7, không giữ kiến trúc hay cách triển khai của nó | draft for review |
 | [`business-rules.md`](business-rules.md) (+ [`business-rules/study-mode.md`](business-rules/study-mode.md)) | BR-01…270: cây deck, hai scheduler, kind, session lifecycle, reset/generation, starter template, trạng thái thẻ, cờ và tag, import/export, tiến độ, Study Home, Settings, nhắc học, tìm kiếm, Trash | frozen for MVP |
-| [`data-model.md`](data-model.md) | Schema, cột, index, quan hệ, và các câu query bất biến giữ dữ liệu đúng | frozen for MVP |
+| [`data-model.md`](data-model.md) | Schema, cột, index, quan hệ, và các câu query bất biến giữ dữ liệu đúng | active |
 | [`use-cases.md`](use-cases.md) | UC-01…22 cho phạm vi MVP | frozen for MVP |
 | [`master-flow.md`](master-flow.md) | Đồ thị nối UC-01…20 thành hành trình, tách theo đối tượng deck / card / study | active |
-| [`superpowers/plans/2026-09-21-memox-v8-foundation.md`](superpowers/plans/2026-09-21-memox-v8-foundation.md) | Kế hoạch triển khai nền tảng V8: Flutter skeleton, data model lõi, scheduler SRS thuần Dart, luật cây deck | not started |
-| [`superpowers/plans/2026-09-23-docs-v8-reset.md`](superpowers/plans/2026-09-23-docs-v8-reset.md) | Kế hoạch dọn `docs/`: xoá tài liệu V7, dựng gate tham chiếu, scrub tài liệu còn lại, nâng `data-model.md` lên V8 | in progress |
+| [`superpowers/plans/2026-09-21-memox-v8-foundation.md`](superpowers/plans/2026-09-21-memox-v8-foundation.md) | Kế hoạch triển khai nền tảng V8: Flutter skeleton, data model lõi, scheduler SRS thuần Dart, luật cây deck | — |
+| [`superpowers/plans/2026-09-23-docs-v8-reset.md`](superpowers/plans/2026-09-23-docs-v8-reset.md) | Kế hoạch dọn `docs/`: xoá tài liệu V7, dựng gate tham chiếu, scrub tài liệu còn lại, nâng `data-model.md` lên V8 | — |
 | [`it-scenarios/`](it-scenarios/) | Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng: điều hướng, bộ thẻ, thẻ ghi nhớ, học và ôn tập | active |
 | [`../tools/check_docs_refs.py`](../tools/check_docs_refs.py) | Gate: không tài liệu nào được trích dẫn thứ đã bị xoá; BR/UC/invariant được trích dẫn phải phân giải được | active |
 
