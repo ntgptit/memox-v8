@@ -7,8 +7,8 @@
 | **Scope** | Must-have của MVP. Ngoài phạm vi: should/nice-to-have, và mọi thứ ở mục "Điều đã cố ý không đặc tả" |
 | **Source of truth for** | UC-xx · main/alternative/error flow · UI state matrix của từng màn |
 | **Depends on** | `document-conventions.md`, `product.md`, `business-rules.md` |
-| **Updated by task** | M100.96 — UC-03 xoá deck vào Trash (BR-03, BR-04, BR-256, BR-265) và điều kiện khoá theo BR-13; UC-04 xoá card vào Trash, giới hạn độ dài theo BR-08/BR-95, cờ, tag và mở chi tiết (BR-92…BR-95, BR-246); M100.10 — UC-22: sắp xếp root/sub-deck cùng cấp; M99.33 — UC-21: Trash và khôi phục item đã xoá; M99.32 — UC-20: tìm kiếm toàn thư viện (deck, hai mặt card, tag); M99.24 — UC-13: xem tiến độ theo deck (cấp thư viện → cấp deck, hai khoảng); trước đó M99.23 — UC-12: xem tiến độ học (streak, hôm nay, bảy ngày) · M99.29 — UC-17: bật nhắc học hằng ngày (opt-in → quyền → lịch → notification → Study Home) · M99.30 — UC-18: quản lý tag (catalog, rename/gộp, xoá) và lọc thẻ theo nhiều tag · M99.31 — UC-19: xem chi tiết một card và lịch sử học của nó |
-| **Last updated** | 2026-09-16 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ task ID V7, tham chiếu kiến trúc V7 và từ vựng layer V7 khỏi use case |
+| **Last updated** | 2026-09-23 |
 
 Chỉ đặc tả must-have. Should-have và nice-to-have viết khi tới lượt — đặc tả
 trước những thứ có thể bị cắt là lãng phí.
@@ -185,7 +185,7 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
 - **E3 — Xoá thất bại:** hiện lỗi; deck còn nguyên vẹn, và `content_type` của
   deck cha cũng không đổi — cả hai nằm trong một transaction (BR-163).
 - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong một
-  thẻ ở màn khác giữa lúc bảng chọn mở. Repository đọc lại `first_answered_at`
+  thẻ ở màn khác giữa lúc bảng chọn mở. Hệ thống đọc lại `first_answered_at`
   **bên trong** transaction (BR-13) và từ chối; màn hình hiện lý do và lối đi tới
   Reset. Trạng thái vẽ trên màn hình MUST NOT là thứ quyết định thao tác có hợp lệ
   hay không.
@@ -259,7 +259,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-08, và chính 
 - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó.
 - **E5 — Deck đích không hợp lệ:** picker chỉ liệt kê deck cùng root, không phải
   root, không phải loại `deck`, và không phải chính deck nguồn. Nếu một thao tác
-  vẫn tới được repository với đích không hợp lệ — deep link, hoặc cây đổi giữa
+  vẫn mang đích không hợp lệ tới trước khi ghi — deep link, hoặc cây đổi giữa
   lúc mở picker và lúc xác nhận — nó bị từ chối kèm lý do có kiểu và không ghi
   gì (BR-165).
 - **E6 — Một thẻ trong lô vi phạm:** cả lô rollback; danh sách và selection giữ
@@ -450,8 +450,8 @@ khoá để tránh bấm đúp.
 **Alternative flows:**
 - **A1 — Chưa có deck nào:** empty state với hai lối đi — thư viện starter (UC-01)
   hoặc tạo deck mới (UC-02).
-- **A2 — Dữ liệu đổi ở màn khác:** danh sách tự cập nhật qua stream từ Drift
-  (AD-01), không cần refresh thủ công.
+- **A2 — Dữ liệu đổi ở màn khác:** danh sách tự cập nhật qua stream từ Drift,
+  không cần refresh thủ công.
 - **A3 — Cây sâu nhiều cấp:** điều hướng xuống từng cấp; số liệu gộp luôn tính
   theo `root_deck_id` (BR-56, BR-57).
 
@@ -793,7 +793,7 @@ với lối chọn nhiều thì tập chọn không rỗng (BR-174)
 - **E2 — Lỗi từ nền tảng khi chia sẻ:** exception của platform channel map
   thành lý do có kiểu; thông báo MUST NOT lộ đường dẫn, tên file hay nội dung
   card (BR-180, BR-181); Retry giữ nguyên scope và format.
-- **E3 — Đọc dữ liệu thất bại:** repository lỗi khi lấy snapshot → lý do có
+- **E3 — Đọc dữ liệu thất bại:** đọc dữ liệu lỗi khi lấy snapshot → lý do có
   kiểu, không có file, không có mutation (BR-178); Retry chạy lại từ bước 4.
 - **E4 — Encode thất bại:** encoder lỗi → lý do có kiểu phân biệt được với lỗi
   đọc, không có artifact một phần nào được bàn giao.
@@ -814,7 +814,7 @@ BR-175, BR-176, BR-177, BR-178, BR-179, BR-180, BR-181
 
 **UI states:** initial (scope + format, primary bật) · generating (primary khoá,
 Cancel còn dùng được) · share requested · dismissed (về initial, không lỗi) ·
-unavailable/platform error · repository error · encoder error · invalid scope
+unavailable/platform error · read error · encoder error · invalid scope
 (rỗng hoặc id đã cũ). Không có state `loading` khi mở sheet — scope và số card
 đã có sẵn từ màn gọi; và không có state `empty`, vì scope rỗng là lỗi (E5) chứ
 không phải một màn hình trống.
@@ -845,9 +845,9 @@ nào — trạng thái "chưa có gì" là một mặt hợp lệ, không phải
    cũ → mới, ngày trống là 0 (BR-196).
    Ba khối này **không chiếm cả màn**: `/progress` là một màn duy nhất, và
    chúng là phần đầu của cấp thư viện trong UC-13 — cùng một vùng cuộn, dưới
-   chúng là bộ chọn khoảng, bảng tổng và danh sách deck. Bố cục là việc của
-   `wireframes/m99-progress-by-deck.md` §1; ở đây chỉ ghi rằng hai use case
-   dùng chung một màn, vì đọc riêng UC-12 sẽ hiểu nhầm thành một tab ba khối.
+   chúng là bộ chọn khoảng, bảng tổng và danh sách deck. Bố cục chi tiết thuộc
+   phạm vi thiết kế UI, ngoài phạm vi tài liệu này; ở đây chỉ ghi rằng hai use
+   case dùng chung một màn, vì đọc riêng UC-12 sẽ hiểu nhầm thành một tab ba khối.
 5. Người dùng đọc xong và rời tab. Hệ thống không ghi gì trong toàn bộ luồng
    (BR-190).
 
@@ -872,7 +872,7 @@ nào — trạng thái "chưa có gì" là một mặt hợp lệ, không phải
   answer nên không tạo hoạt động (BR-193).
 
 **Error flows:**
-- **E1 — Đọc lịch sử thất bại:** repository map exception thành `Failure`; màn
+- **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn
   hình hiện mặt lỗi kèm `Retry`. Thông báo MUST NOT lộ SQL, tên bảng hay nội
   dung card (BR-52).
 - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp
@@ -972,7 +972,7 @@ state "empty selection": bộ chọn luôn có đúng một khoảng được ch
 
 **Main flow:**
 1. Hệ thống đọc **một snapshot** gồm session có thể học tiếp và toàn bộ root deck
-   kèm workload — cùng một transaction, không phải hai lần đọc rời (AD-13). Màn
+   kèm workload — cùng một transaction, không phải hai lần đọc rời. Màn
    hình là **chỉ-đọc**: vào tab, cuộn hay đổi tab không ghi gì (BR-192).
 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói
    deck nào, loại phiên gì, đang ở chặng nào — cả hai giá trị lấy từ chính hàng
@@ -1128,7 +1128,7 @@ số.
 - **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn
   tối đa → lý do có kiểu hiện ngay dưới trường, không ghi gì, draft giữ nguyên
   (BR-211, BR-216).
-- **E2 — Ghi thất bại:** repository lỗi → thông báo có kiểu và `Retry`. Draft
+- **E2 — Ghi thất bại:** thao tác ghi lỗi → thông báo có kiểu và `Retry`. Draft
   giữ nguyên, các control còn lại vẫn hiển thị giá trị **đã persisted**; thông
   báo MUST NOT lộ SQL hay stack trace (BR-216).
 - **E3 — Đọc thất bại:** stream lỗi → trạng thái lỗi của cả màn với `Retry`;
@@ -1292,7 +1292,7 @@ rỗng là câu trả lời hợp lệ, không phải lỗi
   không có kết quả cho bộ lọc, kèm lối `Clear` để bỏ vị từ tag.
 
 **Error flows:**
-- **E1 — Đọc catalog thất bại:** repository lỗi → trạng thái lỗi có Retry; chưa
+- **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa
   có mutation nào xảy ra.
 - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa
   ký tự điều khiển → lỗi có kiểu gắn dưới ô nhập, form giữ nguyên chữ đã gõ
@@ -1442,10 +1442,6 @@ not-found.
 - **E2 — Trang sau đọc lỗi:** giữ nguyên những gì đã tìm được, chỉ dải cuối danh
   sách đổi thành thông báo và nút thử lại.
 
-(E3 cũ — "chi tiết card chưa có route" — là tình huống của nhánh nguồn trước khi
-M99.31 tồn tại, đã hết đường xảy ra từ khi tích hợp nối dây điều hướng ở stage 9;
-mệnh đề phòng hờ tương ứng vẫn nằm trong BR-254.)
-
 **Postconditions:** Không đổi gì — use case chỉ đọc, và không mở phiên học nào
 (BR-254).
 
@@ -1560,7 +1556,7 @@ Manual order.
 **Main flow:**
 1. Hệ thống lấy sibling liền trước hoặc sau từ thứ tự Manual đã lưu và gửi
    operation `before`/`after`, không gửi một database index thô.
-2. Repository mở một transaction, đọc lại source và target active, xác nhận
+2. Hệ thống mở một transaction, đọc lại source và target active, xác nhận
    chúng còn cùng `parent_deck_id`, rồi cập nhật thứ tự nhóm sibling.
 3. Watch của level phát emission mới; danh sách đổi vị trí tại chỗ. Mọi parent,
    root pointer, scheduler, card, study state và subtree giữ nguyên.
@@ -1590,12 +1586,12 @@ nguyên danh sách hiện có.
 | Thứ | Vì sao |
 |---|---|
 | Đưa deck con lên thành root deck | Cần quyết định scheduler mới; là tính năng riêng, không phải phép di chuyển (UC-09 A2) |
-| ~~Tìm kiếm card (S1)~~ | **Đã vào MVP ở M99.32** — UC-20 và BR-247…BR-255 phủ tên deck, hai mặt card và tên tag. Ngoài phạm vi v1: fuzzy/semantic search, bỏ dấu, và tìm trong `example`/`hint`/`pronunciation` |
-| ~~Thống kê / streak (S2)~~ | **Đã đặc tả ở M99.23, M99.24 và M5.26** — UC-12 với BR-190…BR-199 chốt đơn vị đếm, partition, streak và phạm vi v1; UC-13 với BR-182…BR-189 chốt tiến độ theo deck; UC-14 với BR-200…BR-202 chốt tab Study đọc thư viện thật |
-| Đảo chiều card (S3) | Should-have — **một nửa đã đóng ở M99.27**: UC-15 và BR-203…BR-209 cho phép hỏi ngược trong một phiên `self_assess` của deck `sm2` mà **không** ghi lại thẻ, nên phần còn mở là đảo chiều ở các mode khác |
-| ~~Export (nửa còn lại của N1)~~ | **Đã đặc tả ở M99.21** — UC-11 và BR-174…BR-181 chốt scope, encoder, filename, share và quyền riêng tư trước khi viết code, đúng điều kiện mà mục này đặt ra. Còn nice-to-have ngoài phạm vi export nội dung: backup/restore, sync và `.apkg`. |
-| ~~Nhắc nhở hằng ngày (N2)~~ | **Đã đặc tả ở M99.29** — UC-17 và BR-218…BR-229 chốt opt-in, phạm vi due-only, riêng tư của copy, thứ tự cấp bách và vòng đời lịch trước khi viết code. Còn ngoài phạm vi: nhắc theo thẻ mới, nhiều lượt nhắc trong ngày, và nhắc theo từng deck. |
-| Media trong card | Ngoài MVP; quy tắc reset (BR-41) và lưu trữ (AD-08) đã đặt sẵn. Tag đã rời khỏi hàng này: nó được đặc tả ở BR-93/BR-94 (M4.10at) và ở UC-18/BR-230…BR-238 (M99.30) |
+| ~~Tìm kiếm card (S1)~~ | **Đã đặc tả** — UC-20 và BR-247…BR-255 phủ tên deck, hai mặt card và tên tag. Ngoài phạm vi v1: fuzzy/semantic search, bỏ dấu, và tìm trong `example`/`hint`/`pronunciation` |
+| ~~Thống kê / streak (S2)~~ | **Đã đặc tả** — UC-12 với BR-190…BR-199 chốt đơn vị đếm, partition, streak và phạm vi v1; UC-13 với BR-182…BR-189 chốt tiến độ theo deck; UC-14 với BR-200…BR-202 chốt tab Study đọc thư viện thật |
+| Đảo chiều card (S3) | Should-have — **một nửa đã đặc tả**: UC-15 và BR-203…BR-209 cho phép hỏi ngược trong một phiên `self_assess` của deck `sm2` mà **không** ghi lại thẻ, nên phần còn mở là đảo chiều ở các mode khác |
+| ~~Export (nửa còn lại của N1)~~ | **Đã đặc tả** — UC-11 và BR-174…BR-181 chốt scope, encoder, filename, share và quyền riêng tư trước khi viết code, đúng điều kiện mà mục này đặt ra. Còn nice-to-have ngoài phạm vi export nội dung: backup/restore, sync và `.apkg`. |
+| ~~Nhắc nhở hằng ngày (N2)~~ | **Đã đặc tả** — UC-17 và BR-218…BR-229 chốt opt-in, phạm vi due-only, riêng tư của copy, thứ tự cấp bách và vòng đời lịch trước khi viết code. Còn ngoài phạm vi: nhắc theo thẻ mới, nhiều lượt nhắc trong ngày, và nhắc theo từng deck. |
+| Media trong card | Ngoài MVP; quy tắc reset (BR-41) đã đặt sẵn, và khi thêm sẽ lưu trong thư mục riêng của ứng dụng như mọi dữ liệu riêng tư khác, không phải bộ nhớ dùng chung. Tag đã rời khỏi hàng này: nó được đặc tả ở BR-93/BR-94 và ở UC-18/BR-230…BR-238 |
 | Tag phân cấp, màu tag, taxonomy chia sẻ | Ngoài phạm vi Tag Management v1 — UC-18 chốt tag là nhãn phẳng, là định danh văn bản, không phải hệ thống deck thứ hai |
-| Đăng nhập, đồng bộ | Ngoài MVP (AD-03) |
+| Đăng nhập, đồng bộ | Ngoài MVP |
 | Scheduler thứ ba | Abstraction đã sẵn sàng; thêm khi có nhu cầu thật |
