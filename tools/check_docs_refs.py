@@ -33,14 +33,14 @@ KEEP_SET = [
 # Each pattern names something V8 no longer has. Order is report order.
 BANNED = [
     (re.compile(r"AD-\d+"), "AD reference — architecture.md is deleted"),
-    (re.compile(r"\bM\d+(?:\.\d+)+\b"), "V7 WBS task ID — the ledgers are deleted"),
+    (re.compile(r"\bM\d+(?:\.\d+)+[a-z]*\b"), "V7 WBS task ID — the ledgers are deleted"),
     (re.compile(r"\blib/"), "V7 source path — V8 has no lib/ yet"),
     (re.compile(r"\b(?:wbs-study|wbs|architecture|checklist)\.md\b"), "deleted document"),
     (
         re.compile(r"\b(?:wbs-archive|wireframes|reviews|claude-design|design-system)/"),
         "deleted directory",
     ),
-    (re.compile(r"\b[\w./-]+\.dart\b"), "V7 source file — V8 has no code yet"),
+    (re.compile(r"\b[\w./-]+\.(?:dart|drift)\b"), "V7 source file — V8 has no code yet"),
     (re.compile(r"\b(?:integration_)?test/"), "V7 test path — V8 has no tests yet"),
     (re.compile(r"\b[Ss]chema v\d+\b"), "V7 schema version — V8 has no migration path from V7"),
 ]
