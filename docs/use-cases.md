@@ -50,7 +50,7 @@ tham chiếu ngược về đây bằng ID và không phát biểu lại luồng
 7. Hệ thống hỏi **chế độ ôn tập** cho bản sao, gợi ý sẵn `default_scheduler_type`
    của template (BR-34).
 8. Hệ thống **tạo bản sao** trong một transaction (BR-39): root deck mới với
-   `content_type = 'deck'`, `root_deck_id = id`, `scheduler_generation = 1`; toàn
+   `content_type = 'deck'`, `root_id = id`, `generation = 1`; toàn
    bộ cây deck con với `content_type` đúng theo template; toàn bộ card; và study
 state theo scheduler đã chọn (BR-09, BR-33).
 9. Bản sao xuất hiện trong danh sách deck. Toàn bộ card là thẻ **chưa học**
@@ -80,8 +80,8 @@ state theo scheduler đã chọn (BR-09, BR-33).
 
 **Postconditions:**
 - Bản sao có `source_template_id`, `source_template_version`, `scheduler_type` đã
-  chọn, `scheduler_generation = 1`, `first_answered_at = NULL`.
-- Mọi deck trong bản sao có `root_deck_id` trỏ đúng root mới (BR-56).
+  chọn, `generation = 1`, `first_answered_at = NULL`.
+- Mọi deck trong bản sao có `root_id` trỏ đúng root mới (BR-56).
 - Mỗi card có đúng một study state khởi tạo theo scheduler đó.
 
 **Business rules:** BR-09, BR-31…BR-39, BR-56, BR-87
@@ -107,8 +107,8 @@ state theo scheduler đã chọn (BR-09, BR-33).
    sau lượt ôn đầu tiên (BR-13).
 4. Người dùng xác nhận.
 5. Hệ thống validate tên (BR-01) và chế độ đã chọn.
-6. Hệ thống tạo root deck với: `parent_deck_id = NULL`, `root_deck_id = id`,
-   `content_type = 'deck'` (bất biến), `scheduler_generation = 1`,
+6. Hệ thống tạo root deck với: `parent_id = NULL`, `root_id = id`,
+   `content_type = 'deck'` (bất biến), `generation = 1`,
    `first_answered_at = NULL`.
 7. Deck xuất hiện trong danh sách, rỗng.
 
@@ -125,7 +125,7 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
 - **E4 — Ghi database thất bại:** hiện lỗi, giữ nguyên form và dữ liệu đã nhập.
 
 **Postconditions:** Root deck tồn tại với scheduler đã chọn, `content_type =
-'deck'`, `root_deck_id = id`, và còn sau khi khởi động lại app.
+'deck'`, `root_id = id`, và còn sau khi khởi động lại app.
 
 **Business rules:** BR-01, BR-02, BR-11, BR-56, BR-58, BR-59
 **UI states:** initial · submitting · error
@@ -192,7 +192,7 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
 
 **Postconditions:**
 - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại,
-  `scheduler_generation` **không đổi** (chưa có gì để reset), `first_answered_at`
+  `generation` **không đổi** (chưa có gì để reset), `first_answered_at`
   vẫn NULL, và không còn phiên `in_progress` nào của cây (BR-164).
 - Sau xoá: deck và mọi descendant đang active mang cùng một batch trong Trash,
   không bề mặt active nào còn hiện chúng (BR-257), và không còn phiên
@@ -222,7 +222,7 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
    và phiên âm (BR-95).
 3. Hệ thống validate (BR-07, BR-08, BR-95).
 4. Hệ thống tạo card **và** study state của nó trong cùng transaction, theo
-   scheduler của root deck (tra qua `root_deck_id`) và generation hiện tại (BR-09).
+   scheduler của root deck (tra qua `root_id`) và generation hiện tại (BR-09).
 5. Card xuất hiện; số card đến hạn của deck tăng.
 
 Card đầu tiên của một deck `unset` được tạo qua UC-08, và chính nó xác lập
@@ -318,7 +318,7 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
 6. Người dùng trả lời một thẻ. Nguồn của `action` tùy mode: `self_assess` lấy
    **trực tiếp từ người dùng** qua `supportedActions` — 2 nút với `eight_box`, 4 với
    `sm2` (BR-30); bốn mode chấm điểm chấm ra kết quả **nhị phân** rồi ánh xạ theo
-   BR-107 (BR-106). Hệ thống **so `session.scheduler_generation` với generation hiện
+   BR-107 (BR-106). Hệ thống **so `session.generation` với generation hiện
    tại của root** (BR-46); lệch thì đi E4.
 7. Hệ thống xác định `kind` và ghi tường minh (BR-76):
    - phiên `learning` ⇒ `learning`, hoặc `relearning` nếu là lượt lặp trong round;
@@ -328,7 +328,7 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
 8. Lượt `scheduled` tính trạng thái mới bằng thuật toán (BR-15/BR-16 hoặc
    BR-18/BR-19) và cập nhật study state, `answer_count`, `lapse_count`. Lượt
    `learning` và `relearning` chỉ cập nhật `last_answered_at`.
-9. Hệ thống ghi một dòng `study_answers` kèm `kind` (BR-21) — ngay lập tức
+9. Hệ thống ghi một dòng `review_log` kèm `kind` (BR-21) — ngay lập tức
    (BR-25).
 10. **Chỉ ở phiên `learning`:** thẻ đi hết **stage cuối mà chính nó tham gia** — stage
     bỏ qua nó theo BR-114 không được tính — ⇒ hệ thống đặt `learned_at`
@@ -399,13 +399,13 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
 **Postconditions:**
 - Mỗi card đã đánh giá có trạng thái lịch đúng loại lượt, đúng scheduler và đúng
   generation.
-- Mỗi lượt đánh giá có đúng một dòng `study_answers` mang `kind`,
-  `scheduler_type` và `scheduler_generation` tại thời điểm đó.
+- Mỗi lượt đánh giá có đúng một dòng `review_log` mang `kind`,
+  `scheduler_type` và `generation` tại thời điểm đó.
 - `first_answered_at` của root khác NULL sau khi **thẻ đầu tiên hoàn tất chuỗi
   học mới** (bước 10–11, BR-13, BR-144) — **không** phải sau lượt `scheduled`
   đầu tiên. Một phiên `reviewing` chỉ chạy được trên thẻ đã có `learned_at`,
   nên tới lúc đó cột này đã được đặt rồi.
-- `study_sessions.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo
+- `study_session.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo
   ma trận ở `data-model.md`.
 - Nếu E4 xảy ra, **không** có dòng history nào được ghi cho lượt đó.
 
@@ -431,7 +431,7 @@ khoá để tránh bấm đúp.
 
 **Main flow:**
 1. Hệ thống lấy toàn bộ root deck kèm số card đến hạn — **một query gộp** theo
-   `root_deck_id`, không phải N+1 query và không duyệt cây trong Dart.
+   `root_id`, không phải N+1 query và không duyệt cây trong Dart.
 2. Người dùng thấy mỗi deck với tên, tổng số card trong cây, **hai** số của
    BR-150 — card chưa học (New) và card đến hạn (Due), không bao giờ gộp — và
    chế độ ôn tập đang dùng.
@@ -453,7 +453,7 @@ khoá để tránh bấm đúp.
 - **A2 — Dữ liệu đổi ở màn khác:** danh sách tự cập nhật qua stream từ Drift,
   không cần refresh thủ công.
 - **A3 — Cây sâu nhiều cấp:** điều hướng xuống từng cấp; số liệu gộp luôn tính
-  theo `root_deck_id` (BR-56, BR-57).
+  theo `root_id` (BR-56, BR-57).
 
 **Error flows:**
 - **E1 — Đọc thất bại:** màn hình lỗi có nút thử lại.
@@ -490,14 +490,14 @@ giải thích vì sao chế độ ôn tập đang bị khoá (UC-03 A1)
    đích chính của thao tác.
 4. Người dùng xác nhận.
 5. Hệ thống thực hiện, **trong một transaction duy nhất** (BR-47):
-   - tăng `scheduler_generation` của root deck (BR-40);
+   - tăng `generation` của root deck (BR-40);
    - đặt `scheduler_type` / `version` / `config` mới nếu người dùng đã chọn;
    - đặt `first_answered_at = NULL` → scheduler mở khoá (BR-44);
    - khởi tạo lại study state của **toàn bộ** card trong cây (mọi cấp), theo
      scheduler mới và generation mới (BR-42, BR-09);
    - mọi study session `in_progress` của cây → `invalidated`,
      `end_reason = scheduler_reset`, `ended_at` được đặt (BR-83);
-   - **không** đụng tới `study_answers` (BR-43), và **không** đụng tới
+   - **không** đụng tới `review_log` (BR-43), và **không** đụng tới
      `content_type` hay cấu trúc cây (BR-41).
 6. Người dùng quay về deck; toàn bộ card đã trở lại trạng thái Học mới
    (`learned_at`/`due_at` về NULL) và chưa thuộc tập Due/Reviewing; scheduler
@@ -521,11 +521,11 @@ giải thích vì sao chế độ ôn tập đang bị khoá (UC-03 A1)
   (UC-05 E4, BR-84).
 
 **Postconditions:**
-- `scheduler_generation` tăng đúng 1.
+- `generation` tăng đúng 1.
 - Mọi study state trong cây có generation mới, scheduler mới, `due_at = NULL`.
 - `first_answered_at IS NULL`.
 - Không còn session `in_progress` nào của cây.
-- `study_answers` cũ còn nguyên, mang generation cũ (BR-43).
+- `review_log` cũ còn nguyên, mang generation cũ (BR-43).
 - Cấu trúc cây và `content_type` không đổi (BR-41).
 - Bất biến BR-48 và BR-49 giữ nguyên.
 
@@ -562,8 +562,8 @@ Create có ba hành vi khác nhau tuỳ trạng thái deck.
 4. Hệ thống thực hiện **trong một transaction** (BR-62):
    - nếu deck đang `unset`: đặt `content_type` theo hành động đã chọn;
    - tạo phần tử con: card (kèm study state, BR-09) hoặc deck con mới với
-     `content_type = 'unset'`, `parent_deck_id` = deck hiện tại,
-     `root_deck_id` = root của deck hiện tại (BR-56), và **không** có cột
+     `content_type = 'unset'`, `parent_id` = deck hiện tại,
+     `root_id` = root của deck hiện tại (BR-56), và **không** có cột
      scheduler (BR-06).
 5. Từ đây nút Create trong deck này chỉ hiện hành động tương ứng (BR-66).
 
@@ -594,7 +594,7 @@ Create có ba hành vi khác nhau tuỳ trạng thái deck.
 **Postconditions:**
 - Deck có `content_type` khác `unset`, khớp với loại phần tử con vừa tạo.
 - Deck không đồng thời chứa card và deck con (BR-65).
-- Deck con mới có `root_deck_id` đúng bằng root của cha (BR-56, BR-72).
+- Deck con mới có `root_id` đúng bằng root của cha (BR-56, BR-72).
 
 **Business rules:** BR-09, BR-55, BR-56, BR-58…BR-66, BR-72, BR-163
 **UI states:** initial · submitting · error
@@ -617,22 +617,22 @@ Create có ba hành vi khác nhau tuỳ trạng thái deck.
    - đích không phải chính deck nguồn hoặc descendant của nó (BR-70);
    - đích có `content_type = 'deck'` hoặc `'unset'` (BR-64) — không thể đưa deck
      vào một deck chỉ chứa card;
-   - root của đích có cùng `scheduler_type` và `scheduler_generation` với root
+   - root của đích có cùng `scheduler_type` và `generation` với root
      của nguồn (BR-74);
    - độ sâu sau move không vượt giới hạn (BR-55): với `targetDepth` là cấp của
      deck đích (root là cấp 1) và `subtreeHeight` là chiều cao subtree nguồn
      (deck nguồn tính là 1), MUST có `targetDepth + subtreeHeight <= 10`.
 3. Hệ thống thực hiện **trong một transaction** (BR-71):
-   - đặt `parent_deck_id` của deck nguồn thành deck đích;
-   - cập nhật `root_deck_id` cho **toàn bộ subtree** của deck nguồn;
+   - đặt `parent_id` của deck nguồn thành deck đích;
+   - cập nhật `root_id` cho **toàn bộ subtree** của deck nguồn;
    - nếu đích đang `unset`, đặt `content_type = 'deck'` (BR-62);
    - nếu deck cha **cũ** là sub-deck và vừa mất phần tử con cuối cùng, đặt
      `content_type` của nó về `unset` (BR-163); cha cũ là root thì giữ `deck`.
 4. Cây được vẽ lại.
 
 **Alternative flows:**
-- **A1 — Di chuyển trong cùng một cây (cùng root):** `root_deck_id` không đổi,
-  nhưng vẫn phải chạy trong transaction cùng với việc đổi `parent_deck_id`.
+- **A1 — Di chuyển trong cùng một cây (cùng root):** `root_id` không đổi,
+  nhưng vẫn phải chạy trong transaction cùng với việc đổi `parent_id`.
 - **A2 — Di chuyển lên thành root deck:** ngoài phạm vi MVP — deck nguồn sẽ cần
   scheduler riêng, tức là một quyết định mới, không phải một phép di chuyển.
 
@@ -649,12 +649,12 @@ Create có ba hành vi khác nhau tuỳ trạng thái deck.
   cũ cùng quay lại nguyên trạng (BR-163). Không có descendant nào trỏ sai root
   (BR-72).
 - **E5 — Vượt độ sâu tối đa:** `targetDepth + subtreeHeight > 10` → chặn trước
-  khi ghi (BR-55). Không đổi `parent_deck_id`, `root_deck_id`, `content_type`
+  khi ghi (BR-55). Không đổi `parent_id`, `root_id`, `content_type`
   của đích hay bất kỳ timestamp nào.
 
 **Postconditions:**
 - Cây không có cycle (BR-69).
-- Mọi deck trong subtree đã di chuyển có `root_deck_id` đúng bằng root mới
+- Mọi deck trong subtree đã di chuyển có `root_id` đúng bằng root mới
   (BR-56, BR-72).
 - Không deck nào đồng thời chứa card và deck con (BR-65).
 - Deck đích `unset` nhận phần tử con đầu tiên thành `deck`; cha cũ là sub-deck
@@ -836,7 +836,7 @@ nào — trạng thái "chưa có gì" là một mặt hợp lệ, không phải
    `clockProvider` và `utcOffsetProvider` rồi dựng ranh giới ngày theo BR-194.
 2. Hệ thống mở **một** stream đọc lịch sử học, gộp ngay trong SQLite thành các
    hàng *card-day* rồi thành các hàng *active-day* (BR-192); không tải hàng
-   `study_answers` thô lên tầng trên và không đọc từng ngày một.
+   `review_log` thô lên tầng trên và không đọc từng ngày một.
 3. Trong lúc chờ emission đầu tiên, màn hình hiện trạng thái loading có nhãn
    cho screen reader.
 4. Emission tới. Hệ thống hiển thị ba khối, cùng một snapshot:
@@ -1067,10 +1067,10 @@ nhất một thẻ đến hạn (BR-145), và mode ôn duy nhất thuật toán 
 - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là
   validation và không ghi session (BR-208).
 
-**Postconditions:** `study_sessions.direction` giữ lựa chọn của phiên,
+**Postconditions:** `study_session.direction` giữ lựa chọn của phiên,
 `study_queue_items.direction` giữ chiều thật của từng thẻ, và mỗi lượt ghi vào
-`study_answers.direction` chiều chép từ dòng hàng đợi (BR-206). Nội dung thẻ,
-`cards.updated_at` và toàn bộ lịch SRS không đổi (BR-209).
+`review_log.direction` chiều chép từ dòng hàng đợi (BR-206). Nội dung thẻ,
+`card.updated_at` và toàn bộ lịch SRS không đổi (BR-209).
 
 **Business rules:** BR-25, BR-30, BR-101, BR-103, BR-142, BR-145, BR-146,
 BR-203, BR-204, BR-205, BR-206, BR-207, BR-208, BR-209
@@ -1137,7 +1137,7 @@ số.
   không có thay đổi một phần nào (BR-212).
 
 **Postconditions:** `app_settings` giữ đúng một dòng với giá trị người dùng đã
-chọn (BR-210). `decks.study_config` chỉ đổi khi người dùng chủ động dùng
+chọn (BR-210). `deck.study_config` chỉ đổi khi người dùng chủ động dùng
 `Use app defaults` hoặc chỉnh tuỳ chọn của chính deck đó (BR-212). Không thẻ,
 study state, session hay history nào bị đụng bởi bất kỳ luồng nào ở trên
 (BR-213, BR-217).
@@ -1487,7 +1487,7 @@ dùng biết nó tồn tại (BR-257 chỉ nói cái gì bị ẩn khỏi *bề 
    sâu và scheduler/generation mới xuất hiện (BR-261).
 6. Người dùng chọn một target và xác nhận. Hệ thống chạy một transaction: gỡ
    tombstone của **đúng** batch đó, gắn item root vào target, viết lại
-   `root_deck_id` cho cả subtree kể cả tombstone bên trong, và set `content_type`
+   `root_id` cho cả subtree kể cả tombstone bên trong, và set `content_type`
    của target nếu nó đang `unset` (BR-261, BR-262).
 7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id,
    study state, history và tag (BR-262).
@@ -1557,7 +1557,7 @@ Manual order.
 1. Hệ thống lấy sibling liền trước hoặc sau từ thứ tự Manual đã lưu và gửi
    operation `before`/`after`, không gửi một database index thô.
 2. Hệ thống mở một transaction, đọc lại source và target active, xác nhận
-   chúng còn cùng `parent_deck_id`, rồi cập nhật thứ tự nhóm sibling.
+   chúng còn cùng `parent_id`, rồi cập nhật thứ tự nhóm sibling.
 3. Watch của level phát emission mới; danh sách đổi vị trí tại chỗ. Mọi parent,
    root pointer, scheduler, card, study state và subtree giữ nguyên.
 

@@ -106,7 +106,7 @@ flowchart TD
     G -->|"Đích có content_type card"| G2["Chặn · E2, BR-64"]
     G -->|"Root đích khác scheduler hoặc generation"| G3["Chặn, đề nghị reset tường minh · E3, BR-74"]
     G -->|"Vượt cấp 10"| G4["Chặn · E5, BR-55"]
-    G -->|"Hợp lệ"| G5["Đổi parent và root_deck_id toàn subtree trong một transaction · BR-71"]
+    G -->|"Hợp lệ"| G5["Đổi parent và root_id toàn subtree trong một transaction · BR-71"]
 
     B -->|"Đưa content_type về unset"| H{"Deck có rỗng không"}
     H -->|"Không"| H1["Không có nhánh này: content_type do hệ thống tự duy trì · BR-163"]
@@ -189,7 +189,7 @@ phiên đang mở có thể bị vô hiệu hoá từ màn khác.
 flowchart TD
     A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-142, BR-145"}
     B -->|"Không"| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạo session · UC-05 E1, BR-29"]
-    B -->|"Còn"| C["Tạo study_session in_progress mang root_deck_id và generation hiện tại · BR-45, BR-79"]
+    B -->|"Còn"| C["Tạo study_session in_progress mang root_id và generation hiện tại · BR-45, BR-79"]
     C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-142, BR-24"]
     D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · BR-30"]
     E --> F["Hiện mặt trước và tiến độ phiên"]
@@ -214,7 +214,7 @@ flowchart TD
 
     R["Đặt lại tiến độ học trên root · UC-07"] --> S["Xác nhận, nêu rõ giữ gì và mất gì; chọn chế độ mới ngay tại đây"]
     S --> T["Một transaction: generation +1, first_answered_at NULL, khởi tạo lại study state toàn cây, mọi session in_progress → invalidated · BR-40, BR-42, BR-44, BR-47, BR-83"]
-    T --> U["study_answers giữ nguyên, mang generation cũ · BR-43"]
+    T --> U["review_log giữ nguyên, mang generation cũ · BR-43"]
     T -.->|"Phiên đang mở ở màn khác"| H1
 ```
 

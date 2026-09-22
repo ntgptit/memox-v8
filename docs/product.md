@@ -57,7 +57,7 @@ Các quyết định nền tảng trên nằm ở `superpowers/specs/2026-09-21-
 |---|---|---|
 | Nội dung deck và flashcard người dùng tạo | Dữ liệu cá nhân | Chỉ trên thiết bị ở MVP. **Không log nội dung ở bất kỳ level nào** |
 | Ghi chú | Dữ liệu cá nhân | Như trên |
-| Lịch sử học (`study_answers`) | Suy ra được thói quen và thời gian sử dụng | Không gửi ra ngoài ở MVP; không đưa vào analytics |
+| Lịch sử học (`review_log`) | Suy ra được thói quen và thời gian sử dụng | Không gửi ra ngoài ở MVP; không đưa vào analytics |
 | File import | Có thể chứa nội dung ngoài phạm vi app | Xử lý trong bộ nhớ ứng dụng; không để lại bản sao ở thư mục dùng chung |
 | Hình ảnh, audio | Media cá nhân | Lưu trong **thư mục riêng của ứng dụng**, không phải bộ nhớ dùng chung |
 | Dữ liệu backup / export | Chứa toàn bộ những thứ trên | **Chỉ tạo khi người dùng chủ động yêu cầu** — không tự động, không chạy nền |
@@ -211,7 +211,7 @@ thừa nhận điều đó thẳng thắn và để người dùng biết rõ m�
 **Reset giữ nguyên** deck, sub-deck, flashcard, media, tag và nội dung; **xoá**
 lịch ôn, ngày đến hạn, box/ease factor/interval, trạng thái thành thạo và phiên
 đang dở. Study answers cũ được giữ để tham khảo nhưng không dùng cho chu kỳ mới.
-Mỗi deck có `scheduler_generation` tăng sau mỗi lần reset, và kết quả từ session
+Mỗi deck có `generation` tăng sau mỗi lần reset, và kết quả từ session
 thuộc generation cũ bị từ chối.
 
 **Hai scheduler có hai tập action khác nhau** — đây là điểm dễ làm sai nhất:

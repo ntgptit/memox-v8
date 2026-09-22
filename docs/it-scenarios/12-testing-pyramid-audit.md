@@ -174,7 +174,7 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-TREE-006 | `HOST-FLOW` | Emptying a sub-deck resets its type in the same transaction; pure persistence (BR-163). |
 | IT-TREE-007 | `HOST-FLOW` | Manual reset is gone (BR-163); the ID now covers the move transition, which is pure persistence. |
 | IT-TREE-008 | `HOST-FLOW` | Refusal to reset a non-empty deck is a repository guard. |
-| IT-TREE-009 / IT-TREE-009F | `HOST-WIDGET + HOST-FLOW` | Move UI vs the subtree rewrite (root_deck_id, depth) in one transaction. |
+| IT-TREE-009 / IT-TREE-009F | `HOST-WIDGET + HOST-FLOW` | Move UI vs the subtree rewrite (root_id, depth) in one transaction. |
 | IT-TREE-010 | `HOST-FLOW` | Cycle refusal (BR-69/70) is checked inside the write. |
 | IT-TREE-011 | `HOST-FLOW` | BR-64 refusal at the repository. |
 | IT-TREE-012 | `HOST-FLOW` | Cross-scheduler move refusal (BR-73/74) — never silently converted. |

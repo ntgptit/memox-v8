@@ -63,7 +63,7 @@ trên bộ nhớ thiết bị, ghi bởi một tiến trình và đọc bởi m�
 | 2 | Đóng hẳn tiến trình giữa phiên | App thoát hoàn toàn |
 | 3 | Mở lại và chọn Tiếp tục | Phiên mở lại đúng thẻ kế tiếp, không quay về thẻ đầu |
 
-Dẫn xuất từ `IT-CONT-001`. Ranh giới: `study_sessions.cursor` và hàng đợi
+Dẫn xuất từ `IT-CONT-001`. Ranh giới: `study_session.cursor` và hàng đợi
 phải nằm trên đĩa chứ không trong bộ nhớ. Chuỗi vòng, tập không đạt và lịch
 thì đã có ở `HOST-FLOW`.
 
