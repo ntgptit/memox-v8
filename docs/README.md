@@ -3,12 +3,12 @@
 | | |
 |---|---|
 | **Status** | active |
-| **Purpose** | Chỉ mục tài liệu — cái gì tồn tại, cái gì cố ý chưa viết, và ai sở hữu cái gì |
+| **Purpose** | Chỉ mục tài liệu — cái gì tồn tại trong `docs/` và ai sở hữu cái gì |
 | **Scope** | Toàn bộ `docs/`. Ngoài phạm vi: nội dung của từng tài liệu |
-| **Source of truth for** | Danh mục tài liệu · trạng thái từng tài liệu · tài liệu chưa viết và phase sở hữu |
+| **Source of truth for** | Danh mục tài liệu · trạng thái từng tài liệu |
 | **Depends on** | `document-conventions.md` |
-| **Updated by task** | M100.95 — số ID và phạm vi từng tài liệu theo trạng thái thật; `claude-design/`; phạm vi quét của `check_docs.py` |
-| **Last updated** | 2026-09-16 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: viết lại chỉ mục cho bộ tài liệu V8; gỡ tài liệu, thư mục và skill đã xoá khỏi chỉ mục, và bỏ mục tài liệu chưa viết theo quy trình cũ |
+| **Last updated** | 2026-09-23 |
 
 Format và thứ tự đọc: [`document-conventions.md`](document-conventions.md).
 
@@ -16,79 +16,25 @@ Format và thứ tự đọc: [`document-conventions.md`](document-conventions.m
 
 | Document | Purpose | Status |
 |---|---|---|
-| [`document-conventions.md`](document-conventions.md) | Hợp đồng tài liệu: thứ tự đọc, header bắt buộc, template AD/BR/UC/WBS, MUST/SHOULD/MAY | **frozen for MVP** |
-| [`checklist.md`](checklist.md) | The canonical 22-phase development plan | **frozen for MVP** |
-| [`wbs.md`](wbs.md) | Live progress ledger — the source of truth for what is done | active |
-| [`wbs-study.md`](wbs-study.md) | The Study feature's remaining work, from M5.7 on — M5.0…M5.6 are done and archived in `wbs-archive/m5.md` | active |
-| [`wbs-archive/`](wbs-archive/) | entry WBS đã đóng, tách khỏi `wbs.md` ở M100.65. Vẫn nằm trong kiểm trùng ID và đồ thị dependency; xem `wbs-archive/README.md` | active |
-| [`product.md`](product.md) | Problem, users, platform/data/auth decisions, **and MVP scope** | **frozen for MVP** |
-| [`architecture.md`](architecture.md) | Architecture decisions AD-01…23 with reasoning | active |
-| [`use-cases.md`](use-cases.md) | UC-01…22 cho phạm vi MVP | **frozen for MVP** |
+| [`document-conventions.md`](document-conventions.md) | Hợp đồng tài liệu: thứ tự đọc, header bắt buộc, template BR/UC/data model, và từ khoá MUST/SHOULD/MAY | frozen for MVP |
+| [`product.md`](product.md) | Vấn đề, người dùng, quyết định nền tảng, và phạm vi MVP | frozen for MVP |
+| [`superpowers/specs/2026-09-21-memox-v8-foundation-design.md`](superpowers/specs/2026-09-21-memox-v8-foundation-design.md) | Kiến trúc nền tảng V8: Flutter viết lại từ đầu, giữ nghiệp vụ học của V7, không giữ kiến trúc hay cách triển khai của nó | draft for review |
+| [`business-rules.md`](business-rules.md) (+ [`business-rules/study-mode.md`](business-rules/study-mode.md)) | BR-01…270: cây deck, hai scheduler, kind, session lifecycle, reset/generation, starter template, trạng thái thẻ, cờ và tag, import/export, tiến độ, Study Home, Settings, nhắc học, tìm kiếm, Trash | frozen for MVP |
+| [`data-model.md`](data-model.md) | Schema, cột, index, quan hệ, và các câu query bất biến giữ dữ liệu đúng | frozen for MVP |
+| [`use-cases.md`](use-cases.md) | UC-01…22 cho phạm vi MVP | frozen for MVP |
 | [`master-flow.md`](master-flow.md) | Đồ thị nối UC-01…20 thành hành trình, tách theo đối tượng deck / card / study | active |
-| [`business-rules.md`](business-rules.md) | BR-01…270 (phần StudyMode ở `business-rules/study-mode.md`): cây deck, hai scheduler, kind, session lifecycle, reset/generation, starter template, trạng thái thẻ, cờ và tag, import/export, tiến độ, Study Home, Settings, nhắc học, tìm kiếm, Trash | **frozen for MVP** |
-| [`data-model.md`](data-model.md) | Schema v13 + 37 câu query bất biến: decks (cây nhiều cấp), cards, card_study_states, tags, study_sessions, study_answers, study_queue_items, app_settings, delete_batches; template là asset, không phải bảng runtime | **frozen for MVP** |
+| [`superpowers/plans/2026-09-21-memox-v8-foundation.md`](superpowers/plans/2026-09-21-memox-v8-foundation.md) | Kế hoạch triển khai nền tảng V8: Flutter skeleton, data model lõi, scheduler SRS thuần Dart, luật cây deck | not started |
+| [`superpowers/plans/2026-09-23-docs-v8-reset.md`](superpowers/plans/2026-09-23-docs-v8-reset.md) | Kế hoạch dọn `docs/`: xoá tài liệu V7, dựng gate tham chiếu, scrub tài liệu còn lại, nâng `data-model.md` lên V8 | in progress |
+| [`it-scenarios/`](it-scenarios/) | Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng: điều hướng, bộ thẻ, thẻ ghi nhớ, học và ôn tập | active |
+| [`../tools/check_docs_refs.py`](../tools/check_docs_refs.py) | Gate: không tài liệu nào được trích dẫn thứ đã bị xoá; BR/UC/invariant được trích dẫn phải phân giải được | active |
 
-"Frozen for MVP" nghĩa là đặc tả đã chốt và code được viết theo nó. Đổi một tài
-liệu frozen là một quyết định có chủ đích, phải kèm cập nhật mọi tài liệu tham
-chiếu tới nó trong cùng commit — không phải một chỉnh sửa tiện tay.
-
-### Tài liệu theo task
-
-Các thư mục con dưới đây giữ tài liệu gắn với **một** task hoặc **một** lần bàn
-giao, chứ không phải với sản phẩm. Chúng nằm ngoài bảng trên vì vòng đời khác: một
-report đóng lại khi task đóng, còn `use-cases.md` thì không.
-
-| Thư mục | Chứa gì | Vòng đời |
-|---|---|---|
-| [`wireframes/`](wireframes/) | Bố cục và hành vi UI chốt **trước** khi viết code một task | `draft` → `active` khi code land |
-| [`reviews/`](reviews/) | Report và checklist của một vòng review đã chạy | Đóng băng sau khi task đóng |
-| [`reviews/archive/`](reviews/archive/) | Audit mà finding đã thành code và không còn gì trong working tree trích dẫn — xem `reviews/archive/README.md` | Đóng băng, di chuyển ở M100.65 |
-| [`claude-design/`](claude-design/) | Bản chụp dẫn xuất cho Claude Design, công cụ không đọc được repo (M100.94): product context, yêu cầu theo khu vực, contract, DDL, dữ liệu mẫu và research note | Chụp ở một base commit; khi lệch, tài liệu gốc và code thắng |
-
-`design-system/` là ngoại lệ: nó gắn với **sản phẩm**, không với một task, nên nó
-có header bảy dòng như tài liệu cấp một và `check_docs.py` quét nó (M100.29).
-
-| Document | Purpose | Status |
-|---|---|---|
-| [`design-system/theme-architecture.md`](design-system/theme-architecture.md) | Layering của `lib/core/theme/`, chiều import giữa các tầng, và ranh giới public/internal của theme | active |
-| [`design-system/tokyo-component-mapping.md`](design-system/tokyo-component-mapping.md) | Ma trận component → canonical M3 role (đọc từ SDK ghim), dịch ý đồ Tokyo, và bốn sai lệch role đã biết | active |
-| [`design-system/card-recipes.md`](design-system/card-recipes.md) | Mười recipe của `MxCard`: nghĩa, caller, fill/viền/độ sâu/góc/padding, hợp đồng `option`, và quyết định tên `tonal` | active |
-
-`wireframes/` và `reviews/` MUST tham chiếu BR/AD/UC bằng ID và MUST NOT phát
-biểu lại luật — cùng quy tắc canonical location ở `document-conventions.md` §5.
-`claude-design/` là ngoại lệ có chủ đích: người đọc của nó không mở được repo nên
-nó phát biểu lại luật kèm ID, và header của nó khai `Source of truth for: —`.
-`check_docs.py` quét `docs/*.md`, `docs/it-scenarios/` và `docs/design-system/`,
-không quét các thư mục theo task, nên header bảy dòng ở đó là kỷ luật tự giác,
-không phải thứ được cưỡng chế.
-
-**ID là vĩnh viễn.** BR, AD và UC không bao giờ được đánh số lại; rule mới append
-vào số tiếp theo. Lần renumber trước đã làm hỏng tham chiếu ngầm mà không có gì
-báo lỗi — xem mục "Chính sách đánh số" trong `business-rules.md`.
-
-MVP scope lives inside `product.md` rather than a separate `mvp.md` — it is
-short, and splitting it would mean two files that must agree about the same
-feature list.
-
-## Not written yet
-
-These are deliberately absent rather than forgotten. Each is created by the
-phase that owns it — an empty placeholder would read as "considered, nothing
-needed", which is worse than an obvious gap.
-
-| Document | Created during | Owning skill |
-|---|---|---|
-| `api-spec.md` | Phase 10.2 — **not until the Spring Boot backend exists** (AD-05) | `flutter-data-layer` |
-| `design-system.md` | Phase 7 | `flutter-design-system` |
-| `testing-strategy.md` | Phase 15 | `flutter-testing` |
-| `release-checklist.md` | Phase 20–21 | `flutter-ship` |
-
-Templates for the Phase 0–1 documents are in
-`.claude/skills/flutter-product-spec/assets/`.
+**ID là vĩnh viễn.** BR, UC và invariant không bao giờ được đánh số lại; luật
+mới append vào số tiếp theo, kể cả khi nó thuộc phần đầu tài liệu — chi tiết và
+lý do ở [`document-conventions.md`](document-conventions.md) §7.
 
 ## The rule that keeps this useful
 
-Documentation and source code are updated in the same commit. A document that
-lags the code is actively harmful — the next session reads it, believes it, and
-builds on something that is no longer true. If a change makes a document wrong,
-either fix the document or note the discrepancy in `wbs.md` before merging.
+Tài liệu và code được cập nhật trong cùng một commit. Một tài liệu chậm hơn
+code là có hại thật sự — phiên làm việc sau đọc nó, tin nó, và xây tiếp trên
+một điều không còn đúng. Nếu một thay đổi làm tài liệu sai, phải sửa tài liệu
+đó trước khi merge.
