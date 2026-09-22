@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | đang áp dụng |
 | **Purpose** | Ghi hồ sơ thực thi (execution profile) mà mỗi kịch bản nhắm tới và UC/BR nó truy vết tới, để việc viết test sau này biết bắt đầu ở tầng nào |
-| **Scope** | 141 kịch bản của `scenario-catalog.md`. Ngoài phạm vi: viết test, đánh giá chất lượng test đã viết |
+| **Scope** | 141 kịch bản của `scenario-catalog.md`. Ngoài phạm vi: viết test, đánh giá chất lượng test |
 | **Source of truth for** | Hồ sơ thực thi và truy vết UC/BR theo từng ID kịch bản |
 | **Depends on** | `scenario-catalog.md`, `12-testing-pyramid-audit.md` |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ cột test host V7 và mọi số liệu coverage V7, chỉ giữ truy vết UC/BR theo hồ sơ thực thi |

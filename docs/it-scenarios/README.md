@@ -83,12 +83,17 @@ AI agent MUST đọc theo thứ tự:
 liệu" là luật viết cho **một thiết bị**; nó không áp cho một test host tự
 dựng SQLite in-memory của chính nó (§4.3).
 
-Các luồng sau MUST NOT được ghi nhận là đạt của sản phẩm hiện tại:
+Các luồng sau MUST NOT được ghi nhận là đạt khi chạy trên bản dựng V8.0:
 
 - Đổi trực tiếp thuật toán xếp lịch của bộ thẻ gốc đã khóa mà không đi qua
   Đặt lại tiến độ học không phải luồng được hỗ trợ.
-- UC-01 (thư viện bộ thẻ khởi đầu), nhập/xuất, nội dung đa phương tiện, xác
-  thực, đồng bộ và máy chủ nằm ngoài MVP hiện tại.
+- Luồng thuộc phạm vi ngoài V8.0 theo spec
+  `docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2: sáu
+  sub-project sau (Trash, nhập/xuất, tag, nhắc học hằng ngày, thư viện
+  starter deck tức UC-01, thống kê mở rộng) và những gì ngoài V8 hoàn toàn
+  (đa phương tiện, xác thực, đồng bộ/máy chủ, iOS/web/desktop). Kịch bản của
+  các luồng này vẫn là tài liệu nghiệp vụ cho sub-project sau, không phải
+  tiêu chí nghiệm thu của V8.0.
 
 ## 3. Quy ước kịch bản
 
