@@ -98,7 +98,7 @@ BR-02 đã chốt: người dùng có thể muốn hai deck "Unit 5" cho hai gi�
 Card chỉ tồn tại trong deck có `content_type = card` (BR-63), và không bao giờ
 trong root deck (BR-58).
 
-**BR-08 đổi số ở M4.10at: 2000 cho cả hai → 60 và 240.** Rule giữ nguyên ID chứ
+**BR-08 đổi số: 2000 cho cả hai → 60 và 240.** Rule giữ nguyên ID chứ
 không đánh `superseded`, vì cơ chế supersede của §7 dành cho lúc *danh tính* một
 rule đổi khiến tham chiếu cũ trỏ sai chỗ. Ở đây ý nghĩa không đổi — "hai mặt có
 giới hạn độ dài" — nên 21 chỗ đang trích BR-08 vẫn trích đúng thứ chúng định
@@ -110,7 +110,7 @@ rộng mà hàng danh sách và mặt trước thẻ ôn được vẽ cho; quá
 ba dòng trên điện thoại và câu trả lời rơi khỏi tầm nhìn. 240 gấp bốn vì một
 nghĩa chứa nhiều hơn một từ — hai ngôn ngữ, ngăn bằng dấu phẩy.
 
-**Hai mặt nay có hai số, nên giới hạn thuộc về `CardSide`** chứ không phải một
+**Hai mặt nay có hai số, nên giới hạn thuộc về từng mặt thẻ** chứ không phải một
 hằng số dùng chung. Một hằng chung là đúng khi số giống nhau và trở thành cách
 âm thầm cho mặt trước mượn hạn mức của mặt sau ngay khi chúng khác nhau; test
 cho từng mặt ghim đúng điều đó.
@@ -349,8 +349,9 @@ phải lặp mấy lần mới nhớ — thứ cần để đánh giá chất l�
 BR-270 thay BR-80 chỉ để đếm lại tập giá trị. BR-80 được viết khi `end_reason`
 có năm giá trị; `content_deleted` vào sau, cùng Trash (BR-259), và
 `scheduler_changed` vào sau, khi đổi scheduler tách khỏi reset (BR-164).
-CHECK trong `study.drift` và `StudySessionEndReason` đã nhận cả bảy từ lúc đó, còn
-BR-80 thì không được đếm lại — tài liệu nói năm trong khi database nhận bảy.
+CHECK trong schema và kiểu dữ liệu lý do kết thúc phiên (`end_reason`) đã nhận
+cả bảy từ lúc đó, còn BR-80 thì không được đếm lại — tài liệu nói năm trong khi
+database nhận bảy.
 
 BR-86 là điều phân biệt "session hỏng" với "mất tiến độ". Session chuyển sang
 `failed` hay `invalidated` không được kéo theo việc xoá các lượt đã ghi xong —
@@ -472,7 +473,7 @@ tag mỗi thẻ); chúng chỉ nói phần mà mặt quản lý thêm vào.
 | BR-235 | active | Xoá tag MUST **chỉ** gỡ mọi hàng `card_tags` của tag đó rồi xoá hàng `tags`, trong một transaction. MUST NOT xoá, ẩn hay đụng tới bất kỳ thẻ nào, kể cả thẻ chỉ mang duy nhất tag đó. Xác nhận MUST nêu rõ số thẻ sẽ bị gỡ tag và MUST NOT dùng lời lẽ ngụ ý mất thẻ; hành động MUST được mô tả là gỡ tag khỏi thẻ. Xoá tag không còn thẻ nào MUST thành công không cần xác nhận khác biệt về nghĩa. | store + UI | BR-93, UC-18 |
 | BR-236 | active | Mọi thao tác catalog — đổi tên, gộp, xoá — MUST là read-only đối với nội dung thẻ và dữ liệu học: MUST NOT ghi `front`, `back`, ba trường phụ, `is_flagged`, `cards.updated_at`, `content_type` của deck (BR-163), study state, review history hay session. Thứ duy nhất được ghi là hàng `tags` và hàng `card_tags`. | store | BR-10, BR-41, BR-92, BR-163, BR-178, UC-18 |
 | BR-237 | active | Khi Trash tồn tại, thẻ đang ẩn trong Trash MUST NOT được tính vào số đếm "thẻ đang hoạt động" của catalog (BR-230) và MUST NOT xuất hiện trong kết quả lọc theo tag. Đổi tên và gộp MUST vẫn giữ liên kết tag của thẻ đang ẩn để khôi phục không mất metadata; purge vĩnh viễn MUST cascade dọn `card_tags` như xoá thẻ thường. Chừng nào Trash chưa tồn tại, mọi thẻ đã lưu đều là thẻ đang hoạt động và rule này MUST NOT được hiện thực bằng một cột hay một trạng thái ẩn được phát minh trước. | store | BR-230, BR-235 |
-| BR-238 | active | Catalog MUST NOT thêm bản thứ hai của codec tag hay của hàm fold: import, export và catalog MUST dùng chung một codec (BR-176) và một `TagName` (BR-93). Tag do import tạo ra MUST xuất hiện trong catalog như mọi tag khác, và round-trip export → import MUST không đổi sau khi đổi tên, gộp hay xoá — điều thay đổi là tập tag của thẻ, không phải cách chúng được mã hoá. | rule | BR-93, BR-169, BR-176, UC-18 |
+| BR-238 | active | Catalog MUST NOT thêm bản thứ hai của codec tag hay của hàm fold: import, export và catalog MUST dùng chung một codec (BR-176) và một phép chuẩn hoá tên tag (BR-93). Tag do import tạo ra MUST xuất hiện trong catalog như mọi tag khác, và round-trip export → import MUST không đổi sau khi đổi tên, gộp hay xoá — điều thay đổi là tập tag của thẻ, không phải cách chúng được mã hoá. | rule | BR-93, BR-169, BR-176, UC-18 |
 
 BR-231 là rule dễ hiện thực sai nhất trong nhóm này, và cả hai cách sai đều
 trông đúng ở dữ liệu nhỏ. Một `INNER JOIN card_tags` với `tag_id IN (…)` cho
@@ -720,7 +721,7 @@ thứ test khẳng định được mà không cần ghim seed; một phân ph�
 | BR-159 | active | Ở `recall`, mở đáp án MUST NOT là một kết cục: nó MUST NOT ghi `study_answers`, MUST NOT được chấm đúng hay sai, và MUST dừng đồng hồ rồi chuyển sang **tự đánh giá** với đúng hai lựa chọn — nhớ được (đúng) và đã quên (sai). Chỉ lựa chọn của người học MUST được ghi, đúng một lần cho một lượt. | rule + UI | BR-107, BR-120, BR-129, BR-132 |
 | BR-160 | active | Hai kết thúc của `recall` MUST có nhịp khác nhau. Tự đánh giá: sau khi commit MUST tự chuyển lượt, MUST NOT giữ thêm một thời lượng cố định và MUST NOT hiện nút Tiếp theo. Hết giờ: sau khi commit MUST hiện trạng thái đã bị tính sai và một nút Tiếp theo, MUST NOT tự chuyển theo thời lượng; bấm Tiếp theo MUST chỉ chuyển lượt và MUST NOT ghi thêm đáp án nào. | UI | BR-129, BR-130, BR-157, BR-158 |
 | BR-161 | active | Danh sách deck MUST phân loại mỗi deck theo lịch, suy ra lúc đọc và MUST NOT lưu thành cột: `notDue` khi `dueCardCount = 0`; `dueToday` khi thẻ Due **cũ nhất** của subtree có `due_at` thuộc ngày học địa phương hiện tại; `overdue` khi ngày của nó đã qua. Badge MUST hiện số **ranh giới ngày địa phương đã hoàn tất** giữa `due_at` của thẻ Due cũ nhất và hôm nay (theo mốc BR-105), MUST NOT là phép chia số giờ cho 24. Qua đầu ngày địa phương, trạng thái và badge MUST tự làm mới dù database không có write nào. Cả `dueToday` lẫn `overdue` vẫn thuộc đúng một tập Reviewing của BR-142 — phân loại này là UI, MUST NOT tạo loại phiên thứ ba, MUST NOT đổi thứ tự thẻ hay hành vi scheduler, Trạng thái `overdue` MUST mang cặp `errorContainer`/`onErrorContainer` trên **chip đếm overdue của workload line** (quyết định chủ dự án 2026-08-20 — dời khỏi ô icon, đảo phần "ô icon" của quyết định 2026-08-11 vốn đã đảo phán quyết "không danger" cùng ngày): trễ hạn vẫn là tín hiệu đỏ, nhưng nó là **một con số**, không phải một ô vuông — ô icon đỏ cạnh chip đỏ nói cùng một điều hai lần, bằng một glyph đọc ra "đã huỷ" chứ không phải "trễ". Ô icon MUST là danh tính của deck (`folder`/`card`) trên cặp `primaryContainer`/`onPrimaryContainer` ở **mọi** trạng thái lịch. `dueToday` và `notDue` MUST NOT dùng màu đỏ. Level summary MUST tiếp tục phản ánh trạng thái của chính level đang xem — kể cả khi deck mang backlog không còn là một hàng trên màn hình: Due/New là tổng các child subtree (rời nhau), số ngày quá hạn là **max** trên các child có Due, và phân loại đi qua đúng một hàm chung với tile, MUST NOT chép lại điều kiện ở widget khác. Breakdown bốn tập của hero: BR-162. | UI + store | BR-105, BR-142, BR-150, BR-29 |
-| BR-162 | active | Hero level summary MUST hiển thị bốn tập rời nhau của level đang xem: `Overdue` = `learned_at IS NOT NULL AND due_at < startOfToday` (ranh giới đầu ngày địa phương theo mốc BR-105, tính bằng `LocalDayModel`, MUST NOT tự tính trong SQL); `Due today` = `learned_at IS NOT NULL AND due_at >= startOfToday AND due_at <= now`; `New` = `learned_at IS NULL`; `Scheduled` = `learned_at IS NOT NULL AND due_at > now` — hiển thị bằng `total − New − Due` từ cùng snapshot, MUST NOT mang headline hay màu cảnh báo (thẻ nghỉ là lịch đang chạy đúng, không phải việc cần làm). Bốn tập cộng đúng bằng tổng thẻ của level. MUST giữ `dueCardCount = overdueCardCount + dueTodayCardCount` — tổng Reviewing của BR-142 không đổi nghĩa và phiên học vẫn chọn thẻ theo total, không theo hai nửa. Count là aggregate subtree của chính level đang xem, suy ra lúc đọc trong cùng một statement với các count khác — MUST NOT lưu thành cột, MUST NOT query thứ hai. Chú thích tuổi `+Nd` đã bỏ khỏi giao diện nhìn thấy (quyết định chủ dự án 2026-08-20): nó nói backlog *cũ* bao lâu chứ không nói *lớn* cỡ nào. Tuổi của thẻ Due cũ nhất (BR-161) MUST vẫn tới được screen reader qua `deckOverdueSemanticLabel`/`deckHeroOverdueSemanticLabel` và MUST NOT là count. Qua đầu ngày địa phương, thẻ Due today của ngày cũ MUST tự chuyển sang Overdue ở lần đọc kế tiếp mà không có database write. Deck tile MUST hiển thị ba chip rời nhau `overdue · due · new` — mỗi chip một nền riêng — thay cho total Due + New và icon trạng thái (quyết định chủ dự án 2026-08-20). Chip chỉ hiện khi count > 0; deck có thẻ nhưng không còn việc MUST nêu cả hai số 0 trên nền trung tính. | UI + store | BR-105, BR-142, BR-150, BR-161 |
+| BR-162 | active | Hero level summary MUST hiển thị bốn tập rời nhau của level đang xem: `Overdue` = `learned_at IS NOT NULL AND due_at < startOfToday` (ranh giới đầu ngày địa phương theo mốc BR-105, tính ở một chỗ dùng chung, MUST NOT tự tính trong SQL); `Due today` = `learned_at IS NOT NULL AND due_at >= startOfToday AND due_at <= now`; `New` = `learned_at IS NULL`; `Scheduled` = `learned_at IS NOT NULL AND due_at > now` — hiển thị bằng `total − New − Due` từ cùng snapshot, MUST NOT mang headline hay màu cảnh báo (thẻ nghỉ là lịch đang chạy đúng, không phải việc cần làm). Bốn tập cộng đúng bằng tổng thẻ của level. MUST giữ `dueCardCount = overdueCardCount + dueTodayCardCount` — tổng Reviewing của BR-142 không đổi nghĩa và phiên học vẫn chọn thẻ theo total, không theo hai nửa. Count là aggregate subtree của chính level đang xem, suy ra lúc đọc trong cùng một statement với các count khác — MUST NOT lưu thành cột, MUST NOT query thứ hai. Chú thích tuổi `+Nd` đã bỏ khỏi giao diện nhìn thấy (quyết định chủ dự án 2026-08-20): nó nói backlog *cũ* bao lâu chứ không nói *lớn* cỡ nào. Tuổi của thẻ Due cũ nhất (BR-161) MUST vẫn tới được screen reader qua `deckOverdueSemanticLabel`/`deckHeroOverdueSemanticLabel` và MUST NOT là count. Qua đầu ngày địa phương, thẻ Due today của ngày cũ MUST tự chuyển sang Overdue ở lần đọc kế tiếp mà không có database write. Deck tile MUST hiển thị ba chip rời nhau `overdue · due · new` — mỗi chip một nền riêng — thay cho total Due + New và icon trạng thái (quyết định chủ dự án 2026-08-20). Chip chỉ hiện khi count > 0; deck có thẻ nhưng không còn việc MUST nêu cả hai số 0 trên nền trung tính. | UI + store | BR-105, BR-142, BR-150, BR-161 |
 | BR-119 | active | Mode dùng round MUST hoàn tất khi một round kết thúc mà tập không đạt rỗng. Không có trần số round. Trần 3 của BR-104 là của `self_assess`, không áp ở đây. | store | BR-115, BR-104 |
 | BR-120 | active | Một stage MAY có nhiều mức phản hồi (ví dụ `almost` của `match`), nhưng mọi mức không phải "đúng" MUST vào tập không đạt và MUST ánh xạ như sai theo BR-107. Mức phản hồi MUST NOT xuất hiện trong `study_answers.action`. | rule + UI | BR-106, BR-107 |
 | BR-114 | active | Thẻ không đủ dữ liệu cho một stage MUST bị bỏ qua **có ghi nhận** ở stage đó, MUST NOT bị xoá khỏi deck, và MUST vẫn xuất hiện ở các stage khác mà nó đủ dữ liệu. | store | BR-99, BR-113 |
@@ -906,15 +907,15 @@ Trong phiên `learning`, thẻ đi qua cả chuỗi và **không lượt nào đ
 đó sẽ luôn đọc là "nhớ được" và không phân biệt được thẻ nào. Lịch vì thế được
 khởi tạo bởi **sự kiện hoàn tất**, ở mức thấp nhất, giống nhau cho mọi thẻ.
 
-**Mô hình này thay mô hình một-phiên-một-chuỗi của M5.0b…M5.0j.** Bản cũ cho lượt
-đầu ở stage chấm điểm đầu tiên quyết định lịch, và ghi nhận thẳng rằng đó là hệ
-quả được chấp nhận chứ chưa được cân nhắc đủ: sai ở Match rồi đúng ba stage sau
+**Mô hình này thay một cách tiếp cận cũ, cho lượt đầu ở stage chấm điểm đầu
+tiên quyết định lịch** — một hệ quả được chấp nhận chứ chưa được cân nhắc đủ:
+sai ở Match rồi đúng ba stage sau
 vẫn cho lịch của một lần sai. Câu hỏi đó không còn tồn tại — trong phiên học mới
 không có lịch nào để đặt sai, và trong phiên ôn tập chỉ có một mode nên không có
 gì để chọn giữa.
 
-**Không còn mục nào để trống trong nghiệp vụ Study.** Hai mục cuối đã đóng ở
-M5.0m: trần thẻ là `card_limit` áp cho cả hai loại phiên và là trần **mỗi lần
+**Không còn mục nào để trống trong nghiệp vụ Study.** Hai mục cuối đã đóng:
+trần thẻ là `card_limit` áp cho cả hai loại phiên và là trần **mỗi lần
 lấy** (BR-24); và phiên không cho chọn scope hẹp hơn deck đang đứng — người dùng
 chọn **loại phiên**, không chọn phạm vi.
 
@@ -933,7 +934,7 @@ lượt (BR-76, BR-77, BR-111), luật reset (BR-41…BR-47) hay luật ngày h�
 | BR-191 | active | v1 của Progress MUST NOT hiển thị: accuracy hay correct rate, longest streak, mục tiêu/goal, XP hay điểm, heatmap, bộ lọc theo deck, chia sẻ, và hiệu ứng ăn mừng. Các chỉ số này cần định nghĩa nghiệp vụ riêng chưa được chốt; hiển thị một con số chưa có BR đứng sau là viết spec ở tầng sai. | UI | UC-12 |
 | BR-192 | active | Đơn vị hoạt động của Progress là một cặp **distinct `(localDay, cardId)`**, gọi là một *card-day*. Nhiều answer, nhiều stage, nhiều round hay nhiều session của **cùng một card trong cùng một local day** MUST đếm đúng **một**. Progress MUST NOT đếm số hàng `study_answers`, số session hay số lượt. Một card được trả lời trong hai local day khác nhau MUST đếm hai. `localDay` của **mọi** hàng — kể cả hàng ghi từ nhiều tháng trước — MUST được tính bằng UTC offset của **lần đọc hiện tại**, vì `study_answers` không lưu offset theo hàng. Hệ quả đã biết và chấp nhận cho v1: đổi múi giờ hoặc qua một mốc DST làm các ngày quá khứ được phân bucket lại, nên một chuỗi có thể dài ra hoặc đứt hồi tố. | store (SQL) | UC-12, BR-77, BR-105 |
 | BR-193 | active | Stage `browse` không ghi hàng `study_answers` nào (BR-111), nên nó MUST NOT tạo card-day, MUST NOT làm một ngày trở thành active và MUST NOT giữ streak. Mở một phiên rồi chỉ lướt `browse` và thoát MUST để Progress y nguyên. | store (SQL) | UC-12, BR-111 |
-| BR-194 | active | "Hôm nay" của Progress là nửa khoảng `[startOfToday, startOfTomorrow)` theo `LocalDayModel` (BR-105), dựng từ **một** snapshot của `clockProvider` và `utcOffsetProvider`. Mọi con số của một lần hiển thị — Today, Last 7 days, streak — MUST đến từ cùng snapshot đó; MUST NOT có hai lần đọc đồng hồ trong một emission, và SQL MUST NOT tự dẫn xuất local midnight. | store | UC-12, BR-105 |
+| BR-194 | active | "Hôm nay" của Progress là nửa khoảng `[startOfToday, startOfTomorrow)` theo đúng ranh giới ngày học cục bộ của BR-105, dựng từ **một** snapshot của `clockProvider` và `utcOffsetProvider`. Mọi con số của một lần hiển thị — Today, Last 7 days, streak — MUST đến từ cùng snapshot đó; MUST NOT có hai lần đọc đồng hồ trong một emission, và SQL MUST NOT tự dẫn xuất local midnight. | store | UC-12, BR-105 |
 | BR-195 | active | Phân rã của một ngày là một **partition loại trừ nhau**: một card-day là **Learning** khi có ít nhất một answer `kind = 'learning'` trong ngày đó; nếu không, và chỉ khi đó, nó là **Reviewing** khi có answer `scheduled` hoặc `relearning`. `learning + reviewing = total` MUST luôn đúng cho mọi ngày. Một card vừa `learning` vừa `scheduled` trong cùng ngày MUST đếm là Learning và MUST NOT đếm hai lần. | store (SQL) | UC-12, BR-76, BR-192 |
 | BR-196 | active | "Last 7 days" gồm **hôm nay và sáu ngày trước đó**, đúng bảy phần tử, thứ tự **cũ → mới**. Ngày không có card-day nào MUST xuất hiện với giá trị 0 (zero-fill), MUST NOT bị bỏ khỏi dãy và MUST NOT làm dãy ngắn lại. Dãy MUST đúng khi cửa sổ bắc qua ranh giới tháng, ranh giới năm và ở mọi UTC offset. | store | UC-12, BR-192, BR-194 |
 | BR-197 | active | Current streak là số local day liên tiếp có hoạt động, tính lùi từ **anchor**: nếu hôm nay active thì anchor là hôm nay; nếu hôm nay chưa active nhưng hôm qua active thì anchor là hôm qua và chuỗi MUST được giữ nguyên (không reset về 0 chỉ vì hôm nay chưa học); nếu cả hai đều không active thì streak là 0. Streak MUST NOT có trần và MUST NOT bị cắt bởi cửa sổ bảy ngày của BR-196. | store | UC-12, BR-192, BR-194 |
@@ -1001,9 +1002,9 @@ Mặc định học toàn app, theme và ngôn ngữ, trong một dòng duy nh�
 | Tag.name | ≤ 50 ký tự (BR-93) | "Tên tag tối đa 50 ký tự" | rule |
 | Tag.name | không trùng, không phân biệt hoa thường (BR-93) | "Tag này đã tồn tại" | rule + db |
 | Card.tags | ≤ 10 tag mỗi thẻ (BR-94) | "Mỗi thẻ tối đa 10 tag" | rule |
-| AppSettings.cardLimit | cùng bound với tùy chọn của deck (BR-24, BR-211) | như tùy chọn của deck — không có message riêng | rule |
-| AppSettings.themeMode | thuộc `system` \| `light` \| `dark` (BR-214) | không có — control chỉ đưa ra ba lựa chọn hợp lệ | rule + db |
-| AppSettings.language | thuộc `system` \| `en` \| `vi` (BR-215) | không có — control chỉ đưa ra ba lựa chọn hợp lệ | rule + db |
+| app_settings.cardLimit | cùng bound với tùy chọn của deck (BR-24, BR-211) | như tùy chọn của deck — không có message riêng | rule |
+| app_settings.themeMode | thuộc `system` \| `light` \| `dark` (BR-214) | không có — control chỉ đưa ra ba lựa chọn hợp lệ | rule + db |
+| app_settings.language | thuộc `system` \| `en` \| `vi` (BR-215) | không có — control chỉ đưa ra ba lựa chọn hợp lệ | rule + db |
 
 Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại —
 client validation là trải nghiệm, không phải bảo mật.
