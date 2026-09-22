@@ -84,7 +84,7 @@ chứng minh kiến trúc local-only (không network) và cơ chế Drift migrat
 
 | # | Feature | Done when |
 |---|---|---|
-| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck chuyển nó cùng toàn bộ card vào Trash, và xoá vĩnh viễn thì cascade (BR-03, BR-256) |
+| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-03, BR-04) |
 | M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
 | M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
 | M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
@@ -235,12 +235,14 @@ deck con. Deck con mới tạo chưa xác định loại; lần tạo phần t�
 lập nó thành "chứa card" hoặc "chứa deck con", và sau đó không trộn lẫn. Người
 dùng không phải chọn loại lúc tạo deck — lúc đó họ chưa biết. Xem UC-08.
 
-Hệ quả lên MVP scope: **M6 trở thành must-have**, vì thư viện starter là thứ
-người dùng thấy đầu tiên và nó định hình toàn bộ trải nghiệm mở app lần đầu.
+Quyết định nội dung/bản sao ở trên vẫn là nghiệp vụ chốt cho M6 khi sub-project
+thư viện starter triển khai; M6 nằm ngoài phạm vi V8.0 theo spec
+`docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2, không
+phải must-have của V8.0.
 
 | # | Feature | Done when |
 |---|---|---|
-| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân | Cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
+| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân | Sub-project sau (UC-01, BR-31…BR-39, BR-87): cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
 
 Nửa import của N1 (UC-10): thư viện starter giải quyết "app trống lúc mới
 cài", nhưng không giải quyết "bộ thẻ của tôi đang nằm trong một file" — và
