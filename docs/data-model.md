@@ -723,7 +723,7 @@ WHERE NOT (
   OR (status = 'completed'   AND end_reason IS NULL)
   OR (status = 'abandoned'   AND end_reason IN ('user_exit','interrupted'))
   OR (status = 'invalidated'
-      AND end_reason IN ('scheduler_reset','stale_generation','content_deleted'))
+      AND end_reason IN ('scheduler_reset','scheduler_changed','stale_generation','content_deleted'))
   OR (status = 'failed'      AND end_reason = 'persistence_error')
 );
 
