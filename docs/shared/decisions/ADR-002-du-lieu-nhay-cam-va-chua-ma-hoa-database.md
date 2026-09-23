@@ -25,8 +25,6 @@ này nếu app hỗ trợ ghi chú cá nhân tự do hoặc tài liệu công vi
 
 Ở MVP không có dữ liệu rời khỏi thiết bị, nên rủi ro chủ yếu là **log** — và đó
 là chỗ dễ vi phạm nhất, vì log nội dung là phản xạ tự nhiên khi debug. Vì thế nó
-là quy tắc (BR-STARTER-002), không phải sự cẩn thận.
-
-> ⚠️ OPEN QUESTION: đoạn trên gọi luật "không log nội dung" là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật tương ứng có vẻ là BR-CORE-002 (trước là `BR-PRIVACY-002`). Nguồn: `product/product.md` mục Sensitive data · `business-rules/starter-decks.md`. (Plan OQ-6)
+là quy tắc (BR-CORE-002), không phải sự cẩn thận.
 
 Các rule riêng tư: BR-CORE-001, BR-CORE-002, BR-CORE-003, BR-CORE-004.

@@ -10,8 +10,9 @@ flavors, error model). These are grouped because they are decided once and
 constrain everything after — the flavor decides the log level bootstrap
 installs, and the error model decides what the error boundary reports.
 
-Prerequisite: `docs/product.md` exists and answers platforms, online/offline and
-auth. Those three answers change the dependency set, so setting up before they
+Prerequisite: the product section of `docs/README.md` and
+`docs/shared/decisions/ADR-001-quyet-dinh-nen-tang.md` answer platforms,
+online/offline and auth. Those three answers change the dependency set, so setting up before they
 are settled means redoing it.
 
 ## 2.1 Toolchain

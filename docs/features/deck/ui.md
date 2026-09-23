@@ -28,7 +28,7 @@ flowchart TD
 
     B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ bị xoá vĩnh viễn · UC-DECK-002, BR-DECK-023"]
     F -->|"Đồng ý"| F1["Xoá cứng cả cây theo cascade, trong một transaction · BR-DECK-022 · Trash là sub-project sau, xem UC-TRASH-001"]
-    F -->|"Huỷ"| F2["Không xảy ra gì · UC-DECK-002 A4"]
+    F -->|"Huỷ"| F2["Không xảy ra gì · UC-DECK-002 A3"]
 
     B -->|"Di chuyển"| G{"Bốn phép kiểm, theo thứ tự · UC-DECK-005"}
     G -->|"Đích là chính nó hoặc descendant"| G1["Chặn · E1, BR-DECK-017"]
@@ -37,9 +37,6 @@ flowchart TD
     G -->|"Vượt cấp 10"| G4["Chặn · E5, BR-DECK-001"]
     G -->|"Hợp lệ"| G5["Đổi parent và root_id toàn subtree trong một transaction · BR-DECK-018"]
 
-    B -->|"Đưa content_type về unset"| H{"Deck có rỗng không"}
-    H -->|"Không"| H1["Không có nhánh này: content_type do hệ thống tự duy trì · BR-DECK-015"]
-    H -->|"Rỗng"| H2["Xác nhận rồi đặt unset · UC-DECK-002 A3"]
 
     B -->|"Đổi chế độ ôn tập · chỉ root"| I{"first_answered_at"}
     I -->|"NULL"| I1["Mở khoá: cảnh báo rồi khởi tạo lại study state toàn cây, generation giữ nguyên, session đang mở → invalidated · UC-DECK-002, BR-SRS-002, BR-SRS-004, BR-STUDY-016"]
@@ -61,21 +58,17 @@ bị thay thế" và bắt người dùng xác nhận một cảnh báo phá hu�
 transaction với lần hoàn tất đó (mục 5, bước 10–11 của UC-STUDY-001; BR-SRS-003, BR-STUDY-053).
 Không thao tác nào của deck ghi cột này.
 
-> ⚠️ OPEN QUESTION: nhánh `H` của sơ đồ ("Đưa content_type về unset" → "Rỗng → Xác nhận rồi đặt unset · UC-DECK-002 A3") mâu thuẫn với BR-DECK-015 ("Người dùng MUST NOT có thao tác reset `content_type` thủ công"); BR-DECK-014 cho phép thao tác đó đã deprecated. Ngoài ra UC-DECK-002 A3 là "Huỷ xác nhận xoá" và A4 là "Xác nhận đúng chế độ deck đang chạy", nhưng sơ đồ gắn nhãn huỷ xoá (`F2`) là A4 và reset thủ công (`H2`) là A3. Nguồn: `product/master-flow.md` §3 · `business-rules/deck.md` BR-DECK-014, BR-DECK-015 · `use-cases/deck.md` UC-DECK-002. (Plan OQ-15)
-
 ## Validation
 
 | Trường | Rule | Message hiển thị | Enforced by |
 |---|---|---|---|
-| Deck.name | không rỗng sau trim | "Tên deck không được để trống" | rule |
-| Deck.name | ≤ 200 ký tự | "Tên deck tối đa 200 ký tự" | rule |
-| Deck.move | đích không phải chính nó hoặc descendant | "Không thể di chuyển deck vào chính nó" | rule |
+| Deck.name | không rỗng sau trim (BR-DECK-020) | "Tên deck không được để trống" | rule |
+| Deck.name | ≤ 200 ký tự (BR-DECK-020) | "Tên deck tối đa 200 ký tự" | rule |
+| Deck.move | đích không phải chính nó hoặc descendant (BR-DECK-017) | "Không thể di chuyển deck vào chính nó" | rule |
 | Deck.create (sub-deck) | cấp của deck mới ≤ 10 (BR-DECK-001) | "Deck đã ở độ sâu tối đa (10 cấp)" | store |
 | Deck.move | cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) | "Di chuyển vào đây sẽ vượt độ sâu tối đa (10 cấp)" | store |
 
 Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại — client validation là trải nghiệm, không phải bảo mật.
-
-> ⚠️ OPEN QUESTION: ba dòng `Deck.name` (không rỗng, ≤ 200 ký tự) và `Deck.move` (đích không phải chính nó hoặc descendant) không trích BR nào trong nguồn; nội dung trùng ý với BR-DECK-020 và BR-DECK-017 nhưng nguồn không gắn. (Plan Q5)
 
 ## Edge case chưa gắn BR
 

@@ -17,10 +17,8 @@ không thay định nghĩa. Khi hai chỗ lệch nhau, định nghĩa gốc th�
 | Reset learning progress | Giữ nguyên deck, card và nội dung; xoá lịch ôn, trạng thái thành thạo và phiên đang dở; `generation` tăng | UC-SRS-001 — [`features/srs/`](features/srs/README.md); [ADR-004](shared/decisions/ADR-004-khoa-scheduler-va-reset.md) |
 | "Đã thuộc" | Giá trị suy ra từ study state, định nghĩa cho cả hai scheduler | BR-SRS-013 — [`features/srs/`](features/srs/README.md) |
 | Study state | Trạng thái lịch của một card, tạo cùng lúc với card (BR-CARD-004); `card_schedule` là bảng "một dòng cho mỗi card, tạo cùng lúc với card (BR-CARD-004)" | BR-CARD-004 — [`shared/data/schema.md`](shared/data/schema.md) mục "`card_schedule`" |
-| Study answers | Được dùng trong BR như tên một thực thể lưu trữ | BR-SRS-019 — [`features/srs/`](features/srs/README.md) |
+| Study answers | Các hàng `review_log`: mỗi lượt đánh giá đã ghi (chủ dự án chốt khi xử lý OQ-9 (2026-09-23)) | BR-SRS-019 — [`features/srs/`](features/srs/README.md); bảng `review_log` ở [`shared/data/schema.md`](shared/data/schema.md) |
 | Snapshot | Tập thẻ đã chốt khi mở phiên | [`shared/testing/README.md`](shared/testing/README.md) §3.1 |
 | Hàng đợi (`queue`) | Hàng đợi phiên lưu trong database, bất biến trong suốt phiên | BR-STUDY-021, BR-STUDY-022 — [`features/study/`](features/study/README.md) |
 | Fixture / oracle | Bộ dữ liệu dựng sẵn / tiêu chí kết luận của kịch bản IT | [`shared/testing/README.md`](shared/testing/README.md) §3.1 |
 | Batch / item root / tombstone / purge | Từ vựng của Trash: một lần xoá; card/deck người dùng đã chạm; hàng còn nguyên mang `delete_batch_id`; xoá cứng vĩnh viễn | [`features/trash/README.md`](features/trash/README.md) |
-
-> ⚠️ OPEN QUESTION: "study answers" được dùng như một thực thể lưu trữ (BR-CARD-005, BR-DECK-022, BR-SRS-017, BR-SRS-019, BR-SRS-025) nhưng `shared/data/schema.md` không có bảng nào tên như vậy — chỉ có `review_log` mang dữ liệu từng lượt và cột `generation`. Chưa có chỗ nào nói hai tên này là một. (Plan OQ-9)

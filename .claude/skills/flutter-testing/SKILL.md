@@ -39,7 +39,7 @@ where it matters rather than a stale generated file.
 
 Cover use cases, repositories, mappers, validators, Drift queries, migrations
 and error mapping. For each: the success path, each failure path, and the edge
-cases from `docs/business-rules.md`.
+cases from `docs/features/<feature>/rules/` (each BR file has an `## Edge case` section).
 
 The failure paths are the point. A repository test that only asserts the happy
 path leaves untested exactly the code that runs when a user is having a bad day.
@@ -167,7 +167,7 @@ near zero — the whole point is to notice change.
 
 `integration_test/`, driving real user actions.
 
-This repo has a full 60-scenario suite (`docs/it-scenarios/` ↔
+This repo has a full 60-scenario suite (`docs/shared/testing/scenario-catalog.md` ↔
 `integration_test/it_*_test.dart`) with its own harness, robot and fixture
 layer. Before writing, running or debugging any of it, read
 `references/integration-test-harness.md` — it holds the memox-specific rules
@@ -178,7 +178,7 @@ layer. Before writing, running or debugging any of it, read
 Cover what the app actually has (no auth — AD-03; no network — AD-05): cold
 start, main navigation, deck/card CRUD through the UI, restart with state
 restored, the review flows, and each deep link. The canonical list is the 60
-scenarios in `docs/it-scenarios/` — extend that catalog rather than inventing
+scenarios in `docs/shared/testing/scenario-catalog.md` — extend that catalog rather than inventing
 parallel coverage.
 
 Deep links and cold start are the highest-value cases here, because they are the

@@ -133,8 +133,6 @@ subtree trong một transaction, bằng recursive CTE (BR-DECK-018). Bỏ sót m
 ra descendant trỏ sai root hoặc sai độ sâu — dữ liệu hỏng im lặng, vì query vẫn
 chạy và chỉ trả về kết quả thiếu.
 
-> ⚠️ OPEN QUESTION: đoạn trên nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng BR-DECK-018 và UC-DECK-005 chỉ nói `root_id`. (Plan OQ-8)
-
 ### `content_type` — bao gồm cả root
 
 **Sub-deck đang `card` hoặc `deck` mà không còn direct card lẫn direct child
@@ -349,7 +347,7 @@ bảng đầu tiên cần nhìn khi bàn về kích thước DB.
 | `session_kind` | TEXT NOT NULL | `learning` \| `reviewing` (BR-STUDY-051) |
 | `current_mode` | TEXT NOT NULL | stage đang chạy: `browse` \| `self_assess` \| `match` \| `guess` \| `recall` \| `fill` (BR-MODE-002, BR-MODE-008). Phiên `reviewing` chỉ có một giá trị suốt phiên |
 | `status` | TEXT NOT NULL | `in_progress` \| `completed` \| `abandoned` \| `invalidated` \| `failed` (BR-STUDY-010) |
-| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-011, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` là sub-project sau — Trash |
+| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-012, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` là sub-project sau — Trash |
 | `cursor` | INTEGER NOT NULL DEFAULT 0 | số lượt đã phục vụ trong phiên; nền của BR-STUDY-005 |
 | `card_limit` | INTEGER NOT NULL | số thẻ tối đa của phiên, chốt lúc mở (BR-STUDY-003, BR-STUDY-024). Mặc định 20 |
 | `direction` | TEXT NULL | `korean_to_meaning` \| `meaning_to_korean` \| `mixed` (BR-MODE-013, BR-MODE-015). Chốt lúc mở và khoá suốt phiên (BR-MODE-017). NULL ở mọi phiên ngoài BR-MODE-013 |
@@ -383,8 +381,6 @@ Các lượt học đã ghi thành công trước khi phiên kết thúc bất t
 `interrupted` tách khỏi `user_exit` vì cùng lý do BR-SRS-015 lưu `kind` tường minh:
 "người dùng bấm thoát" và "hệ điều hành thu hồi app" là hai sự kiện khác nhau, và
 gộp chúng làm lịch sử nói rằng người dùng bỏ cuộc trong khi họ không hề.
-
-> ⚠️ OPEN QUESTION: cột `end_reason` liệt kê bảy giá trị nhưng trích BR-STUDY-011 (đã deprecated, năm giá trị) thay vì BR-STUDY-012; invariant 12 cũng trích BR-STUDY-011 mà không trích BR-STUDY-012/BR-STUDY-016. (Plan OQ-7)
 
 ## `study_queue_items`
 
@@ -651,7 +647,7 @@ khi có deck ở cấp thứ ba (BR-DECK-003).
 ### Session
 
 ```sql
--- 12. Tổ hợp status × end_reason không hợp lệ (BR-STUDY-010, BR-STUDY-011, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018)
+-- 12. Tổ hợp status × end_reason không hợp lệ (BR-STUDY-010, BR-STUDY-012, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-016, BR-STUDY-017, BR-STUDY-018)
 SELECT id FROM study_session
 WHERE NOT (
      (status = 'in_progress' AND end_reason IS NULL)
@@ -875,6 +871,4 @@ Media được nhắc trong quy tắc reset (BR-SRS-021: reset giữ nguyên nó
 thuộc V8.0** và chưa có bảng. Khi thêm, nó gắn với `card` và không mang
 `generation` — nó là nội dung, và quy tắc "reset không chạm nội dung"
 áp dụng nguyên vẹn.
-
-> ⚠️ OPEN QUESTION: BR dùng "study answers" như một thực thể lưu trữ, nhưng schema không có bảng nào tên như vậy — chỉ có `review_log`. (Plan OQ-9)
 

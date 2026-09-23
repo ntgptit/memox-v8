@@ -14,8 +14,6 @@ code: []
 **Preconditions:** Không có. Nhắc học mặc định tắt và không phụ thuộc dữ liệu
 nào (BR-REMINDER-001); màn hình mở được cả khi thư viện rỗng
 
-> ⚠️ OPEN QUESTION: thân UC trích BR đã deprecated BR-STUDY-001; `rules` không liệt kê chúng. (Plan Q6)
-
 ## Main flow
 
 **Main flow:**

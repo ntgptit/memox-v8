@@ -18,7 +18,7 @@ the same problems until they are expensive.
 Do not skip this because the feature "seems obvious". Every item here that turns
 out to be open becomes rework, and the rework is always larger than the check.
 
-- [ ] **Use case approved** — exists in `docs/use-cases.md` with main,
+- [ ] **Use case approved** — exists in `docs/features/<feature>/usecases/` with main,
       alternative and error flows.
 - [ ] **Business rules clear** — the `BR-xx` rules this feature enforces are
       written, and validation rules have their exact user-facing messages.
@@ -65,7 +65,8 @@ required suffix. See `assets/feature_blueprint.md` — it is the authority on
 layout, and this block is a summary of it.
 
 - Entities are immutable, with value equality, in domain language. Entity state
-  is the enum or sealed class from `docs/business-rules.md`, so illegal states
+  is the enum or sealed class from `docs/features/<feature>/data.md` (state
+  machines), so illegal states
   are unrepresentable rather than merely unlikely.
 - The repository contract is written from what presentation needs, not from what
   the API happens to offer. If the API needs three calls for one screen, the

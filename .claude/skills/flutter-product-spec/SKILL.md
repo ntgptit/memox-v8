@@ -45,12 +45,12 @@ Write into `docs/`. Templates are in `assets/`.
 
 | File | Contains | Template |
 |---|---|---|
-| `docs/product.md` | Problem, users, core value, platforms, online/offline, auth, sensitive data — **and the MVP scope** (must/should/nice/out with completion conditions; the repo decided against a separate `mvp.md`, see `docs/README.md`) | `assets/product_template.md` |
-| `docs/use-cases.md` | One entry per use case, full flows | `assets/use_case_template.md` |
-| `docs/business-rules.md` | Rules, validation rules, entity states, edge cases | `assets/business_rules_template.md` |
+| `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
+| `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
+| `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
 | `docs/wbs.md` | Milestones → features → tasks, the live progress ledger | `assets/wbs_template.md` |
 | `docs/architecture.md` | Layering decisions and deviations, written as they are made | — |
-| `docs/data-model.md` | Entities, relationships, Drift schema intent | — |
+| `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/api-spec.md` | Endpoints, request/response shapes, error format, pagination — not until the backend exists (AD-05) | — |
 | `docs/design-system.md` | Owned by `flutter-design-system` | — |
 | `docs/testing-strategy.md` | Owned by `flutter-testing` | — |

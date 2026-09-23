@@ -2,7 +2,7 @@
 id: BR-STUDY-026
 title: fill: đề là mặt sau, gõ mặt trước
 status: active
-summary: `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`.
+summary: `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`, giữ nguyên dấu.
 superseded_by:
 ---
 ## Rule

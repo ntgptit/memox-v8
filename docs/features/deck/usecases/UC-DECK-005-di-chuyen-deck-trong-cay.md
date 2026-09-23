@@ -26,7 +26,7 @@ code: []
      (deck nguồn tính là 1), MUST có `targetDepth + subtreeHeight <= 10`.
 3. Hệ thống thực hiện **trong một transaction** (BR-DECK-018):
    - đặt `parent_id` của deck nguồn thành deck đích;
-   - cập nhật `root_id` cho **toàn bộ subtree** của deck nguồn;
+   - cập nhật `root_id` và `depth` cho **toàn bộ subtree** của deck nguồn (BR-DECK-018);
    - nếu đích đang `unset`, đặt `content_type = 'deck'` (BR-DECK-008);
    - nếu deck cha **cũ** là sub-deck và vừa mất phần tử con cuối cùng, đặt
      `content_type` của nó về `unset` (BR-DECK-015); cha cũ là root thì giữ `deck`.

@@ -21,8 +21,6 @@ trong khi branch nội bộ và màn hình gốc của nó vẫn là Decks.
 - Không có tab Profile chừng nào chưa có auth/profile domain — nhất quán với
   "Đăng nhập / tài khoản" ở Explicitly out of MVP.
 
-> ⚠️ OPEN QUESTION: `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10 liệt kê "Top-level navigation destinations, progress screen content" là câu hỏi mở của product definition (sub-project 2), trong khi mục trên đã chốt bốn destination. (Plan OQ-3)
-
 ## Primary business flows
 
 1. **Tạo nội dung**: mở app → tạo deck → thêm card → deck xuất hiện trong danh

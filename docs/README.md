@@ -271,10 +271,10 @@ báo một chiều: UC khai báo `rules`; không viết reverse link hay index b
 
 ### Viết use case
 
-Chỉ đặc tả must-have. Should-have và nice-to-have viết khi tới lượt — đặc tả
-trước những thứ có thể bị cắt là lãng phí.
-
-> ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
+UC được viết khi feature được chọn để đặc tả; phạm vi ship của feature (V8.0 hay
+sub-project sau) ghi ở README của feature đó. Không đặc tả trước những thứ chưa
+được chọn — đặc tả trước những thứ có thể bị cắt là lãng phí. (Chủ dự án chốt khi
+xử lý OQ-11 (2026-09-23).)
 
 Luồng viết bằng ngôn ngữ người dùng, không nói theo màn hình hay widget. Màn
 hình sẽ đổi; luồng thì không.
@@ -322,7 +322,7 @@ Lý do: tài liệu frozen là hợp đồng mà code được viết theo. Mộ
 trong lúc làm việc khác sẽ làm code và spec lệch nhau mà không ai để ý — và spec
 là thứ phiên sau tin tưởng.
 
-Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
+Trong các `OPEN QUESTION` ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
 migrate** (`business-rules/`, `use-cases/`, `product/`, `data-model.md`,
 `it-scenarios/`); nội dung gốc tra bằng git history trước commit xoá các thư mục đó. Nhãn "(Plan Qn)" / "(Plan OQ-n)" trỏ tới
 bảng quyết định và danh sách mâu thuẫn của kế hoạch migration `docs/_migration/plan.md`,

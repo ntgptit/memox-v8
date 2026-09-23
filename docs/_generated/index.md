@@ -10,8 +10,9 @@
 |---|---|---|---|---|
 | [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | UC-PROGRESS-002, UC-REMINDER-001, UC-TRANSFER-002 |
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | active | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | UC-PROGRESS-001, UC-REMINDER-001, UC-TRANSFER-002 |
-| [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | UC-CARD-002 |
+| [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
 | [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | UC-CARD-002 |
 
 ### Decisions
 
@@ -25,6 +26,7 @@
 | [ADR-006](../shared/decisions/ADR-006-cay-deck-moi-deck-mot-loai-noi-dung.md) | Cây deck nhiều cấp, mỗi deck một loại nội dung | active | — |
 | [ADR-007](../shared/decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md) | Khoá chính UUID sinh phía client | active | — |
 | [ADR-008](../shared/decisions/ADR-008-datetime-luu-utc.md) | DATETIME lưu UTC | active | — |
+| [ADR-009](../shared/decisions/ADR-009-chot-pham-vi-v8-0.md) | Chốt phạm vi V8.0 | active | — |
 
 ## [card](../features/card/README.md)
 
@@ -40,7 +42,7 @@
 | [BR-CARD-006](../features/card/rules/BR-CARD-006-bon-trang-thai-hien-thi.md) | Bốn trạng thái hiển thị của thẻ | active | Trạng thái hiển thị là `new`, `beginning`, `reviewing` hoặc `mastered`, suy ra khi đọc, không lưu cột. | UC-CARD-001, UC-CARD-002 |
 | [BR-CARD-007](../features/card/rules/BR-CARD-007-the-chua-hoc-xong-la-new.md) | Thẻ chưa học xong lần đầu là new | active | Thẻ `learned_at IS NULL` là `new` ở cả hai thuật toán, không suy từ `answer_count`. | UC-CARD-002 |
 | [BR-CARD-008](../features/card/rules/BR-CARD-008-nguong-8-ngay-beginning-reviewing.md) | Ngưỡng 8 ngày giữa beginning và reviewing | active | Thẻ đã học, chưa "đã thuộc": interval dưới 8 ngày là `beginning`, từ 8 ngày là `reviewing`. | UC-CARD-002 |
-| [BR-CARD-009](../features/card/rules/BR-CARD-009-co-la-noi-dung.md) | Cờ là nội dung | active | Cờ là nội dung: sửa thẻ và reset không đụng tới; hệ thống có thể bật nhưng không tự tắt. | UC-CARD-001, UC-CARD-002 |
+| [BR-CARD-009](../features/card/rules/BR-CARD-009-co-la-noi-dung.md) | Cờ là nội dung | active | Cờ là nội dung: sửa thẻ và reset không đụng tới, xoá thẻ thì xoá cờ theo cascade; hệ thống có thể bật nhưng không tự tắt. | UC-CARD-001, UC-CARD-002 |
 | [BR-CARD-010](../features/card/rules/BR-CARD-010-di-chuyen-the-cung-root.md) | Di chuyển thẻ chỉ trong cùng root | active | Di chuyển thẻ chỉ giữa hai sub-deck cùng root, giữ nguyên thẻ và lịch sử, cập nhật `content_type` hai phía trong một transaction. | UC-CARD-001, UC-TRASH-001 |
 | [BR-CARD-011](../features/card/rules/BR-CARD-011-mutation-hang-loat-all-or-nothing.md) | Mutation hàng loạt all-or-nothing | active | Mọi mutation hàng loạt trên thẻ là all-or-nothing trong một transaction, giữ quy tắc của thao tác đơn lẻ. | UC-CARD-001 |
 | [BR-CARD-012](../features/card/rules/BR-CARD-012-chon-nhieu-tren-toan-tap-ket-qua.md) | Chọn nhiều trên toàn tập kết quả | active | Chọn nhiều áp lên toàn bộ tập kết quả theo filter/search đang bật; đổi ngữ cảnh thì xoá selection. | UC-CARD-001, UC-CARD-002, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
@@ -83,7 +85,7 @@
 | [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | UC-CARD-001, UC-CARD-002, UC-DECK-002, UC-DECK-004, UC-DECK-005, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
 | [BR-DECK-016](../features/deck/rules/BR-DECK-016-cay-deck-khong-co-cycle.md) | Cây deck không có cycle | active | Cây deck không có cycle. | UC-DECK-005 |
 | [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | UC-DECK-005, UC-TRASH-001 |
-| [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id | active | Di chuyển subtree cập nhật `root_id` cho toàn bộ subtree trong một transaction. | UC-DECK-005, UC-TRASH-001 |
+| [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | UC-DECK-005, UC-TRASH-001 |
 | [BR-DECK-019](../features/deck/rules/BR-DECK-019-khong-descendant-nao-tro-sai-root.md) | Không descendant nào trỏ sai root | active | Không có descendant trỏ sai root. | UC-DECK-004, UC-DECK-005 |
 | [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002 |
 | [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | UC-DECK-001 |
@@ -300,7 +302,7 @@
 | [BR-STUDY-023](../features/study/rules/BR-STUDY-023-loai-luot-theo-loai-phien.md) | Loại lượt theo loại phiên | active | Học mới: mọi lượt là `learning`/`relearning`, không đổi lịch; ôn tập: lượt đầu `scheduled`, lượt lặp `relearning`. | — |
 | [BR-STUDY-024](../features/study/rules/BR-STUDY-024-card-limit-chot-luc-mo-phien.md) | card_limit chốt lúc mở phiên | active | Số thẻ của phiên chốt một lần lúc mở vào `card_limit`; đổi tùy chọn sau đó không ảnh hưởng. | UC-SETTINGS-001 |
 | [BR-STUDY-025](../features/study/rules/BR-STUDY-025-dieu-kien-dung-noi-dung-khong-phai-nguong.md) | Điều kiện dựng nội dung không phải ngưỡng thẻ | active | Điều kiện dựng được nội dung quyết định stage chạy hay bỏ qua, không quyết định số thẻ. | — |
-| [BR-STUDY-026](../features/study/rules/BR-STUDY-026-fill-de-la-mat-sau-go-mat-truoc.md) | fill: đề là mặt sau, gõ mặt trước | active | `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`. | — |
+| [BR-STUDY-026](../features/study/rules/BR-STUDY-026-fill-de-la-mat-sau-go-mat-truoc.md) | fill: đề là mặt sau, gõ mặt trước | active | `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`, giữ nguyên dấu. | — |
 | [BR-STUDY-027](../features/study/rules/BR-STUDY-027-fill-luu-phien-ban-chinh-sach-so-khop.md) | fill: lưu phiên bản chính sách so khớp | active | Mỗi lượt `fill` lưu phiên bản chính sách so khớp; đổi chính sách tăng phiên bản, không sửa lượt cũ. | — |
 | [BR-STUDY-028](../features/study/rules/BR-STUDY-028-ghi-viec-dung-goi-y.md) | Ghi việc dùng gợi ý | active | Việc dùng gợi ý được ghi trên lượt và không tự đổi `action` hay lịch. | UC-CARD-002 |
 | [BR-STUDY-029](../features/study/rules/BR-STUDY-029-cau-tra-loi-rong-khong-sinh-luot.md) | Câu trả lời rỗng không sinh lượt | active | Câu trả lời rỗng sau trim không sinh lượt, không tiến checkpoint. | — |
@@ -393,7 +395,7 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, duy nhất không phân biệt hoa thường. | UC-CARD-001, UC-CARD-002, UC-SEARCH-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | UC-CARD-001, UC-CARD-002, UC-SEARCH-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
 | [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | UC-CARD-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
 | [BR-TAG-003](../features/tags/rules/BR-TAG-003-tag-catalog-pham-vi-library.md) | Tag catalog phạm vi library | active | Tag catalog ở phạm vi library, mỗi hàng hiện tên canonical và số thẻ đang hoạt động. | UC-TAG-001 |
 | [BR-TAG-004](../features/tags/rules/BR-TAG-004-loc-theo-nhieu-tag-la-or.md) | Lọc theo nhiều tag là OR | active | Lọc nhiều tag là OR giữa các tag, AND với filter trạng thái và search term. | UC-CARD-001, UC-TAG-001 |
@@ -452,7 +454,7 @@
 | [BR-TRASH-005](../features/trash/rules/BR-TRASH-005-content-type-ve-unset-khi-soft-delete.md) | content_type về unset khi soft-delete | active | Soft-delete lấy đi direct child active cuối cùng thì deck non-root về `unset` cùng transaction. | UC-TRASH-001 |
 | [BR-TRASH-006](../features/trash/rules/BR-TRASH-006-restore-hoi-target.md) | Restore hỏi target | active | Restore hỏi target và không ghi gì trước khi người dùng xác nhận. | UC-TRASH-001 |
 | [BR-TRASH-007](../features/trash/rules/BR-TRASH-007-restore-dung-mot-batch.md) | Restore đúng một batch | active | Restore một batch hồi sinh đúng các hàng của batch đó, giữ nguyên id, nội dung, lịch sử và tag. | UC-TRASH-001 |
-| [BR-TRASH-008](../features/trash/rules/BR-TRASH-008-undo-mot-batch-vua-tao.md) | Undo một batch vừa tạo | active | Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target. | UC-TRASH-001 |
+| [BR-TRASH-008](../features/trash/rules/BR-TRASH-008-undo-mot-batch-vua-tao.md) | Undo một batch vừa tạo | active | Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target; không khả dụng cho thao tác xoá nhiều item. | UC-TRASH-001 |
 | [BR-TRASH-009](../features/trash/rules/BR-TRASH-009-retention-30-ngay.md) | Retention 30 ngày | active | Retention là 30 × 24 giờ từ `deleted_at`; auto-purge chạy khi khởi động, resume và mở Trash. | UC-TRASH-001 |
 | [BR-TRASH-010](../features/trash/rules/BR-TRASH-010-purge-xoa-cung-batch-eligible.md) | Purge xoá cứng batch eligible | active | Purge xoá cứng đúng các hàng của batch eligible và cascade sang dữ liệu liên quan. | UC-TRASH-001 |
 | [BR-TRASH-011](../features/trash/rules/BR-TRASH-011-chon-nhieu-trong-trash.md) | Chọn nhiều trong Trash | active | Chọn nhiều trong Trash tách theo loại item; Purge vĩnh viễn cần xác nhận mạnh. | UC-TRASH-001 |

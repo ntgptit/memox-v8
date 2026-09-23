@@ -9,9 +9,9 @@ depends_on: [card, deck, transfer]
 
 Mô hình dữ liệu tag (BR-TAG-001, BR-TAG-002) và Tag Management v1: catalog, lọc theo tag, đổi tên/gộp, xoá.
 
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+Ngoại lệ: gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)); Tag Management vẫn là sub-project sau.
 
-> ⚠️ OPEN QUESTION: Tag là sub-project sau V8.0 (`superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2; mục Phạm vi ở trên), nhưng UC-CARD-001 (V8.0) có luồng A8 gắn tag và khai báo BR-TAG-001, BR-TAG-002. (Plan OQ-4)
+> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

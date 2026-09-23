@@ -106,7 +106,7 @@ recursion inside the hottest query in the app.
 **Moving a subtree rewrites `root_deck_id` for every node in it, in one
 transaction.** Miss a node and it points at the wrong root: queries still run and
 merely return less than they should, which is corruption that reports itself as a
-missing card rather than as an error. `docs/data-model.md` carries the query that
+missing card rather than as an error. `docs/shared/data/schema.md` carries the query that
 detects it, and `test/database/invariants_test.dart` runs it.
 
 ## What this schema does *not* do

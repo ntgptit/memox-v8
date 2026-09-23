@@ -17,8 +17,6 @@ code: []
 kết thúc bằng việc khởi tạo lịch; *ôn tập* đưa thẻ đến hạn qua **một** cách hỏi
 do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn thẻ (BR-STUDY-051).
 
-> ⚠️ OPEN QUESTION: thân UC trích BR đã deprecated BR-STUDY-001, BR-STUDY-011; `rules` không liệt kê chúng. (Plan Q6)
-
 ## Main flow
 
 **Main flow:**

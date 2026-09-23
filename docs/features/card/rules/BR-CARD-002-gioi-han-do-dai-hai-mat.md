@@ -36,4 +36,8 @@ Không áp dụng
 
 ## Edge case
 
-Không áp dụng
+| Case | Expected behaviour |
+|---|---|
+| Nội dung card dài tối đa (mặt sau 240 ký tự) | Cuộn được trong vùng card, không tràn, không cắt mất (BR-CARD-002) |
+
+Dòng này trước ghi "rất dài (2000 ký tự)" theo giới hạn cũ; Chủ dự án chốt khi xử lý open question OQ-18 (2026-09-23): đổi theo giới hạn hiện hành.
