@@ -14,7 +14,7 @@
 
 ## Tag — mô hình dữ liệu
 
-Tách từ mục "Cờ và tag" của `business-rules.md` cũ. Các rule dưới đây là mô hình dữ liệu cốt lõi của tag; mục "Quản lý tag" bên dưới **không** phát biểu lại chúng.
+Các rule dưới đây là mô hình dữ liệu cốt lõi của tag; mục "Quản lý tag" bên dưới **không** phát biểu lại chúng.
 
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|

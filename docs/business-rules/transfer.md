@@ -10,11 +10,11 @@
 | **Updated by** | `docs/superpowers/specs/2026-09-23-docs-restructure-design.md` — tách theo đối tượng, đánh số lại BR/UC |
 | **Last updated** | 2026-09-23 |
 
-**Phạm vi:** sub-project sau — Export (spec §2).
+**Phạm vi:** sub-project sau — Import (spec §2).
 
 ## Import card từ file
 
-Nửa nhập của Card Transfer. Tách từ mục "Cờ và tag" của `business-rules.md` cũ.
+Nửa nhập của Card Transfer.
 
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|

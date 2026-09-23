@@ -82,8 +82,6 @@ phép đọc `card_schedule` tại thời điểm vẽ. Thẻ đi lùi từ `rev
 
 ## Cờ, di chuyển và thao tác hàng loạt trên thẻ
 
-Tách từ mục "Cờ và tag" của `business-rules.md` cũ theo đối tượng mà từng rule ràng buộc: cờ và các thao tác trên card ở đây, luật tag ở `tags.md`, luật import ở `transfer.md`.
-
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|
 | BR-CARD-009 | active | Cờ đánh dấu thẻ MUST là nội dung: sửa thẻ và reset learning progress MUST NOT đụng tới nó; xoá thẻ MUST xoá nó theo cascade. Hệ thống MAY **bật** cờ (BR-STUDY-073) nhưng MUST NOT tự tắt — bỏ dấu là hành động của người dùng. | db + store | BR-CARD-005, BR-SRS-021, BR-STUDY-073 |
