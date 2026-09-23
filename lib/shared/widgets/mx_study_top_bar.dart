@@ -9,7 +9,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 /// Session chrome for the study modes: close, mode badge, a thin progress
-/// track and an n / total counter. [accent] (primary by default) drives the
+/// track and a counter. [accent] (primary by default) drives the
 /// badge, its tint and the fill, so one bar carries every mode's colour.
 class MxStudyTopBar extends StatelessWidget {
   const MxStudyTopBar({
@@ -17,6 +17,7 @@ class MxStudyTopBar extends StatelessWidget {
     required this.modeLabel,
     required this.current,
     required this.total,
+    required this.counterLabel,
     required this.closeLabel,
     required this.onClose,
     this.accent,
@@ -32,6 +33,10 @@ class MxStudyTopBar extends StatelessWidget {
   /// session starts.
   final int current;
   final int total;
+
+  /// The localized "n / total" text; the bar draws the fill from [current]
+  /// and [total] but holds no copy of its own.
+  final String counterLabel;
   final String closeLabel;
 
   /// Leaving mid-session is the screen's decision; this bar only reports it.
@@ -107,7 +112,7 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                   ),
                 ),
-                Text('$current / $total', style: styles.counter),
+                Text(counterLabel, style: styles.counter),
               ],
             ),
           ),

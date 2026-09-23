@@ -11,6 +11,7 @@ MxStudyTopBar _bar({int current = 3, int total = 10, Color? accent}) =>
       modeLabel: 'Review',
       current: current,
       total: total,
+      counterLabel: '$current / $total',
       closeLabel: 'Close session',
       onClose: () {},
       accent: accent,
@@ -21,7 +22,7 @@ double _fill(WidgetTester tester) => tester
     .widthFactor!;
 
 void main() {
-  testWidgets('fill is current/total and the counter reads n / total', (
+  testWidgets('fill is current/total; the counter shows the caller label', (
     tester,
   ) async {
     await pumpMx(tester, _bar());
@@ -101,6 +102,7 @@ void main() {
         modeLabel: 'Review',
         current: 1,
         total: 2,
+        counterLabel: '1 / 2',
         closeLabel: 'Close session',
         onClose: () => closed++,
       ),
