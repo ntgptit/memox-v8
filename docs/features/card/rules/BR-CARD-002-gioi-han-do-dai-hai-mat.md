@@ -14,7 +14,7 @@ Mặt trước MUST tối đa **60** ký tự và mặt sau MUST tối đa **240
 ## Lý do
 
 **BR-CARD-002 đổi số: 2000 cho cả hai → 60 và 240.** Rule giữ nguyên ID chứ
-không đánh `superseded`, vì cơ chế supersede của §7 dành cho lúc *danh tính* một
+không đánh `superseded`, vì cơ chế supersede (mục "Convention → ID" của `docs/README.md`) dành cho lúc *danh tính* một
 rule đổi khiến tham chiếu cũ trỏ sai chỗ. Ở đây ý nghĩa không đổi — "hai mặt có
 giới hạn độ dài" — nên 21 chỗ đang trích BR-CARD-002 vẫn trích đúng thứ chúng định
 trích. Cái đổi là con số, và nó được ghi ở đây thay vì im lặng.

@@ -4,7 +4,8 @@
 
 ## [README.md](../README.md)
 
-- L280: > ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
+- L277: > ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
+- L325: Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
 
 ## [features/card/README.md](../features/card/README.md)
 

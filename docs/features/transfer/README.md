@@ -33,4 +33,4 @@ Nguồn: trigger của UC-TRANSFER-001 và UC-TRANSFER-002.
 
 | Thứ | Vì sao |
 |---|---|
-| Backup/restore, sync, `.apkg` | Nice-to-have ngoài phạm vi export nội dung (`use-cases/README.md` mục "Điều đã cố ý không đặc tả") |
+| Backup/restore, sync, `.apkg` | Nice-to-have ngoài phạm vi export nội dung (trước migrate: `use-cases/README.md` mục "Điều đã cố ý không đặc tả") |

@@ -14,7 +14,7 @@ Hàng đợi MUST được lưu trong database và MUST bất biến trong suố
 
 ## Lý do
 
-BR-STUDY-021 thay câu cũ trong `data-model.md` rằng hàng đợi là trạng thái tạm của
+BR-STUDY-021 thay câu cũ trong data model (nay là `shared/data/schema.md`) rằng hàng đợi là trạng thái tạm của
 controller. Lý do đổi: hàng đợi mang **luật**, không chỉ mang thứ tự — thứ tự
 BR-STUDY-002, lượt quay lại BR-STUDY-005, trần BR-STUDY-073 — và một cấu trúc mang luật nằm trong
 UI là chỗ luật đi ra khỏi tầm với của mọi phép kiểm. Đặt nó vào

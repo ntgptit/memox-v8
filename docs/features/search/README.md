@@ -23,4 +23,4 @@ Nguồn: trigger của UC-SEARCH-001 ("Bấm biểu tượng tìm kiếm ở hea
 
 | Thứ | Vì sao |
 |---|---|
-| Fuzzy/semantic search, bỏ dấu, tìm trong `example`/`hint`/`pronunciation` | Ngoài phạm vi v1 (`use-cases/README.md` mục "Điều đã cố ý không đặc tả") |
+| Fuzzy/semantic search, bỏ dấu, tìm trong `example`/`hint`/`pronunciation` | Ngoài phạm vi v1 (trước migrate: `use-cases/README.md` mục "Điều đã cố ý không đặc tả") |

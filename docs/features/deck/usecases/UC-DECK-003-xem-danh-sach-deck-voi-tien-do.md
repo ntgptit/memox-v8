@@ -60,7 +60,7 @@ named query. Ngoài ra BR-DECK-002, BR-DECK-003, BR-DECK-011.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([quyết định nền tảng](../../../product/product.md#platform-decisions)).
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
 
 ## Acceptance criteria
 

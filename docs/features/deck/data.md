@@ -1,8 +1,7 @@
 # Deck — dữ liệu
 
-Bảng, cột, index và invariant của `deck` nằm ở `shared/data/schema.md` (đang ở
-[`data-model.md`](../../data-model.md) cho tới khi migrate). File này chỉ giữ
-state machine của field `content_type`.
+Bảng, cột, index và invariant của `deck` nằm ở [`shared/data/schema.md`](../../shared/data/schema.md).
+File này chỉ giữ state machine của field `content_type`.
 
 ## State machine `content_type`
 

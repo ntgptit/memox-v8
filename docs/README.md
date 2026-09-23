@@ -4,9 +4,6 @@ Bản đồ tài liệu cho người và AI agent: cái gì nằm ở đâu, ID 
 kiểm chứng bằng lệnh nào. Danh mục chi tiết từng rule/use case **không** viết ở
 đây — nó được sinh ở [`_generated/index.md`](_generated/index.md).
 
-> Đang migrate sang cấu trúc này theo [`_migration/plan.md`](_migration/plan.md) —
-> xem mục [Trong lúc migration](#trong-lúc-migration).
-
 ## Sản phẩm
 
 ### Problem
@@ -145,7 +142,7 @@ lần sửa, và lúc đó không có cách nào biết bản nào đúng ngoài
 thuộc root deck (BR-DECK-005)`). **Không được phép** chép lại chi tiết đủ để hai
 chỗ có thể mâu thuẫn.
 
-Áp dụng cho repo này (quyết định migration, `_migration/plan.md` §6):
+Áp dụng cho repo này (quyết định khi tái cấu trúc docs):
 
 - **"Dùng ≥ 2 feature" nghĩa là không feature nào sở hữu.** Rule ràng buộc một
   đối tượng ở lại feature của đối tượng đó dù feature khác trích nó; feature khác
@@ -163,8 +160,8 @@ chỗ có thể mâu thuẫn.
 Một agent đọc `docs/` cần trả lời được ba câu:
 
 1. **Đọc theo thứ tự nào?** Không có thứ tự thì agent đọc file nào gặp trước, và
-   một quyết định trong `docs/superpowers/specs/` có thể bị bỏ qua vì nó đọc
-   `docs/use-cases/` trước.
+   một quyết định trong `shared/decisions/` có thể bị bỏ qua vì nó đọc
+   `features/` trước.
 2. **Câu nào là quyết định chính thức, câu nào là giải thích?** Prose giải thích
    *tại sao* một rule tồn tại rất dễ bị đọc thành một rule mới. Ví dụ minh hoạ
    càng dễ bị đọc thành đặc tả.
@@ -325,6 +322,10 @@ Lý do: tài liệu frozen là hợp đồng mà code được viết theo. Mộ
 trong lúc làm việc khác sẽ làm code và spec lệch nhau mà không ai để ý — và spec
 là thứ phiên sau tin tưởng.
 
+Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
+migrate** (`business-rules/`, `use-cases/`, `product/`, `data-model.md`,
+`it-scenarios/`); nội dung gốc tra bằng git history trước commit xoá các thư mục đó.
+
 Mâu thuẫn, mơ hồ hoặc thiếu thông tin: không tự chọn. Ghi tại file đích
 `> ⚠️ OPEN QUESTION: <mô tả, trích nguồn các bên>`; chúng được gom ở
 [`_generated/open-questions.md`](_generated/open-questions.md).
@@ -347,11 +348,3 @@ mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
 `invariant Qn` được trích, section bắt buộc, và `_generated/` có lỗi thời không.
 WARNING (không fail): BR active không UC nào dùng, UC ready có `code: []` hoặc
 chưa có test chứa ID. Chi tiết ở docstring của hai script.
-
-## Trong lúc migration
-
-Toàn bộ nội dung đã có ở cấu trúc trên. Các file gốc — `business-rules/`,
-`use-cases/`, `product/`, `data-model.md`, `it-scenarios/`,
-`document-conventions.md` — chỉ còn giữ để kiểm chứng và sẽ bị xoá ở bước dọn
-dẹp của [`_migration/plan.md`](_migration/plan.md). Không sửa chúng; sửa ở vị
-trí mới. Mục này bị xoá khi migration xong.

@@ -51,7 +51,7 @@ chọn: Create deck (BR-DECK-005). Việc tạo phần tử con nằm ở UC-DEC
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([quyết định nền tảng](../../../product/product.md#platform-decisions)).
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
 
 ## Acceptance criteria
 

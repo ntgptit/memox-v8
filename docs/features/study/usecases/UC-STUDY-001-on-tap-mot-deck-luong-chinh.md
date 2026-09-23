@@ -146,12 +146,12 @@ khoá để tránh bấm đúp.
   đầu tiên. Một phiên `reviewing` chỉ chạy được trên thẻ đã có `learned_at`,
   nên tới lúc đó cột này đã được đặt rồi.
 - `study_session.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo
-  ma trận ở `data-model.md`.
+  ma trận ở `shared/data/schema.md`.
 - Nếu E4 xảy ra, **không** có dòng history nào được ghi cho lượt đó.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([quyết định nền tảng](../../../product/product.md#platform-decisions)).
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
 
 ## Acceptance criteria
 

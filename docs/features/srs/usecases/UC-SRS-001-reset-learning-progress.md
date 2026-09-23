@@ -75,7 +75,7 @@ giải thích vì sao chế độ ôn tập đang bị khoá (UC-DECK-002 A1)
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([quyết định nền tảng](../../../product/product.md#platform-decisions)).
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
 
 ## Acceptance criteria
 

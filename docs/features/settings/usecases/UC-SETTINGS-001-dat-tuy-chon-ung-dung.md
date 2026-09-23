@@ -78,7 +78,7 @@ study state, session hay history nào bị đụng bởi bất kỳ luồng nào
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([quyết định nền tảng](../../../product/product.md#platform-decisions)).
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
 
 ## Acceptance criteria
 

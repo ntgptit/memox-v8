@@ -21,7 +21,7 @@ Starter deck / template: thư viện starter và sao chép một template vào d
 |---|---|
 | Thư viện starter (child flow trong tab Thư viện; empty state khi chưa có deck) | UC-STARTER-001 |
 
-Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); `product/product.md` mục "Điều hướng top-level" ("Thư viện starter (M6) là child flow bên trong tab Thư viện").
+Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); [`shared/ui/navigation.md`](../../shared/ui/navigation.md) mục "Điều hướng top-level" ("Thư viện starter (M6) là child flow bên trong tab Thư viện").
 
 ## Không thuộc phạm vi
 

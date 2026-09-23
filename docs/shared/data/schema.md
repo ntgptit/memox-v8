@@ -12,7 +12,7 @@ là nguồn thẩm quyền cho data model V8.**
 Đây là tài liệu thiết kế: định nghĩa bảng và các bất biến phải đúng, không phải
 SQL runtime thật.
 
-**Mỗi cột của Study tồn tại vì một luật, và đây là ánh xạ.** `business-rules/`
+**Mỗi cột của Study tồn tại vì một luật, và đây là ánh xạ.** `rules/` của các feature
 nói **hành vi** chứ không chỉ định cột — đúng phân công của hai tài liệu — nên không
 tra ngược được từ cột về luật nếu không có bảng này. Người viết M5 cần chiều đó.
 

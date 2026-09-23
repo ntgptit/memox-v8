@@ -4,7 +4,7 @@ title: Starter deck là template được sao chép
 status: active
 superseded_by:
 ---
-Quyết định đã chốt ngày 2026-07-28 (`product/product.md`).
+Quyết định đã chốt ngày 2026-07-28 (trước migrate nằm ở `product/product.md`, mục "Quyết định đã chốt").
 
 ## Quyết định
 

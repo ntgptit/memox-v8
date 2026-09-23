@@ -23,4 +23,4 @@ Nguồn: trigger của UC-REMINDER-001.
 
 | Thứ | Vì sao |
 |---|---|
-| Nhắc theo thẻ mới, nhiều lượt nhắc trong ngày, nhắc theo từng deck | Ngoài phạm vi (`use-cases/README.md` mục "Điều đã cố ý không đặc tả") |
+| Nhắc theo thẻ mới, nhiều lượt nhắc trong ngày, nhắc theo từng deck | Ngoài phạm vi (trước migrate: `use-cases/README.md` mục "Điều đã cố ý không đặc tả") |

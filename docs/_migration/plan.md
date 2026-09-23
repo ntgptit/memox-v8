@@ -1,6 +1,6 @@
 # Kế hoạch tái cấu trúc docs → kiến trúc thân thiện với AI agent
 
-Trạng thái: **Bước 3 xong — mọi đích trong bảng ánh xạ đã tồn tại; Bước 4 kiểm chứng PASS; chờ xác nhận trước Bước 5 (xoá file gốc).** Bước 0 đã xác nhận Q1–Q10 (mục 6). Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
+Trạng thái: **Bước 5 xong — file gốc đã xoá; chỉ còn chờ xác nhận để xoá `_migration/`.** Cột "Nguồn" của bảng ánh xạ là đường dẫn trước migrate (tra bằng git history).
 
 Mọi đường dẫn trong file này tính từ `docs/`. Trong bảng ánh xạ, `<slug>` là phần
 tên file chưa chốt; `check.py --plan` coi `<slug>` và `*` là wildcard, và cột đích

@@ -38,15 +38,15 @@ khỏi UI, state matrix đầy đủ ở màn hình (kể cả empty — "hôm n
 
 ## Sơ đồ là gì, và không là gì
 
-`../use-cases/` đặc tả **từng** UC đầy đủ chín mục. Nó cố ý không vẽ đồ thị nối
+`features/*/usecases/` đặc tả **từng** UC. Nó cố ý không vẽ đồ thị nối
 chúng lại, nên câu "sau khi tạo deck xong thì người dùng đi đâu" không có chỗ nào
 trả lời — mỗi UC tự mô tả mình và im lặng về những UC bên cạnh.
 
 Tài liệu này chỉ giữ **các cạnh của đồ thị đó**. Mọi đỉnh đều trỏ về một UC hoặc
 một BR bằng ID.
 
-**MUST NOT** đọc sơ đồ ở đây như một đặc tả. Theo `../document-conventions.md` §5,
-luật nghiệp vụ sống ở `../business-rules/` và luồng sống ở `../use-cases/`; nhãn
+**MUST NOT** đọc sơ đồ ở đây như một đặc tả. Theo mục "X viết ở đâu" của [`README.md`](../../README.md),
+luật nghiệp vụ sống ở `features/*/rules/` và luồng sống ở `features/*/usecases/`; nhãn
 trong sơ đồ là **rút gọn để đọc được**, không phải bản gốc. Khi sơ đồ và UC/BR
 mâu thuẫn, **UC/BR thắng**, và sơ đồ sai là một defect phải sửa.
 
