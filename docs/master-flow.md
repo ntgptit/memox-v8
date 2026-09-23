@@ -97,8 +97,8 @@ flowchart TD
 
     B -->|"Đổi tên"| E["Validate rồi lưu · UC-03, BR-01"]
 
-    B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ cùng vào Trash · UC-03, BR-04"]
-    F -->|"Đồng ý"| F1["Chuyển cả cây vào Trash dưới một batch · BR-03, BR-256 · khôi phục ở UC-21"]
+    B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ bị xoá vĩnh viễn · UC-03, BR-04"]
+    F -->|"Đồng ý"| F1["Xoá cứng cả cây theo cascade, trong một transaction · BR-03 · Trash là sub-project sau, xem UC-21"]
     F -->|"Huỷ"| F2["Không xảy ra gì · UC-03 A4"]
 
     B -->|"Di chuyển"| G{"Bốn phép kiểm, theo thứ tự · UC-09"}

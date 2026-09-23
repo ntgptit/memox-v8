@@ -27,7 +27,9 @@ khi ai đó đọc và làm theo.
 
 Rule bị thay thế MUST đánh `superseded by BR-yy` ở cột Status và giữ nguyên ID.
 
-Trạng thái hiện tại: **BR-01…BR-268**, không trùng, không thiếu.
+Trạng thái hiện tại: **BR-01…BR-270**, không trùng, không thiếu; riêng số
+**269** bỏ trống có chủ đích — một khoảng trống MUST NOT được cấp lại cho rule
+khác.
 
 ---
 
@@ -363,6 +365,8 @@ generation thì kết quả đó ghi đè trạng thái vừa được làm mớ
 
 ## Starter deck (template)
 
+**Phạm vi:** sub-project sau — Starter decks (spec §2).
+
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|
 | BR-31 | active | Starter deck MUST là template, không phải deck của người dùng; MUST NOT xuất hiện trong danh sách deck và MUST NOT ôn trực tiếp được. | rule | UC-01 |
@@ -457,6 +461,8 @@ tế và đủ hẹp để hàng thẻ có chiều cao đoán được.
 
 ## Quản lý tag — catalog, filter, rename/merge, delete
 
+**Phạm vi:** sub-project sau — Tags (spec §2).
+
 Tag Management v1 không đổi mô hình dữ liệu của BR-93/BR-94: nó chỉ thêm mặt
 **quản lý** cho cùng những hàng đó — nhìn toàn bộ tag, lọc thẻ theo tag, đổi tên
 (có thể dẫn tới gộp) và xoá tag. Các rule dưới đây **không** phát biểu lại
@@ -489,6 +495,8 @@ BR-234 gộp bằng đổi tên chứ không có một hành động `Merge` ri�
 là thêm một bước cho cùng một ý định.
 
 ## Export card ra file
+
+**Phạm vi:** sub-project sau — Export (spec §2).
 
 Nửa còn lại của Card Transfer. Các rule dưới đây **không** phát biểu lại
 validation nội dung (BR-07, BR-08, BR-95), luật tag (BR-93, BR-94) hay luật
@@ -524,6 +532,8 @@ chung (BR-51…BR-54) — chúng chỉ nói phần mà chiều đọc tiến đ�
 | BR-189 | active | Màn hình MUST cập nhật trực tiếp: ghi một lượt trả lời, chuyển thẻ hoặc subtree, xoá deck, và nửa đêm địa phương đi qua MUST đều làm số trên màn hình đổi mà người dùng không phải thao tác gì. Ba sự kiện đầu MUST đến từ stream invalidation của các bảng liên quan; sự kiện thứ tư không có write nào trong database nên MUST đến từ một lần hẹn giờ duy nhất, đặt theo thời điểm hết hạn mà chính snapshot mang theo (BR-184). | store + UI | UC-13, BR-184 |
 
 ## Nhắc học hằng ngày
+
+**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2).
 
 Một notification tóm tắt mỗi ngày, dựng từ workload đến hạn thật. Các
 rule dưới đây **không** phát biểu lại định nghĩa "đến hạn" (BR-22), cách tra root
@@ -587,10 +597,15 @@ nội dung card (BR-07, BR-08, BR-95), luật tag (BR-93) hay luật riêng tư 
 
 ## Trash và restore
 
-Soft-delete thay thế delete cứng cho **card và deck**. Các rule dưới đây **không**
-phát biểu lại BR-03/BR-04 (xoá deck kéo theo cả cây) hay BR-163 (`content_type`
-tự về `unset`) — chúng nói phần mà tombstone thêm vào, và chúng **chi phối**
-BR-03 ở chỗ "kéo theo cả cây" nay là *đánh dấu* cả cây chứ không *xoá* cả cây.
+**Phạm vi:** sub-project sau — Trash (spec §2).
+
+Soft-delete thay thế delete cứng cho **card và deck** — nhưng chỉ **từ khi
+sub-project này triển khai**. Trong V8.0, xoá card hoặc deck vẫn là xoá cứng
+theo cascade đúng như BR-03/BR-04 phát biểu nguyên văn; chưa rule nào dưới đây
+chi phối hành vi hiện tại. Các rule dưới đây **không** phát biểu lại BR-03/BR-04
+(xoá deck kéo theo cả cây) hay BR-163 (`content_type` tự về `unset`) — chúng
+nói phần mà tombstone thêm vào, và **khi Trash triển khai**, BR-256… sẽ đổi
+"kéo theo cả cây" của BR-03 thành *đánh dấu* cả cây chứ không *xoá* cả cây.
 
 Từ vựng: **batch** là một lần xoá của người dùng, mang một id riêng; **item root**
 là chính card/deck người dùng đã chạm; **tombstone** là hàng còn nguyên trong

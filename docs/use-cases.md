@@ -33,6 +33,8 @@ tham chiếu ngược về đây bằng ID và không phát biểu lại luồng
 |---|---|
 | **Status** | active |
 
+**Phạm vi:** sub-project sau — Starter decks (spec §2).
+
 **Actor:** Người dùng mới cài app
 **Trigger:** Mở app lần đầu sau khi cài
 **Preconditions:** Chưa có deck nào
@@ -159,12 +161,13 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
    phiên đang mở của cây — trong một transaction (BR-14, BR-164).
 
 **Main flow (xoá):**
-1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ cùng vào Trash (BR-04, BR-256).
+1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ bị xoá vĩnh viễn
+   (BR-04).
 2. Người dùng xác nhận.
-3. Hệ thống chuyển deck cùng mọi descendant đang active vào Trash dưới một batch,
-   trong một transaction; phiên đang mở chạm tới chúng bị đóng (BR-256, BR-258,
-   BR-259). Khôi phục, Undo và xoá vĩnh viễn đi theo UC-21; chỉ lúc xoá vĩnh viễn
-   dữ liệu mới bị xoá cascade (BR-03, BR-265).
+3. Hệ thống xoá cứng deck cùng toàn bộ descendant, card, study state, study
+   answers và study session của nó, trong một transaction (BR-03). Khi
+   sub-project Trash triển khai, bước này đổi thành soft-delete có Undo và
+   khôi phục — xem UC-21.
 
 **Alternative flows:**
 - **A1 — Root deck đã có thẻ học xong chuỗi học mới:** phần chọn chế độ hiển thị ở trạng thái **khoá**,
@@ -194,14 +197,14 @@ chọn: Create deck (BR-59). Việc tạo phần tử con nằm ở UC-08.
 - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại,
   `generation` **không đổi** (chưa có gì để reset), `first_answered_at`
   vẫn NULL, và không còn phiên `in_progress` nào của cây (BR-164).
-- Sau xoá: deck và mọi descendant đang active mang cùng một batch trong Trash,
-  không bề mặt active nào còn hiện chúng (BR-257), và không còn phiên
-  `in_progress` nào chạm tới chúng (BR-259).
+- Sau xoá: deck và mọi descendant của nó không còn tồn tại — cascade đã xoá
+  cứng card, study state, study answers và study session của chúng (BR-03);
+  không bề mặt active nào còn hiện chúng.
 - Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con cuối
-  cùng, `content_type` của nó tự về `unset` trong cùng transaction (BR-163,
-  BR-260). Deck cha là root thì giữ `deck` (BR-58).
+  cùng, `content_type` của nó tự về `unset` trong cùng transaction (BR-163).
+  Deck cha là root thì giữ `deck` (BR-58).
 
-**Business rules:** BR-01, BR-03, BR-04, BR-06, BR-12, BR-13, BR-14, BR-163, BR-164, BR-256, BR-257, BR-258, BR-259, BR-260, BR-265
+**Business rules:** BR-01, BR-03, BR-04, BR-06, BR-12, BR-13, BR-14, BR-163, BR-164
 **UI states:** loaded · submitting · error
 
 ---
@@ -230,11 +233,12 @@ Card đầu tiên của một deck `unset` được tạo qua UC-08, và chính 
 
 **Alternative flows:**
 - **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-10).
-- **A2 — Xoá card:** hỏi xác nhận; card chuyển vào Trash cùng study state và
-  history của nó, và màn đang đứng cho Undo (BR-256, BR-263). Khôi phục và xoá
-  vĩnh viễn đi theo UC-21. Nếu đó là card **cuối cùng** đang active, deck
-  atomically trở về `content_type = unset` trong cùng transaction (BR-163,
-  BR-260); sau đó người dùng quay về màn hình deck và
+- **A2 — Xoá card:** hỏi xác nhận, nêu rõ nội dung sẽ mất (BR-04); xác nhận thì
+  xoá cứng card cùng study state và history của nó, trong một transaction
+  (BR-03). Khi sub-project Trash triển khai, thao tác này đổi thành soft-delete
+  có Undo và khôi phục — xem UC-21. Nếu đó là card **cuối cùng** đang active,
+  deck atomically trở về `content_type = unset` trong cùng transaction
+  (BR-163); sau đó người dùng quay về màn hình deck và
   lại chọn được tạo card hay tạo sub-deck. "Deck `card` rỗng" không còn là một
   trạng thái ổn định của hệ thống.
 - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ
@@ -273,7 +277,7 @@ state.
 **Postconditions:** Card tồn tại kèm đúng một study state, đúng scheduler và
 đúng generation của root deck.
 
-**Business rules:** BR-07, BR-08, BR-09, BR-10, BR-63, BR-92, BR-93, BR-94, BR-95, BR-163, BR-165, BR-166, BR-167, BR-246, BR-256, BR-260, BR-263
+**Business rules:** BR-03, BR-04, BR-07, BR-08, BR-09, BR-10, BR-63, BR-92, BR-93, BR-94, BR-95, BR-163, BR-165, BR-166, BR-167, BR-246
 **UI states:** loading · loaded · empty · submitting · error
 
 ---
@@ -673,6 +677,8 @@ Create có ba hành vi khác nhau tuỳ trạng thái deck.
 |---|---|
 | **Status** | active |
 
+**Phạm vi:** sub-project sau — Import (spec §2).
+
 **Actor:** Người dùng
 **Trigger:** Chọn "Import cards" từ card list của một deck loại card, từ empty
 state của card list, hoặc từ lựa chọn tạo phần tử con của một deck `unset`
@@ -744,6 +750,8 @@ Preview.
 | | |
 |---|---|
 | **Status** | active |
+
+**Phạm vi:** sub-project sau — Export (spec §2).
 
 **Actor:** Người dùng
 **Trigger:** Chọn `Export cards` trong overflow menu của card list, hoặc
@@ -1157,6 +1165,8 @@ confirm · System resolution theo platform (light/dark, en/vi). Không có state
 |---|---|
 | **Status** | active |
 
+**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2).
+
 **Actor:** Người dùng
 **Trigger:** Mở `Settings → Daily reminder`
 **Preconditions:** Không có. Nhắc học mặc định tắt và không phụ thuộc dữ liệu
@@ -1238,6 +1248,8 @@ state `empty`: màn này luôn có nội dung, kể cả khi thư viện rỗng.
 | | |
 |---|---|
 | **Status** | active |
+
+**Phạm vi:** sub-project sau — Tags (spec §2).
 
 **Actor:** Người dùng
 **Trigger:** Chạm hành động `Tags` trên app bar của Library, hoặc `Manage tags`
@@ -1460,6 +1472,8 @@ trang đầu
 | | |
 |---|---|
 | **Status** | active |
+
+**Phạm vi:** sub-project sau — Trash (spec §2).
 
 **Actor:** Người dùng
 **Trigger:** Xoá một card hoặc deck (vào Trash), hoặc mở `Trash` từ app bar của
