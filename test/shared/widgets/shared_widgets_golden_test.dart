@@ -10,8 +10,10 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -307,6 +309,48 @@ void main() {
                 child: MxButton(label: 'Save', isBlock: true, onPressed: () {}),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxFilterChip and MxChipTrigger', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_chips',
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          MxFilterChip(
+            label: 'All',
+            count: 128,
+            isSelected: true,
+            onSelected: (_) {},
+          ),
+          MxFilterChip(
+            label: 'Cards',
+            count: 96,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+          MxFilterChip(
+            label: 'Decks',
+            icon: AppIcons.filter,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+          const MxFilterChip(
+            label: 'Disabled',
+            isSelected: false,
+            onSelected: null,
+          ),
+          MxChipTrigger(label: 'Sort: Due', onPressed: () {}),
+          MxChipTrigger(
+            label: 'Filters',
+            icon: AppIcons.filters,
+            onPressed: () {},
           ),
         ],
       ),

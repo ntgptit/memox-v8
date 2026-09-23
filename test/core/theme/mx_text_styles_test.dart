@@ -134,6 +134,7 @@ void main() {
       styles.chipCount(ink),
       size: 12,
       weight: FontWeight.w700,
+      tracking: 0.1,
       color: ink,
     );
     expect(

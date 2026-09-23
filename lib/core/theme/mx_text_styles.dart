@@ -89,11 +89,12 @@ final class MxTextStyles {
   TextStyle get footerCaption =>
       _texts.labelSmall!.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// FilterChip count: 12/700 tabular, in the chip's ink at its opacity.
+  /// FilterChip count: 12/700 tabular, in the chip's ink at its opacity, with
+  /// the label's 0.1 tracking so the pair reads as one line.
   TextStyle chipCount(Color ink) => AppTypography.withWeight(
     _texts.labelSmall!,
     FontWeight.w700,
-  ).copyWith(fontFeatures: _tabular, color: ink);
+  ).copyWith(letterSpacing: _labelTracking, fontFeatures: _tabular, color: ink);
 
   /// FieldMessage line: the caption role in the tone's ink.
   TextStyle fieldMessage(Color ink) => _texts.labelSmall!.copyWith(color: ink);

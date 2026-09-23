@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_button_style.dart';
 
 /// Colour role of a button: the contract's four shipped tones.
 enum MxButtonTone { primary, secondary, outline, destructive }
@@ -64,7 +65,18 @@ class MxButton extends StatelessWidget {
     final geometry = _geometryFor(size, hasIcon: icon != null);
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
-      style: _style(context, paint, geometry),
+      style: mxButtonStyle(
+        fill: paint.fill,
+        ink: paint.ink,
+        edge: paint.edge,
+        focusColor: context.colors.primary,
+        height: geometry.height,
+        radius: geometry.radius,
+        padding: geometry.padding,
+        label: geometry.isSmallType
+            ? context.textStyles.buttonLabelSmall
+            : context.textStyles.buttonLabel,
+      ),
       child: _content(paint.ink, geometry),
     );
     final sized = isBlock
@@ -152,44 +164,6 @@ class MxButton extends StatelessWidget {
           canWrap: false,
         ),
       };
-
-  ButtonStyle _style(BuildContext context, _Paint paint, _Geometry geometry) {
-    final focusRing = BorderSide(
-      color: context.colors.primary,
-      width: AppStroke.focus,
-    );
-    final textStyles = context.textStyles;
-    return ButtonStyle(
-      backgroundColor: WidgetStatePropertyAll(paint.fill),
-      foregroundColor: WidgetStatePropertyAll(paint.ink),
-      overlayColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.pressed)
-            ? paint.ink.withValues(alpha: AppOpacity.pressed)
-            : null,
-      ),
-      // Ruling R5: the focus ring sits on the control's own edge.
-      side: WidgetStateProperty.resolveWith(
-        (states) =>
-            states.contains(WidgetState.focused) ? focusRing : paint.edge,
-      ),
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(geometry.radius),
-        ),
-      ),
-      padding: WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: geometry.padding),
-      ),
-      minimumSize: WidgetStatePropertyAll(Size(0, geometry.height)),
-      tapTargetSize: MaterialTapTargetSize.padded,
-      visualDensity: VisualDensity.standard,
-      textStyle: WidgetStatePropertyAll(
-        geometry.isSmallType
-            ? textStyles.buttonLabelSmall
-            : textStyles.buttonLabel,
-      ),
-    );
-  }
 
   Widget _content(Color ink, _Geometry geometry) {
     final text = Text(
