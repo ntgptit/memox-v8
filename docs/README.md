@@ -1,84 +1,351 @@
-# Documentation
+# Documentation — MemoX V8
 
-| | |
-|---|---|
-| **Status** | active |
-| **Purpose** | Chỉ mục tài liệu — cái gì tồn tại trong `docs/` và ai sở hữu cái gì |
-| **Scope** | Toàn bộ `docs/`. Ngoài phạm vi: nội dung của từng tài liệu |
-| **Source of truth for** | Danh mục tài liệu · trạng thái từng tài liệu · "đang làm X thì đọc file nào" |
-| **Depends on** | `document-conventions.md` |
-| **Updated by** | `docs/superpowers/specs/2026-09-23-docs-restructure-design.md` — tách theo đối tượng, đánh số lại BR/UC |
-| **Last updated** | 2026-09-23 |
+Bản đồ tài liệu cho người và AI agent: cái gì nằm ở đâu, ID đặt thế nào, và
+kiểm chứng bằng lệnh nào. Danh mục chi tiết từng rule/use case **không** viết ở
+đây — nó được sinh ở [`_generated/index.md`](_generated/index.md).
 
-Format và thứ tự đọc: [`document-conventions.md`](document-conventions.md).
+## Sản phẩm
 
-## What exists
+### Problem
 
-| Document | Purpose | Status |
+Người học từ vựng quên phần lớn những gì vừa học nếu ôn tập không đúng thời
+điểm. Ôn thủ công bằng sổ tay hoặc file không cho biết *khi nào* cần ôn lại từ
+nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn (đã quên).
+
+### Target users
+
+| Group | Context | What they need | Not the target |
+|---|---|---|---|
+| Người tự học từ vựng | Học lẻ trên điện thoại, thời gian rời rạc, kết nối không ổn định | Ôn đúng thời điểm, dùng được mọi lúc kể cả offline | Lớp học có giáo viên quản lý |
+| Người ôn thi | Khối lượng từ lớn, có deadline | Theo dõi tiến độ, ưu tiên từ sắp quên | Người cần nội dung biên soạn sẵn |
+
+**Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới
+dạng template để người dùng sao chép về. Nội dung starter hiện tại là
+fixture của dự án, chỉ phục vụ development và test — không phải nội dung
+production (BR-STARTER-010). Import/export vẫn ở nice-to-have.
+
+### Core value
+
+Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng.
+
+Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). Dữ liệu nhạy cảm: [ADR-002](shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md).
+
+### Phạm vi MVP
+
+Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để
+chứng minh kiến trúc local-only (không network) và cơ chế Drift migration hoạt
+động. Không phải bản đầy đủ tính năng.
+
+#### Must-have
+
+| # | Feature | Done when |
 |---|---|---|
-| [`document-conventions.md`](document-conventions.md) | Hợp đồng tài liệu: thứ tự đọc, header bắt buộc, template BR/UC/data model, và từ khoá MUST/SHOULD/MAY | frozen for MVP |
-| [`product/product.md`](product/product.md) | Vấn đề, người dùng, quyết định nền tảng, và phạm vi MVP | frozen for MVP |
-| [`product/master-flow.md`](product/master-flow.md) | Đồ thị nối UC thành hành trình, tách theo đối tượng deck / card / review | active |
-| [`superpowers/specs/2026-09-21-memox-v8-foundation-design.md`](superpowers/specs/2026-09-21-memox-v8-foundation-design.md) | Kiến trúc nền tảng V8: Flutter viết lại từ đầu, giữ nghiệp vụ học của V7, không giữ kiến trúc hay cách triển khai của nó | draft for review |
-| [`superpowers/specs/2026-09-23-docs-restructure-design.md`](superpowers/specs/2026-09-23-docs-restructure-design.md) | Thiết kế tách `business-rules/`/`use-cases/` theo đối tượng và đánh số lại BR/UC — nguồn của lần renumber duy nhất khi chuyển sang V8 | approved |
-| [`business-rules/`](business-rules/README.md) | 269 BR (`BR-<CODE>-nnn`) theo đối tượng: cây deck, card, hai scheduler, session/reset, StudyMode, tiến độ, settings, tìm kiếm, riêng tư, và các sub-project sau (Trash, tags, transfer, starter deck, nhắc học) | frozen for MVP |
-| [`data-model.md`](data-model.md) | Schema, cột, index, quan hệ, và các câu query bất biến giữ dữ liệu đúng | active |
-| [`use-cases/`](use-cases/README.md) | 22 UC (`UC-<CODE>-nnn`) theo đối tượng cho phạm vi MVP | frozen for MVP |
-| [`superpowers/plans/2026-09-21-memox-v8-foundation.md`](superpowers/plans/2026-09-21-memox-v8-foundation.md) | Kế hoạch triển khai nền tảng V8: Flutter skeleton, data model lõi, scheduler SRS thuần Dart, luật cây deck | — |
-| [`it-scenarios/`](it-scenarios/) | Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng: điều hướng, bộ thẻ, thẻ ghi nhớ, học và ôn tập | active |
-| [`../tools/check_docs_refs.py`](../tools/check_docs_refs.py) | Gate: mọi `BR-<CODE>-nnn`/`UC-<CODE>-nnn`/`invariant Q<n>` được trích dẫn phải phân giải được tới một định nghĩa thật | active |
+| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-DECK-022, BR-DECK-023) |
+| M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
+| M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
+| M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
+| M5 | Hoạt động đầy đủ offline | Bật chế độ máy bay, mọi chức năng trên vẫn chạy bình thường |
 
-**ID là vĩnh viễn.** BR, UC và invariant không bao giờ được đánh số lại; luật
-mới append vào số tiếp theo **trong đúng file của đối tượng nó ràng buộc**, kể
-cả khi nó thuộc phần đầu file — chi tiết và lý do ở
-[`document-conventions.md`](document-conventions.md) §7. Việc tách theo đối
-tượng và đổi ID sang dạng `BR-<CODE>-nnn` / `UC-<CODE>-nnn` là **lần renumber
-duy nhất** của quá trình chuyển sang V8; xem
-[`superpowers/specs/2026-09-23-docs-restructure-design.md`](superpowers/specs/2026-09-23-docs-restructure-design.md).
+Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên: xem [`features/study-mode/README.md`](features/study-mode/README.md).
 
-## Đang làm việc trên X → đọc những file nào
+#### Should-have
 
-| Đang làm việc trên | Đọc |
+| # | Feature | Done when |
+|---|---|---|
+| S1 | Tìm kiếm card trong deck | Trong phạm vi: tìm theo nội dung mặt trước/sau trong deck đang mở, không phân biệt hoa thường và giữ dấu. Tìm toàn thư viện là UC-SEARCH-001 |
+| S2 | Thống kê ôn tập cơ bản | Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009…BR-PROGRESS-018): số card đã học hôm nay tách Learning/Reviewing, streak theo ngày, và hoạt động bảy ngày gần nhất. Ngoài phạm vi: accuracy, longest streak, goal, XP, heatmap và lọc theo deck (BR-PROGRESS-010) |
+| S3 | Đảo chiều card (nghĩa → từ) | Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR-MODE-019): chọn chiều hỏi trước lượt đầu, chỉ cho phiên ôn tập `self_assess` của deck `sm2` |
+
+#### Nice-to-have
+
+| # | Feature | Notes |
+|---|---|---|
+| N1 | Import/export | Sub-project sau (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-007…BR-TRANSFER-014): import CSV/TSV/XLSX, export nội dung — không phải backup |
+| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
+| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
+
+#### Explicitly out of MVP
+
+| Feature | Why deferred | Revisit when |
+|---|---|---|
+| Đăng nhập / tài khoản | Không có backend; thêm auth lúc này là xây UI cho thứ chưa dùng được | Khi Spring Boot backend sẵn sàng |
+| Đồng bộ đa thiết bị | Cần backend và conflict resolution | Cùng lúc với auth |
+| iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
+| Phân quyền theo role | Chỉ có một loại user, kể cả sau khi có auth | Chưa có kế hoạch |
+| Chia sẻ deck giữa người dùng | Cần backend | Sau đồng bộ |
+| Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+
+## Bản đồ
+
+```
+docs/
+├── README.md                    # file này
+├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
+├── shared/
+│   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
+│   ├── decisions/               # ADR-NNN-<slug>.md
+│   ├── data/                    # schema.md — bảng, cột, index, invariant `-- N.`
+│   ├── ui/                      # navigation.md — điều hướng toàn app
+│   └── testing/                 # hạ tầng kịch bản IT dùng chung
+├── features/<feature>/
+│   ├── README.md                # phạm vi + màn hình → use case
+│   ├── rules/                   # BR-<DOMAIN>-NNN-<slug>.md
+│   ├── usecases/                # UC-<DOMAIN>-NNN-<slug>.md
+│   ├── ui.md                    # TÙY CHỌN
+│   ├── data.md                  # TÙY CHỌN
+│   ├── api.md                   # TÙY CHỌN
+│   └── it-scenarios.md          # TÙY CHỌN — kịch bản IT truy vết về feature này
+├── superpowers/                 # spec + plan của quy trình Superpowers (giữ ID lịch sử)
+└── _generated/                  # KHÔNG SỬA TAY — index, traceability, open questions
+```
+
+File/folder trong `shared/` và file tùy chọn của feature chỉ tồn tại khi có nội
+dung thật. Không tạo file rỗng.
+
+## Thứ tự đọc
+
+1. `CLAUDE.md` ở root repo — ràng buộc áp dụng ở mọi phase.
+2. File này.
+3. `features/<feature>/README.md` của feature đang làm, rồi đúng các BR/UC mà nó
+   trỏ tới. Không đọc hết `docs/`.
+4. `shared/` khi feature tham chiếu tới; `shared/decisions/` khi cần biết **vì sao**.
+5. [`_generated/open-questions.md`](_generated/open-questions.md) trước khi coi
+   một hành vi là đã chốt.
+
+`.claude/skills/` là hướng dẫn *cách làm*, không phải quyết định sản phẩm. Khi
+skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defect phải sửa.
+
+## X viết ở đâu
+
+| Nội dung | Vị trí |
 |---|---|
-| Cây deck, tên/xoá deck | [`business-rules/deck.md`](business-rules/deck.md), [`use-cases/deck.md`](use-cases/deck.md) |
-| Nội dung card, cờ, di chuyển, chi tiết card | [`business-rules/card.md`](business-rules/card.md), [`use-cases/card.md`](use-cases/card.md) |
-| Scheduler `eight_box`/`sm2`, khoá/đổi scheduler, reset | [`business-rules/srs.md`](business-rules/srs.md), [`use-cases/srs.md`](use-cases/srs.md) |
-| Phiên ôn tập, hàng đợi, round, Study Home | [`business-rules/study.md`](business-rules/study.md), [`use-cases/study.md`](use-cases/study.md) |
-| StudyMode, chuỗi stage, chiều hỏi `self_assess` | [`business-rules/study-mode.md`](business-rules/study-mode.md), [`use-cases/study.md`](use-cases/study.md) |
-| Tiến độ theo deck, Progress overview | [`business-rules/progress.md`](business-rules/progress.md), [`use-cases/progress.md`](use-cases/progress.md) |
-| Tuỳ chọn ứng dụng (theme, ngôn ngữ, mặc định học) | [`business-rules/settings.md`](business-rules/settings.md), [`use-cases/settings.md`](use-cases/settings.md) |
-| Tìm kiếm toàn thư viện | [`business-rules/search.md`](business-rules/search.md), [`use-cases/search.md`](use-cases/search.md) |
-| Luật riêng tư chung | [`business-rules/privacy.md`](business-rules/privacy.md) |
-| Trash và restore (sub-project sau) | [`business-rules/trash.md`](business-rules/trash.md), [`use-cases/trash.md`](use-cases/trash.md) |
-| Tag: mô hình dữ liệu và quản lý (sub-project sau) | [`business-rules/tags.md`](business-rules/tags.md), [`use-cases/tags.md`](use-cases/tags.md) |
-| Import/export card (sub-project sau) | [`business-rules/transfer.md`](business-rules/transfer.md), [`use-cases/transfer.md`](use-cases/transfer.md) |
-| Starter deck / template (sub-project sau) | [`business-rules/starter-decks.md`](business-rules/starter-decks.md), [`use-cases/starter-decks.md`](use-cases/starter-decks.md) |
-| Nhắc học hằng ngày (sub-project sau) | [`business-rules/reminders.md`](business-rules/reminders.md), [`use-cases/reminders.md`](use-cases/reminders.md) |
-| Schema, cột, index, bất biến dữ liệu | [`data-model.md`](data-model.md) |
-| Kiểm thử tích hợp theo hành trình | [`it-scenarios/`](it-scenarios/) |
+| Ràng buộc nghiệp vụ, dùng 1 feature | `features/<f>/rules/` |
+| Ràng buộc nghiệp vụ, dùng ≥ 2 feature | `shared/rules/` (BR-CORE) |
+| Hành vi chỉ xảy ra trong 1 use case (kể cả UI/local/API của UC đó) | Section tương ứng trong file UC |
+| Màn hình, điều hướng, state dùng chung nhiều UC của feature | `features/<f>/ui.md` |
+| Bảng/field feature dùng, dữ liệu sync, conflict rule riêng | `features/<f>/data.md` |
+| Endpoint feature dùng, lỗi đặc thù | `features/<f>/api.md` |
+| Request/response, error code | `shared/api/` |
+| Cơ chế chung: cache, sync, state pattern, token | `shared/data/`, `shared/ui/` |
+| Quyết định kỹ thuật có lý do và phương án bị loại | `shared/decisions/` (ADR) |
+| Định nghĩa thuật ngữ | `glossary.md` |
 
-## Business rules và use cases theo đối tượng
+Nguyên tắc: nghiệp vụ → rule; hành vi → use case; cơ chế → shared.
+Không chép nội dung sang chỗ khác — chỉ reference ID hoặc link.
 
-| Đối tượng | Code | BR file | UC file | Phạm vi |
-|---|---|---|---|---|
-| Deck | `DECK` | [`deck.md`](business-rules/deck.md) | [`deck.md`](use-cases/deck.md) | V8.0 |
-| Card | `CARD` | [`card.md`](business-rules/card.md) | [`card.md`](use-cases/card.md) | V8.0 |
-| SRS scheduler | `SRS` | [`srs.md`](business-rules/srs.md) | [`srs.md`](use-cases/srs.md) | V8.0 |
-| Study session | `STUDY` | [`study.md`](business-rules/study.md) | [`study.md`](use-cases/study.md) | V8.0 |
-| StudyMode | `MODE` | [`study-mode.md`](business-rules/study-mode.md) | — (bên trong `study.md`) | V8.0 |
-| Progress | `PROGRESS` | [`progress.md`](business-rules/progress.md) | [`progress.md`](use-cases/progress.md) | V8.0 |
-| Settings | `SETTINGS` | [`settings.md`](business-rules/settings.md) | [`settings.md`](use-cases/settings.md) | V8.0 |
-| Search | `SEARCH` | [`search.md`](business-rules/search.md) | [`search.md`](use-cases/search.md) | V8.0 |
-| Privacy | `PRIVACY` | [`privacy.md`](business-rules/privacy.md) | — | V8.0 |
-| Trash | `TRASH` | [`trash.md`](business-rules/trash.md) | [`trash.md`](use-cases/trash.md) | sub-project sau |
-| Tags | `TAG` | [`tags.md`](business-rules/tags.md) | [`tags.md`](use-cases/tags.md) | sub-project sau |
-| Transfer (import/export) | `TRANSFER` | [`transfer.md`](business-rules/transfer.md) | [`transfer.md`](use-cases/transfer.md) | sub-project sau |
-| Starter decks | `STARTER` | [`starter-decks.md`](business-rules/starter-decks.md) | [`starter-decks.md`](use-cases/starter-decks.md) | sub-project sau |
-| Reminders | `REMINDER` | [`reminders.md`](business-rules/reminders.md) | [`reminders.md`](use-cases/reminders.md) | sub-project sau |
 
-## The rule that keeps this useful
+Lý do quy tắc này chặt: hai bản sao của cùng một rule **luôn** lệch nhau sau vài
+lần sửa, và lúc đó không có cách nào biết bản nào đúng ngoài việc hỏi người viết
+— người đã quên. Tham chiếu bằng ID không có vấn đề đó.
 
-Tài liệu và code được cập nhật trong cùng một commit. Một tài liệu chậm hơn
-code là có hại thật sự — phiên làm việc sau đọc nó, tin nó, và xây tiếp trên
-một điều không còn đúng. Nếu một thay đổi làm tài liệu sai, phải sửa tài liệu
-đó trước khi merge.
+**Được phép nhắc lại** một kết luận ngắn kèm ID để đoạn văn đọc được (`scheduler
+thuộc root deck (BR-DECK-005)`). **Không được phép** chép lại chi tiết đủ để hai
+chỗ có thể mâu thuẫn.
+
+Áp dụng cho repo này (quyết định khi tái cấu trúc docs):
+
+- **"Dùng ≥ 2 feature" nghĩa là không feature nào sở hữu.** Rule ràng buộc một
+  đối tượng ở lại feature của đối tượng đó dù feature khác trích nó; feature khác
+  tham chiếu bằng ID. `shared/rules/` chỉ giữ rule không có chủ — các rule riêng
+  tư, sẽ nhận DOMAIN `CORE` khi chuyển sang.
+- Kịch bản kiểm thử tích hợp: `features/<f>/it-scenarios.md` theo UC/BR mà kịch
+  bản truy vết; hướng dẫn thực thi, danh mục và kịch bản không thuộc feature nào
+  ở `shared/testing/`.
+- Điều hướng toàn app: `shared/ui/navigation.md`.
+
+## Convention
+
+### Vì sao có các quy ước này
+
+Một agent đọc `docs/` cần trả lời được ba câu:
+
+1. **Đọc theo thứ tự nào?** Không có thứ tự thì agent đọc file nào gặp trước, và
+   một quyết định trong `shared/decisions/` có thể bị bỏ qua vì nó đọc
+   `features/` trước.
+2. **Câu nào là quyết định chính thức, câu nào là giải thích?** Prose giải thích
+   *tại sao* một rule tồn tại rất dễ bị đọc thành một rule mới. Ví dụ minh hoạ
+   càng dễ bị đọc thành đặc tả.
+3. **Thông tin này ở đâu là bản gốc?** Cùng một rule viết ở hai file thì sớm muộn
+   hai bản sẽ lệch nhau, và không ai biết bản nào đúng.
+
+
+### ID
+
+| Loại | Format | Ví dụ |
+|---|---|---|
+| Business rule | `BR-<DOMAIN>-NNN` | `BR-DECK-015` |
+| Use case | `UC-<DOMAIN>-NNN` | `UC-STUDY-001` |
+| Rule dùng chung | `BR-CORE-NNN` | — (chưa có) |
+| Quyết định | `ADR-NNN` | `ADR-001` |
+
+- DOMAIN viết hoa, NNN đúng 3 chữ số. Tên file: `<ID>-<slug-kebab-case>.md`; ID
+  trong tên file MUST khớp `id` trong frontmatter.
+- DOMAIN của một feature là tên thư mục viết hoa, trừ các ngoại lệ dưới đây (giữ
+  mã đối tượng có từ trước):
+
+  | Thư mục | DOMAIN |
+  |---|---|
+  | `study-mode` | `MODE` |
+  | `tags` | `TAG` |
+  | `starter-decks` | `STARTER` |
+  | `reminders` | `REMINDER` |
+  | `shared/rules` | `CORE` |
+
+- **ID là vĩnh viễn.** MUST NOT đánh số lại, MUST NOT tái sử dụng số đã bỏ trống.
+  ID mới lấy số tiếp theo của DOMAIN đó, nên ID không nhất thiết tăng theo thứ tự
+  đọc. Lý do: một lần đánh số lại trước V8 đã làm một ID trỏ sang rule khác mà
+  không test nào bắt được. Ngoại lệ duy nhất, thuộc đợt migrate này:
+  `BR-PRIVACY-00n` → `BR-CORE-00n`.
+- Rule bị thay thế: `status: deprecated` + `superseded_by: <ID>`, giữ nguyên ID
+  và nguyên văn. **MUST NOT xoá** — ID biến mất làm mọi tham chiếu cũ trong
+  commit, comment, PR trỏ vào hư không.
+- `docs/superpowers/` giữ ID lịch sử; `check.py` không kiểm ID ở đó.
+
+### Frontmatter
+
+Business rule — `features/<f>/rules/` hoặc `shared/rules/`:
+
+```yaml
+---
+id: BR-STUDY-001
+title: <tên ngắn>
+status: active            # draft | active | deprecated
+summary: <một câu, đủ để agent quyết định có cần mở file không>
+superseded_by:            # chỉ khi deprecated
+---
+## Rule
+## Lý do
+## Ví dụ
+## Edge case
+```
+
+Body BR **không** có mục "Được dùng bởi" — `generate.py` sinh nó ở index.
+
+Dòng `**Enforced by:**` trong `## Rule` của BR giữ cột "Enforced by" của bảng BR cũ:
+chỗ rule được cưỡng chế — `domain`, `db`, `UI`, `scheduler`, `script`, … — hoặc `—`
+nếu chưa cưỡng chế được. `Enforced by` là field có giá trị thực tế cao nhất khi code: nó nói cho người
+triển khai biết rule này sống ở đâu trong hệ thống, và nó phơi bày những rule
+hiện chưa có gì cưỡng chế.
+
+Rule cần nhiều hơn một câu (ví dụ có bảng tra) MUST dùng dạng section
+`### BR-<CODE>-nnn · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related
+ngay dưới tiêu đề.
+
+Use case — `features/<f>/usecases/`:
+
+```yaml
+---
+id: UC-STUDY-001
+title: <tên>
+status: ready             # draft | ready | deprecated — trạng thái SPEC, không phải tiến độ code
+rules: [BR-STUDY-001, BR-STUDY-002]
+code: []                  # path thật trong repo; không chắc → [] và ghi OPEN QUESTION
+---
+## Mục tiêu / Actor / Precondition
+## Main flow
+## Alternative / Error flow
+## UI
+## Local
+## API
+## Acceptance criteria
+```
+
+Feature README — `features/<f>/README.md`:
+
+```yaml
+---
+feature: study
+code: []
+depends_on: []
+---
+## Phạm vi
+## Màn hình → Use case
+## Không thuộc phạm vi
+```
+
+ADR — `shared/decisions/`: frontmatter `id`, `title`, `status`
+(`draft | active | deprecated`), `superseded_by` khi deprecated.
+
+Section không áp dụng: ghi "Không áp dụng", không xoá heading. Quan hệ chỉ khai
+báo một chiều: UC khai báo `rules`; không viết reverse link hay index bằng tay.
+
+### Viết use case
+
+Chỉ đặc tả must-have. Should-have và nice-to-have viết khi tới lượt — đặc tả
+trước những thứ có thể bị cắt là lãng phí.
+
+> ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
+
+Luồng viết bằng ngôn ngữ người dùng, không nói theo màn hình hay widget. Màn
+hình sẽ đổi; luồng thì không.
+
+`Error flows` và `UI states` là hai mục hay bị bỏ và là nguồn của phần lớn màn
+hình thiếu trạng thái. MUST liệt kê đủ; trạng thái không xảy ra thì MUST nói rõ
+vì sao thay vì im lặng bỏ. Trong cấu trúc mới, hai mục đó nằm ở `## Alternative / Error flow` và `## UI`.
+
+Mỗi UC mô tả mình và im lặng về những UC bên cạnh. Các UC nối vào nhau thế nào
+thì xem [`shared/ui/navigation.md`](shared/ui/navigation.md) và `ui.md` của từng
+feature; các sơ đồ đó tham chiếu ngược về UC bằng ID và không phát biểu lại luồng nào.
+
+### Data model
+
+Mỗi bảng MUST có: một section `## <tên bảng>`, một bảng cột với
+`Cột | Kiểu | Ghi chú`, danh sách index, và tham chiếu BR cho mọi ràng buộc.
+
+Mọi bất biến MUST được diễn đạt thành một câu SQL **trả về 0 dòng khi dữ liệu
+đúng**, đặt trong mục `## Bất biến`, đánh số `-- N. <mô tả> (BR-xx)`.
+
+Định dạng đó không tuỳ tiện: `tools/docs/check.py` dựa vào đúng khuôn `-- N.` trong
+[`shared/data/schema.md`](shared/data/schema.md) để đối chiếu `invariant Qn` với nơi
+trích dẫn nó.
+
+### Ngôn ngữ ràng buộc
+
+| Từ khoá | Nghĩa | Vi phạm |
+|---|---|---|
+| **MUST** / **MUST NOT** | Bắt buộc, không ngoại lệ trong phạm vi MVP | Defect, không merge |
+| **SHOULD** | Khuyến nghị mạnh; làm khác phải ghi lý do | Cần biện minh |
+| **MAY** | Tuỳ chọn | Không sao |
+
+Câu không có từ khoá là **giải thích, không phải ràng buộc** — MUST NOT suy ra
+rule mới từ prose. Ví dụ, đoạn code và bảng ví dụ minh hoạ ranh giới của một rule
+đã phát biểu; khi ví dụ và rule mâu thuẫn, **rule thắng**. Mục `## Edge case` của
+BR là **hệ quả** của rule, không phải rule mới.
+
+### Hợp đồng và phạm vi sửa
+
+BR `active` và UC `ready` là hợp đồng mà code viết theo. Sửa chúng là quyết định có
+chủ đích: task sửa tài liệu MUST nêu chính xác file được phép sửa; khi cần sửa
+ngoài phạm vi đó, dừng và nói rõ file nào, vì sao.
+
+Lý do: tài liệu frozen là hợp đồng mà code được viết theo. Một sửa đổi tiện tay
+trong lúc làm việc khác sẽ làm code và spec lệch nhau mà không ai để ý — và spec
+là thứ phiên sau tin tưởng.
+
+Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
+migrate** (`business-rules/`, `use-cases/`, `product/`, `data-model.md`,
+`it-scenarios/`); nội dung gốc tra bằng git history trước commit xoá các thư mục đó. Nhãn "(Plan Qn)" / "(Plan OQ-n)" trỏ tới
+bảng quyết định và danh sách mâu thuẫn của kế hoạch migration `docs/_migration/plan.md`,
+cũng chỉ còn trong git history.
+
+Mâu thuẫn, mơ hồ hoặc thiếu thông tin: không tự chọn. Ghi tại file đích
+`> ⚠️ OPEN QUESTION: <mô tả, trích nguồn các bên>`; chúng được gom ở
+[`_generated/open-questions.md`](_generated/open-questions.md).
+
+Tài liệu và code cập nhật trong cùng một commit. Tài liệu chậm hơn code là có hại
+thật: phiên sau đọc nó, tin nó, và xây tiếp trên một điều không còn đúng.
+
+## Kiểm chứng
+
+Chạy từ root repo, Python 3, không cần thư viện ngoài:
+
+```sh
+python tools/docs/generate.py                                  # sinh docs/_generated/
+python tools/docs/check.py                                     # ERROR → exit 1
+```
+
+`check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
+mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
+`invariant Qn` được trích, section bắt buộc, và `_generated/` có lỗi thời không.
+WARNING (không fail): BR active không UC nào dùng, UC ready có `code: []` hoặc
+chưa có test chứa ID. Chi tiết ở docstring của hai script.
