@@ -96,3 +96,74 @@ JOIN deck r ON r.id = d.root_id
 LEFT JOIN counts ON counts.tile_id = d.id
 WHERE d.parent_id = :parent_id AND d.delete_batch_id IS NULL
 ORDER BY d.sibling_position, d.id;
+
+-- An open deck: the deck and every deck above it, root first. No row when
+-- :deck_id is not an active deck.
+deckAndAncestors(:deck_id AS TEXT):
+WITH RECURSIVE up(id, parent_id) AS (
+  SELECT id, parent_id FROM deck
+  WHERE id = :deck_id AND delete_batch_id IS NULL
+  UNION
+  SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id
+)
+SELECT * FROM deck WHERE id IN (SELECT id FROM up) ORDER BY depth;
+
+-- UC-DECK-005: the decks a move of :deck_id may pick, and the decks on their
+-- paths. The rules are DeckEntity.checkMove's, read the same way: active
+-- decks of every tree whose root runs the same scheduler at the same
+-- generation as the deck's root (BR-DECK-024), outside the deck's subtree
+-- (BR-DECK-017), holding decks or nothing (BR-DECK-009) and shallow enough
+-- for the subtree's height (BR-DECK-001). The current parent comes back with
+-- is_candidate false: it is only a step of the other paths. No row for a
+-- root, a missing deck or a deck in the Trash.
+deckMoveTargets(:deck_id AS TEXT, :max_depth AS INTEGER) AS DeckForestRow:
+WITH RECURSIVE
+  moving AS (
+    SELECT d.id, d.parent_id, r.scheduler_type, r.generation
+    FROM deck d JOIN deck r ON r.id = d.root_id
+    WHERE d.id = :deck_id AND d.parent_id IS NOT NULL
+      AND d.delete_batch_id IS NULL
+  ),
+  subtree(id, height) AS (
+    SELECT id, 1 FROM moving
+    UNION ALL
+    SELECT d.id, subtree.height + 1 FROM deck d
+    JOIN subtree ON d.parent_id = subtree.id
+    WHERE subtree.height < :max_depth
+  )
+SELECT d.id, d.name, d.parent_id, d.sibling_position,
+  d.id <> m.parent_id AS is_candidate
+FROM deck d
+JOIN deck r ON r.id = d.root_id
+JOIN moving m
+  ON r.scheduler_type = m.scheduler_type AND r.generation = m.generation
+WHERE d.delete_batch_id IS NULL
+  AND d.content_type IN ('deck', 'unset')
+  AND d.id NOT IN (SELECT id FROM subtree)
+  AND d.depth + (SELECT MAX(height) FROM subtree) <= :max_depth;
+
+-- IT-DISC-006: the decks a search inside :scope_id looks through, and the
+-- decks on their paths. is_candidate marks the decks strictly below
+-- :scope_id, or every active deck when :scope_id is null. Matching the name
+-- is Dart's: deck has no folded name, and SQLite's lower() folds ASCII only.
+deckSearchScope(:scope_id AS TEXT OR NULL) AS DeckForestRow:
+WITH RECURSIVE
+  up(id, parent_id) AS (
+    SELECT id, parent_id FROM deck
+    WHERE id = :scope_id AND delete_batch_id IS NULL
+    UNION
+    SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id
+  ),
+  down(id) AS (
+    SELECT id FROM up WHERE id = :scope_id
+    UNION
+    SELECT d.id FROM deck d JOIN down ON d.parent_id = down.id
+    WHERE d.delete_batch_id IS NULL
+  )
+SELECT d.id, d.name, d.parent_id, d.sibling_position,
+  (:scope_id IS NULL OR (d.id IN (SELECT id FROM down) AND d.id <> :scope_id))
+    AS is_candidate
+FROM deck d
+WHERE d.delete_batch_id IS NULL
+  AND (:scope_id IS NULL
+    OR d.id IN (SELECT id FROM up) OR d.id IN (SELECT id FROM down));

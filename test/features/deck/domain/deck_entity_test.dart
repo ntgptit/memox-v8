@@ -3,6 +3,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -193,6 +194,45 @@ void main() {
           placement: DeckPlacement.after,
         ),
         ['a', 'b'],
+      );
+    });
+  });
+
+  group('createOptions (BR-DECK-005, BR-DECK-007, BR-DECK-012)', () {
+    DeckEntity deck(DeckContentType type, {int depth = 2}) => DeckEntity(
+      id: 'd',
+      name: 'd',
+      parentId: depth == 1 ? null : 'p',
+      rootId: 'r',
+      depth: depth,
+      contentType: type,
+      schedulerType: null,
+      generation: null,
+      firstAnsweredAt: null,
+      siblingPosition: 0,
+      createdAt: DateTime(2026, 9, 23),
+      updatedAt: DateTime(2026, 9, 23),
+    );
+
+    test('a root and a deck of decks offer a deck, a deck of cards a card', () {
+      expect(deck(DeckContentType.deck, depth: 1).createOptions, {
+        DeckCreateOption.deck,
+      });
+      expect(deck(DeckContentType.deck).createOptions, {DeckCreateOption.deck});
+      expect(deck(DeckContentType.card).createOptions, {DeckCreateOption.card});
+    });
+
+    test('an empty sub-deck offers both', () {
+      expect(deck(DeckContentType.unset).createOptions, {
+        DeckCreateOption.deck,
+        DeckCreateOption.card,
+      });
+    });
+
+    test('the deepest level offers no deck (BR-DECK-001)', () {
+      expect(
+        deck(DeckContentType.unset, depth: DeckEntity.maxDepth).createOptions,
+        {DeckCreateOption.card},
       );
     });
   });

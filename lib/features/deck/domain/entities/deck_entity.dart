@@ -2,6 +2,7 @@ import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -41,6 +42,19 @@ final class DeckEntity {
   static const maxNameLength = 200;
 
   bool get isRoot => parentId == null;
+
+  /// What "Create" offers here (BR-DECK-005, BR-DECK-007, BR-DECK-012):
+  /// decks in a root or a deck of decks, cards in a deck of cards, both in an
+  /// empty sub-deck, and no deck at the deepest level (BR-DECK-001).
+  Set<DeckCreateOption> get createOptions {
+    final byContent = switch (contentType) {
+      DeckContentType.deck => {DeckCreateOption.deck},
+      DeckContentType.card => {DeckCreateOption.card},
+      DeckContentType.unset => {DeckCreateOption.deck, DeckCreateOption.card},
+    };
+    if (depth < maxDepth) return byContent;
+    return byContent.difference({DeckCreateOption.deck});
+  }
 
   /// BR-DECK-020: not blank after trim, at most [maxNameLength] characters.
   static Outcome<void, DeckRejection> checkName(String name) {

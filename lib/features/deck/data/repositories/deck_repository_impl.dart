@@ -3,13 +3,19 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
+import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/deck/data/datasources/deck_dao.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
+import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
+import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
+import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
+import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
+import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -250,6 +256,40 @@ final class DeckRepositoryImpl implements DeckRepository {
       .map((rows) => [for (final row in rows) _toTile(row, startOfToday)])
       .mapDatabaseErrors();
 
+  @override
+  Stream<DeckView?> watchDeck(String deckId) =>
+      _dao.watchDeckAndAncestors(deckId).map(_toView).mapDatabaseErrors();
+
+  @override
+  Stream<List<DeckMoveTarget>> watchMoveTargets(String deckId) => _dao
+      .watchMoveTargetRows(deckId, maxDepth: DeckEntity.maxDepth)
+      .map(
+        (rows) => candidatesInTreeOrder(
+          [for (final row in rows) _nodeOf(row)],
+          (node, path) =>
+              DeckMoveTarget(id: node.id, name: node.name, path: path),
+        ),
+      )
+      .mapDatabaseErrors();
+
+  @override
+  Stream<List<DeckSearchHit>> watchSearch({
+    required String? scopeDeckId,
+    required String foldedTerm,
+  }) => _dao
+      .watchSearchRows(scopeDeckId)
+      .map(
+        (rows) => [
+          for (final hit in candidatesInTreeOrder(
+            [for (final row in rows) _nodeOf(row)],
+            (node, path) =>
+                DeckSearchHit(id: node.id, name: node.name, path: path),
+          ))
+            if (foldText(hit.name).contains(foldedTerm)) hit,
+        ],
+      )
+      .mapDatabaseErrors();
+
   /// A sub-deck's content type follows what it holds (BR-DECK-006..008,
   /// BR-DECK-015); a root is always a deck of decks (BR-DECK-004).
   Future<void> _refreshContentType(String deckId, DateTime at) async {
@@ -313,4 +353,27 @@ DeckTile _toTile(DeckTileRow row, DateTime startOfToday) => DeckTile(
   dueTodayCount: row.dueTodayCount,
   oldestDueAt: row.oldestDueAt,
   startOfToday: startOfToday,
+);
+
+/// [rows] run from the root down to the open deck.
+DeckView? _toView(List<Deck> rows) {
+  if (rows.isEmpty) return null;
+  final root = rows.first;
+  return DeckView(
+    deck: _toEntity(rows.last),
+    schedulerType: _schedulerOf(root)!,
+    isSchedulerLocked: root.firstAnsweredAt != null,
+    breadcrumb: [
+      for (final row in rows.take(rows.length - 1))
+        DeckPathEntry(id: row.id, name: row.name),
+    ],
+  );
+}
+
+DeckTreeNode _nodeOf(DeckForestRow row) => DeckTreeNode(
+  id: row.id,
+  name: row.name,
+  parentId: row.parentId,
+  siblingPosition: row.siblingPosition,
+  isCandidate: row.isCandidate,
 );

@@ -53,6 +53,22 @@ final class DeckDao {
     return _db.deckLevelOfChildren(parentId, startOfToday, now).watch();
   }
 
+  /// [id] and every deck above it, root first; empty when [id] is not an
+  /// active deck.
+  Stream<List<Deck>> watchDeckAndAncestors(String id) =>
+      _db.deckAndAncestors(id).watch();
+
+  /// The decks a move of [id] may pick, and the decks on their paths.
+  Stream<List<DeckForestRow>> watchMoveTargetRows(
+    String id, {
+    required int maxDepth,
+  }) => _db.deckMoveTargets(id, maxDepth).watch();
+
+  /// The decks a search inside [scopeId] looks through, every active deck
+  /// when it is null, and the decks on their paths.
+  Stream<List<DeckForestRow>> watchSearchRows(String? scopeId) =>
+      _db.deckSearchScope(scopeId).watch();
+
   /// One statement (`deck_queries.drift`); null when [id] is not an active
   /// deck.
   Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>
