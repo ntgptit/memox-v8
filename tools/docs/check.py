@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check docs/ against the structure described in docs/README.md.
 
-    python tools/docs/check.py [--plan docs/_migration/plan.md]
+    python tools/docs/check.py [--plan <mapping.md>]
 
 Run from the repository root. Prints `LEVEL path: message`, one per line.
 Exit code 1 when any ERROR is found; WARNINGs never fail.
@@ -15,13 +15,15 @@ ERROR
 - a UC / BR / feature README missing a required `##` section
 - a BR carrying a hand-written "used by" section (it is generated)
 - docs/_generated/ stale compared with a fresh `generate.py` run
-- with --plan: a mapping row whose destination does not exist
+- with --plan: a mapping row whose destination does not exist (a mapping
+  table is one whose first header cell starts with "Nguồn"; destinations are
+  backticked paths relative to docs/, `<slug>` and `*` are wildcards)
 WARNING
 - active BR used by no UC; ready UC with `code: []`; ready UC with no test
 
 Id, invariant and link checks ignore ``` fences and `inline code`. Id checks
-skip docs/superpowers/ (historical documents keep old ids), _generated/ and
-_migration/; links are checked everywhere. See generate.py for the frontmatter
+skip docs/superpowers/ (historical documents keep old ids) and _generated/;
+links are checked everywhere. See generate.py for the frontmatter
 limits.
 """
 from __future__ import annotations
@@ -43,13 +45,8 @@ SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 ID_IN_TEXT = re.compile(r"\b((?:BR|UC)-[A-Z]+-\d{3})\b")
 INVARIANT_CITE = re.compile(r"\binvariant Q(\d+)\b")
 INVARIANT_DEF = re.compile(r"^--\s*(\d+)\.", re.M)
-# Where invariants are defined: the target file and, until it is split, the
-# legacy data model (docs/_migration/plan.md §4).
-INVARIANT_FILES = ("shared/data/schema.md", "data-model.md")
-# Pre-migration definitions (a `| BR-X-nnn |` table row or a `## UC-X-nnn`
-# heading) in these folders still count until the folders are removed.
-LEGACY_DIRS = ("business-rules", "use-cases")
-LEGACY_DEF = re.compile(r"^(?:\|\s*|#+\s*)((?:BR|UC)-[A-Z]+-\d{3})\b", re.M)
+# The one file that defines the numbered invariants cited as `invariant Qn`.
+INVARIANT_FILE = "shared/data/schema.md"
 LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 USED_BY_SECTION = re.compile(r"^##+\s*(được dùng bởi|used by)\b", re.I | re.M)
 
@@ -78,7 +75,7 @@ REQUIRED_SECTIONS = {
     ),
     "FEATURE": ("Phạm vi", "Màn hình → Use case", "Không thuộc phạm vi"),
 }
-SKIP_ID_CHECK = ("superpowers", "_generated", "_migration")
+SKIP_ID_CHECK = ("superpowers", "_generated")
 
 
 class Report:
@@ -214,18 +211,14 @@ def check_warnings(docs: list[g.Doc], report: Report) -> None:
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
-    ids = {d.id for d in docs if d.kind in ("BR", "UC")}
-    for name in LEGACY_DIRS:
-        for path in sorted((g.DOCS / name).glob("*.md")):
-            ids |= set(LEGACY_DEF.findall(path.read_text(encoding="utf-8")))
-    return ids
+    return {d.id for d in docs if d.kind in ("BR", "UC")}
 
 
 def defined_invariants() -> set[int] | None:
-    files = [g.DOCS / name for name in INVARIANT_FILES if (g.DOCS / name).exists()]
-    if not files:
+    path = g.DOCS / INVARIANT_FILE
+    if not path.exists():
         return None
-    return {int(n) for path in files for n in INVARIANT_DEF.findall(path.read_text(encoding="utf-8"))}
+    return {int(n) for n in INVARIANT_DEF.findall(path.read_text(encoding="utf-8"))}
 
 
 def markdown_files() -> list[Path]:
@@ -368,7 +361,7 @@ def run(plan: Path | None) -> Report:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--plan", type=Path, help="bảng ánh xạ migration, ví dụ docs/_migration/plan.md")
+    parser.add_argument("--plan", type=Path, help="file markdown chứa bảng ánh xạ (cột đầu \"Nguồn\")")
     args = parser.parse_args()
     if not g.DOCS.is_dir():
         print("ERROR docs: không tìm thấy — chạy từ root repo")

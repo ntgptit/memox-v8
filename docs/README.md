@@ -324,7 +324,9 @@ là thứ phiên sau tin tưởng.
 
 Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
 migrate** (`business-rules/`, `use-cases/`, `product/`, `data-model.md`,
-`it-scenarios/`); nội dung gốc tra bằng git history trước commit xoá các thư mục đó.
+`it-scenarios/`); nội dung gốc tra bằng git history trước commit xoá các thư mục đó. Nhãn "(Plan Qn)" / "(Plan OQ-n)" trỏ tới
+bảng quyết định và danh sách mâu thuẫn của kế hoạch migration `docs/_migration/plan.md`,
+cũng chỉ còn trong git history.
 
 Mâu thuẫn, mơ hồ hoặc thiếu thông tin: không tự chọn. Ghi tại file đích
 `> ⚠️ OPEN QUESTION: <mô tả, trích nguồn các bên>`; chúng được gom ở
@@ -340,7 +342,6 @@ Chạy từ root repo, Python 3, không cần thư viện ngoài:
 ```sh
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
-python tools/docs/check.py --plan docs/_migration/plan.md      # thêm: đích của bảng ánh xạ phải tồn tại
 ```
 
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
