@@ -133,6 +133,35 @@ void main() {
     );
   });
 
+  test('only the "Bất biến" section is read, not a mention of it or a later section', () {
+    const markdown = '''
+# Schema
+
+Cited in prose as `## Bất biến`, before the section.
+
+```sql
+-- 2. An example before the section
+SELECT 2;
+```
+
+## Bất biến — phải kiểm tra được bằng query
+
+```sql
+-- 1. The invariant
+--    A note under its title.
+SELECT 1;
+```
+
+## A later section
+
+```sql
+-- 3. Not an invariant
+SELECT 3;
+```
+''';
+    expect(parseInvariantQueries(markdown), {1: 'SELECT 1'});
+  });
+
   group('the seed holds', () {
     for (final number in invariantQueries.keys) {
       test('invariant $number: ${invariantSummaries[number]}', () async {

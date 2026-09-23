@@ -5,13 +5,25 @@ import 'dart:io';
 /// and there is no copy to keep in step. Each query must return no row.
 /// Invariants 33-37 need `delete_batches`, which does not exist yet
 /// (foundation plan, Clarification 2).
-final Map<int, String> invariantQueries = _readInvariantQueries();
+final Map<int, String> invariantQueries = parseInvariantQueries(
+  File('docs/shared/data/schema.md').readAsStringSync(),
+);
 
 const _lastInvariantInScope = 32;
 
-Map<int, String> _readInvariantQueries() {
-  final text = File('docs/shared/data/schema.md').readAsStringSync();
-  final section = text.substring(text.indexOf('## Bất biến'));
+/// The queries of the "Bất biến" section of [markdown]: in its ```sql blocks,
+/// each `-- N. <title>` line starts query N, and the `--` lines under it are
+/// notes.
+Map<int, String> parseInvariantQueries(String markdown) {
+  // The heading itself, at the start of a line: the text also cites
+  // `## Bất biến` in prose. The section ends at the next `## ` heading.
+  final heading = RegExp(r'^## Bất biến', multiLine: true).firstMatch(markdown);
+  if (heading == null) {
+    throw StateError('no "## Bất biến" heading');
+  }
+  final rest = markdown.substring(heading.end);
+  final next = RegExp(r'^## ', multiLine: true).firstMatch(rest);
+  final section = next == null ? rest : rest.substring(0, next.start);
   final sql = [
     for (final block in RegExp(
       r'```sql\n(.*?)```',
