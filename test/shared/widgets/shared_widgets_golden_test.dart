@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -39,6 +40,37 @@ void main() {
             icon: AppIcons.play,
             isBlock: true,
             onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxIconButton resting and disabled', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_icon_button',
+      Row(
+        children: [
+          MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: 'Back',
+            onPressed: () {},
+          ),
+          MxIconButton(
+            icon: AppIcons.search,
+            semanticLabel: 'Search',
+            onPressed: () {},
+          ),
+          MxIconButton(
+            icon: AppIcons.more,
+            semanticLabel: 'More',
+            onPressed: () {},
+          ),
+          const MxIconButton(
+            icon: AppIcons.close,
+            semanticLabel: 'Close',
+            onPressed: null,
           ),
         ],
       ),
