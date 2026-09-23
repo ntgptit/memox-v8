@@ -17,7 +17,11 @@ class MxAppShell extends StatelessWidget {
     this.bottomBar,
     this.footer,
     this.fab,
-  });
+  }) : assert(
+         fab == null || footer == null,
+         'the Fab contract anchors a FAB to the bottom or above the nav, '
+         'never over a footer',
+       );
 
   final Widget body;
 
@@ -38,20 +42,27 @@ class MxAppShell extends StatelessWidget {
     final appBar = this.appBar;
     return Scaffold(
       backgroundColor: context.colors.surface,
-      body: Column(
-        children: [
-          ?appBar,
-          Expanded(
-            child: appBar == null
-                ? SafeArea(bottom: false, child: body)
-                : MediaQuery.removePadding(
-                    context: context,
-                    removeTop: true,
-                    child: body,
-                  ),
-          ),
-          ?footer,
-        ],
+      // A context below the Scaffold, whose MediaQuery has already lost the
+      // bottom inset when a bottom nav owns it; the shell's own context would
+      // hand that inset back to the body.
+      body: Builder(
+        builder: (bodyContext) => Column(
+          children: [
+            ?appBar,
+            Expanded(
+              // The app bar owns the top inset; a footer owns the bottom one.
+              child: MediaQuery.removePadding(
+                context: bodyContext,
+                removeTop: appBar != null,
+                removeBottom: footer != null,
+                child: appBar == null
+                    ? SafeArea(bottom: false, child: body)
+                    : body,
+              ),
+            ),
+            ?footer,
+          ],
+        ),
       ),
       bottomNavigationBar: bottomBar,
       floatingActionButton: fab,

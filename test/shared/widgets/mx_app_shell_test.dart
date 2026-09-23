@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -73,6 +74,72 @@ void main() {
 
     expect(fab.right, 360 - 16);
     expect(fab.bottom, 800 - 24 - 20);
+  });
+
+  group('the gesture inset is added once', () {
+    double scrollTail(WidgetTester tester) => tester
+        .widget<ListView>(find.byType(ListView))
+        .padding!
+        .resolve(TextDirection.ltr)
+        .bottom;
+    final rows = [const SizedBox(height: 40)];
+
+    testWidgets('a footer owns it; the scroll above adds only its 24', (
+      tester,
+    ) async {
+      await pumpMxPage(
+        tester,
+        MxAppShell(
+          body: MxScreenScroll(children: rows),
+          footer: const SizedBox(key: _footerKey, height: 72),
+        ),
+        padding: const EdgeInsets.only(bottom: 20),
+      );
+
+      expect(scrollTail(tester), 24);
+    });
+
+    testWidgets('a bottom nav owns it; the scroll above adds only its 24', (
+      tester,
+    ) async {
+      await pumpMxPage(
+        tester,
+        MxAppShell(
+          body: MxScreenScroll(children: rows),
+          bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
+        ),
+        padding: const EdgeInsets.only(bottom: 20),
+      );
+
+      expect(scrollTail(tester), 24);
+    });
+
+    testWidgets('an app bar does not hand the nav-owned inset back', (
+      tester,
+    ) async {
+      await pumpMxPage(
+        tester,
+        MxAppShell(
+          appBar: const MxAppBar(title: 'Library'),
+          body: MxScreenScroll(children: rows),
+          bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
+        ),
+        padding: const EdgeInsets.only(bottom: 20),
+      );
+
+      expect(scrollTail(tester), 24);
+    });
+  });
+
+  test('a FAB over a footer has no anchor rule and is rejected', () {
+    expect(
+      () => MxAppShell(
+        body: const SizedBox(),
+        footer: const SizedBox(),
+        fab: _fab(),
+      ),
+      throwsAssertionError,
+    );
   });
 
   testWidgets('FAB above nav: 4 over the bar, inset counted once', (
