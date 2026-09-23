@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/app/gallery/gallery_actions_section.dart';
 import 'package:memox/app/gallery/gallery_chrome_section.dart';
+import 'package:memox/app/gallery/gallery_inputs_section.dart';
 import 'package:memox/app/gallery/gallery_layout_section.dart';
 import 'package:memox/app/gallery/gallery_states_section.dart';
 import 'package:memox/core/theme/app_theme.dart';
@@ -59,6 +60,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         body: const MxScreenScroll(
           children: [
             GalleryActionsSection(),
+            GalleryInputsSection(),
             GalleryChromeSection(),
             GalleryStatesSection(),
             GalleryLayoutSection(),

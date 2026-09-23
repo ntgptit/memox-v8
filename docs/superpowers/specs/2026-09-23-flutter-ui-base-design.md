@@ -403,6 +403,14 @@ item names where it comes from.
 | 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
 | 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run | phase 3 plan G3 |
 | 19 | The debug gallery's labels and demo copy are English literals, not ARB strings | phase 3 plan G1 |
+| 20 | FieldMessage warning text uses a derived `warningInk` (onWarning light, the amber dark), as the FieldMessage contract scopes it; this resolves row 1 for FieldMessage | phase 4 plan I1 |
+| 21 | SelectionCheckbox's check glyph is 14, below the 16 icon floor, as its contract states | phase 4 plan I2 |
+| 22 | Stepper invalid-ring radius is UNSPECIFIED and uses `AppRadius.md`, its buttons' radius | phase 4 plan I3 |
+| 23 | SegmentedTray lays out 48 tall with the 40 tray painted centred; each segment is at least 48 wide | phase 4 plan I4 |
+| 24 | OptionRow description, SegmentedTray label and FieldMessage keep the caption role's 1.2 tracking (extends row 17) | phase 4 plan I5 |
+| 25 | SelectionCheckbox is painted only; the caller's row owns the tap and the checked semantics | phase 4 plan I6 |
+| 26 | FilterChip's count keeps the label's 0.1 tracking, not the caption role's 1.2, so the digits do not read spaced | phase 4 execution |
+| 27 | TextField and SearchField reach their floors through vertical content padding, not `InputDecoration.constraints`, which painted the box at text height; the multiline field pads 9.5 instead of 8 | phase 4 execution |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
