@@ -1,6 +1,6 @@
 ---
 feature: deck
-code: []
+code: [lib/features/deck/domain, lib/features/deck/data, lib/features/deck/di, lib/core/database/queries/deck_queries.drift]
 depends_on: []
 ---
 ## Phạm vi
@@ -9,8 +9,6 @@ Cây deck, tên và xoá deck (V8.0): luồng tạo, sửa, xoá, di chuyển v�
 deck. Luật ở [`rules/`](rules/), luồng ở [`usecases/`](usecases/), điều hướng và
 validation dùng chung ở [`ui.md`](ui.md), state machine `content_type` ở
 [`data.md`](data.md).
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

@@ -3,7 +3,7 @@ id: UC-DECK-005
 title: Di chuyển deck trong cây
 status: ready
 rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006]
-code: []
+code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, lib/features/deck/domain/usecases/move_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

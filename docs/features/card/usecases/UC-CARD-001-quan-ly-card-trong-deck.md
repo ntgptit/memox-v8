@@ -3,7 +3,7 @@ id: UC-CARD-001
 title: Quản lý card trong deck
 status: ready
 rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD-006, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-CARD-020, BR-DECK-009, BR-DECK-015, BR-DECK-022, BR-DECK-023, BR-TAG-001, BR-TAG-002, BR-TAG-004]
-code: []
+code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/features/card/domain/usecases/select_all_card_ids_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart, lib/features/card/domain/usecases/edit_card_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/move_cards_use_case.dart, lib/features/card/domain/usecases/watch_card_move_targets_use_case.dart, lib/features/card/domain/usecases/set_cards_flagged_use_case.dart, lib/features/card/domain/usecases/add_tag_to_cards_use_case.dart, lib/features/card/domain/usecases/remove_tag_from_cards_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

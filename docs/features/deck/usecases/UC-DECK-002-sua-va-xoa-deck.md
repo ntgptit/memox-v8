@@ -3,7 +3,7 @@ id: UC-DECK-002
 title: Sửa và xoá deck
 status: ready
 rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016]
-code: []
+code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features/deck/domain/usecases/change_deck_scheduler_use_case.dart, lib/features/deck/domain/usecases/get_deck_deletion_summary_use_case.dart, lib/features/deck/domain/usecases/delete_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

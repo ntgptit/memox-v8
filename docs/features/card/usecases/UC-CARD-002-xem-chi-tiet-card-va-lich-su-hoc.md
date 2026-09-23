@@ -3,7 +3,7 @@ id: UC-CARD-002
 title: Xem chi tiết một card và lịch sử học của nó
 status: ready
 rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-012, BR-CARD-013, BR-CARD-014, BR-CARD-015, BR-CARD-016, BR-CARD-017, BR-CARD-018, BR-CARD-019, BR-CARD-020, BR-DECK-015, BR-MODE-008, BR-CORE-005, BR-SRS-014, BR-SRS-015, BR-STUDY-028, BR-STUDY-034, BR-STUDY-035, BR-STUDY-053, BR-TAG-001]
-code: []
+code: [lib/features/card/domain/usecases/watch_card_detail_use_case.dart, lib/features/card/domain/usecases/load_card_history_page_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
