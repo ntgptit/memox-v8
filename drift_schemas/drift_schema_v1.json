@@ -1,0 +1,1701 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "app_settings",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "card_limit",
+            "getter_name": "cardLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 20",
+            "default_dart": "const CustomExpression('20')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "new_card_order",
+            "getter_name": "newCardOrder",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random'))",
+            "default_dart": "const CustomExpression('\\'created\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "theme_mode",
+            "getter_name": "themeMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark'))",
+            "default_dart": "const CustomExpression('\\'system\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "language",
+            "getter_name": "language",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi'))",
+            "default_dart": "const CustomExpression('\\'system\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_enabled",
+            "getter_name": "reminderEnabled",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_minute_of_day",
+            "getter_name": "reminderMinuteOfDay",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439)",
+            "default_dart": "const CustomExpression('1200')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_last_delivered_at",
+            "getter_name": "reminderLastDeliveredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "deck",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "parent_id",
+            "getter_name": "parentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "root_id",
+            "getter_name": "rootId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "depth",
+            "getter_name": "depth",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (depth BETWEEN 1 AND 10)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "content_type",
+            "getter_name": "contentType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck'))",
+            "default_dart": "const CustomExpression('\\'unset\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "owner_id",
+            "getter_name": "ownerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_version",
+            "getter_name": "schedulerVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_config",
+            "getter_name": "schedulerConfig",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "study_config",
+            "getter_name": "studyConfig",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "first_answered_at",
+            "getter_name": "firstAnsweredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_template_id",
+            "getter_name": "sourceTemplateId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_template_version",
+            "getter_name": "sourceTemplateVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "delete_batch_id",
+            "getter_name": "deleteBatchId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sibling_position",
+            "getter_name": "siblingPosition",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((parent_id IS NULL)=(root_id = id))",
+          "CHECK(parent_id IS NOT NULL OR content_type = 'deck')",
+          "CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL))",
+          "CHECK((parent_id IS NULL)=(generation IS NOT NULL))",
+          "CHECK(parent_id IS NOT NULL OR scheduler_version IS NOT NULL)",
+          "CHECK(parent_id IS NULL OR scheduler_config IS NULL)",
+          "CHECK(parent_id IS NULL OR study_config IS NULL)",
+          "CHECK(parent_id IS NULL OR generation IS NULL)"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "study_session",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "deck_id",
+            "getter_name": "deckId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "root_id",
+            "getter_name": "rootId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "session_kind",
+            "getter_name": "sessionKind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (session_kind IN ('learning', 'reviewing'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_mode",
+            "getter_name": "currentMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (current_mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (status IN ('in_progress', 'completed', 'abandoned', 'invalidated', 'failed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "end_reason",
+            "getter_name": "endReason",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (end_reason IN ('user_exit', 'interrupted', 'scheduler_reset', 'scheduler_changed', 'stale_generation', 'persistence_error', 'content_deleted'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "cursor",
+            "getter_name": "cursor",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "card_limit",
+            "getter_name": "cardLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 20",
+            "default_dart": "const CustomExpression('20')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean', 'mixed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "started_at",
+            "getter_name": "startedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ended_at",
+            "getter_name": "endedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((status IN ('in_progress', 'completed') AND end_reason IS NULL)OR(status = 'abandoned' AND end_reason IN ('user_exit', 'interrupted'))OR(status = 'invalidated' AND end_reason IN ('scheduler_reset', 'scheduler_changed', 'stale_generation', 'content_deleted'))OR(status = 'failed' AND end_reason = 'persistence_error'))",
+          "CHECK((status = 'in_progress')=(ended_at IS NULL))",
+          "CHECK(direction IS NULL OR(session_kind = 'reviewing' AND current_mode = 'self_assess'))"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "card",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "deck_id",
+            "getter_name": "deckId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "front",
+            "getter_name": "front",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "back",
+            "getter_name": "back",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "front_folded",
+            "getter_name": "frontFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT ''",
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "back_folded",
+            "getter_name": "backFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT ''",
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_flagged",
+            "getter_name": "isFlagged",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (is_flagged IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "example",
+            "getter_name": "example",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hint",
+            "getter_name": "hint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "pronunciation",
+            "getter_name": "pronunciation",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "delete_batch_id",
+            "getter_name": "deleteBatchId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        2,
+        3
+      ],
+      "type": "table",
+      "data": {
+        "name": "study_queue_items",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "session_id",
+            "getter_name": "sessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES study_session(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "study_session",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "round",
+            "getter_name": "round",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 1 CHECK (round >= 1)",
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (status IN ('pending', 'completed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "available_at",
+            "getter_name": "availableAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (available_at >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answers_in_session",
+            "getter_name": "answersInSession",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (answers_in_session >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "remaining_ms",
+            "getter_name": "remainingMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (remaining_ms IS NULL OR remaining_ms BETWEEN 0 AND 20000)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_revealed",
+            "getter_name": "isRevealed",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (is_revealed IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(session_id, mode, round, card_id)",
+          "CHECK(mode <> 'self_assess' OR answers_in_session <= 4)",
+          "CHECK(mode = 'recall' OR(remaining_ms IS NULL AND is_revealed = 0))",
+          "CHECK(mode = 'self_assess' OR direction IS NULL)"
+        ],
+        "explicit_pk": [
+          "session_id",
+          "mode",
+          "round",
+          "card_id"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "references": [
+        4
+      ],
+      "type": "index",
+      "data": {
+        "on": 4,
+        "name": "idx_study_queue_pending",
+        "sql": "CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 6,
+      "references": [
+        3
+      ],
+      "type": "table",
+      "data": {
+        "name": "card_schedule",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key",
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_version",
+            "getter_name": "schedulerVersion",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "learned_at",
+            "getter_name": "learnedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "due_at",
+            "getter_name": "dueAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_answered_at",
+            "getter_name": "lastAnsweredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answer_count",
+            "getter_name": "answerCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lapse_count",
+            "getter_name": "lapseCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_box",
+            "getter_name": "currentBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (current_box BETWEEN 1 AND 8)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ease_factor",
+            "getter_name": "easeFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "interval_days",
+            "getter_name": "intervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "repetitions",
+            "getter_name": "repetitions",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((scheduler_type = 'eight_box')=(current_box IS NOT NULL))",
+          "CHECK((scheduler_type = 'sm2')=(ease_factor IS NOT NULL))",
+          "CHECK((ease_factor IS NULL)=(interval_days IS NULL))",
+          "CHECK((ease_factor IS NULL)=(repetitions IS NULL))",
+          "CHECK(learned_at IS NOT NULL OR due_at IS NULL)"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        6
+      ],
+      "type": "index",
+      "data": {
+        "on": 6,
+        "name": "idx_card_schedule_due",
+        "sql": "CREATE INDEX idx_card_schedule_due ON card_schedule (due_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        3
+      ],
+      "type": "table",
+      "data": {
+        "name": "review_log",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "session_id",
+            "getter_name": "sessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (kind IN ('learning', 'scheduled', 'relearning'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "outcome_reason",
+            "getter_name": "outcomeReason",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (outcome_reason IS NULL OR outcome_reason = 'timeout')",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "comparison_version",
+            "getter_name": "comparisonVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "used_hint",
+            "getter_name": "usedHint",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (used_hint IS NULL OR used_hint IN (0, 1))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "action",
+            "getter_name": "action",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (\"action\" IN ('forgotten', 'remembered', 'again', 'hard', 'good', 'easy'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answered_at",
+            "getter_name": "answeredAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_due_at",
+            "getter_name": "nextDueAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_box",
+            "getter_name": "previousBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_box",
+            "getter_name": "nextBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_ease_factor",
+            "getter_name": "previousEaseFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_ease_factor",
+            "getter_name": "nextEaseFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_interval_days",
+            "getter_name": "previousIntervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_interval_days",
+            "getter_name": "nextIntervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK(mode = 'fill' OR(comparison_version IS NULL AND used_hint IS NULL))",
+          "CHECK(outcome_reason IS NULL OR mode = 'recall')"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [
+        8
+      ],
+      "type": "index",
+      "data": {
+        "on": 8,
+        "name": "idx_review_log_card",
+        "sql": "CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        8
+      ],
+      "type": "index",
+      "data": {
+        "on": 8,
+        "name": "idx_review_log_session",
+        "sql": "CREATE INDEX idx_review_log_session ON review_log (session_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 11,
+      "references": [
+        8
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 8,
+        "references_in_body": [
+          8
+        ],
+        "name": "review_log_append_only",
+        "sql": "CREATE TRIGGER review_log_append_only\nBEFORE UPDATE ON review_log\nBEGIN\n  SELECT RAISE(ABORT, 'review_log is append-only');\nEND;"
+      }
+    },
+    {
+      "id": 12,
+      "references": [
+        8,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 8,
+        "references_in_body": [
+          8,
+          3
+        ],
+        "name": "review_log_no_delete",
+        "sql": "CREATE TRIGGER review_log_no_delete\nBEFORE DELETE ON review_log\nWHEN OLD.card_id IN (SELECT id FROM card)\nBEGIN\n  SELECT RAISE(ABORT, 'review_log rows are only removed by a card cascade');\nEND;"
+      }
+    },
+    {
+      "id": 13,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "tags",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name_folded",
+            "getter_name": "nameFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "owner_id",
+            "getter_name": "ownerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 14,
+      "references": [
+        13
+      ],
+      "type": "index",
+      "data": {
+        "on": 13,
+        "name": "idx_tags_owner_name_folded",
+        "sql": "CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, ''), name_folded);",
+        "unique": true,
+        "columns": []
+      }
+    },
+    {
+      "id": 15,
+      "references": [
+        3,
+        13
+      ],
+      "type": "table",
+      "data": {
+        "name": "card_tags",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "tag_id",
+            "getter_name": "tagId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES tags(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "tags",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(card_id, tag_id)"
+        ],
+        "explicit_pk": [
+          "card_id",
+          "tag_id"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "references": [
+        15
+      ],
+      "type": "index",
+      "data": {
+        "on": 15,
+        "name": "idx_card_tags_tag",
+        "sql": "CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 17,
+      "references": [
+        3
+      ],
+      "type": "index",
+      "data": {
+        "on": 3,
+        "name": "idx_card_deck_created",
+        "sql": "CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 18,
+      "references": [
+        1
+      ],
+      "type": "index",
+      "data": {
+        "on": 1,
+        "name": "idx_deck_parent_position",
+        "sql": "CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 19,
+      "references": [
+        1
+      ],
+      "type": "index",
+      "data": {
+        "on": 1,
+        "name": "idx_deck_root_position",
+        "sql": "CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id);",
+        "unique": false,
+        "columns": []
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "app_settings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"app_settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"new_card_order\" TEXT NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random')), \"theme_mode\" TEXT NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark')), \"language\" TEXT NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi')), \"reminder_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)), \"reminder_minute_of_day\" INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439), \"reminder_last_delivered_at\" INTEGER, \"updated_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "deck",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"deck\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"parent_id\" TEXT REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"depth\" INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10), \"content_type\" TEXT NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck')), \"owner_id\" TEXT, \"scheduler_type\" TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER, \"scheduler_config\" TEXT, \"study_config\" TEXT, \"generation\" INTEGER, \"first_answered_at\" INTEGER, \"source_template_id\" TEXT, \"source_template_version\" INTEGER, \"delete_batch_id\" TEXT, \"sibling_position\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, CHECK((parent_id IS NULL)=(root_id = id)), CHECK(parent_id IS NOT NULL OR content_type = 'deck'), CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL)), CHECK((parent_id IS NULL)=(generation IS NOT NULL)), CHECK(parent_id IS NOT NULL OR scheduler_version IS NOT NULL), CHECK(parent_id IS NULL OR scheduler_config IS NULL), CHECK(parent_id IS NULL OR study_config IS NULL), CHECK(parent_id IS NULL OR generation IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "study_session",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"study_session\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"deck_id\" TEXT NOT NULL REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, \"session_kind\" TEXT NOT NULL CHECK (session_kind IN ('learning', 'reviewing')), \"current_mode\" TEXT NOT NULL CHECK (current_mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"status\" TEXT NOT NULL CHECK (status IN ('in_progress', 'completed', 'abandoned', 'invalidated', 'failed')), \"end_reason\" TEXT CHECK (end_reason IN ('user_exit', 'interrupted', 'scheduler_reset', 'scheduler_changed', 'stale_generation', 'persistence_error', 'content_deleted')), \"cursor\" INTEGER NOT NULL DEFAULT 0, \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean', 'mixed')), \"started_at\" INTEGER NOT NULL, \"ended_at\" INTEGER, CHECK((status IN ('in_progress', 'completed') AND end_reason IS NULL)OR(status = 'abandoned' AND end_reason IN ('user_exit', 'interrupted'))OR(status = 'invalidated' AND end_reason IN ('scheduler_reset', 'scheduler_changed', 'stale_generation', 'content_deleted'))OR(status = 'failed' AND end_reason = 'persistence_error')), CHECK((status = 'in_progress')=(ended_at IS NULL)), CHECK(direction IS NULL OR(session_kind = 'reviewing' AND current_mode = 'self_assess')));"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"deck_id\" TEXT NOT NULL REFERENCES deck(id)ON DELETE CASCADE, \"front\" TEXT NOT NULL, \"back\" TEXT NOT NULL, \"front_folded\" TEXT NOT NULL DEFAULT '', \"back_folded\" TEXT NOT NULL DEFAULT '', \"is_flagged\" INTEGER NOT NULL DEFAULT 0 CHECK (is_flagged IN (0, 1)), \"example\" TEXT, \"hint\" TEXT, \"pronunciation\" TEXT, \"delete_batch_id\" TEXT, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "study_queue_items",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"study_queue_items\" (\"session_id\" TEXT NOT NULL REFERENCES study_session(id)ON DELETE CASCADE, \"mode\" TEXT NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"round\" INTEGER NOT NULL DEFAULT 1 CHECK (round >= 1), \"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"position\" INTEGER NOT NULL, \"status\" TEXT NOT NULL CHECK (status IN ('pending', 'completed')), \"available_at\" INTEGER NOT NULL DEFAULT 0 CHECK (available_at >= 0), \"answers_in_session\" INTEGER NOT NULL DEFAULT 0 CHECK (answers_in_session >= 0), \"remaining_ms\" INTEGER CHECK (remaining_ms IS NULL OR remaining_ms BETWEEN 0 AND 20000), \"is_revealed\" INTEGER NOT NULL DEFAULT 0 CHECK (is_revealed IN (0, 1)), \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')), PRIMARY KEY(session_id, mode, round, card_id), CHECK(mode <> 'self_assess' OR answers_in_session <= 4), CHECK(mode = 'recall' OR(remaining_ms IS NULL AND is_revealed = 0)), CHECK(mode = 'self_assess' OR direction IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "idx_study_queue_pending",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position)"
+        }
+      ]
+    },
+    {
+      "name": "card_schedule",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card_schedule\" (\"card_id\" TEXT NOT NULL PRIMARY KEY REFERENCES card(id)ON DELETE CASCADE, \"scheduler_type\" TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER NOT NULL, \"generation\" INTEGER NOT NULL, \"learned_at\" INTEGER, \"due_at\" INTEGER, \"last_answered_at\" INTEGER, \"answer_count\" INTEGER NOT NULL DEFAULT 0, \"lapse_count\" INTEGER NOT NULL DEFAULT 0, \"current_box\" INTEGER CHECK (current_box BETWEEN 1 AND 8), \"ease_factor\" REAL, \"interval_days\" INTEGER, \"repetitions\" INTEGER, CHECK((scheduler_type = 'eight_box')=(current_box IS NOT NULL)), CHECK((scheduler_type = 'sm2')=(ease_factor IS NOT NULL)), CHECK((ease_factor IS NULL)=(interval_days IS NULL)), CHECK((ease_factor IS NULL)=(repetitions IS NULL)), CHECK(learned_at IS NOT NULL OR due_at IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_schedule_due",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_schedule_due ON card_schedule (due_at)"
+        }
+      ]
+    },
+    {
+      "name": "review_log",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"review_log\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"session_id\" TEXT NOT NULL, \"scheduler_type\" TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')), \"generation\" INTEGER NOT NULL, \"kind\" TEXT NOT NULL CHECK (kind IN ('learning', 'scheduled', 'relearning')), \"mode\" TEXT NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"outcome_reason\" TEXT CHECK (outcome_reason IS NULL OR outcome_reason = 'timeout'), \"comparison_version\" INTEGER, \"used_hint\" INTEGER CHECK (used_hint IS NULL OR used_hint IN (0, 1)), \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')), \"action\" TEXT NOT NULL CHECK (\"action\" IN ('forgotten', 'remembered', 'again', 'hard', 'good', 'easy')), \"answered_at\" INTEGER NOT NULL, \"next_due_at\" INTEGER, \"previous_box\" INTEGER, \"next_box\" INTEGER, \"previous_ease_factor\" REAL, \"next_ease_factor\" REAL, \"previous_interval_days\" INTEGER, \"next_interval_days\" INTEGER, CHECK(mode = 'fill' OR(comparison_version IS NULL AND used_hint IS NULL)), CHECK(outcome_reason IS NULL OR mode = 'recall'));"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_card",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_session",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_session ON review_log (session_id)"
+        }
+      ]
+    },
+    {
+      "name": "review_log_append_only",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, 'review_log is append-only');END"
+        }
+      ]
+    },
+    {
+      "name": "review_log_no_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER review_log_no_delete BEFORE DELETE ON review_log WHEN OLD.card_id IN (SELECT id FROM card) BEGIN SELECT RAISE (ABORT, 'review_log rows are only removed by a card cascade');END"
+        }
+      ]
+    },
+    {
+      "name": "tags",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"tags\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"name_folded\" TEXT NOT NULL, \"owner_id\" TEXT, \"created_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "idx_tags_owner_name_folded",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, ''), name_folded)"
+        }
+      ]
+    },
+    {
+      "name": "card_tags",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card_tags\" (\"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"tag_id\" TEXT NOT NULL REFERENCES tags(id)ON DELETE CASCADE, PRIMARY KEY(card_id, tag_id));"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_tags_tag",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_deck_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_deck_parent_position",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_deck_root_position",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id)"
+        }
+      ]
+    }
+  ]
+}

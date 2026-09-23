@@ -1,3 +1,4 @@
+import 'package:drift/isolate.dart' show DriftRemoteException;
 import 'package:sqlite3/sqlite3.dart' as sqlite3;
 
 // SQLite primary result codes (https://sqlite.org/rescode.html). An extended
@@ -35,13 +36,17 @@ final class UnknownDatabaseFailure extends Failure {
 /// Maps a raw exception from the Drift/sqlite3 boundary to one [Failure].
 /// This is the single place that inspects driver-specific error shapes —
 /// no repository does this itself.
+///
+/// The app's connection runs in a background isolate (drift_flutter), where
+/// a [sqlite3.SqliteException] arrives wrapped in a [DriftRemoteException].
 Failure mapDatabaseError(Object error) {
-  if (error is! sqlite3.SqliteException) {
-    return UnknownDatabaseFailure(cause: error);
+  final cause = error is DriftRemoteException ? error.remoteCause : error;
+  if (cause is! sqlite3.SqliteException) {
+    return UnknownDatabaseFailure(cause: cause);
   }
-  return switch (error.resultCode) {
-    _sqliteConstraint => ConstraintFailure(cause: error),
-    _sqliteBusy || _sqliteLocked => DatabaseLockedFailure(cause: error),
-    _ => UnknownDatabaseFailure(cause: error),
+  return switch (cause.resultCode) {
+    _sqliteConstraint => ConstraintFailure(cause: cause),
+    _sqliteBusy || _sqliteLocked => DatabaseLockedFailure(cause: cause),
+    _ => UnknownDatabaseFailure(cause: cause),
   };
 }

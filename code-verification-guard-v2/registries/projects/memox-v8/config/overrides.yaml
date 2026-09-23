@@ -22,13 +22,6 @@ overrides:
     # stale_targets_pending WARNING once it has targets. When that warning
     # appears, delete the rule's entry here in the same commit that added the
     # layer. The list must be empty before the full dod_check.sh gate applies.
-    # -- `providers`: waits for the first *_provider.dart file (foundation plan Task 5)
-    memox.state_management.controller_no_build_context:
-      targets_pending: providers
-    memox.state_management.notifier_no_public_mutable_field:
-      targets_pending: providers
-    memox.state_management.state_write_after_await_requires_mounted:
-      targets_pending: providers
     # -- `data`: waits for the first lib/features/*/data/ file (foundation plan Task 7)
     memox.naming.data_file_role_suffix:
       targets_pending: data
