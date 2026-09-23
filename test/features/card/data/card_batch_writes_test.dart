@@ -405,4 +405,58 @@ void main() {
     );
     expect(await totalChanges(db), before);
   });
+
+  group('a deck in the Trash that still holds a live card (spec §8)', () {
+    // Invariant 33 forbids this state and no write path creates it. It is
+    // built by hand to show the card writes do not lean on it: the deck row
+    // is out of reach, whatever the card's own row says.
+    late DeckEntity trashed;
+    late String cardId;
+    setUp(() async {
+      trashed = await decks.sub(root.id, 'Trashed');
+      cardId = (await cards.card(trashed.id)).id;
+      await db.customStatement(
+        "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
+        [trashed.id],
+      );
+    });
+
+    Future<Map<String, Object?>> deckRow(String deckId) async =>
+        (await db
+                .customSelect(
+                  'SELECT * FROM deck WHERE id = ?',
+                  variables: [Variable(deckId)],
+                )
+                .getSingle())
+            .data;
+
+    test('deleting its last card leaves the deck row as it was', () async {
+      final before = await deckRow(trashed.id);
+
+      expect(
+        await cards.deleteCards(cardIds: {cardId}),
+        isA<Ok<void, CardRejection>>(),
+      );
+      expect(await deckRow(trashed.id), before);
+    });
+
+    test('moving its card out is refused: the source deck is out of reach, '
+        'so the cross-root rule cannot be checked', () async {
+      final before = await totalChanges(db);
+
+      expect(
+        await cards.moveCards(
+          cardIds: {cardId},
+          targetDeckId: verbs.id,
+          now: _later,
+        ),
+        isA<Rejected<void, CardRejection>>().having(
+          (rejected) => rejected.reason,
+          'reason',
+          CardRejection.notFound,
+        ),
+      );
+      expect(await totalChanges(db), before);
+    });
+  });
 }

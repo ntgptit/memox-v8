@@ -125,6 +125,9 @@ final class CardRepositoryImpl implements CardRepository {
       if (target == null) return const Rejected(CardRejection.targetNotFound);
       final sourceDeckIds = {for (final row in rows) row.deckId};
       final sources = await _dao.deckRows(sourceDeckIds);
+      if (sources.length != sourceDeckIds.length) {
+        return const Rejected(CardRejection.notFound);
+      }
       final targetContentType = DeckContentType.values.byName(
         target.contentType,
       );

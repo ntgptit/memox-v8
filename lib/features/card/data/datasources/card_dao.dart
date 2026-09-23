@@ -27,8 +27,10 @@ final class CardDao {
             ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
           .getSingleOrNull();
 
-  Future<List<Deck>> deckRows(Set<String> ids) =>
-      (_db.select(_db.deck)..where((deck) => deck.id.isIn(ids))).get();
+  /// The active decks among [ids].
+  Future<List<Deck>> deckRows(Set<String> ids) => (_db.select(
+    _db.deck,
+  )..where((deck) => deck.id.isIn(ids) & deck.deleteBatchId.isNull())).get();
 
   Future<void> insertCard({
     required String id,
@@ -83,13 +85,21 @@ final class CardDao {
     return row.read<bool>('holds');
   }
 
+  /// A deck in the Trash keeps its row as it is.
   Future<void> setDeckContentType(
     String deckId,
     String contentType,
     DateTime now,
-  ) => (_db.update(_db.deck)..where((deck) => deck.id.equals(deckId))).write(
-    DeckCompanion(contentType: Value(contentType), updatedAt: Value(now)),
-  );
+  ) =>
+      (_db.update(_db.deck)..where(
+            (deck) => deck.id.equals(deckId) & deck.deleteBatchId.isNull(),
+          ))
+          .write(
+            DeckCompanion(
+              contentType: Value(contentType),
+              updatedAt: Value(now),
+            ),
+          );
 }
 
 /// The columns a draft sets: sides trimmed with their folded forms computed
