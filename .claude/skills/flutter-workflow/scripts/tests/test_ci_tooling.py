@@ -41,6 +41,40 @@ def _find_bash() -> str | None:
 
 _BASH = _find_bash()
 
+# The Flutter app and its CI workflow do not exist until Phase 2.3; `dod_check.sh`
+# exits early on the same condition. Tests that assert facts about that tree
+# wait for it, and run again unchanged the day it is created.
+_APP_TREE = (REPO_ROOT / "pubspec.yaml").is_file()
+_CI_WORKFLOW = REPO_ROOT / ".github/workflows/ci.yml"
+requires_app_tree = unittest.skipUnless(
+    _APP_TREE, "Flutter app not created yet (no pubspec.yaml at the repo root)"
+)
+requires_ci_workflow = unittest.skipUnless(
+    _CI_WORKFLOW.is_file(), "CI workflow not created yet (.github/workflows/ci.yml)"
+)
+
+
+def _fixture_repo(root: Path, *tests: str) -> Path:
+    """A committed Flutter-shaped git repository holding only `tests`.
+
+    Logic that does not depend on memox's own tree is tested here, so it runs
+    whether or not the app exists and never writes into the real checkout.
+    """
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    (root / "pubspec.yaml").write_text("name: memox\n", encoding="utf-8")
+    (root / ".gitignore").write_text(".dart_tool/\n", encoding="utf-8")
+    for test in tests:
+        path = root / test
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("void main() { test('t', () {}); }\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), "-c", "user.name=test", "-c", "user.email=test@example.com",
+         "commit", "-q", "-m", "fixture"],
+        check=True,
+    )
+    return root
+
 
 class DodCheckStampTest(unittest.TestCase):
     """The pass stamp: run twice on an unchanged tree, pay once.
@@ -52,7 +86,6 @@ class DodCheckStampTest(unittest.TestCase):
     """
 
     SCRIPT = REPO_ROOT / ".claude/skills/flutter-workflow/scripts/dod_check.sh"
-    STAMP = REPO_ROOT / ".dart_tool/dod_check_stamp"
 
     @staticmethod
     def _bash() -> str | None:
@@ -77,21 +110,20 @@ class DodCheckStampTest(unittest.TestCase):
         return None
 
     def setUp(self) -> None:
-        self._saved = self.STAMP.read_bytes() if self.STAMP.exists() else None
+        # The stamp logic reads only git state, so any Flutter-shaped repository
+        # answers the same way — and the real checkout's stamp is never touched.
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = _fixture_repo(Path(temp.name))
+        self.STAMP = self.root / ".dart_tool/dod_check_stamp"
         self.STAMP.parent.mkdir(parents=True, exist_ok=True)
-
-    def tearDown(self) -> None:
-        if self._saved is None:
-            self.STAMP.unlink(missing_ok=True)
-        else:
-            self.STAMP.write_bytes(self._saved)
 
     def _fingerprint(self) -> str:
         """Asked of the script, not recomputed here — a second definition would
         match the first only until one of them changed."""
         out = subprocess.run(
             [self._bash(), str(self.SCRIPT)],
-            cwd=REPO_ROOT, capture_output=True, text=True,
+            cwd=self.root, capture_output=True, text=True,
             env={**os.environ, "PRINT_FINGERPRINT": "1"},
         )
         self.assertEqual(0, out.returncode, out.stderr)
@@ -106,7 +138,7 @@ class DodCheckStampTest(unittest.TestCase):
         answers the question directly now.
         """
         out = subprocess.run(
-            [_BASH, str(self.SCRIPT), *args], cwd=REPO_ROOT,
+            [_BASH, str(self.SCRIPT), *args], cwd=self.root,
             capture_output=True, text=True, timeout=60,
             env={**os.environ, "STAMP_DECISION_ONLY": "1"},
         )
@@ -158,6 +190,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             force_full=force_full,
         )
 
+    @requires_app_tree
     def test_a_shared_widget_change_selects_the_golden_job(self) -> None:
         """#337's shape: six components relaid out, no picture redrawn.
 
@@ -175,6 +208,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         plan = self._plan("test/demo/goldens/deck_list_empty_light.png")
         self.assertTrue(plan.needs_goldens)
 
+    @requires_app_tree
     def test_a_demo_test_change_selects_the_golden_job(self) -> None:
         plan = self._plan("test/demo/deck_screens_demo_test.dart")
         self.assertTrue(plan.needs_goldens)
@@ -203,6 +237,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertEqual(0, plan.shard_count)
         self.assertEqual("pixels", plan.risk)
 
+    @requires_app_tree
     def test_a_picture_beside_its_widget_still_verifies_the_widget(self) -> None:
         """The narrowing must not survive contact with a real code change."""
         plan = self._plan(
@@ -262,6 +297,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             self.module.normalize_path(r"./.github\workflows\ci.yml"),
         )
 
+    @requires_app_tree
     def test_newline_input_does_not_turn_a_known_path_into_full_scope(self) -> None:
         plan = self._plan(
             "\ufefflib/features/card/presentation/screens/card_list_screen.dart\r"
@@ -289,6 +325,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.docs_only)
         self.assertFalse(plan.code_required)
 
+    @requires_app_tree
     def test_presentation_change_adds_transitive_app_consumers(self) -> None:
         plan = self._plan(
             "lib/features/card/presentation/screens/card_list_screen.dart"
@@ -309,6 +346,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertTrue(plan.needs_widgetbook)
 
+    @requires_app_tree
     def test_data_change_adds_cross_feature_harness_consumers(self) -> None:
         plan = self._plan(
             "lib/features/card/data/repositories/card_repository_impl.dart"
@@ -324,6 +362,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertFalse(plan.needs_widgetbook)
 
+    @requires_app_tree
     def test_use_case_change_adds_data_flow_consumers(self) -> None:
         plan = self._plan(
             "lib/features/study/domain/usecases/start_study_session_use_case.dart"
@@ -335,6 +374,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertTrue(plan.needs_widgetbook)
 
+    @requires_app_tree
     def test_public_domain_contract_expands_transitive_dependents(self) -> None:
         plan = self._plan(
             "lib/features/deck/domain/repositories/deck_repository.dart"
@@ -346,6 +386,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertEqual(("data", "domain", "presentation"), plan.affected_layers)
         self.assertGreaterEqual(plan.shard_count, 2)
 
+    @requires_app_tree
     def test_database_query_uses_declared_feature_owner(self) -> None:
         plan = self._plan("lib/core/database/queries/study.drift")
         self.assertIn("study", plan.affected_features)
@@ -364,6 +405,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertFalse(plan.full_suite)
 
+    @requires_app_tree
     def test_schema_change_promotes_to_full_suite(self) -> None:
         plan = self._plan("lib/core/database/tables/cards.drift")
         self.assertTrue(plan.full_suite)
@@ -371,6 +413,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.needs_widgetbook)
         self.assertEqual(("test",), plan.local_test_targets)
 
+    @requires_app_tree
     def test_shared_theme_router_native_and_dependency_changes_are_full(self) -> None:
         for path in (
             "lib/core/theme/app_theme.dart",
@@ -382,17 +425,20 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue(self._plan(path).full_suite)
 
+    @requires_app_tree
     def test_ci_tooling_change_is_full_so_the_new_gate_proves_itself(self) -> None:
         plan = self._plan(".github/workflows/ci.yml")
         self.assertTrue(plan.full_suite)
         self.assertEqual(5, plan.shard_count)
 
+    @requires_app_tree
     def test_test_only_change_runs_exact_tracked_test(self) -> None:
         path = "test/features/card/domain/card_text_test.dart"
         plan = self._plan(path)
         self.assertEqual((path,), plan.test_files)
         self.assertEqual(1, plan.shard_count)
 
+    @requires_app_tree
     def test_golden_only_change_uses_runnable_surrogates(self) -> None:
         path = "test/shared/widgets/mx_components_golden_test.dart"
         plan = self._plan(path)
@@ -440,16 +486,12 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         global cache too.
         """
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            subprocess.run(["git", "init", "-q", str(root)], check=True)
-            (root / "pubspec.yaml").write_text("name: memox\n", encoding="utf-8")
-            solitary = root / "test" / "only_test.dart"
-            solitary.parent.mkdir(parents=True)
-            solitary.write_text("void main() { test('only', () {}); }\n", encoding="utf-8")
+            repo = _fixture_repo(Path(temp) / "repo", "test/a_test.dart", "test/b_test.dart")
+            root = _fixture_repo(Path(temp) / "fixture", "test/only_test.dart")
 
-            repo_first = self.module.discover_tests(REPO_ROOT)
+            repo_first = self.module.discover_tests(repo)
             fixture = self.module.discover_tests(root)
-            repo_second = self.module.discover_tests(REPO_ROOT)
+            repo_second = self.module.discover_tests(repo)
 
             self.assertEqual(repo_first, repo_second)
             self.assertEqual({"test/only_test.dart": 1}, fixture)
@@ -458,10 +500,13 @@ class VerificationPlanBuilderTest(unittest.TestCase):
     def test_a_memoized_scan_is_not_shared_mutable_state(self) -> None:
         """`seal` builds sets from what it receives; a shared object would let
         one plan corrupt the next one built in the same process."""
-        first = self.module.discover_tests(REPO_ROOT)
-        first.clear()
-        self.assertGreater(len(self.module.discover_tests(REPO_ROOT)), 1)
+        with tempfile.TemporaryDirectory() as temp:
+            repo = _fixture_repo(Path(temp), "test/a_test.dart", "test/b_test.dart")
+            first = self.module.discover_tests(repo)
+            first.clear()
+            self.assertGreater(len(self.module.discover_tests(repo)), 1)
 
+    @requires_app_tree
     def test_deleted_test_support_selects_its_layer(self) -> None:
         plan = self._plan("test/features/card/data/support/deleted_fixture.dart")
         self.assertTrue(plan.test_files)
@@ -469,6 +514,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             all(path.startswith("test/features/card/data/") for path in plan.test_files)
         )
 
+    @requires_app_tree
     def test_widgetbook_only_change_skips_host_tests(self) -> None:
         plan = self._plan("widgetbook/lib/main.dart")
         self.assertTrue(plan.code_required)
@@ -476,6 +522,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.needs_widgetbook)
         self.assertFalse(plan.needs_host_tests)
 
+    @requires_app_tree
     def test_new_feature_without_tests_promotes_instead_of_trusting_widgetbook(self) -> None:
         plan = self._plan(
             "lib/features/not_yet_mapped/presentation/screens/new_screen.dart"
@@ -495,6 +542,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.full_suite)
         self.assertTrue(plan.code_required)
 
+    @requires_app_tree
     def test_sealed_plan_is_immutable_and_json_is_deterministic(self) -> None:
         first = self._plan(
             "lib/features/card/data/repositories/card_repository_impl.dart",
@@ -529,6 +577,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
 
 
+@requires_app_tree
 class ImpactMapCoverageTest(unittest.TestCase):
     def _impact(self) -> dict[str, object]:
         return json.loads(
@@ -713,20 +762,25 @@ class FileShardSelectionTest(unittest.TestCase):
 
     def test_json_filter_selects_only_the_sealed_plan_files(self) -> None:
         selected = {"test/features/card/domain/card_text_test.dart"}
-        files = self.module.discover(REPO_ROOT, include_paths=selected)
+        with tempfile.TemporaryDirectory() as temp:
+            root = _fixture_repo(Path(temp), *selected, "test/features/card/data/other_test.dart")
+            files = self.module.discover(root, include_paths=selected)
         self.assertEqual(selected, {item.path for item in files})
 
     def test_json_filter_rejects_missing_or_untracked_file(self) -> None:
-        with self.assertRaises(ValueError):
-            self.module.discover(
-                REPO_ROOT,
-                include_paths={"test/does_not_exist_test.dart"},
-            )
+        with tempfile.TemporaryDirectory() as temp:
+            root = _fixture_repo(Path(temp), "test/tracked_test.dart")
+            with self.assertRaises(ValueError):
+                self.module.discover(
+                    root,
+                    include_paths={"test/does_not_exist_test.dart"},
+                )
 
 
 class WorkflowContractTest(unittest.TestCase):
+    @requires_ci_workflow
     def test_ci_consumes_the_sealed_dynamic_plan(self) -> None:
-        workflow = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        workflow = _CI_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("build_verification_plan.py", workflow)
         self.assertIn("--diff-filter=ACMRTD", workflow)
         self.assertIn("matrix: ${{ fromJSON(needs.classify.outputs.shard_matrix) }}", workflow)
@@ -829,6 +883,8 @@ class PromptContractTest(unittest.TestCase):
         self.assertTrue(any("header fields" in message for message in messages))
 
 
+@requires_app_tree
+@requires_ci_workflow
 class PlanOutputsAreWiredIntoTheWorkflowTest(unittest.TestCase):
     """Every `needs_*` the plan emits must reach the jobs that read it.
 
@@ -849,9 +905,7 @@ class PlanOutputsAreWiredIntoTheWorkflowTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.module = _load("build_verification_plan")
-        cls.workflow = (REPO_ROOT / ".github/workflows/ci.yml").read_text(
-            encoding="utf-8"
-        )
+        cls.workflow = _CI_WORKFLOW.read_text(encoding="utf-8")
 
     def _emitted_needs_keys(self) -> set[str]:
         plan = self.module.build_plan(
