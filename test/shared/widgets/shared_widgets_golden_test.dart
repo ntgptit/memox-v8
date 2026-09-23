@@ -18,6 +18,7 @@ import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
@@ -377,6 +378,28 @@ void main() {
           const MxFieldMessage(
             message: 'Ten tags at most on one card',
             tone: MxFieldMessageTone.warning,
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxSearchField empty and filled', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_search_field',
+      Column(
+        spacing: 16,
+        children: [
+          MxSearchField(
+            controller: TextEditingController(),
+            hintText: 'Search decks and cards',
+            clearLabel: 'Clear',
+          ),
+          MxSearchField(
+            controller: TextEditingController(text: 'irregular verbs'),
+            hintText: 'Search decks and cards',
+            clearLabel: 'Clear',
           ),
         ],
       ),
