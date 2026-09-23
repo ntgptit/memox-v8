@@ -319,12 +319,29 @@ def render_open_questions() -> str:
         link = rel_link(path, GENERATED)
         lines += [f"## [{path.relative_to(DOCS).as_posix()}]({link})", ""]
         for line_no, text in hits:
-            lines.append(f"- L{line_no}: {text}")
+            lines.append(f"- L{line_no}: {rebase_links(text, path.parent, GENERATED)}")
             count += 1
         lines.append("")
     if count == 0:
         lines += ["Không có.", ""]
     return "\n".join(lines).rstrip() + "\n"
+
+
+MD_LINK = re.compile(r"(\[[^\]]*\]\()([^)\s]+)(\))")
+
+
+def rebase_links(text: str, from_dir: Path, to_dir: Path) -> str:
+    """Rewrite relative markdown links so they still resolve from to_dir."""
+
+    def fix(match: re.Match[str]) -> str:
+        target = match[2]
+        if re.match(r"^[a-z][a-z0-9+.-]*:", target, re.I) or target.startswith("#"):
+            return match[0]
+        file_part, _, anchor = target.partition("#")
+        moved = rel_link(from_dir / file_part, to_dir) + (f"#{anchor}" if anchor else "")
+        return f"{match[1]}{moved}{match[3]}"
+
+    return MD_LINK.sub(fix, text)
 
 
 def render_all() -> dict[str, str]:
