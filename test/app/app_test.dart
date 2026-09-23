@@ -43,6 +43,17 @@ void main() {
     expect(_nav(tester).selectedIndex, 0);
   });
 
+  testWidgets('no debug banner over the app', (tester) async {
+    await _pumpApp(tester);
+
+    expect(
+      tester
+          .widget<MaterialApp>(find.byType(MaterialApp))
+          .debugShowCheckedModeBanner,
+      isFalse,
+    );
+  });
+
   testWidgets('four tabs in navigation.md order', (tester) async {
     await _pumpApp(tester);
 

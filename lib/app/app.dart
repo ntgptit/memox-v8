@@ -40,6 +40,7 @@ class _MemoxAppState extends State<MemoxApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp.router(
+    debugShowCheckedModeBanner: false,
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     theme: buildLightTheme(),
     darkTheme: buildDarkTheme(),
