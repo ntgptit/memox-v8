@@ -44,3 +44,8 @@ Avoid speculative abstractions.
 - Do not scaffold layers or folders "for later".
 - Do not create pass-through layers or single-implementation interfaces
   without a concrete architectural reason.
+
+## Language
+
+Always reply to the user in Vietnamese. Code, identifiers, commit messages and
+PR text keep their existing language conventions.
