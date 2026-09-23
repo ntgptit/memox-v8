@@ -1,80 +1,68 @@
 {
   "version": 1,
   "feature_dependencies": {
-    "deck": [
-      "card",
-      "study",
-      "search",
-      "progress",
-      "trash"
-    ],
     "card": [
-      "study",
-      "tag",
-      "search",
-      "progress",
-      "trash"
-    ],
-    "study": [
-      "progress",
-      "reminder",
-      "settings",
-      "trash"
-    ],
-    "tag": [
-      "card",
-      "search"
-    ],
-    "settings": [
-      "study",
-      "reminder"
-    ],
-    "trash": [
       "deck",
-      "card",
-      "tag",
-      "search",
-      "progress"
-    ]
-  },
-  "database_query_features": {
-    "card": [
-      "card"
+      "starter_decks",
+      "tags",
+      "transfer",
+      "trash"
     ],
     "deck": [
-      "deck"
+      "card",
+      "progress",
+      "reminders",
+      "search",
+      "starter_decks",
+      "study",
+      "tags",
+      "transfer",
+      "trash"
     ],
+    "progress": [],
+    "reminders": [],
+    "search": [],
+    "settings": [],
+    "srs": [
+      "card",
+      "deck",
+      "progress",
+      "settings",
+      "study",
+      "trash"
+    ],
+    "starter_decks": [],
     "study": [
+      "card",
+      "deck",
+      "progress",
+      "reminders",
+      "settings",
+      "srs",
+      "starter_decks"
+    ],
+    "study_mode": [
+      "card",
+      "progress",
       "study"
     ],
-    "tag": [
+    "tags": [
       "card",
-      "tag"
+      "search",
+      "transfer"
     ],
-    "progress": [
-      "progress"
+    "transfer": [
+      "tags"
     ],
-    "settings": [
-      "settings"
-    ],
-    "trash": [
-      "trash"
-    ],
-    "search": [
-      "search"
-    ],
-    "reminder": [
-      "reminder"
-    ]
+    "trash": []
   },
+  "database_query_features": {},
   "full_scope_prefixes": [
     ".github/",
     ".claude/skills/flutter-workflow/scripts/",
-    "code-verification-guard-v2/",
     "lib/app/",
     "lib/core/theme/",
     "lib/l10n/",
-    "lib/presentation/shared/",
     "integration_test/",
     "e2e/",
     "android/",
