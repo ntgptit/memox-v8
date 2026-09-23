@@ -34,6 +34,11 @@ V7 is a reference implementation only.
 Do not copy V7 architecture, folder structure, state management, routing,
 dependency wiring, UI implementation, or abstractions.
 
+Exception: the layer architecture (`domain/ data/ presentation/ di/` with
+repository contracts, Drift tables in `lib/core/database/`), feature folder
+names and the Flutter version follow
+[ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md).
+
 Preserve V7 business behavior and required data compatibility unless an
 approved V8 specification explicitly changes them.
 
