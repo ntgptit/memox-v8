@@ -6,12 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/golden_harness.dart';
@@ -243,6 +246,69 @@ void main() {
           semanticLabel: 'New deck',
           onPressed: () {},
         ),
+      ),
+    );
+  });
+
+  testWidgets('MxAppShell with nav + FAB, and with a footer', (tester) async {
+    Widget rows() => MxScreenScroll(
+      clearance: MxScrollClearance.fabAboveNav,
+      children: [
+        for (var i = 0; i < 12; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: MxEmptyState(
+              icon: AppIcons.inbox,
+              title: 'Row $i',
+              isCompact: true,
+            ),
+          ),
+      ],
+    );
+    await expectThemedGoldens(
+      tester,
+      'mx_app_shell',
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: MxAppShell(
+              appBar: const MxAppBar(title: 'Library'),
+              body: rows(),
+              bottomBar: MxBottomNav(
+                destinations: const [
+                  MxNavDestination(
+                    icon: AppIcons.library,
+                    selectedIcon: AppIcons.librarySelected,
+                    label: 'Library',
+                  ),
+                  MxNavDestination(
+                    icon: AppIcons.study,
+                    selectedIcon: AppIcons.studySelected,
+                    label: 'Study',
+                  ),
+                ],
+                selectedIndex: 0,
+                onSelected: (_) {},
+              ),
+              fab: MxFab(
+                icon: AppIcons.add,
+                semanticLabel: 'New',
+                onPressed: () {},
+              ),
+            ),
+          ),
+          Expanded(
+            child: MxAppShell(
+              appBar: const MxAppBar(title: 'Edit'),
+              body: rows(),
+              footer: MxFooterBar(
+                caption: 'Saved on this device',
+                child: MxButton(label: 'Save', isBlock: true, onPressed: () {}),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   });
