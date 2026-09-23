@@ -63,7 +63,7 @@ void main() {
     // reads as the control's name.
     expect(
       tester.getSemantics(find.byType(IconButton)),
-      containsSemantics(tooltip: 'Close', isButton: true),
+      isSemantics(tooltip: 'Close', isButton: true),
     );
     await tester.tap(find.byTooltip('Close'));
 
