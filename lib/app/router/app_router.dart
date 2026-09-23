@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -39,7 +40,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
     if (hasGallery)
       GoRoute(
         path: AppRoutes.gallery,
-        builder: (context, state) => const Placeholder(),
+        builder: (context, state) => const GalleryScreen(),
       ),
   ],
 );
