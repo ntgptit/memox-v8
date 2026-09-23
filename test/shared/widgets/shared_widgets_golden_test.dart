@@ -18,7 +18,9 @@ import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -424,6 +426,53 @@ void main() {
           ),
           const MxSelectionCheckbox(isChecked: false),
           const MxSelectionCheckbox(isChecked: true),
+        ],
+      ),
+    );
+  });
+  testWidgets('MxOptionRow and MxSegmentedTray', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_option_tray',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Column(
+            children: [
+              MxOptionRow(
+                title: 'Eight box',
+                description: 'Cards climb eight boxes, each a longer interval.',
+                isSelected: true,
+                onSelected: () {},
+              ),
+              MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
+              const MxOptionRow(
+                title: 'Disabled',
+                isSelected: false,
+                onSelected: null,
+                hasDivider: false,
+              ),
+            ],
+          ),
+          MxSegmentedTray(
+            segments: const [
+              MxSegment(value: 0, label: 'Light'),
+              MxSegment(value: 1, label: 'Dark'),
+              MxSegment(value: 2, label: 'System'),
+            ],
+            selected: 2,
+            onSelected: (_) {},
+          ),
+          MxSegmentedTray(
+            segments: const [
+              MxSegment(value: 7, label: '7 days'),
+              MxSegment(value: 30, label: '30 days'),
+            ],
+            selected: 7,
+            onSelected: (_) {},
+            isWide: true,
+          ),
         ],
       ),
     );
