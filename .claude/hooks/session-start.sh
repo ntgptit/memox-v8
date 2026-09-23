@@ -1,24 +1,21 @@
 #!/bin/bash
-# Install the Superpowers plugin declared in .claude/settings.json
-# (extraKnownMarketplaces + enabledPlugins) on Claude Code on the web.
-# Cloud containers start from a fresh Claude config, and declaring a plugin in
-# project settings does not install it there, so this does. Idempotent: a
-# plugin that is already installed is left as is.
+# SessionStart: load the vendored Superpowers `using-superpowers` skill into the
+# session context, as the Superpowers plugin's own SessionStart hook does. The
+# skills themselves are vendored in .claude/skills/ (see .claude/superpowers/).
 set -euo pipefail
 
-if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
-  exit 0
-fi
+SKILL="${CLAUDE_PROJECT_DIR:-.}/.claude/skills/using-superpowers/SKILL.md"
+[ -f "$SKILL" ] || exit 0
 
-PLUGIN="superpowers@superpowers-marketplace"
-MARKETPLACE="obra/superpowers-marketplace"
-
-cd "${CLAUDE_PROJECT_DIR:-.}"
-
-if claude plugin list 2>/dev/null | grep -q "$PLUGIN"; then
-  exit 0
-fi
-
-claude plugin marketplace add "$MARKETPLACE" --scope project >/dev/null
-claude plugin install "$PLUGIN" --scope project >/dev/null
-echo "Installed $PLUGIN" >&2
+python3 - "$SKILL" <<'PY'
+import json, sys
+body = open(sys.argv[1], encoding="utf-8").read()
+context = (
+    "<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n"
+    "**Below is the full content of your 'using-superpowers' skill - your "
+    "introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n"
+    + body + "\n</EXTREMELY_IMPORTANT>"
+)
+print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
+                                          "additionalContext": context}}))
+PY
