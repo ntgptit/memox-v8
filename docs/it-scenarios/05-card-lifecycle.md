@@ -7,8 +7,8 @@
 | **Scope** | Card list, create/edit form, required/optional fields, discard, persistence, delete và dữ liệu học không bị ảnh hưởng khi sửa |
 | **Source of truth for** | Scenario IT về vòng đời card hiện có |
 | **Depends on** | `README.md`, `../business-rules.md` (BR-07…10, BR-92, BR-95, BR-163), `../use-cases.md` (UC-04) |
-| **Updated by task** | Yêu cầu viết IT scenario ngày 2026-08-05 |
-| **Last updated** | 2026-08-05 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ tham chiếu task ID V7 khỏi kịch bản vòng đời card |
+| **Last updated** | 2026-09-23 |
 
 ## IT-CARD-001 — Empty card deck có hành động thêm card đầu tiên
 
@@ -138,8 +138,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck loại card chỉ còn đúng một card.
-- **Liên kết:** UC-04 A2, BR-163. *(Hành vi cũ "loại không tự reset" theo BR-67
-  đã bị supersede ở M99.15.)*
+- **Liên kết:** UC-04 A2, BR-163.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

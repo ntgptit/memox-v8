@@ -7,8 +7,8 @@
 | **Scope** | Deck tile, summary, due filter, sort, subtree search, empty/no-result và cập nhật tức thời |
 | **Source of truth for** | Scenario IT về danh sách, discovery và progress của deck |
 | **Depends on** | `README.md`, `../business-rules.md` (BR-29, BR-56, BR-57, BR-65, BR-142, BR-150), `../use-cases.md` (UC-06) |
-| **Updated by task** | BR-150 trên tile: bước 1 của IT-DISC-001 yêu cầu cả hai số New/Due, khớp badge hai chip của Library |
-| **Last updated** | 2026-08-11 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 ## IT-DISC-001 — Deck tile trình bày đủ thông tin ra quyết định
 

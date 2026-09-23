@@ -7,8 +7,8 @@
 | **Scope** | Tạo sub-deck/card đầu tiên, khoá loại nội dung, reset loại khi rỗng, move subtree và depth limit |
 | **Source of truth for** | Scenario IT về cấu trúc cây deck và content type |
 | **Depends on** | `README.md`, `../business-rules.md` (BR-55…74), `../use-cases.md` (UC-08, UC-09) |
-| **Updated by task** | Yêu cầu viết IT scenario ngày 2026-08-05 |
-| **Last updated** | 2026-08-05 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ tham chiếu task ID V7 khỏi kịch bản cây deck |
+| **Last updated** | 2026-09-23 |
 
 ## IT-TREE-001 — Root deck chỉ cho tạo deck con
 
@@ -78,8 +78,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Deck con `Grammar` loại deck chỉ có một child `Tenses`.
-- **Liên kết:** UC-08 A3, BR-163. *(Hành vi cũ "loại giữ nguyên" theo BR-67 đã bị
-  supersede ở M99.15.)*
+- **Liên kết:** UC-08 A3, BR-163.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -89,9 +88,8 @@
 
 ## IT-TREE-007 — Di chuyển child cuối đi cũng mở khoá loại của deck nguồn
 
-> **Kịch bản đổi nội dung ở M99.15.** ID giữ nguyên; hành vi cũ là reset thủ
-> công theo BR-68 và đã bị BR-163 thay thế. Di chuyển là con đường thứ hai làm
-> deck mất phần tử con cuối, nên nó thế chỗ ở đây.
+> Di chuyển là cách thứ hai (ngoài xoá) làm deck mất phần tử con cuối; BR-163
+> áp dụng như nhau: `content_type` quay về `unset` trong cùng transaction.
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** `D-BRANCH` chỉ có `D-LEAF`; tồn tại một deck đích khác đang chưa định loại.
@@ -106,9 +104,8 @@
 
 ## IT-TREE-008 — Deck còn nội dung giữ nguyên loại
 
-> **Kịch bản đổi nội dung ở M99.15**, cùng lý do IT-TREE-007: không còn hành
-> động reset để chặn, nhưng ràng buộc "còn nội dung thì giữ loại" vẫn phải đúng
-> và nay là hệ quả của BR-163 chứ không phải của một nút bị ẩn.
+> Ràng buộc "còn nội dung thì giữ loại" là hệ quả của BR-163, không phải của
+> một hành động reset ẩn riêng.
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** `D-BRANCH` đang chứa `D-LEAF` và một deck con thứ hai.
@@ -182,9 +179,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck con loại card chỉ còn đúng một card.
-- **Liên kết:** UC-04 A2, BR-163. *(Trước M99.15 kịch bản này mô tả reset thủ
-  công theo BR-67/BR-68 và mang `KNOWN-GAP`; gap đã đóng bằng chuyển đổi tự
-  động.)*
+- **Liên kết:** UC-04 A2, BR-163.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

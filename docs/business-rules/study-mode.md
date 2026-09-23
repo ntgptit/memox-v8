@@ -1,23 +1,24 @@
 # BR — StudyMode
 
-Tách khỏi `../business-rules.md` ở M100.65. Trạng thái, cách đánh số và quyền
+Tách khỏi `../business-rules.md`. Trạng thái, cách đánh số và quyền
 sở hữu không đổi: `../business-rules.md` vẫn là `Source of truth for` của
-business rules, và `check_docs.py` đọc cả hai qua `_contract_files("BR")`.
+business rules, và `tools/check_docs_refs.py` đọc cả hai file khi giải quyết
+trích dẫn BR.
 
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|
-| BR-96 | superseded by BR-108 | StudyMode MUST là một trong năm: `review`, `match`, `guess`, `recall`, `fill`. | domain | UC-05, BR-30 |
-| BR-108 | active | StudyMode MUST là một trong sáu: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill`. | domain | UC-05, BR-30 |
-| BR-109 | active | Phiên **học mới** MUST chạy một **chuỗi stage** theo thứ tự cố định do thuật toán khai báo; người dùng MUST NOT chọn stage. Phiên **ôn tập** MUST chạy đúng **một** mode do người dùng chọn (BR-146). | domain | BR-110, BR-142, UC-05 |
-| BR-110 | active | Chuỗi stage của phiên học mới MUST là: `eight_box` → `browse`, `match`, `guess`, `recall`, `fill`; `sm2` → `browse`, `self_assess`. | scheduler | BR-97, BR-109 |
-| BR-111 | active | `browse` MUST NOT sinh `action`, MUST NOT ghi `study_answers` và MUST NOT đổi lịch. Nó chỉ ghi tiến độ stage để Resume quay đúng chỗ. | domain | BR-106, BR-112 |
+| BR-96 | superseded by BR-108 | StudyMode MUST là một trong năm: `review`, `match`, `guess`, `recall`, `fill`. | rule | UC-05, BR-30 |
+| BR-108 | active | StudyMode MUST là một trong sáu: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill`. | rule | UC-05, BR-30 |
+| BR-109 | active | Phiên **học mới** MUST chạy một **chuỗi stage** theo thứ tự cố định do thuật toán khai báo; người dùng MUST NOT chọn stage. Phiên **ôn tập** MUST chạy đúng **một** mode do người dùng chọn (BR-146). | rule | BR-110, BR-142, UC-05 |
+| BR-110 | active | Chuỗi stage của phiên học mới MUST là: `eight_box` → `browse`, `match`, `guess`, `recall`, `fill`; `sm2` → `browse`, `self_assess`. | rule | BR-97, BR-109 |
+| BR-111 | active | `browse` MUST NOT sinh `action`, MUST NOT ghi `review_log` và MUST NOT đổi lịch. Nó chỉ ghi tiến độ stage để Resume quay đúng chỗ. | rule | BR-106, BR-112 |
 | BR-112 | active | `browse` MUST hiển thị mặt trước và mặt sau **cùng lúc**, không có bước lật. `self_assess` MUST hiện mặt trước trước, và chỉ hiện mặt sau cùng tập action sau khi người dùng lật. | UI | BR-108, UC-05 |
-| BR-97 | active | Chuỗi stage MUST do **thuật toán SRS của root deck** khai báo qua `stageSequence` (BR-110). MUST NOT hardcode ở UI. | scheduler | BR-30, BR-110, AD-06 |
-| BR-98 | active | Stage đang chạy MUST được lưu tường minh trên `study_sessions.current_mode`, và mode của từng lượt trên `study_answers.mode`. MUST NOT suy luận từ hình dạng dữ liệu. | db | BR-76, BR-109, AD-11 |
-| BR-99 | active | Trong phiên `learning`, một stage MUST chạy chỉ khi nằm trong `stageSequence` **và** có ít nhất một thẻ đủ dữ liệu; stage không còn thẻ nào MUST bị bỏ qua thay vì hiện rỗng. Trong phiên `reviewing`, không có stage nào để bỏ qua vì người dùng đã chọn: mode không đủ dữ liệu MUST bị **vô hiệu hoá ngay trên màn chọn**, kèm lý do. | domain + UI | BR-97, BR-114, BR-146, UC-05 |
+| BR-97 | active | Chuỗi stage MUST do **thuật toán SRS của root deck** khai báo qua `stageSequence` (BR-110). MUST NOT hardcode ở UI. | rule | BR-30, BR-110 |
+| BR-98 | active | Stage đang chạy MUST được lưu tường minh trên `study_session.current_mode`, và mode của từng lượt trên `review_log.mode`. MUST NOT suy luận từ hình dạng dữ liệu. | db | BR-76, BR-109 |
+| BR-99 | active | Trong phiên `learning`, một stage MUST chạy chỉ khi nằm trong `stageSequence` **và** có ít nhất một thẻ đủ dữ liệu; stage không còn thẻ nào MUST bị bỏ qua thay vì hiện rỗng. Trong phiên `reviewing`, không có stage nào để bỏ qua vì người dùng đã chọn: mode không đủ dữ liệu MUST bị **vô hiệu hoá ngay trên màn chọn**, kèm lý do. | rule + UI | BR-97, BR-114, BR-146, UC-05 |
 | BR-100 | active | Mode bị chặn vì thuật toán MUST được trình bày là không khả dụng cho deck này, và MUST NOT gợi ý Reset learning progress như cách mở khoá. | UI | BR-13, BR-41 |
-| BR-106 | active | Mọi mode **trừ `browse`** MUST sinh một `action` thuộc `supportedActions` của thuật toán. `self_assess` MUST lấy action **trực tiếp từ người dùng**; `match`/`guess`/`recall`/`fill` MUST chấm ra kết quả nhị phân rồi ánh xạ theo BR-107. | domain | BR-15, BR-30, BR-111, AD-18 |
-| BR-107 | active | Với `eight_box`, kết quả nhị phân MUST ánh xạ: sai → `forgotten`, đúng → `remembered`. Hết giờ ở `recall` MUST tính là sai. | domain | BR-15, BR-108 |
+| BR-106 | active | Mọi mode **trừ `browse`** MUST sinh một `action` thuộc `supportedActions` của thuật toán. `self_assess` MUST lấy action **trực tiếp từ người dùng**; `match`/`guess`/`recall`/`fill` MUST chấm ra kết quả nhị phân rồi ánh xạ theo BR-107. | rule | BR-15, BR-30, BR-111 |
+| BR-107 | active | Với `eight_box`, kết quả nhị phân MUST ánh xạ: sai → `forgotten`, đúng → `remembered`. Hết giờ ở `recall` MUST tính là sai. | rule | BR-15, BR-108 |
 
 **Vì sao tập mode thuộc thuật toán chứ không thuộc deck.** Bốn mode chấm điểm
 sinh tín hiệu **nhị phân** — đúng hoặc sai. `eight_box` nhận đúng hai
@@ -42,7 +43,7 @@ nó vẫn sinh ra `forgotten`/`remembered`, và nếu đọc thành "không sinh
 
 Khác biệt thật giữa các mode vì thế nằm gọn ở **nguồn** của action, không phải ở
 việc có hay không có action — và đó cũng chính là toàn bộ phần mỗi handler phải
-tự viết (AD-18). `self_assess` không còn là ngoại lệ của luồng chung; nó là mode mà
+tự viết. `self_assess` không còn là ngoại lệ của luồng chung; nó là mode mà
 `evaluate` trả về đúng cái người dùng vừa bấm.
 
 **Không còn mục nào để trống.** Câu cuối cùng — lượt nào trong chuỗi stage đổi

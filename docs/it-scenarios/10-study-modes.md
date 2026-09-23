@@ -6,9 +6,9 @@
 | **Purpose** | Chứng minh từng cách hỏi có đúng thao tác, kết cục và những hành vi bị cấm đã chốt; không làm lẫn chế độ học với thuật toán xếp lịch |
 | **Scope** | Khung phiên dùng chung, `Browse`, `Self assess`, `Match`, `Guess`, `Recall`, `Fill`, trạng thái sau trả lời và hỗ trợ tiếp cận cơ bản |
 | **Source of truth for** | Kịch bản IT về hành vi nhìn thấy của sáu chế độ học |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-99, BR-106…138, BR-153), `../wireframes/m5-study-modes.md`, `../use-cases.md` (UC-05) |
-| **Updated by task** | Bổ sung kịch bản IT cho chức năng học, rà soát đệ quy ba vòng và chuẩn hóa tiếng Việt ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-99, BR-106…138, BR-153), `../use-cases.md` (UC-05) |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ thư mục wireframes đã xoá khỏi phần phụ thuộc |
+| **Last updated** | 2026-09-23 |
 
 ## IT-MODE-001 — Khung phiên luôn nói rõ chế độ, bộ thẻ, loại phiên và tiến độ
 

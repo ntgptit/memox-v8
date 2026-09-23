@@ -7,8 +7,8 @@
 | **Scope** | Search front/back, sort, filter pills, flag, tag, state/due badge, progress panel và tải thêm |
 | **Source of truth for** | Scenario IT về discovery và organization của card |
 | **Depends on** | `README.md`, `../business-rules.md` (BR-89…95, BR-142, BR-151), `../use-cases.md` (UC-04) |
-| **Updated by task** | Đồng bộ định nghĩa New/Due sau M5 ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 ## IT-ORG-001 — Tìm card theo mặt trước và mặt sau
 

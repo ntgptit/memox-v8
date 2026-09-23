@@ -7,8 +7,8 @@
 | **Scope** | Loại phiên `learning`, chuỗi Eight Box/SM-2, bỏ qua giai đoạn, vòng lặp, học lại trong `Self assess`, hoàn tất và giới hạn mỗi phiên |
 | **Source of truth for** | Kịch bản IT về phiên Học mới của UC-05 |
 | **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-23…30, BR-97…119, BR-139…149), `../use-cases.md` (UC-05) |
-| **Updated by task** | Bổ sung kịch bản IT cho chức năng học, rà soát đệ quy ba vòng và chuẩn hóa tiếng Việt ngày 2026-08-08 |
-| **Last updated** | 2026-08-08 |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
+| **Last updated** | 2026-09-23 |
 
 ## IT-LEARN-001 — Eight Box đi đúng chuỗi năm giai đoạn
 

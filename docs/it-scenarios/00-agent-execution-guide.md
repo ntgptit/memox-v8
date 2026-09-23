@@ -6,9 +6,9 @@
 | **Purpose** | Cung cấp hợp đồng thực thi xác định để AI agent chọn, chuẩn bị, chạy và báo cáo kịch bản IT mà không tự suy diễn |
 | **Scope** | Quy trình của agent, mức sẵn sàng, chuẩn bị, dọn dẹp, dữ liệu dựng sẵn, bằng chứng và kết luận; không định nghĩa lại hành vi sản phẩm |
 | **Source of truth for** | Giao thức AI agent thực thi bộ kịch bản IT |
-| **Depends on** | `README.md`, `scenario-catalog.md`, `../business-rules.md`, `../use-cases.md`, `../wbs.md` |
-| **Updated by task** | Bổ sung hợp đồng thực thi cho chức năng học và chuẩn hóa tiếng Việt ngày 2026-08-08 |
-| **Last updated** | 2026-08-09 |
+| **Depends on** | `README.md`, `scenario-catalog.md`, `../business-rules.md`, `../use-cases.md` |
+| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ đường dẫn/tên lớp harness V7 và lịch sử fixture v1→v2, phát biểu lại hợp đồng harness theo khả năng cần có |
+| **Last updated** | 2026-09-23 |
 
 ## 1. Điểm bắt đầu bắt buộc
 
@@ -53,8 +53,8 @@ tự điền phần còn thiếu rồi ghi nhận kịch bản đạt.
 | `FIXTURE-BLOCKED` | Kịch bản hợp lệ nhưng bộ dữ liệu dựng sẵn xác định chưa được triển khai |
 | `KNOWN-GAP` | Hành vi mong đợi đúng theo nghiệp vụ nhưng giao diện hiện tại được biết là chưa đủ; chạy để xác nhận khoảng trống, MUST NOT ghi sản phẩm đạt |
 
-**`FIXTURE-BLOCKED` chỉ còn nghĩa với `DEVICE-E2E`.** Ở đó luật cũ vẫn giữ
-nguyên: agent MUST NOT sửa cơ sở dữ liệu của thiết bị để giả lập tiền điều kiện,
+**`FIXTURE-BLOCKED` chỉ còn nghĩa với `DEVICE-E2E`.** Ở đó luật sau vẫn áp
+dụng: agent MUST NOT sửa cơ sở dữ liệu của thiết bị để giả lập tiền điều kiện,
 vì một bộ dữ liệu không có đường dẫn hiện vật và phiên bản thì không tái lập
 được. Với `HOST-FLOW` và `HOST-WIDGET` thì trở ngại ấy không tồn tại: test tự
 tạo database in-memory của chính nó, nên dựng hàng là một phần của test chứ
@@ -67,18 +67,16 @@ là: **luôn chọn tầng thấp nhất bắt được đúng loại lỗi.**
 
 | Hồ sơ | Chạy bằng | Dùng cho |
 |---|---|---|
-| `HOST-FLOW` | `flutter test` | Use case + repository + DAO + Drift + SQLite in-memory thật, clock inject, `Random` có seed. Không render UI nếu không cần. Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, tính `due_at`, resume, generation |
+| `HOST-FLOW` | `flutter test` | Rule + store + Drift + SQLite in-memory thật, clock inject, `Random` có seed. Không render UI nếu không cần. Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, tính `due_at`, resume, generation |
 | `HOST-WIDGET` | `flutter test` | Pump app/widget thật trên `ProviderScope`, GoRouter, localization và database thật. Thao tác người dùng, form, dialog, điều hướng, trạng thái loading/empty/error, việc UI phản ánh đúng state nghiệp vụ |
 | `DEVICE-E2E` | Android/iOS emulator hoặc thiết bị | Chỉ những gì hai hồ sơ trên không chứng minh nổi: khởi động nguội, chết tiến trình, deep link từ hệ điều hành, cử chỉ nền tảng, plugin native, smoke trước phát hành |
 
 Modifier được phép khi nó nói thêm một điều kiện thật, ví dụ `HOST-FLOW-CLOCK`
 hay `DEVICE-E2E-RESTART`. Hồ sơ gốc MUST luôn là một trong ba giá trị trên.
 
-**Các hồ sơ cũ đã bị bỏ** — `UI`, `UI-FIXTURE`, `UI-CLOCK`, `UI-RESTART`,
-`UI-DEVICE`, `UI-MULTI`, `UI-FAULT`, `UI-LARGE`, `DEV-LINK`. Chúng mô tả *cách
-thao tác*, không mô tả *ranh giới thực thi*, nên mọi kịch bản đều rơi vào
-emulator theo mặc định. Bảng ánh xạ cũ→mới nằm ở `12-testing-pyramid-audit.md`
-mục C.
+**Hồ sơ mô tả *ranh giới thực thi*, không mô tả *cách thao tác*.** Đặt tên
+hồ sơ theo lượt thao tác (chạm, vuốt, khởi động lại) thay vì theo nơi chạy sẽ
+kéo mọi kịch bản về emulator theo mặc định.
 
 **Hai luật không được nới:**
 
@@ -311,38 +309,42 @@ phiên chưa đạt năm nghĩa, không dùng để giả lập lỗi dựng ri�
 
 ## 6. Hợp đồng dữ liệu dựng sẵn
 
-### 6.1. Trạng thái hiện tại
+### 6.1. Khả năng bắt buộc của harness thực thi
 
-| Khả năng | Hiện vật | Tình trạng |
-|---|---|---|
-| Cố định/dịch chuyển đồng hồ | `integration_test/support/it_harness.dart` — `setNow` | Có |
-| Mở lại cơ sở dữ liệu trong tiến trình kiểm thử | `ItHarness.restartApp` | Có; bằng chứng thấp hơn việc khởi động lại tiến trình Android thật và MUST ghi rõ trong báo cáo |
-| Khởi động lại tiến trình Android thật | Trình chạy ADB/thiết bị | Phụ thuộc môi trường chạy |
-| Hai bề mặt ứng dụng cùng cơ sở dữ liệu | — | Chưa có |
-| Công cụ tiêm lỗi tại kho dữ liệu/cơ sở dữ liệu | — | Chưa có |
+Bất kể chạy bằng `flutter test` hay điều khiển thiết bị thật, harness thực
+thi MUST cung cấp:
 
-Bộ dữ liệu `v1` tại `integration_test/support/it_fixtures.dart` là **bản cũ và
-không hợp lệ cho chức năng học sau BR-142/BR-144**: hồ sơ “New” của nó có `due_at`,
-và thao tác chuyển trạng thái không chứng minh `learned_at`. Agent MUST NOT dùng
-v1 để kết luận kịch bản học hoặc kịch bản thẻ đến hạn. Các dòng danh mục phụ thuộc `S-DUE` hay
-`S-PROGRESS` giữ `FIXTURE-BLOCKED` cho tới khi v2 dưới đây được triển khai.
+- Đồng hồ cố định/dịch chuyển được (clock injection), cho `HOST-FLOW` và
+  `HOST-WIDGET`.
+- Khả năng mở lại cơ sở dữ liệu trong tiến trình kiểm thử — bằng chứng thấp
+  hơn khởi động lại tiến trình Android thật, và MUST ghi rõ trong báo cáo khi
+  dùng thay thế.
+- Khởi động lại tiến trình Android thật cho `DEVICE-E2E`, qua trình chạy
+  ADB/thiết bị; phụ thuộc môi trường chạy.
+- Hai bề mặt ứng dụng cùng chia sẻ một cơ sở dữ liệu, cho kịch bản cần kiểm
+  đồng bộ giữa hai bề mặt.
+- Công cụ tiêm lỗi tại tầng lưu trữ/cơ sở dữ liệu, cho kịch bản mô phỏng lỗi
+  ghi/đọc; công cụ này MUST NOT sửa dữ liệu người dùng ngoài lỗi được tiêm.
 
-### 6.2. Bộ dữ liệu Study v2 bắt buộc nhưng chưa triển khai
+Một kịch bản cần khả năng harness chưa sẵn sàng MUST được đánh dấu
+`FIXTURE-BLOCKED` hoặc `BLOCKED` theo mục 2 và 8.1, không tự suy diễn kết quả.
+
+Fixture “New” MUST NOT mang `due_at`; chuyển trạng thái đã học MUST chứng
+minh được bằng `learned_at`. Một bộ dữ liệu vi phạm điều này MUST NOT được
+dùng để kết luận kịch bản học hoặc kịch bản thẻ đến hạn.
+
+### 6.2. Bộ dữ liệu Study bắt buộc nhưng chưa triển khai
 
 | | |
 |---|---|
-| **Đường dẫn hiện vật** | `integration_test/support/it_study_fixtures.dart` |
-| **Đường dẫn công cụ kiểm tra chỉ đọc** | `integration_test/support/it_study_audit.dart` |
-| **Phiên bản** | `v2` |
-| **Tình trạng** | Chưa có — mọi chuẩn bị `S-STUDY-*` và kịch bản cần kiểm tra chỉ đọc v2 là `FIXTURE-BLOCKED` |
 | **Đồng hồ** | `T0`; mọi `due_at` lưu UTC nhưng kết quả mong đợi tính theo `Asia/Seoul` |
 | **Đặt lại** | Trình nạp MUST xóa sạch trước khi nạp dữ liệu; nạp hai lần cho đúng một kết quả |
 | **Đường ghi** | Nội dung qua kho dữ liệu; trạng thái đã học/ôn tập MUST được tạo bằng luồng học đã phê duyệt hoặc API dữ liệu dựng sẵn kiểm tra bất biến 24/25/28, không dùng SQL tùy hứng trong kịch bản |
 
 #### S-DUE / S-PROGRESS / S-STUDY-MIXED-EB-V2
 
-`S-DUE` và `S-PROGRESS` là hai tên tương thích cho hồ sơ v2 sau, không phải hồ sơ
-v1 cũ. Bộ thẻ gốc Eight Box `Due library` có:
+`S-DUE` và `S-PROGRESS` là hai tên tương thích cho cùng một hồ sơ dữ liệu sau.
+Bộ thẻ gốc Eight Box `Due library` có:
 
 - `Mixed due`: bốn thẻ — `C-P-NEW` chưa học (`learned_at/due_at = NULL`);
   `C-P-BEGIN` đã học, beginning, flagged, due `T0 − 5 phút`; `C-P-REVIEW` đã
@@ -421,32 +423,6 @@ hàng đợi, vị trí hiện tại và phiên; không giả lập bằng trạ
 Một cơ sở dữ liệu kiểm thử dùng công cụ tiêm lỗi có ba chế độ: lỗi ghi một lần
 rồi phục hồi, lỗi lưu trữ không thể tiếp tục, và lỗi đọc thẻ một lần rồi phục hồi.
 Công cụ tiêm lỗi MUST không sửa dữ liệu người dùng và MUST có bước kết thúc xác nhận đã tắt lỗi.
-
-### 6.3. Bộ dữ liệu v1 cũ — đã xoá ở bước 7
-
-`integration_test/support/it_fixtures.dart` **không còn tồn tại**. Nó nạp dữ
-liệu cho các kịch bản `HOST-FLOW`/`HOST-WIDGET` nay chạy bằng `flutter test`, và
-chính nó là thứ ghi thẳng vào bảng trạng thái ôn tập — đường ghi mà mục này vẫn
-luôn nói là MUST NOT dùng làm bằng chứng chức năng học.
-
-Fixture của các kịch bản host sống ở `test/helpers/fixtures/study_fixtures.dart`.
-Chúng dựng dữ liệu trên SQLite in-memory trong tiến trình test, nên "không được
-ghi vào database" — luật viết cho một thiết bị — không áp vào chúng.
-
-Tám kịch bản `DEVICE-E2E` còn lại **không dùng loader nào**: mỗi kịch bản tạo
-đúng trạng thái tối thiểu nó cần, qua giao diện, bằng `ItRobot`. Đó là điều kiện
-tiên quyết chứ không phải bước, và nó giữ cho bộ device không mọc lại một tầng
-fixture thứ hai.
-
-### S-DUE · S-PROGRESS · S-LARGE — không còn là hồ sơ của bộ device
-
-Ba hồ sơ này mô tả dữ liệu cho kịch bản khám phá, tiến độ và danh sách lớn. Cả
-ba nay chạy ở host: `S-LARGE` là `test/integration/flows/card_window_flow_test.dart`
-(65 thẻ, cửa sổ 50 → 65), `S-DUE`/`S-PROGRESS` là `sDue`/`sProgress` trong
-`test/helpers/fixtures/study_fixtures.dart`.
-
-Đặc tả dữ liệu của chúng vẫn có giá trị như **hợp đồng**, nhưng nơi hiện thực
-hợp đồng ấy đã đổi. Agent MUST NOT dựng lại loader v1 trong `integration_test/`.
 
 ## 7. Hợp đồng dọn dẹp
 
