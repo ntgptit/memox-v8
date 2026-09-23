@@ -17,6 +17,11 @@ abstract final class AppIcons {
   static const IconData inbox = Icons.inbox_outlined; // inbox
   static const IconData tag = Icons.sell_outlined; // tag
 
+  // Debug gallery.
+  static const IconData gallery = Icons.widgets_outlined;
+  static const IconData themeMode = Icons.contrast;
+  static const IconData textScale = Icons.format_size;
+
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
