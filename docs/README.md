@@ -111,7 +111,8 @@ foundations, theme binding và spec của 46 widget; đọc từ
 [`00-index.md`](shared/ui/design-handoff/00-index.md). Nội dung chỉ đổi khi JSON đổi:
 thay JSON rồi chạy `python tools/docs/split_handoff.py`; tool dừng và không ghi gì nếu
 gặp file bị sửa tay. Đây là bản gốc chưa sửa. Vấn đề đã biết (contrast của token,
-a11y, mâu thuẫn giữa các file, typography tiếng Việt, study loop chưa thiết kế) ghi ở
+a11y, mâu thuẫn giữa các file, typography tiếng Việt/tiếng Hàn, study loop chưa thiết
+kế) ghi ở
 [`.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md`](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md);
 bản đã sửa tay trước đợt reset docs V8 chỉ còn trong git
 (`git show d0b9250:docs/design/memox-v3/CHANGES.md`).

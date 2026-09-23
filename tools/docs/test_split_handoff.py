@@ -154,6 +154,19 @@ class SplitHandoffTest(unittest.TestCase):
         self.assertIn("widgets/status-bar.md", output)
         self.assertEqual(snapshot(self.out), {"widgets/status-bar.md": b"mine"})
 
+    def test_manifest_without_hashes_protects_every_existing_file(self) -> None:
+        # The previous version of the script recorded a plain list of paths and
+        # wrote specs without a marker; its files may carry hand edits.
+        old = self.out / "widgets/status-bar.md"
+        old.parent.mkdir(parents=True)
+        old.write_text(STATUS_BAR, encoding="utf-8")
+        manifest = self.out / ".handoff-split-manifest.json"
+        manifest.write_text(json.dumps(["widgets/status-bar.md"]), encoding="utf-8")
+        code, output = self.run_split(sample())
+        self.assertEqual(code, 1)
+        self.assertIn("widgets/status-bar.md", output)
+        self.assertEqual(old.read_text(encoding="utf-8"), STATUS_BAR)
+
     def test_hand_edited_file_the_json_no_longer_produces_is_kept(self) -> None:
         self.run_split(sample())
         edited = self.out / "widgets/icon-tile.md"
@@ -264,6 +277,26 @@ class RepositoryIntegrationTest(unittest.TestCase):
         result = self.run_tool("check.py")
         self.assertEqual(result.returncode, 1, result.stdout)
         self.assertIn("docs/shared/ui/design-handoff/widgets/status-bar.md", result.stdout)
+
+    def test_docs_check_fails_when_the_json_was_never_split(self) -> None:
+        self.run_tool("generate.py")
+        result = self.run_tool("check.py")
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn("docs/shared/ui/design-handoff/00-index.md", result.stdout)
+
+    def test_docs_check_fails_when_the_split_outlives_its_json(self) -> None:
+        self.run_tool("split_handoff.py")
+        (self.repo / "docs/shared/ui/design-handoff.json").unlink()
+        self.run_tool("generate.py")
+        result = self.run_tool("check.py")
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn("docs/shared/ui/design-handoff.json", result.stdout)
+
+    def test_docs_check_passes_on_a_repository_without_a_handoff(self) -> None:
+        (self.repo / "docs/shared/ui/design-handoff.json").unlink()
+        self.run_tool("generate.py")
+        result = self.run_tool("check.py")
+        self.assertEqual(result.returncode, 0, result.stdout)
 
 
 if __name__ == "__main__":
