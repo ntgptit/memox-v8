@@ -39,7 +39,10 @@ final class UnknownDatabaseFailure extends Failure {
 ///
 /// The app's connection runs in a background isolate (drift_flutter), where
 /// a [sqlite3.SqliteException] arrives wrapped in a [DriftRemoteException].
+/// A [Failure] is already mapped: a repository that runs inside another's
+/// transaction maps first, and the outer one must not wrap it again.
 Failure mapDatabaseError(Object error) {
+  if (error is Failure) return error;
   final cause = error is DriftRemoteException ? error.remoteCause : error;
   if (cause is! sqlite3.SqliteException) {
     return UnknownDatabaseFailure(cause: cause);

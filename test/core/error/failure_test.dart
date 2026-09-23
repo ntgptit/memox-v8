@@ -32,4 +32,9 @@ void main() {
       expect(failure.message, isNot(contains('私の秘密')));
     },
   );
+
+  test('a Failure already mapped stays as it is', () {
+    const failure = ConstraintFailure(cause: 'x');
+    expect(mapDatabaseError(failure), same(failure));
+  });
 }
