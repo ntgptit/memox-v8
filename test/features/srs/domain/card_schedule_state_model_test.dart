@@ -36,4 +36,42 @@ void main() {
       expect(state.repetitions, 0);
     },
   );
+
+  test('fromColumns reads the columns of the scheduler the row runs', () {
+    final learned = DateTime(2026, 9, 20);
+    final eightBox = CardScheduleState.fromColumns(
+      type: SchedulerType.eightBox,
+      generation: 2,
+      learnedAt: learned,
+      dueAt: DateTime(2026, 9, 23),
+      lastAnsweredAt: learned,
+      answerCount: 3,
+      lapseCount: 1,
+      currentBox: 4,
+      easeFactor: null,
+      intervalDays: null,
+      repetitions: null,
+    );
+    final sm2 = CardScheduleState.fromColumns(
+      type: SchedulerType.sm2,
+      generation: 1,
+      learnedAt: null,
+      dueAt: null,
+      lastAnsweredAt: null,
+      answerCount: 0,
+      lapseCount: 0,
+      currentBox: null,
+      easeFactor: 2.36,
+      intervalDays: 6,
+      repetitions: 2,
+    );
+
+    expect(
+      (eightBox.generation, eightBox.currentBox, eightBox.answerCount),
+      (2, 4, 3),
+    );
+    expect(eightBox.easeFactor, isNull);
+    expect((sm2.easeFactor, sm2.intervalDays, sm2.repetitions), (2.36, 6, 2));
+    expect(sm2.currentBox, isNull);
+  });
 }

@@ -2,6 +2,8 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_list_query_model.dart';
+import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 
 /// The one implementation is `CardRepositoryImpl` (data layer). The contract
 /// exists for ADR-010's reason: domain stays framework-free and tests
@@ -45,5 +47,23 @@ abstract interface class CardRepository {
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
+  });
+
+  /// UC-CARD-001: the first [windowSize] cards of [deckId] that [query] lets
+  /// through, whether more follow, and the count of every filter under the
+  /// same search (IT-ORG-005). Due is due at [now]. Emits again on every
+  /// change of a card or a schedule row.
+  Stream<CardListView> watchCardList({
+    required String deckId,
+    required CardListQuery query,
+    required int windowSize,
+    required DateTime now,
+  });
+
+  /// BR-CARD-012: the ids of every card [query] lets through.
+  Future<Set<String>> cardIdsMatching({
+    required String deckId,
+    required CardListQuery query,
+    required DateTime now,
   });
 }

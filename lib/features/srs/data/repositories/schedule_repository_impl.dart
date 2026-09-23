@@ -197,29 +197,19 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 }
 
-CardScheduleState _stateOf(CardSchedule row) =>
-    switch (SchedulerType.fromCode(row.schedulerType)) {
-      SchedulerType.eightBox => CardScheduleState.eightBox(
-        generation: row.generation,
-        learnedAt: row.learnedAt,
-        dueAt: row.dueAt,
-        lastAnsweredAt: row.lastAnsweredAt,
-        answerCount: row.answerCount,
-        lapseCount: row.lapseCount,
-        currentBox: row.currentBox!,
-      ),
-      SchedulerType.sm2 => CardScheduleState.sm2(
-        generation: row.generation,
-        learnedAt: row.learnedAt,
-        dueAt: row.dueAt,
-        lastAnsweredAt: row.lastAnsweredAt,
-        answerCount: row.answerCount,
-        lapseCount: row.lapseCount,
-        easeFactor: row.easeFactor!,
-        intervalDays: row.intervalDays!,
-        repetitions: row.repetitions!,
-      ),
-    };
+CardScheduleState _stateOf(CardSchedule row) => CardScheduleState.fromColumns(
+  type: SchedulerType.fromCode(row.schedulerType),
+  generation: row.generation,
+  learnedAt: row.learnedAt,
+  dueAt: row.dueAt,
+  lastAnsweredAt: row.lastAnsweredAt,
+  answerCount: row.answerCount,
+  lapseCount: row.lapseCount,
+  currentBox: row.currentBox,
+  easeFactor: row.easeFactor,
+  intervalDays: row.intervalDays,
+  repetitions: row.repetitions,
+);
 
 /// Every column of a `card_schedule` row but `card_id`.
 CardScheduleCompanion _columnsOf(

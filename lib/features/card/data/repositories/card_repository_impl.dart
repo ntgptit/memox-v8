@@ -3,9 +3,13 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
+import 'package:memox/features/card/data/datasources/card_list_dao.dart';
+import 'package:memox/features/card/data/mappers/card_mapper.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_list_query_model.dart';
+import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -22,12 +26,14 @@ final class CardRepositoryImpl implements CardRepository {
     this._tags, {
     DateTime Function()? now,
   }) : _dao = CardDao(_db),
+       _listDao = CardListDao(_db),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final ScheduleRepository _schedules;
   final TagRepository _tags;
   final CardDao _dao;
+  final CardListDao _listDao;
   final DateTime Function() _now;
 
   @override
@@ -56,7 +62,7 @@ final class CardRepositoryImpl implements CardRepository {
       if (contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
-      return Ok(_toEntity((await _dao.findRow(id))!));
+      return Ok(cardEntityOf((await _dao.findRow(id))!));
     });
   }
 
@@ -155,6 +161,50 @@ final class CardRepositoryImpl implements CardRepository {
     });
   }
 
+  @override
+  Stream<CardListView> watchCardList({
+    required String deckId,
+    required CardListQuery query,
+    required int windowSize,
+    required DateTime now,
+  }) => _listDao
+      .watchWindow(
+        deckId: deckId,
+        query: query,
+        limit: windowSize + 1,
+        now: now,
+      )
+      .asyncMap((rows) async {
+        // The window's watch re-runs on every change the counts could see,
+        // so reading the counts here keeps one emission per change.
+        final counts = await _listDao.counts(
+          deckId: deckId,
+          searchTerm: query.searchTerm,
+          now: now,
+        );
+        return CardListView(
+          items: [
+            for (final (card, schedule) in rows.take(windowSize))
+              listItemOf(card, schedule),
+          ],
+          hasMore: rows.length > windowSize,
+          counts: CardListCounts(
+            all: counts.all,
+            due: counts.due,
+            newCards: counts.newCards,
+            flagged: counts.flagged,
+          ),
+        );
+      })
+      .mapDatabaseErrors();
+
+  @override
+  Future<Set<String>> cardIdsMatching({
+    required String deckId,
+    required CardListQuery query,
+    required DateTime now,
+  }) => _mapped(() => _listDao.ids(deckId: deckId, query: query, now: now));
+
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
   /// refusal here is a bug: throwing rolls the whole write back.
   Future<void> _replaceTags(String cardId, CardDraft draft, DateTime at) async {
@@ -179,24 +229,14 @@ final class CardRepositoryImpl implements CardRepository {
   /// One transaction. Nothing inside catches: a throw leaves it, Drift rolls
   /// every row of the write back together, and the error leaves as
   /// `mapDatabaseError`'s [Failure].
-  Future<T> _write<T>(Future<T> Function() body) async {
+  Future<T> _write<T>(Future<T> Function() body) =>
+      _mapped(() => _db.transaction(body));
+
+  Future<T> _mapped<T>(Future<T> Function() body) async {
     try {
-      return await _db.transaction(body);
+      return await body();
     } on Object catch (error, stackTrace) {
       Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }
-
-CardEntity _toEntity(CardRow row) => CardEntity(
-  id: row.id,
-  deckId: row.deckId,
-  front: row.front,
-  back: row.back,
-  isFlagged: row.isFlagged == 1,
-  example: row.example,
-  hint: row.hint,
-  pronunciation: row.pronunciation,
-  createdAt: row.createdAt,
-  updatedAt: row.updatedAt,
-);

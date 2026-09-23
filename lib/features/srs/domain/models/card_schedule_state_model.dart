@@ -65,6 +65,44 @@ sealed class CardScheduleState {
     ),
   };
 
+  /// The state a `card_schedule` row holds, column by column (schema.md):
+  /// the columns of the scheduler [type] names are set, the other
+  /// scheduler's are null, as the row's CHECK constraints keep them.
+  factory CardScheduleState.fromColumns({
+    required SchedulerType type,
+    required int generation,
+    required DateTime? learnedAt,
+    required DateTime? dueAt,
+    required DateTime? lastAnsweredAt,
+    required int answerCount,
+    required int lapseCount,
+    required int? currentBox,
+    required double? easeFactor,
+    required int? intervalDays,
+    required int? repetitions,
+  }) => switch (type) {
+    SchedulerType.eightBox => CardScheduleState.eightBox(
+      generation: generation,
+      learnedAt: learnedAt,
+      dueAt: dueAt,
+      lastAnsweredAt: lastAnsweredAt,
+      answerCount: answerCount,
+      lapseCount: lapseCount,
+      currentBox: currentBox!,
+    ),
+    SchedulerType.sm2 => CardScheduleState.sm2(
+      generation: generation,
+      learnedAt: learnedAt,
+      dueAt: dueAt,
+      lastAnsweredAt: lastAnsweredAt,
+      answerCount: answerCount,
+      lapseCount: lapseCount,
+      easeFactor: easeFactor!,
+      intervalDays: intervalDays!,
+      repetitions: repetitions!,
+    ),
+  };
+
   final int generation;
   final DateTime? learnedAt;
   final DateTime? dueAt;
