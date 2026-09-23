@@ -15,8 +15,14 @@ final class MxTextStyles {
   static const double _titleTracking = -0.3;
   static const double _screenTitleTracking = -0.5;
   static const double _emptyBodyHeight = 1.55;
-  static const double _optionTitleTracking = -0.1;
-  static const double _optionDescriptionHeight = 1.45;
+  static const double _rowTitleTracking = -0.1;
+  static const double _rowDescriptionHeight = 1.45;
+  static const double _listRowTitleHeight = 1.35;
+  static const double _overlineTracking = 0.6;
+  static const double _pillHeight = 1;
+  static const double _noteHeight = 1.5;
+  static const double _workloadHeight = 1.5;
+  static const double _donutLabelSize = 9;
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
@@ -113,17 +119,91 @@ final class MxTextStyles {
   TextStyle get searchHint =>
       searchValue.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// OptionRow title: 14/600, -0.1.
-  TextStyle get optionTitle => AppTypography.withWeight(
+  /// Row title (OptionRow, ActionSheetCommandRow): 14/600, -0.1.
+  TextStyle get rowTitle => AppTypography.withWeight(
     _texts.bodyMedium!,
     FontWeight.w600,
-  ).copyWith(letterSpacing: _optionTitleTracking, color: _scheme.onSurface);
+  ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
-  /// OptionRow description: the caption role at line-height 1.45 (I5).
-  TextStyle get optionDescription => _texts.labelSmall!.copyWith(
-    height: _optionDescriptionHeight,
+  /// Row description (OptionRow, SettingsRow sub): the caption role at
+  /// line-height 1.45 (I5, S5).
+  TextStyle get rowDescription => _texts.labelSmall!.copyWith(
+    height: _rowDescriptionHeight,
     color: _scheme.onSurfaceVariant,
   );
+
+  /// ListRow title: the row title at line-height 1.35, so every row in a list
+  /// is one height.
+  TextStyle get listRowTitle => rowTitle.copyWith(height: _listRowTitleHeight);
+
+  /// ListRow and ActionSheetCommandRow sub-line: the caption role in
+  /// onSurfaceVariant (S5).
+  TextStyle get rowSubtitle => footerCaption;
+
+  /// SettingsRow label: 16/600, -0.1.
+  TextStyle get settingsLabel => AppTypography.withWeight(
+    _texts.bodyLarge!,
+    FontWeight.w600,
+  ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
+
+  /// ActionSheetCommandRow verb: the row title, error when destructive.
+  TextStyle commandLabel({required bool isDestructive}) => rowTitle.copyWith(
+    color: isDestructive ? _scheme.error : _scheme.onSurface,
+  );
+
+  /// Overline (Section, ListSectionHeader): 12/700, 0.6 tracking,
+  /// onSurfaceVariant. Tabular, so a trailing static count lines up. The
+  /// widget upper-cases the text.
+  TextStyle get overline =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        letterSpacing: _overlineTracking,
+        fontFeatures: _tabular,
+        color: _scheme.onSurfaceVariant,
+      );
+
+  /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
+  /// label's 0.1 tracking (S4).
+  TextStyle badgeLabel(Color ink) =>
+      chipCount(ink).copyWith(height: _pillHeight);
+
+  /// TagChip label: 12/600 at line-height 1, 0.1 tracking (S4).
+  TextStyle get tagLabel => _texts.labelSmall!.copyWith(
+    height: _pillHeight,
+    letterSpacing: _labelTracking,
+    color: _scheme.onSurfaceVariant,
+  );
+
+  /// Note text: the caption role at line-height 1.5 (S5).
+  TextStyle get noteText => _texts.labelSmall!.copyWith(
+    height: _noteHeight,
+    color: _scheme.onSurfaceVariant,
+  );
+
+  /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
+  /// tracking (S4), line-height 1.5 for the 18 band.
+  TextStyle get workloadText =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w400).copyWith(
+        height: _workloadHeight,
+        letterSpacing: _labelTracking,
+        fontFeatures: _tabular,
+        color: _scheme.onSurfaceVariant,
+      );
+
+  /// WorkloadBreakdownLine term: the connective style at 600 in its colour.
+  TextStyle workloadTerm(Color ink) => AppTypography.withWeight(
+    workloadText,
+    FontWeight.w600,
+  ).copyWith(color: ink);
+
+  /// MasteryDonut label: 9/700 at line-height 1, 0.1 tracking (S4), in the
+  /// arc colour. Below the 12 floor as the contract states (row 8).
+  TextStyle donutLabel(Color ink) =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        fontSize: _donutLabelSize,
+        height: _pillHeight,
+        letterSpacing: _labelTracking,
+        color: ink,
+      );
 
   /// SegmentedTray label: the caption role, onSurface when selected (I5).
   TextStyle trayLabel({required bool isSelected}) =>

@@ -19,4 +19,15 @@ abstract final class AppDecorations {
         : null,
     boxShadow: AppShadows.whisper(scheme),
   );
+
+  /// The tinted hero Card: the surface-hero fill, with the ghost edge in both
+  /// themes, because a borderless hero dissolves into the light page.
+  static BoxDecoration heroCard(ColorScheme scheme, MxDerivedColors derived) =>
+      raisedCard(scheme, derived).copyWith(
+        color: derived.surfaceHero,
+        border: Border.all(
+          color: derived.ghostBorder,
+          width: AppStroke.hairline,
+        ),
+      );
 }

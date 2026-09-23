@@ -93,10 +93,10 @@ class MxOptionRow extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(title, style: styles.optionTitle),
+                          Text(title, style: styles.rowTitle),
                           if (description case final text?) ...[
                             const SizedBox(height: _descriptionGap),
-                            Text(text, style: styles.optionDescription),
+                            Text(text, style: styles.rowDescription),
                           ],
                         ],
                       ),
