@@ -75,6 +75,8 @@ lib/
 │   ├── mx_semantic_colors.dart      ThemeExtension (nine stored colours)
 │   ├── mx_derived_colors.dart       the derived colours, computed once
 │   ├── mastery_ramp.dart            MasteryRamp utility
+│   ├── mx_text_styles.dart          component type treatments (phase 2)
+│   ├── app_decorations.dart         raised card surface (phase 2)
 │   ├── app_component_themes.dart    Material component themes (grows per phase)
 │   ├── app_theme.dart               buildLightTheme() / buildDarkTheme()
 │   └── theme_context.dart           context.colors / texts / semanticColors
@@ -327,8 +329,9 @@ in phases 4–6 also gets its gallery entry.
 
 **Goldens:**
 
-- One light and one dark golden per component, at 360×800, tagged `golden` in
-  `dart_test.yaml` and run with `TZ=UTC`.
+- One light and one dark golden per component, at 360×800 logical pixels,
+  captured at pixel ratio 3 (1080×2400) with real shadow blur, tagged `golden`
+  in `dart_test.yaml` and run with `TZ=UTC`.
 - `test/flutter_test_config.dart` loads the real Plus Jakarta Sans, so text does
   not render as Ahem boxes.
 - Tolerance is zero.
@@ -387,6 +390,14 @@ item names where it comes from.
 | 7 | ListRow title 14/600 vs foundations 16/500: the widget spec is implemented | critique P1, §5 rule |
 | 8 | MasteryDonut label under the 12px floor: the widget spec is implemented | critique P1, §5 rule |
 | 9 | Goldens are Windows-generated and must be regenerated when Linux CI exists | §8.2 |
+| 10 | AppBar, StudyTopBar (56) and the BottomNav bar (64) are minimum heights that grow with text scaling; MxAppShell places the app bar in-flow instead of `Scaffold.appBar` | phase 2 plan R1, R3 |
+| 11 | Button chip size paints `surfaceContainerLowest` + ghost edge with `onSurface` ink whatever the tone; the contract leaves chip ink unspecified | phase 2 plan R2 |
+| 12 | Breadcrumb ancestor segments have a 48×48 hit area; the row is 48 tall instead of 2 + text + 8 | phase 2 plan R4 |
+| 13 | The focus ring is a 2px `primary` side on the control's own edge; the contract's offset 2 is not drawn | phase 2 plan R5 |
+| 14 | StudyTopBar track is `progress-track` (`surfaceContainerHigh`) per its theme-consumption table, over "surfaceContainer" in its dimension line | phase 2 plan R6, critique P1 |
+| 15 | EmptyState tile→title (16) and title→body (8) gaps are UNSPECIFIED in the contract and use the spacing roles | phase 2 plan R7 |
+| 16 | EmptyState has no footnote slot until MxNote (phase 5); MxButton's loading spinner is a plain `CircularProgressIndicator` until MxSpinner (phase 6) | phase 2 plan R8 |
+| 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
