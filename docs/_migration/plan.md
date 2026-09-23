@@ -1,6 +1,6 @@
 # Kế hoạch tái cấu trúc docs → kiến trúc thân thiện với AI agent
 
-Trạng thái: **Bước 0 — chờ xác nhận.** Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
+Trạng thái: **Bước 0 — đã xác nhận Q1–Q10 (mục 6).** Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
 
 Mọi đường dẫn trong file này tính từ `docs/`. Trong bảng ánh xạ, `<slug>` là phần
 tên file chưa chốt; `check.py --plan` coi `<slug>` và `*` là wildcard, và cột đích
@@ -23,8 +23,9 @@ luôn là đường dẫn đầu tiên trong dấu backtick của ô.
 
 ## 2. Danh sách feature
 
-Thư mục feature = tên file đối tượng hiện tại. DOMAIN của ID giữ nguyên (xem Q1),
-nên có 3 feature mà tên thư mục khác DOMAIN; bảng này sẽ nằm trong `README.md` và
+Thư mục feature = tên file đối tượng hiện tại. Mỗi feature có thêm file tuỳ chọn
+`it-scenarios.md` (Q3b) khi có kịch bản IT truy vết về nó. DOMAIN của ID giữ nguyên (Q1),
+nên có 4 thư mục mà tên khác DOMAIN (`study-mode`/MODE, `tags`/TAG, `starter-decks`/STARTER, `reminders`/REMINDER); bảng này sẽ nằm trong `README.md` và
 `check.py` dùng nó để kiểm "ID thuộc đúng thư mục".
 
 | Feature (thư mục) | DOMAIN | BR | UC | `code` | Phạm vi (theo nguồn) |
@@ -42,7 +43,7 @@ nên có 3 feature mà tên thư mục khác DOMAIN; bảng này sẽ nằm tron
 | `transfer` | `TRANSFER` | 14 | 2 | `[]` | sub-project sau |
 | `starter-decks` | `STARTER` | 10 | 1 | `[]` | sub-project sau |
 | `reminders` | `REMINDER` | 12 | 1 | `[]` | sub-project sau |
-| *(shared)* | `PRIVACY` | 4 | 0 | — | V8.0 — xem Q2 |
+| *(shared)* | `CORE` (đổi từ `PRIVACY`) | 4 | 0 | — | V8.0 — Q2 |
 
 `depends_on` của từng feature README sẽ lấy từ trích dẫn BR chéo đã có (ví dụ
 `progress` → `study`, `srs`, `deck`); không thêm quan hệ nào không có trong nguồn.
@@ -98,7 +99,8 @@ state machine, validation, edge case, 6 UC) → `card` → `srs` → `study-mode
 
 | Đích | Nội dung | Lý do |
 |---|---|---|
-| `shared/rules/BR-PRIVACY-00{1..4}-*.md` | 4 BR riêng tư | Được trích bởi ≥ 6 đối tượng (progress, reminders, transfer, trash, study, search, settings, card); không có feature sở hữu (Q2) |
+| `shared/rules/BR-CORE-00{1..4}-*.md` | 4 BR riêng tư, **đổi ID** `BR-PRIVACY-00n` → `BR-CORE-00n` (Q2); sửa mọi trích dẫn trong `docs/` trừ `superpowers/` (giữ ID lịch sử) | Được trích bởi ≥ 6 đối tượng; không có feature sở hữu |
+| `shared/testing/` | `it-scenarios/README.md`, `00-agent-execution-guide.md`, `12-testing-pyramid-audit.md`, `14-host-coverage-map.md`, `scenario-catalog.md` (cột "Tệp" trỏ sang file đích mới); `it-scenarios.md` cho 5 kịch bản không truy vết feature nào | Hạ tầng kiểm thử dùng chung (Q3b). Catalog/audit/coverage map có thể chuyển sang `_generated/` sau khi có script — không làm trong task này |
 | `shared/decisions/ADR-001` | Platform decisions (`product.md`) | Quyết định có lựa chọn + hệ quả; `foundation-design §3` đã là nguồn gốc → ADR trỏ về spec, không chép (Q3) |
 | `shared/decisions/ADR-002` | Sensitive data + "chưa mã hoá DB" (`product.md`) | Quyết định có lý do và điều kiện xem lại |
 | `shared/decisions/ADR-003…006` | "Quyết định đã chốt (2026-07-28)": hai scheduler chọn theo deck · khoá-và-reset · starter là bản sao · cây deck một loại nội dung | Mỗi mục có quyết định + lý do + phương án bị loại; luật tương ứng đã ở BR-SRS/BR-STARTER/BR-DECK nên ADR chỉ giữ lý do và trỏ ID |
@@ -129,24 +131,26 @@ Theo đúng tiêu chí "dùng ≥ 2 feature" (tính trên `rules` của UC ∪ c
 | BR-PRIVACY-001…004 | ≥ 6 feature |
 
 Áp dụng nguyên văn tiêu chí sẽ đổi ID ~70 rule và kéo rule ra khỏi đối tượng mà nó
-ràng buộc. **Đề xuất (Q2):** BR ở lại feature **sở hữu** đối tượng nó ràng buộc; feature
-khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có feature sở hữu**
-(hiện chỉ PRIVACY). `BR-CORE-NNN` dành cho rule dùng chung **mới** sau này.
+ràng buộc. **Đã chốt (Q2):** BR ở lại feature **sở hữu** đối tượng nó ràng buộc; feature
+khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có feature sở hữu**:
+4 rule PRIVACY, đổi thành `BR-CORE-001…004` (cùng thứ tự, nên cũng là thứ tự xuất hiện).
+`BR-CORE-005` trở đi dành cho rule dùng chung mới.
 
-## 6. Câu hỏi cần quyết trước Bước 1
+## 6. Quyết định (đã xác nhận)
 
-| # | Câu hỏi | Đề xuất |
+| # | Câu hỏi | Quyết định |
 |---|---|---|
-| **Q1** | Giữ ID hiện có hay đánh số lại "theo thứ tự xuất hiện"? `document-conventions.md` §7 và `business-rules/README.md` cấm renumber ("lần renumber duy nhất" đã làm 2026-09-23); ID hiện tại **cố ý** không tăng theo thứ tự đọc | **Giữ nguyên 100% ID BR/UC.** "Đánh số theo thứ tự xuất hiện" chỉ áp cho ID mới (ADR-001…008) |
-| **Q2** | Rule ≥ 2 feature: chuyển thành BR-CORE (đổi ID) hay giữ ở feature sở hữu? PRIVACY: giữ `BR-PRIVACY-NNN` trong `shared/rules/` hay đổi thành `BR-CORE-001…004`? | Giữ ở feature sở hữu (mục 5). PRIVACY giữ ID `BR-PRIVACY-NNN` trong `shared/rules/`; `check.py` chấp nhận DOMAIN `CORE` và `PRIVACY` ở `shared/rules/` |
-| **Q3** | `it-scenarios/` (17 file) và `superpowers/` (4 file) không có vị trí trong cấu trúc đích | Giữ nguyên tại chỗ, không tách. `superpowers/` do Superpowers sở hữu (CLAUDE.md); `it-scenarios/` là đặc tả kiểm thử, có traceability riêng (`scenario-catalog.md`). Chỉ sửa link bị hỏng do di chuyển file khác. ADR-001 trỏ về `foundation-design §3` thay vì chép |
-| **Q4** | Điều hướng toàn app (`master-flow.md` §1–2, `product.md` "Điều hướng top-level") — tạo `shared/ui/navigation.md` (không có trong danh sách file mẫu của `shared/ui/`)? | Tạo `shared/ui/navigation.md` |
-| **Q5** | Bảng Validation → `features/<f>/ui.md`; dòng edge case → BR trích đầu tiên; dòng/đoạn **không trích BR nào** → đâu? (deck 5, card 4, srs ~9, starter 1; prose `study.md:211`, `study.md:299`, `study-mode.md:111`, bảng khởi tạo study state `card.md:49`) | Dòng không trích BR → `ui.md` (edge case/validation) hoặc `data.md` (state/bảng khởi tạo) của feature, kèm OPEN QUESTION "chưa gắn BR". Prose không trích BR → `## Lý do` của BR gần nhất **trong cùng section**, kèm ghi chú nguồn |
-| **Q6** | 73 chỗ BR.Related trỏ UC nhưng UC không liệt kê BR; 97 chỗ ngược lại. `rules` của UC lấy gì? | `rules` = "Business rules" của UC ∪ UC được nêu trong Related của BR, **bỏ BR deprecated** (BR-DECK-013→UC-CARD-001, BR-DECK-014→UC-DECK-002, BR-STUDY-001, BR-STUDY-011, BR-MODE-001; ghi OPEN QUESTION tại UC nếu UC đang trích BR deprecated trong thân bài) |
-| **Q7** | Header 7 dòng bắt buộc (`document-conventions.md` §4) bị thay bằng frontmatter — bỏ hẳn quy ước header? | Bỏ; frontmatter + `_generated/index.md` thay thế |
-| **Q8** | `frozen for MVP` và quy tắc "không sửa tài liệu frozen" (§8) không có trong enum mới | Chuyển quy tắc §8 vào `README.md` thành: BR `active` và UC `ready` là hợp đồng; sửa phải là thay đổi có chủ đích. Task này được coi là cho phép sửa mọi file frozen trong `docs/` |
-| **Q9** | `## Acceptance criteria` dạng Given/When/Then không có trong nguồn — viết mới là bịa | Để `- [ ] OPEN QUESTION: chưa có AC trong nguồn` ở cả 22 UC; Postconditions giữ nguyên văn ở `## Local`. (Phương án khác: chép Postconditions thành AC không có Given/When/Then) |
-| **Q10** | `title` + `summary` của 261 BR dạng bảng phải viết mới (nguồn không có) | Agent viết, chỉ rút gọn câu rule, không thêm ngữ nghĩa; duyệt theo từng feature ở điểm dừng |
+| Q1 | Giữ ID hay đánh số lại theo thứ tự xuất hiện (`document-conventions.md` §7 cấm renumber) | **Giữ nguyên ID BR/UC.** "Theo thứ tự xuất hiện" chỉ áp cho ID mới (ADR-001…008). Ngoại lệ duy nhất: Q2 |
+| Q2 | Rule ≥ 2 feature | **Ở lại feature sở hữu.** 4 rule PRIVACY → `shared/rules/BR-CORE-001…004`; sửa trích dẫn trong 13 file ngoài `superpowers/` |
+| Q3 | `it-scenarios/`, `superpowers/` | `superpowers/` **giữ nguyên tại chỗ**. `it-scenarios/` **tách vào feature** (Q3b) |
+| Q3b | Tách it-scenarios thế nào | Mỗi kịch bản `## IT-…` → `features/<f>/it-scenarios.md`, `<f>` = DOMAIN của UC đầu tiên (không có UC thì BR đầu tiên) trong cột "Truy vết" của `scenario-catalog.md`; không truy vết feature nào → `shared/testing/it-scenarios.md`. Giữ ID IT. File dùng chung → `shared/testing/`. Phân bố: study 55, deck 38, card 24, study-mode 8, srs 5, shared 5, transfer 3, tags 3, progress 1 |
+| Q4 | Điều hướng toàn app | `shared/ui/navigation.md` |
+| Q5 | Dòng/đoạn không trích BR | Edge case/validation → `ui.md`; state/bảng khởi tạo → `data.md` của feature, kèm OPEN QUESTION "chưa gắn BR". Prose → `## Lý do` của BR gần nhất trong cùng section, ghi nguồn |
+| Q6 | `rules` của UC | Hợp "Business rules" của UC ∪ UC nêu trong Related của BR; bỏ BR deprecated (ghi OPEN QUESTION nếu thân UC còn trích BR deprecated) |
+| Q7 | Header 7 dòng | Bỏ; frontmatter + `_generated/index.md` thay thế |
+| Q8 | `frozen for MVP` | Chuyển thành quy tắc trong `README.md`: BR `active`, UC `ready` là hợp đồng; sửa phải có chủ đích và nêu file được sửa. Task này được phép sửa mọi file frozen trong `docs/` |
+| Q9 | Acceptance criteria | `- [ ] OPEN QUESTION: chưa có AC trong nguồn` ở cả 22 UC; Postconditions giữ nguyên văn ở `## Local` |
+| Q10 | `title`/`summary` của 261 BR dạng bảng | Agent viết, chỉ rút gọn câu rule, không thêm ngữ nghĩa; duyệt ở điểm dừng từng feature |
 
 ## 7. Mâu thuẫn / mơ hồ đã xác minh (sẽ ghi `> ⚠️ OPEN QUESTION` tại file đích)
 
@@ -164,7 +168,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | OQ-10 | File sub-project sau mang `Status: frozen for MVP` trong khi thân nói "sub-project sau" | `trash.md:5` (và tags, transfer, starter-decks, reminders; cặp UC) | `trash.md:13` … | Tự hết khi bỏ header; phạm vi ghi ở feature README |
 | OQ-11 | `use-cases/README.md` nói phạm vi chỉ must-have nhưng liệt kê UC should/nice/sub-project sau | `use-cases/README.md:7` | `use-cases/README.md:39-45` | Tự hết khi README mới bỏ câu phạm vi đó — cần xác nhận |
 | OQ-12 | M6 (starter) đánh số Must-have nhưng văn bản nói không phải must-have V8.0 | `product.md:245` | `product.md:239` | `features/starter-decks/README.md` |
-| OQ-13 | Số kịch bản IT lệch: README "141 dòng", catalog có 142 dòng `IT-`, audit tổng 163 | `it-scenarios/README.md:81` | `it-scenarios/12-testing-pyramid-audit.md:24` | Không migrate (Q3) — chỉ báo cáo |
+| OQ-13 | Số kịch bản IT lệch: README "141 dòng", catalog có 142 dòng `IT-`, audit tổng 163 | `it-scenarios/README.md:81` | `it-scenarios/12-testing-pyramid-audit.md:24` | `shared/testing/README.md` |
 | OQ-14 | Validation `srs.md:282-283` và nhiều dòng edge case/validation không trích BR nào | `deck.md:102-104,128`, `card.md:123-124,146`, `srs.md:247-302` | — | Xem Q5 |
 
 ## 8. Rủi ro ngoài phạm vi (không sửa trong task này)
@@ -173,7 +177,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 |---|---|
 | `tools/check_docs_refs.py` sẽ hỏng | Đọc cứng `docs/business-rules/`, `docs/use-cases/`, `docs/data-model.md`, `docs/product/`. Nằm ngoài `tools/docs/` → không sửa; `check.py` mới thay chức năng. Cần quyết: xoá hay cập nhật trong task riêng |
 | `.claude/skills/` trỏ đường dẫn docs cũ | Đã lỗi thời **từ trước**: `docs/business-rules.md`, `docs/use-cases.md`, `docs/checklist.md`, `docs/wbs.md` (flutter-workflow, flutter-product-spec, flutter-feature-slice, flutter-testing, flutter-data-layer, flutter-drift; `flutter-workflow/scripts/check_docs.py:97-103`). Migration làm lệch thêm; cần task riêng |
-| `superpowers/` giữ ID cũ | Theo quyết định của spec 2026-09-23; không đụng |
+| `superpowers/` giữ ID cũ | Theo quyết định của spec 2026-09-23; không đụng. Sau Q2, `BR-PRIVACY-*` trong `superpowers/` là ID lịch sử; `check.py` bỏ qua `superpowers/` khi kiểm tham chiếu ID (vẫn kiểm link) |
 
 ---
 
@@ -306,248 +310,248 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `document-conventions.md:249` ## 8. Tài liệu frozen và phạm vi sửa | `README.md` | — | ⚠️ Q8: `frozen for MVP` không có trong enum mới |
 | `document-conventions.md:265` ## 9. Ví dụ không phải là rule | `README.md` | — | mục Convention |
 | `document-conventions.md:278` ## 10. Validation | `README.md` | — | mục "Lệnh kiểm chứng" (generate.py/check.py) |
-| `it-scenarios/00-agent-execution-guide.md:1` # Hướng dẫn AI agent thực thi kịch bản IT | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:13` ## 1. Điểm bắt đầu bắt buộc | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:33` ### 1.1. Tự kiểm tra trước khi chạy | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:48` ## 2. Mức sẵn sàng | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:63` ## 3. Hồ sơ thực thi | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:87` ## 4. Môi trường xác định | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:109` ## 5. Công thức chuẩn bị hoàn toàn qua giao diện | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:111` ### SETUP-EMPTY | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:119` ### SETUP-D-EB | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:125` ### SETUP-D-SM2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:131` ### SETUP-ROOTS | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:138` ### SETUP-TREE-UNSET | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:147` ### SETUP-UNSET-CHILD:&lt;name&gt; | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:155` ### SETUP-TREE-CARD | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:161` ### SETUP-CARD-BASIC | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:168` ### SETUP-CARD-PLAIN | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:174` ### SETUP-CARD-TAGS | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:180` ### SETUP-CARD-EMPTY-TYPED | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:188` ### SETUP-CARD-SINGLE | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:192` ### SETUP-MOVE-TREE | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:199` ### SETUP-DECK-TYPED-WITH-CHILD | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:206` ### SETUP-DECK-TYPED-EMPTY | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:212` ### SETUP-CYCLE-TREE | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:218` ### SETUP-CROSS-SCHEDULER-MOVE | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:225` ### SETUP-SEARCH-TREES | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:232` ### SETUP-DEEP-10 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:238` ### SETUP-ROOT-TRIO | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:244` ### Dữ liệu thẻ học chuẩn | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:257` ### SETUP-STUDY-EB-5-FULL | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:264` ### SETUP-STUDY-EB-5-PLAIN | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:269` ### SETUP-STUDY-EB-1 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:274` ### SETUP-STUDY-EB-4 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:280` ### SETUP-STUDY-SM2-4 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:287` ### SETUP-STUDY-EB-21 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:293` ### SETUP-STUDY-SCOPE | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:300` ### SETUP-STUDY-ALL-MODES | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:310` ## 6. Hợp đồng dữ liệu dựng sẵn | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:312` ### 6.1. Khả năng bắt buộc của harness thực thi | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:336` ### 6.2. Bộ dữ liệu Study bắt buộc nhưng chưa triển khai | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:344` #### S-DUE / S-PROGRESS / S-STUDY-MIXED-EB-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:359` #### S-STUDY-FUTURE-EB-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:365` #### S-STUDY-BROKEN-OPTIONS-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:374` #### S-STUDY-REVIEW-EB-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:381` #### S-STUDY-REVIEW-EB-MINIMAL-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:387` #### S-STUDY-FILL-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:393` #### S-STUDY-GUESS-BLOCKED-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:400` #### S-STUDY-GUESS-SOURCE-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:410` #### S-STUDY-REVIEW-SM2-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:415` #### S-STUDY-RESUME-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:421` #### S-STUDY-FAILURE-V2 | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:427` ## 7. Hợp đồng dọn dẹp | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:439` ## 8. Kết luận và bằng chứng | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:441` ### 8.1. Trạng thái lần chạy | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:455` ### 8.2. Bằng chứng tối thiểu | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:464` ### 8.3. Mẫu báo cáo | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:483` ## 9. Quy tắc đối chiếu không mơ hồ | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:485` ### 9.1. Thứ tự tiêu chí kết luận | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:502` ### 9.2. Cách mở rộng tiền điều kiện | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/00-agent-execution-guide.md:511` ### 9.3. Quy tắc kết quả mong đợi | `it-scenarios/00-agent-execution-guide.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:1` # Kịch bản IT — Khởi động, điều hướng và tiếp tục | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:13` ## IT-NAV-001 — Cold start mở đúng danh sách Deck | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:24` ## IT-NAV-002 — Chuyển giữa tab Thư viện và Học giữ nguyên bộ thẻ đang mở | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:35` ## IT-NAV-003 — Back đi lên đúng một cấp trong cây | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:46` ## IT-NAV-004 — Breadcrumb quay về ancestor đã chọn | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:57` ## IT-NAV-005 — Route không hợp lệ có lối phục hồi an toàn | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:70` ## IT-NAV-006 — Hành trình Deck/Card xuyên suốt và còn dữ liệu sau restart | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:90` ## IT-NAV-007 — Hành trình quản lý nội dung chạy khi offline | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:103` ## IT-NAV-008 — Back từ màn vào học quay về đúng bộ thẻ nguồn mà không tạo phiên | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:115` ## IT-NAV-009 — Back qua màn chọn chế độ không tạo phiên và giữ đúng ngăn xếp | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:127` ## IT-NAV-010 — Back của hệ thống trong phiên dùng cùng hợp đồng thoát như nút ✕ | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:142` ## IT-NAV-011 — Bốn destination top-level, Tiến độ chỉ-đọc và một placeholder không tạo phiên, không ghi DB | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/01-navigation-and-continuity.md:159` ## IT-NAV-012 — Import wizard là full-screen task phía trên shell | `it-scenarios/01-navigation-and-continuity.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:1` # IT scenarios — Vòng đời root deck | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:13` ## IT-DECK-001 — Tạo root deck dùng Eight Box | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:28` ## IT-DECK-002 — Tạo root deck dùng SM-2 và cho phép trùng tên | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:39` ## IT-DECK-003 — Không tạo deck khi thiếu dữ liệu bắt buộc | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:51` ## IT-DECK-004 — Giới hạn tên và bảo toàn nội dung khi validation lỗi | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:62` ## IT-DECK-005 — Huỷ form có và không có thay đổi | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:74` ## IT-DECK-006 — Đổi tên root deck | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:89` ## IT-DECK-007 — Huỷ xoá root deck | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/02-root-deck-lifecycle.md:100` ## IT-DECK-008 — Xác nhận xoá root deck và toàn bộ cây | `it-scenarios/02-root-deck-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:1` # IT scenarios — Cây deck, loại nội dung và di chuyển | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:13` ## IT-TREE-001 — Root deck chỉ cho tạo deck con | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:26` ## IT-TREE-002 — Deck con chưa định loại cho phép chọn card hoặc deck | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:36` ## IT-TREE-003 — Card đầu tiên cố định deck thành loại card | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:51` ## IT-TREE-004 — Deck con đầu tiên cố định deck thành loại deck | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:65` ## IT-TREE-005 — Validation thất bại không làm deck bị khoá loại | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:77` ## IT-TREE-006 — Xoá child cuối đưa sub-deck về chưa định loại | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:89` ## IT-TREE-007 — Di chuyển child cuối đi cũng mở khoá loại của deck nguồn | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:105` ## IT-TREE-008 — Deck còn nội dung giữ nguyên loại | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:120` ## IT-TREE-009 — Di chuyển sub-deck tới đích hợp lệ trong cùng cây | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:134` ## IT-TREE-010 — Không cho di chuyển vào chính nó hoặc descendant | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:145` ## IT-TREE-011 — Không cho di chuyển deck vào deck chứa card | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:156` ## IT-TREE-012 — Không cho move giữa hai root khác scheduler | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:167` ## IT-TREE-013 — Chặn tạo hoặc move vượt quá 10 cấp | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/03-deck-tree-and-content-type.md:178` ## IT-TREE-014 — Xoá card cuối mở khoá lại loại nội dung của deck | `it-scenarios/03-deck-tree-and-content-type.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:1` # IT scenarios — Khám phá deck và theo dõi tiến độ | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:13` ## IT-DISC-001 — Deck tile trình bày đủ thông tin ra quyết định | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:27` ## IT-DISC-002 — Không có card đến hạn là trạng thái bình thường | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:37` ## IT-DISC-003 — Lọc chỉ các deck đang có card đến hạn | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:51` ## IT-DISC-004 — Bộ lọc không có kết quả có lối quay lại | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:61` ## IT-DISC-005 — Sắp xếp theo tên và gần đây | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:75` ## IT-DISC-006 — Tìm deck trong đúng phạm vi subtree | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:90` ## IT-DISC-007 — Tìm kiếm không khớp có thông tin phạm vi và lối xoá | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/04-deck-discovery-and-progress.md:100` ## IT-DISC-008 — Summary và danh sách tự cập nhật sau thay đổi nội dung | `it-scenarios/04-deck-discovery-and-progress.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:1` # IT scenarios — Vòng đời card | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:13` ## IT-CARD-001 — Empty card deck có hành động thêm card đầu tiên | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:23` ## IT-CARD-002 — Tạo card với hai mặt bắt buộc | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:38` ## IT-CARD-003 — Validation mặt trước và mặt sau | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:50` ## IT-CARD-004 — Giới hạn độ dài nội dung card | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:61` ## IT-CARD-005 — Tạo card có thông tin bổ sung | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:73` ## IT-CARD-006 — Giới hạn 240 ký tự cho từng trường bổ sung | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:84` ## IT-CARD-007 — Lưu và thêm card khác | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:96` ## IT-CARD-008 — Sửa card và giữ vị trí quản lý ổn định | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:111` ## IT-CARD-009 — Sửa nội dung không làm mất tiến độ hoặc cờ | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:122` ## IT-CARD-010 — Huỷ và xác nhận xoá card | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:137` ## IT-CARD-011 — Xoá card cuối đưa deck về chưa định loại | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:149` ## IT-CARD-012 — Chuyển card sang deck khác cùng cây giữ nguyên tiến độ | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:163` ## IT-CARD-013 — Đích không hợp lệ bị từ chối trước khi ghi | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:175` ## IT-CARD-014 — Import CSV/paste tạo card với study state mới | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/05-card-lifecycle.md:189` ## IT-CARD-015 — Import là tất-cả-hoặc-không, và đích không hợp lệ bị từ chối | `it-scenarios/05-card-lifecycle.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:1` # IT scenarios — Tìm kiếm, tổ chức và tiến độ card | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:13` ## IT-ORG-001 — Tìm card theo mặt trước và mặt sau | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:27` ## IT-ORG-002 — Search không có kết quả và phục hồi | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:37` ## IT-ORG-003 — Sắp xếp card mới nhất và đến hạn trước | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:48` ## IT-ORG-004 — Gắn cờ và bỏ cờ một card | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:63` ## IT-ORG-005 — Lọc All, Due, New và Flagged với số lượng đúng | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:76` ## IT-ORG-006 — Filter không có kết quả không bị hiểu là deck rỗng | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:86` ## IT-ORG-007 — Thêm và tái sử dụng tag không phân biệt hoa thường | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:101` ## IT-ORG-008 — Xoá tag khỏi card không xoá nội dung card | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:112` ## IT-ORG-009 — Validation tên tag và giới hạn 10 tag | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:124` ## IT-ORG-010 — Trạng thái, due badge và progress panel nhất quán | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:139` ## IT-ORG-011 — Breadcrumb và tên deck trên card list cập nhật sau rename | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:150` ## IT-ORG-012 — Danh sách lớn tải theo cửa sổ và không mất card | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:162` ## IT-ORG-013 — Chọn nhiều card và Select all trên tập đã lọc | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/06-card-discovery-and-organization.md:177` ## IT-ORG-014 — Bulk action là tất-cả-hoặc-không | `it-scenarios/06-card-discovery-and-organization.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:1` # Kịch bản IT — Điểm vào chức năng học và tùy chọn | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:13` ## IT-STUDY-001 — Màn vào học tách thẻ mới và thẻ đến hạn thành hai tập rời nhau | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:28` ## IT-STUDY-002 — Chỉ xem số lượng hoặc huy hiệu không tạo phiên | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:39` ## IT-STUDY-003 — Không có thẻ đến hạn là trạng thái bình thường và không cho ôn sớm | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:51` ## IT-STUDY-004 — Eight Box chỉ đưa các chế độ chấm điểm hợp lệ vào ôn tập | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:66` ## IT-STUDY-005 — SM-2 chỉ có một chế độ ôn nên vào thẳng `Self assess` | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:77` ## IT-STUDY-006 — Chế độ thiếu dữ liệu bị vô hiệu hóa kèm lý do, không mở màn rỗng | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:93` ## IT-STUDY-007 — Số lượng của từng chế độ ôn phản ánh đúng tập thẻ sử dụng được | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:104` ## IT-STUDY-008 — Tùy chọn toàn ứng dụng được giữ sau khi khởi động lại | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:118` ## IT-STUDY-009 — Ghi đè ở bộ thẻ gốc thắng mặc định và bộ thẻ con không có cấu hình riêng | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:130` ## IT-STUDY-010 — Phiên chốt giới hạn thẻ lúc mở và không đổi theo tùy chọn sau đó | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:142` ## IT-STUDY-011 — Phạm vi phiên là bộ thẻ đang mở và toàn bộ cây con của nó | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:154` ## IT-STUDY-012 — `Created` chọn đúng tập cũ nhất; `Random` không đổi tập đã chốt khi tiếp tục | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/07-study-entry-and-options.md:166` ## IT-STUDY-013 — Cấu hình bộ thẻ gốc không đọc được thì dùng mặc định và không chặn học | `it-scenarios/07-study-entry-and-options.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:1` # Kịch bản IT — Phiên học thẻ mới | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:13` ## IT-LEARN-001 — Eight Box đi đúng chuỗi năm giai đoạn | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:29` ## IT-LEARN-002 — SM-2 đi đúng chuỗi `Browse` rồi `Self assess` | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:41` ## IT-LEARN-003 — `Browse` chỉ làm quen, hiện cả hai mặt và không chấm điểm | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:53` ## IT-LEARN-004 — Mọi giai đoạn dùng cùng tập thẻ nhưng thứ tự độc lập | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:65` ## IT-LEARN-005 — Thẻ thiếu câu ví dụ được bỏ qua ở `Fill` nhưng vẫn hoàn tất học mới | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:77` ## IT-LEARN-006 — `Guess` bị bỏ qua khi tập phiên không đủ năm nghĩa khác nhau | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:88` ## IT-LEARN-007 — `Match` bị bỏ qua khi chỉ có một cặp | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:99` ## IT-LEARN-008 — Thẻ sai trong một vòng chỉ rời tập không đạt sau vòng sạch | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:111` ## IT-LEARN-009 — `Self assess` lặp thẻ đúng khoảng cách và bật cờ ở trần học lại | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:123` ## IT-LEARN-010 — Chỉ hoàn tất chuỗi mới tạo lịch đầu tiên và khóa thuật toán xếp lịch | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:136` ## IT-LEARN-011 — Giới hạn thẻ là trần mỗi phiên, không phải hạn mức ngày | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/08-study-learning-session.md:148` ## IT-LEARN-012 — Bỏ dở học mới không tạo lịch nửa chừng và lần sau học lại từ `Browse` | `it-scenarios/08-study-learning-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:1` # Kịch bản IT — Phiên ôn tập và thuật toán xếp lịch | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:13` ## IT-REVIEW-001 — Hàng đợi ôn tập chỉ lấy thẻ đã học và đang đến hạn | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:24` ## IT-REVIEW-002 — Phiên ôn tập Eight Box chạy đúng một chế độ đã chọn | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:38` ## IT-REVIEW-003 — Phiên ôn tập SM-2 lấy hành động trực tiếp từ người dùng | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:50` ## IT-REVIEW-004 — Thẻ có hạn sớm hơn được phục vụ trước và giới hạn tính theo thẻ riêng biệt | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:62` ## IT-REVIEW-005 — Lượt đầu là theo lịch, lượt lặp là học lại và không xếp lịch lần hai | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:73` ## IT-REVIEW-006 — Eight Box đưa `Forgotten` và `Remembered` tới đúng hộp/khoảng cách | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:84` ## IT-REVIEW-007 — SM-2 áp dụng `Again`/`Hard`/`Good`/`Easy` đúng thứ tự cập nhật | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:96` ## IT-REVIEW-008 — Không thể ôn lại trước hạn vừa được xếp | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:108` ## IT-REVIEW-009 — Tổng kết phân biệt thẻ đã xử lý và thẻ đến hạn còn ngoài giới hạn | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/09-study-review-session.md:119` ## IT-REVIEW-010 — Số lượng và hàng đợi của từng chế độ không dùng chung một con số giả | `it-scenarios/09-study-review-session.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:1` # Kịch bản IT — Sáu chế độ học | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:13` ## IT-MODE-001 — Khung phiên luôn nói rõ chế độ, bộ thẻ, loại phiên và tiến độ | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:25` ## IT-MODE-002 — `Browse` hiện hai mặt cùng lúc, đi tiếp và xem lại bằng vuốt | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:46` ## IT-MODE-003 — `Match` giữ nguyên bàn và phân biệt ba trạng thái ô | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:58` ## IT-MODE-004 — `Match` quy kết lượt cho thuật ngữ được chọn trước và giữ thẻ sai sang vòng sau | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:73` ## IT-MODE-005 — `Guess` luôn có đúng năm lựa chọn khác nghĩa và chỉ nhận lần chạm đầu | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:88` ## IT-MODE-006 — `Guess` bị bỏ qua khi cả tập phiên không đủ năm nghĩa | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:99` ## IT-MODE-007 — Thứ tự thẻ và lựa chọn ổn định khi Tiếp tục nhưng là hai hoán vị độc lập | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:111` ## IT-MODE-008 — `Recall` đo 20 giây tương tác, lật thủ công trước hạn được ưu tiên | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:126` ## IT-MODE-009 — `Recall` hết giờ tự lật, khóa kết cục sai và giữ thời gian khi Tiếp tục | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:141` ## IT-MODE-010 — `Fill` bỏ khoảng trắng, không phân biệt hoa thường nhưng giữ dấu; ô nhập rỗng không tiến lượt | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:153` ## IT-MODE-011 — Gợi ý không tự đổi kết quả và `Fill` chỉ nhận một lần gửi | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:165` ## IT-MODE-012 — `Self assess` chỉ hiện hành động sau khi người dùng lật | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:177` ## IT-MODE-013 — Các chế độ học dùng được với trình đọc màn hình và cỡ chữ lớn | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:189` ## IT-MODE-014 — `Guess` chặn nguyên tử nếu một câu hỏi bất ngờ thiếu phương án nhiễu | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/10-study-modes.md:201` ## IT-MODE-015 — `Guess` chỉ lấy phương án nhiễu hợp lệ trong cùng cây mà không lộ thẻ mới | `it-scenarios/10-study-modes.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:1` # Kịch bản IT — Tiếp tục phiên, ngoại tuyến và lỗi | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:13` ## IT-CONT-001 — Tiến trình bị hệ điều hành thu hồi trong cùng ngày vẫn Tiếp tục đúng điểm dừng | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:28` ## IT-CONT-002 — Chọn phiên mới khi có phiên cùng ngày sẽ đóng phiên cũ do người dùng bỏ | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:40` ## IT-CONT-003 — Phiên từ ngày học trước bị đóng với lý do gián đoạn | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:52` ## IT-CONT-004 — Nút ✕ là thoát chủ động, không phải thao tác Quay lại vô hại | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:64` ## IT-CONT-005 — Phiên hoàn tất có tổng kết và không còn hàng đợi chờ xử lý | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:76` ## IT-CONT-006 — Hàng đợi bất biến khi nội dung bộ thẻ đổi sau lúc mở phiên | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:88` ## IT-CONT-007 — Xóa bộ thẻ đang học kết thúc phiên và phục hồi điều hướng | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:103` ## IT-CONT-008 — Toàn bộ phiên học hoạt động ngoại tuyến | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:115` ## IT-CONT-009 — Đặt lại khi phiên đang mở làm phiên mất hiệu lực với `scheduler_reset` | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:127` ## IT-CONT-010 — Phiên thuộc thế hệ dữ liệu cũ bị từ chối nguyên tử | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:139` ## IT-CONT-011 — Lỗi ghi tạm thời không tiến thẻ và thử lại chỉ ghi một lần | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:150` ## IT-CONT-012 — Lỗi lưu trữ không thể tiếp tục đóng phiên ở trạng thái `failed` nhưng giữ lượt cũ | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:162` ## IT-CONT-013 — Lỗi đọc thẻ cho phép Thử lại mà không làm mất điểm dừng | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/11-study-continuity-and-failures.md:177` ## IT-CONT-014 — Chọn Ôn tập khi có phiên cùng ngày đóng phiên cũ do người dùng bỏ | `it-scenarios/11-study-continuity-and-failures.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/12-testing-pyramid-audit.md:1` # Audit tháp kiểm thử cho toàn bộ kịch bản IT | `it-scenarios/12-testing-pyramid-audit.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/12-testing-pyramid-audit.md:17` ## B. Phân bố theo hồ sơ thực thi | `it-scenarios/12-testing-pyramid-audit.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/12-testing-pyramid-audit.md:48` ## C. Phân loại theo hồ sơ thực thi | `it-scenarios/12-testing-pyramid-audit.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/12-testing-pyramid-audit.md:184` ## E. Điều tài liệu này *không* làm | `it-scenarios/12-testing-pyramid-audit.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:1` # Kịch bản ranh giới nền tảng | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:22` ## IT-PLAT-001 — Khởi động nguội bản đã cài đặt vào đúng danh sách bộ thẻ | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:37` ## IT-PLAT-002 — Dữ liệu đã ghi sống sót qua một lần chết tiến trình thật | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:55` ## IT-PLAT-003 — Phiên học bị hệ điều hành thu hồi vẫn tiếp tục đúng điểm dừng | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:70` ## IT-PLAT-004 — Deep link đi từ hệ điều hành vào đúng màn hình | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:84` ## IT-PLAT-005 — Cử chỉ back của hệ thống trong phiên dùng cùng hợp đồng thoát như nút ✕ | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:97` ## IT-PLAT-006 — Smoke trước phát hành: cài, mở, tạo, học | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/13-platform-boundaries.md:114` ## IT-PLAT-009 — Hệ thống cấp CJK mà app đã thôi bundle | `it-scenarios/13-platform-boundaries.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/14-host-coverage-map.md:1` # Bản đồ coverage host cho từng kịch bản | `it-scenarios/14-host-coverage-map.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:1` # Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:13` ## 1. Mục tiêu | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:60` ## 2. Phạm vi hiện tại | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:98` ## 3. Quy ước kịch bản | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:118` ### 3.1. Thuật ngữ dành cho người rà soát và AI agent | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:139` ## 4. Môi trường và dữ liệu chuẩn | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:141` ### 4.1. Môi trường | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:155` ### 4.2. Dữ liệu tạo qua UI | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:167` ### 4.3. Dữ liệu seed dành riêng cho trạng thái học | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:184` ## 5. Traceability nghiệp vụ | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/README.md:206` ## 6. Definition of ready cho AI agent | `it-scenarios/README.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:17` ## Điều hướng và tiếp tục | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:34` ## Vòng đời bộ thẻ gốc | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:47` ## Cây bộ thẻ và loại nội dung | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:66` ## Khám phá bộ thẻ và tiến độ | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:79` ## Vòng đời thẻ | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:99` ## Khám phá và tổ chức thẻ | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:118` ## Điểm vào chức năng học và tùy chọn | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:136` ## Phiên học thẻ mới | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:153` ## Phiên ôn tập | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:168` ## Các chế độ học | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:188` ## Tiếp tục phiên học và lỗi | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:207` ## Ranh giới nền tảng | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
-| `it-scenarios/scenario-catalog.md:219` ## Bất biến của danh mục | `it-scenarios/scenario-catalog.md` (giữ nguyên) | — | ⚠️ Q3: không có vị trí trong cấu trúc đích |
+| `it-scenarios/00-agent-execution-guide.md:1` # Hướng dẫn AI agent thực thi kịch bản IT | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:13` ## 1. Điểm bắt đầu bắt buộc | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:33` ### 1.1. Tự kiểm tra trước khi chạy | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:48` ## 2. Mức sẵn sàng | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:63` ## 3. Hồ sơ thực thi | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:87` ## 4. Môi trường xác định | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:109` ## 5. Công thức chuẩn bị hoàn toàn qua giao diện | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:111` ### SETUP-EMPTY | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:119` ### SETUP-D-EB | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:125` ### SETUP-D-SM2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:131` ### SETUP-ROOTS | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:138` ### SETUP-TREE-UNSET | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:147` ### SETUP-UNSET-CHILD:&lt;name&gt; | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:155` ### SETUP-TREE-CARD | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:161` ### SETUP-CARD-BASIC | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:168` ### SETUP-CARD-PLAIN | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:174` ### SETUP-CARD-TAGS | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:180` ### SETUP-CARD-EMPTY-TYPED | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:188` ### SETUP-CARD-SINGLE | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:192` ### SETUP-MOVE-TREE | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:199` ### SETUP-DECK-TYPED-WITH-CHILD | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:206` ### SETUP-DECK-TYPED-EMPTY | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:212` ### SETUP-CYCLE-TREE | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:218` ### SETUP-CROSS-SCHEDULER-MOVE | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:225` ### SETUP-SEARCH-TREES | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:232` ### SETUP-DEEP-10 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:238` ### SETUP-ROOT-TRIO | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:244` ### Dữ liệu thẻ học chuẩn | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:257` ### SETUP-STUDY-EB-5-FULL | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:264` ### SETUP-STUDY-EB-5-PLAIN | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:269` ### SETUP-STUDY-EB-1 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:274` ### SETUP-STUDY-EB-4 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:280` ### SETUP-STUDY-SM2-4 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:287` ### SETUP-STUDY-EB-21 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:293` ### SETUP-STUDY-SCOPE | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:300` ### SETUP-STUDY-ALL-MODES | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:310` ## 6. Hợp đồng dữ liệu dựng sẵn | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:312` ### 6.1. Khả năng bắt buộc của harness thực thi | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:336` ### 6.2. Bộ dữ liệu Study bắt buộc nhưng chưa triển khai | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:344` #### S-DUE / S-PROGRESS / S-STUDY-MIXED-EB-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:359` #### S-STUDY-FUTURE-EB-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:365` #### S-STUDY-BROKEN-OPTIONS-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:374` #### S-STUDY-REVIEW-EB-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:381` #### S-STUDY-REVIEW-EB-MINIMAL-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:387` #### S-STUDY-FILL-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:393` #### S-STUDY-GUESS-BLOCKED-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:400` #### S-STUDY-GUESS-SOURCE-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:410` #### S-STUDY-REVIEW-SM2-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:415` #### S-STUDY-RESUME-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:421` #### S-STUDY-FAILURE-V2 | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:427` ## 7. Hợp đồng dọn dẹp | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:439` ## 8. Kết luận và bằng chứng | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:441` ### 8.1. Trạng thái lần chạy | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:455` ### 8.2. Bằng chứng tối thiểu | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:464` ### 8.3. Mẫu báo cáo | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:483` ## 9. Quy tắc đối chiếu không mơ hồ | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:485` ### 9.1. Thứ tự tiêu chí kết luận | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:502` ### 9.2. Cách mở rộng tiền điều kiện | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/00-agent-execution-guide.md:511` ### 9.3. Quy tắc kết quả mong đợi | `shared/testing/agent-execution-guide.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/01-navigation-and-continuity.md:1` # Kịch bản IT — Khởi động, điều hướng và tiếp tục | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/01-navigation-and-continuity.md:13` ## IT-NAV-001 — Cold start mở đúng danh sách Deck | `features/deck/it-scenarios.md` | IT-NAV-001 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/01-navigation-and-continuity.md:24` ## IT-NAV-002 — Chuyển giữa tab Thư viện và Học giữ nguyên bộ thẻ đang mở | `features/study/it-scenarios.md` | IT-NAV-002 | theo truy vết đầu tiên trong catalog: `BR-STUDY-020` |
+| `it-scenarios/01-navigation-and-continuity.md:35` ## IT-NAV-003 — Back đi lên đúng một cấp trong cây | `features/deck/it-scenarios.md` | IT-NAV-003 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/01-navigation-and-continuity.md:46` ## IT-NAV-004 — Breadcrumb quay về ancestor đã chọn | `features/deck/it-scenarios.md` | IT-NAV-004 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/01-navigation-and-continuity.md:57` ## IT-NAV-005 — Route không hợp lệ có lối phục hồi an toàn | `shared/testing/it-scenarios.md` | IT-NAV-005 | catalog không truy vết UC/BR của feature nào |
+| `it-scenarios/01-navigation-and-continuity.md:70` ## IT-NAV-006 — Hành trình Deck/Card xuyên suốt và còn dữ liệu sau restart | `features/deck/it-scenarios.md` | IT-NAV-006 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/01-navigation-and-continuity.md:90` ## IT-NAV-007 — Hành trình quản lý nội dung chạy khi offline | `shared/testing/it-scenarios.md` | IT-NAV-007 | catalog không truy vết UC/BR của feature nào |
+| `it-scenarios/01-navigation-and-continuity.md:103` ## IT-NAV-008 — Back từ màn vào học quay về đúng bộ thẻ nguồn mà không tạo phiên | `features/study/it-scenarios.md` | IT-NAV-008 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/01-navigation-and-continuity.md:115` ## IT-NAV-009 — Back qua màn chọn chế độ không tạo phiên và giữ đúng ngăn xếp | `features/study/it-scenarios.md` | IT-NAV-009 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/01-navigation-and-continuity.md:127` ## IT-NAV-010 — Back của hệ thống trong phiên dùng cùng hợp đồng thoát như nút ✕ | `features/study/it-scenarios.md` | IT-NAV-010 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/01-navigation-and-continuity.md:142` ## IT-NAV-011 — Bốn destination top-level, Tiến độ chỉ-đọc và một placeholder không tạo phiên, không ghi DB | `features/progress/it-scenarios.md` | IT-NAV-011 | theo truy vết đầu tiên trong catalog: `UC-PROGRESS-001` |
+| `it-scenarios/01-navigation-and-continuity.md:159` ## IT-NAV-012 — Import wizard là full-screen task phía trên shell | `features/transfer/it-scenarios.md` | IT-NAV-012 | theo truy vết đầu tiên trong catalog: `UC-TRANSFER-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:1` # IT scenarios — Vòng đời root deck | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/02-root-deck-lifecycle.md:13` ## IT-DECK-001 — Tạo root deck dùng Eight Box | `features/deck/it-scenarios.md` | IT-DECK-001 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:28` ## IT-DECK-002 — Tạo root deck dùng SM-2 và cho phép trùng tên | `features/deck/it-scenarios.md` | IT-DECK-002 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:39` ## IT-DECK-003 — Không tạo deck khi thiếu dữ liệu bắt buộc | `features/deck/it-scenarios.md` | IT-DECK-003 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:51` ## IT-DECK-004 — Giới hạn tên và bảo toàn nội dung khi validation lỗi | `features/deck/it-scenarios.md` | IT-DECK-004 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:62` ## IT-DECK-005 — Huỷ form có và không có thay đổi | `features/deck/it-scenarios.md` | IT-DECK-005 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/02-root-deck-lifecycle.md:74` ## IT-DECK-006 — Đổi tên root deck | `features/deck/it-scenarios.md` | IT-DECK-006 | theo truy vết đầu tiên trong catalog: `UC-DECK-002` |
+| `it-scenarios/02-root-deck-lifecycle.md:89` ## IT-DECK-007 — Huỷ xoá root deck | `features/deck/it-scenarios.md` | IT-DECK-007 | theo truy vết đầu tiên trong catalog: `UC-DECK-002` |
+| `it-scenarios/02-root-deck-lifecycle.md:100` ## IT-DECK-008 — Xác nhận xoá root deck và toàn bộ cây | `features/deck/it-scenarios.md` | IT-DECK-008 | theo truy vết đầu tiên trong catalog: `UC-DECK-002` |
+| `it-scenarios/03-deck-tree-and-content-type.md:1` # IT scenarios — Cây deck, loại nội dung và di chuyển | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/03-deck-tree-and-content-type.md:13` ## IT-TREE-001 — Root deck chỉ cho tạo deck con | `features/deck/it-scenarios.md` | IT-TREE-001 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:26` ## IT-TREE-002 — Deck con chưa định loại cho phép chọn card hoặc deck | `features/deck/it-scenarios.md` | IT-TREE-002 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:36` ## IT-TREE-003 — Card đầu tiên cố định deck thành loại card | `features/deck/it-scenarios.md` | IT-TREE-003 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:51` ## IT-TREE-004 — Deck con đầu tiên cố định deck thành loại deck | `features/deck/it-scenarios.md` | IT-TREE-004 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:65` ## IT-TREE-005 — Validation thất bại không làm deck bị khoá loại | `features/deck/it-scenarios.md` | IT-TREE-005 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:77` ## IT-TREE-006 — Xoá child cuối đưa sub-deck về chưa định loại | `features/deck/it-scenarios.md` | IT-TREE-006 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:89` ## IT-TREE-007 — Di chuyển child cuối đi cũng mở khoá loại của deck nguồn | `features/deck/it-scenarios.md` | IT-TREE-007 | theo truy vết đầu tiên trong catalog: `UC-DECK-005` |
+| `it-scenarios/03-deck-tree-and-content-type.md:105` ## IT-TREE-008 — Deck còn nội dung giữ nguyên loại | `features/deck/it-scenarios.md` | IT-TREE-008 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:120` ## IT-TREE-009 — Di chuyển sub-deck tới đích hợp lệ trong cùng cây | `features/deck/it-scenarios.md` | IT-TREE-009 | theo truy vết đầu tiên trong catalog: `UC-DECK-005` |
+| `it-scenarios/03-deck-tree-and-content-type.md:134` ## IT-TREE-010 — Không cho di chuyển vào chính nó hoặc descendant | `features/deck/it-scenarios.md` | IT-TREE-010 | theo truy vết đầu tiên trong catalog: `UC-DECK-005` |
+| `it-scenarios/03-deck-tree-and-content-type.md:145` ## IT-TREE-011 — Không cho di chuyển deck vào deck chứa card | `features/deck/it-scenarios.md` | IT-TREE-011 | theo truy vết đầu tiên trong catalog: `UC-DECK-005` |
+| `it-scenarios/03-deck-tree-and-content-type.md:156` ## IT-TREE-012 — Không cho move giữa hai root khác scheduler | `features/deck/it-scenarios.md` | IT-TREE-012 | theo truy vết đầu tiên trong catalog: `UC-DECK-005` |
+| `it-scenarios/03-deck-tree-and-content-type.md:167` ## IT-TREE-013 — Chặn tạo hoặc move vượt quá 10 cấp | `features/deck/it-scenarios.md` | IT-TREE-013 | theo truy vết đầu tiên trong catalog: `UC-DECK-004` |
+| `it-scenarios/03-deck-tree-and-content-type.md:178` ## IT-TREE-014 — Xoá card cuối mở khoá lại loại nội dung của deck | `features/card/it-scenarios.md` | IT-TREE-014 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/04-deck-discovery-and-progress.md:1` # IT scenarios — Khám phá deck và theo dõi tiến độ | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/04-deck-discovery-and-progress.md:13` ## IT-DISC-001 — Deck tile trình bày đủ thông tin ra quyết định | `features/deck/it-scenarios.md` | IT-DISC-001 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:27` ## IT-DISC-002 — Không có card đến hạn là trạng thái bình thường | `features/deck/it-scenarios.md` | IT-DISC-002 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:37` ## IT-DISC-003 — Lọc chỉ các deck đang có card đến hạn | `features/deck/it-scenarios.md` | IT-DISC-003 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:51` ## IT-DISC-004 — Bộ lọc không có kết quả có lối quay lại | `features/deck/it-scenarios.md` | IT-DISC-004 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:61` ## IT-DISC-005 — Sắp xếp theo tên và gần đây | `features/deck/it-scenarios.md` | IT-DISC-005 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:75` ## IT-DISC-006 — Tìm deck trong đúng phạm vi subtree | `features/deck/it-scenarios.md` | IT-DISC-006 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:90` ## IT-DISC-007 — Tìm kiếm không khớp có thông tin phạm vi và lối xoá | `features/deck/it-scenarios.md` | IT-DISC-007 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/04-deck-discovery-and-progress.md:100` ## IT-DISC-008 — Summary và danh sách tự cập nhật sau thay đổi nội dung | `features/deck/it-scenarios.md` | IT-DISC-008 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/05-card-lifecycle.md:1` # IT scenarios — Vòng đời card | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/05-card-lifecycle.md:13` ## IT-CARD-001 — Empty card deck có hành động thêm card đầu tiên | `features/card/it-scenarios.md` | IT-CARD-001 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:23` ## IT-CARD-002 — Tạo card với hai mặt bắt buộc | `features/card/it-scenarios.md` | IT-CARD-002 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:38` ## IT-CARD-003 — Validation mặt trước và mặt sau | `features/card/it-scenarios.md` | IT-CARD-003 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:50` ## IT-CARD-004 — Giới hạn độ dài nội dung card | `features/card/it-scenarios.md` | IT-CARD-004 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:61` ## IT-CARD-005 — Tạo card có thông tin bổ sung | `features/card/it-scenarios.md` | IT-CARD-005 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:73` ## IT-CARD-006 — Giới hạn 240 ký tự cho từng trường bổ sung | `features/card/it-scenarios.md` | IT-CARD-006 | theo truy vết đầu tiên trong catalog: `BR-CARD-003` |
+| `it-scenarios/05-card-lifecycle.md:84` ## IT-CARD-007 — Lưu và thêm card khác | `features/card/it-scenarios.md` | IT-CARD-007 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:96` ## IT-CARD-008 — Sửa card và giữ vị trí quản lý ổn định | `features/card/it-scenarios.md` | IT-CARD-008 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:111` ## IT-CARD-009 — Sửa nội dung không làm mất tiến độ hoặc cờ | `features/card/it-scenarios.md` | IT-CARD-009 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:122` ## IT-CARD-010 — Huỷ và xác nhận xoá card | `features/card/it-scenarios.md` | IT-CARD-010 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:137` ## IT-CARD-011 — Xoá card cuối đưa deck về chưa định loại | `features/card/it-scenarios.md` | IT-CARD-011 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:149` ## IT-CARD-012 — Chuyển card sang deck khác cùng cây giữ nguyên tiến độ | `features/card/it-scenarios.md` | IT-CARD-012 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:163` ## IT-CARD-013 — Đích không hợp lệ bị từ chối trước khi ghi | `features/card/it-scenarios.md` | IT-CARD-013 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/05-card-lifecycle.md:175` ## IT-CARD-014 — Import CSV/paste tạo card với study state mới | `features/transfer/it-scenarios.md` | IT-CARD-014 | theo truy vết đầu tiên trong catalog: `UC-TRANSFER-001` |
+| `it-scenarios/05-card-lifecycle.md:189` ## IT-CARD-015 — Import là tất-cả-hoặc-không, và đích không hợp lệ bị từ chối | `features/transfer/it-scenarios.md` | IT-CARD-015 | theo truy vết đầu tiên trong catalog: `UC-TRANSFER-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:1` # IT scenarios — Tìm kiếm, tổ chức và tiến độ card | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/06-card-discovery-and-organization.md:13` ## IT-ORG-001 — Tìm card theo mặt trước và mặt sau | `features/card/it-scenarios.md` | IT-ORG-001 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:27` ## IT-ORG-002 — Search không có kết quả và phục hồi | `features/card/it-scenarios.md` | IT-ORG-002 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:37` ## IT-ORG-003 — Sắp xếp card mới nhất và đến hạn trước | `features/card/it-scenarios.md` | IT-ORG-003 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:48` ## IT-ORG-004 — Gắn cờ và bỏ cờ một card | `features/card/it-scenarios.md` | IT-ORG-004 | theo truy vết đầu tiên trong catalog: `BR-CARD-009` |
+| `it-scenarios/06-card-discovery-and-organization.md:63` ## IT-ORG-005 — Lọc All, Due, New và Flagged với số lượng đúng | `features/card/it-scenarios.md` | IT-ORG-005 | theo truy vết đầu tiên trong catalog: `BR-CARD-007` |
+| `it-scenarios/06-card-discovery-and-organization.md:76` ## IT-ORG-006 — Filter không có kết quả không bị hiểu là deck rỗng | `features/card/it-scenarios.md` | IT-ORG-006 | theo truy vết đầu tiên trong catalog: `BR-CARD-009` |
+| `it-scenarios/06-card-discovery-and-organization.md:86` ## IT-ORG-007 — Thêm và tái sử dụng tag không phân biệt hoa thường | `features/tags/it-scenarios.md` | IT-ORG-007 | theo truy vết đầu tiên trong catalog: `BR-TAG-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:101` ## IT-ORG-008 — Xoá tag khỏi card không xoá nội dung card | `features/tags/it-scenarios.md` | IT-ORG-008 | theo truy vết đầu tiên trong catalog: `BR-TAG-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:112` ## IT-ORG-009 — Validation tên tag và giới hạn 10 tag | `features/tags/it-scenarios.md` | IT-ORG-009 | theo truy vết đầu tiên trong catalog: `BR-TAG-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:124` ## IT-ORG-010 — Trạng thái, due badge và progress panel nhất quán | `features/card/it-scenarios.md` | IT-ORG-010 | theo truy vết đầu tiên trong catalog: `BR-CARD-006` |
+| `it-scenarios/06-card-discovery-and-organization.md:139` ## IT-ORG-011 — Breadcrumb và tên deck trên card list cập nhật sau rename | `features/card/it-scenarios.md` | IT-ORG-011 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:150` ## IT-ORG-012 — Danh sách lớn tải theo cửa sổ và không mất card | `shared/testing/it-scenarios.md` | IT-ORG-012 | catalog không truy vết UC/BR của feature nào |
+| `it-scenarios/06-card-discovery-and-organization.md:162` ## IT-ORG-013 — Chọn nhiều card và Select all trên tập đã lọc | `features/card/it-scenarios.md` | IT-ORG-013 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/06-card-discovery-and-organization.md:177` ## IT-ORG-014 — Bulk action là tất-cả-hoặc-không | `features/card/it-scenarios.md` | IT-ORG-014 | theo truy vết đầu tiên trong catalog: `UC-CARD-001` |
+| `it-scenarios/07-study-entry-and-options.md:1` # Kịch bản IT — Điểm vào chức năng học và tùy chọn | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/07-study-entry-and-options.md:13` ## IT-STUDY-001 — Màn vào học tách thẻ mới và thẻ đến hạn thành hai tập rời nhau | `features/study/it-scenarios.md` | IT-STUDY-001 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:28` ## IT-STUDY-002 — Chỉ xem số lượng hoặc huy hiệu không tạo phiên | `features/study/it-scenarios.md` | IT-STUDY-002 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:39` ## IT-STUDY-003 — Không có thẻ đến hạn là trạng thái bình thường và không cho ôn sớm | `features/study/it-scenarios.md` | IT-STUDY-003 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:51` ## IT-STUDY-004 — Eight Box chỉ đưa các chế độ chấm điểm hợp lệ vào ôn tập | `features/study/it-scenarios.md` | IT-STUDY-004 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:66` ## IT-STUDY-005 — SM-2 chỉ có một chế độ ôn nên vào thẳng `Self assess` | `features/study/it-scenarios.md` | IT-STUDY-005 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:77` ## IT-STUDY-006 — Chế độ thiếu dữ liệu bị vô hiệu hóa kèm lý do, không mở màn rỗng | `features/study/it-scenarios.md` | IT-STUDY-006 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:93` ## IT-STUDY-007 — Số lượng của từng chế độ ôn phản ánh đúng tập thẻ sử dụng được | `features/study/it-scenarios.md` | IT-STUDY-007 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:104` ## IT-STUDY-008 — Tùy chọn toàn ứng dụng được giữ sau khi khởi động lại | `features/study/it-scenarios.md` | IT-STUDY-008 | theo truy vết đầu tiên trong catalog: `BR-STUDY-056` |
+| `it-scenarios/07-study-entry-and-options.md:118` ## IT-STUDY-009 — Ghi đè ở bộ thẻ gốc thắng mặc định và bộ thẻ con không có cấu hình riêng | `features/deck/it-scenarios.md` | IT-STUDY-009 | theo truy vết đầu tiên trong catalog: `BR-DECK-025` |
+| `it-scenarios/07-study-entry-and-options.md:130` ## IT-STUDY-010 — Phiên chốt giới hạn thẻ lúc mở và không đổi theo tùy chọn sau đó | `features/study/it-scenarios.md` | IT-STUDY-010 | theo truy vết đầu tiên trong catalog: `BR-STUDY-003` |
+| `it-scenarios/07-study-entry-and-options.md:142` ## IT-STUDY-011 — Phạm vi phiên là bộ thẻ đang mở và toàn bộ cây con của nó | `features/study/it-scenarios.md` | IT-STUDY-011 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/07-study-entry-and-options.md:154` ## IT-STUDY-012 — `Created` chọn đúng tập cũ nhất; `Random` không đổi tập đã chốt khi tiếp tục | `features/study/it-scenarios.md` | IT-STUDY-012 | theo truy vết đầu tiên trong catalog: `BR-STUDY-021` |
+| `it-scenarios/07-study-entry-and-options.md:166` ## IT-STUDY-013 — Cấu hình bộ thẻ gốc không đọc được thì dùng mặc định và không chặn học | `features/study/it-scenarios.md` | IT-STUDY-013 | theo truy vết đầu tiên trong catalog: `BR-STUDY-003` |
+| `it-scenarios/08-study-learning-session.md:1` # Kịch bản IT — Phiên học thẻ mới | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/08-study-learning-session.md:13` ## IT-LEARN-001 — Eight Box đi đúng chuỗi năm giai đoạn | `features/study/it-scenarios.md` | IT-LEARN-001 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/08-study-learning-session.md:29` ## IT-LEARN-002 — SM-2 đi đúng chuỗi `Browse` rồi `Self assess` | `features/study/it-scenarios.md` | IT-LEARN-002 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/08-study-learning-session.md:41` ## IT-LEARN-003 — `Browse` chỉ làm quen, hiện cả hai mặt và không chấm điểm | `features/study-mode/it-scenarios.md` | IT-LEARN-003 | theo truy vết đầu tiên trong catalog: `BR-MODE-005` |
+| `it-scenarios/08-study-learning-session.md:53` ## IT-LEARN-004 — Mọi giai đoạn dùng cùng tập thẻ nhưng thứ tự độc lập | `features/study/it-scenarios.md` | IT-LEARN-004 | theo truy vết đầu tiên trong catalog: `BR-STUDY-021` |
+| `it-scenarios/08-study-learning-session.md:65` ## IT-LEARN-005 — Thẻ thiếu câu ví dụ được bỏ qua ở `Fill` nhưng vẫn hoàn tất học mới | `features/study/it-scenarios.md` | IT-LEARN-005 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/08-study-learning-session.md:77` ## IT-LEARN-006 — `Guess` bị bỏ qua khi tập phiên không đủ năm nghĩa khác nhau | `features/study-mode/it-scenarios.md` | IT-LEARN-006 | theo truy vết đầu tiên trong catalog: `BR-MODE-009` |
+| `it-scenarios/08-study-learning-session.md:88` ## IT-LEARN-007 — `Match` bị bỏ qua khi chỉ có một cặp | `features/study-mode/it-scenarios.md` | IT-LEARN-007 | theo truy vết đầu tiên trong catalog: `BR-MODE-009` |
+| `it-scenarios/08-study-learning-session.md:99` ## IT-LEARN-008 — Thẻ sai trong một vòng chỉ rời tập không đạt sau vòng sạch | `features/study/it-scenarios.md` | IT-LEARN-008 | theo truy vết đầu tiên trong catalog: `BR-STUDY-059` |
+| `it-scenarios/08-study-learning-session.md:111` ## IT-LEARN-009 — `Self assess` lặp thẻ đúng khoảng cách và bật cờ ở trần học lại | `features/study/it-scenarios.md` | IT-LEARN-009 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/08-study-learning-session.md:123` ## IT-LEARN-010 — Chỉ hoàn tất chuỗi mới tạo lịch đầu tiên và khóa thuật toán xếp lịch | `features/srs/it-scenarios.md` | IT-LEARN-010 | theo truy vết đầu tiên trong catalog: `BR-SRS-003` |
+| `it-scenarios/08-study-learning-session.md:136` ## IT-LEARN-011 — Giới hạn thẻ là trần mỗi phiên, không phải hạn mức ngày | `features/study/it-scenarios.md` | IT-LEARN-011 | theo truy vết đầu tiên trong catalog: `BR-STUDY-003` |
+| `it-scenarios/08-study-learning-session.md:148` ## IT-LEARN-012 — Bỏ dở học mới không tạo lịch nửa chừng và lần sau học lại từ `Browse` | `features/study/it-scenarios.md` | IT-LEARN-012 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/09-study-review-session.md:1` # Kịch bản IT — Phiên ôn tập và thuật toán xếp lịch | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/09-study-review-session.md:13` ## IT-REVIEW-001 — Hàng đợi ôn tập chỉ lấy thẻ đã học và đang đến hạn | `features/study/it-scenarios.md` | IT-REVIEW-001 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/09-study-review-session.md:24` ## IT-REVIEW-002 — Phiên ôn tập Eight Box chạy đúng một chế độ đã chọn | `features/study-mode/it-scenarios.md` | IT-REVIEW-002 | theo truy vết đầu tiên trong catalog: `BR-MODE-003` |
+| `it-scenarios/09-study-review-session.md:38` ## IT-REVIEW-003 — Phiên ôn tập SM-2 lấy hành động trực tiếp từ người dùng | `features/study/it-scenarios.md` | IT-REVIEW-003 | theo truy vết đầu tiên trong catalog: `BR-STUDY-009` |
+| `it-scenarios/09-study-review-session.md:50` ## IT-REVIEW-004 — Thẻ có hạn sớm hơn được phục vụ trước và giới hạn tính theo thẻ riêng biệt | `features/study/it-scenarios.md` | IT-REVIEW-004 | theo truy vết đầu tiên trong catalog: `BR-STUDY-002` |
+| `it-scenarios/09-study-review-session.md:62` ## IT-REVIEW-005 — Lượt đầu là theo lịch, lượt lặp là học lại và không xếp lịch lần hai | `features/srs/it-scenarios.md` | IT-REVIEW-005 | theo truy vết đầu tiên trong catalog: `BR-SRS-018` |
+| `it-scenarios/09-study-review-session.md:73` ## IT-REVIEW-006 — Eight Box đưa `Forgotten` và `Remembered` tới đúng hộp/khoảng cách | `features/srs/it-scenarios.md` | IT-REVIEW-006 | theo truy vết đầu tiên trong catalog: `BR-SRS-008` |
+| `it-scenarios/09-study-review-session.md:84` ## IT-REVIEW-007 — SM-2 áp dụng `Again`/`Hard`/`Good`/`Easy` đúng thứ tự cập nhật | `features/srs/it-scenarios.md` | IT-REVIEW-007 | theo truy vết đầu tiên trong catalog: `BR-SRS-010` |
+| `it-scenarios/09-study-review-session.md:96` ## IT-REVIEW-008 — Không thể ôn lại trước hạn vừa được xếp | `features/study/it-scenarios.md` | IT-REVIEW-008 | theo truy vết đầu tiên trong catalog: `BR-STUDY-074` |
+| `it-scenarios/09-study-review-session.md:108` ## IT-REVIEW-009 — Tổng kết phân biệt thẻ đã xử lý và thẻ đến hạn còn ngoài giới hạn | `features/study/it-scenarios.md` | IT-REVIEW-009 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/09-study-review-session.md:119` ## IT-REVIEW-010 — Số lượng và hàng đợi của từng chế độ không dùng chung một con số giả | `features/study-mode/it-scenarios.md` | IT-REVIEW-010 | theo truy vết đầu tiên trong catalog: `BR-MODE-009` |
+| `it-scenarios/10-study-modes.md:1` # Kịch bản IT — Sáu chế độ học | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/10-study-modes.md:13` ## IT-MODE-001 — Khung phiên luôn nói rõ chế độ, bộ thẻ, loại phiên và tiến độ | `features/study/it-scenarios.md` | IT-MODE-001 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/10-study-modes.md:25` ## IT-MODE-002 — `Browse` hiện hai mặt cùng lúc, đi tiếp và xem lại bằng vuốt | `features/study-mode/it-scenarios.md` | IT-MODE-002 | theo truy vết đầu tiên trong catalog: `BR-MODE-005` |
+| `it-scenarios/10-study-modes.md:46` ## IT-MODE-003 — `Match` giữ nguyên bàn và phân biệt ba trạng thái ô | `features/study/it-scenarios.md` | IT-MODE-003 | theo truy vết đầu tiên trong catalog: `BR-STUDY-059` |
+| `it-scenarios/10-study-modes.md:58` ## IT-MODE-004 — `Match` quy kết lượt cho thuật ngữ được chọn trước và giữ thẻ sai sang vòng sau | `features/study-mode/it-scenarios.md` | IT-MODE-004 | theo truy vết đầu tiên trong catalog: `BR-MODE-012` |
+| `it-scenarios/10-study-modes.md:73` ## IT-MODE-005 — `Guess` luôn có đúng năm lựa chọn khác nghĩa và chỉ nhận lần chạm đầu | `features/study/it-scenarios.md` | IT-MODE-005 | theo truy vết đầu tiên trong catalog: `BR-STUDY-037` |
+| `it-scenarios/10-study-modes.md:88` ## IT-MODE-006 — `Guess` bị bỏ qua khi cả tập phiên không đủ năm nghĩa | `features/study-mode/it-scenarios.md` | IT-MODE-006 | theo truy vết đầu tiên trong catalog: `BR-MODE-009` |
+| `it-scenarios/10-study-modes.md:99` ## IT-MODE-007 — Thứ tự thẻ và lựa chọn ổn định khi Tiếp tục nhưng là hai hoán vị độc lập | `features/study/it-scenarios.md` | IT-MODE-007 | theo truy vết đầu tiên trong catalog: `BR-STUDY-061` |
+| `it-scenarios/10-study-modes.md:111` ## IT-MODE-008 — `Recall` đo 20 giây tương tác, lật thủ công trước hạn được ưu tiên | `features/study/it-scenarios.md` | IT-MODE-008 | theo truy vết đầu tiên trong catalog: `BR-STUDY-031` |
+| `it-scenarios/10-study-modes.md:126` ## IT-MODE-009 — `Recall` hết giờ tự lật, khóa kết cục sai và giữ thời gian khi Tiếp tục | `features/study/it-scenarios.md` | IT-MODE-009 | theo truy vết đầu tiên trong catalog: `BR-STUDY-031` |
+| `it-scenarios/10-study-modes.md:141` ## IT-MODE-010 — `Fill` bỏ khoảng trắng, không phân biệt hoa thường nhưng giữ dấu; ô nhập rỗng không tiến lượt | `features/study/it-scenarios.md` | IT-MODE-010 | theo truy vết đầu tiên trong catalog: `BR-STUDY-026` |
+| `it-scenarios/10-study-modes.md:153` ## IT-MODE-011 — Gợi ý không tự đổi kết quả và `Fill` chỉ nhận một lần gửi | `features/study/it-scenarios.md` | IT-MODE-011 | theo truy vết đầu tiên trong catalog: `BR-STUDY-027` |
+| `it-scenarios/10-study-modes.md:165` ## IT-MODE-012 — `Self assess` chỉ hiện hành động sau khi người dùng lật | `features/study/it-scenarios.md` | IT-MODE-012 | theo truy vết đầu tiên trong catalog: `BR-STUDY-009` |
+| `it-scenarios/10-study-modes.md:177` ## IT-MODE-013 — Các chế độ học dùng được với trình đọc màn hình và cỡ chữ lớn | `shared/testing/it-scenarios.md` | IT-MODE-013 | catalog không truy vết UC/BR của feature nào |
+| `it-scenarios/10-study-modes.md:189` ## IT-MODE-014 — `Guess` chặn nguyên tử nếu một câu hỏi bất ngờ thiếu phương án nhiễu | `features/study/it-scenarios.md` | IT-MODE-014 | theo truy vết đầu tiên trong catalog: `BR-STUDY-037` |
+| `it-scenarios/10-study-modes.md:201` ## IT-MODE-015 — `Guess` chỉ lấy phương án nhiễu hợp lệ trong cùng cây mà không lộ thẻ mới | `features/study/it-scenarios.md` | IT-MODE-015 | theo truy vết đầu tiên trong catalog: `BR-STUDY-037` |
+| `it-scenarios/11-study-continuity-and-failures.md:1` # Kịch bản IT — Tiếp tục phiên, ngoại tuyến và lỗi | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/11-study-continuity-and-failures.md:13` ## IT-CONT-001 — Tiến trình bị hệ điều hành thu hồi trong cùng ngày vẫn Tiếp tục đúng điểm dừng | `features/study/it-scenarios.md` | IT-CONT-001 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:28` ## IT-CONT-002 — Chọn phiên mới khi có phiên cùng ngày sẽ đóng phiên cũ do người dùng bỏ | `features/study/it-scenarios.md` | IT-CONT-002 | theo truy vết đầu tiên trong catalog: `BR-STUDY-014` |
+| `it-scenarios/11-study-continuity-and-failures.md:40` ## IT-CONT-003 — Phiên từ ngày học trước bị đóng với lý do gián đoạn | `features/study/it-scenarios.md` | IT-CONT-003 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:52` ## IT-CONT-004 — Nút ✕ là thoát chủ động, không phải thao tác Quay lại vô hại | `features/study/it-scenarios.md` | IT-CONT-004 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:64` ## IT-CONT-005 — Phiên hoàn tất có tổng kết và không còn hàng đợi chờ xử lý | `features/study/it-scenarios.md` | IT-CONT-005 | theo truy vết đầu tiên trong catalog: `BR-STUDY-013` |
+| `it-scenarios/11-study-continuity-and-failures.md:76` ## IT-CONT-006 — Hàng đợi bất biến khi nội dung bộ thẻ đổi sau lúc mở phiên | `features/study/it-scenarios.md` | IT-CONT-006 | theo truy vết đầu tiên trong catalog: `BR-STUDY-021` |
+| `it-scenarios/11-study-continuity-and-failures.md:88` ## IT-CONT-007 — Xóa bộ thẻ đang học kết thúc phiên và phục hồi điều hướng | `features/study/it-scenarios.md` | IT-CONT-007 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:103` ## IT-CONT-008 — Toàn bộ phiên học hoạt động ngoại tuyến | `features/study/it-scenarios.md` | IT-CONT-008 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:115` ## IT-CONT-009 — Đặt lại khi phiên đang mở làm phiên mất hiệu lực với `scheduler_reset` | `features/srs/it-scenarios.md` | IT-CONT-009 | theo truy vết đầu tiên trong catalog: `UC-SRS-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:127` ## IT-CONT-010 — Phiên thuộc thế hệ dữ liệu cũ bị từ chối nguyên tử | `features/study/it-scenarios.md` | IT-CONT-010 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:139` ## IT-CONT-011 — Lỗi ghi tạm thời không tiến thẻ và thử lại chỉ ghi một lần | `features/study/it-scenarios.md` | IT-CONT-011 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:150` ## IT-CONT-012 — Lỗi lưu trữ không thể tiếp tục đóng phiên ở trạng thái `failed` nhưng giữ lượt cũ | `features/study/it-scenarios.md` | IT-CONT-012 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:162` ## IT-CONT-013 — Lỗi đọc thẻ cho phép Thử lại mà không làm mất điểm dừng | `features/study/it-scenarios.md` | IT-CONT-013 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/11-study-continuity-and-failures.md:177` ## IT-CONT-014 — Chọn Ôn tập khi có phiên cùng ngày đóng phiên cũ do người dùng bỏ | `features/study/it-scenarios.md` | IT-CONT-014 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/12-testing-pyramid-audit.md:1` # Audit tháp kiểm thử cho toàn bộ kịch bản IT | `shared/testing/testing-pyramid-audit.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/12-testing-pyramid-audit.md:17` ## B. Phân bố theo hồ sơ thực thi | `shared/testing/testing-pyramid-audit.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/12-testing-pyramid-audit.md:48` ## C. Phân loại theo hồ sơ thực thi | `shared/testing/testing-pyramid-audit.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/12-testing-pyramid-audit.md:184` ## E. Điều tài liệu này *không* làm | `shared/testing/testing-pyramid-audit.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/13-platform-boundaries.md:1` # Kịch bản ranh giới nền tảng | `features/*/it-scenarios.md` | — | tiêu đề/giới thiệu nhóm → đầu mỗi file it-scenarios.md nhận kịch bản của nhóm này |
+| `it-scenarios/13-platform-boundaries.md:22` ## IT-PLAT-001 — Khởi động nguội bản đã cài đặt vào đúng danh sách bộ thẻ | `features/deck/it-scenarios.md` | IT-PLAT-001 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/13-platform-boundaries.md:37` ## IT-PLAT-002 — Dữ liệu đã ghi sống sót qua một lần chết tiến trình thật | `features/deck/it-scenarios.md` | IT-PLAT-002 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/13-platform-boundaries.md:55` ## IT-PLAT-003 — Phiên học bị hệ điều hành thu hồi vẫn tiếp tục đúng điểm dừng | `features/study/it-scenarios.md` | IT-PLAT-003 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/13-platform-boundaries.md:70` ## IT-PLAT-004 — Deep link đi từ hệ điều hành vào đúng màn hình | `features/deck/it-scenarios.md` | IT-PLAT-004 | theo truy vết đầu tiên trong catalog: `UC-DECK-003` |
+| `it-scenarios/13-platform-boundaries.md:84` ## IT-PLAT-005 — Cử chỉ back của hệ thống trong phiên dùng cùng hợp đồng thoát như nút ✕ | `features/study/it-scenarios.md` | IT-PLAT-005 | theo truy vết đầu tiên trong catalog: `UC-STUDY-001` |
+| `it-scenarios/13-platform-boundaries.md:97` ## IT-PLAT-006 — Smoke trước phát hành: cài, mở, tạo, học | `features/deck/it-scenarios.md` | IT-PLAT-006 | theo truy vết đầu tiên trong catalog: `UC-DECK-001` |
+| `it-scenarios/13-platform-boundaries.md:114` ## IT-PLAT-009 — Hệ thống cấp CJK mà app đã thôi bundle | `shared/testing/it-scenarios.md` | IT-PLAT-009 | catalog không truy vết UC/BR của feature nào |
+| `it-scenarios/14-host-coverage-map.md:1` # Bản đồ coverage host cho từng kịch bản | `shared/testing/host-coverage-map.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:1` # Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:13` ## 1. Mục tiêu | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:60` ## 2. Phạm vi hiện tại | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:98` ## 3. Quy ước kịch bản | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:118` ### 3.1. Thuật ngữ dành cho người rà soát và AI agent | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:139` ## 4. Môi trường và dữ liệu chuẩn | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:141` ### 4.1. Môi trường | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:155` ### 4.2. Dữ liệu tạo qua UI | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:167` ### 4.3. Dữ liệu seed dành riêng cho trạng thái học | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:184` ## 5. Traceability nghiệp vụ | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/README.md:206` ## 6. Definition of ready cho AI agent | `shared/testing/README.md` | — | file dùng chung (Q3b) |
+| `it-scenarios/scenario-catalog.md:17` ## Điều hướng và tiếp tục | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:34` ## Vòng đời bộ thẻ gốc | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:47` ## Cây bộ thẻ và loại nội dung | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:66` ## Khám phá bộ thẻ và tiến độ | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:79` ## Vòng đời thẻ | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:99` ## Khám phá và tổ chức thẻ | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:118` ## Điểm vào chức năng học và tùy chọn | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:136` ## Phiên học thẻ mới | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:153` ## Phiên ôn tập | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:168` ## Các chế độ học | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:188` ## Tiếp tục phiên học và lỗi | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:207` ## Ranh giới nền tảng | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
+| `it-scenarios/scenario-catalog.md:219` ## Bất biến của danh mục | `shared/testing/scenario-catalog.md` | — | file dùng chung (Q3b); cột "Tệp" cập nhật theo file đích |
 | `product/master-flow.md:1` # Master flow — memox (MVP) | `shared/ui/navigation.md` | — | header |
 | `product/master-flow.md:15` ## 1. Tài liệu này là gì, và không là gì | `shared/ui/navigation.md` | — | đoạn "sơ đồ không phải đặc tả" — ⚠️ Q4 |
 | `product/master-flow.md:36` ## 2. Master flow — toàn app | `shared/ui/navigation.md` | — | ⚠️ Q4 |
@@ -709,10 +713,10 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `business-rules/deck.md:62` | `features/deck/rules/BR-DECK-023-<slug>.md` | BR-DECK-023 | giữ ID |
 | `business-rules/deck.md:63` | `features/deck/rules/BR-DECK-024-<slug>.md` | BR-DECK-024 | giữ ID |
 | `business-rules/deck.md:64` | `features/deck/rules/BR-DECK-025-<slug>.md` | BR-DECK-025 | giữ ID |
-| `business-rules/privacy.md:17` | `shared/rules/BR-PRIVACY-001-<slug>.md` | BR-PRIVACY-001 | giữ ID |
-| `business-rules/privacy.md:18` | `shared/rules/BR-PRIVACY-002-<slug>.md` | BR-PRIVACY-002 | giữ ID |
-| `business-rules/privacy.md:19` | `shared/rules/BR-PRIVACY-003-<slug>.md` | BR-PRIVACY-003 | giữ ID |
-| `business-rules/privacy.md:20` | `shared/rules/BR-PRIVACY-004-<slug>.md` | BR-PRIVACY-004 | giữ ID |
+| `business-rules/privacy.md:17` | `shared/rules/BR-CORE-001-<slug>.md` | BR-CORE-001 | đổi từ BR-PRIVACY-001 (Q2); sửa mọi trích dẫn |
+| `business-rules/privacy.md:18` | `shared/rules/BR-CORE-002-<slug>.md` | BR-CORE-002 | đổi từ BR-PRIVACY-002 (Q2); sửa mọi trích dẫn |
+| `business-rules/privacy.md:19` | `shared/rules/BR-CORE-003-<slug>.md` | BR-CORE-003 | đổi từ BR-PRIVACY-003 (Q2); sửa mọi trích dẫn |
+| `business-rules/privacy.md:20` | `shared/rules/BR-CORE-004-<slug>.md` | BR-CORE-004 | đổi từ BR-PRIVACY-004 (Q2); sửa mọi trích dẫn |
 | `business-rules/progress.md:22` | `features/progress/rules/BR-PROGRESS-001-<slug>.md` | BR-PROGRESS-001 | giữ ID |
 | `business-rules/progress.md:23` | `features/progress/rules/BR-PROGRESS-002-<slug>.md` | BR-PROGRESS-002 | giữ ID |
 | `business-rules/progress.md:24` | `features/progress/rules/BR-PROGRESS-003-<slug>.md` | BR-PROGRESS-003 | giữ ID |
