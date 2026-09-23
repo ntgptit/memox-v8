@@ -57,8 +57,8 @@ class SplitError(Exception):
 class ConflictError(Exception):
     """The output dir holds files this run must neither overwrite nor remove."""
 
-    def __init__(self, conflicts: list[str]) -> None:
-        super().__init__("\n".join(conflicts))
+    def __init__(self, conflicts: list[tuple[str, str]]) -> None:
+        super().__init__("\n".join(f"{path}: {reason}" for path, reason in conflicts))
         self.conflicts = conflicts
 
 
@@ -271,10 +271,12 @@ def manifest_bytes(files: dict[str, bytes]) -> bytes:
     return (json.dumps(recorded, indent=2) + "\n").encode("utf-8")
 
 
-def find_conflicts(out_dir: Path, files: dict[str, bytes]) -> list[str]:
-    """Files a run would overwrite or remove although they are not what the last
-    run wrote: edits made by hand, or files this script never wrote."""
-    recorded = read_manifest(out_dir)
+def find_conflicts(
+    out_dir: Path, files: dict[str, bytes], recorded: dict[str, str]
+) -> list[tuple[str, str]]:
+    """(path, reason) for every file a run would overwrite or remove although it
+    is not what the last run wrote (`recorded`, from read_manifest): edits made
+    by hand, or files this script never wrote."""
     conflicts = []
     for path in sorted(files.keys() | recorded.keys()):
         target = out_dir / path
@@ -284,9 +286,9 @@ def find_conflicts(out_dir: Path, files: dict[str, bytes]) -> list[str]:
         if current == files.get(path):
             continue
         if path not in recorded:
-            conflicts.append(f"{path}: not written by this script")
+            conflicts.append((path, "not written by this script"))
         elif _sha(current) != recorded[path]:
-            conflicts.append(f"{path}: edited since the last run")
+            conflicts.append((path, "edited since the last run"))
     return conflicts
 
 
@@ -314,10 +316,10 @@ def write_outputs(out_dir: Path, files: dict[str, bytes]) -> tuple[int, int, int
     Raises ConflictError before touching anything when that would overwrite or
     remove a file that is not what the last run wrote.
     """
-    conflicts = find_conflicts(out_dir, files)
+    recorded = read_manifest(out_dir)
+    conflicts = find_conflicts(out_dir, files, recorded)
     if conflicts:
         raise ConflictError(conflicts)
-    previous = read_manifest(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     written = unchanged = 0
@@ -332,7 +334,7 @@ def write_outputs(out_dir: Path, files: dict[str, bytes]) -> tuple[int, int, int
 
     removed = 0
     root = out_dir.resolve()
-    for rel in sorted(previous.keys() - files.keys()):
+    for rel in sorted(recorded.keys() - files.keys()):
         target = (out_dir / rel).resolve()
         if root in target.parents and target.is_file():
             target.unlink()
@@ -349,8 +351,13 @@ def write_outputs(out_dir: Path, files: dict[str, bytes]) -> tuple[int, int, int
     return written, unchanged, removed
 
 
+def _show(path: Path) -> str:
+    """The path as generate.py and check.py print it: relative to the repo root when inside it."""
+    return (path.relative_to(ROOT) if path.is_relative_to(ROOT) else path).as_posix()
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Split the MemoX V3 handoff JSON into Markdown.")
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("input", type=Path, nargs="?", default=DEFAULT_INPUT,
                         help="handoff JSON file (default: %(default)s)")
     parser.add_argument("output_dir", type=Path, nargs="?", default=DEFAULT_OUTPUT,
@@ -360,26 +367,24 @@ def main(argv: list[str] | None = None) -> int:
     try:
         files = load_files(args.input)
     except (OSError, ValueError, SplitError) as error:
-        print(f"error: {error}", file=sys.stderr)
+        print(f"ERROR {_show(args.input)}: {error}", file=sys.stderr)
         return 2
 
     try:
         written, unchanged, removed = write_outputs(args.output_dir, files)
     except ConflictError as error:
+        for path, reason in error.conflicts:
+            print(f"ERROR {_show(args.output_dir / path)}: {reason}", file=sys.stderr)
         print(
-            f"error: nothing written; {len(error.conflicts)} file(s) in {args.output_dir} "
-            "are not what this script last wrote:",
-            file=sys.stderr,
-        )
-        for conflict in error.conflicts:
-            print(f"  {conflict}", file=sys.stderr)
-        print(
-            "Move any edit worth keeping out of this folder, restore (git checkout) or "
-            "delete these files, then run again.",
+            f"ERROR {_show(args.output_dir)}: nothing written — move any edit worth keeping "
+            "out of this folder, restore (git checkout) or delete the files above, then run again",
             file=sys.stderr,
         )
         return 1
-    print(f"{len(files)} files: {written} written, {unchanged} unchanged, {removed} removed")
+    print(
+        f"OK {_show(args.output_dir)}: {len(files)} files — "
+        f"{written} written, {unchanged} unchanged, {removed} removed"
+    )
     return 0
 
 

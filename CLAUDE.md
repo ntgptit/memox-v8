@@ -54,3 +54,8 @@ Avoid speculative abstractions.
 
 Always reply to the user in Vietnamese. Code, identifiers, commit messages and
 PR text keep their existing language conventions.
+
+Messages printed by the scripts in `tools/` (errors, warnings, status lines,
+CLI help) are in English. Strings that belong to a document format, such as the
+Vietnamese section headings a script checks or text it writes into generated
+docs, follow the docs.

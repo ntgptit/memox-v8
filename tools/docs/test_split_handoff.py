@@ -56,14 +56,18 @@ class SplitHandoffTest(unittest.TestCase):
         self.tmp = Path(tmp.name)
         self.out = self.tmp / "out"
 
-    def run_split(self, data) -> tuple[int, str]:
-        """Run the CLI on `data`; return (exit code, stdout + stderr)."""
-        src = self.tmp / "in.json"
-        src.write_text(json.dumps(data), encoding="utf-8")
+    def run_main(self, src: Path) -> tuple[int, str]:
+        """Run the CLI on the JSON file `src`; return (exit code, stdout + stderr)."""
         captured = io.StringIO()
         with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
             code = sh.main([str(src), str(self.out)])
         return code, captured.getvalue()
+
+    def run_split(self, data) -> tuple[int, str]:
+        """run_main on `data` written out as JSON."""
+        src = self.tmp / "in.json"
+        src.write_text(json.dumps(data), encoding="utf-8")
+        return self.run_main(src)
 
     def test_spec_strings_follow_the_marker_byte_for_byte(self) -> None:
         self.assertEqual(self.run_split(sample())[0], 0)
@@ -190,6 +194,39 @@ class SplitHandoffTest(unittest.TestCase):
         code, output = self.run_split(bad)
         self.assertEqual(code, 2)
         self.assertIn("$.foundations.spec", output)
+        self.assertFalse(self.out.exists())
+
+    def test_json_of_the_wrong_shape_fails_before_writing(self) -> None:
+        # (JSON, text that must locate the problem in the error)
+        cases = {
+            "top-level value is not an object": ([], "top-level"),
+            "widgets is not a list": ({**sample(), "widgets": {}}, "$.widgets"),
+            "a widget is not an object": ({**sample(), "widgets": ["StatusBar"]}, "$.widgets[0]"),
+            "a widget name is not a string": (
+                {**sample(), "widgets": [{"name": 7, "spec": "# x"}]}, "$.widgets[0].name"),
+            "a widget name gives no file name": (
+                {**sample(), "widgets": [{"name": "!!!", "spec": "# x"}]}, "'!!!'"),
+        }
+        for i, (label, (data, where)) in enumerate(cases.items()):
+            with self.subTest(label):
+                self.out = self.tmp / f"out-{i}"  # a failing case must not leak into the next
+                code, output = self.run_split(data)
+                self.assertEqual(code, 2)
+                self.assertIn(where, output)
+                self.assertFalse(self.out.exists())
+
+    def test_missing_json_file_fails_before_writing(self) -> None:
+        code, output = self.run_main(self.tmp / "absent.json")
+        self.assertEqual(code, 2)
+        self.assertIn("absent.json", output)
+        self.assertFalse(self.out.exists())
+
+    def test_unparsable_json_fails_naming_the_file(self) -> None:
+        src = self.tmp / "in.json"
+        src.write_text("{not json", encoding="utf-8")
+        code, output = self.run_main(src)
+        self.assertEqual(code, 2)
+        self.assertIn("in.json", output)
         self.assertFalse(self.out.exists())
 
     def test_kebab_file_names(self) -> None:

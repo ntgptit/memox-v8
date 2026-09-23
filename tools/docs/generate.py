@@ -112,13 +112,13 @@ def split_frontmatter(text: str) -> tuple[dict[str, object] | None, str, str | N
     try:
         end = next(i for i in range(1, len(lines)) if lines[i].strip() == "---")
     except StopIteration:
-        return None, text, "frontmatter không có dòng `---` đóng"
+        return None, text, "frontmatter has no closing `---` line"
     meta: dict[str, object] = {}
     for line_no, line in enumerate(lines[1:end], 2):
         if not line.strip():
             continue
         if ":" not in line:
-            return meta, "\n".join(lines[end + 1 :]), f"frontmatter dòng {line_no}: thiếu `key: value`"
+            return meta, "\n".join(lines[end + 1 :]), f"frontmatter line {line_no}: expected `key: value`"
         key, raw = line.split(":", 1)
         meta[key.strip()] = parse_value(raw)
     return meta, "\n".join(lines[end + 1 :]), None
@@ -170,7 +170,7 @@ def load_docs() -> list[Doc]:
                 feature=feature,
                 meta=meta or {},
                 body=body,
-                frontmatter_error=error if meta is not None else (error or "thiếu frontmatter"),
+                frontmatter_error=error if meta is not None else (error or "missing frontmatter"),
                 sections=h2_sections(body),
             )
         )
@@ -361,13 +361,13 @@ def write_all(out_dir: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--out", type=Path, default=GENERATED, help="thư mục đích (mặc định docs/_generated)")
+    parser.add_argument("--out", type=Path, default=GENERATED, help="output directory (default: docs/_generated)")
     args = parser.parse_args()
     if not DOCS.is_dir():
-        print("ERROR docs: không tìm thấy — chạy từ root repo")
+        print("ERROR docs: not found — run from the repository root")
         return 1
     write_all(args.out)
-    print(f"OK {args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out}: đã sinh 3 file")
+    print(f"OK {args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out}: generated 3 files")
     return 0
 
 
