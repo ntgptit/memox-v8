@@ -1,0 +1,7 @@
+# Every text file is checked out with LF, whatever core.autocrlf says, so a
+# Windows checkout matches what generators write (tools/docs/check.py compares
+# byte for byte). Windows-only scripts keep CRLF.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

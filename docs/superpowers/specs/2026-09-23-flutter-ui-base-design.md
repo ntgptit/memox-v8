@@ -32,7 +32,8 @@ to the feature's own sub-project.
 - The app launches into a four-tab shell (Thư viện · Học · Tiến độ · Cài đặt),
   each tab showing a placeholder, in English and Vietnamese.
 - A debug-only gallery shows every component in every variant and state.
-- The full `dod_check.sh` gate passes.
+- The phase gate passes (§8.3); `dod_check.sh` joins it once the backend
+  adds codegen.
 
 ## 2. Decisions
 
@@ -274,8 +275,9 @@ reads no provider.
 - `app_en.arb` is the template and `app_vi.arb` the translation.
 - Every key has an `@description`, as the guard rule
   `memox.i18n.arb_entry_needs_description` requires.
-- The only strings are those of the shell, the placeholder, the gallery and the
-  components' built-in labels.
+- The only strings are those of the shell, the placeholder and the gallery's
+  entry action. The debug-only gallery's own labels and demo copy stay English
+  literals (phase 3 ruling G1).
 
 ## 7. Boundary with the backend foundation
 
@@ -360,8 +362,9 @@ in phases 4–6 also gets its gallery entry.
   their first target. Their entries are deleted in that same commit.
 - **The first `lib/app/` file (phase 3)** does the same for the two
   `targets_pending: app` entries.
-- **From phase 3**, when the first screen exists, the gate is
-  `.claude/skills/flutter-workflow/scripts/dod_check.sh`.
+- **From phase 3** the gate adds `python tools/docs/check.py`.
+  `dod_check.sh` becomes the gate once the backend adds Riverpod/Drift codegen;
+  its generated-code step reports zero scope until then (phase 3 ruling G2).
 
 **Toolchain.** Every gate runs on the Flutter that `.fvmrc` pins (3.47.5); the
 pubspec needs Dart ^3.13.4, which older SDKs cannot resolve.
@@ -398,6 +401,8 @@ item names where it comes from.
 | 15 | EmptyState tile→title (16) and title→body (8) gaps are UNSPECIFIED in the contract and use the spacing roles | phase 2 plan R7 |
 | 16 | EmptyState has no footnote slot until MxNote (phase 5); MxButton's loading spinner is a plain `CircularProgressIndicator` until MxSpinner (phase 6) | phase 2 plan R8 |
 | 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
+| 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run | phase 3 plan G3 |
+| 19 | The debug gallery's labels and demo copy are English literals, not ARB strings | phase 3 plan G1 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

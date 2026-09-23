@@ -74,9 +74,6 @@ overrides:
       targets_pending: presentation
     memox_v7.design_system.no_raw_widget:
       targets_pending: presentation
-    # -- `l10n`: waits for lib/l10n/app_en.arb (the first user-visible string)
-    memox.i18n.arb_entry_needs_description:
-      targets_pending: l10n
     # -- `visual-audit`: waits for the first test/visual_audit/ companion (UI sub-project)
     memox.visual.production_screen_audit_not_exploratory:
       targets_pending: visual-audit
