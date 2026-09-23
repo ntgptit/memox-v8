@@ -166,9 +166,10 @@ final class MxTextStyles {
   TextStyle badgeLabel(Color ink) =>
       chipCount(ink).copyWith(height: _pillHeight);
 
-  /// TagChip label: 12/600 at line-height 1, 0.1 tracking (S4).
+  /// TagChip label: 12/600, 0.1 tracking (S4). It keeps the caption's 1.4
+  /// line-height, not the contract's 1: an ellipsized tag clips to its text
+  /// box, and a 12px box cuts the descenders.
   TextStyle get tagLabel => _texts.labelSmall!.copyWith(
-    height: _pillHeight,
     letterSpacing: _labelTracking,
     color: _scheme.onSurfaceVariant,
   );

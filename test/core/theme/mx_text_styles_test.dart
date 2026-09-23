@@ -253,7 +253,7 @@ void main() {
       tracking: 0.1,
       color: scheme.onSurfaceVariant,
     );
-    expect(styles.tagLabel.height, 1);
+    expect(styles.tagLabel.height, 1.4);
   });
 
   test('note 12 at 1.5; workload 12/400 with 600 terms; donut 9/700', () {
