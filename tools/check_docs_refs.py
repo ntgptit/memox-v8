@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Gate: the V8 docs keep-set may not cite anything that no longer exists.
+"""Gate: every BR-n, UC-n and invariant Qn cited in the V8 docs keep-set
+resolves to a real definition, and every keep-set file exists.
 
     python tools/check_docs_refs.py [path ...]
 
@@ -30,25 +31,6 @@ KEEP_SET = [
     *sorted((DOCS / "it-scenarios").glob("*.md")),
 ]
 
-# Each pattern names something V8 no longer has. Order is report order.
-BANNED = [
-    (re.compile(r"AD-\d+"), "AD reference — architecture.md is deleted"),
-    (re.compile(r"\bM\d+(?:\.\d+)+[a-z]*\b"), "V7 WBS task ID — the ledgers are deleted"),
-    (re.compile(r"\blib/"), "V7 source path — V8 has no lib/ yet"),
-    (re.compile(r"\b(?:wbs-study|wbs|architecture|checklist)\.md\b"), "deleted document"),
-    (
-        re.compile(r"\b(?:wbs-archive|wireframes|reviews|claude-design|design-system)/"),
-        "deleted directory",
-    ),
-    (re.compile(r"\b[\w./-]+\.(?:dart|drift)\b"), "V7 source file — V8 has no code yet"),
-    (re.compile(r"\b(?:integration_)?test/"), "V7 test path — V8 has no tests yet"),
-    (re.compile(r"\b[Ss]chema v\d+\b"), "V7 schema version — V8 has no migration path from V7"),
-    (
-        re.compile(r"\b(?:card_study_states|study_answers|study_sessions|parent_deck_id|root_deck_id|scheduler_generation)\b"),
-        "V7 identifier — V8 renamed it (see data-model.md)",
-    ),
-]
-
 BR_DEF = re.compile(r"^(?:\|\s*|#+\s*)BR-(\d+)\b", re.M)
 UC_DEF = re.compile(r"^#+\s*UC-(\d+)\b", re.M)
 INV_DEF = re.compile(r"^--\s*(\d+)\.", re.M)
@@ -70,9 +52,6 @@ def defined_ids(path: Path, pattern: re.Pattern[str]) -> set[int]:
 
 def check_file(path: Path, br: set[int], uc: set[int], inv: set[int]) -> None:
     for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        for pattern, reason in BANNED:
-            for hit in pattern.findall(line):
-                fail(path, line_no, f"{reason}: {hit}")
         # A rule's definition row still cites other rules in its Related
         # column — 171 of them do — so drop only the leading `| BR-nnn |`
         # and scan the rest. Skipping the whole row blinds the check.

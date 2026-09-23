@@ -26,7 +26,7 @@ Format và thứ tự đọc: [`document-conventions.md`](document-conventions.m
 | [`superpowers/plans/2026-09-21-memox-v8-foundation.md`](superpowers/plans/2026-09-21-memox-v8-foundation.md) | Kế hoạch triển khai nền tảng V8: Flutter skeleton, data model lõi, scheduler SRS thuần Dart, luật cây deck | — |
 | [`superpowers/plans/2026-09-23-docs-v8-reset.md`](superpowers/plans/2026-09-23-docs-v8-reset.md) | Kế hoạch dọn `docs/`: xoá tài liệu V7, dựng gate tham chiếu, scrub tài liệu còn lại, nâng `data-model.md` lên V8 | — |
 | [`it-scenarios/`](it-scenarios/) | Bộ kịch bản kiểm thử tích hợp theo hành trình người dùng: điều hướng, bộ thẻ, thẻ ghi nhớ, học và ôn tập | active |
-| [`../tools/check_docs_refs.py`](../tools/check_docs_refs.py) | Gate: không tài liệu nào được trích dẫn thứ đã bị xoá; BR/UC/invariant được trích dẫn phải phân giải được | active |
+| [`../tools/check_docs_refs.py`](../tools/check_docs_refs.py) | Gate: mọi `BR-xx`/`UC-xx`/`invariant Q<n>` được trích dẫn phải phân giải được tới một định nghĩa thật | active |
 
 **ID là vĩnh viễn.** BR, UC và invariant không bao giờ được đánh số lại; luật
 mới append vào số tiếp theo, kể cả khi nó thuộc phần đầu tài liệu — chi tiết và

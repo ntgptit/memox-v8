@@ -263,18 +263,14 @@ MAY khác với code thật.
 
 | Kiểm | Bắt được gì |
 |---|---|
-| Không còn tham chiếu `AD-nn` | Từng trỏ tới tài liệu kiến trúc theo số, nay đã xoá |
-| Không còn V7 task ID kiểu `M<n>.<n>…` | Từng trỏ tới ledger tiến độ đã xoá |
-| Không còn đường dẫn thư mục nguồn Dart, file `.dart`/`.drift`, hay thư mục test | Tham chiếu tới code hoặc test mà V8 chưa có |
-| Không còn tên tài liệu hoặc thư mục V7 đã xoá (ledger tiến độ, tài liệu kiến trúc theo số, quy trình phase, wireframe, …) | Tham chiếu chết tới thứ đã xoá |
-| Không còn số hiệu schema kiểu V7 | Tham chiếu tới version schema mà V8 không kế thừa |
 | Mọi `BR-xx` / `UC-xx` / `invariant Q<n>` được trích dẫn đều resolve được | Tham chiếu chết sau khi sửa |
 
 Những gì `tools/check_docs_refs.py` **không** kiểm được, và MUST do người xem:
 tài liệu có đủ bảy dòng header không, `Source of truth for` có trùng giữa các
 file không (vi phạm mục 5), BR/UC có trùng ID không (vi phạm mục 7), bảng BR có
 đủ cột bắt buộc không (mục 6.2), UC có đủ chín mục không (mục 6.3), query bất
-biến có parse và phân biệt được đúng khuôn không (mục 6.4), tài liệu còn marker
-chưa chốt hay không, một rule có phải rule tốt không, một tham chiếu có trỏ đúng
-rule về mặt ngữ nghĩa không, và một `Rationale` có thật sự giải thích được gì
-không.
+biến có parse và phân biệt được đúng khuôn không (mục 6.4), một tài liệu có
+trích dẫn một tài liệu hoặc đường dẫn không còn tồn tại không, tài liệu còn
+marker chưa chốt hay không, một rule có phải rule tốt không, một tham chiếu có
+trỏ đúng rule về mặt ngữ nghĩa không, và một `Rationale` có thật sự giải thích
+được gì không.
