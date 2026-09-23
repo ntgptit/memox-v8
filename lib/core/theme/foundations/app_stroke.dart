@@ -9,4 +9,7 @@ abstract final class AppStroke {
 
   /// Gap between a control and its focus ring.
   static const double focusOffset = 2;
+
+  /// Spinner arc and other progress strokes.
+  static const double indicator = 2;
 }
