@@ -65,6 +65,21 @@ void main() {
     expect(find.byTooltip('Clear search'), findsNothing);
   });
 
+  testWidgets('clear keeps the field focused', (tester) async {
+    await pump(tester);
+    await tester.tap(find.byType(TextField));
+    await tester.enterText(find.byType(TextField), 'kanji');
+    await tester.pump();
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pump();
+
+    expect(controller.text, isEmpty);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  }, variant: TargetPlatformVariant.all());
+
   testWidgets('focus lightens the fill and tints the glyph', (tester) async {
     await pump(tester);
     await tester.tap(find.byType(TextField));
