@@ -44,6 +44,8 @@ void main() {
     for (final title in [
       'B · Actions',
       'C · Inputs & selection',
+      'D · Surfaces, rows & content',
+      'E · Status & metadata',
       'A · Chrome & navigation',
       'G · Loading, empty & error',
       'H · Layout',

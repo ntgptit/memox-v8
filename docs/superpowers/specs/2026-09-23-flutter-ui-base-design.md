@@ -411,6 +411,23 @@ item names where it comes from.
 | 25 | SelectionCheckbox is painted only; the caller's row owns the tap and the checked semantics | phase 4 plan I6 |
 | 26 | FilterChip's count keeps the label's 0.1 tracking, not the caption role's 1.2, so the digits do not read spaced | phase 4 execution |
 | 27 | TextField and SearchField reach their floors through vertical content padding, not `InputDecoration.constraints`, which painted the box at text height; the multiline field pads 9.5 instead of 8 | phase 4 execution |
+| 28 | Badge offers no `streak` tone: its colour is PRESERVE_ONLY with no V3 call site, and §4.2 keeps the extension at nine fields | phase 5 plan S1 |
+| 29 | Badge's `neutral` tone, whose colour the contract does not name, paints `onSurfaceVariant`, as EmptyState's neutral tone does | phase 5 plan S2 |
+| 30 | A tonal warning Badge reads in `warningInk` (extends row 20); a solid Badge's label is `onPrimary` for every tone as written, so a solid warning badge is white on amber | phase 5 plan S3 |
+| 31 | Pill and count text (Badge, StatusBadge, TagChip, WorkloadBreakdownLine, MasteryDonut label) takes the 0.1 label tracking (extends row 26) | phase 5 plan S4 |
+| 32 | 12px text whose contract states only size and colour (the ListRow, ActionSheetCommandRow and SettingsRow sub-lines, Note) keeps the caption role (extends row 24) | phase 5 plan S5 |
+| 33 | StatusBadge's four names come from the caller, since `shared/` cannot import `l10n/`; the bare dot announces the same name | phase 5 plan S6 |
+| 34 | ActionSheetCommandRow's glyph (16) and label→sub gap (2) are UNSPECIFIED and use the small IconTile step and the ListRow gap | phase 5 plan S7 |
+| 35 | Section draws the ghost dividers between its rows, renders its note as MxNote, and keeps its 16 bottom gap although §5 gives outer spacing to the caller | phase 5 plan S8, S9 |
+| 36 | MasteryDonut's track is `surfaceContainer` as its contract states, not MasteryRamp's progress-track; at 0% the label takes the lowest band colour; the label scales down to stay inside the ring | phase 5 plan S10 |
+| 37 | Badge, StatusBadge and TagChip heights (22, 18) are minimums that text scaling grows | phase 5 plan S11 |
+| 38 | WorkloadBreakdownLine paints no top margin; the row that stacks it owns the 2 gap. The suffix follows the terms after a space | phase 5 plan S12 |
+| 39 | IconTile's `seed` is the one `Color` parameter among the shared widgets: per-deck data the contract passes per instance | phase 5 plan S16 |
+| 40 | SettingsRow's wide control keeps its own width, start-aligned under the label, since Stepper and SegmentedTray are intrinsic-width | phase 5 plan S17 |
+| 41 | Badge's leading glyph is 12, below the 16 icon floor, as its contract states | phase 5 plan S18 |
+| 42 | Row 16's footnote half is resolved: EmptyState's `footnote` renders an MxNote 20 below the action | phase 5 plan S19 |
+| 43 | ListRow and SettingsRow put the 12/12 vertical inset on the text column only, so a 48 trailing target (overflow button, toggle) sits inside the text height instead of growing the row; the painted rows match the contract's "one title + one sub + 12/12" | phase 5 execution |
+| 44 | TagChip's label keeps the caption line-height 1.4, not the contract's 1: an ellipsized label clips to its text box, and a 12px box cut the descenders | phase 5 execution |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

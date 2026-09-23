@@ -174,21 +174,120 @@ void main() {
     );
   });
 
-  test('option row: title 14/600/-0.1, description 12 at 1.45', () {
+  test('row styles: title 14/600/-0.1, list title at 1.35, sub-lines 12', () {
     expectStyle(
-      styles.optionTitle,
+      styles.rowTitle,
       size: 14,
       weight: FontWeight.w600,
       tracking: -0.1,
       color: scheme.onSurface,
     );
     expectStyle(
-      styles.optionDescription,
+      styles.listRowTitle,
+      size: 14,
+      weight: FontWeight.w600,
+      tracking: -0.1,
+    );
+    expect(styles.listRowTitle.height, 1.35);
+    expectStyle(
+      styles.rowDescription,
       size: 12,
       weight: FontWeight.w600,
       color: scheme.onSurfaceVariant,
     );
-    expect(styles.optionDescription.height, 1.45);
+    expect(styles.rowDescription.height, 1.45);
+    expectStyle(
+      styles.rowSubtitle,
+      size: 12,
+      weight: FontWeight.w600,
+      color: scheme.onSurfaceVariant,
+    );
+  });
+
+  test('settings label 16/600/-0.1; a destructive command label is error', () {
+    expectStyle(
+      styles.settingsLabel,
+      size: 16,
+      weight: FontWeight.w600,
+      tracking: -0.1,
+      color: scheme.onSurface,
+    );
+    expect(styles.commandLabel(isDestructive: false).color, scheme.onSurface);
+    expectStyle(
+      styles.commandLabel(isDestructive: true),
+      size: 14,
+      weight: FontWeight.w600,
+      color: scheme.error,
+    );
+  });
+
+  test('overline 12/700 at 0.6, tabular, onSurfaceVariant', () {
+    expectStyle(
+      styles.overline,
+      size: 12,
+      weight: FontWeight.w700,
+      tracking: 0.6,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(
+      styles.overline.fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
+  });
+
+  test('pills: badge 12/700 tabular and tag 12/600, line-height 1, 0.1', () {
+    final badge = styles.badgeLabel(scheme.primary);
+    expectStyle(
+      badge,
+      size: 12,
+      weight: FontWeight.w700,
+      tracking: 0.1,
+      color: scheme.primary,
+    );
+    expect(badge.height, 1);
+    expect(badge.fontFeatures, contains(const FontFeature.tabularFigures()));
+    expectStyle(
+      styles.tagLabel,
+      size: 12,
+      weight: FontWeight.w600,
+      tracking: 0.1,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(styles.tagLabel.height, 1.4);
+  });
+
+  test('note 12 at 1.5; workload 12/400 with 600 terms; donut 9/700', () {
+    expectStyle(
+      styles.noteText,
+      size: 12,
+      weight: FontWeight.w600,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(styles.noteText.height, 1.5);
+    expectStyle(
+      styles.workloadText,
+      size: 12,
+      weight: FontWeight.w400,
+      tracking: 0.1,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(styles.workloadText.height, 1.5);
+    expect(
+      styles.workloadText.fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
+    expectStyle(
+      styles.workloadTerm(scheme.primary),
+      size: 12,
+      weight: FontWeight.w600,
+      color: scheme.primary,
+    );
+    expectStyle(
+      styles.donutLabel(scheme.primary),
+      size: 9,
+      weight: FontWeight.w700,
+      color: scheme.primary,
+    );
   });
 
   test('tray label follows selection; stepper value 16/700 tabular', () {

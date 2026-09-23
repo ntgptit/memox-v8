@@ -22,6 +22,10 @@ abstract final class AppIcons {
   static const IconData filter = Icons.filter_list; // filter
   static const IconData alert = Icons.error_outline; // alert-circle
   static const IconData remove = Icons.remove; // minus
+  static const IconData info = Icons.info_outline; // info
+  static const IconData folder = Icons.folder_outlined; // folder
+  static const IconData edit = Icons.edit_outlined; // pencil
+  static const IconData reminder = Icons.notifications_none; // bell
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;

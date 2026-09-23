@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -106,5 +107,24 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a footnote sits 20 below the action as a note', (tester) async {
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'Trash is empty',
+        actionLabel: 'Back to library',
+        onAction: () {},
+        footnote: 'Deleted items stay here for 30 days.',
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxNote)).dy -
+          tester.getBottomLeft(find.byType(MxButton)).dy,
+      20,
+    );
   });
 }

@@ -30,4 +30,19 @@ void main() {
     expect(card.boxShadow, isEmpty);
     expect(card.border, Border.all(color: derived.ghostBorder));
   });
+
+  test('hero: surface-hero fill with the ghost edge in both themes', () {
+    for (final (scheme, semantic) in [
+      (AppColorSchemes.light, MxSemanticColors.light),
+      (AppColorSchemes.dark, MxSemanticColors.dark),
+    ]) {
+      final derived = MxDerivedColors.resolve(scheme, semantic);
+      final hero = AppDecorations.heroCard(scheme, derived);
+
+      expect(hero.color, derived.surfaceHero);
+      expect(hero.border, Border.all(color: derived.ghostBorder));
+      expect(hero.borderRadius, BorderRadius.circular(20));
+      expect(hero.boxShadow, AppShadows.whisper(scheme));
+    }
+  });
 }

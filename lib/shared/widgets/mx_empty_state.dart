@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 
 /// What the surface's emptiness means: action-led, a plain fact, a calm
 /// finish, something to act on, or a failed outcome.
@@ -22,6 +23,7 @@ class MxEmptyState extends StatelessWidget {
     this.isCompact = false,
     this.actionLabel,
     this.onAction,
+    this.footnote,
   }) : assert(
          (actionLabel == null) == (onAction == null),
          'actionLabel and onAction come together',
@@ -36,6 +38,9 @@ class MxEmptyState extends StatelessWidget {
   final bool isCompact;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// A product rule under the action, drawn as an MxNote (ruling S19).
+  final String? footnote;
 
   static const double _tileTint = 0.10;
   static const double _tileSize = 64;
@@ -94,6 +99,10 @@ class MxEmptyState extends StatelessWidget {
               )) ...[
                 const SizedBox(height: AppSpacing.card),
                 MxButton(label: label, onPressed: onPressed, isBlock: true),
+              ],
+              if (footnote case final rule?) ...[
+                const SizedBox(height: AppSpacing.card),
+                MxNote(text: rule),
               ],
             ],
           ),
