@@ -16,6 +16,8 @@ ERROR
 - a UC / BR / feature README missing a required `##` section
 - a BR carrying a hand-written "used by" section (it is generated)
 - docs/_generated/ stale compared with a fresh `generate.py` run
+- docs/shared/ui/design-handoff/ not exactly what `split_handoff.py` makes of
+  docs/shared/ui/design-handoff.json (a file missing, edited or extra)
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -38,6 +40,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import generate as g  # noqa: E402
+import split_handoff as sh  # noqa: E402
 
 BR_ID = re.compile(r"^BR-[A-Z]+-\d{3}$")
 UC_ID = re.compile(r"^UC-[A-Z]+-\d{3}$")
@@ -310,6 +313,29 @@ def check_generated(report: Report) -> None:
                 report.error(g.GENERATED / extra, "file không do generate.py sinh")
 
 
+SPLIT = "chạy `python tools/docs/split_handoff.py`"
+HANDOFF_DRIFT = {
+    "missing": f"thiếu so với JSON — {SPLIT}",
+    "changed": f"khác bản sinh từ JSON (bị sửa tay hoặc chưa sinh lại) — {SPLIT}",
+    "extra": "JSON không sinh ra file này — file tự viết thì chuyển ra khỏi thư mục; "
+    f"file do JSON cũ sinh thì {SPLIT}",
+}
+
+
+def check_design_handoff(report: Report) -> None:
+    """Compare design-handoff/ with a fresh split of its JSON, the way check_generated
+    does for _generated/. Nothing to check while neither exists."""
+    if not (sh.DEFAULT_INPUT.exists() or sh.DEFAULT_OUTPUT.exists()):
+        return
+    try:
+        files = sh.load_files(sh.DEFAULT_INPUT)
+    except (OSError, ValueError, sh.SplitError) as error:
+        report.error(sh.DEFAULT_INPUT, f"không sinh được design handoff: {error}")
+        return
+    for path, kind in sh.find_drift(sh.DEFAULT_OUTPUT, files):
+        report.error(sh.DEFAULT_OUTPUT / path, HANDOFF_DRIFT[kind])
+
+
 # ------------------------------------------------------------ plan mapping
 
 PLAN_HEADER = re.compile(r"^\|\s*Nguồn\b")
@@ -378,6 +404,7 @@ def run(plan: Path | None) -> Report:
     check_references(docs, by_id, report)
     check_text(docs, report)
     check_generated(report)
+    check_design_handoff(report)
     if plan is not None:
         check_plan(plan, report)
     check_warnings(docs, report)
