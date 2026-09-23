@@ -345,10 +345,16 @@ fi
 # not go red when the thing being edited is itself, so its verdict is evidence
 # only once these have passed. Missing pytest fails rather than skips — a gate
 # that reports "skipped" is a gate nobody notices has gone.
-# The guard needs Python >= 3.12 and its own packages (pyyaml, rich, typer,
-# pytest), which the system interpreter may not have. `GUARD_PY` names that
-# interpreter (the cloud SessionStart hook exports ~/.guard-venv's); without
-# it the guard runs on $PY like every other gate.
+# The guard needs Python >= 3.12 (its pyproject) plus requirements-dev.txt,
+# installed globally. `python`/`python3` can be older (3.11 on the cloud
+# image), so the newest python3.1x on PATH wins; `GUARD_PY` overrides, and
+# $PY is the last resort.
+GUARD_PY="${GUARD_PY:-}"
+if [[ -z "$GUARD_PY" ]]; then
+  for candidate in python3.13 python3.12; do
+    command -v "$candidate" >/dev/null 2>&1 && { GUARD_PY="$candidate"; break; }
+  done
+fi
 GUARD_PY="${GUARD_PY:-$PY}"
 GUARD_TESTS="$REPO_ROOT/code-verification-guard-v2/tests"
 if [[ $NEEDS_STATIC -eq 0 ]]; then
