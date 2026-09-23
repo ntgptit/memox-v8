@@ -5,8 +5,8 @@
 | **Status** | active |
 | **Purpose** | Chứng minh thẻ chưa học đi đúng chuỗi giai đoạn, vòng và điều kiện hoàn tất trước khi nhận lịch đầu tiên |
 | **Scope** | Loại phiên `learning`, chuỗi Eight Box/SM-2, bỏ qua giai đoạn, vòng lặp, học lại trong `Self assess`, hoàn tất và giới hạn mỗi phiên |
-| **Source of truth for** | Kịch bản IT về phiên Học mới của UC-05 |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-23…30, BR-97…119, BR-139…149), `../use-cases.md` (UC-05) |
+| **Source of truth for** | Kịch bản IT về phiên Học mới của UC-STUDY-001 |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules/` (BR-STUDY-002…BR-STUDY-009, BR-MODE-007, BR-MODE-008, BR-MODE-009, BR-MODE-010, BR-STUDY-020, BR-STUDY-021, BR-STUDY-072, BR-STUDY-073, BR-STUDY-074, BR-MODE-011, BR-MODE-012, BR-MODE-002, BR-MODE-003, BR-MODE-004, BR-MODE-005, BR-MODE-006, BR-STUDY-022, BR-STUDY-071, BR-STUDY-059, BR-STUDY-060, BR-STUDY-061, BR-STUDY-062, BR-STUDY-069, BR-STUDY-024, BR-STUDY-025, BR-STUDY-023, BR-STUDY-051, BR-STUDY-052, BR-STUDY-053, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-058), `../use-cases/` (UC-STUDY-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 

@@ -4,9 +4,9 @@
 |---|---|
 | **Status** | đang áp dụng |
 | **Purpose** | Định nghĩa phạm vi, điểm bắt đầu và dữ liệu chung cho người hoặc AI agent thực thi kịch bản IT trên chức năng hiện có |
-| **Scope** | Điều hướng, bộ thẻ, thẻ ghi nhớ, chức năng học theo UC-05 và Đặt lại tiến độ học theo UC-07; ngoài phạm vi là bộ thẻ mẫu, đồng bộ và máy chủ |
+| **Scope** | Điều hướng, bộ thẻ, thẻ ghi nhớ, chức năng học theo UC-STUDY-001 và Đặt lại tiến độ học theo UC-SRS-001; ngoài phạm vi là bộ thẻ mẫu, đồng bộ và máy chủ |
 | **Source of truth for** | Chỉ mục và quy ước thực thi bộ kịch bản IT hiện tại |
-| **Depends on** | `../product.md`, `../business-rules.md`, `../use-cases.md` |
+| **Depends on** | `../product/product.md`, `../business-rules/`, `../use-cases/` |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ đường dẫn test V7 và tài liệu đã xoá khỏi mục lục kịch bản IT |
 | **Last updated** | 2026-09-23 |
 
@@ -35,7 +35,7 @@ Một bộ dữ liệu dựng sẵn MAY được dùng để chuẩn bị trạn
 nó vẫn phải có đường dẫn hiện vật và phiên bản; với hai hồ sơ host thì test tự
 tạo database của chính nó, nên "dựng sẵn" chỉ là mã dựng hàng.
 
-Hai tập thẻ học MUST tách hẳn theo BR-142: **Học mới** có `learned_at IS
+Hai tập thẻ học MUST tách hẳn theo BR-STUDY-051: **Học mới** có `learned_at IS
 NULL`; **Ôn tập** có `learned_at IS NOT NULL AND due_at <= now`. Thẻ mới không
 được gọi là “đến hạn”. Bộ dữ liệu dựng sẵn hoặc kịch bản nào còn gộp hai tập
 này là `DOC-DRIFT`, không phải bằng chứng cho sản phẩm.
@@ -90,7 +90,7 @@ Các luồng sau MUST NOT được ghi nhận là đạt khi chạy trên bản 
 - Luồng thuộc phạm vi ngoài V8.0 theo spec
   `docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2: sáu
   sub-project sau (Trash, nhập/xuất, tag, nhắc học hằng ngày, thư viện
-  starter deck tức UC-01, thống kê mở rộng) và những gì ngoài V8 hoàn toàn
+  starter deck tức UC-STARTER-001, thống kê mở rộng) và những gì ngoài V8 hoàn toàn
   (đa phương tiện, xác thực, đồng bộ/máy chủ, iOS/web/desktop). Kịch bản của
   các luồng này vẫn là tài liệu nghiệp vụ cho sub-project sau, không phải
   tiêu chí nghiệm thu của V8.0.
@@ -185,18 +185,18 @@ Dữ liệu dựng sẵn MUST dùng nội dung giả, không dùng dữ liệu c
 
 | Nguồn | Scenario chính |
 |---|---|
-| UC-02 — tạo bộ thẻ gốc | `IT-DECK-001`, `IT-DECK-002`, `IT-DECK-003`, `IT-DECK-004` |
-| UC-03 — sửa/xoá bộ thẻ | `IT-DECK-005`, `IT-DECK-006`, `IT-DECK-007`, `IT-DECK-008`, `IT-TREE-007`, `IT-TREE-008`, `IT-TREE-014` |
-| UC-04 — quản lý thẻ | `IT-CARD-001` tới `IT-CARD-011`; `IT-ORG-001` tới `IT-ORG-012` |
-| UC-06 — danh sách bộ thẻ và tiến độ | `IT-DISC-001` tới `IT-DISC-008`; `IT-ORG-011` |
-| UC-08 — tạo phần tử con, xác lập loại | `IT-TREE-001` tới `IT-TREE-008`; `IT-TREE-013` |
-| UC-09 — di chuyển bộ thẻ | `IT-TREE-009` tới `IT-TREE-013` |
-| UC-05 — điểm vào và tùy chọn | `IT-STUDY-001` tới `IT-STUDY-013` |
-| UC-05 — điều hướng Study | `IT-NAV-002`, `IT-NAV-008` tới `IT-NAV-010` |
-| UC-05 — học mới | `IT-LEARN-001` tới `IT-LEARN-012` |
-| UC-05 — ôn tập và thuật toán xếp lịch | `IT-REVIEW-001` tới `IT-REVIEW-010` |
-| UC-05 — StudyMode | `IT-MODE-001` tới `IT-MODE-015` |
-| UC-05 — tiếp tục và lỗi | `IT-CONT-001` tới `IT-CONT-014` |
+| UC-DECK-001 — tạo bộ thẻ gốc | `IT-DECK-001`, `IT-DECK-002`, `IT-DECK-003`, `IT-DECK-004` |
+| UC-DECK-002 — sửa/xoá bộ thẻ | `IT-DECK-005`, `IT-DECK-006`, `IT-DECK-007`, `IT-DECK-008`, `IT-TREE-007`, `IT-TREE-008`, `IT-TREE-014` |
+| UC-CARD-001 — quản lý thẻ | `IT-CARD-001` tới `IT-CARD-011`; `IT-ORG-001` tới `IT-ORG-012` |
+| UC-DECK-003 — danh sách bộ thẻ và tiến độ | `IT-DISC-001` tới `IT-DISC-008`; `IT-ORG-011` |
+| UC-DECK-004 — tạo phần tử con, xác lập loại | `IT-TREE-001` tới `IT-TREE-008`; `IT-TREE-013` |
+| UC-DECK-005 — di chuyển bộ thẻ | `IT-TREE-009` tới `IT-TREE-013` |
+| UC-STUDY-001 — điểm vào và tùy chọn | `IT-STUDY-001` tới `IT-STUDY-013` |
+| UC-STUDY-001 — điều hướng Study | `IT-NAV-002`, `IT-NAV-008` tới `IT-NAV-010` |
+| UC-STUDY-001 — học mới | `IT-LEARN-001` tới `IT-LEARN-012` |
+| UC-STUDY-001 — ôn tập và thuật toán xếp lịch | `IT-REVIEW-001` tới `IT-REVIEW-010` |
+| UC-STUDY-001 — StudyMode | `IT-MODE-001` tới `IT-MODE-015` |
+| UC-STUDY-001 — tiếp tục và lỗi | `IT-CONT-001` tới `IT-CONT-014` |
 | Hành trình deck/card xuyên suốt và ngoại tuyến | `IT-NAV-006`, `IT-NAV-007`, `IT-PLAT-002` |
 | Ranh giới nền tảng — thứ duy nhất còn chạy trên thiết bị | `IT-PLAT-001` tới `IT-PLAT-006`; `IT-NAV-007`, `IT-CONT-008` |
 

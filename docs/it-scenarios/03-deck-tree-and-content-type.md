@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra cây deck giữ đúng loại nội dung, giới hạn độ sâu và quy tắc di chuyển qua thao tác người dùng |
 | **Scope** | Tạo sub-deck/card đầu tiên, khoá loại nội dung, reset loại khi rỗng, move subtree và depth limit |
 | **Source of truth for** | Scenario IT về cấu trúc cây deck và content type |
-| **Depends on** | `README.md`, `../business-rules.md` (BR-55…74), `../use-cases.md` (UC-08, UC-09) |
+| **Depends on** | `README.md`, `../business-rules/` (BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-013, BR-DECK-014, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006), `../use-cases/` (UC-DECK-004, UC-DECK-005) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ tham chiếu task ID V7 khỏi kịch bản cây deck |
 | **Last updated** | 2026-09-23 |
 
@@ -78,22 +78,22 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Deck con `Grammar` loại deck chỉ có một child `Tenses`.
-- **Liên kết:** UC-08 A3, BR-163.
+- **Liên kết:** UC-DECK-004 A3, BR-DECK-015.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
 | 1 | Xoá `Tenses` và xác nhận | `Grammar` trở thành empty state và `content_type` về `unset` trong cùng transaction |
 | 2 | Chạm Tạo | Có cả Tạo card và Tạo deck — deck đã mở khoá loại |
-| 3 | Lặp lại với một root rỗng | Root vẫn chỉ cho tạo deck: root bất biến `deck` (BR-58) |
+| 3 | Lặp lại với một root rỗng | Root vẫn chỉ cho tạo deck: root bất biến `deck` (BR-DECK-004) |
 
 ## IT-TREE-007 — Di chuyển child cuối đi cũng mở khoá loại của deck nguồn
 
-> Di chuyển là cách thứ hai (ngoài xoá) làm deck mất phần tử con cuối; BR-163
+> Di chuyển là cách thứ hai (ngoài xoá) làm deck mất phần tử con cuối; BR-DECK-015
 > áp dụng như nhau: `content_type` quay về `unset` trong cùng transaction.
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** `D-BRANCH` chỉ có `D-LEAF`; tồn tại một deck đích khác đang chưa định loại.
-- **Liên kết:** UC-09, BR-163.
+- **Liên kết:** UC-DECK-005, BR-DECK-015.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -104,12 +104,12 @@
 
 ## IT-TREE-008 — Deck còn nội dung giữ nguyên loại
 
-> Ràng buộc "còn nội dung thì giữ loại" là hệ quả của BR-163, không phải của
+> Ràng buộc "còn nội dung thì giữ loại" là hệ quả của BR-DECK-015, không phải của
 > một hành động reset ẩn riêng.
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** `D-BRANCH` đang chứa `D-LEAF` và một deck con thứ hai.
-- **Liên kết:** UC-08 A3, BR-163, invariant Q29.
+- **Liên kết:** UC-DECK-004 A3, BR-DECK-015, invariant Q29.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -179,7 +179,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck con loại card chỉ còn đúng một card.
-- **Liên kết:** UC-04 A2, BR-163.
+- **Liên kết:** UC-CARD-001 A2, BR-DECK-015.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

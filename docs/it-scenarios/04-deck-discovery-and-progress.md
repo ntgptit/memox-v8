@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra người dùng tìm, lọc, sắp xếp và đọc trạng thái học của deck trên mọi cấp cây |
 | **Scope** | Deck tile, summary, due filter, sort, subtree search, empty/no-result và cập nhật tức thời |
 | **Source of truth for** | Scenario IT về danh sách, discovery và progress của deck |
-| **Depends on** | `README.md`, `../business-rules.md` (BR-29, BR-56, BR-57, BR-65, BR-142, BR-150), `../use-cases.md` (UC-06) |
+| **Depends on** | `README.md`, `../business-rules/` (BR-STUDY-008, BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-STUDY-051, BR-STUDY-046), `../use-cases/` (UC-DECK-003) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 
@@ -20,7 +20,7 @@
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Mở root deck list | Tile `Due library` hiện Eight Box, 5 card toàn cây, **số New và số Due là hai con số tách biệt** (BR-150) — 2 card đến hạn — và 2 sub-deck trực tiếp |
+| 1 | Mở root deck list | Tile `Due library` hiện Eight Box, 5 card toàn cây, **số New và số Due là hai con số tách biệt** (BR-STUDY-046) — 2 card đến hạn — và 2 sub-deck trực tiếp |
 | 2 | Quan sát deck có card đến hạn | Trạng thái đến hạn được truyền đạt bằng chữ và biểu tượng, không chỉ bằng màu |
 | 3 | Mở một child level | Tile child dùng cùng cách trình bày, số liệu đúng với subtree đó |
 

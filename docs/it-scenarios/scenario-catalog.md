@@ -18,202 +18,202 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-NAV-001 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-06 |
-| IT-NAV-002 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | BR-101 |
-| IT-NAV-003 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-06 |
-| IT-NAV-004 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-06 |
+| IT-NAV-001 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-003 |
+| IT-NAV-002 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | BR-STUDY-020 |
+| IT-NAV-003 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-DECK-003 |
+| IT-NAV-004 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-DECK-003 |
 | IT-NAV-005 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-004 | SETUP-EMPTY | CLEAN-RESET | — |
-| IT-NAV-006 | `01-navigation-and-continuity.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-03, UC-04, UC-08 |
+| IT-NAV-006 | `01-navigation-and-continuity.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, UC-DECK-002, UC-CARD-001, UC-DECK-004 |
 | IT-NAV-007 | `01-navigation-and-continuity.md` | READY | `DEVICE-E2E` | — | SETUP-TREE-CARD | CLEAN-RESET | — |
-| IT-NAV-008 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-05, BR-101 |
-| IT-NAV-009 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05, BR-101, BR-146 |
-| IT-NAV-010 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-005 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82 |
-| IT-NAV-011 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-12, BR-190 |
-| IT-NAV-012 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-10, BR-175 |
+| IT-NAV-008 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-STUDY-001, BR-STUDY-020 |
+| IT-NAV-009 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-020, BR-STUDY-055 |
+| IT-NAV-010 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | IT-PLAT-005 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 A3, BR-STUDY-014 |
+| IT-NAV-011 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-PROGRESS-001, BR-PROGRESS-009 |
+| IT-NAV-012 | `01-navigation-and-continuity.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-TRANSFER-001, BR-TRANSFER-008 |
 
 ## Vòng đời bộ thẻ gốc
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-DECK-001 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-001F | SETUP-EMPTY | CLEAN-RESET | UC-02, BR-11 |
-| IT-DECK-002 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-D-SM2 | CLEAN-RESET | UC-02, BR-02 |
-| IT-DECK-003 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-02, BR-01, BR-11 |
-| IT-DECK-004 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-02, BR-01 |
-| IT-DECK-005 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-02 A1 |
-| IT-DECK-006 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-006F | SETUP-D-EB | CLEAN-RESET | UC-03, BR-01 |
-| IT-DECK-007 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-03 A4, BR-04 |
-| IT-DECK-008 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-008F | SETUP-TREE-CARD | CLEAN-RESET | UC-03, BR-03, BR-04 |
+| IT-DECK-001 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-001F | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, BR-SRS-001 |
+| IT-DECK-002 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-D-SM2 | CLEAN-RESET | UC-DECK-001, BR-DECK-021 |
+| IT-DECK-003 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, BR-DECK-020, BR-SRS-001 |
+| IT-DECK-004 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, BR-DECK-020 |
+| IT-DECK-005 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001 A1 |
+| IT-DECK-006 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-006F | SETUP-D-EB | CLEAN-RESET | UC-DECK-002, BR-DECK-020 |
+| IT-DECK-007 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-DECK-002 A4, BR-DECK-023 |
+| IT-DECK-008 | `02-root-deck-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DECK-008F | SETUP-TREE-CARD | CLEAN-RESET | UC-DECK-002, BR-DECK-022, BR-DECK-023 |
 
 ## Cây bộ thẻ và loại nội dung
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-TREE-001 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-001F | SETUP-D-EB | CLEAN-RESET | UC-08, BR-58, BR-59 |
-| IT-TREE-002 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-08, BR-60, BR-61 |
-| IT-TREE-003 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-003F | SETUP-TREE-UNSET | CLEAN-RESET | UC-08, BR-62, BR-63 |
-| IT-TREE-004 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-004F | SETUP-UNSET-CHILD:Grammar | CLEAN-RESET | UC-08, BR-62, BR-64 |
-| IT-TREE-005 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-UNSET-CHILD:Unclassified | CLEAN-RESET | UC-08 E1, BR-62 |
-| IT-TREE-006 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-DECK-TYPED-WITH-CHILD | CLEAN-RESET | UC-08 A3, BR-163 |
-| IT-TREE-007 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-09, BR-163 |
-| IT-TREE-008 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-08 A3, BR-163 |
-| IT-TREE-009 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-009F | SETUP-MOVE-TREE | CLEAN-RESET | UC-09, BR-71 |
-| IT-TREE-010 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CYCLE-TREE | CLEAN-RESET | UC-09 E1, BR-69, BR-70 |
-| IT-TREE-011 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-MOVE-TREE | CLEAN-RESET | UC-09 E2, BR-64 |
-| IT-TREE-012 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CROSS-SCHEDULER-MOVE | CLEAN-RESET | UC-09 E3, BR-73, BR-74 |
-| IT-TREE-013 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-DEEP-10 | CLEAN-RESET | UC-08 E4, UC-09 E5, BR-55 |
-| IT-TREE-014 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04 A2, BR-163 |
+| IT-TREE-001 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-001F | SETUP-D-EB | CLEAN-RESET | UC-DECK-004, BR-DECK-004, BR-DECK-005 |
+| IT-TREE-002 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-DECK-004, BR-DECK-006, BR-DECK-007 |
+| IT-TREE-003 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-003F | SETUP-TREE-UNSET | CLEAN-RESET | UC-DECK-004, BR-DECK-008, BR-DECK-009 |
+| IT-TREE-004 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-004F | SETUP-UNSET-CHILD:Grammar | CLEAN-RESET | UC-DECK-004, BR-DECK-008, BR-DECK-010 |
+| IT-TREE-005 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-UNSET-CHILD:Unclassified | CLEAN-RESET | UC-DECK-004 E1, BR-DECK-008 |
+| IT-TREE-006 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-DECK-TYPED-WITH-CHILD | CLEAN-RESET | UC-DECK-004 A3, BR-DECK-015 |
+| IT-TREE-007 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-DECK-005, BR-DECK-015 |
+| IT-TREE-008 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-TREE-UNSET | CLEAN-RESET | UC-DECK-004 A3, BR-DECK-015 |
+| IT-TREE-009 | `03-deck-tree-and-content-type.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-TREE-009F | SETUP-MOVE-TREE | CLEAN-RESET | UC-DECK-005, BR-DECK-018 |
+| IT-TREE-010 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CYCLE-TREE | CLEAN-RESET | UC-DECK-005 E1, BR-DECK-016, BR-DECK-017 |
+| IT-TREE-011 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-MOVE-TREE | CLEAN-RESET | UC-DECK-005 E2, BR-DECK-010 |
+| IT-TREE-012 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CROSS-SCHEDULER-MOVE | CLEAN-RESET | UC-DECK-005 E3, BR-SRS-005, BR-SRS-006 |
+| IT-TREE-013 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-DEEP-10 | CLEAN-RESET | UC-DECK-004 E4, UC-DECK-005 E5, BR-DECK-001 |
+| IT-TREE-014 | `03-deck-tree-and-content-type.md` | READY | `HOST-FLOW` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001 A2, BR-DECK-015 |
 
 ## Khám phá bộ thẻ và tiến độ
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-DISC-001 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-001F | S-DUE | CLEAN-RESET | UC-06, BR-142, BR-150 |
-| IT-DISC-002 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | S-DUE | CLEAN-RESET | UC-06 A1, BR-29 |
-| IT-DISC-003 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-003F | S-DUE | CLEAN-RESET | UC-06, BR-142, BR-150 |
-| IT-DISC-004 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | S-DUE | CLEAN-RESET | UC-06, BR-29 |
-| IT-DISC-005 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-005F | SETUP-ROOT-TRIO | CLEAN-RESET | UC-06 |
-| IT-DISC-006 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-006F | SETUP-SEARCH-TREES | CLEAN-RESET | UC-06 A3, BR-56, BR-57 |
-| IT-DISC-007 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | SETUP-D-EB | CLEAN-RESET | UC-06 |
-| IT-DISC-008 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-06 A2, BR-22 |
+| IT-DISC-001 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-001F | S-DUE | CLEAN-RESET | UC-DECK-003, BR-STUDY-051, BR-STUDY-046 |
+| IT-DISC-002 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | S-DUE | CLEAN-RESET | UC-DECK-003 A1, BR-STUDY-008 |
+| IT-DISC-003 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-003F | S-DUE | CLEAN-RESET | UC-DECK-003, BR-STUDY-051, BR-STUDY-046 |
+| IT-DISC-004 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | S-DUE | CLEAN-RESET | UC-DECK-003, BR-STUDY-008 |
+| IT-DISC-005 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-005F | SETUP-ROOT-TRIO | CLEAN-RESET | UC-DECK-003 |
+| IT-DISC-006 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-DISC-006F | SETUP-SEARCH-TREES | CLEAN-RESET | UC-DECK-003 A3, BR-DECK-002, BR-DECK-003 |
+| IT-DISC-007 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | SETUP-D-EB | CLEAN-RESET | UC-DECK-003 |
+| IT-DISC-008 | `04-deck-discovery-and-progress.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-DECK-003 A2, BR-STUDY-001 |
 
 ## Vòng đời thẻ
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-CARD-001 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04 A3 |
-| IT-CARD-002 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-002F | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04, BR-07, BR-09 |
-| IT-CARD-003 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04 E1, BR-07 |
-| IT-CARD-004 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04, BR-08 |
-| IT-CARD-005 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04, BR-95 |
-| IT-CARD-006 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | BR-95 |
-| IT-CARD-007 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-04 A4 |
-| IT-CARD-008 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-008F | SETUP-CARD-BASIC | CLEAN-RESET | UC-04 A1, BR-10 |
-| IT-CARD-009 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | S-PROGRESS | CLEAN-RESET | UC-04 A1, BR-10, BR-92 |
-| IT-CARD-010 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-010F | SETUP-CARD-BASIC | CLEAN-RESET | UC-04 A2 |
-| IT-CARD-011 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-SINGLE | CLEAN-RESET | UC-04 A2, BR-163 |
-| IT-CARD-012 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-SINGLE | CLEAN-RESET | UC-04 A5, BR-163, BR-165 |
-| IT-CARD-013 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-04 E5, BR-165 |
-| IT-CARD-014 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-10, BR-169, BR-171, BR-172 |
-| IT-CARD-015 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-10 E4, UC-10 E5, BR-168, BR-170, BR-171 |
+| IT-CARD-001 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001 A3 |
+| IT-CARD-002 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-002F | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001, BR-CARD-001, BR-CARD-004 |
+| IT-CARD-003 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001 E1, BR-CARD-001 |
+| IT-CARD-004 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001, BR-CARD-002 |
+| IT-CARD-005 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001, BR-CARD-003 |
+| IT-CARD-006 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | BR-CARD-003 |
+| IT-CARD-007 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-CARD-001 A4 |
+| IT-CARD-008 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-008F | SETUP-CARD-BASIC | CLEAN-RESET | UC-CARD-001 A1, BR-CARD-005 |
+| IT-CARD-009 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | S-PROGRESS | CLEAN-RESET | UC-CARD-001 A1, BR-CARD-005, BR-CARD-009 |
+| IT-CARD-010 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-CARD-010F | SETUP-CARD-BASIC | CLEAN-RESET | UC-CARD-001 A2 |
+| IT-CARD-011 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-SINGLE | CLEAN-RESET | UC-CARD-001 A2, BR-DECK-015 |
+| IT-CARD-012 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-SINGLE | CLEAN-RESET | UC-CARD-001 A5, BR-DECK-015, BR-CARD-010 |
+| IT-CARD-013 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-CARD-001 E5, BR-CARD-010 |
+| IT-CARD-014 | `05-card-lifecycle.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | — | SETUP-CARD-EMPTY-TYPED | CLEAN-RESET | UC-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-004, BR-TRANSFER-005 |
+| IT-CARD-015 | `05-card-lifecycle.md` | READY | `HOST-FLOW` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-TRANSFER-001 E4, UC-TRANSFER-001 E5, BR-TRANSFER-001, BR-TRANSFER-003, BR-TRANSFER-004 |
 
 ## Khám phá và tổ chức thẻ
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-ORG-001 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-001F | SETUP-CARD-BASIC | CLEAN-RESET | UC-04, S1 |
-| IT-ORG-002 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-04, S1 |
-| IT-ORG-003 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | S-DUE | CLEAN-RESET | UC-04, BR-142, BR-151 |
-| IT-ORG-004 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-004F | SETUP-CARD-PLAIN | CLEAN-RESET | BR-92 |
-| IT-ORG-005 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | S-DUE | CLEAN-RESET | BR-90, BR-92, BR-142, BR-151 |
-| IT-ORG-006 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | BR-92 |
-| IT-ORG-007 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-007F | SETUP-CARD-PLAIN | CLEAN-RESET | BR-93 |
-| IT-ORG-008 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | SETUP-CARD-TAGS | CLEAN-RESET | BR-93 |
-| IT-ORG-009 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-SINGLE | CLEAN-RESET | BR-93, BR-94 |
-| IT-ORG-010 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-010F | S-PROGRESS | CLEAN-RESET | BR-89, BR-90, BR-91 |
-| IT-ORG-011 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-04, UC-06 |
+| IT-ORG-001 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-001F | SETUP-CARD-BASIC | CLEAN-RESET | UC-CARD-001, S1 |
+| IT-ORG-002 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-CARD-001, S1 |
+| IT-ORG-003 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | S-DUE | CLEAN-RESET | UC-CARD-001, BR-STUDY-051, BR-STUDY-047 |
+| IT-ORG-004 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-004F | SETUP-CARD-PLAIN | CLEAN-RESET | BR-CARD-009 |
+| IT-ORG-005 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | S-DUE | CLEAN-RESET | BR-CARD-007, BR-CARD-009, BR-STUDY-051, BR-STUDY-047 |
+| IT-ORG-006 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | BR-CARD-009 |
+| IT-ORG-007 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-007F | SETUP-CARD-PLAIN | CLEAN-RESET | BR-TAG-001 |
+| IT-ORG-008 | `06-card-discovery-and-organization.md` | READY | `HOST-FLOW` | — | SETUP-CARD-TAGS | CLEAN-RESET | BR-TAG-001 |
+| IT-ORG-009 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-CARD-SINGLE | CLEAN-RESET | BR-TAG-001, BR-TAG-002 |
+| IT-ORG-010 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-ORG-010F | S-PROGRESS | CLEAN-RESET | BR-CARD-006, BR-CARD-007, BR-CARD-008 |
+| IT-ORG-011 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | SETUP-TREE-CARD | CLEAN-RESET | UC-CARD-001, UC-DECK-003 |
 | IT-ORG-012 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | — |
-| IT-ORG-013 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | UC-04 A6, BR-167 |
-| IT-ORG-014 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-04 A6, UC-04 E6, BR-166 |
+| IT-ORG-013 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` | — | S-LARGE | CLEAN-RESET | UC-CARD-001 A6, BR-CARD-012 |
+| IT-ORG-014 | `06-card-discovery-and-organization.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | — | SETUP-CARD-BASIC | CLEAN-RESET | UC-CARD-001 A6, UC-CARD-001 E6, BR-CARD-011 |
 
 ## Điểm vào chức năng học và tùy chọn
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-STUDY-001 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-001F | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-05, BR-142, BR-150, BR-151 |
-| IT-STUDY-002 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05, BR-101 |
-| IT-STUDY-003 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-FUTURE-EB-V2 | CLEAN-RESET | UC-05 E1, BR-29, BR-145 |
-| IT-STUDY-004 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-004F | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05, BR-99, BR-146, BR-154 |
-| IT-STUDY-005 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | UC-05, BR-30, BR-146 |
-| IT-STUDY-006 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-006F | S-STUDY-REVIEW-EB-MINIMAL-V2 | CLEAN-RESET | UC-05, BR-99, BR-100, BR-121, BR-153 |
-| IT-STUDY-007 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05, BR-114, BR-154 |
-| IT-STUDY-008 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-147, BR-148 |
-| IT-STUDY-009 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-06, BR-139, BR-147 |
-| IT-STUDY-010 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-24, BR-139 |
-| IT-STUDY-011 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-05, BR-23, BR-142 |
-| IT-STUDY-012 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-102, BR-139, BR-148 |
-| IT-STUDY-013 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-BROKEN-OPTIONS-V2 | CLEAN-RESET | BR-24, BR-147, BR-148 |
+| IT-STUDY-001 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-001F | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-051, BR-STUDY-046, BR-STUDY-047 |
+| IT-STUDY-002 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001, BR-STUDY-020 |
+| IT-STUDY-003 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-FUTURE-EB-V2 | CLEAN-RESET | UC-STUDY-001 E1, BR-STUDY-008, BR-STUDY-054 |
+| IT-STUDY-004 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-004F | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-MODE-009, BR-STUDY-055, BR-STUDY-044 |
+| IT-STUDY-005 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-009, BR-STUDY-055 |
+| IT-STUDY-006 | `07-study-entry-and-options.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-STUDY-006F | S-STUDY-REVIEW-EB-MINIMAL-V2 | CLEAN-RESET | UC-STUDY-001, BR-MODE-009, BR-MODE-010, BR-STUDY-037, BR-STUDY-045 |
+| IT-STUDY-007 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-071, BR-STUDY-044 |
+| IT-STUDY-008 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | IT-PLAT-002 | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-STUDY-056, BR-STUDY-057 |
+| IT-STUDY-009 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-DECK-025, BR-STUDY-024, BR-STUDY-056 |
+| IT-STUDY-010 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-STUDY-003, BR-STUDY-024 |
+| IT-STUDY-011 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SCOPE | CLEAN-RESET | UC-STUDY-001, BR-STUDY-002, BR-STUDY-051 |
+| IT-STUDY-012 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-STUDY-021, BR-STUDY-024, BR-STUDY-057 |
+| IT-STUDY-013 | `07-study-entry-and-options.md` | READY | `HOST-FLOW` | — | S-STUDY-BROKEN-OPTIONS-V2 | CLEAN-RESET | BR-STUDY-003, BR-STUDY-056, BR-STUDY-057 |
 
 ## Phiên học thẻ mới
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-LEARN-001 | `08-study-learning-session.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-LEARN-001W | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05, BR-97, BR-108, BR-109, BR-110 |
-| IT-LEARN-002 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SM2-4 | CLEAN-RESET | UC-05, BR-109, BR-110 |
-| IT-LEARN-003 | `08-study-learning-session.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-111, BR-112 |
-| IT-LEARN-004 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-102, BR-113, BR-117, BR-127 |
-| IT-LEARN-005 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-PLAIN | CLEAN-RESET | UC-05 A0b, BR-114, BR-140, BR-144 |
-| IT-LEARN-006 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-4 | CLEAN-RESET | BR-99, BR-121, BR-124, BR-140 |
-| IT-LEARN-007 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-1 | CLEAN-RESET | BR-99, BR-153 |
-| IT-LEARN-008 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-115, BR-116, BR-119 |
-| IT-LEARN-009 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SM2-4 | CLEAN-RESET | UC-05 A2b, BR-26, BR-28, BR-92, BR-104 |
-| IT-LEARN-010 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-13, BR-27, BR-105, BR-144, BR-145, BR-149 |
-| IT-LEARN-011 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-24, BR-139 |
-| IT-LEARN-012 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82, BR-86, BR-144 |
+| IT-LEARN-001 | `08-study-learning-session.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-LEARN-001W | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001, BR-MODE-007, BR-MODE-002, BR-MODE-003, BR-MODE-004 |
+| IT-LEARN-002 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SM2-4 | CLEAN-RESET | UC-STUDY-001, BR-MODE-003, BR-MODE-004 |
+| IT-LEARN-003 | `08-study-learning-session.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-MODE-005, BR-MODE-006 |
+| IT-LEARN-004 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-021, BR-STUDY-022, BR-STUDY-061, BR-STUDY-043 |
+| IT-LEARN-005 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-PLAIN | CLEAN-RESET | UC-STUDY-001 A0b, BR-STUDY-071, BR-STUDY-025, BR-STUDY-053 |
+| IT-LEARN-006 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-4 | CLEAN-RESET | BR-MODE-009, BR-STUDY-037, BR-STUDY-040, BR-STUDY-025 |
+| IT-LEARN-007 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-1 | CLEAN-RESET | BR-MODE-009, BR-STUDY-045 |
+| IT-LEARN-008 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-059, BR-STUDY-060, BR-STUDY-069 |
+| IT-LEARN-009 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-SM2-4 | CLEAN-RESET | UC-STUDY-001 A2b, BR-STUDY-005, BR-STUDY-007, BR-CARD-009, BR-STUDY-073 |
+| IT-LEARN-010 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-SRS-003, BR-STUDY-006, BR-STUDY-074, BR-STUDY-053, BR-STUDY-054, BR-STUDY-058 |
+| IT-LEARN-011 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-21 | CLEAN-RESET | BR-STUDY-003, BR-STUDY-024 |
+| IT-LEARN-012 | `08-study-learning-session.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 A3, BR-STUDY-014, BR-STUDY-019, BR-STUDY-053 |
 
 ## Phiên ôn tập
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-REVIEW-001 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-05, BR-142 |
-| IT-REVIEW-002 | `09-study-review-session.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-REVIEW-002W | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-109, BR-146 |
-| IT-REVIEW-003 | `09-study-review-session.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | BR-30, BR-106, BR-146 |
-| IT-REVIEW-004 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-23, BR-24, BR-102, BR-139 |
-| IT-REVIEW-005 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-20, BR-21, BR-75, BR-76, BR-77, BR-78, BR-141, BR-143 |
-| IT-REVIEW-006 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-15, BR-16, BR-105 |
-| IT-REVIEW-007 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | BR-17, BR-18, BR-19, BR-105 |
-| IT-REVIEW-008 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-105, BR-145 |
-| IT-REVIEW-009 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-05 A4, BR-24 |
-| IT-REVIEW-010 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-99, BR-114, BR-154 |
+| IT-REVIEW-001 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-051 |
+| IT-REVIEW-002 | `09-study-review-session.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-REVIEW-002W | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-MODE-003, BR-STUDY-055 |
+| IT-REVIEW-003 | `09-study-review-session.md` | READY | `HOST-WIDGET` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | BR-STUDY-009, BR-MODE-011, BR-STUDY-055 |
+| IT-REVIEW-004 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-STUDY-002, BR-STUDY-003, BR-STUDY-021, BR-STUDY-024 |
+| IT-REVIEW-005 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-SRS-018, BR-SRS-019, BR-SRS-014, BR-SRS-015, BR-SRS-016, BR-SRS-017, BR-STUDY-023, BR-STUDY-052 |
+| IT-REVIEW-006 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-SRS-008, BR-SRS-009, BR-STUDY-074 |
+| IT-REVIEW-007 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-SM2-V2 | CLEAN-RESET | BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-STUDY-074 |
+| IT-REVIEW-008 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-STUDY-074, BR-STUDY-054 |
+| IT-REVIEW-009 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | UC-STUDY-001 A4, BR-STUDY-003 |
+| IT-REVIEW-010 | `09-study-review-session.md` | READY | `HOST-FLOW` | — | S-STUDY-REVIEW-EB-V2 | CLEAN-RESET | BR-MODE-009, BR-STUDY-071, BR-STUDY-044 |
 
 ## Các chế độ học
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-MODE-001 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-05, BR-98, BR-142 |
-| IT-MODE-002 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-111, BR-112 |
-| IT-MODE-003 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-115 |
-| IT-MODE-004 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-004F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-107, BR-116, BR-118, BR-120 |
-| IT-MODE-005 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-005F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-121, BR-125, BR-126 |
-| IT-MODE-006 | `10-study-modes.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-4 | CLEAN-RESET | BR-99, BR-121, BR-124 |
-| IT-MODE-007 | `10-study-modes.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-117, BR-127 |
-| IT-MODE-008 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-008F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-128, BR-129 |
-| IT-MODE-009 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-009F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-128, BR-130, BR-131, BR-133 |
-| IT-MODE-010 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-134, BR-137, BR-138 |
-| IT-MODE-011 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-135, BR-136, BR-137, BR-138 |
-| IT-MODE-012 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | BR-30, BR-106, BR-112, BR-146 |
+| IT-MODE-001 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-MODE-008, BR-STUDY-051 |
+| IT-MODE-002 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-MODE-005, BR-MODE-006 |
+| IT-MODE-003 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-059 |
+| IT-MODE-004 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-004F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-MODE-012, BR-STUDY-060, BR-STUDY-062, BR-STUDY-070 |
+| IT-MODE-005 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-005F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-037, BR-STUDY-041, BR-STUDY-042 |
+| IT-MODE-006 | `10-study-modes.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-4 | CLEAN-RESET | BR-MODE-009, BR-STUDY-037, BR-STUDY-040 |
+| IT-MODE-007 | `10-study-modes.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-061, BR-STUDY-043 |
+| IT-MODE-008 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-008F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-031, BR-STUDY-032 |
+| IT-MODE-009 | `10-study-modes.md` | READY | `HOST-WIDGET` + `HOST-FLOW` | IT-MODE-009F | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-031, BR-STUDY-033, BR-STUDY-034, BR-STUDY-036 |
+| IT-MODE-010 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-STUDY-026, BR-STUDY-029, BR-STUDY-030 |
+| IT-MODE-011 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-FILL-V2 | CLEAN-RESET | BR-STUDY-027, BR-STUDY-028, BR-STUDY-029, BR-STUDY-030 |
+| IT-MODE-012 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | BR-STUDY-009, BR-MODE-011, BR-MODE-006, BR-STUDY-055 |
 | IT-MODE-013 | `10-study-modes.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-ALL-MODES | CLEAN-RESET | — |
-| IT-MODE-014 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-BLOCKED-V2 | CLEAN-RESET | BR-121, BR-124 |
-| IT-MODE-015 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-SOURCE-V2 | CLEAN-RESET | BR-121, BR-122, BR-123 |
+| IT-MODE-014 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-BLOCKED-V2 | CLEAN-RESET | BR-STUDY-037, BR-STUDY-040 |
+| IT-MODE-015 | `10-study-modes.md` | READY | `HOST-FLOW` | — | S-STUDY-GUESS-SOURCE-V2 | CLEAN-RESET | BR-STUDY-037, BR-STUDY-038, BR-STUDY-039 |
 
 ## Tiếp tục phiên học và lỗi
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-CONT-001 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | IT-PLAT-003 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3b, BR-79, BR-102, BR-103 |
-| IT-CONT-002 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-82, BR-103 |
-| IT-CONT-003 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3b, BR-80, BR-86, BR-103 |
-| IT-CONT-004 | `11-study-continuity-and-failures.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 A3, BR-82, BR-86 |
-| IT-CONT-005 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-81 |
-| IT-CONT-006 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | BR-102, BR-139 |
-| IT-CONT-007 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-CONT-007W | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-05 A5 |
-| IT-CONT-008 | `11-study-continuity-and-failures.md` | READY | `DEVICE-E2E` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-05 |
-| IT-CONT-009 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-07, BR-83, BR-152 |
-| IT-CONT-010 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-05 E4, BR-46, BR-84 |
-| IT-CONT-011 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-05 E2, BR-25 |
-| IT-CONT-012 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-05 E3, BR-85, BR-86 |
-| IT-CONT-013 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-CONT-013W | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-05 E5 |
-| IT-CONT-014 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-05, BR-82, BR-103 |
+| IT-CONT-001 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | IT-PLAT-003 | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 A3b, BR-STUDY-010, BR-STUDY-021, BR-STUDY-072 |
+| IT-CONT-002 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-014, BR-STUDY-072 |
+| IT-CONT-003 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 A3b, BR-STUDY-011, BR-STUDY-019, BR-STUDY-072 |
+| IT-CONT-004 | `11-study-continuity-and-failures.md` | READY | `HOST-WIDGET` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 A3, BR-STUDY-014, BR-STUDY-019 |
+| IT-CONT-005 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | BR-STUDY-013 |
+| IT-CONT-006 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | BR-STUDY-021, BR-STUDY-024 |
+| IT-CONT-007 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-CONT-007W | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-STUDY-001 A5 |
+| IT-CONT-008 | `11-study-continuity-and-failures.md` | READY | `DEVICE-E2E` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-STUDY-001 |
+| IT-CONT-009 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | SETUP-STUDY-EB-5-FULL | CLEAN-RESET | UC-SRS-001, BR-STUDY-015, BR-STUDY-050 |
+| IT-CONT-010 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-RESUME-V2 | CLEAN-RESET | UC-STUDY-001 E4, BR-SRS-026, BR-STUDY-017 |
+| IT-CONT-011 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-STUDY-001 E2, BR-STUDY-004 |
+| IT-CONT-012 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-STUDY-001 E3, BR-STUDY-018, BR-STUDY-019 |
+| IT-CONT-013 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` + `HOST-WIDGET` | IT-CONT-013W | S-STUDY-FAILURE-V2 | CLEAN-RESET | UC-STUDY-001 E5 |
+| IT-CONT-014 | `11-study-continuity-and-failures.md` | READY | `HOST-FLOW` | — | S-STUDY-MIXED-EB-V2 | CLEAN-RESET | UC-STUDY-001, BR-STUDY-014, BR-STUDY-072 |
 
 ## Ranh giới nền tảng
 
 | ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
 |---|---|---|---|---|---|---|---|
-| IT-PLAT-001 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-001 | SETUP-EMPTY | CLEAN-RESET | UC-06 |
-| IT-PLAT-002 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-006 · IT-DECK-001 · IT-CARD-002 · IT-CARD-008 · IT-CARD-010 · IT-ORG-004 · IT-STUDY-008 | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04 |
-| IT-PLAT-003 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-CONT-001 | SETUP-EMPTY | CLEAN-RESET | UC-05 A3b, BR-79, BR-102, BR-103 |
-| IT-PLAT-004 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-005 | SETUP-EMPTY | CLEAN-RESET | UC-06 |
-| IT-PLAT-005 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-010 | SETUP-EMPTY | CLEAN-RESET | UC-05 A3, BR-82 |
-| IT-PLAT-006 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | UC-02, UC-04, UC-05 |
+| IT-PLAT-001 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-001 | SETUP-EMPTY | CLEAN-RESET | UC-DECK-003 |
+| IT-PLAT-002 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-006 · IT-DECK-001 · IT-CARD-002 · IT-CARD-008 · IT-CARD-010 · IT-ORG-004 · IT-STUDY-008 | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, UC-CARD-001 |
+| IT-PLAT-003 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-CONT-001 | SETUP-EMPTY | CLEAN-RESET | UC-STUDY-001 A3b, BR-STUDY-010, BR-STUDY-021, BR-STUDY-072 |
+| IT-PLAT-004 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-005 | SETUP-EMPTY | CLEAN-RESET | UC-DECK-003 |
+| IT-PLAT-005 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | IT-NAV-010 | SETUP-EMPTY | CLEAN-RESET | UC-STUDY-001 A3, BR-STUDY-014 |
+| IT-PLAT-006 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, UC-CARD-001, UC-STUDY-001 |
 | IT-PLAT-009 | `13-platform-boundaries.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | — |
 
 ## Bất biến của danh mục

@@ -88,7 +88,7 @@ Dẫn xuất từ `IT-NAV-005`. Ranh giới: intent filter của Android và vi�
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Dùng cử chỉ back của hệ điều hành, không phải nút ✕ | Phiên đóng như người dùng bỏ, đúng BR-82 |
+| 1 | Dùng cử chỉ back của hệ điều hành, không phải nút ✕ | Phiên đóng như người dùng bỏ, đúng BR-STUDY-014 |
 | 2 | Quay lại màn vào học | Không còn phiên nào đang mở chờ tiếp tục |
 
 Dẫn xuất từ `IT-NAV-010`. Ranh giới: cử chỉ predictive back của Android và

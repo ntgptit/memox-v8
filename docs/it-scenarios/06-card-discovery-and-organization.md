@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra người dùng tìm card, sắp xếp, gắn cờ/tag, lọc và đọc tiến độ từ card list |
 | **Scope** | Search front/back, sort, filter pills, flag, tag, state/due badge, progress panel và tải thêm |
 | **Source of truth for** | Scenario IT về discovery và organization của card |
-| **Depends on** | `README.md`, `../business-rules.md` (BR-89…95, BR-142, BR-151), `../use-cases.md` (UC-04) |
+| **Depends on** | `README.md`, `../business-rules/` (BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-TAG-001, BR-TAG-002, BR-CARD-003, BR-STUDY-051, BR-STUDY-047), `../use-cases/` (UC-CARD-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 
@@ -163,7 +163,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Deck có nhiều card hơn một cửa sổ tải, và một filter khớp một tập con quan sát được.
-- **Liên kết:** UC-04 A6, BR-167.
+- **Liên kết:** UC-CARD-001 A6, BR-CARD-012.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -178,7 +178,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Có `IT-ORG-013`; một selection từ hai card trở lên.
-- **Liên kết:** UC-04 A6, UC-04 E6, BR-166.
+- **Liên kết:** UC-CARD-001 A6, UC-CARD-001 E6, BR-CARD-011.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

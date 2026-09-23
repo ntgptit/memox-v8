@@ -7,7 +7,7 @@
 | **Scope** | Toàn bộ `docs/*.md` và các reference trong `.claude/skills/` |
 | **Source of truth for** | Format tài liệu, thứ tự đọc, từ khoá MUST/SHOULD/MAY, quy tắc canonical location, quy tắc superseded |
 | **Depends on** | — (đây là tài liệu gốc của hệ thống tài liệu) |
-| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ mẫu AD, template WBS task và tham chiếu tài liệu đã xoá khỏi hợp đồng tài liệu |
+| **Updated by** | `docs/superpowers/specs/2026-09-23-docs-restructure-design.md` — tách theo đối tượng, đánh số lại BR/UC |
 | **Last updated** | 2026-09-23 |
 
 ---
@@ -18,7 +18,7 @@ Một agent đọc `docs/` cần trả lời được ba câu:
 
 1. **Đọc theo thứ tự nào?** Không có thứ tự thì agent đọc file nào gặp trước, và
    một quyết định trong `docs/superpowers/specs/` có thể bị bỏ qua vì nó đọc
-   `use-cases.md` trước.
+   `docs/use-cases/` trước.
 2. **Câu nào là quyết định chính thức, câu nào là giải thích?** Prose giải thích
    *tại sao* một rule tồn tại rất dễ bị đọc thành một rule mới. Ví dụ minh hoạ
    càng dễ bị đọc thành đặc tả.
@@ -36,16 +36,18 @@ tài liệu trước nó đã được đọc.
 |---|---|---|
 | 1 | `CLAUDE.md` | Ràng buộc nào áp dụng ở mọi phase? |
 | 2 | `docs/document-conventions.md` | Tài liệu được viết và đọc thế nào? *(file này)* |
-| 3 | `docs/product.md` | Sản phẩm là gì, phạm vi MVP đến đâu? |
+| 3 | `docs/product/product.md` | Sản phẩm là gì, phạm vi MVP đến đâu? |
 | 4 | `docs/superpowers/specs/` | Quyết định kiến trúc nào đã chốt, và vì sao? |
-| 5 | `docs/business-rules.md` (+ `business-rules/study-mode.md`) | Luật nghiệp vụ nào phải đúng? |
+| 5 | `docs/business-rules/` (chọn file theo đối tượng đang làm — xem `docs/business-rules/README.md`) | Luật nghiệp vụ nào phải đúng? |
 | 6 | `docs/data-model.md` | Dữ liệu được mô hình hoá thế nào? |
-| 7 | `docs/use-cases.md` | Người dùng đi qua những luồng nào? |
-| 8 | `docs/master-flow.md` | Các UC nối vào nhau thành hành trình nào? |
+| 7 | `docs/use-cases/` (chọn file theo đối tượng đang làm — xem `docs/use-cases/README.md`) | Người dùng đi qua những luồng nào? |
+| 8 | `docs/product/master-flow.md` | Các UC nối vào nhau thành hành trình nào? |
 | 9 | `docs/superpowers/plans/` | Kế hoạch triển khai nào đang chạy, và các bước của nó? |
 
 Đọc **1–2 trước mọi thứ khác**. Với một task cụ thể, agent SHOULD đọc thêm chỉ
-những tài liệu mà task chạm tới, không đọc hết.
+những tài liệu mà task chạm tới — dùng bảng "working on X → read these files"
+ở `docs/README.md` để chọn đúng file `business-rules/` và `use-cases/` theo đối
+tượng, không đọc hết.
 
 `docs/it-scenarios/` là bộ kịch bản kiểm thử tích hợp; đọc khi task chạm tới
 kiểm thử, không nằm trong thứ tự bắt buộc ở trên.
@@ -119,10 +121,11 @@ bằng ID (`BR-xx`, `UC-xx`), MUST NOT chép lại nội dung.
 | Loại thông tin | Vị trí gốc |
 |---|---|
 | Quyết định kiến trúc và lý do | `docs/superpowers/specs/` |
-| Luật nghiệp vụ, validation, state machine | `business-rules.md` (BR-xx) |
-| Luồng người dùng | `use-cases.md` (UC-xx) |
+| Luật nghiệp vụ, validation, state machine | `business-rules/<đối tượng>.md` (`BR-<CODE>-nnn`) |
+| Luồng người dùng | `use-cases/<đối tượng>.md` (`UC-<CODE>-nnn`) |
 | Bảng, cột, index, query bất biến | `data-model.md` |
-| Phạm vi sản phẩm, MVP, quyết định nền tảng | `product.md` |
+| Phạm vi sản phẩm, MVP, quyết định nền tảng | `product/product.md` |
+| Đồ thị UC nối vào nhau | `product/master-flow.md` |
 | Kế hoạch triển khai, tiến độ theo từng plan | `docs/superpowers/plans/` |
 | Kịch bản kiểm thử tích hợp theo hành trình | `it-scenarios/` |
 | Format tài liệu | file này |
@@ -132,8 +135,8 @@ lần sửa, và lúc đó không có cách nào biết bản nào đúng ngoài
 — người đã quên. Tham chiếu bằng ID không có vấn đề đó.
 
 **Được phép nhắc lại** một kết luận ngắn kèm ID để đoạn văn đọc được (`scheduler
-thuộc root deck (BR-05)`). **Không được phép** chép lại chi tiết đủ để hai chỗ có
-thể mâu thuẫn.
+thuộc root deck (BR-DECK-005)`). **Không được phép** chép lại chi tiết đủ để hai
+chỗ có thể mâu thuẫn.
 
 ---
 
@@ -145,13 +148,17 @@ và làm loãng phần có tín hiệu.
 
 ### 6.2. BR — Business Rule
 
-BR nhiều (hiện 87), nên MUST dùng **dạng bảng** làm mặc định:
+BR nhiều, nên MUST dùng **dạng bảng** làm mặc định:
 
 ```markdown
 | ID | Status | Rule | Enforced by | Related |
 |---|---|---|---|---|
-| BR-xx | active | <Luật, một câu, dùng MUST/SHOULD/MAY> | domain \| db \| UI \| script | UC-xx |
+| BR-<CODE>-nnn | active | <Luật, một câu, dùng MUST/SHOULD/MAY> | domain \| db \| UI \| script | UC-<CODE>-nnn |
 ```
+
+`<CODE>` là mã đối tượng của file (`DECK`, `CARD`, `SRS`, … — danh sách đầy đủ
+ở `docs/business-rules/README.md`). Mỗi rule mới append vào số tiếp theo
+**trong đúng file của đối tượng nó ràng buộc**.
 
 | Field | Mức | Ghi chú |
 |---|---|---|
@@ -169,19 +176,19 @@ triển khai biết rule này sống ở đâu trong hệ thống, và nó phơi
 hiện chưa có gì cưỡng chế.
 
 Rule cần nhiều hơn một câu (ví dụ có bảng tra) MUST dùng dạng section
-`### BR-xx · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related ngay
-dưới tiêu đề.
+`### BR-<CODE>-nnn · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related
+ngay dưới tiêu đề.
 
 ### 6.3. UC — Use Case
 
 MUST dùng dạng section, đủ chín mục:
 
 ```markdown
-## UC-xx · <Tên>
+## UC-<CODE>-nnn · <Tên>
 
 | | |
 |---|---|
-| **Status** | active \| superseded by UC-yy |
+| **Status** | active \| superseded by UC-<CODE>-mmm |
 
 **Actor:**
 **Trigger:**
@@ -214,17 +221,28 @@ chiếu `invariant Q<n>` không đối chiếu được.
 
 ## 7. ID là vĩnh viễn
 
-**MUST NOT** đánh số lại BR, UC hay invariant. Mục mới append vào số tiếp theo,
-kể cả khi nó thuộc một phần nằm đầu tài liệu. ID vì thế **không** tăng dần theo
-thứ tự đọc, và đó là cố ý.
+ID có dạng `BR-<CODE>-nnn` / `UC-<CODE>-nnn`, với `<CODE>` là mã đối tượng của
+file (`DECK`, `CARD`, `SRS`, … — danh mục đầy đủ ở `docs/business-rules/README.md`
+và `docs/use-cases/README.md`).
 
-Lý do cụ thể: lần renumber trước đã làm `BR-13` trỏ sang một rule về template
+**MUST NOT** đánh số lại BR, UC hay invariant. Mục mới append vào số tiếp theo
+**trong đúng file của đối tượng nó ràng buộc**, kể cả khi nó thuộc một phần nằm
+đầu file. ID vì thế **không** tăng dần theo thứ tự đọc trong file, và đó là
+cố ý.
+
+Lý do cụ thể: một renumber trước V8 đã làm một ID trỏ sang một rule về template
 trong khi nó định trỏ tới rule reset. Không test nào bắt được; nó chỉ lộ ra khi
-ai đó đọc và làm theo.
+ai đó đọc và làm theo. Chính vì rủi ro đó,
+`docs/superpowers/specs/2026-09-23-docs-restructure-design.md` đã làm **một lần
+renumber duy nhất và cuối cùng** khi chuyển sang V8: tách BR/UC theo đối tượng
+và đổi sang dạng `BR-<CODE>-nnn` / `UC-<CODE>-nnn` để ID tự nói lên file nó
+thuộc về. Từ đây trở đi, ID vĩnh viễn theo đúng nghĩa gốc — không đánh số lại,
+không tái sử dụng số đã bỏ trống, và không còn một lần renumber toàn cục nào
+nữa.
 
-Rule bị thay thế MUST đánh dấu `superseded by BR-yy` ở cột Status, giữ nguyên ID
-và nguyên văn. **MUST NOT xoá.** Một ID biến mất khiến mọi tham chiếu cũ — trong
-commit message, code comment, PR — trỏ vào hư không.
+Rule bị thay thế MUST đánh dấu `superseded by BR-<CODE>-mmm` ở cột Status, giữ
+nguyên ID và nguyên văn. **MUST NOT xoá.** Một ID biến mất khiến mọi tham chiếu
+cũ — trong commit message, code comment, PR — trỏ vào hư không.
 
 ---
 

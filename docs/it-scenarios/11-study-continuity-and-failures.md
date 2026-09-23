@@ -6,7 +6,7 @@
 | **Purpose** | Chứng minh phiên học tồn tại đúng qua vòng đời ứng dụng và kết thúc trung thực khi người dùng, thao tác đặt lại hoặc lỗi lưu trữ làm gián đoạn |
 | **Scope** | Tiếp tục phiên, thoát chủ động, gián đoạn qua ngày, hàng đợi bất biến, xóa bộ thẻ, ngoại tuyến, lỗi ghi có thể/không thể phục hồi và thế hệ dữ liệu cũ |
 | **Source of truth for** | Kịch bản IT về khả năng tiếp tục và xử lý lỗi của chức năng học |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-25, BR-79…86, BR-102…105, BR-127, BR-133), `../use-cases.md` (UC-05, UC-07) |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules/` (BR-STUDY-004, BR-STUDY-010, BR-STUDY-011, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018, BR-STUDY-019, BR-STUDY-021, BR-STUDY-072, BR-STUDY-073, BR-STUDY-074, BR-STUDY-043, BR-STUDY-036), `../use-cases/` (UC-STUDY-001, UC-SRS-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ task ID V7 và tài liệu ledger đã xoá khỏi phần phụ thuộc |
 | **Last updated** | 2026-09-23 |
 
@@ -95,7 +95,7 @@
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Ở cửa sổ thứ hai, xóa bộ thẻ và xác nhận | Bộ thẻ biến mất theo UC-03 |
+| 1 | Ở cửa sổ thứ hai, xóa bộ thẻ và xác nhận | Bộ thẻ biến mất theo UC-DECK-002 |
 | 2 | Quay lại phiên và thực hiện hành động tiếp | Ứng dụng không sập, không lộ ID/SQL và không ghi vào thẻ đã mất |
 | 3 | Quan sát điều hướng | Phiên kết thúc và đưa về danh sách bộ thẻ hợp lệ |
 | 4 | Khởi động lại | Bộ thẻ hoặc phiên mồ côi không xuất hiện lại |
@@ -115,7 +115,7 @@
 ## IT-CONT-009 — Đặt lại khi phiên đang mở làm phiên mất hiệu lực với `scheduler_reset`
 
 - **Ưu tiên:** P0
-- **Tiền điều kiện:** `SETUP-STUDY-EB-5-FULL`; UC-07 có giao diện hoàn chỉnh; đã tạo phiên `in_progress` bằng giao diện.
+- **Tiền điều kiện:** `SETUP-STUDY-EB-5-FULL`; UC-SRS-001 có giao diện hoàn chỉnh; đã tạo phiên `in_progress` bằng giao diện.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

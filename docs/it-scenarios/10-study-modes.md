@@ -6,7 +6,7 @@
 | **Purpose** | Chứng minh từng cách hỏi có đúng thao tác, kết cục và những hành vi bị cấm đã chốt; không làm lẫn chế độ học với thuật toán xếp lịch |
 | **Scope** | Khung phiên dùng chung, `Browse`, `Self assess`, `Match`, `Guess`, `Recall`, `Fill`, trạng thái sau trả lời và hỗ trợ tiếp cận cơ bản |
 | **Source of truth for** | Kịch bản IT về hành vi nhìn thấy của sáu chế độ học |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-99, BR-106…138, BR-153), `../use-cases.md` (UC-05) |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules/` (BR-MODE-009, BR-MODE-011, BR-MODE-012, BR-MODE-002, BR-MODE-003, BR-MODE-004, BR-MODE-005, BR-MODE-006, BR-STUDY-022, BR-STUDY-071, BR-STUDY-059, BR-STUDY-060, BR-STUDY-061, BR-STUDY-062, BR-STUDY-069, BR-STUDY-070, BR-STUDY-037, BR-STUDY-038, BR-STUDY-039, BR-STUDY-040, BR-STUDY-041, BR-STUDY-042, BR-STUDY-043, BR-STUDY-031, BR-STUDY-032, BR-STUDY-033, BR-STUDY-034, BR-STUDY-035, BR-STUDY-036, BR-STUDY-026, BR-STUDY-027, BR-STUDY-028, BR-STUDY-029, BR-STUDY-030, BR-STUDY-045), `../use-cases/` (UC-STUDY-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ thư mục wireframes đã xoá khỏi phần phụ thuộc |
 | **Last updated** | 2026-09-23 |
 
@@ -37,9 +37,9 @@
 | 6 | Vuốt trái trở lại thẻ đang sống rồi vuốt trái lần nữa | Chỉ tiến một điểm dừng; thẻ đã xem lại **không** bị ghi lượt thứ hai |
 | 7 | Duyệt bằng trình đọc màn hình | Có custom action tương đương cho Tiếp tục và Thẻ trước; Thẻ trước chỉ xuất hiện khi có chỗ để lùi |
 
-**Bước 3 và 4 từng nói ngược với BR-155.** Bảng cũ ghi "không có vuốt lùi" và
-"chạm Tiếp tục", trong khi BR-155 bắt buộc `browse` — và chỉ `browse` — cho xem
-lại thẻ đã qua bằng vuốt hoặc một control tương đương, còn BR-111 thì không cho
+**Bước 3 và 4 từng nói ngược với BR-STUDY-048.** Bảng cũ ghi "không có vuốt lùi" và
+"chạm Tiếp tục", trong khi BR-STUDY-048 bắt buộc `browse` — và chỉ `browse` — cho xem
+lại thẻ đã qua bằng vuốt hoặc một control tương đương, còn BR-MODE-005 thì không cho
 mode này có bất kỳ hành động chấm điểm nào. Cái không tồn tại là **nút** Tiếp
 tục, không phải thao tác đi tiếp.
 
@@ -195,7 +195,7 @@ tục, không phải thao tác đi tiếp.
 |---|---|---|
 | 1 | Chọn `Guess` và đi tới câu hỏi bị bộ tạo lỗi tác động | Màn chặn có nội dung rõ; không hiển thị câu hỏi dưới năm lựa chọn |
 | 2 | Quan sát tiến độ trên màn chặn | Thẻ hiện tại, điểm dừng và tiến độ chưa đổi; câu hỏi không bị tự bỏ qua |
-| 3 | Kiểm tra mọi hành động trên màn chặn | Chỉ có đường rời phiên; không có Thử lại/Tiếp tục/Bỏ qua làm tiến điểm dừng trái BR-124 |
+| 3 | Kiểm tra mọi hành động trên màn chặn | Chỉ có đường rời phiên; không có Thử lại/Tiếp tục/Bỏ qua làm tiến điểm dừng trái BR-STUDY-040 |
 | 4 | Rời phiên, tắt lỗi, bắt đầu một phiên `Guess` mới | Câu hỏi mới dựng được với đúng năm lựa chọn; chỉ lựa chọn của người dùng trong phiên mới được chấm |
 
 ## IT-MODE-015 — `Guess` chỉ lấy phương án nhiễu hợp lệ trong cùng cây mà không lộ thẻ mới

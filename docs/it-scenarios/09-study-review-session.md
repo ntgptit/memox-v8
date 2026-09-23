@@ -5,8 +5,8 @@
 | **Status** | active |
 | **Purpose** | Chứng minh phiên `reviewing` chỉ lấy thẻ đến hạn và cập nhật lịch đúng thuật toán, loại lượt và mốc ngày học |
 | **Scope** | Hàng đợi thẻ đến hạn, chế độ ôn, lượt theo lịch/học lại, Eight Box, SM-2, thứ tự hạn, tổng kết và phiên kế tiếp |
-| **Source of truth for** | Kịch bản IT về phiên Ôn tập của UC-05 |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-15…30, BR-75…78, BR-105, BR-139…149, BR-154), `../use-cases.md` (UC-05) |
+| **Source of truth for** | Kịch bản IT về phiên Ôn tập của UC-STUDY-001 |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules/` (BR-SRS-008, BR-SRS-009, BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-SRS-018, BR-SRS-019, BR-STUDY-001, BR-STUDY-002, BR-STUDY-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-006, BR-STUDY-007, BR-STUDY-008, BR-STUDY-009, BR-SRS-014…BR-SRS-017, BR-STUDY-074, BR-STUDY-024, BR-STUDY-025, BR-STUDY-023, BR-STUDY-051, BR-STUDY-052, BR-STUDY-053, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-058, BR-STUDY-044), `../use-cases/` (UC-STUDY-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 
