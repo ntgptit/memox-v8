@@ -85,7 +85,10 @@ docs/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
 │   ├── data/                    # schema.md — bảng, cột, index, invariant `-- N.`
-│   ├── ui/                      # navigation.md — điều hướng toàn app
+│   ├── ui/
+│   │   ├── navigation.md        # điều hướng toàn app
+│   │   ├── design-handoff.json  # nguồn: handoff thiết kế V3 (foundations, theme, 46 widget)
+│   │   └── design-handoff/      # KHÔNG SỬA TAY — sinh từ design-handoff.json
 │   └── testing/                 # hạ tầng kịch bản IT dùng chung
 ├── features/<feature>/
 │   ├── README.md                # phạm vi + màn hình → use case
@@ -101,6 +104,18 @@ docs/
 
 File/folder trong `shared/` và file tùy chọn của feature chỉ tồn tại khi có nội
 dung thật. Không tạo file rỗng.
+
+`shared/ui/design-handoff/` là bản tách nguyên văn của handoff thiết kế V3 (design
+kit `ui_kits/mobile/v3`) trong [`design-handoff.json`](shared/ui/design-handoff.json):
+foundations, theme binding và spec của 46 widget; đọc từ
+[`00-index.md`](shared/ui/design-handoff/00-index.md). Nội dung chỉ đổi khi JSON đổi:
+thay JSON rồi chạy `python tools/docs/split_handoff.py`; tool dừng và không ghi gì nếu
+gặp file bị sửa tay. Đây là bản gốc chưa sửa. Vấn đề đã biết (contrast của token,
+a11y, mâu thuẫn giữa các file, typography tiếng Việt/tiếng Hàn, study loop chưa thiết
+kế) ghi ở
+[`.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md`](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md);
+bản đã sửa tay trước đợt reset docs V8 chỉ còn trong git
+(`git show d0b9250:docs/design/memox-v3/CHANGES.md`).
 
 ## Thứ tự đọc
 
@@ -347,12 +362,15 @@ thật: phiên sau đọc nó, tin nó, và xây tiếp trên một điều khô
 Chạy từ root repo, Python 3, không cần thư viện ngoài:
 
 ```sh
+python tools/docs/split_handoff.py                             # khi JSON đổi: sinh lại docs/shared/ui/design-handoff/
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
 ```
 
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
 mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
-`invariant Qn` được trích, section bắt buộc, và `_generated/` có lỗi thời không.
-WARNING (không fail): BR active không UC nào dùng, UC ready có `code: []` hoặc
-chưa có test chứa ID. Chi tiết ở docstring của hai script.
+`invariant Qn` được trích, section bắt buộc, `_generated/` có lỗi thời không, và
+`shared/ui/design-handoff/` có khớp từng byte với bản sinh lại từ JSON không (thiếu,
+bị sửa tay hay thừa file đều là ERROR). WARNING (không fail): BR active không UC nào
+dùng, UC ready có `code: []` hoặc chưa có test chứa ID. Chi tiết ở docstring của ba
+script.
