@@ -1,3 +1,5 @@
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+
 /// The study state of one card under its root's scheduler: the shape of a
 /// `card_schedule` row (schema.md). Each variant carries exactly one
 /// scheduler's fields; the other scheduler's fields read as null, as the
@@ -33,6 +35,35 @@ sealed class CardScheduleState {
     required int intervalDays,
     required int repetitions,
   }) = _Sm2State;
+
+  /// The row a card starts with (BR-CARD-004), and the row the scheduler
+  /// change (BR-SRS-004) and the reset (BR-SRS-020) write again: nothing
+  /// learned, nothing scheduled, the lowest level of [type], at [generation].
+  factory CardScheduleState.initial(
+    SchedulerType type, {
+    required int generation,
+  }) => switch (type) {
+    SchedulerType.eightBox => CardScheduleState.eightBox(
+      generation: generation,
+      learnedAt: null,
+      dueAt: null,
+      lastAnsweredAt: null,
+      answerCount: 0,
+      lapseCount: 0,
+      currentBox: 1,
+    ),
+    SchedulerType.sm2 => CardScheduleState.sm2(
+      generation: generation,
+      learnedAt: null,
+      dueAt: null,
+      lastAnsweredAt: null,
+      answerCount: 0,
+      lapseCount: 0,
+      easeFactor: 2.5,
+      intervalDays: 0,
+      repetitions: 0,
+    ),
+  };
 
   final int generation;
   final DateTime? learnedAt;
