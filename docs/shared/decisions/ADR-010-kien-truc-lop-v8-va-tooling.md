@@ -45,3 +45,5 @@ luật SRS và cây deck test được như Dart thuần — và là ranh giới
   [`shared/data/schema.md`](../data/schema.md).
 - Tên feature là khoá của `verification_impact_map.json`; test
   `ImpactMapMatchesTheDocsTest` giữ nó khớp với `docs/features/`.
+- Quyết định 2 được cụ thể hoá bởi [ADR-011](ADR-011-cau-truc-thu-muc-v8.md): bucket trong
+  từng layer, luật import giữa các feature và gate kiểm chứng theo giai đoạn.

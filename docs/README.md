@@ -284,6 +284,9 @@ tảng không khai báo feature tiêu thụ nó, kể cả khi tài liệu của
 đó. Chỉ ghi phụ thuộc trực tiếp — bỏ cạnh đã suy ra được qua feature khác. Nhắc
 tới một BR/UC của feature khác không tự tạo phụ thuộc. `check.py` báo lỗi khi có
 chu trình; `verification_impact_map.json` suy ra từ trường này.
+Chiều import Dart giữa các feature trong `lib/features/` do
+[ADR-011](shared/decisions/ADR-011-cau-truc-thu-muc-v8.md) quy định riêng và có thể khác
+đồ thị này.
 
 ADR — `shared/decisions/`: frontmatter `id`, `title`, `status`
 (`draft | active | deprecated`), `superseded_by` khi deprecated.

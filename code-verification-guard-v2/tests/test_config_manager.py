@@ -518,3 +518,27 @@ def test_missing_ruleset_manifest_reports_manifest_path(tmp_path: Path):
 
     with pytest.raises(FileNotFoundError, match="guard-manifest.yaml not found"):
         manager.load_ruleset_runtime(tmp_path / "project", "memox")
+
+
+def test_targets_pending_from_rule_options_reaches_the_final_rule(tmp_path: Path):
+    write_yaml(tmp_path / "registries" / "rules.yaml", registry_yaml("sample.waiting"))
+    config = project_config(registries=["registries/rules.yaml"])
+    config[ConfigKeys.OVERRIDES][ConfigKeys.RULE_OPTIONS] = {
+        "sample.waiting": {ConfigKeys.TARGETS_PENDING: "presentation"},
+    }
+
+    rules = ConfigManager().load_rule_definitions(tmp_path, config, profile_config())
+
+    assert rules[0][ConfigKeys.TARGETS_PENDING] == "presentation"
+
+
+@pytest.mark.parametrize("bad_value", ["", "   ", 3, ["presentation"]])
+def test_targets_pending_must_name_a_layer(tmp_path: Path, bad_value: object):
+    write_yaml(tmp_path / "registries" / "rules.yaml", registry_yaml("sample.waiting"))
+    config = project_config(registries=["registries/rules.yaml"])
+    config[ConfigKeys.OVERRIDES][ConfigKeys.RULE_OPTIONS] = {
+        "sample.waiting": {ConfigKeys.TARGETS_PENDING: bad_value},
+    }
+
+    with pytest.raises(ValueError, match="targets_pending"):
+        ConfigManager().load_rule_definitions(tmp_path, config, profile_config())

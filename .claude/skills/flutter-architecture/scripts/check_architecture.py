@@ -268,9 +268,14 @@ def _check_file_sizes(files: list[tuple[str, list[str]]]) -> None:
 
 
 def _check_scope(files: list[tuple[str, list[str]]], lib: str) -> None:
-    # 9. Scope. Every rule above selects files by path fragment, so a folder
-    #    rename turns the whole check into rules that pass because they looked
-    #    at nothing. Zero is a hard failure.
+    # 9. Scope. Every rule above selects files by path fragment, so a checker
+    #    that matched no file at all passed by looking at nothing: zero files
+    #    under lib/ is a hard failure. The per-layer counts are reported, not
+    #    required. ADR-011 creates a layer with its first real file, so a tree
+    #    with domain/ and no data/ yet is legitimate. A renamed layer or
+    #    top-level folder is caught by name instead: the known-layer CI test
+    #    and the shape rules in test/architecture/boundaries_test.dart fail on
+    #    any folder outside the ADR-011 list.
     paths = [p for p, _ in files]
     scopes = {
         "all": len(paths),
@@ -286,16 +291,14 @@ def _check_scope(files: list[tuple[str, list[str]]], lib: str) -> None:
         f"{scopes['features']} (domain {scopes['domain']}, data {scopes['data']}"
         f", presentation {scopes['presentation']}, di {scopes['di']})"
     )
-    for name, count in scopes.items():
-        if count > 0:
-            continue
-        _error(
-            f"zero scope: {name}",
-            lib,
-            "No file matched, so every rule scoped to it passed without "
-            "inspecting anything. Either the layer was removed or the path "
-            "changed.",
-        )
+    if scopes["all"] > 0:
+        return
+    _error(
+        "zero scope: all",
+        lib,
+        "No Dart file under lib/, so every rule passed without inspecting "
+        "anything. Either the sources moved or the path changed.",
+    )
 
 
 def main() -> int:

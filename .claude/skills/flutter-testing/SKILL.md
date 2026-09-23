@@ -18,19 +18,22 @@ deliberately decided not to test and why.
 
 ```
 test/
+├── architecture/       boundaries_test.dart, boundary_rules.dart (ADR-011)
+├── app/                once app/ has behaviour: router, bootstrap
+├── core/<concern>/     mirrors lib/core/<concern>/
+├── database/           schema-wide: schema, migration, invariants
+├── integration/        cross-feature flows on real SQLite
 ├── features/<feature>/
-│   ├── domain/       use case, validation
-│   ├── data/         repository, mapper, data source
-│   └── presentation/ controller, widget
-├── app/              architecture/convention guards parsing the AST
-├── core/             error mapping and other core units
-├── database/         migration_test.dart · invariants_test.dart · support/test_database.dart
-├── drift/            generated schema verifiers (schema_vN.dart)
-├── shared/           shared widget tests
-├── visual_audit/     MX-VIS-001 per-screen audits
-└── helpers/          fakes, builders, pump helpers
-integration_test/     the 60-scenario E2E suite (it_*_test.dart + support/)
+│   ├── domain/         entity rules, value objects, use cases
+│   ├── data/           repository, mapper, DAO
+│   └── presentation/   controller, widget; support/ for feature-local fakes
+└── support/            shared: test_database.dart, fake clock, builders, pump helpers
 ```
+
+Folders appear with their first test (ADR-011 D1, D12). The suites that come
+with the UI (visual audits under `test/visual_audit/`, which the guard's
+`memox.visual.*` rules already target, goldens and `integration_test/`) are
+placed when the UI sub-project starts.
 
 `mocktail` for mocks — no codegen, so a changed signature is a compile error
 where it matters rather than a stale generated file.
@@ -45,7 +48,7 @@ The failure paths are the point. A repository test that only asserts the happy
 path leaves untested exactly the code that runs when a user is having a bad day.
 
 Repository tests here run against **real in-memory SQLite**
-(`test/database/support/test_database.dart`), not a mocked executor — the thing
+(`test/support/test_database.dart`), not a mocked executor — the thing
 worth proving is that the SQL, the constraints and the transaction behave, and
 a mock proves none of that (see `flutter-feature-slice` Step 4, which owns this
 rule):
@@ -116,7 +119,7 @@ Always wrap in `ProviderScope` with overrides, and in the app theme and l10n
 delegates — a widget test without the theme can pass while the real screen has
 no styling.
 
-Put the wrapper in `test/helpers/` once. Every test writing its own is how they
+Put the wrapper in `test/support/` once. Every test writing its own is how they
 drift apart and stop reflecting the real app.
 
 Cover per screen: main text and actions, loading, empty, error, validation

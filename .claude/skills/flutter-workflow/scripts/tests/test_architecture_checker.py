@@ -23,6 +23,7 @@ is why these run there rather than inside this one.
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -57,11 +58,9 @@ class ArchitectureCheckerFixtureTest(unittest.TestCase):
             encoding="utf-8",
         )
 
-        # `presentation/` and `di/` exist because the checker refuses a layer
-        # that matches nothing — "every rule scoped to it passed without
-        # inspecting anything" is its own wording. A fixture missing a layer
-        # fails for that reason instead of the planted one, which is exactly
-        # the unattributable failure the clean case below rules out.
+        # All four layers are present so that every rule has a file to
+        # inspect. A missing layer is legitimate under ADR-011 (a layer
+        # appears with its first real file) and has its own test below.
         screens = root / "lib" / "features" / "deck" / "presentation" / "screens"
         screens.mkdir(parents=True)
         (screens / "deck_list_screen.dart").write_text(
@@ -182,6 +181,51 @@ class ArchitectureCheckerFixtureTest(unittest.TestCase):
                     f"flip this assertion; if not, something else broke.\n{output}"
                 ),
             )
+
+    def test_a_tree_without_presentation_or_di_passes(self) -> None:
+        # ADR-011: a layer appears with its first real file, so the foundation
+        # has domain/ and data/ long before any screen or provider. Missing
+        # optional layers must not fail the check.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._project(root)
+            deck = root / "lib" / "features" / "deck"
+            shutil.rmtree(deck / "presentation")
+            shutil.rmtree(deck / "di")
+
+            result = self._run(root)
+
+            self.assertEqual(
+                result.returncode,
+                0,
+                msg=f"a lazily-built layer was treated as missing.\n{result.stdout}",
+            )
+
+    def test_a_fresh_tree_with_only_main_passes(self) -> None:
+        # The state right after `flutter create`: no feature yet, nothing
+        # wrong with that, and nothing for the feature rules to inspect.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pubspec.yaml").write_text("name: fixture\n", encoding="utf-8")
+            (root / "lib").mkdir()
+            (root / "lib" / "main.dart").write_text("void main() {}\n", encoding="utf-8")
+
+            result = self._run(root)
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout)
+
+    def test_a_lib_without_dart_files_fails(self) -> None:
+        # The zero scope that stays fatal: a checker that read no file at all
+        # is reporting success for having looked at nothing.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pubspec.yaml").write_text("name: fixture\n", encoding="utf-8")
+            (root / "lib").mkdir()
+
+            result = self._run(root)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout)
+            self.assertIn("zero scope: all", result.stdout)
 
     def test_a_project_with_no_lib_but_a_pubspec_fails(self) -> None:
         # The M4.10b mitigation, pinned: a skip before the project exists is

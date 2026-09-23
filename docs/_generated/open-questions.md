@@ -152,4 +152,5 @@
 
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
-- L123: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+- L151: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+- L3048: > ⚠️ OPEN QUESTION: BR-CARD-004 says creating a card also creates its

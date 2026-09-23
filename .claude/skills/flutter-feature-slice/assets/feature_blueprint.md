@@ -1,5 +1,11 @@
 # Feature blueprint — derived from `features/deck` and `features/card`
 
+> **V7 reference.** This file describes memox-v7's `features/deck` and
+> `features/card` as V7 built them. Its paths, including the
+> `app/di/repository_bindings.dart` binding, do not exist in V8. The V8 layout is
+> ADR-011 (`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`): read this
+> file for the reasoning, never for a path.
+
 Deck and Card are the two worked examples. This file records **the method they
 settled** — how a slice is layered, where a rule is enforced, what a use case may
 know, which test sits at which level — measured against the code as it stands

@@ -6,19 +6,28 @@
 core data model, pure-Dart SRS schedulers, deck-tree rules and their
 transactional invariants, all guarded by tests. No product UI.
 
-**Architecture:** Feature-first single package. Per [ADR-010](../../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md),
-each feature folder is `lib/features/<f>/` with layers `domain/` (entities,
-repository contracts, pure rules, use cases where a real interaction needs
-one), `data/` (repository implementations, datasources, mappers) and `di/`
-(Riverpod providers) — `presentation/` is not created in this plan (no
-product UI). `domain/` is pure Dart: no Flutter, no Drift. Drift tables and
-named queries live centrally in `lib/core/database/{tables,queries}` per
+**Architecture:** Feature-first single package. Per [ADR-010](../../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md)
+and ADR-011 (`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`), each
+feature folder is `lib/features/<f>/` with layers `domain/`, `data/` and `di/`,
+and every file sits in a bucket of its layer: `domain/{entities,models,repositories,failures}/`,
+`data/{datasources,repositories}/`, and a flat `di/` for the Riverpod providers.
+`presentation/` and `domain/usecases/` are not created in this plan: there is no
+product UI, so there is no interaction for AD-12 to wrap. `domain/` is pure Dart:
+no Flutter, no Drift. A feature's public surface is its
+`domain/{entities,models,repositories,failures}/`, imported file by file; there are
+no barrels. Drift tables and named queries live centrally in
+`lib/core/database/{tables,queries}` per
 [`flutter-drift/references/project-baseline.md`](../../../.claude/skills/flutter-drift/references/project-baseline.md);
 `core/database` assembles them into one `AppDatabase`. A repository
 implementation runs every write inside one Drift transaction. A repository
 contract has exactly one implementation, which is deliberate (ADR-010's
-"concrete architectural reason" carve-out in `flutter-architecture`), not a
-speculative interface. A folder is created only when it holds a real file.
+"concrete architectural reason"), not a speculative interface. A folder is
+created only when it holds a real file.
+
+**Prerequisite:** [`2026-09-23-v8-folder-architecture.md`](2026-09-23-v8-folder-architecture.md)
+is complete. Its tooling is what this plan's gate runs: the ADR-011 rules in
+`test/architecture/`, `check_architecture.py` without per-layer zero scopes, and
+the guard's `targets_pending` waiting list.
 
 **Tech Stack:** Flutter 3.47.5 (Dart SDK 3.13.4), pinned in `.fvmrc`.
 `flutter_riverpod` 3.4.3 + `riverpod_annotation` 4.0.7 + `riverpod_generator`
@@ -45,15 +54,23 @@ Every task's requirements implicitly include these.
   Drift.
 - Database: Drift/SQLite is the single source of truth; IDs are
   client-generated UUIDs (ADR-007); datetimes are stored as UTC (ADR-008).
-- Structure: `lib/{main.dart, app/, core/, features/<f>/{domain,data,di}}`,
-  `<f>` from ADR-010's list, snake_case, matching `docs/features/`. A folder
-  is created only when it holds a real file.
+- Structure (ADR-011): `lib/{main.dart, app/, core/<concern>/, features/<f>/{domain,data,di}}`,
+  `<f>` from ADR-010's list, snake_case, matching `docs/features/`. Every
+  feature file sits in a bucket of its layer (`domain/{entities,models,repositories,failures}/`,
+  `data/{datasources,repositories}/`; `di/` is flat) and carries the file suffix
+  the guard expects (`_entity`, `_model`, `_scheduler`, `_repository`, `_failure`,
+  `_dao`, `_repository_impl`, `_provider`). A folder is created only when it
+  holds a real file.
+- Imports between features (ADR-011): only another feature's
+  `domain/{entities,models,repositories,failures}/` files, plus its `di/` from a
+  `di/` file; never its `data/`; no barrels. The import map is `srs → ∅`,
+  `deck → {srs}`, `card → {deck, srs}` (`test/architecture/boundary_rules.dart`).
 - Drift tables and named `.drift` queries are central in
   `lib/core/database/{tables,queries}`, never per-feature. DAOs are
   feature-owned, under `lib/features/<f>/data/datasources/`.
 - `domain/` is pure Dart: no `package:flutter`, no `package:drift`, no
   `package:memox/core/database/`.
-- `Scheduler` is the only cross-implementation interface in this plan (two
+- `SrsScheduler` is the only cross-implementation interface in this plan (two
   real implementations: `eight_box`, `sm2`). A repository contract with one
   implementation is accepted only for the "domain stays framework-free, tests
   substitute fakes" reason in ADR-010 — not for "maybe later".
@@ -72,13 +89,24 @@ Every task's requirements implicitly include these.
   applied (BR-SRS-026, BR-STUDY-017).
 - `review_log.kind`, `study_session.status` / `end_reason` are stored, never
   inferred (invariant 12, 26).
-- Expected business rejections return `Outcome`'s `Ok` / `Rejected(reason)`,
-  not exceptions. Unexpected DB errors are mapped in one place
-  (`lib/core/error/failure.dart`) into `Failure` subtypes. Riverpod
-  auto-retry is disabled for DB errors.
+- Expected business rejections return `Outcome<T, R>`'s `Ok` /
+  `Rejected(reason)`, not exceptions. `R` is the refusing feature's own reason
+  enum in its `domain/failures/`: `DeckRejection`, `SrsRejection`,
+  `CardRejection` (ADR-011 D6). Unexpected DB errors are mapped in one place
+  (`lib/core/error/failure.dart`) into `Failure` subtypes. Riverpod auto-retry
+  is disabled for DB errors.
 - Card content, notes, history and exports are never logged at any level.
-- Verification gate: `flutter analyze` and `flutter test` (after
-  `dart run build_runner build --delete-conflicting-outputs`). Generated
+- Verification gate: the phased gate in `README.md` (ADR-011), after
+  `dart run build_runner build --delete-conflicting-outputs` —
+  `flutter analyze`, `flutter test`,
+  `python3 .claude/skills/flutter-architecture/scripts/check_architecture.py`,
+  `python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'`
+  and `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8`.
+  Every "Gate and commit" step below runs all five. When the guard reports
+  `guard.config.stale_targets_pending` for a rule, the task just added the layer
+  that rule waited for: delete the rule's entry from
+  `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`
+  in the same commit (Tasks 3, 5, 7 and 10 name the entries). Generated
   `*.g.dart` files are not committed.
 
 ## Package versions (checked 2026-09-23)
@@ -158,23 +186,27 @@ made and recorded so review can push back on them, not gaps.
    **Resolved 2026-09-23 (project owner):** add these columns now, nullable
    and without a FK; the FK arrives with the sub-project that creates the
    referenced table.
-3. **Public surface of a feature** is its `domain/` layer, reached through a
-   barrel file `lib/features/<f>/<f>.dart` that exports domain types
-   (entities, the repository contract, `Rejection`s) and, once one exists,
-   the `di/` provider. Pure rules must also be reachable this way, so
-   cross-feature imports go through the barrel. Enforced by a test (Task 1).
+3. **Public surface of a feature** is its `domain/{entities,models,repositories,failures}/`,
+   imported file by file (ADR-011 D3). There are no barrel files: a barrel that
+   re-exported `di/` would pull Riverpod and Drift into a dependent feature's
+   `domain/`. Another feature's `di/` is imported only from a `di/` file (and,
+   later, from `presentation/`). Pure rules are static members of the entity
+   (ADR-011 D7), so they travel with it. Enforced by
+   `test/architecture/boundaries_test.dart`.
 4. **`srs` depends on no feature** at the Dart level (spec §4). Its *tables*
    reference `card` (foreign key), a schema relationship, not a Dart import.
    The boundary test checks Dart imports only.
-5. **`deck` may import the `srs` barrel**, to type the scheduler chosen when
-   a root deck is created (`SchedulerType`). The dependency map is
-   `deck → srs`, `card → deck, srs`, a future `study`/`progress` →
-   `deck, card, srs`.
-6. **Moving a root deck is rejected** (`Rejection.rootCannotMove`). The spec
-   only describes moving sub-deck subtrees.
+5. **`deck` imports `srs`'s `domain/models/scheduler_type_model.dart`**, to
+   type the scheduler chosen when a root deck is created (`SchedulerType`). The
+   Dart import map is `srs → ∅`, `deck → {srs}`, `card → {deck, srs}`; a future
+   `study`/`progress` adds its edges in the commit that creates it. It is the
+   contract direction and may differ from `depends_on` in the docs, which is the
+   data direction (ADR-011 D2).
+6. **Moving a root deck is rejected** (`DeckRejection.rootCannotMove`). The
+   spec only describes moving sub-deck subtrees.
 7. **Blank deck names and blank card front/back are rejected**
-   (`Rejection.blankName`, `Rejection.blankContent`) — a trust-boundary
-   check the spec implies but does not spell out.
+   (`DeckRejection.blankName`, `CardRejection.blankContent`) — a
+   trust-boundary check the spec implies but does not spell out.
 8. **Application id** is `com.memox.memox` (from
    `flutter create --project-name memox --org com.memox`). Change before the
    first release build if another id is wanted.
@@ -182,9 +214,12 @@ made and recorded so review can push back on them, not gaps.
    global `core/clock`, because only repositories that touch time need it
    and the SRS domain functions already receive `now` as an argument.
 10. **Repositories are exposed through Riverpod providers** in each
-    feature's `di/` folder (`deckRepositoryProvider`, `scheduleRepositoryProvider`,
-    `cardRepositoryProvider`). This is what makes `di/` a real folder in this
-    plan, not a speculative one.
+    feature's `di/` folder, one file per repository:
+    `deck/di/deck_repository_provider.dart` (`deckRepositoryProvider`),
+    `srs/di/schedule_repository_provider.dart` (`scheduleRepositoryProvider`),
+    `card/di/card_repository_provider.dart` (`cardRepositoryProvider`). Each
+    provider constructs its implementation directly; there is no `app/di/`.
+    This is what makes `di/` a real folder in this plan, not a speculative one.
 11. **`DATETIME` storage mode**: no `build.yaml` is added in this plan, so
     Drift's default (Unix epoch seconds, UTC assumed at the Dart boundary)
     applies, per `flutter-drift/references/project-baseline.md`. Pinning the
@@ -216,49 +251,71 @@ in the named task.
 
 ## File Structure
 
+One path per line; every `lib/` file sits in an ADR-011 bucket.
+
 ```
-.fvmrc                                                 {"flutter": "3.47.5"}
+.fvmrc                                                     {"flutter": "3.47.5"}
 pubspec.yaml, analysis_options.yaml, README.md
-drift_schemas/drift_schema_v1.json                     schema snapshot
-lib/main.dart                                          ProviderScope(retry: noRetry) + runApp
-lib/app/app.dart, app/router.dart                       MemoxApp, noRetry, placeholder route
-lib/core/id.dart                                       newId()
-lib/core/outcome.dart                                  Outcome / Ok / Rejected / Rejection
-lib/core/error/failure.dart                            Failure + mapDatabaseError
-lib/core/database/app_database.dart                    AppDatabase (assembles tables/)
-lib/core/database/connection.dart                      driftDatabase(), the only file that opens a DB
-lib/core/database/tables/deck.drift, card.drift, srs.drift, study.drift, settings.drift
-lib/core/database/queries/ (added only when a task needs a named query)
-lib/core/database/di/database_provider.dart            databaseProvider (codegen, keepAlive)
-lib/features/srs/srs.dart                              barrel
-lib/features/srs/domain/scheduler.dart, schedulers.dart, eight_box.dart, sm2.dart,
-                        due_date.dart, review_kind.dart, card_schedule_state.dart,
-                        review_log_entry.dart, schedule_repository.dart
-lib/features/srs/data/repositories/schedule_repository_impl.dart
+drift_schemas/drift_schema_v1.json                         schema snapshot
+lib/main.dart                                              ProviderScope(retry: noRetry) + runApp
+lib/app/app.dart                                           MemoxApp
+lib/app/router/app_router.dart                             placeholder route
+lib/core/id/new_id.dart                                    newId()
+lib/core/error/outcome.dart                                Outcome<T, R> / Ok / Rejected
+lib/core/error/failure.dart                                Failure + mapDatabaseError
+lib/core/database/app_database.dart                        AppDatabase (assembles tables/)
+lib/core/database/connection.dart                          driftDatabase(), the only file that opens a DB
+lib/core/database/tables/deck.drift, card.drift, tags.drift, srs.drift, study.drift, settings.drift
+lib/core/database/queries/                                 added only when a task needs a named query
+lib/core/database/di/database_provider.dart                databaseProvider (codegen, keepAlive)
+lib/features/srs/domain/models/review_kind_model.dart
+lib/features/srs/domain/models/due_date_model.dart
+lib/features/srs/domain/models/scheduler_type_model.dart
+lib/features/srs/domain/models/review_action_model.dart
+lib/features/srs/domain/models/srs_scheduler.dart
+lib/features/srs/domain/models/card_schedule_state_model.dart
+lib/features/srs/domain/models/review_log_entry_model.dart
+lib/features/srs/domain/models/eight_box_scheduler.dart
+lib/features/srs/domain/models/sm2_scheduler.dart
+lib/features/srs/domain/models/schedulers_model.dart
+lib/features/srs/domain/failures/srs_failure.dart
+lib/features/srs/domain/repositories/schedule_repository.dart
 lib/features/srs/data/datasources/srs_dao.dart
-lib/features/srs/di/srs_providers.dart                 scheduleRepositoryProvider
-lib/features/deck/deck.dart                            barrel
-lib/features/deck/domain/deck.dart, deck_rules.dart, deck_repository.dart
-lib/features/deck/data/repositories/deck_repository_impl.dart
+lib/features/srs/data/repositories/schedule_repository_impl.dart
+lib/features/srs/di/schedule_repository_provider.dart      scheduleRepositoryProvider
+lib/features/deck/domain/entities/deck_entity.dart         DeckEntity + its tree rules
+lib/features/deck/domain/models/deck_content_type_model.dart
+lib/features/deck/domain/failures/deck_failure.dart
+lib/features/deck/domain/repositories/deck_repository.dart
 lib/features/deck/data/datasources/deck_dao.dart
-lib/features/deck/di/deck_providers.dart               deckRepositoryProvider
-lib/features/card/card.dart                            barrel
-lib/features/card/domain/card.dart, card_repository.dart
-lib/features/card/data/repositories/card_repository_impl.dart
+lib/features/deck/data/repositories/deck_repository_impl.dart
+lib/features/deck/di/deck_repository_provider.dart         deckRepositoryProvider
+lib/features/card/domain/entities/card_entity.dart         CardEntity + checkContent
+lib/features/card/domain/failures/card_failure.dart
+lib/features/card/domain/repositories/card_repository.dart
 lib/features/card/data/datasources/card_dao.dart
-lib/features/card/di/card_providers.dart               cardRepositoryProvider
-test/architecture/boundaries_test.dart
-test/core/**, test/features/**, test/database/**, test/integration/**, test/app/**,
-test/support/test_database.dart
+lib/features/card/data/repositories/card_repository_impl.dart
+lib/features/card/di/card_repository_provider.dart         cardRepositoryProvider
+test/architecture/boundaries_test.dart, boundary_rules.dart, boundary_rules_test.dart
+test/core/<concern>/**, test/features/<f>/{domain,data}/**, test/database/**,
+test/integration/**, test/app/**, test/support/test_database.dart
 ```
 
 `study/`, `settings/`, `tags/` are not created (no Dart file in this plan —
-see Clarification 1). `progress/` is not created. `presentation/` is not
-created in any feature (no product UI).
+see Clarification 1). `progress/` is not created. `presentation/` and
+`domain/usecases/` are not created in any feature (no product UI, so no
+interaction for AD-12 to wrap).
 
 ---
 
 ### Task 1: Toolchain, project skeleton and boundary guard
+
+> **Done before ADR-011, partly superseded.** This task ran as written. Its
+> `test/architecture/boundaries_test.dart` (barrel rule, three-feature purity
+> list) is replaced by the ADR-011 rules in `test/architecture/boundary_rules.dart`,
+> and its `README.md` gate by the phased gate, both in
+> [`2026-09-23-v8-folder-architecture.md`](2026-09-23-v8-folder-architecture.md).
+> The steps below are kept as the record of what ran; do not re-run them.
 
 **Files:**
 - Create: `.fvmrc`, Flutter project files at the repo root (via
@@ -557,15 +614,18 @@ git commit -m "chore: scaffold Flutter project, pin toolchain, add boundary guar
 ### Task 2: Core primitives (id, outcome, failure mapping)
 
 **Files:**
-- Create: `lib/core/id.dart`, `lib/core/outcome.dart`, `lib/core/error/failure.dart`
-- Test: `test/core/id_test.dart`, `test/core/outcome_test.dart`, `test/core/error/failure_test.dart`
+- Create: `lib/core/id/new_id.dart`, `lib/core/error/outcome.dart`, `lib/core/error/failure.dart`
+- Test: `test/core/id/new_id_test.dart`, `test/core/error/outcome_test.dart`, `test/core/error/failure_test.dart`
 
 **Interfaces:**
 - Produces:
   - `String newId()` — a v4 UUID string.
-  - `sealed class Outcome<T>`, `final class Ok<T> extends Outcome<T> { T value; }`,
-    `final class Rejected<T> extends Outcome<T> { Rejection reason; }`.
-  - `enum Rejection { blankName, blankContent, depthExceeded, notADeckContainer, notACardContainer, subtreeSchedulerMismatch, movingIntoOwnSubtree, rootCannotMove, unsupportedAction, staleGeneration, notFound }`
+  - `sealed class Outcome<T, R extends Enum>`,
+    `final class Ok<T, R extends Enum> extends Outcome<T, R> { T value; }`,
+    `final class Rejected<T, R extends Enum> extends Outcome<T, R> { R reason; }`.
+    `core/` names no reason: each feature declares its own enum in its
+    `domain/failures/` (ADR-011 D6) — `DeckRejection` (Task 6),
+    `SrsRejection` (Task 8), `CardRejection` (Task 9).
   - `sealed class Failure { String message; Object? cause; }`,
     `final class ConstraintFailure extends Failure {}`,
     `final class DatabaseLockedFailure extends Failure {}`,
@@ -574,11 +634,11 @@ git commit -m "chore: scaffold Flutter project, pin toolchain, add boundary guar
 
 - [ ] **Step 1: Write the failing id test**
 
-`test/core/id_test.dart`:
+`test/core/id/new_id_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/id.dart';
+import 'package:memox/core/id/new_id.dart';
 
 void main() {
   test('newId returns a v4 UUID and two calls differ', () {
@@ -595,12 +655,12 @@ void main() {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/core/id_test.dart`
-Expected: FAIL — `lib/core/id.dart` does not exist.
+Run: `flutter test test/core/id/new_id_test.dart`
+Expected: FAIL — `lib/core/id/new_id.dart` does not exist.
 
 - [ ] **Step 3: Implement `newId`**
 
-`lib/core/id.dart`:
+`lib/core/id/new_id.dart`:
 
 ```dart
 import 'package:uuid/uuid.dart';
@@ -613,80 +673,69 @@ String newId() => _uuid.v4();
 
 - [ ] **Step 4: Run to verify it passes**
 
-Run: `flutter test test/core/id_test.dart`
+Run: `flutter test test/core/id/new_id_test.dart`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing outcome test**
 
-`test/core/outcome_test.dart`:
+`test/core/error/outcome_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/outcome.dart';
+import 'package:memox/core/error/outcome.dart';
+
+enum _Reason { tooDeep }
 
 void main() {
-  test('Ok carries a value, Rejected carries a reason', () {
-    const ok = Ok<int>(1);
-    const rejected = Rejected<int>(Rejection.depthExceeded);
+  test('Ok carries a value, Rejected carries a typed reason', () {
+    const Outcome<int, _Reason> ok = Ok(1);
+    const Outcome<int, _Reason> rejected = Rejected(_Reason.tooDeep);
 
-    expect(switch (ok) { Ok(:final value) => value, Rejected() => -1 }, 1);
-    expect(
-      switch (rejected) {
-        Ok() => null,
-        Rejected(:final reason) => reason,
-      },
-      Rejection.depthExceeded,
-    );
+    expect(switch (ok) {
+      Ok(:final value) => value,
+      Rejected() => -1,
+    }, 1);
+    expect(switch (rejected) {
+      Ok() => null,
+      Rejected(:final reason) => reason,
+    }, _Reason.tooDeep);
   });
 }
 ```
 
 - [ ] **Step 6: Run to verify it fails**
 
-Run: `flutter test test/core/outcome_test.dart`
-Expected: FAIL — `lib/core/outcome.dart` does not exist.
+Run: `flutter test test/core/error/outcome_test.dart`
+Expected: FAIL — `lib/core/error/outcome.dart` does not exist.
 
-- [ ] **Step 7: Implement `Outcome`/`Rejection`**
+- [ ] **Step 7: Implement `Outcome`**
 
-`lib/core/outcome.dart`:
+`lib/core/error/outcome.dart`:
 
 ```dart
-/// A business rejection reason. Every value here is a rule from the spec or
-/// schema.md the write path enforces before touching the database.
-enum Rejection {
-  blankName,
-  blankContent,
-  depthExceeded,
-  notADeckContainer,
-  notACardContainer,
-  subtreeSchedulerMismatch,
-  movingIntoOwnSubtree,
-  rootCannotMove,
-  unsupportedAction,
-  staleGeneration,
-  notFound,
-}
-
 /// The result of an operation that can be legitimately refused. Not an
 /// exception: a `Rejected` is an expected outcome the caller must handle.
-sealed class Outcome<T> {
+///
+/// [R] is the refusing feature's own reason enum (ADR-011 D6), so `core/`
+/// names no business reason and a switch over [R] stays exhaustive.
+sealed class Outcome<T, R extends Enum> {
   const Outcome();
 }
 
-final class Ok<T> extends Outcome<T> {
+final class Ok<T, R extends Enum> extends Outcome<T, R> {
   const Ok(this.value);
   final T value;
 }
 
-final class Rejected<T> extends Outcome<T> {
+final class Rejected<T, R extends Enum> extends Outcome<T, R> {
   const Rejected(this.reason);
-  final Rejection reason;
+  final R reason;
 }
 ```
 
 - [ ] **Step 8: Run to verify it passes**
 
-Run: `flutter test test/core/outcome_test.dart`
+Run: `flutter test test/core/error/outcome_test.dart`
 Expected: PASS.
 
 - [ ] **Step 9: Write the failing failure-mapping test**
@@ -694,7 +743,6 @@ Expected: PASS.
 `test/core/error/failure_test.dart`:
 
 ```dart
-import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite3;
@@ -787,6 +835,9 @@ Expected: PASS.
 ```bash
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/core test/core
 git commit -m "feat(core): add id, outcome and failure-mapping primitives" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
@@ -796,38 +847,45 @@ git commit -m "feat(core): add id, outcome and failure-mapping primitives" -m "C
 ### Task 3: SRS domain types, due-date rule and `eight_box`
 
 **Files:**
-- Create: `lib/features/srs/domain/review_kind.dart`, `due_date.dart`,
-  `scheduler.dart`, `card_schedule_state.dart`, `review_log_entry.dart`,
-  `eight_box.dart`
-- Test: `test/features/srs/due_date_test.dart`, `test/features/srs/eight_box_test.dart`
+- Create, all under `lib/features/srs/domain/models/`: `review_kind_model.dart`,
+  `due_date_model.dart`, `scheduler_type_model.dart`, `review_action_model.dart`,
+  `srs_scheduler.dart`, `card_schedule_state_model.dart`,
+  `review_log_entry_model.dart`, `eight_box_scheduler.dart`
+- Modify: `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`
+  (retire the six `domain` entries, Step 9)
+- Test: `test/features/srs/domain/due_date_model_test.dart`,
+  `test/features/srs/domain/eight_box_scheduler_test.dart`
 
 **Interfaces:**
 - Consumes: nothing outside `dart:core`.
-- Produces:
-  - `enum ReviewKind { learning, scheduled, relearning }`
-  - `DateTime dueAtLocalMidnight(DateTime now, int daysFromNow)`
-  - `enum SchedulerType { eightBox, sm2 }`
+- Produces (one type per file, imported by path — there is no `srs` barrel):
+  - `enum ReviewKind { learning, scheduled, relearning }` (`review_kind_model.dart`)
+  - `DateTime dueAtLocalMidnight(DateTime now, int daysFromNow)` (`due_date_model.dart`).
+    It is a date computation both schedulers share, not a rule that refuses, so it
+    stays a top-level function (ADR-011 D7 covers rules that refuse).
+  - `enum SchedulerType { eightBox, sm2 }` (`scheduler_type_model.dart`)
+  - `enum EightBoxAction { forgotten, remembered }`,
+    `enum Sm2Action { again, hard, good, easy }` (`review_action_model.dart`)
   - `sealed class CardScheduleState` with `eightBox`/`sm2` shape fields
     matching `card_schedule` (schema.md): `generation`, `learnedAt`, `dueAt`,
     `lastAnsweredAt`, `answerCount`, `lapseCount`, and scheduler-specific
-    fields (`currentBox` or `easeFactor`/`intervalDays`/`repetitions`).
-  - `sealed class ReviewAction` with `EightBoxAction { forgotten, remembered }`
-    and `Sm2Action { again, hard, good, easy }` variants (as enums used by a
-    matching sealed wrapper, so `Scheduler.next` is total).
+    fields (`currentBox` or `easeFactor`/`intervalDays`/`repetitions`)
+    (`card_schedule_state_model.dart`).
   - `final class ReviewLogEntry` mirroring `review_log`'s scheduler-specific
     columns needed by both schedulers: `kind`, `previousBox`/`nextBox` or
     `previousEaseFactor`/`nextEaseFactor`/`previousIntervalDays`/`nextIntervalDays`,
-    `nextDueAt`.
-  - `abstract interface class Scheduler { SchedulerType get type; int get version; Set<Object> get supportedActions; (CardScheduleState, ReviewLogEntry) next(CardScheduleState state, Object action, DateTime now); }`
-  - `const EightBoxScheduler eightBoxScheduler`.
+    `nextDueAt` (`review_log_entry_model.dart`).
+  - `abstract interface class SrsScheduler { SchedulerType get type; int get version; Set<Object> get supportedActions; (CardScheduleState, ReviewLogEntry) next(CardScheduleState state, Object action, DateTime now); }`
+    (`srs_scheduler.dart`)
+  - `const EightBoxScheduler eightBoxScheduler` (`eight_box_scheduler.dart`).
 
 - [ ] **Step 1: Write the failing due-date tests**
 
-`test/features/srs/due_date_test.dart`:
+`test/features/srs/domain/due_date_model_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
 
 void main() {
   test('0 days from now is local midnight of today', () {
@@ -849,12 +907,12 @@ void main() {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/srs/due_date_test.dart`
-Expected: FAIL — `lib/features/srs/srs.dart` does not exist.
+Run: `flutter test test/features/srs/domain/due_date_model_test.dart`
+Expected: FAIL — `lib/features/srs/domain/models/due_date_model.dart` does not exist.
 
-- [ ] **Step 3: Implement `due_date.dart` and the `srs` barrel**
+- [ ] **Step 3: Implement `due_date_model.dart`**
 
-`lib/features/srs/domain/due_date.dart`:
+`lib/features/srs/domain/models/due_date_model.dart`:
 
 ```dart
 /// Local midnight [daysFromNow] days after [now]'s local date. Time-of-day
@@ -866,24 +924,22 @@ DateTime dueAtLocalMidnight(DateTime now, int daysFromNow) {
 }
 ```
 
-`lib/features/srs/srs.dart`:
-
-```dart
-export 'domain/due_date.dart';
-```
-
 - [ ] **Step 4: Run to verify it passes**
 
-Run: `flutter test test/features/srs/due_date_test.dart`
+Run: `flutter test test/features/srs/domain/due_date_model_test.dart`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing `eight_box` tests**
 
-`test/features/srs/eight_box_test.dart`:
+`test/features/srs/domain/eight_box_scheduler_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
+import 'package:memox/features/srs/domain/models/eight_box_scheduler.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
+import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 
 CardScheduleState _newCard({int generation = 1}) => CardScheduleState.eightBox(
       generation: generation,
@@ -945,12 +1001,14 @@ void main() {
 
 - [ ] **Step 6: Run to verify it fails**
 
-Run: `flutter test test/features/srs/eight_box_test.dart`
+Run: `flutter test test/features/srs/domain/eight_box_scheduler_test.dart`
 Expected: FAIL — `CardScheduleState`, `eightBoxScheduler` etc. do not exist.
 
 - [ ] **Step 7: Implement the remaining domain types and `eight_box`**
 
-`lib/features/srs/domain/review_kind.dart`:
+Every import in `lib/` is a `package:memox/...` import (`always_use_package_imports`).
+
+`lib/features/srs/domain/models/review_kind_model.dart`:
 
 ```dart
 /// Stored verbatim on `review_log.kind` (schema.md) — never inferred from
@@ -958,33 +1016,44 @@ Expected: FAIL — `CardScheduleState`, `eightBoxScheduler` etc. do not exist.
 enum ReviewKind { learning, scheduled, relearning }
 ```
 
-`lib/features/srs/domain/card_schedule_state.dart`: a `sealed class` with two
-variants (`_EightBoxState`, `_Sm2State`) behind named constructors
-`CardScheduleState.eightBox(...)` / `CardScheduleState.sm2(...)`, common
-fields `generation`, `learnedAt`, `dueAt`, `lastAnsweredAt`, `answerCount`,
-`lapseCount` (mirroring `card_schedule` in schema.md), scheduler-only fields
-nullable on the other variant, and a `copyWith`.
-
-`lib/features/srs/domain/review_log_entry.dart`: `final class ReviewLogEntry`
-with `kind`, `previousBox`, `nextBox`, `previousEaseFactor`, `nextEaseFactor`,
-`previousIntervalDays`, `nextIntervalDays`, `nextDueAt` — all nullable except
-`kind`, matching schema.md's per-scheduler `NULL` convention on `review_log`.
-
-`lib/features/srs/domain/scheduler.dart`:
+`lib/features/srs/domain/models/scheduler_type_model.dart`:
 
 ```dart
-import 'card_schedule_state.dart';
-import 'review_log_entry.dart';
-
+/// The scheduler a root deck uses (spec §5), stored as a stable text code.
 enum SchedulerType { eightBox, sm2 }
+```
 
+`lib/features/srs/domain/models/review_action_model.dart`:
+
+```dart
 enum EightBoxAction { forgotten, remembered }
 
 enum Sm2Action { again, hard, good, easy }
+```
+
+`lib/features/srs/domain/models/card_schedule_state_model.dart`: a `sealed class`
+`CardScheduleState` with two variants (`_EightBoxState`, `_Sm2State`) behind named
+constructors `CardScheduleState.eightBox(...)` / `CardScheduleState.sm2(...)`,
+common fields `generation`, `learnedAt`, `dueAt`, `lastAnsweredAt`, `answerCount`,
+`lapseCount` (mirroring `card_schedule` in schema.md), scheduler-only fields
+nullable on the other variant, and a `copyWith`.
+
+`lib/features/srs/domain/models/review_log_entry_model.dart`: `final class
+ReviewLogEntry` with `kind`, `previousBox`, `nextBox`, `previousEaseFactor`,
+`nextEaseFactor`, `previousIntervalDays`, `nextIntervalDays`, `nextDueAt` — all
+nullable except `kind`, matching schema.md's per-scheduler `NULL` convention on
+`review_log`.
+
+`lib/features/srs/domain/models/srs_scheduler.dart`:
+
+```dart
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/review_log_entry_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 /// A pure function of (state, action, now) -> (next state, log entry). Time
 /// is injected so tests never depend on the wall clock (spec §5 "SRS core").
-abstract interface class Scheduler {
+abstract interface class SrsScheduler {
   SchedulerType get type;
   int get version;
   Set<Object> get supportedActions;
@@ -996,8 +1065,10 @@ abstract interface class Scheduler {
 }
 ```
 
-`lib/features/srs/domain/eight_box.dart`: the box ladder
-`{1: 1, 2: 2, 3: 4, 4: 8, 5: 16, 6: 32, 7: 64, 8: 128}` days, `remembered`
+`lib/features/srs/domain/models/eight_box_scheduler.dart`: `final class
+EightBoxScheduler implements SrsScheduler` and `const EightBoxScheduler
+eightBoxScheduler`. The box ladder is
+`{1: 1, 2: 2, 3: 4, 4: 8, 5: 16, 6: 32, 7: 64, 8: 128}` days. `remembered`
 before `learnedAt` is set: box 1 → 2, sets `learnedAt = now`, `kind = learning`,
 no `dueAt`. `remembered` after `learnedAt`: box+1 (max 8), `kind = scheduled`,
 `dueAt = dueAtLocalMidnight(now, ladder[nextBox])`. `forgotten` before
@@ -1005,43 +1076,72 @@ no `dueAt`. `remembered` after `learnedAt`: box+1 (max 8), `kind = scheduled`,
 box unchanged, `kind = relearning`, `dueAt` unchanged (BR-SRS-017, invariant
 14).
 
-Update `lib/features/srs/srs.dart` to export every new file.
-
 - [ ] **Step 8: Run to verify it passes**
 
 Run: `flutter test test/features/srs`
 Expected: PASS.
 
-- [ ] **Step 9: Gate and commit**
+- [ ] **Step 9: Retire the `domain` waiting entries, gate and commit**
+
+This task adds the first `lib/features/*/domain/` file, so the guard now reports
+`guard.config.stale_targets_pending` for six rules. Delete these six entries, each
+with its `targets_pending: domain` line, from
+`code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`:
+
+```
+memox.architecture.domain_no_infrastructure_import
+memox.architecture.no_drift_type_in_domain
+memox.architecture.no_transaction_outside_data_layer
+memox.architecture.single_study_mode_dispatch
+memox.data_model.scheduler_no_ambient_now
+memox.naming.domain_file_role_suffix
+```
+
+Also delete the group's comment line above them, the one that starts with `# --`
+and names `domain`.
 
 ```bash
 flutter analyze
 flutter test
-git add lib/features/srs test/features/srs
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
+git add lib/features/srs test/features/srs code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
 git commit -m "feat(srs): add SRS domain types, due-date rule and eight_box scheduler" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
+
+Expected: every command exits 0; the guard shows no `stale_targets_pending`.
 
 ---
 
 ### Task 4: `sm2` scheduler and scheduler lookup
 
 **Files:**
-- Create: `lib/features/srs/domain/sm2.dart`, `lib/features/srs/domain/schedulers.dart`
-- Test: `test/features/srs/sm2_test.dart`, `test/features/srs/schedulers_test.dart`
+- Create: `lib/features/srs/domain/models/sm2_scheduler.dart`,
+  `lib/features/srs/domain/models/schedulers_model.dart`
+- Test: `test/features/srs/domain/sm2_scheduler_test.dart`,
+  `test/features/srs/domain/schedulers_model_test.dart`
 
 **Interfaces:**
-- Consumes: `Scheduler`, `CardScheduleState`, `ReviewLogEntry`, `SchedulerType` (Task 3).
+- Consumes: `SrsScheduler`, `CardScheduleState`, `ReviewLogEntry`, `SchedulerType`,
+  `Sm2Action`, `dueAtLocalMidnight` (Task 3).
 - Produces:
-  - `const Sm2Scheduler sm2Scheduler`.
-  - `Scheduler schedulerFor(SchedulerType type)`.
+  - `const Sm2Scheduler sm2Scheduler` (`sm2_scheduler.dart`).
+  - `SrsScheduler schedulerFor(SchedulerType type)` (`schedulers_model.dart`). It
+    lives in its own file so that neither the interface nor the enum has to
+    import the implementations.
 
 - [ ] **Step 1: Write the failing `sm2` tests**
 
-`test/features/srs/sm2_test.dart`:
+`test/features/srs/domain/sm2_scheduler_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
+import 'package:memox/features/srs/domain/models/review_kind_model.dart';
+import 'package:memox/features/srs/domain/models/sm2_scheduler.dart';
 
 CardScheduleState _newCard() => CardScheduleState.sm2(
       generation: 1,
@@ -1101,10 +1201,13 @@ void main() {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/srs/sm2_test.dart`
+Run: `flutter test test/features/srs/domain/sm2_scheduler_test.dart`
 Expected: FAIL — `sm2Scheduler` does not exist.
 
-- [ ] **Step 3: Implement `sm2.dart`**
+- [ ] **Step 3: Implement `sm2_scheduler.dart` and `schedulers_model.dart`**
+
+`lib/features/srs/domain/models/sm2_scheduler.dart`: `final class Sm2Scheduler
+implements SrsScheduler` and `const Sm2Scheduler sm2Scheduler`.
 
 Classic SM-2: `easeFactor' = max(1.3, ease + (0.1 − (5−q)×(0.08+(5−q)×0.02)))`
 with `q` mapped from the four actions (`again`→2, `hard`→3, `good`→4,
@@ -1117,34 +1220,36 @@ with `q` mapped from the four actions (`again`→2, `hard`→3, `good`→4,
 after `learnedAt`: `kind = relearning`, `dueAt`/`intervalDays` unchanged,
 `lapseCount + 1` (BR-SRS-018).
 
-`lib/features/srs/domain/schedulers.dart`:
+`lib/features/srs/domain/models/schedulers_model.dart`:
 
 ```dart
-import 'eight_box.dart';
-import 'scheduler.dart';
-import 'sm2.dart';
+import 'package:memox/features/srs/domain/models/eight_box_scheduler.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/srs/domain/models/sm2_scheduler.dart';
+import 'package:memox/features/srs/domain/models/srs_scheduler.dart';
 
 /// The lookup table behind "scheduler is chosen per root deck" (spec §5).
-Scheduler schedulerFor(SchedulerType type) => switch (type) {
-      SchedulerType.eightBox => eightBoxScheduler,
-      SchedulerType.sm2 => sm2Scheduler,
-    };
+SrsScheduler schedulerFor(SchedulerType type) => switch (type) {
+  SchedulerType.eightBox => eightBoxScheduler,
+  SchedulerType.sm2 => sm2Scheduler,
+};
 ```
-
-Update `lib/features/srs/srs.dart` to export `sm2.dart` and `schedulers.dart`.
 
 - [ ] **Step 4: Run to verify it passes**
 
-Run: `flutter test test/features/srs/sm2_test.dart`
+Run: `flutter test test/features/srs/domain/sm2_scheduler_test.dart`
 Expected: PASS.
 
 - [ ] **Step 5: Write and pass the lookup test**
 
-`test/features/srs/schedulers_test.dart`:
+`test/features/srs/domain/schedulers_model_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/models/eight_box_scheduler.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/srs/domain/models/schedulers_model.dart';
+import 'package:memox/features/srs/domain/models/sm2_scheduler.dart';
 
 void main() {
   test('schedulerFor returns the matching implementation', () {
@@ -1154,19 +1259,23 @@ void main() {
 }
 ```
 
-Run: `flutter test test/features/srs/schedulers_test.dart`
+Run: `flutter test test/features/srs/domain/schedulers_model_test.dart`
 Expected: PASS.
 
 - [ ] **Step 6: Import-boundary check**
 
-Run: `flutter test test/architecture/boundaries_test.dart`
-Expected: PASS — `srs/domain` still imports nothing forbidden.
+Run: `flutter test test/architecture`
+Expected: PASS — `srs/domain` still imports nothing forbidden, and every file
+sits in an ADR-011 bucket.
 
 - [ ] **Step 7: Gate and commit**
 
 ```bash
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/srs test/features/srs
 git commit -m "feat(srs): add sm2 scheduler and scheduler lookup" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
@@ -1843,160 +1952,187 @@ Expected: PASS.
 
 - [ ] **Step 10: Import-boundary check**
 
-Run: `flutter test test/architecture/boundaries_test.dart`
-Expected: PASS.
+Run: `flutter test test/architecture`
+Expected: PASS — `core/database/` imports no feature, `app/` or `shared/`, and
+`core/` holds only concern folders.
 
-- [ ] **Step 11: Gate and commit**
+- [ ] **Step 11: Retire the `providers` waiting entries, gate and commit**
+
+`lib/core/database/di/database_provider.dart` is the first `*_provider.dart`
+file, so the guard now reports `guard.config.stale_targets_pending` for three
+rules. Delete these three entries, each with its `targets_pending: providers`
+line, and the group's comment line (it starts with `# --` and names
+`providers`), from
+`code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`:
+
+```
+memox.state_management.controller_no_build_context
+memox.state_management.notifier_no_public_mutable_field
+memox.state_management.state_write_after_await_requires_mounted
+```
 
 ```bash
 flutter analyze
 flutter test
-git add lib/core/database test/support test/database drift_schemas
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
+git add lib/core/database test/support test/database drift_schemas code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
 git commit -m "feat(db): add v1 schema, AppDatabase and data invariants" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
+
+Expected: every command exits 0; the guard shows no `stale_targets_pending`.
 
 ---
 
 ### Task 6: Deck domain — entity, pure rules and repository contract
 
 **Files:**
-- Create: `lib/features/deck/domain/deck.dart`, `deck_rules.dart`,
-  `deck_repository.dart`, `lib/features/deck/deck.dart`
-- Test: `test/features/deck/deck_rules_test.dart`
+- Create: `lib/features/deck/domain/entities/deck_entity.dart`,
+  `lib/features/deck/domain/models/deck_content_type_model.dart`,
+  `lib/features/deck/domain/failures/deck_failure.dart`,
+  `lib/features/deck/domain/repositories/deck_repository.dart`
+- Test: `test/features/deck/domain/deck_entity_test.dart`
 
 **Interfaces:**
-- Consumes: `Outcome`, `Rejected`, `Rejection` (Task 2); `SchedulerType` (Task 3, via the `srs` barrel).
+- Consumes: `Outcome`, `Ok`, `Rejected` (Task 2, `lib/core/error/outcome.dart`);
+  `SchedulerType` (Task 3, `lib/features/srs/domain/models/scheduler_type_model.dart`
+  — `deck → srs` is an edge of the ADR-011 import map).
 - Produces:
-  - `final class Deck` mirroring `deck` (schema.md): `id`, `name`, `parentId`,
+  - `enum DeckContentType { unset, card, deck }` (`deck_content_type_model.dart`).
+  - `enum DeckRejection { blankName, depthExceeded, notADeckContainer, notACardContainer, subtreeSchedulerMismatch, movingIntoOwnSubtree, rootCannotMove, notFound }`
+    (`deck_failure.dart`) — deck's own reasons (ADR-011 D6).
+  - `final class DeckEntity` mirroring `deck` (schema.md): `id`, `name`, `parentId`,
     `rootId`, `depth`, `contentType`, `schedulerType`, `generation`,
-    `firstAnsweredAt`, `siblingPosition`, timestamps.
-  - `enum DeckContentType { unset, card, deck }`
-  - Pure functions taking the current tree shape (never the database) and
-    returning `Outcome<void>`: `Outcome<void> checkCreateSubDeck({required int parentDepth})`,
-    `Outcome<void> checkCreateCard({required DeckContentType parentContentType})`,
-    `Outcome<void> checkMove({required String movingId, required String targetParentId, required List<String> targetAncestorIds, required int targetDepth, required int subtreeHeight, required SchedulerType? movingRootScheduler, required int? movingRootGeneration, required SchedulerType? targetRootScheduler, required int? targetRootGeneration})`,
-    `Outcome<void> checkName(String name)`.
-  - `abstract interface class DeckRepository` with `Future<Outcome<Deck>> createRootDeck({required String name, required SchedulerType schedulerType, DateTime? now})`,
-    `Future<Outcome<Deck>> createSubDeck({required String parentId, required String name, DateTime? now})`,
-    `Future<Outcome<void>> moveDeck({required String deckId, required String newParentId, DateTime? now})`,
-    `Future<Outcome<void>> deleteDeck({required String deckId})`,
-    `Future<Deck?> findById(String id)`.
+    `firstAnsweredAt`, `siblingPosition`, timestamps. Named `DeckEntity`, not
+    `Deck`: Task 5's Drift row class is `Deck` (`AS Deck`), and the data layer
+    imports both.
+  - The deck tree rules, as static members of `DeckEntity` (ADR-011 D7). They take
+    the current tree shape (never the database) and return
+    `Outcome<void, DeckRejection>`: `DeckEntity.checkName(String name)`,
+    `DeckEntity.checkCreateSubDeck({required int parentDepth})`,
+    `DeckEntity.checkCreateCard({required DeckContentType parentContentType})`,
+    `DeckEntity.checkMove({required String movingId, required String targetParentId, required List<String> targetAncestorIds, required int targetDepth, required int subtreeHeight, required SchedulerType? movingRootScheduler, required int? movingRootGeneration, required SchedulerType? targetRootScheduler, required int? targetRootGeneration})`.
+  - `abstract interface class DeckRepository` with
+    `Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({required String name, required SchedulerType schedulerType, DateTime? now})`,
+    `Future<Outcome<DeckEntity, DeckRejection>> createSubDeck({required String parentId, required String name, DateTime? now})`,
+    `Future<Outcome<void, DeckRejection>> moveDeck({required String deckId, required String newParentId, DateTime? now})`,
+    `Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId})`,
+    `Future<DeckEntity?> findById(String id)`.
 
 - [ ] **Step 1: Write the failing pure-rule tests**
 
-`test/features/deck/deck_rules_test.dart`:
+`test/features/deck/domain/deck_entity_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/deck/deck.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+
+typedef _Check = Outcome<void, DeckRejection>;
+typedef _Refused = Rejected<void, DeckRejection>;
+typedef _Allowed = Ok<void, DeckRejection>;
+
+DeckRejection _reasonOf(_Check result) => (result as _Refused).reason;
 
 void main() {
   group('checkName', () {
     test('blank or whitespace-only name is rejected', () {
-      expect(checkName('   '), isA<Rejected<void>>());
-      expect((checkName('   ') as Rejected<void>).reason, Rejection.blankName);
+      expect(DeckEntity.checkName('   '), isA<_Refused>());
+      expect(_reasonOf(DeckEntity.checkName('   ')), DeckRejection.blankName);
     });
     test('a real name is accepted', () {
-      expect(checkName('Korean 101'), isA<Ok<void>>());
+      expect(DeckEntity.checkName('Korean 101'), isA<_Allowed>());
     });
   });
 
   group('checkCreateSubDeck', () {
     test('depth 10 is the deepest a sub-deck may be created at', () {
-      expect(checkCreateSubDeck(parentDepth: 10), isA<Rejected<void>>());
-      expect((checkCreateSubDeck(parentDepth: 10) as Rejected<void>).reason, Rejection.depthExceeded);
+      final result = DeckEntity.checkCreateSubDeck(parentDepth: 10);
+      expect(_reasonOf(result), DeckRejection.depthExceeded);
     });
     test('depth 9 may still get a child at depth 10', () {
-      expect(checkCreateSubDeck(parentDepth: 9), isA<Ok<void>>());
+      expect(DeckEntity.checkCreateSubDeck(parentDepth: 9), isA<_Allowed>());
     });
   });
 
   group('checkCreateCard', () {
     test('a parent already holding sub-decks refuses a card', () {
-      final r = checkCreateCard(parentContentType: DeckContentType.deck);
-      expect(r, isA<Rejected<void>>());
-      expect((r as Rejected<void>).reason, Rejection.notACardContainer);
+      final result = DeckEntity.checkCreateCard(
+        parentContentType: DeckContentType.deck,
+      );
+      expect(_reasonOf(result), DeckRejection.notACardContainer);
     });
     test('unset or card-typed parent accepts a card', () {
-      expect(checkCreateCard(parentContentType: DeckContentType.unset), isA<Ok<void>>());
-      expect(checkCreateCard(parentContentType: DeckContentType.card), isA<Ok<void>>());
+      expect(
+        DeckEntity.checkCreateCard(parentContentType: DeckContentType.unset),
+        isA<_Allowed>(),
+      );
+      expect(
+        DeckEntity.checkCreateCard(parentContentType: DeckContentType.card),
+        isA<_Allowed>(),
+      );
     });
   });
 
   group('checkMove', () {
-    test('a root deck cannot move', () {
-      final r = checkMove(
-        movingId: 'root1', targetParentId: 'other', targetAncestorIds: const [],
-        targetDepth: 1, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 1,
-      );
-      // A root deck is identified by the caller passing its own id among its ancestors check —
-      // the repository (Task 7) is what knows "this id has no parent"; this pure check receives
-      // an explicit `isRoot` style precondition via targetAncestorIds containing movingId meaning
-      // "moving onto/into itself", covered below. A literal root-move guard is asserted at the
-      // repository level (Task 7) where parent_id is known; this test documents the contract only.
-      expect(r, isA<Outcome<void>>());
-    });
+    _Check move({
+      String movingId = 'a',
+      String targetParentId = 'b',
+      List<String> targetAncestorIds = const ['b'],
+      int targetDepth = 2,
+      int subtreeHeight = 1,
+      SchedulerType targetRootScheduler = SchedulerType.eightBox,
+      int targetRootGeneration = 1,
+    }) => DeckEntity.checkMove(
+      movingId: movingId,
+      targetParentId: targetParentId,
+      targetAncestorIds: targetAncestorIds,
+      targetDepth: targetDepth,
+      subtreeHeight: subtreeHeight,
+      movingRootScheduler: SchedulerType.eightBox,
+      movingRootGeneration: 1,
+      targetRootScheduler: targetRootScheduler,
+      targetRootGeneration: targetRootGeneration,
+    );
+
+    // A root deck cannot move (`DeckRejection.rootCannotMove`): only the
+    // repository knows a deck has no parent, so Task 7 asserts it there.
 
     test('moving a deck into its own descendant is rejected', () {
-      final r = checkMove(
-        movingId: 'a', targetParentId: 'b', targetAncestorIds: const ['b', 'a'],
-        targetDepth: 3, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 1,
-      );
-      expect(r, isA<Rejected<void>>());
-      expect((r as Rejected<void>).reason, Rejection.movingIntoOwnSubtree);
+      final result = move(targetAncestorIds: const ['b', 'a'], targetDepth: 3);
+      expect(_reasonOf(result), DeckRejection.movingIntoOwnSubtree);
     });
 
     test('moving onto itself is rejected', () {
-      final r = checkMove(
-        movingId: 'a', targetParentId: 'a', targetAncestorIds: const ['a'],
-        targetDepth: 2, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 1,
-      );
-      expect((r as Rejected<void>).reason, Rejection.movingIntoOwnSubtree);
+      final result = move(targetParentId: 'a', targetAncestorIds: const ['a']);
+      expect(_reasonOf(result), DeckRejection.movingIntoOwnSubtree);
     });
 
     test('moving a subtree past depth 10 is rejected', () {
-      final r = checkMove(
-        movingId: 'a', targetParentId: 'b', targetAncestorIds: const ['b'],
-        targetDepth: 9, subtreeHeight: 2,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 1,
-      );
-      expect((r as Rejected<void>).reason, Rejection.depthExceeded);
+      final result = move(targetDepth: 9, subtreeHeight: 2);
+      expect(_reasonOf(result), DeckRejection.depthExceeded);
     });
 
-    test('moving under a root with a different scheduler or generation is blocked', () {
-      final schedulerMismatch = checkMove(
-        movingId: 'a', targetParentId: 'b', targetAncestorIds: const ['b'],
-        targetDepth: 2, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.sm2, targetRootGeneration: 1,
-      );
-      expect((schedulerMismatch as Rejected<void>).reason, Rejection.subtreeSchedulerMismatch);
-
-      final generationMismatch = checkMove(
-        movingId: 'a', targetParentId: 'b', targetAncestorIds: const ['b'],
-        targetDepth: 2, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 2,
-      );
-      expect((generationMismatch as Rejected<void>).reason, Rejection.subtreeSchedulerMismatch);
-    });
+    test(
+      'moving under a root with another scheduler or generation is blocked',
+      () {
+        expect(
+          _reasonOf(move(targetRootScheduler: SchedulerType.sm2)),
+          DeckRejection.subtreeSchedulerMismatch,
+        );
+        expect(
+          _reasonOf(move(targetRootGeneration: 2)),
+          DeckRejection.subtreeSchedulerMismatch,
+        );
+      },
+    );
 
     test('a same-root, in-depth move is accepted', () {
-      final r = checkMove(
-        movingId: 'a', targetParentId: 'b', targetAncestorIds: const ['b'],
-        targetDepth: 2, subtreeHeight: 1,
-        movingRootScheduler: SchedulerType.eightBox, movingRootGeneration: 1,
-        targetRootScheduler: SchedulerType.eightBox, targetRootGeneration: 1,
-      );
-      expect(r, isA<Ok<void>>());
+      expect(move(), isA<_Allowed>());
     });
   });
 }
@@ -2004,20 +2140,47 @@ void main() {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/deck/deck_rules_test.dart`
-Expected: FAIL — `lib/features/deck/deck.dart` does not exist.
+Run: `flutter test test/features/deck/domain/deck_entity_test.dart`
+Expected: FAIL — `lib/features/deck/domain/entities/deck_entity.dart` does not exist.
 
-- [ ] **Step 3: Implement `deck.dart`, `deck_rules.dart`, `deck_repository.dart`**
+- [ ] **Step 3: Implement the model, the reasons, the entity and the contract**
 
-`lib/features/deck/domain/deck.dart`:
+`lib/features/deck/domain/models/deck_content_type_model.dart`:
 
 ```dart
-import 'package:memox/features/srs/srs.dart';
-
+/// What a deck holds; `unset` until its first child (BR-DECK-006..008).
 enum DeckContentType { unset, card, deck }
+```
 
-final class Deck {
-  const Deck({
+`lib/features/deck/domain/failures/deck_failure.dart`:
+
+```dart
+/// Why the deck feature refuses a write (ADR-011 D6). Every value is a rule
+/// from the spec or schema.md, checked before the database is touched.
+enum DeckRejection {
+  blankName,
+  depthExceeded,
+  notADeckContainer,
+  notACardContainer,
+  subtreeSchedulerMismatch,
+  movingIntoOwnSubtree,
+  rootCannotMove,
+  notFound,
+}
+```
+
+`lib/features/deck/domain/entities/deck_entity.dart`:
+
+```dart
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+
+const _maxDepth = 10;
+
+final class DeckEntity {
+  const DeckEntity({
     required this.id,
     required this.name,
     required this.parentId,
@@ -2046,118 +2209,113 @@ final class Deck {
   final DateTime updatedAt;
 
   bool get isRoot => parentId == null;
+
+  static Outcome<void, DeckRejection> checkName(String name) =>
+      name.trim().isEmpty
+      ? const Rejected(DeckRejection.blankName)
+      : const Ok(null);
+
+  static Outcome<void, DeckRejection> checkCreateSubDeck({
+    required int parentDepth,
+  }) => parentDepth >= _maxDepth
+      ? const Rejected(DeckRejection.depthExceeded)
+      : const Ok(null);
+
+  static Outcome<void, DeckRejection> checkCreateCard({
+    required DeckContentType parentContentType,
+  }) => parentContentType == DeckContentType.deck
+      ? const Rejected(DeckRejection.notACardContainer)
+      : const Ok(null);
+
+  /// Whether moving `movingId` under `targetParentId` is allowed. The caller
+  /// (the repository, inside its transaction) supplies:
+  /// - [targetAncestorIds]: the target parent and every ancestor above it, so
+  ///   this stays a pure comparison instead of a recursive query.
+  /// - [targetDepth]: depth the target parent is at today.
+  /// - [subtreeHeight]: how many levels deep the moving subtree goes below
+  ///   `movingId` itself (a leaf has height 1).
+  static Outcome<void, DeckRejection> checkMove({
+    required String movingId,
+    required String targetParentId,
+    required List<String> targetAncestorIds,
+    required int targetDepth,
+    required int subtreeHeight,
+    required SchedulerType? movingRootScheduler,
+    required int? movingRootGeneration,
+    required SchedulerType? targetRootScheduler,
+    required int? targetRootGeneration,
+  }) {
+    if (targetParentId == movingId || targetAncestorIds.contains(movingId)) {
+      return const Rejected(DeckRejection.movingIntoOwnSubtree);
+    }
+    if (targetDepth + subtreeHeight > _maxDepth) {
+      return const Rejected(DeckRejection.depthExceeded);
+    }
+    if (movingRootScheduler != targetRootScheduler ||
+        movingRootGeneration != targetRootGeneration) {
+      return const Rejected(DeckRejection.subtreeSchedulerMismatch);
+    }
+    return const Ok(null);
+  }
 }
 ```
 
-`lib/features/deck/domain/deck_rules.dart`:
+`lib/features/deck/domain/repositories/deck_repository.dart`:
 
 ```dart
-import 'package:memox/core/outcome.dart';
-import 'package:memox/features/srs/srs.dart';
-
-const _maxDepth = 10;
-
-Outcome<void> checkName(String name) =>
-    name.trim().isEmpty ? const Rejected(Rejection.blankName) : const Ok(null);
-
-Outcome<void> checkCreateSubDeck({required int parentDepth}) =>
-    parentDepth >= _maxDepth ? const Rejected(Rejection.depthExceeded) : const Ok(null);
-
-Outcome<void> checkCreateCard({required DeckContentType parentContentType}) =>
-    parentContentType == DeckContentType.deck
-        ? const Rejected(Rejection.notACardContainer)
-        : const Ok(null);
-
-/// Whether moving `movingId` under `targetParentId` is allowed. The caller
-/// (the repository, inside its transaction) supplies:
-/// - [targetAncestorIds]: the target parent and every ancestor above it, so
-///   this stays a pure comparison instead of a recursive query.
-/// - [targetDepth]: depth the target parent is at today.
-/// - [subtreeHeight]: how many levels deep the moving subtree goes below
-///   `movingId` itself (a leaf has height 1).
-Outcome<void> checkMove({
-  required String movingId,
-  required String targetParentId,
-  required List<String> targetAncestorIds,
-  required int targetDepth,
-  required int subtreeHeight,
-  required SchedulerType? movingRootScheduler,
-  required int? movingRootGeneration,
-  required SchedulerType? targetRootScheduler,
-  required int? targetRootGeneration,
-}) {
-  if (targetParentId == movingId || targetAncestorIds.contains(movingId)) {
-    return const Rejected(Rejection.movingIntoOwnSubtree);
-  }
-  if (targetDepth + subtreeHeight > _maxDepth) {
-    return const Rejected(Rejection.depthExceeded);
-  }
-  if (movingRootScheduler != targetRootScheduler || movingRootGeneration != targetRootGeneration) {
-    return const Rejected(Rejection.subtreeSchedulerMismatch);
-  }
-  return const Ok(null);
-}
-```
-
-`lib/features/deck/domain/deck_repository.dart`:
-
-```dart
-import 'package:memox/core/outcome.dart';
-import 'package:memox/features/srs/srs.dart';
-
-import 'deck.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 /// The one implementation is `DeckRepositoryImpl` (data layer, Task 7). The
 /// contract exists so `domain/` stays framework-free and tests substitute a
 /// fake — see ADR-010's "concrete architectural reason" note.
 abstract interface class DeckRepository {
-  Future<Outcome<Deck>> createRootDeck({
+  Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({
     required String name,
     required SchedulerType schedulerType,
     DateTime? now,
   });
 
-  Future<Outcome<Deck>> createSubDeck({
+  Future<Outcome<DeckEntity, DeckRejection>> createSubDeck({
     required String parentId,
     required String name,
     DateTime? now,
   });
 
-  Future<Outcome<void>> moveDeck({
+  Future<Outcome<void, DeckRejection>> moveDeck({
     required String deckId,
     required String newParentId,
     DateTime? now,
   });
 
-  Future<Outcome<void>> deleteDeck({required String deckId});
+  Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId});
 
-  Future<Deck?> findById(String id);
+  Future<DeckEntity?> findById(String id);
 }
-```
-
-`lib/features/deck/deck.dart`:
-
-```dart
-export 'domain/deck.dart';
-export 'domain/deck_repository.dart';
-export 'domain/deck_rules.dart';
 ```
 
 - [ ] **Step 4: Run to verify it passes**
 
-Run: `flutter test test/features/deck/deck_rules_test.dart`
+Run: `flutter test test/features/deck/domain/deck_entity_test.dart`
 Expected: PASS.
 
 - [ ] **Step 5: Import-boundary check**
 
-Run: `flutter test test/architecture/boundaries_test.dart`
-Expected: PASS — `deck/domain` imports only `srs`'s barrel and core.
+Run: `flutter test test/architecture`
+Expected: PASS — `deck/domain` imports only `core/error/` and `srs`'s public
+`domain/models/`, along the `deck → srs` edge.
 
 - [ ] **Step 6: Gate and commit**
 
 ```bash
+dart format lib test
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/deck test/features/deck
 git commit -m "feat(deck): add deck entity, pure tree rules and repository contract" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
@@ -2169,15 +2327,18 @@ git commit -m "feat(deck): add deck entity, pure tree rules and repository contr
 **Files:**
 - Create: `lib/features/deck/data/datasources/deck_dao.dart`,
   `lib/features/deck/data/repositories/deck_repository_impl.dart`,
-  `lib/features/deck/di/deck_providers.dart`
-- Test: `test/features/deck/deck_repository_impl_test.dart`
+  `lib/features/deck/di/deck_repository_provider.dart`
+- Test: `test/features/deck/data/deck_repository_impl_test.dart`
 
 **Interfaces:**
-- Consumes: `AppDatabase` (Task 5); `Deck`, `DeckRepository`, rule functions
-  (Task 6); `Outcome`, `Rejection`, `mapDatabaseError` (Task 2).
+- Consumes: `AppDatabase` and its Drift row class `Deck` (Task 5); `DeckEntity`
+  and its rules `DeckEntity.checkName` / `checkCreateSubDeck` / `checkMove`,
+  `DeckRepository`, `DeckRejection`, `DeckContentType` (Task 6); `Outcome`,
+  `mapDatabaseError` (Task 2).
 - Produces: `class DeckRepositoryImpl implements DeckRepository` with
   constructor `DeckRepositoryImpl(AppDatabase db, {DateTime Function()? now})`;
-  `Provider<DeckRepository> deckRepositoryProvider` (depends on `databaseProvider`).
+  `Provider<DeckRepository> deckRepositoryProvider` (depends on `databaseProvider`)
+  in `lib/features/deck/di/deck_repository_provider.dart`.
 
 Every method runs inside `db.transaction(() async { ... })`. Per
 `flutter-architecture`'s "a rule that needs the data as it stands at the
@@ -2187,18 +2348,20 @@ transaction that writes, never hoisted above it.
 
 - [ ] **Step 1: Write the failing repository tests**
 
-`test/features/deck/deck_repository_impl_test.dart` — cover, with a fresh
+`test/features/deck/data/deck_repository_impl_test.dart` — cover, with a fresh
 `openTestDatabase()` per test:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/outcome.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/deck.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 void main() {
   late AppDatabase db;
@@ -2211,7 +2374,7 @@ void main() {
 
   test('createRootDeck stores content_type deck, generation 1, own root_id', () async {
     final result = await repo.createRootDeck(name: 'Korean', schedulerType: SchedulerType.eightBox);
-    final deck = (result as Ok<Deck>).value;
+    final deck = (result as Ok<DeckEntity, DeckRejection>).value;
     expect(deck.contentType, DeckContentType.deck);
     expect(deck.generation, 1);
     expect(deck.rootId, deck.id);
@@ -2220,31 +2383,31 @@ void main() {
 
   test('createRootDeck rejects a blank name and writes nothing', () async {
     final result = await repo.createRootDeck(name: '   ', schedulerType: SchedulerType.eightBox);
-    expect((result as Rejected<Deck>).reason, Rejection.blankName);
+    expect((result as Rejected<DeckEntity, DeckRejection>).reason, DeckRejection.blankName);
     expect(await db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle(), isNotNull);
   });
 
   test('createSubDeck on a fresh root sets content_type unset', () async {
-    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final sub = ((await repo.createSubDeck(parentId: root.id, name: 's')) as Ok<Deck>).value;
+    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final sub = ((await repo.createSubDeck(parentId: root.id, name: 's')) as Ok<DeckEntity, DeckRejection>).value;
     expect(sub.contentType, DeckContentType.unset);
     expect(sub.rootId, root.id);
     expect(sub.depth, 2);
   });
 
   test('creating a deck at depth 10 is rejected before any write', () async {
-    var parentId = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value.id;
+    var parentId = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value.id;
     for (var d = 2; d <= 10; d++) {
-      parentId = ((await repo.createSubDeck(parentId: parentId, name: 'd$d')) as Ok<Deck>).value.id;
+      parentId = ((await repo.createSubDeck(parentId: parentId, name: 'd$d')) as Ok<DeckEntity, DeckRejection>).value.id;
     }
     final r = await repo.createSubDeck(parentId: parentId, name: 'too deep');
-    expect((r as Rejected<Deck>).reason, Rejection.depthExceeded);
+    expect((r as Rejected<DeckEntity, DeckRejection>).reason, DeckRejection.depthExceeded);
   });
 
   test('emptying a sub-deck resets content_type to unset in the same transaction', () async {
-    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final sub = ((await repo.createSubDeck(parentId: root.id, name: 's')) as Ok<Deck>).value;
-    final leaf = ((await repo.createSubDeck(parentId: sub.id, name: 'l')) as Ok<Deck>).value;
+    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final sub = ((await repo.createSubDeck(parentId: root.id, name: 's')) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await repo.createSubDeck(parentId: sub.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
 
     await repo.deleteDeck(deckId: leaf.id);
 
@@ -2253,23 +2416,23 @@ void main() {
   });
 
   test('moving a deck onto its own descendant is rejected and changes nothing', () async {
-    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final a = ((await repo.createSubDeck(parentId: root.id, name: 'a')) as Ok<Deck>).value;
-    final b = ((await repo.createSubDeck(parentId: a.id, name: 'b')) as Ok<Deck>).value;
+    final root = ((await repo.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final a = ((await repo.createSubDeck(parentId: root.id, name: 'a')) as Ok<DeckEntity, DeckRejection>).value;
+    final b = ((await repo.createSubDeck(parentId: a.id, name: 'b')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await repo.moveDeck(deckId: a.id, newParentId: b.id);
-    expect((result as Rejected<void>).reason, Rejection.movingIntoOwnSubtree);
+    expect((result as Rejected<void, DeckRejection>).reason, DeckRejection.movingIntoOwnSubtree);
     expect((await repo.findById(a.id))!.parentId, root.id);
   });
 
   test('moving a subtree updates root_id and depth for every descendant', () async {
-    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final branch = ((await repo.createSubDeck(parentId: rootA.id, name: 'branch')) as Ok<Deck>).value;
-    final leaf = ((await repo.createSubDeck(parentId: branch.id, name: 'leaf')) as Ok<Deck>).value;
+    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final branch = ((await repo.createSubDeck(parentId: rootA.id, name: 'branch')) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await repo.createSubDeck(parentId: branch.id, name: 'leaf')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await repo.moveDeck(deckId: branch.id, newParentId: rootB.id);
-    expect(result, isA<Ok<void>>());
+    expect(result, isA<Ok<void, DeckRejection>>());
 
     final movedBranch = await repo.findById(branch.id);
     final movedLeaf = await repo.findById(leaf.id);
@@ -2280,59 +2443,60 @@ void main() {
   });
 
   test('moving a subtree under a root with a different scheduler is blocked', () async {
-    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.sm2)) as Ok<Deck>).value;
-    final branch = ((await repo.createSubDeck(parentId: rootA.id, name: 'branch')) as Ok<Deck>).value;
+    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.sm2)) as Ok<DeckEntity, DeckRejection>).value;
+    final branch = ((await repo.createSubDeck(parentId: rootA.id, name: 'branch')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await repo.moveDeck(deckId: branch.id, newParentId: rootB.id);
-    expect((result as Rejected<void>).reason, Rejection.subtreeSchedulerMismatch);
+    expect((result as Rejected<void, DeckRejection>).reason, DeckRejection.subtreeSchedulerMismatch);
   });
 
   test('a root deck cannot move', () async {
-    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
+    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await repo.moveDeck(deckId: rootA.id, newParentId: rootB.id);
-    expect((result as Rejected<void>).reason, Rejection.rootCannotMove);
+    expect((result as Rejected<void, DeckRejection>).reason, DeckRejection.rootCannotMove);
   });
 }
 ```
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/deck/deck_repository_impl_test.dart`
+Run: `flutter test test/features/deck/data/deck_repository_impl_test.dart`
 Expected: FAIL — `DeckRepositoryImpl` does not exist.
 
 - [ ] **Step 3: Implement `deck_dao.dart` and `deck_repository_impl.dart`**
 
 `lib/features/deck/data/datasources/deck_dao.dart` wraps raw row access for
-`deck` on `AppDatabase` — `Future<Deck?> findRow(String id)`, `subtreeIds`
+`deck` on `AppDatabase` — `Future<Deck?> findRow(String id)` (the Drift row
+class from Task 5; a DAO never returns a domain entity), `subtreeIds`
 (recursive `UNION`, per schema.md's "Duyệt cây" note: cycle-safe, never
 depth-capped), `subtreeHeight` (probe query with a caller-supplied cap
 constant), `ancestorIds`, and the raw `insert`/`update` calls
 `DeckRepositoryImpl` composes inside its own transaction.
 
 `lib/features/deck/data/repositories/deck_repository_impl.dart` implements
-each `DeckRepository` method: run the matching `deck_rules.dart` check(s)
-against data read from the DAO inside `db.transaction`, then write via the
-DAO, mapping any thrown DB error through `mapDatabaseError` into
-`Rejected`/rethrow as appropriate. `moveDeck` additionally: rejects when
-`deckId`'s row has `parentId == null` (`Rejection.rootCannotMove`) before
-calling `checkMove`; on success, updates `root_id`/`depth` for the moving
+each `DeckRepository` method: run the matching `DeckEntity` rule(s) against
+data read from the DAO inside `db.transaction`, then write via the DAO, mapping
+each `Deck` row to a `DeckEntity` on the way out and any thrown DB error through
+`mapDatabaseError` into `Rejected`/rethrow as appropriate. `moveDeck`
+additionally: rejects when `deckId`'s row has `parentId == null`
+(`DeckRejection.rootCannotMove`) before calling `DeckEntity.checkMove`; on success, updates `root_id`/`depth` for the moving
 node and every descendant via the DAO's recursive CTE update
 (BR-DECK-018); recomputes `content_type` on the old and new parent in the
 same transaction. `deleteDeck` cascades via the DB's `ON DELETE CASCADE`
 and then recomputes the parent's `content_type`.
 
-`lib/features/deck/di/deck_providers.dart`:
+`lib/features/deck/di/deck_repository_provider.dart`:
 
 ```dart
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/deck.dart';
+import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'deck_providers.g.dart';
+part 'deck_repository_provider.g.dart';
 
 @riverpod
 DeckRepository deckRepository(Ref ref) => DeckRepositoryImpl(ref.watch(databaseProvider));
@@ -2342,23 +2506,32 @@ DeckRepository deckRepository(Ref ref) => DeckRepositoryImpl(ref.watch(databaseP
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-flutter test test/features/deck/deck_repository_impl_test.dart
+flutter test test/features/deck/data/deck_repository_impl_test.dart
 ```
 
 Expected: PASS.
 
 - [ ] **Step 5: Import-boundary check**
 
-Run: `flutter test test/architecture/boundaries_test.dart`
+Run: `flutter test test/architecture`
 Expected: PASS — `deck/data` and `deck/di` may import Drift/Riverpod;
 `deck/domain` still may not.
 
-- [ ] **Step 6: Gate and commit**
+- [ ] **Step 6: Retire the `data` waiting entry, gate and commit**
+
+This task adds the first `lib/features/*/data/` file, so the guard now reports
+`guard.config.stale_targets_pending` for `memox.naming.data_file_role_suffix`.
+Delete that entry, its `targets_pending: data` line and the group's comment line
+(it starts with `# --` and names `data`) from
+`code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`.
 
 ```bash
 flutter analyze
 flutter test
-git add lib/features/deck test/features/deck
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
+git add lib/features/deck test/features/deck code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
 git commit -m "feat(deck): add transactional deck repository and provider" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
 
@@ -2369,33 +2542,44 @@ git commit -m "feat(deck): add transactional deck repository and provider" -m "C
 **Files:**
 - Create: `lib/features/srs/data/datasources/srs_dao.dart`,
   `lib/features/srs/data/repositories/schedule_repository_impl.dart`,
-  `lib/features/srs/domain/schedule_repository.dart`, `lib/features/srs/di/srs_providers.dart`
-- Test: `test/features/srs/schedule_repository_impl_test.dart`
+  `lib/features/srs/domain/repositories/schedule_repository.dart`,
+  `lib/features/srs/domain/failures/srs_failure.dart`,
+  `lib/features/srs/di/schedule_repository_provider.dart`
+- Test: `test/features/srs/data/schedule_repository_impl_test.dart`
 
 **Interfaces:**
-- Consumes: `AppDatabase` (Task 5); `Scheduler`, `schedulerFor`,
-  `CardScheduleState`, `ReviewLogEntry`, `SchedulerType` (Tasks 3–4);
-  `DeckRepository` (Task 6, to read the root's scheduler/generation).
-- Produces: `abstract interface class ScheduleRepository` with
-  `Future<Outcome<void>> recordReview({required String cardId, required String sessionId, required Object action, DateTime? now})`,
-  `Future<Outcome<void>> resetLearning({required String rootDeckId})`,
-  `Future<Outcome<void>> changeScheduler({required String rootDeckId, required SchedulerType newType})`;
+- Consumes: `AppDatabase` (Task 5); `SrsScheduler`, `schedulerFor`,
+  `CardScheduleState`, `ReviewLogEntry`, `SchedulerType`, `EightBoxAction`,
+  `Sm2Action` (Tasks 3–4); `Outcome`, `mapDatabaseError` (Task 2). `srs` imports
+  no feature (ADR-011 import map: `srs → ∅`): it reads the card's `deck_id` and the
+  root deck's `scheduler_type`/`generation`/`first_answered_at` through its own DAO
+  over the central tables in `lib/core/database/`.
+- Produces: `enum SrsRejection { unsupportedAction, schedulerLocked, staleGeneration, notFound }`
+  (`srs_failure.dart`); `abstract interface class ScheduleRepository` with
+  `Future<Outcome<void, SrsRejection>> recordReview({required String cardId, required String sessionId, required Object action, DateTime? now})`,
+  `Future<Outcome<void, SrsRejection>> resetLearning({required String rootDeckId})`,
+  `Future<Outcome<void, SrsRejection>> changeScheduler({required String rootDeckId, required SchedulerType newType})`;
   `class ScheduleRepositoryImpl implements ScheduleRepository`;
-  `Provider<ScheduleRepository> scheduleRepositoryProvider`.
+  `Provider<ScheduleRepository> scheduleRepositoryProvider` in
+  `lib/features/srs/di/schedule_repository_provider.dart`.
 
 - [ ] **Step 1: Write the failing repository tests**
 
-`test/features/srs/schedule_repository_impl_test.dart` — set up a root deck
-and a card via `DeckRepositoryImpl`/raw inserts, then cover:
+`test/features/srs/data/schedule_repository_impl_test.dart` — set up a root deck
+and a card by raw inserts (`srs` imports no feature, so its tests do not either),
+then cover:
 
 ```dart
+import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/outcome.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 void main() {
   late AppDatabase db;
@@ -2415,13 +2599,13 @@ void main() {
   test('recordReview rejects an action the deck scheduler does not support', () async {
     final (_, cardId, sessionId) = await _fixture(); // eight_box deck
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: Sm2Action.good);
-    expect((result as Rejected<void>).reason, Rejection.unsupportedAction);
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.unsupportedAction);
   });
 
   test('recordReview writes card_schedule and an append-only review_log row', () async {
     final (_, cardId, sessionId) = await _fixture();
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
-    expect(result, isA<Ok<void>>());
+    expect(result, isA<Ok<void, SrsRejection>>());
 
     final schedule = await db.customSelect(
       'SELECT current_box, learned_at FROM card_schedule WHERE card_id = ?',
@@ -2441,7 +2625,7 @@ void main() {
     await db.customStatement('DELETE FROM card WHERE id = ?', [cardId]);
 
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
-    expect((result as Rejected<void>).reason, Rejection.notFound);
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.notFound);
     final logCount = await db.customSelect('SELECT COUNT(*) AS n FROM review_log').getSingle();
     expect(logCount.read<int>('n'), 0);
   });
@@ -2451,7 +2635,7 @@ void main() {
     await repo.resetLearning(rootDeckId: rootId); // bumps generation to 2
 
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
-    expect((result as Rejected<void>).reason, Rejection.staleGeneration);
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.staleGeneration);
   });
 
   test('resetLearning bumps generation and recreates card_schedule', () async {
@@ -2472,7 +2656,7 @@ void main() {
   test('changeScheduler before the first review is allowed and keeps generation', () async {
     final (rootId, _, __) = await _fixture();
     final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
-    expect(result, isA<Ok<void>>());
+    expect(result, isA<Ok<void, SrsRejection>>());
   });
 
   test('changeScheduler after the first review is rejected (locked)', () async {
@@ -2480,50 +2664,108 @@ void main() {
     await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
 
     final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
-    expect((result as Rejected<void>).reason, Rejection.unsupportedAction);
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.schedulerLocked);
   });
 }
 ```
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/srs/schedule_repository_impl_test.dart`
+Run: `flutter test test/features/srs/data/schedule_repository_impl_test.dart`
 Expected: FAIL — `ScheduleRepositoryImpl` does not exist.
 
-- [ ] **Step 3: Implement `srs_dao.dart`, `schedule_repository.dart`, `schedule_repository_impl.dart`**
+- [ ] **Step 3: Implement `srs_failure.dart`, `schedule_repository.dart`, `srs_dao.dart`, `schedule_repository_impl.dart`**
 
-`schedule_repository.dart` (domain contract, mirrors `deck_repository.dart`'s
-shape from Task 6). `srs_dao.dart` wraps raw row access for `card_schedule`
+`lib/features/srs/domain/failures/srs_failure.dart`:
+
+```dart
+/// Why the srs feature refuses a write (ADR-011 D6).
+enum SrsRejection {
+  /// The action is not in the deck scheduler's `supportedActions`.
+  unsupportedAction,
+
+  /// The scheduler is locked once the first card finished learning
+  /// (BR-SRS-003); only Reset learning progress unlocks it (BR-SRS-024).
+  schedulerLocked,
+
+  /// The session's generation is older than the root's (BR-SRS-026).
+  staleGeneration,
+
+  /// The card or its schedule row no longer exists.
+  notFound,
+}
+```
+
+`lib/features/srs/domain/repositories/schedule_repository.dart`:
+
+```dart
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+
+/// The one implementation is `ScheduleRepositoryImpl` (data layer). The
+/// contract exists for ADR-010's reason: domain stays framework-free and tests
+/// substitute a fake.
+abstract interface class ScheduleRepository {
+  Future<Outcome<void, SrsRejection>> recordReview({
+    required String cardId,
+    required String sessionId,
+    required Object action,
+    DateTime? now,
+  });
+
+  Future<Outcome<void, SrsRejection>> resetLearning({
+    required String rootDeckId,
+  });
+
+  Future<Outcome<void, SrsRejection>> changeScheduler({
+    required String rootDeckId,
+    required SchedulerType newType,
+  });
+}
+```
+
+`srs_dao.dart` wraps raw row access for `card_schedule`
 and `review_log`, plus a read of the owning root deck's
 `scheduler_type`/`generation`/`first_answered_at` (via `card.deck_id` →
 `deck.root_id`, never `COALESCE`). `schedule_repository_impl.dart`:
 `recordReview` runs inside one transaction — load the card's schedule row
-and its root deck's current scheduler/generation (404 → `Rejection.notFound`
+and its root deck's current scheduler/generation (404 → `SrsRejection.notFound`
 if the card is gone); reject if `action` is outside
-`schedulerFor(type).supportedActions` (`Rejection.unsupportedAction`);
+`schedulerFor(type).supportedActions` (`SrsRejection.unsupportedAction`);
 reject if the session's stored `generation` (read from `study_session`)
-differs from the root's current `generation` (`Rejection.staleGeneration`);
-otherwise call `Scheduler.next`, write the new `card_schedule` row and one
+differs from the root's current `generation` (`SrsRejection.staleGeneration`);
+otherwise call `SrsScheduler.next`, write the new `card_schedule` row and one
 `review_log` row, and — if this is the first `learnedAt` ever set for the
 root — set `deck.first_answered_at` in the same transaction (BR-SRS-003).
 `resetLearning` bumps `deck.generation` by 1, clears `first_answered_at`,
 and re-creates every `card_schedule` row under the root at box 1 /
 `learnedAt = null` / `dueAt = null` at the new generation — `review_log` is
 never touched (append-only, kept across resets). `changeScheduler` rejects
-with `Rejection.unsupportedAction` when `first_answered_at IS NOT NULL`
+with `SrsRejection.schedulerLocked` when `first_answered_at IS NOT NULL`
 (locked); otherwise updates `deck.scheduler_type` in place, generation
 unchanged.
 
-`lib/features/srs/di/srs_providers.dart` mirrors Task 7's provider shape,
-depending on `databaseProvider`.
+`lib/features/srs/di/schedule_repository_provider.dart`:
 
-Update `lib/features/srs/srs.dart` to export `schedule_repository.dart`.
+```dart
+import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'schedule_repository_provider.g.dart';
+
+@riverpod
+ScheduleRepository scheduleRepository(Ref ref) =>
+    ScheduleRepositoryImpl(ref.watch(databaseProvider));
+```
 
 - [ ] **Step 4: Generate and run to verify it passes**
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-flutter test test/features/srs/schedule_repository_impl_test.dart
+flutter test test/features/srs/data/schedule_repository_impl_test.dart
 ```
 
 Expected: PASS.
@@ -2531,7 +2773,7 @@ Expected: PASS.
 - [ ] **Step 5: Import-boundary and full-suite check**
 
 ```bash
-flutter test test/architecture/boundaries_test.dart
+flutter test test/architecture
 flutter test test/features/srs
 ```
 
@@ -2542,6 +2784,9 @@ Expected: PASS.
 ```bash
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/srs test/features/srs
 git commit -m "feat(srs): add transactional schedule repository (review, reset, scheduler change)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
@@ -2551,37 +2796,49 @@ git commit -m "feat(srs): add transactional schedule repository (review, reset, 
 ### Task 9: `CardRepositoryImpl`
 
 **Files:**
-- Create: `lib/features/card/domain/card.dart`, `card_repository.dart`,
+- Create: `lib/features/card/domain/entities/card_entity.dart`,
+  `lib/features/card/domain/failures/card_failure.dart`,
+  `lib/features/card/domain/repositories/card_repository.dart`,
   `lib/features/card/data/datasources/card_dao.dart`,
   `lib/features/card/data/repositories/card_repository_impl.dart`,
-  `lib/features/card/di/card_providers.dart`, `lib/features/card/card.dart`
-- Test: `test/features/card/card_repository_impl_test.dart`
+  `lib/features/card/di/card_repository_provider.dart`
+- Test: `test/features/card/data/card_repository_impl_test.dart`
 
 **Interfaces:**
-- Consumes: `AppDatabase` (Task 5); `DeckRepository` (Task 6, to check the
-  parent deck's `content_type` and maintain it after create/delete);
-  `Outcome`, `Rejection` (Task 2).
-- Produces: `final class CardEntity` mirroring `card` (schema.md, minus
-  `delete_batch_id` which this plan does not expose); `abstract interface
-  class CardRepository` with `Future<Outcome<CardEntity>> createCard({required String deckId, required String front, required String back, String? example, String? hint, String? pronunciation, DateTime? now})`,
-  `Future<Outcome<void>> deleteCard({required String cardId})`;
-  `class CardRepositoryImpl implements CardRepository`; `Provider<CardRepository> cardRepositoryProvider`.
+- Consumes: `AppDatabase` (Task 5); `DeckRepository`, `DeckEntity.checkCreateCard`,
+  `DeckContentType` (Task 6, to check the parent deck's `content_type` and maintain
+  it after create/delete — `card → deck` is an edge of the ADR-011 import map);
+  `deckRepositoryProvider` (Task 7); `Outcome`, `mapDatabaseError` (Task 2).
+- Produces: `enum CardRejection { blankContent, notACardContainer, notFound }`
+  (`card_failure.dart`); `final class CardEntity` mirroring `card` (schema.md, minus
+  `delete_batch_id` which this plan does not expose), with the rule
+  `static Outcome<void, CardRejection> checkContent({required String front, required String back})`
+  (ADR-011 D7); `abstract interface class CardRepository` with
+  `Future<Outcome<CardEntity, CardRejection>> createCard({required String deckId, required String front, required String back, String? example, String? hint, String? pronunciation, DateTime? now})`,
+  `Future<Outcome<void, CardRejection>> deleteCard({required String cardId})`;
+  `class CardRepositoryImpl implements CardRepository`;
+  `Provider<CardRepository> cardRepositoryProvider` in
+  `lib/features/card/di/card_repository_provider.dart`.
 
 - [ ] **Step 1: Write the failing repository tests**
 
-`test/features/card/card_repository_impl_test.dart`:
+`test/features/card/data/card_repository_impl_test.dart`:
 
 ```dart
+import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/outcome.dart';
-import 'package:memox/features/card/card.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/domain/entities/card_entity.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/deck.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 void main() {
   late AppDatabase db;
@@ -2595,53 +2852,53 @@ void main() {
   tearDown(() => db.close());
 
   test('creating a card sets content_type card on the (unset) parent deck', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await cards.createCard(deckId: leaf.id, front: 'front', back: 'back');
-    expect(result, isA<Ok<CardEntity>>());
+    expect(result, isA<Ok<CardEntity, CardRejection>>());
     expect((await decks.findById(leaf.id))!.contentType, DeckContentType.card);
   });
 
   test('a card cannot be created directly on a root deck', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
     final result = await cards.createCard(deckId: root.id, front: 'f', back: 'b');
-    expect((result as Rejected<CardEntity>).reason, Rejection.notACardContainer);
+    expect((result as Rejected<CardEntity, CardRejection>).reason, CardRejection.notACardContainer);
   });
 
   test('a card cannot be created in a deck that already holds sub-decks', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final branch = ((await decks.createSubDeck(parentId: root.id, name: 'b')) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final branch = ((await decks.createSubDeck(parentId: root.id, name: 'b')) as Ok<DeckEntity, DeckRejection>).value;
     await decks.createSubDeck(parentId: branch.id, name: 'child');
 
     final result = await cards.createCard(deckId: branch.id, front: 'f', back: 'b');
-    expect((result as Rejected<CardEntity>).reason, Rejection.notACardContainer);
+    expect((result as Rejected<CardEntity, CardRejection>).reason, CardRejection.notACardContainer);
   });
 
   test('blank front or back is rejected', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
 
-    expect((await cards.createCard(deckId: leaf.id, front: '   ', back: 'b') as Rejected<CardEntity>).reason,
-        Rejection.blankContent);
-    expect((await cards.createCard(deckId: leaf.id, front: 'f', back: '') as Rejected<CardEntity>).reason,
-        Rejection.blankContent);
+    expect((await cards.createCard(deckId: leaf.id, front: '   ', back: 'b') as Rejected<CardEntity, CardRejection>).reason,
+        CardRejection.blankContent);
+    expect((await cards.createCard(deckId: leaf.id, front: 'f', back: '') as Rejected<CardEntity, CardRejection>).reason,
+        CardRejection.blankContent);
   });
 
   test('optional example/hint/pronunciation trim to NULL, not empty string', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await cards.createCard(deckId: leaf.id, front: 'f', back: 'b', hint: '   ');
-    expect((result as Ok<CardEntity>).value.hint, isNull);
+    expect((result as Ok<CardEntity, CardRejection>).value.hint, isNull);
   });
 
   test('front_folded/back_folded are Unicode-lowercase, not SQL lower()', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<Deck>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
 
     final result = await cards.createCard(deckId: leaf.id, front: 'CÔNG NGHỆ', back: 'technology');
-    final card = (result as Ok<CardEntity>).value;
+    final card = (result as Ok<CardEntity, CardRejection>).value;
     final row = await db.customSelect(
       'SELECT front_folded FROM card WHERE id = ?',
       variables: [Variable(card.id)],
@@ -2650,9 +2907,9 @@ void main() {
   });
 
   test('deleting the last card in a deck resets its content_type to unset', () async {
-    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<Deck>).value;
-    final card = ((await cards.createCard(deckId: leaf.id, front: 'f', back: 'b')) as Ok<CardEntity>).value;
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
+    final card = ((await cards.createCard(deckId: leaf.id, front: 'f', back: 'b')) as Ok<CardEntity, CardRejection>).value;
 
     await cards.deleteCard(cardId: card.id);
 
@@ -2663,18 +2920,93 @@ void main() {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `flutter test test/features/card/card_repository_impl_test.dart`
+Run: `flutter test test/features/card/data/card_repository_impl_test.dart`
 Expected: FAIL — `CardRepositoryImpl` does not exist.
 
-- [ ] **Step 3: Implement `card.dart`, `card_repository.dart`, `card_dao.dart`, `card_repository_impl.dart`**
+- [ ] **Step 3: Implement the reasons, the entity, the contract, `card_dao.dart` and `card_repository_impl.dart`**
 
-`lib/features/card/domain/card.dart`: `final class CardEntity` with `id`,
-`deckId`, `front`, `back`, `isFlagged`, `example`, `hint`, `pronunciation`,
-`createdAt`, `updatedAt` (no `frontFolded`/`backFolded` — those are a
-data-layer/search concern, not part of the domain entity).
+`lib/features/card/domain/failures/card_failure.dart`:
 
-`lib/features/card/domain/card_repository.dart`: the `CardRepository`
-contract from "Interfaces" above.
+```dart
+/// Why the card feature refuses a write (ADR-011 D6).
+enum CardRejection {
+  /// BR-CARD-001: front or back is blank.
+  blankContent,
+
+  /// BR-DECK-004, BR-DECK-009: the target deck is a root or holds sub-decks.
+  notACardContainer,
+
+  /// The target deck, or the card, no longer exists.
+  notFound,
+}
+```
+
+`lib/features/card/domain/entities/card_entity.dart` (no `frontFolded`/`backFolded`
+— those are a data-layer/search concern, not part of the domain entity):
+
+```dart
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
+
+final class CardEntity {
+  const CardEntity({
+    required this.id,
+    required this.deckId,
+    required this.front,
+    required this.back,
+    required this.isFlagged,
+    required this.example,
+    required this.hint,
+    required this.pronunciation,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final String id;
+  final String deckId;
+  final String front;
+  final String back;
+  final bool isFlagged;
+  final String? example;
+  final String? hint;
+  final String? pronunciation;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// BR-CARD-001: both faces carry text.
+  static Outcome<void, CardRejection> checkContent({
+    required String front,
+    required String back,
+  }) => front.trim().isEmpty || back.trim().isEmpty
+      ? const Rejected(CardRejection.blankContent)
+      : const Ok(null);
+}
+```
+
+`lib/features/card/domain/repositories/card_repository.dart`:
+
+```dart
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/entities/card_entity.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
+
+/// The one implementation is `CardRepositoryImpl` (data layer). The contract
+/// exists for ADR-010's reason: domain stays framework-free and tests
+/// substitute a fake.
+abstract interface class CardRepository {
+  Future<Outcome<CardEntity, CardRejection>> createCard({
+    required String deckId,
+    required String front,
+    required String back,
+    String? example,
+    String? hint,
+    String? pronunciation,
+    DateTime? now,
+  });
+
+  Future<Outcome<void, CardRejection>> deleteCard({required String cardId});
+}
+```
 
 `lib/features/card/data/datasources/card_dao.dart`: raw insert/delete on
 `card`, computing `front_folded`/`back_folded` via
@@ -2684,44 +3016,65 @@ blank.
 
 `lib/features/card/data/repositories/card_repository_impl.dart`:
 `CardRepositoryImpl(AppDatabase db, DeckRepository decks, {DateTime Function()? now})`.
-`createCard` runs inside `db.transaction`: reject blank front/back
-(`Rejection.blankContent`); read the parent deck's `content_type` via the
+`createCard` runs inside `db.transaction`: apply `CardEntity.checkContent`
+(`CardRejection.blankContent`); read the parent deck's `content_type` via the
 DAO (not `decks.findById`, to stay inside the same transaction) and apply
-`checkCreateCard` from `deck_rules.dart`; insert the card; if the parent was
-`unset`, update it to `card` in the same transaction (BR-DECK-008).
+`DeckEntity.checkCreateCard`, answering `CardRejection.notACardContainer` when it
+refuses (`CardRejection.notFound` when the deck is gone); insert the card; if the
+parent was `unset`, update it to `card` in the same transaction (BR-DECK-008).
 `deleteCard` deletes the row, then re-checks the parent: if no card remains,
 set `content_type` back to `unset` in the same transaction (BR-DECK-015,
 invariant 29).
 
-`lib/features/card/di/card_providers.dart` mirrors Tasks 7–8's provider
-shape, depending on `databaseProvider` and `deckRepositoryProvider`.
-
-`lib/features/card/card.dart`:
+`lib/features/card/di/card_repository_provider.dart` (`card/di` may import
+`deck/di`: ADR-011 lets `di/` reach another feature's `di/`):
 
 ```dart
-export 'domain/card.dart';
-export 'domain/card_repository.dart';
+import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/deck/di/deck_repository_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'card_repository_provider.g.dart';
+
+@riverpod
+CardRepository cardRepository(Ref ref) => CardRepositoryImpl(
+  ref.watch(databaseProvider),
+  ref.watch(deckRepositoryProvider),
+);
 ```
+
+> ⚠️ OPEN QUESTION: BR-CARD-004 says creating a card also creates its
+> `card_schedule` row (the root's scheduler and `generation`, `due_at = NULL`,
+> per-scheduler start values). This task does not write that row, and Task 10's
+> smoke test calls `recordReview` right after `createCard`, which then answers
+> `SrsRejection.notFound`. Decide with the project owner, before this task runs,
+> where the start values come from; the ADR-011 import map allows `card → srs`.
 
 - [ ] **Step 4: Generate and run to verify it passes**
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-flutter test test/features/card/card_repository_impl_test.dart
+flutter test test/features/card/data/card_repository_impl_test.dart
 ```
 
 Expected: PASS.
 
 - [ ] **Step 5: Import-boundary check**
 
-Run: `flutter test test/architecture/boundaries_test.dart`
-Expected: PASS — `card` may import `deck` and `srs`'s barrels.
+Run: `flutter test test/architecture`
+Expected: PASS — `card` imports only `deck`'s and `srs`'s public buckets, and
+`deck`'s `di/` from its own `di/`.
 
 - [ ] **Step 6: Gate and commit**
 
 ```bash
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/card test/features/card
 git commit -m "feat(card): add transactional card repository with content-type maintenance" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
@@ -2731,8 +3084,10 @@ git commit -m "feat(card): add transactional card repository with content-type m
 ### Task 10: Wiring (app shell, retry policy) and end-to-end smoke test
 
 **Files:**
-- Create: `lib/app/app.dart`, `lib/app/router.dart`
-- Modify: `lib/main.dart`
+- Create: `lib/app/app.dart`, `lib/app/router/app_router.dart`
+- Modify: `lib/main.dart`,
+  `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`
+  (retire the two `app` entries, Step 7)
 - Test: `test/app/app_test.dart`, `test/integration/foundation_smoke_test.dart`
 
 **Interfaces:**
@@ -2764,9 +3119,9 @@ void main() {
 Run: `flutter test test/app/app_test.dart`
 Expected: FAIL — `lib/app/app.dart` does not exist.
 
-- [ ] **Step 3: Implement `router.dart`, `app.dart`, `main.dart`**
+- [ ] **Step 3: Implement `app_router.dart`, `app.dart`, `main.dart`**
 
-`lib/app/router.dart`: a `GoRouter` with one placeholder route (`/`) showing
+`lib/app/router/app_router.dart`: a `GoRouter` with one placeholder route (`/`) showing
 a `Scaffold` with the text `"MemoX foundation"` — no feature UI, per the
 spec's "no product UI".
 
@@ -2813,13 +3168,17 @@ learning, and check the database is left in a state that passes every
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/outcome.dart';
-import 'package:memox/features/card/card.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/domain/entities/card_entity.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/deck.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/srs/srs.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../support/test_database.dart';
 
@@ -2832,9 +3191,9 @@ void main() {
     final cards = CardRepositoryImpl(db, decks, now: () => now);
     final schedules = ScheduleRepositoryImpl(db, now: () => now);
 
-    final root = ((await decks.createRootDeck(name: 'Korean', schedulerType: SchedulerType.eightBox)) as Ok<Deck>).value;
-    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'Nouns')) as Ok<Deck>).value;
-    final card = ((await cards.createCard(deckId: leaf.id, front: '사과', back: 'apple')) as Ok<CardEntity>).value;
+    final root = ((await decks.createRootDeck(name: 'Korean', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'Nouns')) as Ok<DeckEntity, DeckRejection>).value;
+    final card = ((await cards.createCard(deckId: leaf.id, front: '사과', back: 'apple')) as Ok<CardEntity, CardRejection>).value;
 
     const sessionId = 'smoke-session';
     await db.customStatement(
@@ -2845,10 +3204,10 @@ void main() {
     );
 
     expect(await schedules.recordReview(cardId: card.id, sessionId: sessionId, action: EightBoxAction.remembered),
-        isA<Ok<void>>());
+        isA<Ok<void, SrsRejection>>());
     expect(await schedules.recordReview(cardId: card.id, sessionId: sessionId, action: EightBoxAction.remembered),
-        isA<Ok<void>>());
-    expect(await schedules.resetLearning(rootDeckId: root.id), isA<Ok<void>>());
+        isA<Ok<void, SrsRejection>>());
+    expect(await schedules.resetLearning(rootDeckId: root.id), isA<Ok<void, SrsRejection>>());
 
     // Every invariant query from Task 5 still returns zero rows.
     final invariantQueries = <String>[
@@ -2872,21 +3231,38 @@ void main() {
 Run: `flutter test test/integration/foundation_smoke_test.dart`
 Expected: PASS.
 
-- [ ] **Step 7: Full gate**
+- [ ] **Step 7: Retire the `app` waiting entries and run the full gate**
+
+`lib/app/app.dart` is the first `lib/app/` file, so the guard now reports
+`guard.config.stale_targets_pending` for two rules. Delete these two entries,
+each with its `targets_pending: app` line, and the group's comment line (it
+starts with `# --` and names `app`), from
+`code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`:
+
+```
+memox.design_token.no_raw_text_style
+memox_v7.design_system.no_bare_font_weight
+```
+
+What remains in the list are the 28 rules that wait for the UI sub-project
+(`presentation`, `l10n`, `visual-audit`).
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 flutter analyze
 flutter test
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
+python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 ```
 
-Expected: 0 analyzer issues, all tests pass, including
-`test/architecture/boundaries_test.dart`.
+Expected: 0 analyzer issues, all tests pass (including `test/architecture/`),
+every command exits 0, and the guard shows no `stale_targets_pending`.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add lib/app lib/main.dart test/app test/integration
+git add lib/app lib/main.dart test/app test/integration code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
 git commit -m "feat(app): wire app shell, disable provider retry, add foundation smoke test" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
 ```
 
@@ -2897,8 +3273,8 @@ git commit -m "feat(app): wire app shell, disable provider retry, add foundation
 **1. Spec coverage.** §1 intent (offline Android, no speculative layers):
 Task 1. §3 decisions (Riverpod 3 codegen, Drift single source of truth,
 go_router, no freezed, client UUIDs, feature-first): Tasks 1–2, 5, 7–9. §4
-structure: superseded by ADR-010 everywhere (Clarifications, File
-Structure, Tasks 1, 6–9). §5 data model (three lifetimes, generation
+structure: superseded by ADR-010 and ADR-011 everywhere (Clarifications 3, 5,
+10, File Structure, Tasks 2–10). §5 data model (three lifetimes, generation
 column, SRS core): Tasks 3–5, 8. §6 deck tree rules (depth 10, root-only
 cards, content_type maintenance, root_id, subtree move, scheduler lock):
 Tasks 6–7. §7 data flow (transactional writes): Tasks 7–9. §8 errors
@@ -2920,23 +3296,26 @@ names the exact file, gives one worked example, and states the rule that
 generates the rest (the invariant number/BR code, or "matches Task 7's
 shape") rather than leaving a gap.
 
-**3. Type consistency.** `Outcome<T>`/`Ok<T>`/`Rejected<T>`/`Rejection`
-(Task 2) are used with the same generic shape in Tasks 6–10. `SchedulerType`,
-`Scheduler`, `CardScheduleState`, `ReviewLogEntry`, `EightBoxAction`,
-`Sm2Action` (Tasks 3–4) are consumed unchanged by Task 8.
-`DeckRepository`/`Deck`/`DeckContentType` (Task 6) match the constructor and
-field names `DeckRepositoryImpl` (Task 7) and `CardRepositoryImpl` (Task 9)
-use. `CardRepository`/`CardEntity` (Task 9) match Task 10's smoke test.
+**3. Type consistency.** `Outcome<T, R>`/`Ok<T, R>`/`Rejected<T, R>`
+(Task 2) are used in Tasks 6–10 with the refusing feature's reason enum as `R`:
+`DeckRejection` (Task 6) in Tasks 6, 7, 9 and 10, `SrsRejection` (Task 8) in
+Tasks 8 and 10, `CardRejection` (Task 9) in Tasks 9 and 10. `SchedulerType`,
+`SrsScheduler`, `schedulerFor`, `CardScheduleState`, `ReviewLogEntry`,
+`EightBoxAction`, `Sm2Action` (Tasks 3–4) are consumed unchanged by Task 8.
+`DeckRepository`/`DeckEntity`/`DeckContentType` and the rules
+`DeckEntity.check*` (Task 6) match what `DeckRepositoryImpl` (Task 7) and
+`CardRepositoryImpl` (Task 9) use; the Drift row class stays `Deck` (Task 5).
+Every import is a file path from the File Structure list; there is no barrel. `CardRepository`/`CardEntity` (Task 9) match Task 10's smoke test.
 Provider names (`deckRepositoryProvider`, `scheduleRepositoryProvider`,
 `cardRepositoryProvider`, `databaseProvider`) are declared once (Tasks 5,
 7–9) and referenced, never redeclared, afterwards.
 
 **4. Review Focus.** All five items (blank name/content, unsupported
 action, move-into-own-subtree, delete-mid-session, due-date month/year
-boundary) each have an explicit test: blank name (Task 6, `checkName`
-tests; Task 9, blank front/back tests), unsupported action (Task 8,
+boundary) each have an explicit test: blank name (Task 6,
+`DeckEntity.checkName` tests; Task 9, blank front/back tests), unsupported action (Task 8,
 `recordReview rejects an action the deck scheduler does not support`),
-move-into-own-subtree (Task 6's `checkMove` tests; Task 7's repository-level
+move-into-own-subtree (Task 6's `DeckEntity.checkMove` tests; Task 7's repository-level
 test of the same name), delete-mid-session (Task 8's
 `reviewing a card deleted mid-session` test), due-date boundary (Task 3's
 month-end and 128-day year-end tests).

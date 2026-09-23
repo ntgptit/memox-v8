@@ -28,6 +28,7 @@
 | [ADR-008](../shared/decisions/ADR-008-datetime-luu-utc.md) | DATETIME lưu UTC | active | — |
 | [ADR-009](../shared/decisions/ADR-009-chot-pham-vi-v8-0.md) | Chốt phạm vi V8.0 | active | — |
 | [ADR-010](../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md) | Kiến trúc lớp V8, tên thư mục feature và phiên bản Flutter | active | — |
+| [ADR-011](../shared/decisions/ADR-011-cau-truc-thu-muc-v8.md) | Cấu trúc thư mục V8 | active | — |
 
 ## [card](../features/card/README.md)
 

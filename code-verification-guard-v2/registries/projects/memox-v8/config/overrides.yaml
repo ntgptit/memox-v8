@@ -15,6 +15,100 @@ overrides:
     - flutter.no_hardcoded_duration
   severity: {}
   rule_options:
+    # Phased gate (ADR-011, spec 2026-09-23-v8-folder-architecture-design.md
+    # section 8). Each rule below has no target files yet because the layer
+    # it checks has not been built. `targets_pending` names that layer: the
+    # guard reports the rule at info level while it waits, and as a
+    # stale_targets_pending WARNING once it has targets. When that warning
+    # appears, delete the rule's entry here in the same commit that added the
+    # layer. The list must be empty before the full dod_check.sh gate applies.
+    # -- `domain`: waits for the first lib/features/*/domain/ file (foundation plan Task 3)
+    memox.architecture.domain_no_infrastructure_import:
+      targets_pending: domain
+    memox.architecture.no_drift_type_in_domain:
+      targets_pending: domain
+    memox.architecture.no_transaction_outside_data_layer:
+      targets_pending: domain
+    memox.architecture.single_study_mode_dispatch:
+      targets_pending: domain
+    memox.data_model.scheduler_no_ambient_now:
+      targets_pending: domain
+    memox.naming.domain_file_role_suffix:
+      targets_pending: domain
+    # -- `providers`: waits for the first *_provider.dart file (foundation plan Task 5)
+    memox.state_management.controller_no_build_context:
+      targets_pending: providers
+    memox.state_management.notifier_no_public_mutable_field:
+      targets_pending: providers
+    memox.state_management.state_write_after_await_requires_mounted:
+      targets_pending: providers
+    # -- `data`: waits for the first lib/features/*/data/ file (foundation plan Task 7)
+    memox.naming.data_file_role_suffix:
+      targets_pending: data
+    # -- `app`: waits for the first lib/app/ file (foundation plan Task 10)
+    memox.design_token.no_raw_text_style:
+      targets_pending: app
+    memox_v7.design_system.no_bare_font_weight:
+      targets_pending: app
+    # -- `presentation`: waits for the first presentation/ or shared/ UI file (UI sub-project)
+    memox.architecture.presentation_no_data_import:
+      targets_pending: presentation
+    memox.architecture.widget_no_database_access:
+      targets_pending: presentation
+    memox.architecture.widget_no_repository_access:
+      targets_pending: presentation
+    memox.architecture.widgets_grouped_into_buckets:
+      targets_pending: presentation
+    memox.data_model.review_actions_from_supported_actions:
+      targets_pending: presentation
+    memox.design_token.no_raw_border_radius:
+      targets_pending: presentation
+    memox.design_token.no_raw_color:
+      targets_pending: presentation
+    memox.design_token.no_raw_duration:
+      targets_pending: presentation
+    memox.design_token.no_raw_spacing_literal:
+      targets_pending: presentation
+    memox.design_token.no_raw_stroke_width:
+      targets_pending: presentation
+    memox.error_handling.no_technical_detail_in_user_message:
+      targets_pending: presentation
+    memox.error_handling.ui_never_sees_infrastructure_exception:
+      targets_pending: presentation
+    memox.i18n.no_literal_user_string:
+      targets_pending: presentation
+    memox.naming.presentation_file_role_suffix:
+      targets_pending: presentation
+    memox.state_management.no_shared_is_loading_flag:
+      targets_pending: presentation
+    memox_v7.design_system.no_flat_style_from:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_button:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_choice_chip:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_icon_color:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_loading_indicator:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_screen_chrome:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_sheet_route:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_style_escape:
+      targets_pending: presentation
+    memox_v7.design_system.no_raw_widget:
+      targets_pending: presentation
+    memox_v7.design_system.no_text_restyle:
+      targets_pending: presentation
+    # -- `l10n`: waits for lib/l10n/app_en.arb (the first user-visible string)
+    memox.i18n.arb_entry_needs_description:
+      targets_pending: l10n
+    # -- `visual-audit`: waits for the first test/visual_audit/ companion (UI sub-project)
+    memox.visual.production_screen_audit_not_exploratory:
+      targets_pending: visual-audit
+    memox.visual.production_screen_audit_not_skipped:
+      targets_pending: visual-audit
     # Generated code is not hand-written; length limits on it are noise.
     common.max_file_lines:
       include:
