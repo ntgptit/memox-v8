@@ -19,6 +19,14 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
+import 'package:memox/shared/widgets/mx_section.dart';
+
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+
+import 'package:memox/shared/widgets/mx_note.dart';
+
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+
 import '../../support/golden_harness.dart';
 
 void main() {
@@ -167,6 +175,56 @@ void main() {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxSection, MxListSectionHeader and MxNote', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_section_header_note',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          MxListSectionHeader(
+            label: 'Decks',
+            trailing: MxChipTrigger(
+              label: 'Sort: Due',
+              icon: AppIcons.sort,
+              onPressed: () {},
+            ),
+          ),
+          MxSection(
+            title: 'Reminders',
+            note: 'Changes apply to future sessions.',
+            children: [
+              MxSettingsRow(
+                label: 'Daily reminder',
+                icon: AppIcons.reminder,
+                trailing: MxToggle(
+                  isOn: true,
+                  onChanged: (_) {},
+                  semanticLabel: 'Daily reminder',
+                ),
+              ),
+              MxSettingsRow(
+                label: 'Reminder time',
+                icon: AppIcons.reminder,
+                onTap: () {},
+              ),
+            ],
+          ),
+          const MxSection(
+            children: [
+              MxSettingsRow(label: 'Untitled group', icon: AppIcons.library),
+            ],
+          ),
+          const MxNote(
+            text:
+                'Deleted decks stay recoverable for 30 days, then they are '
+                'removed for good together with their cards.',
           ),
         ],
       ),
