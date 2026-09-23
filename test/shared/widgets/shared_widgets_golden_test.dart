@@ -13,11 +13,13 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -351,6 +353,30 @@ void main() {
             label: 'Filters',
             icon: AppIcons.filters,
             onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxTextField states and MxFieldMessage tones', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_text_field',
+      Column(
+        spacing: 16,
+        children: [
+          const MxTextField(hintText: 'Deck name'),
+          MxTextField(controller: TextEditingController(text: 'Japanese N5')),
+          const MxTextField(
+            hintText: 'Deck name',
+            errorText: 'Name is required',
+          ),
+          const MxTextField(hintText: 'Back of the card', isMultiline: true),
+          const MxTextField(hintText: 'Disabled', isEnabled: false),
+          const MxFieldMessage(
+            message: 'Ten tags at most on one card',
+            tone: MxFieldMessageTone.warning,
           ),
         ],
       ),
