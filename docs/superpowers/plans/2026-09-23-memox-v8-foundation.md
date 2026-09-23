@@ -256,6 +256,20 @@ made and recorded so review can push back on them, not gaps.
     scheduler live on the root (BR-DECK-025); without the check, the sub-deck's
     `root_id` would reach every schedule row of the tree while the root's
     generation stays as it is.
+15. **Known gap, owned by the core-learning slice: the new-card branch of the
+    schedulers** (Tasks 3, 4, 8). BR-STUDY-053 makes finishing the new-card
+    chain an event, not a review: until then `card_schedule` does not change,
+    and the event sets `learned_at`, the lowest level (`eight_box` box 1, `sm2`
+    interval 1) and `due_at` at the next local midnight, with no `scheduled`
+    log. This plan's `recordReview` instead moves a new card on its first
+    `remembered`/`good` (box 2, interval 1) and sets `learned_at` without
+    `due_at`, which breaks invariant 24 (BR-STUDY-058) until the card's next
+    review. It stays as written (project owner, 2026-09-23): nothing calls
+    `recordReview` before the study sub-project, and the deck/card backend
+    reads schedule rows without writing reviews. The study sub-project
+    replaces the branch and adds the completion event (`completeLearning`,
+    schema.md invariant 30). For the same reason Task 5's `CHECK` holds
+    invariant 28 only.
 
 ## Review Focus
 
@@ -1435,7 +1449,8 @@ CREATE TABLE card_schedule (
   CHECK ((scheduler_type = 'sm2') = (ease_factor IS NOT NULL)),
   CHECK ((ease_factor IS NULL) = (interval_days IS NULL)),
   CHECK ((ease_factor IS NULL) = (repetitions IS NULL)),
-  -- invariant 24/28: learned_at and due_at move together
+  -- invariant 28: no due date before learning is done. Invariant 24, the other
+  -- direction, is not a CHECK yet (Clarification 15).
   CHECK (learned_at IS NOT NULL OR due_at IS NULL)
 ) AS CardSchedule;
 
