@@ -1,5 +1,7 @@
 # MemoX V8 Foundation Implementation Plan
 
+> Superseded by [`2026-09-23-memox-v8-foundation.md`](2026-09-23-memox-v8-foundation.md) and [ADR-010](../../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md); kept as history.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the MemoX V8 foundation: a runnable Flutter skeleton with the core data model, pure-Dart SRS schedulers, deck-tree rules and their transactional invariants, all guarded by tests. No product UI.

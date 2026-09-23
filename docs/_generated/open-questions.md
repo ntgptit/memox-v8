@@ -149,3 +149,11 @@
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 
 - L109: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
+
+- L123: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+- L142: **OPEN QUESTION:** ADR-009 decision 4 puts "gắn/gỡ tag trên thẻ" (BR-TAG-001,
+- L163: **OPEN QUESTION:** confirm that a nullable column added without its FK,
+- L1188: are not created (Clarification 1, OPEN QUESTION). Every `CHECK` and column
+- L2840: in Clarification 1's deferral of `tags`/`card_tags` and the OPEN QUESTION
