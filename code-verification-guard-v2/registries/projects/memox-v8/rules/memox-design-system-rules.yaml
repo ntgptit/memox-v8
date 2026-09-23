@@ -1,0 +1,385 @@
+# MemoX V7 guard rules — domain: design_system
+#
+# The design system's component boundary: a feature composes shared primitives
+# (`Mx*`), it does not rebuild them from raw Material widgets. The prose half of
+# this contract has lived on the primitives themselves all along —
+# `mx_action_button.dart` opens with "that is the whole point of having this
+# widget instead of using `FilledButton` directly" — but prose on a shared
+# widget is read by the person editing the shared widget, not by the person
+# writing a new dialog in a feature. The 2026-08 theme-composition review found
+# exactly that gap: the invariant was declared and nothing enforced it.
+#
+# History note: the old `memox` ruleset had this rule
+# (`memox.design_system.no_raw_button`), and it was not carried into v7 when
+# the ruleset was rebuilt for the feature-first tree — the nine rebuilt files
+# simply did not include the design-system one. Loading the old file instead of
+# writing this one would be worse than the gap: its scopes name the layer-first
+# paths (`lib/presentation/features/**`), so it would pass green while matching
+# nothing.
+#
+# Scope note: `presentation_files` (features/*/presentation only), NOT
+# `ui_surfaces` — `lib/shared/` is where the primitives legitimately build the
+# raw widgets these rules ban. Linting it would flag the definition as the
+# crime, the same argument `memox-design-token-rules.yaml` makes for
+# `lib/core/theme/`.
+version: 1
+metadata:
+  id: memox-v8-design-system
+  name: MemoX V7 Design System Rules
+  description: >-
+    Features compose shared Mx primitives; raw Material control widgets stay in
+    lib/shared where the primitives are defined.
+  owner: memox-v8
+rules:
+  - id: memox_v7.design_system.no_raw_button
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw Material buttons in feature code. Use `MxActionButton` (variants:
+      primary / secondary / destructive / tonal; sizes: standard / compact) or
+      the other shared button primitives, so every action in the app resolves
+      through one style pipeline. A shape the shared widget cannot express is a
+      gap in the widget — extend it in lib/shared, do not route around it here.
+    scopes:
+      - presentation_files
+    # `\b` is what keeps `MxTextButton` legal without a lookbehind: `x` and `T`
+    # are both word characters, so there is no boundary inside the name.
+    patterns:
+      - '\bElevatedButton(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+      - '\bFilledButton(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+      - '\bOutlinedButton(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+      - '\bTextButton(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+    tags:
+      - memox-v8
+      - design-system
+
+  # Every pattern below is line-anchored with the comment exemption the
+  # duration rule established: prose that *names* a banned widget must not trip
+  # the rule that bans it — the first dry run here flagged a doc comment that
+  # said "used to be a raw IconButton(color:)" while explaining why it no
+  # longer is.
+  - id: memox_v7.design_system.no_raw_widget
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw Material component widgets in feature code. Use the Mx shared
+      primitive (MxCard, MxListTile, MxIconButton, MxFab, MxRadio, dialogs via
+      the shared show helpers, ...) so the component's visual grammar has one
+      owner. A widget with no Mx wrapper yet goes through the admission rule in
+      the flutter-theme-design skill first — wrapper, tests, then guard —
+      never raw-first.
+    scopes:
+      - presentation_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\b(?:Card|ListTile|IconButton|FloatingActionButton|InkResponse|ExpansionTile|Badge)\s*\('
+      - '^(?!\s*(?://|\*)).*\b(?:Checkbox|Radio|TextFormField|Slider|RangeSlider|SegmentedButton|ToggleButtons)\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\b(?:NavigationBar|NavigationDrawer|NavigationRail|BottomNavigationBar|BottomAppBar|TabBar)\s*\('
+      - '^(?!\s*(?://|\*)).*\b(?:Dialog|AlertDialog|SimpleDialog|MaterialBanner|SearchBar|SearchAnchor|DropdownMenu)\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\bshowDialog\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\b(?:SnackBar|SnackBarAction|InkWell)\s*\('
+      - '^(?!\s*(?://|\*)).*\.showSnackBar\s*\('
+      - '^(?!\s*(?://|\*)).*\b(?:Switch|SwitchListTile|CheckboxListTile|RadioListTile|RadioGroup)\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\b(?:PopupMenuButton|PopupMenuItem|DropdownButton|DropdownButtonHideUnderline)\s*[<(]'
+    tags:
+      - memox-v8
+      - design-system
+
+  # --- Design System V1 closure (A20.1 §9, Phase 0) -----------------------
+  # Two pure ratchets: both names scanned 0 in `lib/features/*/presentation/`
+  # on the day the rules landed, so neither can go red on existing code. They
+  # exist so the next screen cannot quietly build its own chrome or its own
+  # pick-one control.
+  #
+  # `Scaffold` is deliberately NOT here. It is the framework's layout host, not
+  # a design-system component: no architecture decision forbids a feature from
+  # owning one, and `MxContentShell` documents why the *shell* builds its own —
+  # that is not a prohibition on features (A20.1 §9, FRAMEWORK_PRIMITIVE_ALLOWED).
+  - id: memox_v7.design_system.no_raw_screen_chrome
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw screen chrome in feature code. `MxContentShell` owns the bar, the
+      subheader and the back affordance, so every screen's chrome resolves
+      through one owner. A bar the shell cannot express is a gap in the shell —
+      extend it in lib/shared, do not build an `AppBar` / `SliverAppBar` here.
+    scopes:
+      - presentation_files
+    # Line-anchored with the comment exemption every rule in this file uses.
+    # `\b` keeps `MxAppBar`-style names legal and `\s*\(` keeps `AppBarTheme(`
+    # (a theme, not chrome) legal.
+    patterns:
+      - '^(?!\s*(?://|\*)).*\b(?:AppBar|SliverAppBar)\s*\('
+    tags:
+      - memox-v8
+      - design-system
+
+  # `MxPillButton` owns pick-one. `Chip`, `ActionChip`, `InputChip` and
+  # `FilterChip` are deliberately not included: the tag strip's deletable
+  # `Chip` and its add-tag `ActionChip` are FEATURE_SPECIAL_CASE_ALLOWED
+  # (A20.1 §8), and a multi-select `FilterChip` has no shared owner to point at.
+  # Landed in Phase 6, after `showMxSheet` existed and every caller had moved
+  # (A20.1 P1-01 → P1-03): guarding first would have banned the only route.
+  - id: memox_v7.design_system.no_raw_sheet_route
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw bottom-sheet route in feature code. `showMxSheet` owns the
+      navigator, the safe area and the scroll control, and `MxSheetHeader`
+      announces the title; sixteen callers each deciding those was how one
+      sheet came to sit under the navigation bar and another under the status
+      bar. Open the sheet through lib/shared/widgets/mx_sheet.dart.
+    scopes:
+      - presentation_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bshow(?:Modal)?BottomSheet\s*[<(]'
+    tags:
+      - memox-v8
+      - design-system
+
+  # Landed in Phase 6, after the loading family owned every shape and the six
+  # spinner sites had moved (A20.1 P1-02 → P1-03).
+  #
+  # **The determinate mastery ring is excluded by file, with its reason.** A
+  # ring that shows `value: fraction` is progress, not loading; it is
+  # FEATURE_SPECIAL_CASE_ALLOWED in A20.1 §8 and the rule must agree with the
+  # taxonomy it enforces. The exclusion is only safe with its companion:
+  # `raw_progress_exclusions_test.dart` walks every construction in every
+  # excluded file and fails on one with no `value:` — so a loading spinner
+  # added to an excluded file does not inherit the exemption silently. A new
+  # determinate caller is added here **with its reason** in the same change.
+  - id: memox_v7.design_system.no_raw_loading_indicator
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw progress indicator in feature code. A loading state has one
+      owner for its accessible name — `MxLoadingState`, `.inColumn` or
+      `.inline` — because a bare spinner announces nothing. A *determinate*
+      ring (`value:`) is not a loading state: name its file on this rule's
+      `exclude:` with the reason, and keep `value:` non-null.
+    scopes:
+      - presentation_files
+    exclude:
+      # The card's mastery ring: `CircularProgressIndicator(value: fraction)`
+      # inside `Positioned.fill` — progress shown, not time waited.
+      - '**/card/presentation/widgets/sections/card_progress_panel_widget.dart'
+    patterns:
+      - '^(?!\s*(?://|\*)).*\b(?:CircularProgressIndicator|LinearProgressIndicator)(?:\.adaptive)?\s*\('
+    tags:
+      - memox-v8
+      - design-system
+
+  - id: memox_v7.design_system.no_raw_choice_chip
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw `ChoiceChip` in feature code. `MxPillButton` owns the pick-one
+      control — its tick slot, its focus ring, its 48dp target and its
+      exclusive-group semantics — so every pill in the app is one component.
+    scopes:
+      - presentation_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bChoiceChip(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+    tags:
+      - memox-v8
+      - design-system
+
+  - id: memox_v7.design_system.no_raw_style_escape
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No hand-built styles in feature code. `ButtonStyle`, `styleFrom`,
+      `BorderSide`, `BoxShadow`, `ShapeDecoration`, `RoundedRectangleBorder`,
+      `WidgetStateProperty` and literal icon sizes are the design system's
+      vocabulary — a feature that needs one is describing a variant the shared
+      widget should own. Extend the Mx widget or the theme in lib/shared /
+      lib/core/theme, then select it semantically here.
+    scopes:
+      - presentation_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\b(?:ButtonStyle|BorderSide|BoxShadow|ShapeDecoration|RoundedRectangleBorder)\s*\('
+      - '^(?!\s*(?://|\*)).*\.styleFrom\s*\('
+      - '^(?!\s*(?://|\*)).*\b(?:WidgetStateProperty|MaterialStateProperty)\b'
+      - '^(?!\s*(?://|\*)).*\bIcon\s*\([^)]*\bsize\s*:\s*\d'
+    tags:
+      - memox-v8
+      - design-system
+
+  # Both app faces are variable fonts with a `wght` axis, and renderers read
+  # the axis over `TextStyle.fontWeight` once it is present — so a bare
+  # `copyWith(fontWeight:)` reports the new weight to every test and paints the
+  # rung's old one on the device. Found live three separate times (the
+  # NavigationBar's selected label, both migrated buttons' inline labels, and
+  # then eleven more sites in one sweep); `AppTypography.withWeight` moves the
+  # axis with the weight and is the only legal spelling.
+  #
+  # The pattern requires the `FontWeight.` literal on purpose:
+  # `withWeight`'s own implementation writes `fontWeight: weight`, so the one
+  # file allowed to touch the field never matches.
+  - id: memox_v7.design_system.no_flat_style_from
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No `styleFrom(` in widgets — feature or shared. `styleFrom` builds flat
+      WidgetStatePropertyAll values that shadow the theme's resolvers for
+      every state at once: the destructive button that never darkened, and the
+      filled icon button whose disabled state stayed fully armed, were both
+      this call. State pairs come from app_button_themes' builders
+      (buildFilledStyle, textLinkForeground) or a ButtonStyle with explicit
+      resolveWith. The one legitimate styleFrom lives in app_theme.dart, where
+      it IS the theme being defined.
+    scopes:
+      - widget_ui_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\.styleFrom\s*\('
+    tags:
+      - memox-v8
+      - design-system
+
+  - id: memox_v7.design_system.no_bare_font_weight
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Never set `fontWeight:` directly — on a variable font it reports one
+      weight and paints another. Re-weight through
+      `AppTypography.withWeight(style, FontWeight.wXXX)`, which moves the
+      `wght` axis with it.
+    scopes:
+      - typography_and_theme_surfaces
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bfontWeight\s*:\s*FontWeight\.'
+    tags:
+      - memox-v8
+      - design-system
+      - typography
+
+  # A widget picks a rung and an AppInk; it does not mix styles. Four
+  # spellings of the same escape, and the scope is the whole UI surface
+  # (A20.1 P1-07): features *and* `lib/shared/widgets/`, where fifteen open
+  # colours lived while the rule watched only features. File mode, because
+  # `withWeight(...)` is written over three lines by `dart format` and a
+  # line-scoped pattern could not see the `.copyWith(` on the fourth; the
+  # balanced-paren walk stops at a bare paren, so an unbalanced one inside a
+  # comment shortens the check rather than leaking it.
+  #
+  # What it cannot see — a restyle through a local alias
+  # (`final text = texts.bodyMedium!; text.copyWith(color:)`) — is
+  # `text_restyle_alias_test.dart`'s, a two-pass scan a regex cannot be.
+  - id: memox_v7.design_system.no_text_restyle
+    type: regex
+    mode: file
+    severity: error
+    enabled: true
+    message: >-
+      No per-site text styling in UI code. Pick a rung and apply a closed
+      ink: `texts.bodySmall!.inked(context, AppInk.quiet, isEmphasized:,
+      isTabular:)`, or a named role on `context.textStyles`. A combination
+      neither can express is a missing role — add it to AppTextStyles/AppInk in
+      lib/core/theme, do not assemble it here.
+    scopes:
+      - ui_surfaces
+    patterns:
+      - '^(?!\s*(?://|\*)).*\btexts\.[a-zA-Z]+[!?]?\s*\.copyWith\s*\('
+      - '^(?!\s*(?://|\*)).*\btextStyles\.[a-zA-Z]+[!?]?\s*\.copyWith\s*\('
+      # `inputHintStyle` is a resolved style, consumed whole; a `.copyWith(`
+      # on it is the same restyle through the extension's fifth accessor
+      # (A20.1 P1-09).
+      - '^(?!\s*(?://|\*)).*\binputHintStyle[!?]?\s*\.copyWith\s*\('
+      - '^(?!\s*(?://|\*)).*\btextTheme\.[a-zA-Z]+[!?]?\s*\.copyWith\s*\('
+      - '\bwithWeight\s*\((?:[^()]|\([^()]*\))*\)\s*\.copyWith\s*\('
+    tags:
+      - memox-v8
+      - design-system
+      - typography
+
+  # `.resolve(` is the one legal colour spelling on a raw Icon — it proves the
+  # value came out of AppInk's closed set. Everything else is an open colour on
+  # a glyph, which MxIcon exists to own.
+  - id: memox_v7.design_system.no_raw_icon_color
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No open `Icon(color:)` in feature code. Use `MxIcon(icon, ink: AppInk.x,
+      size: MxIconSize.y)`; when the size genuinely has no MxIconSize step,
+      keep `Icon` and spell the colour as `<AppInk>.resolve(context)` so it
+      still comes from the closed set.
+    scopes:
+      - presentation_files
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bIcon\s*\([^)]*\bcolor\s*:\s*(?![A-Za-z_][\w.]*\.resolve\()'
+    tags:
+      - memox-v8
+      - design-system
+
+  # `ColorScheme` is the 45 Material 3 colour roles — 26 standard, 19 add-on —
+  # and the guard locks the names to that list by allowlist, in both
+  # directions (M100.17). The SDK's constructor accepts a few more names
+  # (three deprecated roles and a tint mechanism it resolves for itself), and
+  # any name that is not on the list is a finding, so none of them has to be
+  # spelled here to stay out. `brightness` is the one non-role argument the
+  # constructor takes.
+  #
+  # Argument side, file mode: the callee is the unnamed constructor, one of
+  # the four brightness-named constructors, or `copyWith` on one of the three
+  # identifiers the codebase gives a scheme (`scheme`, `colors`,
+  # `colorScheme`); `fromSeed` is not a role list and is left to the scheme
+  # header's own argument. The balanced-paren walk stops at a bare `(` or
+  # `)`, so an unbalanced paren in a comment inside the call shortens what is
+  # checked rather than leaking the check into the code after it. The first
+  # pattern reads an argument at the start of its own line, which is where
+  # `dart format` puts every argument of a call this long — and where a
+  # comment never starts with an identifier and a colon; the second covers a
+  # call written on one line.
+  - id: memox_v7.design_system.color_scheme_arguments_are_m3_roles
+    type: regex
+    mode: file
+    severity: error
+    enabled: true
+    message: >-
+      A `ColorScheme` is built from the 45 Material 3 colour roles only (26
+      standard + 19 add-on), plus `brightness`. Any other argument name is
+      either a deprecated role or a mechanism the SDK already resolves — do
+      not pass it; the scheme header in `app_theme.dart` lists the set
+      (M100.17).
+    scopes:
+      - dart_lib
+    patterns:
+      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?^\s+(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
+      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\([^()\n]*?\b(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
+    tags:
+      - memox-v8
+      - design-system
+
+  # Read side, line mode: on the three identifiers the codebase gives a
+  # scheme, a member must be one of the 45 roles, `brightness`, or
+  # `copyWith`. Comment lines are exempt because prose names files such as
+  # `colors.css`. `?.` is accepted so a nullable scheme is not a way around
+  # the rule. `context.colors.<role>` and `theme.colorScheme.<role>` are the
+  # shapes this catches; a scheme held under another name is a naming
+  # finding first (`highContrastScheme` renamed its parameter to `scheme` for
+  # exactly this reason).
+  - id: memox_v7.design_system.color_scheme_reads_are_m3_roles
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Read a `ColorScheme` through one of its 45 Material 3 role names (or
+      `brightness` / `copyWith`). Anything else is a deprecated role, a
+      mechanism the app disables everywhere, or a typo — name the role you
+      mean, e.g. `onSurface`, `surfaceContainerHighest` (M100.17).
+    scopes:
+      - dart_lib
+    patterns:
+      - '^(?!\s*//).*?\b(?:scheme|colors|colorScheme)\??\.(?!(?:brightness|copyWith|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\b)[A-Za-z_]\w*'
+    tags:
+      - memox-v8
+      - design-system

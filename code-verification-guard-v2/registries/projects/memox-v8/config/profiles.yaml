@@ -1,0 +1,46 @@
+version: 1
+
+profiles:
+  # Local and CI are deliberately identical. A guard that is stricter in CI than
+  # on the developer's machine teaches people to push and find out, which is the
+  # slowest possible feedback loop.
+  #
+  # Every rule now has real targets, so warnings are failures. The list of
+  # `rule_without_targets` diagnostics that justified the softer gate drained
+  # once the feature-first tree landed in M3.1 — and the three that remained
+  # turned out to be genuine scope bugs, not "not yet": provider_files did not
+  # match the project's `*_provider.dart` convention, so the Riverpod rules were
+  # guarding nothing at all.
+  #
+  # That is the reason the diagnostic must never be silenced. It was not noise
+  # waiting for code to arrive; it was the only thing reporting that three rules
+  # were dead.
+  local:
+    failure:
+      fail_on:
+        - error
+        - warning
+      warning_as_error: true
+    report:
+      format: console
+      show_code_line: true
+      show_fix_hint: true
+    overrides:
+      disabled_rules: []
+      severity: {}
+      rule_options: {}
+
+  ci:
+    failure:
+      fail_on:
+        - error
+        - warning
+      warning_as_error: true
+    report:
+      format: console
+      show_code_line: true
+      show_fix_hint: true
+    overrides:
+      disabled_rules: []
+      severity: {}
+      rule_options: {}

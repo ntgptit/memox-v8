@@ -237,7 +237,13 @@ không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
 | `owner_id` | TEXT NULL | NULL = local profile |
 | `created_at` | DATETIME NOT NULL | UTC |
 
-Index: `UNIQUE (owner_id, name_folded)`.
+Index: `UNIQUE (COALESCE(owner_id, ''), name_folded)`.
+
+**`COALESCE`, không phải `(owner_id, name_folded)`**, vì SQLite coi các `NULL` là
+khác nhau trong unique index: với profile cục bộ (`owner_id` NULL), `(NULL, 'noun')`
+ghi hai lần vẫn lọt và BR-TAG-001 không còn được database giữ. Chủ dự án chốt ngày
+2026-09-23: giữ nghĩa "NULL = local profile" như các bảng khác, chuẩn hoá NULL
+ngay trong index.
 
 **`name_folded` là một cột thật, không phải một expression index**, vì BR-TAG-001 đòi
 unique không phân biệt hoa thường và SQLite chỉ có `NOCASE` cho ASCII — một tag

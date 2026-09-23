@@ -345,20 +345,25 @@ fi
 # not go red when the thing being edited is itself, so its verdict is evidence
 # only once these have passed. Missing pytest fails rather than skips — a gate
 # that reports "skipped" is a gate nobody notices has gone.
+# The guard needs Python >= 3.12 and its own packages (pyyaml, rich, typer,
+# pytest), which the system interpreter may not have. `GUARD_PY` names that
+# interpreter (the cloud SessionStart hook exports ~/.guard-venv's); without
+# it the guard runs on $PY like every other gate.
+GUARD_PY="${GUARD_PY:-$PY}"
 GUARD_TESTS="$REPO_ROOT/code-verification-guard-v2/tests"
 if [[ $NEEDS_STATIC -eq 0 ]]; then
   :
 elif [[ ! -d "$GUARD_TESTS" ]]; then
   FAILED+=("guard self-tests missing at $GUARD_TESTS")
-elif [[ -z "$PY" ]]; then
+elif [[ -z "$GUARD_PY" ]]; then
   FAILED+=("guard self-tests cannot run without python")
-elif ! "$PY" -m pytest --version >/dev/null 2>&1; then
-  FAILED+=("guard self-tests need pytest: $PY -m pip install -r code-verification-guard-v2/requirements-dev.txt")
+elif ! "$GUARD_PY" -m pytest --version >/dev/null 2>&1; then
+  FAILED+=("guard self-tests need pytest: $GUARD_PY -m pip install -r code-verification-guard-v2/requirements-dev.txt")
 else
   # Run from the guard directory -- one probe reads `guard-manifest.yaml` by
   # relative path -- and in a subshell so the `cd` cannot leak into the other
   # planned commands, which `eval` runs in this same shell.
-  plan guard_self_tests "guard self-tests (probes)"     "(cd '$REPO_ROOT/code-verification-guard-v2' && $PY -m pytest -q)"
+  plan guard_self_tests "guard self-tests (probes)"     "(cd '$REPO_ROOT/code-verification-guard-v2' && $GUARD_PY -m pytest -q)"
 fi
 
 # The project's main guard. Owns every check flutter analyze cannot express —
@@ -369,11 +374,11 @@ if [[ $NEEDS_STATIC -eq 0 ]]; then
   :
 elif [[ ! -f "$GUARD_RUNNER" ]]; then
   FAILED+=("code verification guard missing at $GUARD_RUNNER")
-elif [[ -z "$PY" ]]; then
+elif [[ -z "$GUARD_PY" ]]; then
   FAILED+=("code verification guard cannot run without python")
 else
-  plan guard "code verification guard (memox-v7)" \
-    "$PY '$GUARD_RUNNER' check --project '$REPO_ROOT' --ruleset memox-v7"
+  plan guard "code verification guard (memox-v8)" \
+    "$GUARD_PY '$GUARD_RUNNER' check --project '$REPO_ROOT' --ruleset memox-v8"
 fi
 
 if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
