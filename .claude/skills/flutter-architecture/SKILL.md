@@ -10,83 +10,114 @@ naming).
 
 ## Folder structure
 
+The V8 layout is ADR-011 (`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`),
+which refines ADR-010 decision 2. The tree says where a file goes, not what to
+create: a folder appears with its first real file.
+
 ```
 lib/
-├── app/
-│   ├── app.dart            # MaterialApp.router, theme wiring
-│   ├── bootstrap.dart      # startup sequence, error boundaries
-│   ├── router/             # GoRouter config, route paths, guards
-│   └── config/             # EnvConfig and flavor definitions
-├── core/                   # cross-cutting infrastructure, no feature logic
-│   ├── error/              # Failure hierarchy + exception→failure mapping
-│   ├── network/            # Dio client, interceptors
-│   ├── database/           # Drift database, migrations
-│   ├── storage/            # secure storage, preferences
-│   ├── logging/            # logger abstraction
-│   ├── theme/              # tokens, ThemeData
-│   ├── localization/       # ARB setup, l10n helpers
-│   └── utils/              # genuinely generic helpers
-├── shared/                 # reusable across features
-│   ├── widgets/            # design-system components
-│   ├── models/             # shared value types
-│   └── extensions/
-├── features/
-│   └── <feature>/
-│       ├── data/           # repositories/, mappers/, datasources/, models/
-│       ├── domain/         # entities/, repositories/, models/, usecases/, failures/
-│       └── presentation/   # screens/, controllers/, states/, widgets/, providers/
-│           └── widgets/    # exactly four buckets, one level deep (AD-15):
-│                           #   sections/ items/ overlays/ support/
-└── main.dart
+├── main.dart                 # ProviderScope + runApp, nothing else
+├── app/                      # composition root: MemoxApp, retry policy
+│   └── router/               # app_router.dart; paths and shell come with the UI
+├── core/                     # infrastructure that knows no feature, one folder per concern
+│   ├── database/             # connection.dart, app_database.dart, di/, tables/, queries/
+│   ├── error/                # failure.dart, outcome.dart
+│   └── id/                   # new_id.dart
+├── l10n/                     # app_en.arb, app_vi.arb, from the first UI string
+├── shared/
+│   └── widgets/              # Mx* components, from the design-system sub-project
+└── features/<feature>/       # names from ADR-010 decision 1
+    ├── domain/               # plain Dart: entities/ models/ repositories/ failures/ usecases/
+    ├── data/                 # datasources/ mappers/ repositories/ models/
+    ├── di/                   # flat: repository providers, typed as the contract
+    └── presentation/         # screens/ controllers/ states/ providers/
+        └── widgets/          # exactly four buckets, one level deep (AD-15):
+                              #   sections/ items/ overlays/ support/
 ```
 
+| Folder | Suffix | Holds |
+|---|---|---|
+| `domain/entities/` | `_entity` | immutable domain objects; pure rules as members |
+| `domain/models/` | `_model`, `_scheduler`, `_mode` | value objects, stored-code enums, read models; `srs` schedulers, `study_mode` modes |
+| `domain/repositories/` | `_repository` | contracts, one implementation each |
+| `domain/failures/` | `_failure` | the feature's rejection-reason enum |
+| `domain/usecases/` | `_use_case` | one per UI interaction (AD-12) |
+| `data/datasources/` | `_dao`, `_data_source` | a DAO per bounded context |
+| `data/mappers/` | `_mapper` | row to entity, when the mapping is not trivial |
+| `data/repositories/` | `_repository_impl` | contract implementations; every write in one transaction |
+| `data/models/` | `_model` | DTOs; none while the app is local-only (ADR-001) |
+| `di/` | `_provider` | repository providers; each constructs its implementation |
+| `presentation/screens/`, `controllers/`, `states/` | `_screen`, `_controller`, `_state` | a screen, its controllers, its state classes |
+| `presentation/providers/` | `_provider` | use-case providers |
+| `presentation/widgets/<bucket>/` | `_widget` | placed by the four questions below |
+
+Every feature file sits in a bucket of its layer; only `di/` is flat. No file
+sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
+feature root, and there are no barrels: another feature imports the bucket file
+it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
+`entities/deck.dart`. These wait for an ADR that opens the need:
+`core/network/`, `core/storage/`, `core/utils/`, `app/config/` and flavors,
+`app/di/`, `shared/models/`, `shared/extensions/`.
+
 **Placing a widget** is four questions asked in order, stopping at the first
-yes — the full contract, the rationale and the rejected alternatives are AD-15
-in `docs/architecture.md`:
+yes (AD-15, ratified for V8 by ADR-011 D8):
 
 1. Does it open *over* the screen (`showModalBottomSheet`/`showDialog`)? → `overlays/`
 2. Is it the repeated row of a list, or a part only that row uses? → `items/`
 3. Does the screen compose it directly into its body or chrome? → `sections/`
 4. Does it serve more than one bucket above (ARB mapping, render-only extension)? → `support/`
 
-Nothing sits directly in `widgets/`, buckets never nest, a bucket is created
-only when it has real content, and the bucket list is app-wide: a fifth name is
-an AD-15 change, not a new folder. `architecture_boundary_test.dart` owns the
-full shape; the guard rule `memox.architecture.widgets_grouped_into_buckets` is
-the second net.
+Buckets never nest, a bucket is created only when it has real content, and the
+bucket list is app-wide: a fifth name is an ADR change, not a new folder.
+`test/architecture/boundaries_test.dart` owns the full shape, with the rules in
+`test/architecture/boundary_rules.dart`; the guard rule
+`memox.architecture.widgets_grouped_into_buckets` is the second net.
 
 `core/` is infrastructure with no knowledge of any feature. The moment
-`core/network/` mentions a specific endpoint, or `core/database/` imports a
-feature entity, the boundary has broken — that code belongs in the feature.
+`core/database/` imports a feature entity, the boundary has broken — that code
+belongs in the feature.
 
 ## Dependency rules
 
 ```
 presentation ──► domain ◄── data
-        (never presentation ──► data)
+      │                      ▲
+      └────────► di ─────────┘      di wires data to the domain contract
 ```
 
-- **domain** imports Dart and other domain code. Not Flutter, not Dio, not
-  Drift, not `json_annotation`. The test is simple: a domain file must compile
-  in a plain Dart package. If it needs `package:flutter` for `@immutable` or
-  `Color`, restructure — `@immutable` can come from `meta`, and a `Color` in a
-  domain entity means a UI concept leaked into the model.
-- **data** implements the repository contracts declared in domain, and depends
-  on domain. Never the reverse.
-- **presentation** talks to use cases (AD-12). The only sanctioned exception is
-  a feature that has no `usecases/` folder at all (see the carve-out below) —
-  never "this one read felt too small for a use case" inside a feature that has
-  them. Never to a data source, never to Drift, never to Dio.
-- **features are islands.** A feature may not import another feature's `data/`
-  or `presentation/`. If two features need the same thing, it moves to `shared/`
-  or `core/`, or one feature exposes a domain-level contract the other depends
-  on. Cross-feature imports are how a codebase becomes impossible to change.
-- **no cycles.** If A needs B and B needs A, extract the shared piece.
+- **domain** is plain Dart: no Flutter, Riverpod or Drift, nothing from
+  `core/database/`, `app/` or `shared/`, and no other layer. `meta` is allowed.
+  The test is simple: a domain file must compile in a plain Dart package. If it
+  needs `package:flutter` for `@immutable` or `Color`, restructure — `@immutable`
+  can come from `meta`, and a `Color` in a domain entity means a UI concept
+  leaked into the model.
+- **data** implements the repository contracts of its own domain, and may import
+  its own `domain/` and `core/`. Never the reverse.
+- **di** may import its own `data/` and `domain/`, and `core/`. It is where a
+  repository implementation is constructed.
+- **presentation** may import its own `domain/` and `di/`, never `data/`. Every
+  interaction it triggers, read or write, goes through exactly one use case
+  (AD-12, ADR-011 D4–D5): never to a DAO, never to Drift.
+- **Between features**, a file may import another feature's
+  `domain/{entities,models,repositories,failures}/`, file by file. A file in
+  `presentation/` or `di/` may also import another feature's `di/`. Nothing
+  imports another feature's `data/`, `presentation/` or `domain/usecases/`. If
+  two features need the same thing, it moves to `core/`, or one feature exposes
+  a domain contract the other depends on.
+- **The import map is acyclic.** `allowedFeatureImports` in
+  `test/architecture/boundary_rules.dart` lists the features each feature may
+  import: `srs → ∅`, `deck → {srs}`, `card → {deck, srs}`. A new feature adds
+  its entry in the commit that creates its folder. The map is the contract
+  direction; `depends_on` in `docs/features/*/README.md` is the data direction
+  and may differ (ADR-011 D2).
+- `core/` imports no feature, `app/` or `shared/`. `shared/` imports only
+  `core/`. `app/` composes features, and no feature imports `app/`.
 
 Verify mechanically rather than by eye:
 
 ```bash
-.claude/skills/flutter-architecture/scripts/check_architecture.sh
+flutter test test/architecture
+python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 ```
 
 ## Pragmatic, not ceremonial
@@ -94,21 +125,15 @@ Verify mechanically rather than by eye:
 Clean Architecture here is a means, not the goal. The checklist says so
 explicitly, and it is the part most often ignored:
 
-- **Not every feature needs every layer.** A settings screen that toggles a
-  local preference does not need an entity, a contract, an implementation and a
-  use case to wrap one boolean. It needs a controller and a storage call.
-- **A feature that has a `usecases/` folder gets one use case per interaction**
-  (AD-12). This is a deliberate change from the older rule below, made by the
-  project owner before the second feature was cloned: uniformity is what turns a
-  new feature into a clone rather than a judgement call at every operation. Six of
-  Deck's ten hold the input validation that used to run twice — once in a
-  controller and once again in the repository. Four are thin, and that is the
-  accepted cost.
-
-  The older rule still applies to a feature small enough not to have the folder at
-  all: a settings toggle needs a controller and a storage call, not five layers.
-  What changed is that *within* a Clean Architecture feature, the layer is uniform.
-
+- **A layer appears with its first real file, and a feature with a screen has
+  one use case per interaction** (AD-12, ratified by ADR-011 D4). A feature with
+  no screen has no `presentation/` and no `domain/usecases/`; nothing is
+  scaffolded for later. Once a feature has a screen, every interaction goes
+  through its own use case, reads and thin ones included, and no feature is
+  exempt, settings included (D5). Uniformity is what turns a new feature into a
+  clone of a known shape rather than a judgement call at every operation, and it
+  gives each input-validation rule one owner — the use case — instead of a
+  controller and a repository that both check it.
 - **A rule that needs the data as it stands at the moment of writing does not go
   in a use case.** Depth limits, first-child locks, emptiness checks and subtree
   moves run inside `runInTransaction`. Hoisting one above the repository puts the
@@ -122,8 +147,8 @@ explicitly, and it is the part most often ignored:
   the need is real, is nearly always lower than the cost of carrying an unused
   one through every change.
 
-When you deviate from the standard shape, write one line in
-`docs/architecture.md` saying what and why. The next person then reads a
+The standard shape is ADR-011. A deviation from it is an ADR change approved
+by the project owner, not a local exception, so the next person reads a
 decision instead of an inconsistency.
 
 ## Control flow
@@ -174,14 +199,16 @@ legal; the other five will eventually happen.
 
 ## Naming
 
-Files are `snake_case` ending in the suffix that states the role:
-`*_screen.dart`, `*_widget.dart`, `*_controller.dart`, `*_state.dart`,
-`*_repository.dart` (contract), `*_repository_impl.dart` (implementation),
-`*_use_case.dart`, `*_model.dart` (DTO), `*_entity.dart` (domain).
+Files are `snake_case` ending in the suffix that states the role; the table
+under "Folder structure" pairs each folder with its suffixes, and the folder
+never replaces the suffix.
 
-The `_model` / `_entity` split is load-bearing: `_model` is the wire or database
-shape and may change when the API changes; `_entity` is the domain shape and
-should not. Naming them apart keeps people from passing a DTO into the UI.
+`_model` means two things, told apart by its folder. In `domain/models/` it is
+a value object, a stored-code enum or a read model: domain language, stable. In
+`data/models/` it is a DTO, the wire shape, which changes when the API changes.
+`_entity` is the domain object and changes with neither. The Drift row class is
+none of these: only `data/` and `core/database/` use it, and the repository maps
+it to the entity, so no row or DTO reaches the UI.
 
 Booleans read as predicates: `isLoading`, `hasError`, `canSubmit`,
 `shouldRetry`. Avoid `Utils`, `Manager`, `Helper` — they attract unrelated code
@@ -203,7 +230,7 @@ The Riverpod checks that `riverpod_lint` used to provide — `ref.read` inside
 **code-verification-guard**, run as a separate gate:
 
 ```bash
-python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7
+python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 ```
 
 Nothing merges with an analyzer error. A warning you intend to keep needs an
