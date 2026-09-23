@@ -13,6 +13,7 @@ final class MxDerivedColors {
     required this.dangerSoft,
     required this.dangerBorder,
     required this.warningSoft,
+    required this.warningBorder,
     required this.surfaceHero,
     required this.chromeGlass,
     required this.ghostBorder,
@@ -33,6 +34,11 @@ final class MxDerivedColors {
       ),
       warningSoft: semantic.warning.withValues(
         alpha: isDark ? _warningSoftDark : _warningSoftLight,
+      ),
+      // The theme gap the InlineBanner contract reports: warning-border is
+      // not in the derived registry. Its ratios come from that contract (O6).
+      warningBorder: semantic.warning.withValues(
+        alpha: isDark ? _warningBorderDark : _warningBorderLight,
       ),
       // The one derivation whose base changes with the theme.
       surfaceHero: Color.alphaBlend(
@@ -59,6 +65,8 @@ final class MxDerivedColors {
   static const double _dangerBorderDark = 0.32;
   static const double _warningSoftLight = 0.12;
   static const double _warningSoftDark = 0.18;
+  static const double _warningBorderLight = 0.26;
+  static const double _warningBorderDark = 0.32;
   static const double _surfaceHeroLight = 0.05;
   static const double _surfaceHeroDark = 0.12;
   static const double _ghostBorderLight = 0.14;
@@ -72,6 +80,9 @@ final class MxDerivedColors {
 
   /// Warning tint.
   final Color warningSoft;
+
+  /// InlineBanner warning edge.
+  final Color warningBorder;
 
   /// Tinted hero card fill.
   final Color surfaceHero;

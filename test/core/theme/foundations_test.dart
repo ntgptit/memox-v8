@@ -96,4 +96,8 @@ void main() {
     expect(AppStroke.control, 2);
     expect(AppStroke.selectedRing, 6);
   });
+
+  test('the scrim is drawn at 45% (spec §5)', () {
+    expect(AppEffects.scrimOpacity, 0.45);
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
 import '../../support/widget_harness.dart';
@@ -97,7 +98,7 @@ void main() {
     final width = tester.getSize(find.byType(MxStepper)).width;
 
     await pumpMx(tester, _stepper(isBusy: true));
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(MxSpinner), findsOneWidget);
     expect(find.text('20'), findsNothing);
     expect(tester.getSize(find.byType(MxStepper)).width, width);
   });

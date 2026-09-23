@@ -3,6 +3,7 @@ import 'package:memox/app/gallery/gallery_actions_section.dart';
 import 'package:memox/app/gallery/gallery_chrome_section.dart';
 import 'package:memox/app/gallery/gallery_inputs_section.dart';
 import 'package:memox/app/gallery/gallery_layout_section.dart';
+import 'package:memox/app/gallery/gallery_overlays_section.dart';
 import 'package:memox/app/gallery/gallery_states_section.dart';
 import 'package:memox/app/gallery/gallery_status_section.dart';
 import 'package:memox/app/gallery/gallery_surfaces_section.dart';
@@ -65,6 +66,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             GalleryInputsSection(),
             GallerySurfacesSection(),
             GalleryStatusSection(),
+            GalleryOverlaysSection(),
             GalleryChromeSection(),
             GalleryStatesSection(),
             GalleryLayoutSection(),

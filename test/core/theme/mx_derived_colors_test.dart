@@ -52,4 +52,9 @@ void main() {
     expect(light.warningInk, MxSemanticColors.light.onWarning);
     expect(dark.warningInk, MxSemanticColors.dark.warning);
   });
+
+  test('warningBorder: warning at 26% light, 32% dark (O6)', () {
+    expect(light.warningBorder, isColorCloseTo(0x42F59E0B));
+    expect(dark.warningBorder, isColorCloseTo(0x52FFC658));
+  });
 }

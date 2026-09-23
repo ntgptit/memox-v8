@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// Colour role of a button: the contract's four shipped tones.
 enum MxButtonTone { primary, secondary, outline, destructive }
@@ -189,12 +190,10 @@ class MxButton extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Visibility.maintain(visible: false, child: body),
-        SizedBox.square(
-          dimension: AppIconSize.inline,
-          child: CircularProgressIndicator(
-            strokeWidth: AppStroke.indicator,
-            color: ink,
-          ),
+        // Ruling O2: onPrimary inside a filled button, primary on the rest.
+        MxSpinner(
+          isOnFill:
+              tone == MxButtonTone.primary || tone == MxButtonTone.destructive,
         ),
       ],
     );

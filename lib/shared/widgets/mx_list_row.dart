@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title and the sub are one line each with an ellipsis, so every row in a
@@ -61,13 +62,7 @@ class MxListRow extends StatelessWidget {
     final colors = context.colors;
     final styles = context.textStyles;
     final end = switch ((isBusy, hasChevron)) {
-      (true, _) => SizedBox.square(
-        dimension: AppIconSize.inline,
-        child: CircularProgressIndicator(
-          strokeWidth: AppStroke.indicator,
-          color: colors.primary,
-        ),
-      ),
+      (true, _) => const MxSpinner(),
       (false, true) => Icon(
         AppIcons.chevronRight,
         size: AppIconSize.compact,

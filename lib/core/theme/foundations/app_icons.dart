@@ -26,6 +26,7 @@ abstract final class AppIcons {
   static const IconData folder = Icons.folder_outlined; // folder
   static const IconData edit = Icons.edit_outlined; // pencil
   static const IconData reminder = Icons.notifications_none; // bell
+  static const IconData offline = Icons.cloud_off_outlined; // cloud-off
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;

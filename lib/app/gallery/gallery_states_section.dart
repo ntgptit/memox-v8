@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
-/// Group G: the empty state in each tone (Skeleton, Spinner and ErrorState
-/// join in phase 6).
+/// Group G: loading, empty and error.
 class GalleryStatesSection extends StatelessWidget {
   const GalleryStatesSection({super.key});
 
@@ -27,6 +30,28 @@ class GalleryStatesSection extends StatelessWidget {
           tone: tone,
           isCompact: true,
         ),
+      const MxSkeletonRow(),
+      const MxSkeletonRow(),
+      const Row(
+        spacing: AppSpacing.gutter,
+        children: [
+          MxSpinner(),
+          MxSpinner(size: MxSpinnerSize.compact),
+          MxSpinner(size: MxSpinnerSize.standard),
+          MxSpinner(size: MxSpinnerSize.large),
+        ],
+      ),
+      MxErrorState(
+        title: 'Could not load decks',
+        body: 'Nothing was lost. Try again in a moment.',
+        retryLabel: 'Retry',
+        onRetry: () {},
+      ),
+      const MxErrorState(
+        title: 'Deck not found',
+        body: 'It may have been deleted on this device.',
+        icon: AppIcons.alert,
+      ),
     ],
   );
 }

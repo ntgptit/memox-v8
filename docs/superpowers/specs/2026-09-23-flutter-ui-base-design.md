@@ -428,6 +428,28 @@ item names where it comes from.
 | 42 | Row 16's footnote half is resolved: EmptyState's `footnote` renders an MxNote 20 below the action | phase 5 plan S19 |
 | 43 | ListRow and SettingsRow put the 12/12 vertical inset on the text column only, so a 48 trailing target (overflow button, toggle) sits inside the text height instead of growing the row; the painted rows match the contract's "one title + one sub + 12/12" | phase 5 execution |
 | 44 | TagChip's label keeps the caption line-height 1.4, not the contract's 1: an ellipsized label clips to its text box, and a 12px box cut the descenders | phase 5 execution |
+| 45 | MxSpinner is a fixed three-quarter 2px ring turning once every 0.8s, not Material's growing arc, and it keeps turning under reduced motion because it is the only sign of work in flight | phase 6 plan O1 |
+| 46 | Row 16's spinner half is resolved: MxButton, MxListRow and MxStepper spin MxSpinner, onPrimary inside a filled button and primary elsewhere, so a loading outline or secondary button spins in primary | phase 6 plan O2 |
+| 47 | Skeleton's radius 6 is a component constant; the skeleton row ships as MxSkeletonRow on ListRow geometry, with an UNSPECIFIED 8 between its bars | phase 6 plan O3 |
+| 48 | ErrorState's tile → title gap is UNSPECIFIED and uses EmptyState's 16 | phase 6 plan O4 |
+| 49 | Dialog title and body typography and insets are UNSPECIFIED: `compactTitle` (the ErrorState and DeckPickerSheet title), a 14 onSurface body, 20 in, 8 apart, scrolling when the text outgrows the screen | phase 6 plan O5 |
+| 50 | InlineBanner's warning border is a new derived `warningBorder` at the contract's 26% / 32% (the theme gap it reports); actions always sit under the message, so the single-line trailing-action form is not built; its text keeps the caption role at 1.55 (extends row 24) | phase 6 plan O6 |
+| 51 | The BottomSheet opens with the platform modal route's slide at 260ms, not a 20% translate; the Dialog keeps the contract's 0.94 scale and fade | phase 6 plan O7 |
+| 52 | The scrim's 45% is a new effect token, `AppEffects.scrimOpacity` | phase 6 plan O8 |
+| 53 | Snackbar is the platform floating SnackBar with a 16 margin; its action is a 32 compact button in a 48 target with an UNSPECIFIED radius of 8 | phase 6 plan O9 |
+| 54 | DeckPickerSheet's footer is one button (outline Cancel with targets, primary OK without); its title → rule gap is UNSPECIFIED and uses 4 | phase 6 plan O11 |
+| 55 | The toast's 10 vertical padding sits on the message, not on the SnackBar, so the action's 48 target fits inside the 48 floor instead of making an action toast 68 tall (the ListRow rule of row 43) | phase 6 execution |
+| 56 | Audit score 13/20, Acceptable (accessibility 2, performance 3, theming 3, platform conformance 3, adaptivity 2). Verdict: it reads as a native Material app (modal routes, platform SnackBar, edge-to-edge, Material icons, 48 targets throughout). Re-measured, not repeated: row 2 (snackbar action 2.40:1 dark), row 30 (solid warning Badge 2.15:1 light) | phase 6 audit |
+| 57 | P1 contrast: the MasteryDonut label in the < 34% band is `statusLearning` at 2.04:1 on surface (light) at 9px, and the StatusBadge learning label is 1.87:1 on its 12% tint (light); extends rows 3 and 8 | phase 6 audit |
+| 58 | P1 non-text contrast: the InlineBanner warning glyph is `warning` at 1.87:1 on its amber ground in light, under the 3:1 a meaningful icon needs | phase 6 audit |
+| 59 | P2 non-text contrast: the BottomSheet grabber is `outlineVariant` at 1.30:1 (light) and 1.05:1 (dark) on `surfaceContainerHigh`, and an outline Button's edge on a dialog or sheet surface is 1.05:1 in dark; extends row 4 | phase 6 audit |
+| 60 | P2 contrast: the WorkloadBreakdownLine "new" term is `statusNew` at 2.81:1 on surface (light), 12/600; extends row 3 | phase 6 audit |
+| 61 | P2 accessibility: MxSpinner and MxSkeleton expose no semantics, so a screen reader hears nothing while content loads; MxMasteryDonut announces only its percentage, with no subject, and takes no label | phase 6 audit |
+| 62 | P2 platform: `android/app/src/main/AndroidManifest.xml` does not set `android:enableOnBackInvokedCallback`, so Android 14+ shows no predictive Back preview (Back itself works) | phase 6 audit |
+| 63 | P2 adaptivity: there is no window-size class; MxBottomNav is used at every width with no navigation rail, and lists and cards stretch edge to edge on tablets and in landscape | phase 6 audit |
+| 64 | P2 keyboard: MxBottomSheet does not pad for the IME inset, so a text field placed in a sheet would sit under the keyboard; no sheet holds a field yet | phase 6 audit |
+| 65 | P3 platform: MxToggle, MxSegmentedTray, MxSpinner and the sheet grabber are handoff-drawn stand-ins for Material's Switch, SegmentedButton, progress indicator and drag handle; they carry the right semantics, but the grabber offers no drag-handle action to a screen reader | phase 6 audit |
+| 66 | P3 polish and performance: at its low pulse the light skeleton is 1.07:1 on surface, and the light banner borders are 1.11:1 on their ground; each MxSkeleton runs its own ticker, and `context.derivedColors` is rebuilt on every read | phase 6 audit |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
