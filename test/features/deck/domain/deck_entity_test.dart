@@ -3,6 +3,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 typedef _Check = Outcome<void, DeckRejection>;
@@ -158,6 +159,41 @@ void main() {
 
     test('a same-root, in-depth move is accepted', () {
       expect(move(), isA<_Allowed>());
+    });
+  });
+
+  group('reorder (BR-SRS-007)', () {
+    test('places the deck before or after its anchor', () {
+      expect(
+        DeckEntity.reorder(
+          ['a', 'b', 'c'],
+          movingId: 'c',
+          anchorId: 'a',
+          placement: DeckPlacement.before,
+        ),
+        ['c', 'a', 'b'],
+      );
+      expect(
+        DeckEntity.reorder(
+          ['a', 'b', 'c'],
+          movingId: 'a',
+          anchorId: 'c',
+          placement: DeckPlacement.after,
+        ),
+        ['b', 'c', 'a'],
+      );
+    });
+
+    test('a deck anchored on itself keeps the order', () {
+      expect(
+        DeckEntity.reorder(
+          ['a', 'b'],
+          movingId: 'a',
+          anchorId: 'a',
+          placement: DeckPlacement.after,
+        ),
+        ['a', 'b'],
+      );
     });
   });
 }

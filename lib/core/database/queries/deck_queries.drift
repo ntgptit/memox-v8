@@ -1,0 +1,19 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+
+-- BR-DECK-023: the active decks below :deck_id and the active cards of its
+-- subtree. No row when :deck_id is not an active deck.
+deckDeletionSummary:
+WITH RECURSIVE subtree(id) AS (
+  SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
+  UNION
+  SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id
+  WHERE d.delete_batch_id IS NULL
+)
+SELECT
+  (SELECT COUNT(*) - 1 FROM subtree) AS sub_deck_count,
+  (SELECT COUNT(*) FROM card c
+   WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL)
+    AS card_count
+FROM deck
+WHERE id = :deck_id AND delete_batch_id IS NULL;

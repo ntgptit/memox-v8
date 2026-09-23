@@ -7,6 +7,8 @@ import 'package:memox/features/deck/data/datasources/deck_dao.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
+import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -108,6 +110,9 @@ final class DeckRepositoryImpl implements DeckRepository {
       if (oldParentId == null) {
         return const Rejected(DeckRejection.rootCannotMove);
       }
+      if (oldParentId == newParentId) {
+        return const Rejected(DeckRejection.sameParent);
+      }
       final movingRoot = await _dao.findRow(moving.rootId);
       final targetRoot = await _dao.findRow(target.rootId);
       if (movingRoot == null || targetRoot == null) {
@@ -143,6 +148,74 @@ final class DeckRepositoryImpl implements DeckRepository {
       return const Ok(null);
     });
   }
+
+  @override
+  Future<Outcome<void, DeckRejection>> renameDeck({
+    required String deckId,
+    required String name,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      if (_refusal(DeckEntity.checkName(name)) case final reason?) {
+        return Rejected(reason);
+      }
+      if (await _dao.findRow(deckId) == null) {
+        return const Rejected(DeckRejection.notFound);
+      }
+      await _dao.rename(deckId, name.trim(), at);
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<Outcome<void, DeckRejection>> reorderDeck({
+    required String deckId,
+    required String anchorId,
+    required DeckPlacement placement,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final deck = await _dao.findRow(deckId);
+      final anchor = await _dao.findRow(anchorId);
+      if (deck == null || anchor == null) {
+        return const Rejected(DeckRejection.notFound);
+      }
+      if (deck.parentId != anchor.parentId) {
+        return const Rejected(DeckRejection.notSiblings);
+      }
+      final siblings = await _dao.siblingRows(deck.parentId);
+      final order = DeckEntity.reorder(
+        [for (final row in siblings) row.id],
+        movingId: deckId,
+        anchorId: anchorId,
+        placement: placement,
+      );
+      final positionOf = {
+        for (final row in siblings) row.id: row.siblingPosition,
+      };
+      for (final (position, id) in order.indexed) {
+        if (positionOf[id] == position) continue;
+        await _dao.setSiblingPosition(id, position, at);
+      }
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<Outcome<DeckDeletionSummary, DeckRejection>> deletionSummary(
+    String deckId,
+  ) => _mapped(() async {
+    final row = await _dao.deletionSummary(deckId);
+    if (row == null) return const Rejected(DeckRejection.notFound);
+    return Ok(
+      DeckDeletionSummary(
+        subDeckCount: row.subDeckCount,
+        cardCount: row.cardCount,
+      ),
+    );
+  });
 
   @override
   Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId}) {

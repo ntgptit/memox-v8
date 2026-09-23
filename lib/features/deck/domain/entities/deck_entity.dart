@@ -2,6 +2,7 @@ import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 final class DeckEntity {
@@ -49,6 +50,28 @@ final class DeckEntity {
       return const Rejected(DeckRejection.nameTooLong);
     }
     return const Ok(null);
+  }
+
+  /// BR-SRS-007: the manual order of a sibling group once [movingId] sits
+  /// just before or just after [anchorId]. Both ids are in [siblingIds]; the
+  /// caller numbers the result from 0.
+  static List<String> reorder(
+    List<String> siblingIds, {
+    required String movingId,
+    required String anchorId,
+    required DeckPlacement placement,
+  }) {
+    if (movingId == anchorId) return List.of(siblingIds);
+    final order = [
+      for (final id in siblingIds)
+        if (id != movingId) id,
+    ];
+    final anchorAt = order.indexOf(anchorId);
+    final insertAt = switch (placement) {
+      DeckPlacement.before => anchorAt,
+      DeckPlacement.after => anchorAt + 1,
+    };
+    return order..insert(insertAt, movingId);
   }
 
   /// A sub-deck goes into a deck that holds decks or nothing yet

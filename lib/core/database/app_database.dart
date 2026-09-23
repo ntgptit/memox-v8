@@ -10,6 +10,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/srs.drift',
     'package:memox/core/database/tables/study.drift',
     'package:memox/core/database/tables/settings.drift',
+    'package:memox/core/database/queries/deck_queries.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {

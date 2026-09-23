@@ -8,9 +8,42 @@ final class DeckDao {
 
   final AppDatabase _db;
 
-  Future<Deck?> findRow(String id) => (_db.select(
-    _db.deck,
-  )..where((deck) => deck.id.equals(id))).getSingleOrNull();
+  /// An active deck: a deck in the Trash is out of reach of every write
+  /// (spec §8).
+  Future<Deck?> findRow(String id) =>
+      (_db.select(_db.deck)
+            ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
+          .getSingleOrNull();
+
+  /// The active decks under [parentId] in manual order, `(sibling_position,
+  /// id)` (BR-SRS-007); a null parent selects the roots.
+  Future<List<Deck>> siblingRows(String? parentId) =>
+      (_db.select(_db.deck)
+            ..where(
+              (deck) =>
+                  deck.parentId.isExp(Variable<String>(parentId)) &
+                  deck.deleteBatchId.isNull(),
+            )
+            ..orderBy([
+              (deck) => OrderingTerm(expression: deck.siblingPosition),
+              (deck) => OrderingTerm(expression: deck.id),
+            ]))
+          .get();
+
+  Future<void> rename(String id, String name, DateTime now) =>
+      (_db.update(_db.deck)..where((deck) => deck.id.equals(id))).write(
+        DeckCompanion(name: Value(name), updatedAt: Value(now)),
+      );
+
+  Future<void> setSiblingPosition(String id, int position, DateTime now) =>
+      (_db.update(_db.deck)..where((deck) => deck.id.equals(id))).write(
+        DeckCompanion(siblingPosition: Value(position), updatedAt: Value(now)),
+      );
+
+  /// One statement (`deck_queries.drift`); null when [id] is not an active
+  /// deck.
+  Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>
+      _db.deckDeletionSummary(id).getSingleOrNull();
 
   Future<void> insert(DeckCompanion row) => _db.into(_db.deck).insert(row);
 
