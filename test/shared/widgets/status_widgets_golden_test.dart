@@ -8,6 +8,10 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+
+import 'package:memox/shared/widgets/mx_mastery_donut.dart';
+
 import '../../support/golden_harness.dart';
 
 void main() {
@@ -60,6 +64,59 @@ void main() {
               MxTagChip(label: 'verbs'),
               MxTagChip(label: 'N5', isDense: true),
               MxTagChip(label: 'a tag long enough to reach the maximum'),
+            ],
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxWorkloadBreakdownLine and MxMasteryDonut', (tester) async {
+    String overdue(int n) => '$n overdue';
+    String today(int n) => '$n today';
+    String fresh(int n) => '$n new';
+    await expectThemedGoldens(
+      tester,
+      'mx_workload_donut',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          MxWorkloadBreakdownLine(
+            overdueCount: 3,
+            todayCount: 12,
+            newCount: 5,
+            overdueLabel: overdue,
+            todayLabel: today,
+            newLabel: fresh,
+            fallback: 'Nothing due',
+            suffix: 'across 4 decks',
+          ),
+          MxWorkloadBreakdownLine(
+            overdueCount: 0,
+            todayCount: 4,
+            newCount: 0,
+            overdueLabel: overdue,
+            todayLabel: today,
+            newLabel: fresh,
+            fallback: 'Nothing due',
+          ),
+          MxWorkloadBreakdownLine(
+            overdueCount: 0,
+            todayCount: 0,
+            newCount: 0,
+            overdueLabel: overdue,
+            todayLabel: today,
+            newLabel: fresh,
+            fallback: '42 cards · nothing due',
+          ),
+          const Row(
+            spacing: 16,
+            children: [
+              MxMasteryDonut(fraction: 0),
+              MxMasteryDonut(fraction: 0.2),
+              MxMasteryDonut(fraction: 0.5),
+              MxMasteryDonut(fraction: 1),
             ],
           ),
         ],
