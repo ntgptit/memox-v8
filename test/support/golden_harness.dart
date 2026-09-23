@@ -24,6 +24,22 @@ Future<void> expectThemedGoldens(
 ) async {
   await tester.binding.setSurfaceSize(phoneSize);
   addTearDown(() => tester.binding.setSurfaceSize(null));
+  // flutter_test paints shadows as hard, unblurred shapes by default; the
+  // shadow treatments are part of the design, so goldens paint them for real
+  // and restore the default before the test's invariant check.
+  debugDisableShadows = false;
+  try {
+    await _captureBothThemes(tester, name, child);
+  } finally {
+    debugDisableShadows = true;
+  }
+}
+
+Future<void> _captureBothThemes(
+  WidgetTester tester,
+  String name,
+  Widget child,
+) async {
   for (final (suffix, theme) in [
     ('light', buildLightTheme()),
     ('dark', buildDarkTheme()),

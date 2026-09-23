@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
@@ -226,6 +227,21 @@ void main() {
           ],
           selectedIndex: 0,
           onSelected: (_) {},
+        ),
+      ),
+    );
+  });
+
+  testWidgets('MxFab resting', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_fab',
+      Align(
+        alignment: Alignment.bottomRight,
+        child: MxFab(
+          icon: AppIcons.add,
+          semanticLabel: 'New deck',
+          onPressed: () {},
         ),
       ),
     );
