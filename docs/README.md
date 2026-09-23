@@ -179,7 +179,8 @@ báo một chiều: UC khai báo `rules`; không viết reverse link hay index b
 
 Câu không có từ khoá là **giải thích, không phải ràng buộc** — MUST NOT suy ra
 rule mới từ prose. Ví dụ, đoạn code và bảng ví dụ minh hoạ ranh giới của một rule
-đã phát biểu; khi ví dụ và rule mâu thuẫn, **rule thắng**.
+đã phát biểu; khi ví dụ và rule mâu thuẫn, **rule thắng**. Mục `## Edge case` của
+BR là **hệ quả** của rule, không phải rule mới.
 
 ### Hợp đồng và phạm vi sửa
 

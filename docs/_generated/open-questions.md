@@ -2,6 +2,44 @@
 
 # Open questions
 
+## [features/deck/README.md](../features/deck/README.md)
+
+- L13: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+
+## [features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md)
+
+- L14: > ⚠️ OPEN QUESTION: `data-model.md` mục "`root_id` — vì sao tồn tại" nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng rule này và UC-DECK-005 bước 3 chỉ nói `root_id`. (Plan OQ-8)
+
+## [features/deck/ui.md](../features/deck/ui.md)
+
+- L64: > ⚠️ OPEN QUESTION: nhánh `H` của sơ đồ ("Đưa content_type về unset" → "Rỗng → Xác nhận rồi đặt unset · UC-DECK-002 A3") mâu thuẫn với BR-DECK-015 ("Người dùng MUST NOT có thao tác reset `content_type` thủ công"); BR-DECK-014 cho phép thao tác đó đã deprecated. Ngoài ra UC-DECK-002 A3 là "Huỷ xác nhận xoá" và A4 là "Xác nhận đúng chế độ deck đang chạy", nhưng sơ đồ gắn nhãn huỷ xoá (`F2`) là A4 và reset thủ công (`H2`) là A3. Nguồn: `product/master-flow.md` §3 · `business-rules/deck.md` BR-DECK-014, BR-DECK-015 · `use-cases/deck.md` UC-DECK-002. (Plan OQ-15)
+- L78: > ⚠️ OPEN QUESTION: ba dòng `Deck.name` (không rỗng, ≤ 200 ký tự) và `Deck.move` (đích không phải chính nó hoặc descendant) không trích BR nào trong nguồn; nội dung trùng ý với BR-DECK-020 và BR-DECK-017 nhưng nguồn không gắn. (Plan Q5)
+- L86: > ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)
+
+## [features/deck/usecases/UC-DECK-001-tao-root-deck.md](../features/deck/usecases/UC-DECK-001-tao-root-deck.md)
+
+- L58: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md)
+
+- L90: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
+
+- L67: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md](../features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md)
+
+- L81: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md](../features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md)
+
+- L81: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
+## [features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md)
+
+- L56: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+
 ## [glossary.md](../glossary.md)
 
 - L25: > ⚠️ OPEN QUESTION: "study answers" được dùng như một thực thể lưu trữ (BR-CARD-005, BR-DECK-022, BR-SRS-017, BR-SRS-019, BR-SRS-025) nhưng `data-model.md` không có bảng nào tên như vậy — chỉ có `review_log` mang dữ liệu từng lượt và cột `generation`. Chưa có chỗ nào nói hai tên này là một. (Plan OQ-9)

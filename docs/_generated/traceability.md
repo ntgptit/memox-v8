@@ -6,4 +6,9 @@ Use case → rules → code → test. Test = file trong `test/`, `integration_te
 
 | UC | Status | Rules | Code | Tests |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| [UC-DECK-001](../features/deck/usecases/UC-DECK-001-tao-root-deck.md) | ready | BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS-001 | — | — |
+| [UC-DECK-002](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md) | ready | BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016 | — | — |
+| [UC-DECK-003](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md) | ready | BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-STUDY-008, BR-STUDY-051 | — | — |
+| [UC-DECK-004](../features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md) | ready | BR-CARD-004, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-019 | — | — |
+| [UC-DECK-005](../features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md) | ready | BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006 | — | — |
+| [UC-DECK-006](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md) | ready | BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-SRS-007 | — | — |

@@ -1,6 +1,6 @@
 # Kế hoạch tái cấu trúc docs → kiến trúc thân thiện với AI agent
 
-Trạng thái: **Bước 1 xong** (khung + tool). Bước 0 đã xác nhận Q1–Q10 (mục 6). Tiếp theo: Bước 2, feature thí điểm `deck`. Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
+Trạng thái: **Bước 2 xong — feature thí điểm `deck`, chờ xác nhận.** Bước 0 đã xác nhận Q1–Q10 (mục 6); Bước 1 xong (khung + tool). Còn lại của `deck`: `it-scenarios.md` (làm cùng `shared/testing/` ở Bước 3), điền `depends_on` khi `srs`/`study`/`card` tồn tại. Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
 
 Mọi đường dẫn trong file này tính từ `docs/`. Trong bảng ánh xạ, `<slug>` là phần
 tên file chưa chốt; `check.py --plan` coi `<slug>` và `*` là wildcard, và cột đích
@@ -170,6 +170,8 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | OQ-12 | M6 (starter) đánh số Must-have nhưng văn bản nói không phải must-have V8.0 | `product.md:245` | `product.md:239` | `features/starter-decks/README.md` |
 | OQ-13 | Số kịch bản IT lệch: README "141 dòng", catalog có 142 dòng `IT-`, audit tổng 163 | `it-scenarios/README.md:81` | `it-scenarios/12-testing-pyramid-audit.md:24` | `shared/testing/README.md` |
 | OQ-14 | Validation `srs.md:282-283` và nhiều dòng edge case/validation không trích BR nào | `deck.md:102-104,128`, `card.md:123-124,146`, `srs.md:247-302` | — | Xem Q5 |
+| OQ-15 | Sơ đồ deck còn nhánh reset `content_type` thủ công (H2) mâu thuẫn BR-DECK-015; nhãn F2/H2 trỏ sai UC-DECK-002 A3/A4 | `product/master-flow.md` §3 | BR-DECK-015 (`deck.md:33`), `use-cases/deck.md` UC-DECK-002 A3, A4 | `features/deck/ui.md` |
+| OQ-16 | BR-SRS-007 là luật thứ tự thủ công của deck (`sibling_position`) nhưng mang DOMAIN `SRS`; theo Q1 giữ nguyên ID và nằm ở `features/srs/` | `srs.md:23` | UC-DECK-006 | `features/srs/rules/BR-SRS-007-*` |
 
 ## 8. Rủi ro ngoài phạm vi (không sửa trong task này)
 
