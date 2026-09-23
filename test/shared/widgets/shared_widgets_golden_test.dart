@@ -4,10 +4,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -132,6 +134,32 @@ void main() {
                 onPressed: () {},
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxStudyTopBar default and mastery accent', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_study_top_bar',
+      Column(
+        children: [
+          MxStudyTopBar(
+            modeLabel: 'Review',
+            current: 3,
+            total: 10,
+            closeLabel: 'Close',
+            onClose: () {},
+          ),
+          MxStudyTopBar(
+            modeLabel: 'Recall',
+            current: 10,
+            total: 10,
+            closeLabel: 'Close',
+            onClose: () {},
+            accent: MxSemanticColors.light.mastery,
           ),
         ],
       ),
