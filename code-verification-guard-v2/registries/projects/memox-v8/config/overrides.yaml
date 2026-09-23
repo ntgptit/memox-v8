@@ -48,8 +48,6 @@ overrides:
     # -- `app`: waits for the first lib/app/ file (foundation plan Task 10)
     memox.design_token.no_raw_text_style:
       targets_pending: app
-    memox_v7.design_system.no_bare_font_weight:
-      targets_pending: app
     # -- `presentation`: waits for the first presentation/ or shared/ UI file (UI sub-project)
     memox.architecture.presentation_no_data_import:
       targets_pending: presentation
@@ -65,11 +63,7 @@ overrides:
       targets_pending: presentation
     memox.design_token.no_raw_color:
       targets_pending: presentation
-    memox.design_token.no_raw_duration:
-      targets_pending: presentation
     memox.design_token.no_raw_spacing_literal:
-      targets_pending: presentation
-    memox.design_token.no_raw_stroke_width:
       targets_pending: presentation
     memox.error_handling.no_technical_detail_in_user_message:
       targets_pending: presentation
