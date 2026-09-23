@@ -192,6 +192,43 @@ class SplitHandoffTest(unittest.TestCase):
         self.assertIn("$.foundations.spec", output)
         self.assertFalse(self.out.exists())
 
+    def test_json_of_the_wrong_shape_fails_before_writing(self) -> None:
+        # (JSON, text that must locate the problem in the error)
+        cases = {
+            "top-level value is not an object": ([], "top-level"),
+            "widgets is not a list": ({**sample(), "widgets": {}}, "$.widgets"),
+            "a widget is not an object": ({**sample(), "widgets": ["StatusBar"]}, "$.widgets[0]"),
+            "a widget name is not a string": (
+                {**sample(), "widgets": [{"name": 7, "spec": "# x"}]}, "$.widgets[0].name"),
+            "a widget name gives no file name": (
+                {**sample(), "widgets": [{"name": "!!!", "spec": "# x"}]}, "'!!!'"),
+        }
+        for i, (label, (data, where)) in enumerate(cases.items()):
+            with self.subTest(label):
+                self.out = self.tmp / f"out-{i}"  # a failing case must not leak into the next
+                code, output = self.run_split(data)
+                self.assertEqual(code, 2)
+                self.assertIn(where, output)
+                self.assertFalse(self.out.exists())
+
+    def test_missing_json_file_fails_before_writing(self) -> None:
+        captured = io.StringIO()
+        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
+            code = sh.main([str(self.tmp / "absent.json"), str(self.out)])
+        self.assertEqual(code, 2)
+        self.assertIn("absent.json", captured.getvalue())
+        self.assertFalse(self.out.exists())
+
+    def test_unparsable_json_fails_naming_the_file(self) -> None:
+        src = self.tmp / "in.json"
+        src.write_text("{not json", encoding="utf-8")
+        captured = io.StringIO()
+        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
+            code = sh.main([str(src), str(self.out)])
+        self.assertEqual(code, 2)
+        self.assertIn("in.json", captured.getvalue())
+        self.assertFalse(self.out.exists())
+
     def test_kebab_file_names(self) -> None:
         names = ("StatusBar", "Fab", "ActionSheetCommandRow", "HTMLParser")
         self.assertEqual(

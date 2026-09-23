@@ -120,12 +120,12 @@ def check_frontmatter(doc: g.Doc, report: Report) -> bool:
     for key in REQUIRED_FIELDS[doc.kind]:
         value = doc.meta.get(key)
         if key in LIST_FIELDS and not isinstance(value, list):
-            report.error(doc.path, f"`{key}` phải là list inline `[...]`")
+            report.error(doc.path, f"`{key}` must be an inline list `[...]`")
         elif key not in LIST_FIELDS and not value:
-            report.error(doc.path, f"thiếu trường bắt buộc `{key}`")
+            report.error(doc.path, f"missing required field `{key}`")
     allowed = STATUS.get(doc.kind)
     if allowed and doc.status and doc.status not in allowed:
-        report.error(doc.path, f"`status: {doc.status}` không thuộc {sorted(allowed)}")
+        report.error(doc.path, f"`status: {doc.status}` is not one of {sorted(allowed)}")
     return True
 
 
@@ -134,38 +134,38 @@ def check_identity(doc: g.Doc, report: Report) -> None:
     if not doc.id:
         return
     if not pattern.match(doc.id):
-        report.error(doc.path, f"id `{doc.id}` sai format")
+        report.error(doc.path, f"id `{doc.id}` is malformed")
         return
     if not re.fullmatch(re.escape(doc.id) + "-" + SLUG + r"\.md", doc.path.name):
-        report.error(doc.path, f"tên file phải là `{doc.id}-<slug-kebab-case>.md`")
+        report.error(doc.path, f"file name must be `{doc.id}-<slug-kebab-case>.md`")
     if doc.kind == "ADR":
         return
     expected = g.domain_of(doc.feature)
     actual = doc.id.split("-")[1]
     if actual != expected:
-        report.error(doc.path, f"id `{doc.id}` có DOMAIN `{actual}`, thư mục này yêu cầu `{expected}`")
+        report.error(doc.path, f"id `{doc.id}` has DOMAIN `{actual}`; this folder requires `{expected}`")
 
 
 def check_sections(doc: g.Doc, report: Report) -> None:
     for name in REQUIRED_SECTIONS.get(doc.kind, ()):
         if name not in doc.sections:
-            report.error(doc.path, f"thiếu section `## {name}`")
+            report.error(doc.path, f"missing section `## {name}`")
     if doc.kind == "BR" and USED_BY_SECTION.search(doc.body):
-        report.error(doc.path, "BR không được có section \"Được dùng bởi\" — generate.py sinh nó")
+        report.error(doc.path, "a BR must not carry a \"Được dùng bởi\" section — generate.py produces it")
 
 
 def check_paths(doc: g.Doc, report: Report) -> None:
     for code_path in doc.as_list("code"):
         if not (g.ROOT / code_path).exists():
-            report.error(doc.path, f"path trong `code` không tồn tại: `{code_path}`")
+            report.error(doc.path, f"path in `code` does not exist: `{code_path}`")
 
 
 def check_feature_readme(doc: g.Doc, features: list[str], report: Report) -> None:
     if doc.meta.get("feature") != doc.feature:
-        report.error(doc.path, f"`feature: {doc.meta.get('feature')}` phải trùng tên thư mục `{doc.feature}`")
+        report.error(doc.path, f"`feature: {doc.meta.get('feature')}` must match the folder name `{doc.feature}`")
     for dep in doc.as_list("depends_on"):
         if dep not in features:
-            report.error(doc.path, f"`depends_on` trỏ tới feature không tồn tại: `{dep}`")
+            report.error(doc.path, f"`depends_on` names a feature that does not exist: `{dep}`")
 
 
 # ------------------------------------------------------------ cross checks
@@ -182,7 +182,7 @@ def check_dependency_cycles(docs: list[g.Doc], report: Report) -> None:
             return
         if state.get(feature) == "open":
             cycle = path[path.index(feature):] + [feature]
-            report.error(readme[feature].path, f"`depends_on` có chu trình: {' → '.join(cycle)}")
+            report.error(readme[feature].path, f"`depends_on` has a cycle: {' → '.join(cycle)}")
             return
         state[feature] = "open"
         for dep in graph.get(feature, []):
@@ -200,7 +200,7 @@ def check_duplicates(docs: list[g.Doc], report: Report) -> dict[str, g.Doc]:
         if doc.kind == "FEATURE" or not doc.id:
             continue
         if doc.id in by_id:
-            report.error(doc.path, f"id `{doc.id}` trùng với {show(by_id[doc.id].path)}")
+            report.error(doc.path, f"id `{doc.id}` duplicates {show(by_id[doc.id].path)}")
             continue
         by_id[doc.id] = doc
     return by_id
@@ -211,16 +211,16 @@ def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report)
         for rule_id in doc.as_list("rules") if doc.kind == "UC" else []:
             target = by_id.get(rule_id)
             if target is None or target.kind != "BR":
-                report.error(doc.path, f"`rules` trỏ tới BR không tồn tại: `{rule_id}`")
+                report.error(doc.path, f"`rules` names a BR that does not exist: `{rule_id}`")
             elif target.status == "deprecated":
-                report.error(doc.path, f"`rules` trỏ tới BR deprecated: `{rule_id}`")
+                report.error(doc.path, f"`rules` names a deprecated BR: `{rule_id}`")
         superseded_by = str(doc.meta.get("superseded_by") or "")
         if not superseded_by:
             continue
         if superseded_by not in by_id:
-            report.error(doc.path, f"`superseded_by` trỏ tới id không tồn tại: `{superseded_by}`")
+            report.error(doc.path, f"`superseded_by` names an id that does not exist: `{superseded_by}`")
         if doc.status != "deprecated":
-            report.error(doc.path, "`superseded_by` chỉ dùng khi `status: deprecated`")
+            report.error(doc.path, "`superseded_by` is only allowed with `status: deprecated`")
 
 
 def check_warnings(docs: list[g.Doc], report: Report) -> None:
@@ -229,12 +229,12 @@ def check_warnings(docs: list[g.Doc], report: Report) -> None:
     tests = g.tests_by_id([d.id for d in ready])
     for doc in docs:
         if doc.kind == "BR" and doc.status == "active" and doc.id not in usage:
-            report.warning(doc.path, "BR active không được UC nào dùng")
+            report.warning(doc.path, "active BR is used by no UC")
     for doc in ready:
         if not doc.as_list("code"):
-            report.warning(doc.path, "UC ready có `code: []`")
+            report.warning(doc.path, "ready UC has `code: []`")
         if not tests[doc.id]:
-            report.warning(doc.path, "UC ready chưa có test chứa ID")
+            report.warning(doc.path, "ready UC has no test that contains its id")
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
@@ -272,10 +272,10 @@ def check_text(docs: list[g.Doc], report: Report) -> None:
             if not check_ids or line_no <= body_start:
                 continue
             for cited in sorted(set(ID_IN_TEXT.findall(line)) - ids):
-                report.error(where, f"`{cited}` được trích nhưng không được định nghĩa")
+                report.error(where, f"`{cited}` is cited but not defined")
             for n in INVARIANT_CITE.findall(line):
                 if invariants is not None and int(n) not in invariants:
-                    report.error(where, f"`invariant Q{n}` được trích nhưng không có `-- {n}.`")
+                    report.error(where, f"`invariant Q{n}` is cited but there is no `-- {n}.`")
 
 
 def frontmatter_end(text: str) -> int:
@@ -294,7 +294,7 @@ def check_links(path: Path, line: str, where: str, report: Report) -> None:
         if not file_part:
             continue
         if not (path.parent / file_part).exists():
-            report.error(where, f"link hỏng: `{target}`")
+            report.error(where, f"broken link: `{target}`")
 
 
 def check_generated(report: Report) -> None:
@@ -304,21 +304,21 @@ def check_generated(report: Report) -> None:
         for path in sorted(Path(tmp).iterdir()):
             current = g.GENERATED / path.name
             if not current.exists():
-                report.error(current, "chưa được sinh — chạy `python tools/docs/generate.py`")
+                report.error(current, "not generated — run `python tools/docs/generate.py`")
             elif current.read_bytes() != path.read_bytes():
-                report.error(current, "lỗi thời — chạy `python tools/docs/generate.py`")
+                report.error(current, "stale — run `python tools/docs/generate.py`")
         if g.GENERATED.is_dir():
             expected = {p.name for p in Path(tmp).iterdir()}
             for extra in sorted(p.name for p in g.GENERATED.iterdir() if p.name not in expected):
-                report.error(g.GENERATED / extra, "file không do generate.py sinh")
+                report.error(g.GENERATED / extra, "not produced by generate.py")
 
 
-SPLIT = "chạy `python tools/docs/split_handoff.py`"
+SPLIT = "run `python tools/docs/split_handoff.py`"
 HANDOFF_DRIFT = {
-    "missing": f"thiếu so với JSON — {SPLIT}",
-    "changed": f"khác bản sinh từ JSON (bị sửa tay hoặc chưa sinh lại) — {SPLIT}",
-    "extra": "JSON không sinh ra file này — file tự viết thì chuyển ra khỏi thư mục; "
-    f"file do JSON cũ sinh thì {SPLIT}",
+    "missing": f"missing — {SPLIT}",
+    "changed": f"differs from a fresh split of the JSON (edited by hand, or not regenerated) — {SPLIT}",
+    "extra": "not produced by the JSON — move a hand-written file out of this folder; "
+    f"for a file an older JSON produced, {SPLIT}",
 }
 
 
@@ -330,7 +330,7 @@ def check_design_handoff(report: Report) -> None:
     try:
         files = sh.load_files(sh.DEFAULT_INPUT)
     except (OSError, ValueError, sh.SplitError) as error:
-        report.error(sh.DEFAULT_INPUT, f"không sinh được design handoff: {error}")
+        report.error(sh.DEFAULT_INPUT, f"cannot split the design handoff: {error}")
         return
     for path, kind in sh.find_drift(sh.DEFAULT_OUTPUT, files):
         report.error(sh.DEFAULT_OUTPUT / path, HANDOFF_DRIFT[kind])
@@ -363,14 +363,14 @@ def plan_destinations(plan: Path) -> list[str]:
 
 def check_plan(plan: Path, report: Report) -> None:
     if not plan.exists():
-        report.error(plan, "không tìm thấy file plan")
+        report.error(plan, "plan file not found")
         return
     missing: dict[str, int] = {}
     for dest in plan_destinations(plan):
         if not destination_exists(dest):
             missing[dest] = missing.get(dest, 0) + 1
     for dest, rows in sorted(missing.items()):
-        report.error(plan, f"đích chưa tồn tại ({rows} dòng): `{dest}`")
+        report.error(plan, f"destination does not exist ({rows} row(s)): `{dest}`")
 
 
 def destination_exists(dest: str) -> bool:
@@ -389,7 +389,7 @@ def run(plan: Path | None) -> Report:
     features = g.feature_names()
     for feature in features:
         if not (g.DOCS / "features" / feature / "README.md").exists():
-            report.error(g.DOCS / "features" / feature, "feature thiếu README.md")
+            report.error(g.DOCS / "features" / feature, "feature has no README.md")
     for doc in docs:
         if not check_frontmatter(doc, report):
             continue
@@ -413,10 +413,10 @@ def run(plan: Path | None) -> Report:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--plan", type=Path, help="file markdown chứa bảng ánh xạ (cột đầu \"Nguồn\")")
+    parser.add_argument("--plan", type=Path, help="Markdown file with mapping tables (first header cell \"Nguồn\")")
     args = parser.parse_args()
     if not g.DOCS.is_dir():
-        print("ERROR docs: không tìm thấy — chạy từ root repo")
+        print("ERROR docs: not found — run from the repository root")
         return 1
     report = run(args.plan)
     report.print()
