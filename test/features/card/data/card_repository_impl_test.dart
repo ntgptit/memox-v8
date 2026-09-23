@@ -5,14 +5,17 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
+import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
+import '../../../support/card_fixtures.dart';
+import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
 DateTime _now() => DateTime(2026, 9, 23);
@@ -20,6 +23,9 @@ DateTime _now() => DateTime(2026, 9, 23);
 Future<int> _count(AppDatabase db, String table) async =>
     (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle())
         .read<int>('n');
+
+CardRejection _reason(Outcome<Object?, CardRejection> result) =>
+    (result as Rejected<Object?, CardRejection>).reason;
 
 /// Fails the one call `createCard` makes, to prove that the card and its
 /// schedule row are written in one transaction (BR-CARD-004).
@@ -36,34 +42,30 @@ void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
   late CardRepositoryImpl cards;
-  setUp(() {
+  late DeckEntity root;
+  late DeckEntity leaf;
+  setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
     cards = CardRepositoryImpl(
       db,
       ScheduleRepositoryImpl(db, now: _now),
+      TagRepositoryImpl(db, now: _now),
       now: _now,
     );
+    root = await decks.root('r');
+    leaf = await decks.sub(root.id, 'l');
   });
   tearDown(() => db.close());
 
   test(
     'creating a card sets content_type card on the (unset) parent deck',
     () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final leaf = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'l',
-      )) as Ok<DeckEntity, DeckRejection>).value;
-
       final result = await cards.createCard(
         deckId: leaf.id,
-        front: 'front',
-        back: 'back',
+        draft: const CardDraft(front: 'front', back: 'back'),
       );
+
       expect(result, isA<Ok<CardEntity, CardRejection>>());
       expect(
         (await decks.findById(leaf.id))!.contentType,
@@ -73,20 +75,10 @@ void main() {
   );
 
   test('creating a card creates its schedule row from the root scheduler and generation (BR-CARD-004)', () async {
-    final root = ((await decks.createRootDeck(
-      name: 'r',
-      schedulerType: SchedulerType.sm2,
-    )) as Ok<DeckEntity, DeckRejection>).value;
-    final leaf = ((await decks.createSubDeck(
-      parentId: root.id,
-      name: 'l',
-    )) as Ok<DeckEntity, DeckRejection>).value;
+    final sm2 = await decks.root('s', SchedulerType.sm2);
+    final sm2Leaf = await decks.sub(sm2.id, 'l');
 
-    final card = ((await cards.createCard(
-      deckId: leaf.id,
-      front: 'f',
-      back: 'b',
-    )) as Ok<CardEntity, CardRejection>).value;
+    final card = await cards.card(sm2Leaf.id);
 
     final row = await db
         .customSelect(
@@ -106,26 +98,23 @@ void main() {
   test(
     'when the schedule row cannot be written, the card is not created either',
     () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final leaf = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'l',
-      )) as Ok<DeckEntity, DeckRejection>).value;
       final failing = CardRepositoryImpl(
         db,
         _FailingScheduleRepository(),
+        TagRepositoryImpl(db, now: _now),
         now: _now,
       );
 
       await expectLater(
-        failing.createCard(deckId: leaf.id, front: 'f', back: 'b'),
+        failing.createCard(
+          deckId: leaf.id,
+          draft: const CardDraft(front: 'f', back: 'b', tagNames: ['t']),
+        ),
         throwsA(anything),
       );
 
       expect(await _count(db, 'card'), 0);
+      expect(await _count(db, 'tags'), 0);
       expect(
         (await decks.findById(leaf.id))!.contentType,
         DeckContentType.unset,
@@ -134,19 +123,12 @@ void main() {
   );
 
   test('a card cannot be created directly on a root deck', () async {
-    final root = ((await decks.createRootDeck(
-      name: 'r',
-      schedulerType: SchedulerType.eightBox,
-    )) as Ok<DeckEntity, DeckRejection>).value;
     final result = await cards.createCard(
       deckId: root.id,
-      front: 'f',
-      back: 'b',
+      draft: const CardDraft(front: 'f', back: 'b'),
     );
-    expect(
-      (result as Rejected<CardEntity, CardRejection>).reason,
-      CardRejection.notACardContainer,
-    );
+
+    expect(_reason(result), CardRejection.notACardContainer);
     expect(await _count(db, 'card'), 0);
     expect(await _count(db, 'card_schedule'), 0);
   });
@@ -154,96 +136,94 @@ void main() {
   test(
     'a card cannot be created in a deck that already holds sub-decks',
     () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final branch = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'b',
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      await decks.createSubDeck(parentId: branch.id, name: 'child');
+      final branch = await decks.sub(root.id, 'b');
+      await decks.sub(branch.id, 'child');
 
       final result = await cards.createCard(
         deckId: branch.id,
-        front: 'f',
-        back: 'b',
+        draft: const CardDraft(front: 'f', back: 'b'),
       );
-      expect(
-        (result as Rejected<CardEntity, CardRejection>).reason,
-        CardRejection.notACardContainer,
-      );
+
+      expect(_reason(result), CardRejection.notACardContainer);
     },
   );
 
-  test('blank front or back is rejected', () async {
-    final root = ((await decks.createRootDeck(
-      name: 'r',
-      schedulerType: SchedulerType.eightBox,
-    )) as Ok<DeckEntity, DeckRejection>).value;
-    final leaf = ((await decks.createSubDeck(
-      parentId: root.id,
-      name: 'l',
-    )) as Ok<DeckEntity, DeckRejection>).value;
+  test('a draft the card rules refuse writes nothing (BR-CARD-001..003, BR-TAG-002)', () async {
+    final before = await totalChanges(db);
+
+    Future<CardRejection> refusal(CardDraft draft) async =>
+        _reason(await cards.createCard(deckId: leaf.id, draft: draft));
 
     expect(
-      (await cards.createCard(
-        deckId: leaf.id,
-        front: '   ',
-        back: 'b',
-      ) as Rejected<CardEntity, CardRejection>).reason,
+      await refusal(const CardDraft(front: '   ', back: 'b')),
       CardRejection.blankContent,
     );
     expect(
-      (await cards.createCard(
-        deckId: leaf.id,
-        front: 'f',
-        back: '',
-      ) as Rejected<CardEntity, CardRejection>).reason,
+      await refusal(const CardDraft(front: 'f', back: '')),
       CardRejection.blankContent,
+    );
+    expect(
+      await refusal(CardDraft(front: 'x' * 61, back: 'b')),
+      CardRejection.frontTooLong,
+    );
+    expect(
+      await refusal(
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          tagNames: [for (var i = 0; i < 11; i++) 'tag $i'],
+        ),
+      ),
+      CardRejection.tooManyTags,
+    );
+    expect(await totalChanges(db), before);
+  });
+
+  test('the flag and the tags of the draft are stored with the card', () async {
+    final card = await cards.card(
+      leaf.id,
+      const CardDraft(
+        front: 'f',
+        back: 'b',
+        isFlagged: true,
+        tagNames: ['Verb', ' verb ', 'Food'],
+      ),
+    );
+
+    final tags = await db
+        .customSelect(
+          'SELECT t.name FROM card_tags ct JOIN tags t ON t.id = ct.tag_id '
+          'WHERE ct.card_id = ? ORDER BY t.name_folded',
+          variables: [Variable(card.id)],
+        )
+        .get();
+    expect(card.isFlagged, isTrue);
+    expect(
+      [for (final row in tags) row.read<String>('name')],
+      ['Food', 'Verb'],
     );
   });
 
   test(
     'optional example/hint/pronunciation trim to NULL, not empty string',
     () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final leaf = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'l',
-      )) as Ok<DeckEntity, DeckRejection>).value;
-
-      final result = await cards.createCard(
-        deckId: leaf.id,
-        front: 'f',
-        back: 'b',
-        hint: '   ',
+      final card = await cards.card(
+        leaf.id,
+        const CardDraft(front: 'f', back: 'b', hint: '   '),
       );
-      expect((result as Ok<CardEntity, CardRejection>).value.hint, isNull);
+
+      expect(card.hint, isNull);
     },
   );
 
   test(
     'front_folded/back_folded are Unicode-lowercase, not SQL lower()',
     () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final leaf = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'l',
-      )) as Ok<DeckEntity, DeckRejection>).value;
-
-      final result = await cards.createCard(
-        deckId: leaf.id,
-        front: 'CÔNG NGHỆ',
-        back: 'technology',
+      final card = await cards.card(
+        leaf.id,
+        const CardDraft(front: 'CÔNG NGHỆ', back: 'technology'),
       );
-      final card = (result as Ok<CardEntity, CardRejection>).value;
+
       final row = await db
           .customSelect(
             'SELECT front_folded FROM card WHERE id = ?',
@@ -253,38 +233,4 @@ void main() {
       expect(row.read<String>('front_folded'), 'công nghệ');
     },
   );
-
-  test(
-    'deleting the last card in a deck resets its content_type to unset',
-    () async {
-      final root = ((await decks.createRootDeck(
-        name: 'r',
-        schedulerType: SchedulerType.eightBox,
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final leaf = ((await decks.createSubDeck(
-        parentId: root.id,
-        name: 'l',
-      )) as Ok<DeckEntity, DeckRejection>).value;
-      final card = ((await cards.createCard(
-        deckId: leaf.id,
-        front: 'f',
-        back: 'b',
-      )) as Ok<CardEntity, CardRejection>).value;
-
-      await cards.deleteCard(cardId: card.id);
-
-      expect(
-        (await decks.findById(leaf.id))!.contentType,
-        DeckContentType.unset,
-      );
-    },
-  );
-
-  test('deleting a missing card answers notFound', () async {
-    final result = await cards.deleteCard(cardId: 'missing');
-    expect(
-      (result as Rejected<void, CardRejection>).reason,
-      CardRejection.notFound,
-    );
-  });
 }

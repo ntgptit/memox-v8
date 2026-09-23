@@ -1,56 +1,73 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/text/folded_text.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 
 /// Row access for `card`, plus the reads and writes of the owning `deck` row
 /// that card writes need. It returns Drift rows, never domain entities, and
-/// runs inside the caller's transaction.
+/// runs inside the caller's transaction. A card or deck in the Trash is out
+/// of reach of every write (spec §8).
 final class CardDao {
   CardDao(this._db);
 
   final AppDatabase _db;
 
-  Future<CardRow?> findRow(String id) => (_db.select(
+  Future<CardRow?> findRow(String id) =>
+      (_db.select(_db.card)
+            ..where((card) => card.id.equals(id) & card.deleteBatchId.isNull()))
+          .getSingleOrNull();
+
+  /// The active cards among [ids].
+  Future<List<CardRow>> liveRows(Set<String> ids) => (_db.select(
     _db.card,
-  )..where((card) => card.id.equals(id))).getSingleOrNull();
+  )..where((card) => card.id.isIn(ids) & card.deleteBatchId.isNull())).get();
 
-  Future<Deck?> deckRow(String id) => (_db.select(
-    _db.deck,
-  )..where((deck) => deck.id.equals(id))).getSingleOrNull();
+  Future<Deck?> deckRow(String id) =>
+      (_db.select(_db.deck)
+            ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
+          .getSingleOrNull();
 
-  /// Inserts a card with trimmed sides, their folded forms computed in Dart —
-  /// SQLite's `lower()` is ASCII-only (schema.md) — and blank optional fields
-  /// stored as null.
+  Future<List<Deck>> deckRows(Set<String> ids) =>
+      (_db.select(_db.deck)..where((deck) => deck.id.isIn(ids))).get();
+
   Future<void> insertCard({
     required String id,
     required String deckId,
-    required String front,
-    required String back,
-    required String? example,
-    required String? hint,
-    required String? pronunciation,
+    required CardDraft draft,
     required DateTime now,
   }) => _db
       .into(_db.card)
       .insert(
-        CardCompanion.insert(
-          id: id,
-          deckId: deckId,
-          front: front.trim(),
-          back: back.trim(),
-          frontFolded: Value(foldText(front)),
-          backFolded: Value(foldText(back)),
-          example: Value(_trimmedOrNull(example)),
-          hint: Value(_trimmedOrNull(hint)),
-          pronunciation: Value(_trimmedOrNull(pronunciation)),
-          createdAt: now,
-          updatedAt: now,
+        _contentOf(draft).copyWith(
+          id: Value(id),
+          deckId: Value(deckId),
+          createdAt: Value(now),
+          updatedAt: Value(now),
         ),
       );
 
-  /// Its schedule row, review log and tag links go with it by cascade.
-  Future<void> deleteCard(String id) =>
-      (_db.delete(_db.card)..where((card) => card.id.equals(id))).go();
+  Future<void> updateContent(String id, CardDraft draft, DateTime now) =>
+      (_db.update(_db.card)..where((card) => card.id.equals(id))).write(
+        _contentOf(draft).copyWith(updatedAt: Value(now)),
+      );
+
+  /// Their schedule rows, review logs and tag links go with them by cascade.
+  Future<void> deleteCards(Set<String> ids) =>
+      (_db.delete(_db.card)..where((card) => card.id.isIn(ids))).go();
+
+  Future<void> moveCards(Set<String> ids, String deckId, DateTime now) =>
+      (_db.update(_db.card)..where((card) => card.id.isIn(ids))).write(
+        CardCompanion(deckId: Value(deckId), updatedAt: Value(now)),
+      );
+
+  /// Writes only the cards whose flag differs from [isFlagged].
+  Future<void> setFlagged(Set<String> ids, bool isFlagged, DateTime now) {
+    final flag = isFlagged ? 1 : 0;
+    return (_db.update(_db.card)..where(
+          (card) => card.id.isIn(ids) & card.isFlagged.equals(flag).not(),
+        ))
+        .write(CardCompanion(isFlagged: Value(flag), updatedAt: Value(now)));
+  }
 
   /// Whether [deckId] still holds a live card; tombstones do not count, as in
   /// invariant 29.
@@ -74,6 +91,19 @@ final class CardDao {
     DeckCompanion(contentType: Value(contentType), updatedAt: Value(now)),
   );
 }
+
+/// The columns a draft sets: sides trimmed with their folded forms computed
+/// in Dart (schema.md), blank optional fields stored as null.
+CardCompanion _contentOf(CardDraft draft) => CardCompanion(
+  front: Value(draft.front.trim()),
+  back: Value(draft.back.trim()),
+  frontFolded: Value(foldText(draft.front)),
+  backFolded: Value(foldText(draft.back)),
+  example: Value(_trimmedOrNull(draft.example)),
+  hint: Value(_trimmedOrNull(draft.hint)),
+  pronunciation: Value(_trimmedOrNull(draft.pronunciation)),
+  isFlagged: Value(draft.isFlagged ? 1 : 0),
+);
 
 String? _trimmedOrNull(String? value) {
   final trimmed = value?.trim();

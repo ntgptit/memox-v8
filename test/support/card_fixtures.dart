@@ -1,5 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/entities/card_entity.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
 
 /// A card and its schedule row written straight to the tables, in one
 /// transaction, so a read test can set any schedule state and the watchers
@@ -65,3 +69,17 @@ Future<void> insertCard(
     updates: {db.cardSchedule},
   );
 });
+
+/// A card made through the real repository. A refusal here is a broken
+/// fixture, so it throws.
+extension CardFixtures on CardRepository {
+  Future<CardEntity> card(
+    String deckId, [
+    CardDraft draft = const CardDraft(front: 'front', back: 'back'),
+  ]) async => switch (await createCard(deckId: deckId, draft: draft)) {
+    Ok(:final value) => value,
+    Rejected(:final reason) => throw StateError(
+      'fixture card refused: $reason',
+    ),
+  };
+}

@@ -1,20 +1,49 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 
 /// The one implementation is `CardRepositoryImpl` (data layer). The contract
 /// exists for ADR-010's reason: domain stays framework-free and tests
 /// substitute a fake.
+///
+/// A batch takes a set of card ids and is all or nothing in one transaction:
+/// one card the rules refuse refuses the batch, and nothing is written
+/// (BR-CARD-011). An empty set writes nothing and answers `Ok`.
 abstract interface class CardRepository {
+  /// UC-CARD-001: the card, its schedule row (BR-CARD-004) and its tags, and
+  /// the deck becomes a deck of cards when it held nothing (BR-DECK-008).
   Future<Outcome<CardEntity, CardRejection>> createCard({
     required String deckId,
-    required String front,
-    required String back,
-    String? example,
-    String? hint,
-    String? pronunciation,
+    required CardDraft draft,
     DateTime? now,
   });
 
-  Future<Outcome<void, CardRejection>> deleteCard({required String cardId});
+  /// UC-CARD-001 A1: new content, flag and tags; the schedule row and the
+  /// review log stay as they are (BR-CARD-005).
+  Future<Outcome<void, CardRejection>> editCard({
+    required String cardId,
+    required CardDraft draft,
+    DateTime? now,
+  });
+
+  /// Their schedule rows, logs and tag links go with them; a deck left with
+  /// no card is unset again (BR-DECK-015).
+  Future<Outcome<void, CardRejection>> deleteCards({
+    required Set<String> cardIds,
+  });
+
+  /// BR-CARD-010: only `deck_id` and `updated_at` change.
+  Future<Outcome<void, CardRejection>> moveCards({
+    required Set<String> cardIds,
+    required String targetDeckId,
+    DateTime? now,
+  });
+
+  /// An explicit value for every card, never a toggle (BR-CARD-011).
+  Future<Outcome<void, CardRejection>> setFlagged({
+    required Set<String> cardIds,
+    required bool isFlagged,
+    DateTime? now,
+  });
 }

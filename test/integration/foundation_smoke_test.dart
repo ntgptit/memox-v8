@@ -3,6 +3,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -10,20 +11,26 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../support/invariant_queries.dart';
 import '../support/test_database.dart';
 
 void main() {
   test(
-    'deck -> card -> two reviews -> reset leaves a consistent database',
+    'deck -> tagged card -> two reviews -> reset leaves a consistent database',
     () async {
       final db = openTestDatabase();
       addTearDown(db.close);
       final now = DateTime(2026, 9, 23);
       final decks = DeckRepositoryImpl(db, now: () => now);
       final schedules = ScheduleRepositoryImpl(db, now: () => now);
-      final cards = CardRepositoryImpl(db, schedules, now: () => now);
+      final cards = CardRepositoryImpl(
+        db,
+        schedules,
+        TagRepositoryImpl(db, now: () => now),
+        now: () => now,
+      );
 
       final root = ((await decks.createRootDeck(
         name: 'Korean',
@@ -35,8 +42,7 @@ void main() {
       )) as Ok<DeckEntity, DeckRejection>).value;
       final card = ((await cards.createCard(
         deckId: leaf.id,
-        front: '사과',
-        back: 'apple',
+        draft: const CardDraft(front: '사과', back: 'apple', tagNames: ['fruit']),
       )) as Ok<CardEntity, CardRejection>).value;
 
       const sessionId = 'smoke-session';
