@@ -16,6 +16,12 @@ abstract final class AppIcons {
   static const IconData play = Icons.play_arrow; // play
   static const IconData inbox = Icons.inbox_outlined; // inbox
   static const IconData tag = Icons.sell_outlined; // tag
+  static const IconData chevronDown = Icons.keyboard_arrow_down; // chevron-down
+  static const IconData sort = Icons.swap_vert; // arrow-up-down
+  static const IconData filters = Icons.tune; // sliders-horizontal
+  static const IconData filter = Icons.filter_list; // filter
+  static const IconData alert = Icons.error_outline; // alert-circle
+  static const IconData remove = Icons.remove; // minus
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;

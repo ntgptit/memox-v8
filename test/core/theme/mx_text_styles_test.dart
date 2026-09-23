@@ -127,4 +127,82 @@ void main() {
       color: scheme.onSurfaceVariant,
     );
   });
+
+  test('chip count 12/700 tabular in the given ink', () {
+    const ink = Color(0xFF654321);
+    expectStyle(
+      styles.chipCount(ink),
+      size: 12,
+      weight: FontWeight.w700,
+      color: ink,
+    );
+    expect(
+      styles.chipCount(ink).fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
+  });
+
+  test('field message is the caption role in the given ink', () {
+    const ink = Color(0xFF654321);
+    expectStyle(
+      styles.fieldMessage(ink),
+      size: 12,
+      weight: FontWeight.w600,
+      color: ink,
+    );
+  });
+
+  test('input hint 14 onSurfaceVariant; search value 16/400', () {
+    expectStyle(
+      styles.inputHint,
+      size: 14,
+      weight: FontWeight.w400,
+      color: scheme.onSurfaceVariant,
+    );
+    expectStyle(
+      styles.searchValue,
+      size: 16,
+      weight: FontWeight.w400,
+      color: scheme.onSurface,
+    );
+    expectStyle(
+      styles.searchHint,
+      size: 16,
+      weight: FontWeight.w400,
+      color: scheme.onSurfaceVariant,
+    );
+  });
+
+  test('option row: title 14/600/-0.1, description 12 at 1.45', () {
+    expectStyle(
+      styles.optionTitle,
+      size: 14,
+      weight: FontWeight.w600,
+      tracking: -0.1,
+      color: scheme.onSurface,
+    );
+    expectStyle(
+      styles.optionDescription,
+      size: 12,
+      weight: FontWeight.w600,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(styles.optionDescription.height, 1.45);
+  });
+
+  test('tray label follows selection; stepper value 16/700 tabular', () {
+    expect(styles.trayLabel(isSelected: true).color, scheme.onSurface);
+    expect(styles.trayLabel(isSelected: false).color, scheme.onSurfaceVariant);
+    expectStyle(
+      styles.stepperValue(isInvalid: false),
+      size: 16,
+      weight: FontWeight.w700,
+      color: scheme.onSurface,
+    );
+    expect(styles.stepperValue(isInvalid: true).color, scheme.error);
+    expect(
+      styles.stepperValue(isInvalid: false).fontFeatures,
+      contains(const FontFeature.tabularFigures()),
+    );
+  });
 }

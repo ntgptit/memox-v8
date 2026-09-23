@@ -91,4 +91,9 @@ void main() {
   test('the indicator stroke is the spinner arc width', () {
     expect(AppStroke.indicator, 2);
   });
+
+  test('control and selected-ring strokes', () {
+    expect(AppStroke.control, 2);
+    expect(AppStroke.selectedRing, 6);
+  });
 }
