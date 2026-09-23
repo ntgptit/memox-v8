@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
@@ -168,6 +169,37 @@ void main() {
             onSelected: (_) {},
             isWide: true,
           ),
+        ],
+      ),
+    );
+  });
+  testWidgets('MxStepper default, invalid, busy, disabled', (tester) async {
+    Widget stepper({
+      int value = 20,
+      bool isInvalid = false,
+      bool isBusy = false,
+      bool isEnabled = true,
+    }) => MxStepper(
+      value: value,
+      decrementLabel: 'Fewer',
+      incrementLabel: 'More',
+      onDecrement: () {},
+      onIncrement: () {},
+      isInvalid: isInvalid,
+      isBusy: isBusy,
+      isEnabled: isEnabled,
+    );
+    await expectThemedGoldens(
+      tester,
+      'mx_stepper',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          stepper(),
+          stepper(value: 250, isInvalid: true),
+          stepper(isBusy: true),
+          stepper(isEnabled: false),
         ],
       ),
     );
