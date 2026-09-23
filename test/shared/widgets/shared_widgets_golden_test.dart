@@ -19,8 +19,10 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -401,6 +403,27 @@ void main() {
             hintText: 'Search decks and cards',
             clearLabel: 'Clear',
           ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxToggle and MxSelectionCheckbox', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_toggle_checkbox',
+      Row(
+        spacing: 8,
+        children: [
+          MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Off'),
+          MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'On'),
+          const MxToggle(
+            isOn: true,
+            onChanged: null,
+            semanticLabel: 'Disabled',
+          ),
+          const MxSelectionCheckbox(isChecked: false),
+          const MxSelectionCheckbox(isChecked: true),
         ],
       ),
     );
