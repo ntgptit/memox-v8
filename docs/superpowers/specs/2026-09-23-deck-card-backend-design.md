@@ -196,7 +196,8 @@ transaction (BR-CARD-011). Each use case is a class named `<Name>UseCase`, in
 
 **Tags** has no use case in this spec. Its `TagRepository` is called by the card
 data layer inside the card's transaction, as the foundation's Task 9 calls
-`DeckRepository`. The tag use cases come with Tag Management.
+`ScheduleRepository.initializeCard` (§4). The tag use cases come with Tag
+Management.
 
 ## 7. Domain rules and models
 
