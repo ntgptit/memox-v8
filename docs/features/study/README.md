@@ -1,7 +1,7 @@
 ---
 feature: study
 code: []
-depends_on: [deck, srs, study-mode]
+depends_on: [card, deck, srs, study-mode]
 ---
 ## Phạm vi
 

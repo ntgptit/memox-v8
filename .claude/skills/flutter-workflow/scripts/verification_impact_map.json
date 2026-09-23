@@ -2,8 +2,10 @@
   "version": 1,
   "feature_dependencies": {
     "card": [
-      "deck",
+      "search",
+      "srs",
       "starter_decks",
+      "study",
       "tags",
       "transfer",
       "trash"
@@ -13,9 +15,10 @@
       "progress",
       "reminders",
       "search",
+      "settings",
+      "srs",
       "starter_decks",
       "study",
-      "tags",
       "transfer",
       "trash"
     ],
@@ -24,36 +27,26 @@
     "search": [],
     "settings": [],
     "srs": [
-      "card",
-      "deck",
       "progress",
       "settings",
       "study",
+      "study_mode",
       "trash"
     ],
     "starter_decks": [],
     "study": [
-      "card",
-      "deck",
       "progress",
       "reminders",
-      "settings",
-      "srs",
-      "starter_decks"
+      "settings"
     ],
     "study_mode": [
-      "card",
-      "progress",
       "study"
     ],
     "tags": [
-      "card",
       "search",
       "transfer"
     ],
-    "transfer": [
-      "tags"
-    ],
+    "transfer": [],
     "trash": []
   },
   "database_query_features": {},

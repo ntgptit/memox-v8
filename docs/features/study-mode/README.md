@@ -1,7 +1,7 @@
 ---
 feature: study-mode
 code: []
-depends_on: []
+depends_on: [srs]
 ---
 ## Phạm vi
 

@@ -11,6 +11,7 @@ ERROR
 - id format wrong, id not matching the file name / folder DOMAIN, id duplicated
 - `rules` pointing to an unknown or deprecated BR; `superseded_by` unknown
 - a `code` path or a feature README `depends_on` that does not exist
+- a cycle in the feature `depends_on` graph (it must stay a DAG)
 - a broken relative link; a BR/UC id or `invariant Qn` cited but not defined
 - a UC / BR / feature README missing a required `##` section
 - a BR carrying a hand-written "used by" section (it is generated)
@@ -165,6 +166,29 @@ def check_feature_readme(doc: g.Doc, features: list[str], report: Report) -> Non
 
 
 # ------------------------------------------------------------ cross checks
+
+
+def check_dependency_cycles(docs: list[g.Doc], report: Report) -> None:
+    """`depends_on` must stay a DAG — see docs/README.md."""
+    graph = {doc.feature: doc.as_list("depends_on") for doc in docs if doc.kind == "FEATURE"}
+    readme = {doc.feature: doc for doc in docs if doc.kind == "FEATURE"}
+    state: dict[str, str] = {}
+
+    def visit(feature: str, path: list[str]) -> None:
+        if state.get(feature) == "done":
+            return
+        if state.get(feature) == "open":
+            cycle = path[path.index(feature):] + [feature]
+            report.error(readme[feature].path, f"`depends_on` có chu trình: {' → '.join(cycle)}")
+            return
+        state[feature] = "open"
+        for dep in graph.get(feature, []):
+            if dep in graph:
+                visit(dep, path + [feature])
+        state[feature] = "done"
+
+    for feature in sorted(graph):
+        visit(feature, [])
 
 
 def check_duplicates(docs: list[g.Doc], report: Report) -> dict[str, g.Doc]:
@@ -349,6 +373,7 @@ def run(plan: Path | None) -> Report:
             check_identity(doc, report)
         check_sections(doc, report)
         check_paths(doc, report)
+    check_dependency_cycles(docs, report)
     by_id = check_duplicates(docs, report)
     check_references(docs, by_id, report)
     check_text(docs, report)

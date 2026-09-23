@@ -1,7 +1,7 @@
 ---
 feature: tags
 code: []
-depends_on: [card, deck, transfer]
+depends_on: [card]
 ---
 ## Phạm vi
 
