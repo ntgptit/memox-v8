@@ -47,4 +47,9 @@ void main() {
     expect(light.ghostBorder, isColorCloseTo(0x245265F5));
     expect(dark.ghostBorder, isColorCloseTo(0x298B9AFF));
   });
+
+  test('warningInk is onWarning in light and the amber in dark (I1)', () {
+    expect(light.warningInk, MxSemanticColors.light.onWarning);
+    expect(dark.warningInk, MxSemanticColors.dark.warning);
+  });
 }

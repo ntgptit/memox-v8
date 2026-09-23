@@ -38,11 +38,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('the four phase-2 groups are present', (tester) async {
+  testWidgets('every built group is present', (tester) async {
     await _pumpGallery(tester);
 
     for (final title in [
       'B · Actions',
+      'C · Inputs & selection',
       'A · Chrome & navigation',
       'G · Loading, empty & error',
       'H · Layout',

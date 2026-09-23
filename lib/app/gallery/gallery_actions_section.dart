@@ -3,6 +3,8 @@ import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 /// Group B: every Button tone, size and state, and the IconButton.
@@ -76,6 +78,40 @@ class GalleryActionsSection extends StatelessWidget {
             icon: AppIcons.close,
             semanticLabel: 'Close',
             onPressed: null,
+          ),
+        ],
+      ),
+      Wrap(
+        spacing: AppSpacing.control,
+        runSpacing: AppSpacing.control,
+        children: [
+          MxFilterChip(
+            label: 'All',
+            count: 128,
+            isSelected: true,
+            onSelected: (_) {},
+          ),
+          MxFilterChip(
+            label: 'Cards',
+            count: 96,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+          MxFilterChip(
+            label: 'Decks',
+            icon: AppIcons.filter,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+          MxChipTrigger(
+            label: 'Sort: Due',
+            icon: AppIcons.sort,
+            onPressed: () {},
+          ),
+          MxChipTrigger(
+            label: 'Filters',
+            icon: AppIcons.filters,
+            onPressed: () {},
           ),
         ],
       ),

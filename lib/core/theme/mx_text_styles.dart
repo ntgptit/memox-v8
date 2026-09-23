@@ -15,6 +15,9 @@ final class MxTextStyles {
   static const double _titleTracking = -0.3;
   static const double _screenTitleTracking = -0.5;
   static const double _emptyBodyHeight = 1.55;
+  static const double _optionTitleTracking = -0.1;
+  static const double _optionDescriptionHeight = 1.45;
+  static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -85,4 +88,53 @@ final class MxTextStyles {
   /// FooterBar caption under the actions: 12, onSurfaceVariant.
   TextStyle get footerCaption =>
       _texts.labelSmall!.copyWith(color: _scheme.onSurfaceVariant);
+
+  /// FilterChip count: 12/700 tabular, in the chip's ink at its opacity, with
+  /// the label's 0.1 tracking so the pair reads as one line.
+  TextStyle chipCount(Color ink) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w700,
+  ).copyWith(letterSpacing: _labelTracking, fontFeatures: _tabular, color: ink);
+
+  /// FieldMessage line: the caption role in the tone's ink.
+  TextStyle fieldMessage(Color ink) => _texts.labelSmall!.copyWith(color: ink);
+
+  /// TextField placeholder: 14, onSurfaceVariant.
+  TextStyle get inputHint =>
+      _texts.bodyMedium!.copyWith(color: _scheme.onSurfaceVariant);
+
+  /// SearchField value: 16/400.
+  TextStyle get searchValue => AppTypography.withWeight(
+    _texts.bodyLarge!,
+    FontWeight.w400,
+  ).copyWith(color: _scheme.onSurface);
+
+  /// SearchField placeholder: the value style in onSurfaceVariant.
+  TextStyle get searchHint =>
+      searchValue.copyWith(color: _scheme.onSurfaceVariant);
+
+  /// OptionRow title: 14/600, -0.1.
+  TextStyle get optionTitle => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(letterSpacing: _optionTitleTracking, color: _scheme.onSurface);
+
+  /// OptionRow description: the caption role at line-height 1.45 (I5).
+  TextStyle get optionDescription => _texts.labelSmall!.copyWith(
+    height: _optionDescriptionHeight,
+    color: _scheme.onSurfaceVariant,
+  );
+
+  /// SegmentedTray label: the caption role, onSurface when selected (I5).
+  TextStyle trayLabel({required bool isSelected}) =>
+      _texts.labelSmall!.copyWith(
+        color: isSelected ? _scheme.onSurface : _scheme.onSurfaceVariant,
+      );
+
+  /// Stepper value: 16/700 tabular, error when invalid.
+  TextStyle stepperValue({required bool isInvalid}) =>
+      AppTypography.withWeight(_texts.bodyLarge!, FontWeight.w700).copyWith(
+        fontFeatures: _tabular,
+        color: isInvalid ? _scheme.error : _scheme.onSurface,
+      );
 }

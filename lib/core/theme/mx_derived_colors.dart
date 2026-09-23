@@ -16,6 +16,7 @@ final class MxDerivedColors {
     required this.surfaceHero,
     required this.chromeGlass,
     required this.ghostBorder,
+    required this.warningInk,
   });
 
   factory MxDerivedColors.resolve(
@@ -45,6 +46,10 @@ final class MxDerivedColors {
       ghostBorder: scheme.primary.withValues(
         alpha: isDark ? _ghostBorderDark : _ghostBorderLight,
       ),
+      // Kit-scoped (FieldMessage contract): the warning FILL fails as 12px
+      // text on light surfaces, so light inks with onWarning and dark with
+      // the amber itself.
+      warningInk: isDark ? semantic.warning : semantic.onWarning,
     );
   }
 
@@ -76,4 +81,7 @@ final class MxDerivedColors {
 
   /// The 1px primary-tinted hairline on cards, chips, dividers and chrome.
   final Color ghostBorder;
+
+  /// Warning TEXT (FieldMessage), never the warning fill.
+  final Color warningInk;
 }
