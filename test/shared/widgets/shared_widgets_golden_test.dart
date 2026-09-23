@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../support/golden_harness.dart';
@@ -71,6 +72,32 @@ void main() {
             icon: AppIcons.close,
             semanticLabel: 'Close',
             onPressed: null,
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxEmptyState full with action, compact neutral', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_empty_state',
+      Column(
+        spacing: 16,
+        children: [
+          MxEmptyState(
+            icon: AppIcons.inbox,
+            title: 'No decks yet',
+            body: 'Create a deck or add a starter deck to begin.',
+            actionLabel: 'Create deck',
+            onAction: () {},
+          ),
+          const MxEmptyState(
+            icon: AppIcons.search,
+            title: 'No match',
+            body: 'Try another word.',
+            tone: MxEmptyStateTone.neutral,
+            isCompact: true,
           ),
         ],
       ),
