@@ -1,0 +1,56 @@
+version: 1
+
+metadata:
+  id: common-convention-rules
+  name: Common Convention Rules
+  description: Generic coding convention rules for all projects.
+
+rules:
+  - id: common.no_placeholder_implementation
+    type: regex
+    severity: error
+    enabled: true
+    message: Placeholder implementations must not be committed.
+    scopes:
+      - source_files
+    patterns:
+      - "\\b(pass|TODO|FIXME)\\b\\s*(#|//)?\\s*(implement|implementation|later|temporary|temp|stub|placeholder|not implemented)"
+      - "\\bthrow\\s+new\\s+UnsupportedOperationException\\s*\\("
+      - "\\bthrow\\s+UnimplementedError\\s*\\("
+      - "\\bNotImplementedError\\s*\\("
+    tags:
+      - common
+      - convention
+      - correctness
+    fix:
+      hint: Replace the placeholder with the real implementation or remove the unused code.
+
+  - id: common.no_commented_out_code
+    type: regex
+    severity: error
+    enabled: true
+    message: Commented-out code should not be committed.
+    scopes:
+      - source_files
+    patterns:
+      # A keyword on its own is not code. The pattern here used to be one
+      # alternation of bare words followed by `\b`, so the wrapped prose comment
+      # `// for this assertion.` was reported as commented-out code — the rule
+      # punished explaining things, which is the opposite of what it is for.
+      #
+      # Each alternative now requires the syntax that actually follows the keyword
+      # in code: a paren, a terminating `;`, an identifier, an assignment. Real
+      # commented-out code has all of that; a sentence that happens to start with
+      # "for" or "return" has none of it.
+      - "^\\s*(#|//)\\s*(if|for|while|switch|catch)\\s*\\("
+      - "^\\s*(#|//)\\s*return\\b[^\\n]*;"
+      - "^\\s*(#|//)\\s*(class|def|function|fn)\\s+\\w+"
+      - "^\\s*(#|//)\\s*(const|let|var|final)\\s+\\w+\\s*[=;]"
+      - "^\\s*(#|//)\\s*(public|private|protected)\\s+\\w+\\s+\\w+"
+      - "^\\s*(#|//)\\s*\\w+\\s*=\\s*[^=\\n]+;\\s*$"
+    tags:
+      - common
+      - convention
+      - cleanup
+    fix:
+      hint: Delete commented-out code or explain the decision in a normal comment.
