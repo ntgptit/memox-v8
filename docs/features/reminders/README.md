@@ -1,7 +1,7 @@
 ---
 feature: reminders
 code: []
-depends_on: []
+depends_on: [deck, study]
 ---
 ## Phạm vi
 

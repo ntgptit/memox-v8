@@ -2,13 +2,17 @@
 
 # Open questions
 
+## [README.md](../README.md)
+
+- L280: > ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
+
 ## [features/card/README.md](../features/card/README.md)
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## [features/card/rules/BR-CARD-019-the-khong-ton-tai-co-ly-do-co-kieu.md](../features/card/rules/BR-CARD-019-the-khong-ton-tai-co-ly-do-co-kieu.md)
 
-- L15: > ⚠️ OPEN QUESTION: rule trích BR-PRIVACY-003 cho ý "MUST NOT lộ id, đường dẫn hay SQL", nhưng BR-PRIVACY-003 là "Media MUST lưu trong thư mục riêng của ứng dụng". Không BR riêng tư nào phát biểu ý này. Nguồn: `business-rules/card.md` BR-CARD-019 · `business-rules/privacy.md` BR-PRIVACY-003. (Plan OQ-5)
+- L15: > ⚠️ OPEN QUESTION: rule trích BR-CORE-003 cho ý "MUST NOT lộ id, đường dẫn hay SQL", nhưng BR-CORE-003 là "Media MUST lưu trong thư mục riêng của ứng dụng". Không BR riêng tư nào phát biểu ý này. Nguồn: `business-rules/card.md` BR-CARD-019 · `business-rules/privacy.md` BR-CORE-003. (Plan OQ-5)
 
 ## [features/card/ui.md](../features/card/ui.md)
 
@@ -24,7 +28,7 @@
 
 ## [features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md](../features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md)
 
-- L16: > ⚠️ OPEN QUESTION: E1 trích BR-PRIVACY-003 cho ý "không lộ id hay chi tiết kỹ thuật", nhưng BR-PRIVACY-003 là luật lưu media. (Plan OQ-5)
+- L16: > ⚠️ OPEN QUESTION: E1 trích BR-CORE-003 cho ý "không lộ id hay chi tiết kỹ thuật", nhưng BR-CORE-003 là luật lưu media. (Plan OQ-5)
 - L97: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/README.md](../features/deck/README.md)
@@ -209,11 +213,11 @@
 
 ## [features/transfer/README.md](../features/transfer/README.md)
 
-- L14: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+- L21: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## [features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md)
 
-- L15: > ⚠️ OPEN QUESTION: rule gọi luật riêng tư của nội dung card là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật riêng tư tương ứng có vẻ là BR-PRIVACY-001/BR-PRIVACY-002. Nguồn: `business-rules/transfer.md` BR-TRANSFER-006 · `business-rules/starter-decks.md` BR-STARTER-002. (Plan OQ-6)
+- L15: > ⚠️ OPEN QUESTION: rule gọi luật riêng tư của nội dung card là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật riêng tư tương ứng có vẻ là BR-CORE-001/BR-CORE-002. Nguồn: `business-rules/transfer.md` BR-TRANSFER-006 · `business-rules/starter-decks.md` BR-STARTER-002. (Plan OQ-6)
 
 ## [features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md](../features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md)
 
@@ -233,4 +237,22 @@
 
 ## [glossary.md](../glossary.md)
 
-- L25: > ⚠️ OPEN QUESTION: "study answers" được dùng như một thực thể lưu trữ (BR-CARD-005, BR-DECK-022, BR-SRS-017, BR-SRS-019, BR-SRS-025) nhưng `data-model.md` không có bảng nào tên như vậy — chỉ có `review_log` mang dữ liệu từng lượt và cột `generation`. Chưa có chỗ nào nói hai tên này là một. (Plan OQ-9)
+- L26: > ⚠️ OPEN QUESTION: "study answers" được dùng như một thực thể lưu trữ (BR-CARD-005, BR-DECK-022, BR-SRS-017, BR-SRS-019, BR-SRS-025) nhưng `shared/data/schema.md` không có bảng nào tên như vậy — chỉ có `review_log` mang dữ liệu từng lượt và cột `generation`. Chưa có chỗ nào nói hai tên này là một. (Plan OQ-9)
+
+## [shared/data/schema.md](../shared/data/schema.md)
+
+- L136: > ⚠️ OPEN QUESTION: đoạn trên nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng BR-DECK-018 và UC-DECK-005 chỉ nói `root_id`. (Plan OQ-8)
+- L387: > ⚠️ OPEN QUESTION: cột `end_reason` liệt kê bảy giá trị nhưng trích BR-STUDY-011 (đã deprecated, năm giá trị) thay vì BR-STUDY-012; invariant 12 cũng trích BR-STUDY-011 mà không trích BR-STUDY-012/BR-STUDY-016. (Plan OQ-7)
+- L879: > ⚠️ OPEN QUESTION: BR dùng "study answers" như một thực thể lưu trữ, nhưng schema không có bảng nào tên như vậy — chỉ có `review_log`. (Plan OQ-9)
+
+## [shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md](../shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md)
+
+- L30: > ⚠️ OPEN QUESTION: đoạn trên gọi luật "không log nội dung" là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật tương ứng có vẻ là BR-CORE-002 (trước là `BR-PRIVACY-002`). Nguồn: `product/product.md` mục Sensitive data · `business-rules/starter-decks.md`. (Plan OQ-6)
+
+## [shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md)
+
+- L14: > ⚠️ OPEN QUESTION: BR-CARD-019 và UC-CARD-002 E1 trích rule này (khi còn là `BR-PRIVACY-003`) cho ý "không lộ id, đường dẫn hay SQL", trong khi rule chỉ nói về nơi lưu media. (Plan OQ-5)
+
+## [shared/ui/navigation.md](../shared/ui/navigation.md)
+
+- L24: > ⚠️ OPEN QUESTION: `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10 liệt kê "Top-level navigation destinations, progress screen content" là câu hỏi mở của product definition (sub-project 2), trong khi mục trên đã chốt bốn destination. (Plan OQ-3)

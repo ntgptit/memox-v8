@@ -16,7 +16,7 @@ Tìm kiếm MUST bao phủ đúng bốn trường: tên deck, mặt trước car
 
 Global Library Search (UC-SEARCH-001). Các rule dưới đây **không** phát biểu lại luật
 nội dung card (BR-CARD-001, BR-CARD-002, BR-CARD-003), luật tag (BR-TAG-001) hay luật riêng tư chung
-(BR-PRIVACY-001…BR-PRIVACY-004) — chúng chỉ nói phần mà việc tìm kiếm thêm vào.
+(BR-CORE-001…BR-CORE-004) — chúng chỉ nói phần mà việc tìm kiếm thêm vào.
 
 ## Ví dụ
 

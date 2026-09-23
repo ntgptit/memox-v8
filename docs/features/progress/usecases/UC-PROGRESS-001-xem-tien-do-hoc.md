@@ -2,7 +2,7 @@
 id: UC-PROGRESS-001
 title: Xem tiến độ học
 status: ready
-rules: [BR-MODE-005, BR-PRIVACY-002, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGRESS-012, BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016, BR-PROGRESS-017, BR-PROGRESS-018, BR-STUDY-074]
+rules: [BR-MODE-005, BR-CORE-002, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGRESS-012, BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016, BR-PROGRESS-017, BR-PROGRESS-018, BR-STUDY-074]
 code: []
 ---
 ## Mục tiêu / Actor / Precondition
@@ -60,7 +60,7 @@ nào — trạng thái "chưa có gì" là một mặt hợp lệ, không phải
 **Error flows:**
 - **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn
   hình hiện mặt lỗi kèm `Retry`. Thông báo MUST NOT lộ SQL, tên bảng hay nội
-  dung card (BR-PRIVACY-002).
+  dung card (BR-CORE-002).
 - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp
   và MUST NOT ghi gì (BR-PROGRESS-009).
 

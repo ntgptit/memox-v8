@@ -1,7 +1,7 @@
 ---
 feature: starter-decks
 code: []
-depends_on: []
+depends_on: [card, deck, study]
 ---
 ## Phạm vi
 

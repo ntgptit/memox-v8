@@ -1,7 +1,7 @@
 ---
 feature: srs
 code: []
-depends_on: []
+depends_on: [study]
 ---
 ## Phạm vi
 

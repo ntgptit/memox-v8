@@ -1,6 +1,6 @@
 # Kế hoạch tái cấu trúc docs → kiến trúc thân thiện với AI agent
 
-Trạng thái: **Bước 2 xong — feature thí điểm `deck`, chờ xác nhận.** Bước 0 đã xác nhận Q1–Q10 (mục 6); Bước 1 xong (khung + tool). Còn lại của `deck`: `it-scenarios.md` (làm cùng `shared/testing/` ở Bước 3), điền `depends_on` khi `srs`/`study`/`card` tồn tại. Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
+Trạng thái: **Bước 3 xong — mọi đích trong bảng ánh xạ đã tồn tại; Bước 4 kiểm chứng PASS; chờ xác nhận trước Bước 5 (xoá file gốc).** Bước 0 đã xác nhận Q1–Q10 (mục 6). Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
 
 Mọi đường dẫn trong file này tính từ `docs/`. Trong bảng ánh xạ, `<slug>` là phần
 tên file chưa chốt; `check.py --plan` coi `<slug>` và `*` là wildcard, và cột đích
@@ -57,7 +57,7 @@ state machine, validation, edge case, 6 UC) → `card` → `srs` → `study-mode
 
 ### 3.1. BR → file BR
 
-| Nguồn | Đích trong file BR |
+| Nội dung gốc | Đích trong file BR |
 |---|---|
 | Cột **ID** | `id` + tên file |
 | Cột **Status** `active` / `superseded by X` | `status: active` / `status: deprecated` + `superseded_by: X` |
@@ -74,7 +74,7 @@ state machine, validation, edge case, 6 UC) → `card` → `srs` → `study-mode
 
 ### 3.2. UC → file UC
 
-| Nguồn (9 mục) | Đích |
+| Mục của UC gốc | Đích |
 |---|---|
 | Phạm vi (chỉ 5 UC sub-project sau), Actor, Trigger, Preconditions | `## Mục tiêu / Actor / Precondition` |
 | Main flow (kể cả nhiều main flow của UC-DECK-002) | `## Main flow` |
@@ -88,7 +88,7 @@ state machine, validation, edge case, 6 UC) → `card` → `srs` → `study-mode
 
 ### 3.3. Các nội dung khác
 
-| Nguồn | Đích | Lý do |
+| Nội dung gốc | Đích | Lý do |
 |---|---|---|
 | Bảng Validation rules (field / rule / message / enforced) | `features/<f>/ui.md` mục "Validation" | Message dùng chung cho nhiều UC (tạo + sửa) — Q5 |
 | Entity state machines | `features/<f>/data.md` | Trạng thái của field/bảng |
@@ -172,6 +172,11 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | OQ-14 | Validation `srs.md:282-283` và nhiều dòng edge case/validation không trích BR nào | `deck.md:102-104,128`, `card.md:123-124,146`, `srs.md:247-302` | — | Xem Q5 |
 | OQ-15 | Sơ đồ deck còn nhánh reset `content_type` thủ công (H2) mâu thuẫn BR-DECK-015; nhãn F2/H2 trỏ sai UC-DECK-002 A3/A4 | `product/master-flow.md` §3 | BR-DECK-015 (`deck.md:33`), `use-cases/deck.md` UC-DECK-002 A3, A4 | `features/deck/ui.md` |
 | OQ-16 | BR-SRS-007 là luật thứ tự thủ công của deck (`sibling_position`) nhưng mang DOMAIN `SRS`; theo Q1 giữ nguyên ID và nằm ở `features/srs/` | `srs.md:23` | UC-DECK-006 | `features/srs/rules/BR-SRS-007-*` |
+| OQ-17 | Đoạn giải thích nút `I1` nói xoá hết card **không** đưa deck về `unset`, ngược với chính nút `I1` và BR-DECK-015 | `product/master-flow.md` §4 | BR-DECK-015 | `features/card/ui.md` |
+| OQ-18 | Edge case "Nội dung card rất dài (2000 ký tự)" dùng giới hạn cũ; BR-CARD-002 là 60/240 | `business-rules/card.md` Edge cases | BR-CARD-002 | `features/card/ui.md` |
+| OQ-19 | Cùng khái niệm định nghĩa hai lần: card-day (BR-PROGRESS-002/011), phân hoạch Learning/Reviewing (005/014), chỉ-đọc (007/009) | `business-rules/progress.md` | — | `features/progress/README.md` + 6 BR |
+| OQ-20 | BR-TAG-006 nói validation của BR-TAG-001 gồm "không ký tự điều khiển"; BR-TAG-001 không có điều kiện đó | `business-rules/tags.md` BR-TAG-006 | BR-TAG-001 | BR-TAG-006 |
+| OQ-21 | Hàng BR-STARTER-010 lặp hai lần giống hệt nhau | `business-rules/starter-decks.md` | — | `features/starter-decks/README.md` |
 
 ## 8. Rủi ro ngoài phạm vi (không sửa trong task này)
 

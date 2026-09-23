@@ -1,7 +1,7 @@
 ---
 feature: trash
 code: []
-depends_on: []
+depends_on: [card, deck, srs]
 ---
 ## Phạm vi
 

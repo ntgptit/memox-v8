@@ -10,7 +10,7 @@ superseded_by:
 Nhắc học MUST mặc định **tắt**. Ứng dụng MUST NOT xin quyền notification, MUST NOT đăng ký lịch nền và MUST NOT hiện notification nào cho tới khi người dùng chủ động bật. Bật là một hành động tường minh của người dùng, MUST NOT suy ra từ việc mở app, học xong một phiên hay cài lại app.
 
 **Enforced by:** rule + UI
-**Liên quan:** BR-PRIVACY-004
+**Liên quan:** BR-CORE-004
 
 > ⚠️ OPEN QUESTION: đoạn giới thiệu (mục `## Lý do` bên dưới) nói không phát biểu lại định nghĩa "đến hạn" và trích BR-STUDY-001, nhưng BR-STUDY-001 đã deprecated, thay bằng BR-STUDY-051. Nguồn: `business-rules/reminders.md`. (Plan Q6)
 
@@ -18,7 +18,7 @@ Nhắc học MUST mặc định **tắt**. Ứng dụng MUST NOT xin quyền not
 
 Một notification tóm tắt mỗi ngày, dựng từ workload đến hạn thật. Các
 rule dưới đây **không** phát biểu lại định nghĩa "đến hạn" (BR-STUDY-001), cách tra root
-(BR-DECK-002, BR-DECK-003), hay luật riêng tư chung (BR-PRIVACY-001…BR-PRIVACY-004) — chúng chỉ nói phần mà
+(BR-DECK-002, BR-DECK-003), hay luật riêng tư chung (BR-CORE-001…BR-CORE-004) — chúng chỉ nói phần mà
 chiều nhắc học thêm vào.
 
 ## Ví dụ

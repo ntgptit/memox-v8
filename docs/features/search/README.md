@@ -1,7 +1,7 @@
 ---
 feature: search
 code: []
-depends_on: []
+depends_on: [deck, tags]
 ---
 ## Phạm vi
 

@@ -1,7 +1,7 @@
 ---
 feature: settings
 code: []
-depends_on: []
+depends_on: [srs, study]
 ---
 ## Phạm vi
 

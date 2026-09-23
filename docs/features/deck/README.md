@@ -1,7 +1,7 @@
 ---
 feature: deck
 code: []
-depends_on: []
+depends_on: [card, srs, study]
 ---
 ## Phạm vi
 

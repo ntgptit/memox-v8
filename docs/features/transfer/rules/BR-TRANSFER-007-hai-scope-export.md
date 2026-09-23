@@ -16,7 +16,7 @@ Export MUST hỗ trợ đúng hai scope và MUST NOT có scope thứ ba ở v1. 
 
 Nửa còn lại của Card Transfer. Các rule dưới đây **không** phát biểu lại
 validation nội dung (BR-CARD-001, BR-CARD-002, BR-CARD-003), luật tag (BR-TAG-001, BR-TAG-002) hay luật
-riêng tư chung (BR-PRIVACY-001…BR-PRIVACY-004) — chúng chỉ nói phần mà chiều export thêm vào.
+riêng tư chung (BR-CORE-001…BR-CORE-004) — chúng chỉ nói phần mà chiều export thêm vào.
 
 ## Ví dụ
 

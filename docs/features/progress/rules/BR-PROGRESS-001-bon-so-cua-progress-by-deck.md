@@ -17,7 +17,7 @@ Progress by Deck v1 MUST chỉ báo cáo đúng bốn số cho mỗi phạm vi: 
 Drill-down hoạt động học theo cây deck (UC-PROGRESS-002). Các rule dưới đây **không** phát
 biểu lại định nghĩa ngày địa phương (BR-STUDY-074), quan hệ cha–con và `root_id`
 (BR-DECK-001…BR-DECK-003), tính append-only của `review_log` (BR-SRS-023) hay luật riêng tư
-chung (BR-PRIVACY-001…BR-PRIVACY-004) — chúng chỉ nói phần mà chiều đọc tiến độ thêm vào.
+chung (BR-CORE-001…BR-CORE-004) — chúng chỉ nói phần mà chiều đọc tiến độ thêm vào.
 
 ## Ví dụ
 

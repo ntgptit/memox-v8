@@ -14,7 +14,7 @@ superseded_by:
 
 ## Lý do
 
-Mặc định học toàn app, theme và ngôn ngữ, trong một dòng duy nhất (UC-SETTINGS-001). Các rule dưới đây **không** phát biểu lại luật override theo root deck (BR-DECK-025) hay luật riêng tư chung (BR-PRIVACY-001…BR-PRIVACY-004).
+Mặc định học toàn app, theme và ngôn ngữ, trong một dòng duy nhất (UC-SETTINGS-001). Các rule dưới đây **không** phát biểu lại luật override theo root deck (BR-DECK-025) hay luật riêng tư chung (BR-CORE-001…BR-CORE-004).
 
 ## Ví dụ
 

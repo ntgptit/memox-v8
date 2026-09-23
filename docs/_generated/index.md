@@ -4,7 +4,27 @@
 
 ## shared
 
-Chưa có tài liệu.
+### Rules
+
+| ID | Title | Status | Summary | Used by |
+|---|---|---|---|---|
+| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | UC-PROGRESS-002, UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | active | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | UC-PROGRESS-001, UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | UC-CARD-002 |
+| [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
+
+### Decisions
+
+| ID | Title | Status | Summary |
+|---|---|---|---|
+| [ADR-001](../shared/decisions/ADR-001-quyet-dinh-nen-tang.md) | Quyết định nền tảng | active | — |
+| [ADR-002](../shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md) | Dữ liệu nhạy cảm và chưa mã hoá database | active | — |
+| [ADR-003](../shared/decisions/ADR-003-hai-scheduler-chon-theo-deck.md) | Hai scheduler, chọn theo deck | active | — |
+| [ADR-004](../shared/decisions/ADR-004-khoa-scheduler-va-reset.md) | Khoá scheduler và reset learning progress | active | — |
+| [ADR-005](../shared/decisions/ADR-005-starter-deck-la-template-sao-chep.md) | Starter deck là template được sao chép | active | — |
+| [ADR-006](../shared/decisions/ADR-006-cay-deck-moi-deck-mot-loai-noi-dung.md) | Cây deck nhiều cấp, mỗi deck một loại nội dung | active | — |
+| [ADR-007](../shared/decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md) | Khoá chính UUID sinh phía client | active | — |
+| [ADR-008](../shared/decisions/ADR-008-datetime-luu-utc.md) | DATETIME lưu UTC | active | — |
 
 ## [card](../features/card/README.md)
 

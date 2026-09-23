@@ -2,7 +2,7 @@
 id: UC-CARD-002
 title: Xem chi tiết một card và lịch sử học của nó
 status: ready
-rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-012, BR-CARD-013, BR-CARD-014, BR-CARD-015, BR-CARD-016, BR-CARD-017, BR-CARD-018, BR-CARD-019, BR-CARD-020, BR-DECK-015, BR-MODE-008, BR-PRIVACY-003, BR-SRS-014, BR-SRS-015, BR-STUDY-028, BR-STUDY-034, BR-STUDY-035, BR-STUDY-053, BR-TAG-001]
+rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-012, BR-CARD-013, BR-CARD-014, BR-CARD-015, BR-CARD-016, BR-CARD-017, BR-CARD-018, BR-CARD-019, BR-CARD-020, BR-DECK-015, BR-MODE-008, BR-CORE-003, BR-SRS-014, BR-SRS-015, BR-STUDY-028, BR-STUDY-034, BR-STUDY-035, BR-STUDY-053, BR-TAG-001]
 code: []
 ---
 ## Mục tiêu / Actor / Precondition
@@ -13,7 +13,7 @@ chọn nhiều (BR-CARD-020)
 **Preconditions:** Deck đang mở là sub-deck loại `card`; thẻ được chạm còn tồn
 tại
 
-> ⚠️ OPEN QUESTION: E1 trích BR-PRIVACY-003 cho ý "không lộ id hay chi tiết kỹ thuật", nhưng BR-PRIVACY-003 là luật lưu media. (Plan OQ-5)
+> ⚠️ OPEN QUESTION: E1 trích BR-CORE-003 cho ý "không lộ id hay chi tiết kỹ thuật", nhưng BR-CORE-003 là luật lưu media. (Plan OQ-5)
 
 ## Main flow
 
@@ -61,7 +61,7 @@ tại
 **Error flows:**
 - **E1 — Thẻ không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã
   bị xoá → hệ thống hiện mặt not-found có kiểu kèm lối quay lại danh sách; không
-  màn trắng, không lộ id hay chi tiết kỹ thuật (BR-CARD-019, BR-PRIVACY-003).
+  màn trắng, không lộ id hay chi tiết kỹ thuật (BR-CARD-019, BR-CORE-003).
 - **E2 — Thẻ bị xoá từ màn khác khi chi tiết đang mở:** stream nội dung chuyển
   sang mặt not-found tương tự E1; không có mutation nào được thực hiện từ đây
   (BR-CARD-013, BR-CARD-019).

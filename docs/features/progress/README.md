@@ -1,7 +1,7 @@
 ---
 feature: progress
 code: []
-depends_on: []
+depends_on: [deck, srs, study, study-mode]
 ---
 ## Phạm vi
 
