@@ -7,3 +7,9 @@
 /// (BR-STUDY-074).
 DateTime dueAtLocalMidnight(DateTime now, int daysFromNow) =>
     DateTime(now.year, now.month, now.day + daysFromNow);
+
+/// The start of [now]'s local day: the one boundary Due today and Overdue are
+/// split on (BR-STUDY-068), computed here and passed to the queries, never in
+/// SQL.
+DateTime startOfLocalDay(DateTime now) =>
+    DateTime(now.year, now.month, now.day);

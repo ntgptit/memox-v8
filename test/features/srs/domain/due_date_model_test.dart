@@ -25,4 +25,11 @@ void main() {
     final now = DateTime(2026, 3, 1, 9);
     expect(dueAtLocalMidnight(now, 30), DateTime(2026, 3, 31));
   });
+
+  test('startOfLocalDay drops the time of day', () {
+    expect(
+      startOfLocalDay(DateTime(2026, 9, 23, 23, 59)),
+      DateTime(2026, 9, 23),
+    );
+  });
 }
