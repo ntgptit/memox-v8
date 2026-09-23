@@ -263,6 +263,13 @@ depends_on: []
 ## Không thuộc phạm vi
 ```
 
+`depends_on` — X khai báo Y khi X **đọc dữ liệu hoặc contract mà Y sở hữu**
+(chủ dự án chốt ngày 2026-09-23). Đồ thị phải **không có chu trình**: feature nền
+tảng không khai báo feature tiêu thụ nó, kể cả khi tài liệu của nó nhắc tới feature
+đó. Chỉ ghi phụ thuộc trực tiếp — bỏ cạnh đã suy ra được qua feature khác. Nhắc
+tới một BR/UC của feature khác không tự tạo phụ thuộc. `check.py` báo lỗi khi có
+chu trình; `verification_impact_map.json` suy ra từ trường này.
+
 ADR — `shared/decisions/`: frontmatter `id`, `title`, `status`
 (`draft | active | deprecated`), `superseded_by` khi deprecated.
 

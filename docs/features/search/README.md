@@ -1,7 +1,7 @@
 ---
 feature: search
 code: []
-depends_on: [deck, tags]
+depends_on: [card, deck, tags]
 ---
 ## Phạm vi
 
