@@ -11,6 +11,14 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
+import 'package:memox/shared/widgets/mx_settings_row.dart';
+
+import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
+
+import 'package:memox/shared/widgets/mx_toggle.dart';
+
+import 'package:memox/shared/widgets/mx_stepper.dart';
+
 import '../../support/golden_harness.dart';
 
 void main() {
@@ -84,6 +92,83 @@ void main() {
             ),
           ],
         ),
+      ),
+    );
+  });
+
+  testWidgets('MxSettingsRow and MxActionSheetCommandRow', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_settings_command_rows',
+      Column(
+        spacing: 16,
+        children: [
+          MxCard(
+            isFullBleed: true,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MxSettingsRow(
+                  label: 'Daily reminder',
+                  subtitle: 'One nudge at the time you choose',
+                  icon: AppIcons.reminder,
+                  trailing: MxToggle(
+                    isOn: true,
+                    onChanged: (_) {},
+                    semanticLabel: 'Daily reminder',
+                  ),
+                ),
+                MxSettingsRow(
+                  label: 'Language',
+                  icon: AppIcons.library,
+                  onTap: () {},
+                ),
+                MxSettingsRow(
+                  label: 'Cards per session',
+                  icon: AppIcons.library,
+                  wideControl: MxStepper(
+                    value: 20,
+                    decrementLabel: 'Fewer',
+                    incrementLabel: 'More',
+                    onDecrement: () {},
+                    onIncrement: () {},
+                  ),
+                ),
+                const MxSettingsRow(
+                  label: 'Unavailable while notifications are off',
+                  icon: AppIcons.reminder,
+                  isEnabled: false,
+                ),
+              ],
+            ),
+          ),
+          MxCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MxActionSheetCommandRow(
+                  icon: AppIcons.edit,
+                  label: 'Rename',
+                  subtitle: 'Change the deck name',
+                  onTap: () {},
+                ),
+                MxActionSheetCommandRow(
+                  icon: AppIcons.folder,
+                  label: 'Move',
+                  hasChevron: true,
+                  onTap: () {},
+                ),
+                MxActionSheetCommandRow(
+                  icon: AppIcons.delete,
+                  label: 'Delete',
+                  subtitle: 'Recoverable for 30 days',
+                  isDestructive: true,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   });
