@@ -1,6 +1,7 @@
 # MemoX V8 — Folder architecture design
 
-Status: decisions approved in chat 2026-09-23 · spec awaiting review · Path: architectural
+Status: approved 2026-09-23 · amended while writing the plan (§6.3 table, §8 items 3
+and 5, §9 item 4 and the rule count in its follow-up list) · Path: architectural
 
 ## 1. Intent
 
@@ -201,7 +202,7 @@ also import another feature's `di/`. No file imports another feature's `data/`,
 | Graph | Direction | Declared in | Used for |
 |---|---|---|---|
 | `depends_on` | data: X reads data or a business contract that Y owns | `docs/features/*/README.md` | `verification_impact_map.json` (test widening), docs integrity |
-| Dart import map | contract: X imports Y's public buckets | `test/architecture/boundaries_test.dart` | compile-time boundaries |
+| Dart import map | contract: X imports Y's public buckets | `test/architecture/boundary_rules.dart` | compile-time boundaries |
 
 - The import map must be acyclic, and the test itself checks this. The foundation's
   entries are `srs → ∅`, `deck → {srs}` and `card → {deck, srs}`. `srs` reads `deck`
@@ -246,25 +247,29 @@ Until the first `presentation/` file lands, the gate is:
 
 1. `flutter analyze`.
 2. `flutter test`, which includes `test/architecture/boundaries_test.dart`.
-3. `check_architecture.py`. Its zero-scope rule stays mandatory for `all`,
-   `features`, `domain` and `data`; `presentation` and `di` become optional layers.
+3. `check_architecture.py`. Its zero-scope rule stays mandatory for `all` only. The
+   per-layer counts are reported, not required. Layers appear with their first real
+   file (D1), so a tree with `domain/` and no `data/` yet is legitimate: that is the
+   state after foundation Task 3, and today's tree has no feature at all. A renamed
+   layer or folder is caught by name instead of by count, through item 4 and the
+   shape rules of `boundaries_test.dart` (§9).
 4. The CI tooling unit tests. They hold
    `test_every_feature_source_uses_a_known_top_level_layer`, which fails on any
    top-level feature folder outside `domain/`, `data/`, `di/` and `presentation/`. It
    therefore still catches the layer rename that the zero-scope rule was guarding
    against.
-5. The guard `memox-v8`, failing on any error. `rule_without_targets` and
-   `missing_target_path` warnings are tolerated only for rules on an explicit
-   allowlist, and an unlisted warning still fails. Each entry names the layer it waits
-   for. Measured on the stub tree of §2 plus the repository's existing tests, the list
-   for the foundation is 28 rules:
+5. The guard `memox-v8`, failing on any error. A rule that has no targets yet declares
+   `targets_pending: <layer>` in the ruleset's `config/overrides.yaml`. The guard
+   reports such a rule at info level while it waits. Once the rule has targets, the
+   declaration is reported as a `stale_targets_pending` warning, so the entry must go
+   in the commit that adds the layer. A rule without targets and without the
+   declaration still fails. The list starts at 40 rules on today's tree, which has no
+   feature code. Foundation Tasks 3, 5, 7 and 10 retire 12 of them as their layers
+   land. 28 remain after the foundation:
    - 25 wait for `presentation/` or `shared/` UI;
    - 1 waits for `lib/l10n/` (`memox.i18n.arb_entry_needs_description`, which also
      raises the `missing_target_path` for `app_en.arb`);
    - 2 wait for visual-audit tests.
-
-   The implementation plan recomputes the list against the real tree, and chooses the
-   mechanism after reading the guard's configuration API.
 
 From the first screen, the gate is the full `dod_check.sh`, with the guard back to
 warnings-as-errors and an empty allowlist. The generated-code gate becomes mandatory
@@ -296,13 +301,18 @@ beyond `lib/main.dart`, so every change is to documentation, skills, tooling or 
    - `flutter-project-setup/SKILL.md`: flavors and `EnvConfig` are deferred until an
      ADR opens networking (ADR-001).
 4. **Tooling:**
-   - `check_architecture.py`: optional `presentation` and `di` scopes.
-     `test_architecture_checker.py` gains a fixture without them that passes, and
-     keeps the failure on a zero `domain` scope.
+   - `check_architecture.py`: only the `all` zero scope stays fatal (§8).
+     `test_architecture_checker.py` gains two fixtures that pass, one without
+     `presentation/` and `di/` and one with only `lib/main.dart`, and one with an
+     empty `lib/` that fails.
    - `boundaries_test.dart`: drop the barrel rule. Add the public-bucket rule (§6.2),
-     domain purity for every `lib/features/*/domain/`, the bucket-placement rule (§5)
-     and the acyclicity check (§6.3).
-   - Guard profile `memox-v8`: the phased allowlist (§8).
+     domain purity for every `lib/features/*/domain/`, the shape rules (§4, §5 and
+     D11: top-level `lib/` folders, layer buckets, `core/` concern folders) and the
+     acyclicity check (§6.3). The rules live in `test/architecture/boundary_rules.dart`,
+     so each one is proven on a planted violation.
+   - The vendored guard: `targets_pending` support in the rule runner and in config
+     validation, with tests. The `memox-v8` ruleset's `config/overrides.yaml` gets
+     the allowlist (§8).
    - `build_verification_plan.py`: no change, since this layout is the one it expects.
 5. **Foundation plan:**
    - File Structure, task paths and test paths follow §10.
@@ -318,7 +328,7 @@ Out of scope, and recorded as follow-up:
 - V7 references in the skills that are not about folders, such as
   `docs/checklist.md`, `docs/wbs.md`, AD numbers in the data-layer and state skills,
   and the MX-VIS-001 and Widgetbook steps.
-- The `memox-v8` guard ruleset still carries ten rules with `memox_v7.design_system.*`
+- The `memox-v8` guard ruleset still carries 13 rules with `memox_v7.design_system.*`
   ids.
 
 ## 10. Foundation plan paths
