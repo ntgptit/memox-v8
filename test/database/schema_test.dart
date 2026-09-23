@@ -96,6 +96,21 @@ void main() {
     expect(f, isA<ConstraintFailure>());
   });
 
+  test(
+    'a sub-deck cannot carry a scheduler version either (BR-DECK-025)',
+    () async {
+      await _root(db, 'r');
+      final f = await _failureOf(
+        () => db.customStatement(
+          'INSERT INTO deck (id, name, parent_id, root_id, depth, scheduler_version, '
+          'sibling_position, created_at, updated_at) '
+          "VALUES ('s', 'x', 'r', 'r', 2, 1, 0, 0, 0)",
+        ),
+      );
+      expect(f, isA<ConstraintFailure>());
+    },
+  );
+
   test('deleting a root cascades to sub-decks, cards, schedules, logs and sessions', () async {
     await _root(db, 'r');
     await _child(db, 's', 'r', 'r', 2, content: 'card');

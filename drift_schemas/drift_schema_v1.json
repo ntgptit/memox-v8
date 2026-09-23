@@ -333,7 +333,7 @@
           "CHECK(parent_id IS NOT NULL OR content_type = 'deck')",
           "CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL))",
           "CHECK((parent_id IS NULL)=(generation IS NOT NULL))",
-          "CHECK(parent_id IS NOT NULL OR scheduler_version IS NOT NULL)",
+          "CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL))",
           "CHECK(parent_id IS NULL OR scheduler_config IS NULL)",
           "CHECK(parent_id IS NULL OR study_config IS NULL)",
           "CHECK(parent_id IS NULL OR generation IS NULL)"
@@ -1531,7 +1531,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"deck\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"parent_id\" TEXT REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"depth\" INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10), \"content_type\" TEXT NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck')), \"owner_id\" TEXT, \"scheduler_type\" TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER, \"scheduler_config\" TEXT, \"study_config\" TEXT, \"generation\" INTEGER, \"first_answered_at\" INTEGER, \"source_template_id\" TEXT, \"source_template_version\" INTEGER, \"delete_batch_id\" TEXT, \"sibling_position\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, CHECK((parent_id IS NULL)=(root_id = id)), CHECK(parent_id IS NOT NULL OR content_type = 'deck'), CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL)), CHECK((parent_id IS NULL)=(generation IS NOT NULL)), CHECK(parent_id IS NOT NULL OR scheduler_version IS NOT NULL), CHECK(parent_id IS NULL OR scheduler_config IS NULL), CHECK(parent_id IS NULL OR study_config IS NULL), CHECK(parent_id IS NULL OR generation IS NULL));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"deck\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"parent_id\" TEXT REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"depth\" INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10), \"content_type\" TEXT NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck')), \"owner_id\" TEXT, \"scheduler_type\" TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER, \"scheduler_config\" TEXT, \"study_config\" TEXT, \"generation\" INTEGER, \"first_answered_at\" INTEGER, \"source_template_id\" TEXT, \"source_template_version\" INTEGER, \"delete_batch_id\" TEXT, \"sibling_position\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, CHECK((parent_id IS NULL)=(root_id = id)), CHECK(parent_id IS NOT NULL OR content_type = 'deck'), CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL)), CHECK((parent_id IS NULL)=(generation IS NOT NULL)), CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL)), CHECK(parent_id IS NULL OR scheduler_config IS NULL), CHECK(parent_id IS NULL OR study_config IS NULL), CHECK(parent_id IS NULL OR generation IS NULL));"
         }
       ]
     },

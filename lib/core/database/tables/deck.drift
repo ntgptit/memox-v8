@@ -27,7 +27,7 @@ CREATE TABLE deck (
   -- scheduler columns only on root: BR-DECK-025
   CHECK ((parent_id IS NULL) = (scheduler_type IS NOT NULL)),
   CHECK ((parent_id IS NULL) = (generation IS NOT NULL)),
-  CHECK (parent_id IS NOT NULL OR scheduler_version IS NOT NULL),
+  CHECK ((parent_id IS NULL) = (scheduler_version IS NOT NULL)),
   CHECK (parent_id IS NULL OR scheduler_config IS NULL),
   CHECK (parent_id IS NULL OR study_config IS NULL),
   CHECK (parent_id IS NULL OR generation IS NULL)
