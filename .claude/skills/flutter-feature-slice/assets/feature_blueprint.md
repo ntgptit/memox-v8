@@ -987,7 +987,7 @@ flutter test test/l10n/no_hardcoded_strings_test.dart
 
 # every gate the project actually has
 .claude/skills/flutter-workflow/scripts/dod_check.sh
-.claude/skills/flutter-workflow/scripts/check_docs.sh --db build/invariant_fixture_clean.db
+python3 .claude/skills/flutter-workflow/scripts/verify_invariants.py --db build/invariant_fixture_clean.db
 ```
 
 ### The real footprint of a new feature
