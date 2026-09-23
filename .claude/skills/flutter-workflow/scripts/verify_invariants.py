@@ -1,4 +1,4 @@
-"""Verify the data invariants specified in docs/data-model.md.
+"""Verify the data invariants specified in docs/shared/data/schema.md.
 
 The queries are extracted from the frozen document itself, not copied here, so
 this tests the specification rather than a duplicate of it. If someone edits an
@@ -68,7 +68,7 @@ CREATE TABLE study_queue_items (
 
 # Extract the invariant queries straight out of the frozen doc, so this test
 # verifies the DOCUMENT, not a copy of it.
-doc = pathlib.Path("docs/data-model.md").read_text()
+doc = pathlib.Path("docs/shared/data/schema.md").read_text()
 blocks = re.findall(r"```sql\n(.*?)```", doc, re.S)
 inv_sql = "\n".join(b for b in blocks if re.search(r"^--\s*\d+\.", b, re.M))
 queries = {}
@@ -78,7 +78,7 @@ for chunk in re.split(r"\n(?=--\s*\d+\.)", inv_sql):
     body = "\n".join(l for l in chunk.splitlines() if not l.strip().startswith("--")).strip()
     if body: queries[int(m.group(1))] = (m.group(2).strip(), body)
 
-print(f"Trích được {len(queries)} câu invariant từ docs/data-model.md\n")
+print(f"Trích được {len(queries)} câu invariant từ docs/shared/data/schema.md\n")
 
 def fresh():
     c = sqlite3.connect(":memory:"); c.executescript(SCHEMA); return c

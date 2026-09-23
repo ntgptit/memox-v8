@@ -12,8 +12,6 @@ superseded_by:
 **Enforced by:** rule + store
 **Liên quan:** BR-TAG-001
 
-> ⚠️ OPEN QUESTION: rule nói validation của BR-TAG-001 gồm "không ký tự điều khiển", nhưng BR-TAG-001 chỉ nêu không rỗng sau trim, tối đa 50 ký tự và duy nhất không phân biệt hoa thường. Nguồn: `business-rules/tags.md` BR-TAG-001, BR-TAG-006. (Plan OQ-20)
-
 ## Lý do
 
 Nguồn không ghi lý do.

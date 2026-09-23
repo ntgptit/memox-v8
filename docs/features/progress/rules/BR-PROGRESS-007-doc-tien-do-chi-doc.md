@@ -12,11 +12,9 @@ superseded_by:
 **Enforced by:** store + UI
 **Liên quan:** BR-TRANSFER-011
 
-> ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
 ## Lý do
 
-Nguồn không ghi lý do.
+Cùng khái niệm tính chỉ-đọc với BR-PROGRESS-009, rule tương ứng của Progress overview; hai rule áp cho hai màn và được giữ cả hai (chủ dự án chốt khi xử lý OQ-19 (2026-09-23)). Sửa một rule thì kiểm tra rule kia.
 
 ## Ví dụ
 

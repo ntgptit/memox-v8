@@ -2,49 +2,25 @@
 
 # Open questions
 
-## [README.md](../README.md)
-
-- L277: > ⚠️ OPEN QUESTION: câu trên (từ `use-cases/README.md`) nói chỉ đặc tả must-have, nhưng đã có UC cho should-have (UC-SEARCH-001, UC-PROGRESS-*, UC-STUDY-003), nice-to-have (UC-TRANSFER-*, UC-REMINDER-001, UC-TAG-001) và sub-project sau (UC-TRASH-001, UC-STARTER-001). (Plan OQ-11)
-- L325: Trong các OPEN QUESTION ghi lúc migrate, phần "Nguồn:" nêu đường dẫn **trước
-
 ## [features/card/README.md](../features/card/README.md)
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-## [features/card/rules/BR-CARD-019-the-khong-ton-tai-co-ly-do-co-kieu.md](../features/card/rules/BR-CARD-019-the-khong-ton-tai-co-ly-do-co-kieu.md)
-
-- L15: > ⚠️ OPEN QUESTION: rule trích BR-CORE-003 cho ý "MUST NOT lộ id, đường dẫn hay SQL", nhưng BR-CORE-003 là "Media MUST lưu trong thư mục riêng của ứng dụng". Không BR riêng tư nào phát biểu ý này. Nguồn: `business-rules/card.md` BR-CARD-019 · `business-rules/privacy.md` BR-CORE-003. (Plan OQ-5)
-
-## [features/card/ui.md](../features/card/ui.md)
-
-- L48: > ⚠️ OPEN QUESTION: đoạn giải thích `I1` nói "Xoá hết card **không** đưa deck về `unset`", nhưng chính nút `I1` của sơ đồ và BR-DECK-015 nói card cuối bị xoá thì deck tự về `unset` trong cùng transaction. Nguồn: `product/master-flow.md` §4. (Plan OQ-17)
-- L62: > ⚠️ OPEN QUESTION: 2 dòng validation trên không trích BR nào trong nguồn: `Card.front` không rỗng sau trim; `Card.back` không rỗng sau trim. (Plan Q5)
-- L70: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
-- L72: > ⚠️ OPEN QUESTION: dòng "Nội dung card rất dài (2000 ký tự)" dùng giới hạn 2000 cũ; BR-CARD-002 hiện giới hạn mặt trước 60 và mặt sau 240 ký tự (lý do đổi số ghi ở BR-CARD-002). Nguồn: `business-rules/card.md` mục Edge cases. (Plan OQ-18)
-
 ## [features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md](../features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md)
 
-- L14: > ⚠️ OPEN QUESTION: luồng A8 Tag và `rules` (BR-TAG-001, BR-TAG-002) thuộc Tag, mà Tag là sub-project sau V8.0 theo `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2 và `business-rules/tags.md`; UC này thuộc V8.0. (Plan OQ-4)
-- L90: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L88: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md](../features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md)
 
-- L16: > ⚠️ OPEN QUESTION: E1 trích BR-CORE-003 cho ý "không lộ id hay chi tiết kỹ thuật", nhưng BR-CORE-003 là luật lưu media. (Plan OQ-5)
-- L97: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/README.md](../features/deck/README.md)
 
 - L13: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-## [features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md)
-
-- L14: > ⚠️ OPEN QUESTION: `data-model.md` mục "`root_id` — vì sao tồn tại" nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng rule này và UC-DECK-005 bước 3 chỉ nói `root_id`. (Plan OQ-8)
-
 ## [features/deck/ui.md](../features/deck/ui.md)
 
-- L64: > ⚠️ OPEN QUESTION: nhánh `H` của sơ đồ ("Đưa content_type về unset" → "Rỗng → Xác nhận rồi đặt unset · UC-DECK-002 A3") mâu thuẫn với BR-DECK-015 ("Người dùng MUST NOT có thao tác reset `content_type` thủ công"); BR-DECK-014 cho phép thao tác đó đã deprecated. Ngoài ra UC-DECK-002 A3 là "Huỷ xác nhận xoá" và A4 là "Xác nhận đúng chế độ deck đang chạy", nhưng sơ đồ gắn nhãn huỷ xoá (`F2`) là A4 và reset thủ công (`H2`) là A3. Nguồn: `product/master-flow.md` §3 · `business-rules/deck.md` BR-DECK-014, BR-DECK-015 · `use-cases/deck.md` UC-DECK-002. (Plan OQ-15)
-- L78: > ⚠️ OPEN QUESTION: ba dòng `Deck.name` (không rỗng, ≤ 200 ký tự) và `Deck.move` (đích không phải chính nó hoặc descendant) không trích BR nào trong nguồn; nội dung trùng ý với BR-DECK-020 và BR-DECK-017 nhưng nguồn không gắn. (Plan Q5)
-- L86: > ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)
+- L79: > ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)
 
 ## [features/deck/usecases/UC-DECK-001-tao-root-deck.md](../features/deck/usecases/UC-DECK-001-tao-root-deck.md)
 
@@ -73,32 +49,6 @@
 ## [features/progress/README.md](../features/progress/README.md)
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-- L12: > ⚠️ OPEN QUESTION: nội dung màn Progress (và điều hướng top-level) được `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10 liệt kê là câu hỏi mở của product definition (sub-project 2), nhưng BR-PROGRESS-* và UC-PROGRESS-* đã chốt nội dung màn hình. (Plan OQ-3)
-- L14: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-002-don-vi-dem-card-day.md](../features/progress/rules/BR-PROGRESS-002-don-vi-dem-card-day.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-005-phan-hoach-learning-reviewing-theo-deck.md](../features/progress/rules/BR-PROGRESS-005-phan-hoach-learning-reviewing-theo-deck.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-007-doc-tien-do-chi-doc.md](../features/progress/rules/BR-PROGRESS-007-doc-tien-do-chi-doc.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-009-progress-read-only-tuyet-doi.md](../features/progress/rules/BR-PROGRESS-009-progress-read-only-tuyet-doi.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-011-don-vi-hoat-dong-card-day.md](../features/progress/rules/BR-PROGRESS-011-don-vi-hoat-dong-card-day.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
-
-## [features/progress/rules/BR-PROGRESS-014-phan-ra-mot-ngay-learning-reviewing.md](../features/progress/rules/BR-PROGRESS-014-phan-ra-mot-ngay-learning-reviewing.md)
-
-- L15: > ⚠️ OPEN QUESTION: nguồn định nghĩa cùng khái niệm ở hai rule của hai section (Progress by Deck và Progress overview): card-day ở BR-PROGRESS-002 và BR-PROGRESS-011; phân hoạch Learning/Reviewing ở BR-PROGRESS-005 và BR-PROGRESS-014; chỉ-đọc ở BR-PROGRESS-007 và BR-PROGRESS-009. Chưa rõ rule nào là nguồn duy nhất. Nguồn: `business-rules/progress.md`. (Plan OQ-19)
 
 ## [features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md](../features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md)
 
@@ -112,19 +62,13 @@
 
 - L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-## [features/reminders/rules/BR-REMINDER-001-mac-dinh-tat.md](../features/reminders/rules/BR-REMINDER-001-mac-dinh-tat.md)
-
-- L15: > ⚠️ OPEN QUESTION: đoạn giới thiệu (mục `## Lý do` bên dưới) nói không phát biểu lại định nghĩa "đến hạn" và trích BR-STUDY-001, nhưng BR-STUDY-001 đã deprecated, thay bằng BR-STUDY-051. Nguồn: `business-rules/reminders.md`. (Plan Q6)
-
 ## [features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md](../features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md)
 
-- L17: > ⚠️ OPEN QUESTION: thân UC trích BR đã deprecated BR-STUDY-001; `rules` không liệt kê chúng. (Plan Q6)
-- L100: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L98: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/search/README.md](../features/search/README.md)
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-- L12: > ⚠️ OPEN QUESTION: Search có thuộc V8.0 không: `business-rules/README.md` ghi "Tìm kiếm toàn thư viện (V8.0)", `product/product.md` xếp tìm kiếm là S1 should-have, còn `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2 không nhắc Search ở cả danh sách trong lẫn ngoài V8.0. (Plan OQ-2)
 
 ## [features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md](../features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md)
 
@@ -142,15 +86,6 @@
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-## [features/srs/rules/BR-SRS-007-thu-tu-thu-cong-trong-nhom-sibling.md](../features/srs/rules/BR-SRS-007-thu-tu-thu-cong-trong-nhom-sibling.md)
-
-- L14: > ⚠️ OPEN QUESTION: rule này ràng buộc thứ tự thủ công của **deck** (`sibling_position`, dùng bởi UC-DECK-006) nhưng mang DOMAIN `SRS`. Theo quyết định giữ ID (Plan Q1) nó ở lại feature `srs`. (Plan OQ-16)
-
-## [features/srs/ui.md](../features/srs/ui.md)
-
-- L14: > ⚠️ OPEN QUESTION: 2 dòng validation trên không trích BR nào trong nguồn: `Deck.schedulerType` bắt buộc chọn khi tạo root deck; `Deck.move` đích cùng root scheduler và generation. (Plan Q5)
-- L22: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
-
 ## [features/srs/usecases/UC-SRS-001-reset-learning-progress.md](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md)
 
 - L82: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
@@ -158,8 +93,6 @@
 ## [features/starter-decks/README.md](../features/starter-decks/README.md)
 
 - L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-- L14: > ⚠️ OPEN QUESTION: M6 (thư viện starter deck) được đánh số trong bảng Must-have của `product/product.md` nhưng chính đoạn ngay trên nói "M6 nằm ngoài phạm vi V8.0 … không phải must-have của V8.0". (Plan OQ-12)
-- L16: > ⚠️ OPEN QUESTION: nguồn (`business-rules/starter-decks.md`) có hàng BR-STARTER-010 lặp lại hai lần, giống hệt nhau; file này giữ một bản. (Plan OQ-21)
 
 ## [features/starter-decks/ui.md](../features/starter-decks/ui.md)
 
@@ -173,14 +106,9 @@
 
 - L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-## [features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md)
-
-- L15: > ⚠️ OPEN QUESTION: cột Related của rule này trong nguồn trích BR-STUDY-011 (đã deprecated, năm giá trị `end_reason`) thay vì BR-STUDY-012 (bảy giá trị). Nguồn: `business-rules/study.md` BR-STUDY-072. (Plan OQ-7)
-
 ## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
 
-- L20: > ⚠️ OPEN QUESTION: thân UC trích BR đã deprecated BR-STUDY-001, BR-STUDY-011; `rules` không liệt kê chúng. (Plan Q6)
-- L158: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L156: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md](../features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md)
 
@@ -193,20 +121,10 @@
 ## [features/study-mode/README.md](../features/study-mode/README.md)
 
 - L53: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-- L55: > ⚠️ OPEN QUESTION: mode nào trong sáu mode thực sự ship ở V8.0 vẫn là câu hỏi mở do product definition (sub-project 2) quyết định (`product/product.md` mục "StudyMode — một trục riêng"; [`foundation-design`](../superpowers/specs/2026-09-21-memox-v8-foundation-design.md) §10), trong khi BR-MODE-002, BR-STUDY-055, UC-STUDY-001 và `data-model.md` (`study_session.current_mode`) đã chốt đủ sáu mode. (Plan OQ-1)
-
-## [features/study-mode/rules/BR-MODE-002-sau-study-mode.md](../features/study-mode/rules/BR-MODE-002-sau-study-mode.md)
-
-- L15: > ⚠️ OPEN QUESTION: mode nào trong sáu mode thực sự ship ở V8.0 vẫn là câu hỏi mở do product definition (sub-project 2) quyết định (`product/product.md` mục "StudyMode — một trục riêng"; [`foundation-design`](../superpowers/specs/2026-09-21-memox-v8-foundation-design.md) §10), trong khi BR-MODE-002, BR-STUDY-055, UC-STUDY-001 và `data-model.md` (`study_session.current_mode`) đã chốt đủ sáu mode. (Plan OQ-1)
 
 ## [features/tags/README.md](../features/tags/README.md)
 
-- L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-- L14: > ⚠️ OPEN QUESTION: Tag là sub-project sau V8.0 (`superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2; mục Phạm vi ở trên), nhưng UC-CARD-001 (V8.0) có luồng A8 gắn tag và khai báo BR-TAG-001, BR-TAG-002. (Plan OQ-4)
-
-## [features/tags/rules/BR-TAG-006-doi-ten-tag.md](../features/tags/rules/BR-TAG-006-doi-ten-tag.md)
-
-- L15: > ⚠️ OPEN QUESTION: rule nói validation của BR-TAG-001 gồm "không ký tự điều khiển", nhưng BR-TAG-001 chỉ nêu không rỗng sau trim, tối đa 50 ký tự và duy nhất không phân biệt hoa thường. Nguồn: `business-rules/tags.md` BR-TAG-001, BR-TAG-006. (Plan OQ-20)
+- L14: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## [features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md)
 
@@ -215,10 +133,6 @@
 ## [features/transfer/README.md](../features/transfer/README.md)
 
 - L21: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-## [features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md)
-
-- L15: > ⚠️ OPEN QUESTION: rule gọi luật riêng tư của nội dung card là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật riêng tư tương ứng có vẻ là BR-CORE-001/BR-CORE-002. Nguồn: `business-rules/transfer.md` BR-TRANSFER-006 · `business-rules/starter-decks.md` BR-STARTER-002. (Plan OQ-6)
 
 ## [features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md](../features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md)
 
@@ -235,25 +149,3 @@
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 
 - L109: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [glossary.md](../glossary.md)
-
-- L26: > ⚠️ OPEN QUESTION: "study answers" được dùng như một thực thể lưu trữ (BR-CARD-005, BR-DECK-022, BR-SRS-017, BR-SRS-019, BR-SRS-025) nhưng `shared/data/schema.md` không có bảng nào tên như vậy — chỉ có `review_log` mang dữ liệu từng lượt và cột `generation`. Chưa có chỗ nào nói hai tên này là một. (Plan OQ-9)
-
-## [shared/data/schema.md](../shared/data/schema.md)
-
-- L136: > ⚠️ OPEN QUESTION: đoạn trên nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng BR-DECK-018 và UC-DECK-005 chỉ nói `root_id`. (Plan OQ-8)
-- L387: > ⚠️ OPEN QUESTION: cột `end_reason` liệt kê bảy giá trị nhưng trích BR-STUDY-011 (đã deprecated, năm giá trị) thay vì BR-STUDY-012; invariant 12 cũng trích BR-STUDY-011 mà không trích BR-STUDY-012/BR-STUDY-016. (Plan OQ-7)
-- L879: > ⚠️ OPEN QUESTION: BR dùng "study answers" như một thực thể lưu trữ, nhưng schema không có bảng nào tên như vậy — chỉ có `review_log`. (Plan OQ-9)
-
-## [shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md](../shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md)
-
-- L30: > ⚠️ OPEN QUESTION: đoạn trên gọi luật "không log nội dung" là BR-STARTER-002, nhưng BR-STARTER-002 là luật `template_id` của starter deck; luật tương ứng có vẻ là BR-CORE-002 (trước là `BR-PRIVACY-002`). Nguồn: `product/product.md` mục Sensitive data · `business-rules/starter-decks.md`. (Plan OQ-6)
-
-## [shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md)
-
-- L14: > ⚠️ OPEN QUESTION: BR-CARD-019 và UC-CARD-002 E1 trích rule này (khi còn là `BR-PRIVACY-003`) cho ý "không lộ id, đường dẫn hay SQL", trong khi rule chỉ nói về nơi lưu media. (Plan OQ-5)
-
-## [shared/ui/navigation.md](../shared/ui/navigation.md)
-
-- L24: > ⚠️ OPEN QUESTION: `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10 liệt kê "Top-level navigation destinations, progress screen content" là câu hỏi mở của product definition (sub-project 2), trong khi mục trên đã chốt bốn destination. (Plan OQ-3)

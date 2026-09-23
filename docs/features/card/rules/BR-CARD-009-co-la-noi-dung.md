@@ -2,7 +2,7 @@
 id: BR-CARD-009
 title: Cờ là nội dung
 status: active
-summary: Cờ là nội dung: sửa thẻ và reset không đụng tới; hệ thống có thể bật nhưng không tự tắt.
+summary: Cờ là nội dung: sửa thẻ và reset không đụng tới, xoá thẻ thì xoá cờ theo cascade; hệ thống có thể bật nhưng không tự tắt.
 superseded_by:
 ---
 ## Rule

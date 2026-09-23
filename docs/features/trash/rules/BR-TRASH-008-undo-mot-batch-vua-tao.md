@@ -2,7 +2,7 @@
 id: BR-TRASH-008
 title: Undo một batch vừa tạo
 status: active
-summary: Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target.
+summary: Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target; không khả dụng cho thao tác xoá nhiều item.
 superseded_by:
 ---
 ## Rule

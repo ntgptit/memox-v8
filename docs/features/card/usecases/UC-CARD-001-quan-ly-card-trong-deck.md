@@ -11,8 +11,6 @@ code: []
 **Trigger:** Mở một deck có `content_type = 'card'`
 **Preconditions:** Deck tồn tại và `content_type = 'card'` (BR-DECK-009)
 
-> ⚠️ OPEN QUESTION: luồng A8 Tag và `rules` (BR-TAG-001, BR-TAG-002) thuộc Tag, mà Tag là sub-project sau V8.0 theo `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2 và `business-rules/tags.md`; UC này thuộc V8.0. (Plan OQ-4)
-
 ## Main flow
 
 **Main flow:**

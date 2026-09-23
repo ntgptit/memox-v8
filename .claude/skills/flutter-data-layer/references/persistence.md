@@ -74,4 +74,4 @@ const _storage = FlutterSecureStorage(
 If the database itself holds sensitive data, consider SQLCipher via
 `sqlcipher_flutter_libs`. Decide this before launch — encrypting an existing
 plaintext database in a migration is painful, and it is a decision better made
-once in `docs/product.md` under sensitive data.
+once in `docs/shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md`.

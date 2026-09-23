@@ -1,6 +1,6 @@
 # The IT scenario suite — memox-specific knowledge
 
-The 60 scenarios in `docs/it-scenarios/` run as `integration_test/it_*_test.dart`
+The 60 scenarios in `docs/features/*/it-scenarios.md` and `docs/shared/testing/it-scenarios.md` run as `integration_test/it_*_test.dart`
 on a real Android emulator, driven through the UI like a user. The generic craft
 of driving `integration_test` (liveness, finder discipline, scrolling, IME,
 clock ticks, classifying a red run) lives in the **global** `flutter-harness`
@@ -14,8 +14,8 @@ is true of *this* app and would be wrong to generalize.
 | Harness (db/clock seams, launch/restart, wipe, settle) | `integration_test/support/it_harness.dart` |
 | Robot (user-level actions, `ItText` copy constants) | `integration_test/support/it_robot.dart` |
 | Fixtures (S-DUE / S-PROGRESS / S-LARGE) | `integration_test/support/it_fixtures.dart` |
-| Execution rules, setup recipes, fixture contract | `docs/it-scenarios/00-agent-execution-guide.md` |
-| Status ledger per scenario | `docs/it-scenarios/scenario-catalog.md` |
+| Execution rules, setup recipes, fixture contract | `docs/shared/testing/agent-execution-guide.md` |
+| Status ledger per scenario | `docs/shared/testing/scenario-catalog.md` |
 
 Run one file at a time, watchdogged:
 

@@ -11,10 +11,6 @@ Starter deck / template: thư viện starter và sao chép một template vào d
 
 > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
-> ⚠️ OPEN QUESTION: M6 (thư viện starter deck) được đánh số trong bảng Must-have của `product/product.md` nhưng chính đoạn ngay trên nói "M6 nằm ngoài phạm vi V8.0 … không phải must-have của V8.0". (Plan OQ-12)
-
-> ⚠️ OPEN QUESTION: nguồn (`business-rules/starter-decks.md`) có hàng BR-STARTER-010 lặp lại hai lần, giống hệt nhau; file này giữ một bản. (Plan OQ-21)
-
 ## Màn hình → Use case
 
 | Màn hình | UC |

@@ -20,6 +20,6 @@ phải must-have của V8.0.
 
 | # | Feature | Done when |
 |---|---|---|
-| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân | Sub-project sau (UC-STARTER-001, BR-STARTER-001…BR-STARTER-009, BR-STARTER-010): cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
+| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân — **ngoài V8.0, sub-project sau**; giữ số M6 để không đổi ID | Sub-project sau (UC-STARTER-001, BR-STARTER-001…BR-STARTER-009, BR-STARTER-010): cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
 
 Luật: BR-STARTER-001…BR-STARTER-010; luồng UC-STARTER-001.

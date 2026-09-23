@@ -1,21 +1,19 @@
 ---
 id: BR-DECK-018
-title: Di chuyển subtree cập nhật root_id
+title: Di chuyển subtree cập nhật root_id và depth
 status: active
-summary: Di chuyển subtree cập nhật `root_id` cho toàn bộ subtree trong một transaction.
+summary: Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction.
 superseded_by:
 ---
 ## Rule
 
-Di chuyển subtree MUST cập nhật `root_id` cho toàn bộ subtree trong một transaction.
+Di chuyển subtree MUST cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction.
 
 **Enforced by:** store
 
-> ⚠️ OPEN QUESTION: `data-model.md` mục "`root_id` — vì sao tồn tại" nói di chuyển subtree phải cập nhật `root_id` **và** `depth` (trích BR-DECK-018), nhưng rule này và UC-DECK-005 bước 3 chỉ nói `root_id`. (Plan OQ-8)
-
 ## Lý do
 
-Nguồn không ghi lý do.
+`deck.depth` là cột lưu thật (xem `shared/data/schema.md`, bảng `deck`); cập nhật `root_id` mà không cập nhật `depth` để lại độ sâu sai trên mọi descendant. Chủ dự án chốt khi xử lý open question OQ-8 (2026-09-23): thêm `depth` vào rule cho khớp schema.
 
 ## Ví dụ
 

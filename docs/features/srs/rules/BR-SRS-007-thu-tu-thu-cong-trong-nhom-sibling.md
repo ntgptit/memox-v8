@@ -11,8 +11,6 @@ Thứ tự thủ công của deck MUST chỉ được xác định trong một n
 
 **Enforced by:** store + db
 
-> ⚠️ OPEN QUESTION: rule này ràng buộc thứ tự thủ công của **deck** (`sibling_position`, dùng bởi UC-DECK-006) nhưng mang DOMAIN `SRS`. Theo quyết định giữ ID (Plan Q1) nó ở lại feature `srs`. (Plan OQ-16)
-
 ## Lý do
 
 Nguồn không ghi lý do.

@@ -5,11 +5,9 @@ depends_on: [deck, tags]
 ---
 ## Phạm vi
 
-Tìm kiếm toàn thư viện (Global Library Search): tên deck, hai mặt card và tên tag.
+Tìm kiếm toàn thư viện (Global Library Search): tên deck, hai mặt card và tên tag. Thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)).
 
 > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-> ⚠️ OPEN QUESTION: Search có thuộc V8.0 không: `business-rules/README.md` ghi "Tìm kiếm toàn thư viện (V8.0)", `product/product.md` xếp tìm kiếm là S1 should-have, còn `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2 không nhắc Search ở cả danh sách trong lẫn ngoài V8.0. (Plan OQ-2)
 
 ## Màn hình → Use case
 

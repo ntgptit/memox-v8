@@ -103,7 +103,8 @@ widget.
 ## Non-negotiables for this layer
 
 - Never log tokens, passwords, or anything listed as sensitive in
-  `docs/product.md`. Redact by key name in the logging interceptor, not by
+  `docs/shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md`.
+  Redact by key name in the logging interceptor, not by
   remembering at each call site.
 - Verbose HTTP logging is development-only, gated on `EnvConfig.logLevel`.
 - Tokens go in `flutter_secure_storage`, never in SharedPreferences, and are

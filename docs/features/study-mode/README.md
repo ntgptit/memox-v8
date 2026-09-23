@@ -5,7 +5,7 @@ depends_on: []
 ---
 ## Phạm vi
 
-Tập StudyMode, chuỗi stage và chiều hỏi của `self_assess` (V8.0). Feature không có UC riêng: mode chạy bên trong các UC của feature `study`.
+Tập StudyMode, chuỗi stage và chiều hỏi của `self_assess` (V8.0; đủ sáu mode (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md))). Feature không có UC riêng: mode chạy bên trong các UC của feature `study`.
 
 App có **hai trục độc lập**, và việc tách chúng là quyết định sản phẩm chứ không
 phải chi tiết kỹ thuật:
@@ -51,8 +51,6 @@ từ hai mode ôn tập: `eight_box` có bốn, `sm2` chỉ có `self_assess` n�
 thẳng (BR-STUDY-055).
 
 > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-> ⚠️ OPEN QUESTION: mode nào trong sáu mode thực sự ship ở V8.0 vẫn là câu hỏi mở do product definition (sub-project 2) quyết định (`product/product.md` mục "StudyMode — một trục riêng"; [`foundation-design`](../../superpowers/specs/2026-09-21-memox-v8-foundation-design.md) §10), trong khi BR-MODE-002, BR-STUDY-055, UC-STUDY-001 và `data-model.md` (`study_session.current_mode`) đã chốt đủ sáu mode. (Plan OQ-1)
 
 ## Màn hình → Use case
 
