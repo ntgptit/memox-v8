@@ -16,14 +16,20 @@ void main() {
 
   test('SQLITE_BUSY maps to DatabaseLockedFailure', () {
     final failure = mapDatabaseError(
-      sqlite3.SqliteException(extendedResultCode: 5, message: 'database is locked'),
+      sqlite3.SqliteException(
+        extendedResultCode: 5,
+        message: 'database is locked',
+      ),
     );
     expect(failure, isA<DatabaseLockedFailure>());
   });
 
-  test('anything else maps to UnknownDatabaseFailure and never leaks card content', () {
-    final failure = mapDatabaseError(StateError('front: "私の秘密"'));
-    expect(failure, isA<UnknownDatabaseFailure>());
-    expect(failure.message, isNot(contains('私の秘密')));
-  });
+  test(
+    'anything else maps to UnknownDatabaseFailure and never leaks card content',
+    () {
+      final failure = mapDatabaseError(StateError('front: "私の秘密"'));
+      expect(failure, isA<UnknownDatabaseFailure>());
+      expect(failure.message, isNot(contains('私の秘密')));
+    },
+  );
 }
