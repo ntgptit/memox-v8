@@ -32,6 +32,20 @@ void main() {
         expect(theme.textTheme.bodySmall!.fontFamily, AppTypography.fontFamily);
       });
 
+      // CircleAvatar, FlexibleSpaceBar and UserAccountsDrawerHeader read
+      // primaryTextTheme directly, not textTheme.
+      test('$name primaryTextTheme is bound to the theme family too', () {
+        final style = theme.primaryTextTheme.bodyMedium!;
+        final weight = style.fontWeight ?? FontWeight.w400;
+
+        expect(style.fontFamily, AppTypography.fontFamily);
+        expect(style.fontSize, 14);
+        expect(
+          style.fontVariations,
+          contains(FontVariation.weight(weight.value.toDouble())),
+        );
+      });
+
       test('$name text ink is onSurface', () {
         expect(theme.textTheme.bodyMedium!.color, scheme.onSurface);
       });

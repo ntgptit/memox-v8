@@ -16,6 +16,8 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
   final base = ThemeData(colorScheme: scheme);
   return base.copyWith(
     textTheme: AppTypography.bind(base.textTheme),
+    // Read directly by CircleAvatar, FlexibleSpaceBar and others.
+    primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
     scaffoldBackgroundColor: scheme.surface,
     extensions: [semantic],
   );
