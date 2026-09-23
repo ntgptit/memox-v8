@@ -1,6 +1,6 @@
 # Kế hoạch tái cấu trúc docs → kiến trúc thân thiện với AI agent
 
-Trạng thái: **Bước 0 — đã xác nhận Q1–Q10 (mục 6).** Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
+Trạng thái: **Bước 1 xong** (khung + tool). Bước 0 đã xác nhận Q1–Q10 (mục 6). Tiếp theo: Bước 2, feature thí điểm `deck`. Tài liệu tạm, xoá cả `_migration/` sau khi được duyệt ở Bước 5.
 
 Mọi đường dẫn trong file này tính từ `docs/`. Trong bảng ánh xạ, `<slug>` là phần
 tên file chưa chốt; `check.py --plan` coi `<slug>` và `*` là wildcard, và cột đích
@@ -16,7 +16,7 @@ luôn là đường dẫn đầu tiên trong dấu backtick của ô.
 | BR | 269 định nghĩa, 14 file, 261 dạng hàng bảng + 8 dạng section (`### BR-SRS-008…019`); 5 BR `superseded` |
 | UC | 22, 12 file; UC nào cũng đủ 9 mục (Actor…UI states); 5 UC sub-project sau có thêm mục **Phạm vi** |
 | ID hiện có | Đã đúng format `BR-<DOMAIN>-NNN` / `UC-<DOMAIN>-NNN` (kết quả của `superpowers/specs/2026-09-23-docs-restructure-design.md`) |
-| Code ứng dụng | **Không có**: repo không có `lib/`, `test/`, `pubspec.yaml`. Mọi trường `code` sẽ là `[]` kèm OPEN QUESTION |
+| Code ứng dụng | **Không có**: repo không có `lib/`, `test/`, `pubspec.yaml`. Mọi trường `code` sẽ là `[]` kèm `OPEN QUESTION` |
 | Thư mục test | Không có → cột "test" của traceability sẽ rỗng; mọi UC `ready` sẽ nhận WARNING "chưa có test" |
 | PyYAML | Không có dependency Python nào trong repo → tự viết parser tối thiểu (scalar + list inline) |
 | Tool hiện có | `tools/check_docs_refs.py` (gate trích dẫn, đọc cứng `business-rules/`, `use-cases/`, `data-model.md`), `tools/split_handoff.py` + test |
@@ -145,8 +145,8 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | Q3 | `it-scenarios/`, `superpowers/` | `superpowers/` **giữ nguyên tại chỗ**. `it-scenarios/` **tách vào feature** (Q3b) |
 | Q3b | Tách it-scenarios thế nào | Mỗi kịch bản `## IT-…` → `features/<f>/it-scenarios.md`, `<f>` = DOMAIN của UC đầu tiên (không có UC thì BR đầu tiên) trong cột "Truy vết" của `scenario-catalog.md`; không truy vết feature nào → `shared/testing/it-scenarios.md`. Giữ ID IT. File dùng chung → `shared/testing/`. Phân bố: study 55, deck 38, card 24, study-mode 8, srs 5, shared 5, transfer 3, tags 3, progress 1 |
 | Q4 | Điều hướng toàn app | `shared/ui/navigation.md` |
-| Q5 | Dòng/đoạn không trích BR | Edge case/validation → `ui.md`; state/bảng khởi tạo → `data.md` của feature, kèm OPEN QUESTION "chưa gắn BR". Prose → `## Lý do` của BR gần nhất trong cùng section, ghi nguồn |
-| Q6 | `rules` của UC | Hợp "Business rules" của UC ∪ UC nêu trong Related của BR; bỏ BR deprecated (ghi OPEN QUESTION nếu thân UC còn trích BR deprecated) |
+| Q5 | Dòng/đoạn không trích BR | Edge case/validation → `ui.md`; state/bảng khởi tạo → `data.md` của feature, kèm `OPEN QUESTION` "chưa gắn BR". Prose → `## Lý do` của BR gần nhất trong cùng section, ghi nguồn |
+| Q6 | `rules` của UC | Hợp "Business rules" của UC ∪ UC nêu trong Related của BR; bỏ BR deprecated (ghi `OPEN QUESTION` nếu thân UC còn trích BR deprecated) |
 | Q7 | Header 7 dòng | Bỏ; frontmatter + `_generated/index.md` thay thế |
 | Q8 | `frozen for MVP` | Chuyển thành quy tắc trong `README.md`: BR `active`, UC `ready` là hợp đồng; sửa phải có chủ đích và nêu file được sửa. Task này được phép sửa mọi file frozen trong `docs/` |
 | Q9 | Acceptance criteria | `- [ ] OPEN QUESTION: chưa có AC trong nguồn` ở cả 22 UC; Postconditions giữ nguyên văn ở `## Local` |
@@ -154,7 +154,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 
 ## 7. Mâu thuẫn / mơ hồ đã xác minh (sẽ ghi `> ⚠️ OPEN QUESTION` tại file đích)
 
-| # | Nội dung | Nguồn A | Nguồn B | File đích ghi OPEN QUESTION |
+| # | Nội dung | Nguồn A | Nguồn B | File đích ghi `OPEN QUESTION` |
 |---|---|---|---|---|
 | OQ-1 | Mode nào ship ở V8.0 là câu hỏi mở, nhưng BR/UC đã "frozen" đủ 6 mode | `product/product.md:138` · `superpowers/specs/2026-09-21-memox-v8-foundation-design.md:181` | BR-MODE-002 (`study-mode.md:17`) · UC-STUDY-001 · `data-model.md:353` | `features/study-mode/README.md` |
 | OQ-2 | Search thuộc V8.0? | `business-rules/README.md:41` "(V8.0)" | `product.md:146` S1 should-have; `foundation-design §2` không nhắc | `features/search/README.md` |
@@ -201,23 +201,23 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `business-rules/card.md:83` ## Cờ, di chuyển và thao tác hàng loạt trên thẻ | `features/card/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/card.md:99` ## Chi tiết card và lịch sử học | `features/card/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/card.md:119` ## Validation rules | `features/card/ui.md` | — | ⚠️ Q5: bảng validation + message hiển thị |
-| `business-rules/card.md:133` ## Edge cases | `features/card/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/card.md:133` ## Edge cases | `features/card/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/deck.md:1` # Business rules — Deck | `features/deck/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/deck.md:13` ## Cây deck | `features/deck/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/deck.md:55` ## Deck — tên và xoá | `features/deck/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/deck.md:71` ## Entity state machines | `features/deck/data.md` | — | state machine của entity/field |
 | `business-rules/deck.md:73` ### Deck — `content_type` | `features/deck/data.md` | — | state machine của entity/field |
 | `business-rules/deck.md:98` ## Validation rules | `features/deck/ui.md` | — | ⚠️ Q5: bảng validation + message hiển thị |
-| `business-rules/deck.md:112` ## Edge cases | `features/deck/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/deck.md:112` ## Edge cases | `features/deck/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/privacy.md:1` # Business rules — Dữ liệu riêng tư | `shared/rules/` | — | header → bỏ; phạm vi ghi trong README.md |
 | `business-rules/privacy.md:13` ## Dữ liệu riêng tư | `shared/rules/` | — | tách từng BR (xem bảng ID) — ⚠️ Q2 |
 | `business-rules/progress.md:1` # Business rules — Progress | `features/progress/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/progress.md:13` ## Tiến độ theo deck | `features/progress/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/progress.md:33` ## Progress overview | `features/progress/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
-| `business-rules/progress.md:55` ## Edge cases | `features/progress/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/progress.md:55` ## Edge cases | `features/progress/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/reminders.md:1` # Business rules — Nhắc học hằng ngày | `features/reminders/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/reminders.md:15` ## Nhắc học hằng ngày | `features/reminders/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
-| `business-rules/reminders.md:45` ## Edge cases | `features/reminders/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/reminders.md:45` ## Edge cases | `features/reminders/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/search.md:1` # Business rules — Tìm kiếm toàn thư viện | `features/search/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/search.md:13` ## Tìm kiếm toàn thư viện | `features/search/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/settings.md:1` # Business rules — Tuỳ chọn ứng dụng | `features/settings/README.md` | — | header Scope → ## Phạm vi |
@@ -242,13 +242,13 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `business-rules/srs.md:238` ### Card study state | `features/srs/data.md` | — | state machine của entity/field |
 | `business-rules/srs.md:264` ### Deck — trạng thái khoá scheduler | `features/srs/data.md` | — | state machine của entity/field |
 | `business-rules/srs.md:278` ## Validation rules | `features/srs/ui.md` | — | ⚠️ Q5: bảng validation + message hiển thị |
-| `business-rules/srs.md:289` ## Edge cases | `features/srs/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/srs.md:289` ## Edge cases | `features/srs/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/starter-decks.md:1` # Business rules — Starter deck | `features/starter-decks/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/starter-decks.md:15` ## Starter deck (template) | `features/starter-decks/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
-| `business-rules/starter-decks.md:41` ## Edge cases | `features/starter-decks/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/starter-decks.md:41` ## Edge cases | `features/starter-decks/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/study-mode.md:1` # Business rules — StudyMode | `features/study-mode/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/study-mode.md:79` ## Chiều hỏi của `self_assess` — reverse recall | `features/study-mode/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
-| `business-rules/study-mode.md:118` ## Edge cases | `features/study-mode/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/study-mode.md:118` ## Edge cases | `features/study-mode/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/study.md:1` # Business rules — Study session | `features/study/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/study.md:13` ## Phiên ôn tập | `features/study/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/study.md:29` ## Vòng đời study session | `features/study/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
@@ -256,7 +256,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `business-rules/study.md:313` ## Tab Study — đọc thư viện thật | `features/study/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/study.md:325` ## Entity state machines | `features/study/data.md` | — | state machine của entity/field |
 | `business-rules/study.md:327` ### Study session | `features/study/data.md` | — | state machine của entity/field |
-| `business-rules/study.md:340` ## Edge cases | `features/study/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/study.md:340` ## Edge cases | `features/study/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/tags.md:1` # Business rules — Tags | `features/tags/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/tags.md:15` ## Tag — mô hình dữ liệu | `features/tags/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/tags.md:31` ## Quản lý tag — catalog, filter, rename/merge, delete | `features/tags/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
@@ -264,7 +264,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `business-rules/transfer.md:1` # Business rules — Card transfer (import/export) | `features/transfer/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/transfer.md:15` ## Import card từ file | `features/transfer/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `business-rules/transfer.md:30` ## Export card ra file | `features/transfer/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
-| `business-rules/transfer.md:51` ## Edge cases | `features/transfer/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → OPEN QUESTION |
+| `business-rules/transfer.md:51` ## Edge cases | `features/transfer/rules/` | — | ⚠️ Q5: mỗi dòng → `## Edge case` của BR được trích đầu tiên; dòng không trích BR → `OPEN QUESTION` |
 | `business-rules/trash.md:1` # Business rules — Trash và restore | `features/trash/README.md` | — | header Scope → ## Phạm vi |
 | `business-rules/trash.md:15` ## Trash và restore | `features/trash/rules/` | — | tách từng BR (xem bảng ID); prose "Vì sao…" → `## Lý do` của BR nó mở đầu — ⚠️ Q5 |
 | `data-model.md:1` # Data model — memox | `shared/data/schema.md` | — | giữ nguyên thứ tự; invariant Q<n> không đổi số |
@@ -573,7 +573,7 @@ khác tham chiếu bằng ID. `shared/rules/` chỉ nhận rule **không có fea
 | `product/product.md:158` ## Explicitly out of MVP | `README.md` | — | như trên |
 | `product/product.md:169` ## Điều hướng top-level | `shared/ui/navigation.md` | — | ⚠️ Q4: file ngoài danh sách mẫu của shared/ui |
 | `product/product.md:186` ## Primary business flows | `shared/ui/navigation.md` | — | ⚠️ Q4 |
-| `product/product.md:199` ## Quyết định đã chốt (2026-07-28) | `shared/decisions/ADR-003-<slug>.md` … `ADR-006-<slug>.md` | — | 4 quyết định: 2 scheduler theo deck; khoá-và-reset; starter là bản sao; cây 1 loại nội dung |
+| `product/product.md:199` ## Quyết định đã chốt (2026-07-28) | `shared/decisions/ADR-003-<slug>.md`, `shared/decisions/ADR-004-<slug>.md`, `shared/decisions/ADR-005-<slug>.md`, `shared/decisions/ADR-006-<slug>.md` | — | 4 quyết định: 2 scheduler theo deck; khoá-và-reset; starter là bản sao; cây 1 loại nội dung |
 | `superpowers/plans/2026-09-21-memox-v8-foundation.md:1` # MemoX V8 Foundation Implementation Plan | `superpowers/plans/2026-09-21-memox-v8-foundation.md` (giữ nguyên) | — | ⚠️ Q3: tài liệu quy trình Superpowers (CLAUDE.md) |
 | `superpowers/plans/2026-09-21-memox-v8-foundation.md:13` ## Global Constraints | `superpowers/plans/2026-09-21-memox-v8-foundation.md` (giữ nguyên) | — | ⚠️ Q3: tài liệu quy trình Superpowers (CLAUDE.md) |
 | `superpowers/plans/2026-09-21-memox-v8-foundation.md:31` ## Clarifications to the spec (confirm during plan review) | `superpowers/plans/2026-09-21-memox-v8-foundation.md` (giữ nguyên) | — | ⚠️ Q3: tài liệu quy trình Superpowers (CLAUDE.md) |
