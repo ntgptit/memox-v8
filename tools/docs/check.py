@@ -315,7 +315,7 @@ def check_generated(report: Report) -> None:
 
 SPLIT = "run `python tools/docs/split_handoff.py`"
 HANDOFF_DRIFT = {
-    "missing": f"missing — {SPLIT}",
+    "missing": f"missing, though a fresh split of the JSON produces it — {SPLIT}",
     "changed": f"differs from a fresh split of the JSON (edited by hand, or not regenerated) — {SPLIT}",
     "extra": "not produced by the JSON — move a hand-written file out of this folder; "
     f"for a file an older JSON produced, {SPLIT}",

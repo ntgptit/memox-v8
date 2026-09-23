@@ -56,14 +56,18 @@ class SplitHandoffTest(unittest.TestCase):
         self.tmp = Path(tmp.name)
         self.out = self.tmp / "out"
 
-    def run_split(self, data) -> tuple[int, str]:
-        """Run the CLI on `data`; return (exit code, stdout + stderr)."""
-        src = self.tmp / "in.json"
-        src.write_text(json.dumps(data), encoding="utf-8")
+    def run_main(self, src: Path) -> tuple[int, str]:
+        """Run the CLI on the JSON file `src`; return (exit code, stdout + stderr)."""
         captured = io.StringIO()
         with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
             code = sh.main([str(src), str(self.out)])
         return code, captured.getvalue()
+
+    def run_split(self, data) -> tuple[int, str]:
+        """run_main on `data` written out as JSON."""
+        src = self.tmp / "in.json"
+        src.write_text(json.dumps(data), encoding="utf-8")
+        return self.run_main(src)
 
     def test_spec_strings_follow_the_marker_byte_for_byte(self) -> None:
         self.assertEqual(self.run_split(sample())[0], 0)
@@ -212,21 +216,17 @@ class SplitHandoffTest(unittest.TestCase):
                 self.assertFalse(self.out.exists())
 
     def test_missing_json_file_fails_before_writing(self) -> None:
-        captured = io.StringIO()
-        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
-            code = sh.main([str(self.tmp / "absent.json"), str(self.out)])
+        code, output = self.run_main(self.tmp / "absent.json")
         self.assertEqual(code, 2)
-        self.assertIn("absent.json", captured.getvalue())
+        self.assertIn("absent.json", output)
         self.assertFalse(self.out.exists())
 
     def test_unparsable_json_fails_naming_the_file(self) -> None:
         src = self.tmp / "in.json"
         src.write_text("{not json", encoding="utf-8")
-        captured = io.StringIO()
-        with contextlib.redirect_stdout(captured), contextlib.redirect_stderr(captured):
-            code = sh.main([str(src), str(self.out)])
+        code, output = self.run_main(src)
         self.assertEqual(code, 2)
-        self.assertIn("in.json", captured.getvalue())
+        self.assertIn("in.json", output)
         self.assertFalse(self.out.exists())
 
     def test_kebab_file_names(self) -> None:
