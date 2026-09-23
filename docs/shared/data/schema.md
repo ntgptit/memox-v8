@@ -700,9 +700,13 @@ WHERE learned_at IS NULL AND due_at IS NOT NULL;
 -- 25. Thẻ chưa xong học mới mà đã có lượt `scheduled` (BR-STUDY-053, BR-STUDY-058)
 --     Chuỗi học mới ghi `learning`/`relearning` và không đổi lịch; một lượt
 --     `scheduled` ở đây nghĩa là lịch đã bị đặt giữa chừng.
+--     Chỉ xét lượt cùng generation với study state: Reset giữ lượt cũ
+--     (BR-SRS-023) còn thẻ học lại từ đầu, nên lượt `scheduled` của generation
+--     trước không phải vi phạm.
 SELECT a.id FROM review_log a
 JOIN card_schedule s ON s.card_id = a.card_id
-WHERE a.kind = 'scheduled' AND s.learned_at IS NULL;
+WHERE a.kind = 'scheduled' AND s.learned_at IS NULL
+  AND a.generation = s.generation;
 
 -- 26. `kind = 'learning'` nằm ngoài phiên học mới (BR-STUDY-052)
 SELECT a.id FROM review_log a

@@ -23,6 +23,14 @@ const _seed = <String>[
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, direction, \"action\", answered_at, previous_box, next_box) VALUES ('l1', 'c1', 's1', 'eight_box', 1, 'learning', 'self_assess', NULL, 'remembered', 100, 1, 2), ('l3', 'c1', 's2', 'eight_box', 1, 'scheduled', 'self_assess', 'korean_to_meaning', 'remembered', 120, 2, 3), ('l4', 'c1', 's2', 'eight_box', 1, 'relearning', 'self_assess', 'korean_to_meaning', 'forgotten', 121, 3, 3)",
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, comparison_version, used_hint, \"action\", answered_at) VALUES ('l2', 'c1', 's1', 'eight_box', 1, 'learning', 'fill', 1, 0, 'remembered', 101)",
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, outcome_reason, \"action\", answered_at) VALUES ('l5', 'c1', 's1', 'eight_box', 1, 'learning', 'recall', 'timeout', 'forgotten', 102)",
+  // A session the Reset of tree B closed, and the scheduled turn it kept from
+  // generation 1 (BR-SRS-023) while c4 started over at generation 2.
+  "INSERT INTO study_session (id, deck_id, root_id, generation, session_kind, current_mode, status, "
+      "end_reason, direction, started_at, ended_at) "
+      "VALUES ('s0', 'B', 'B', 1, 'reviewing', 'self_assess', 'invalidated', 'scheduler_reset', NULL, 200, 260)",
+  "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, \"action\", "
+      "answered_at, previous_ease_factor, next_ease_factor, previous_interval_days, next_interval_days) "
+      "VALUES ('l6', 'c4', 's0', 'sm2', 1, 'scheduled', 'self_assess', 'good', 250, 2.5, 2.5, 1, 6)",
   "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t1', 'Noun', 'noun', 0)",
   "INSERT INTO card_tags (card_id, tag_id) VALUES ('c1', 't1')",
   "INSERT INTO app_settings (id, updated_at) VALUES (1, 0)",
@@ -117,6 +125,13 @@ void main() {
     }
   });
   tearDown(() => db.close());
+
+  test('schema.md states invariants 1 to 32', () {
+    expect(
+      invariantQueries.keys,
+      unorderedEquals([for (var n = 1; n <= 32; n++) n]),
+    );
+  });
 
   group('the seed holds', () {
     for (final number in invariantQueries.keys) {
