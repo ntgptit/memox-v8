@@ -138,7 +138,7 @@ made and recorded so review can push back on them, not gaps.
    too — created now as schema only, same reasoning, owned by the future
    `settings` feature. `tags` and `card_tags` are V8.0 for tagging a card
    (ADR-009 decision 4; schema.md updated on 2026-09-23 to match) — created
-   now as schema only (all columns, the unique `(owner_id, name_folded)`
+   now as schema only (all columns, the unique `(COALESCE(owner_id, ''), name_folded)`
    index, both cascading FKs); the tag/untag write path is the
    core-learning-slice's card feature. Tag Management (UC-TAG-001) stays a
    later sub-project. **Resolved 2026-09-23 (project owner):** follow
@@ -1465,7 +1465,9 @@ CREATE TABLE tags (
   created_at DATETIME NOT NULL
 ) AS Tag;
 
-CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (owner_id, name_folded);
+-- COALESCE: SQLite treats NULLs as distinct in a unique index, and the local
+-- profile's owner_id is NULL (schema.md, resolved 2026-09-23).
+CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, ''), name_folded);
 
 CREATE TABLE card_tags (
   card_id TEXT NOT NULL REFERENCES card (id) ON DELETE CASCADE,
@@ -1476,10 +1478,9 @@ CREATE TABLE card_tags (
 CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id);
 ```
 
-SQLite treats `NULL`s as distinct in a unique index, so `(NULL, 'noun')` twice
-would pass; the local profile's `owner_id` is `NULL` (schema.md), so the tag
-write path (core-learning slice) must check the folded name before insert
-until an owner exists. This plan only creates the schema.
+The unique index normalises `owner_id` with `COALESCE`, so two tags with the
+same folded name are rejected for the local profile (`owner_id` NULL) too —
+the database, not only the write path, holds BR-TAG-001.
 
 - [ ] **Step 2: Write `AppDatabase` and the connection helper**
 
@@ -1732,6 +1733,16 @@ void main() {
     await db.customStatement("DELETE FROM card WHERE id = 'c1'");
     await db.customStatement("DELETE FROM tags WHERE id = 't2'");
     expect(await _count(db, 'card_tags'), 0);
+  });
+
+  test('a tag name is unique for the local profile (NULL owner) after folding', () async {
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t1', 'Noun', 'noun', 0)",
+    );
+    final f = await _failureOf(() => db.customStatement(
+          "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t2', 'noun', 'noun', 0)",
+        ));
+    expect(f, isA<ConstraintFailure>());
   });
 
   test('a tag name is unique per owner after folding', () async {
