@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/mx_text_styles.dart';
 
 /// The one way UI code reads the theme.
 extension ThemeContext on BuildContext {
@@ -22,4 +23,6 @@ extension ThemeContext on BuildContext {
 
   MxDerivedColors get derivedColors =>
       MxDerivedColors.resolve(colors, semanticColors);
+
+  MxTextStyles get textStyles => MxTextStyles(texts, colors);
 }

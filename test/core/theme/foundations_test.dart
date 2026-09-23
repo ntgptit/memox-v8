@@ -87,4 +87,8 @@ void main() {
     expect(AppDurations.spinnerCycle, const Duration(milliseconds: 800));
     expect(AppDurations.skeletonPulse, const Duration(milliseconds: 1400));
   });
+
+  test('the indicator stroke is the spinner arc width', () {
+    expect(AppStroke.indicator, 2);
+  });
 }
