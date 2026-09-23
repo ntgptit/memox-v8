@@ -45,6 +45,14 @@ Future<void> pumpMx(
   );
 }
 
+/// [pumpMx] at the view size the test already set.
+Future<void> pumpMxAt(WidgetTester tester, Widget child) => tester.pumpWidget(
+  MaterialApp(
+    theme: buildLightTheme(),
+    home: Scaffold(body: Center(child: child)),
+  ),
+);
+
 /// Pumps [page] as the whole route, for widgets that own their Scaffold.
 Future<void> pumpMxPage(
   WidgetTester tester,
