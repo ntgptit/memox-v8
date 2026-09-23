@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -162,6 +163,31 @@ void main() {
             closeLabel: 'Close',
             onClose: () {},
             accent: MxSemanticColors.light.mastery,
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxBreadcrumb short and deep', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_breadcrumb',
+      Column(
+        children: [
+          MxBreadcrumb(
+            segments: [
+              MxBreadcrumbSegment(label: 'Japanese', onTap: () {}),
+              MxBreadcrumbSegment(label: 'N5', onTap: () {}),
+              const MxBreadcrumbSegment(label: 'Verbs'),
+            ],
+          ),
+          MxBreadcrumb(
+            segments: [
+              for (var i = 1; i < 10; i++)
+                MxBreadcrumbSegment(label: 'Level $i', onTap: () {}),
+              const MxBreadcrumbSegment(label: 'Level 10'),
+            ],
           ),
         ],
       ),
