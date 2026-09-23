@@ -41,7 +41,7 @@
 # more and every gate pays it at once):
 #
 #   flutter test    43s          dart format          3s
-#   flutter analyze 10s          check_docs.py        2s   [28s]
+#   flutter analyze 10s          docs check           2s   [28s]
 #   guard (python)  11s          CI tooling tests     8s
 #                                architecture guard   2s
 #
@@ -301,11 +301,12 @@ else
 fi
 
 # Cheap now that it is one Python process, so it belongs in the local gate
-# rather than only in CI — a dangling BR reference or a stale WBS dependency is
-# caught before the commit, not on the PR.
-DOCS_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/check_docs.py"
+# rather than only in CI — a dangling BR reference, a broken link or a stale
+# docs/_generated/ is caught before the commit, not on the PR. The gate is the
+# repo's own `tools/docs/check.py` (see docs/README.md, "Kiểm chứng").
+DOCS_PY="$REPO_ROOT/tools/docs/check.py"
 if [[ -n "$PY" && -f "$DOCS_PY" ]]; then
-  plan docs "document integrity" "$PY '$DOCS_PY' --quiet"
+  plan docs "document integrity" "$PY '$DOCS_PY'"
 else
   FAILED+=("document gate unavailable: $DOCS_PY")
 fi
