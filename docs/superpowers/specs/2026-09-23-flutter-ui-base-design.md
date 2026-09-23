@@ -428,6 +428,17 @@ item names where it comes from.
 | 42 | Row 16's footnote half is resolved: EmptyState's `footnote` renders an MxNote 20 below the action | phase 5 plan S19 |
 | 43 | ListRow and SettingsRow put the 12/12 vertical inset on the text column only, so a 48 trailing target (overflow button, toggle) sits inside the text height instead of growing the row; the painted rows match the contract's "one title + one sub + 12/12" | phase 5 execution |
 | 44 | TagChip's label keeps the caption line-height 1.4, not the contract's 1: an ellipsized label clips to its text box, and a 12px box cut the descenders | phase 5 execution |
+| 45 | MxSpinner is a fixed three-quarter 2px ring turning once every 0.8s, not Material's growing arc, and it keeps turning under reduced motion because it is the only sign of work in flight | phase 6 plan O1 |
+| 46 | Row 16's spinner half is resolved: MxButton, MxListRow and MxStepper spin MxSpinner, onPrimary inside a filled button and primary elsewhere, so a loading outline or secondary button spins in primary | phase 6 plan O2 |
+| 47 | Skeleton's radius 6 is a component constant; the skeleton row ships as MxSkeletonRow on ListRow geometry, with an UNSPECIFIED 8 between its bars | phase 6 plan O3 |
+| 48 | ErrorState's tile → title gap is UNSPECIFIED and uses EmptyState's 16 | phase 6 plan O4 |
+| 49 | Dialog title and body typography and insets are UNSPECIFIED: `compactTitle` (the ErrorState and DeckPickerSheet title), a 14 onSurface body, 20 in, 8 apart, scrolling when the text outgrows the screen | phase 6 plan O5 |
+| 50 | InlineBanner's warning border is a new derived `warningBorder` at the contract's 26% / 32% (the theme gap it reports); actions always sit under the message, so the single-line trailing-action form is not built; its text keeps the caption role at 1.55 (extends row 24) | phase 6 plan O6 |
+| 51 | The BottomSheet opens with the platform modal route's slide at 260ms, not a 20% translate; the Dialog keeps the contract's 0.94 scale and fade | phase 6 plan O7 |
+| 52 | The scrim's 45% is a new effect token, `AppEffects.scrimOpacity` | phase 6 plan O8 |
+| 53 | Snackbar is the platform floating SnackBar with a 16 margin; its action is a 32 compact button in a 48 target with an UNSPECIFIED radius of 8 | phase 6 plan O9 |
+| 54 | DeckPickerSheet's footer is one button (outline Cancel with targets, primary OK without); its title → rule gap is UNSPECIFIED and uses 4 | phase 6 plan O11 |
+| 55 | The toast's 10 vertical padding sits on the message, not on the SnackBar, so the action's 48 target fits inside the 48 floor instead of making an action toast 68 tall (the ListRow rule of row 43) | phase 6 execution |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
