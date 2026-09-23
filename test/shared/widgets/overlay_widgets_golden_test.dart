@@ -7,9 +7,11 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -111,6 +113,90 @@ void main() {
             ),
           ),
         ),
+      ),
+    );
+  });
+
+  testWidgets('MxSnackbarContent on its inverse surface', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_snackbar',
+      Builder(
+        builder: (context) {
+          // The surface buildMxSnackBar configures (ruling O9).
+          Widget toast(Widget content) => DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.inverseSurface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: content,
+            ),
+          );
+          return Column(
+            spacing: 16,
+            children: [
+              toast(const MxSnackbarContent(message: 'Deck saved')),
+              toast(
+                MxSnackbarContent(
+                  message: 'Moved to Trash',
+                  actionLabel: 'Undo',
+                  onAction: () {},
+                ),
+              ),
+              toast(
+                MxSnackbarContent(
+                  message:
+                      'The export was saved to Downloads and is ready to '
+                      'share with another device.',
+                  actionLabel: 'Open',
+                  onAction: () {},
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  });
+
+  testWidgets('MxDeckPickerSheet with targets and with none', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_deck_picker',
+      Column(
+        spacing: 16,
+        children: [
+          MxDeckPickerSheet(
+            title: 'Move to deck',
+            rule:
+                'Cards keep their progress. Decks that hold other decks '
+                'are not offered.',
+            candidates: [
+              MxPickerCandidate(label: 'Kana', onTap: () {}),
+              MxPickerCandidate(label: 'Kanji N5', onTap: () {}),
+              MxPickerCandidate(
+                label: 'Grammar',
+                reason: 'Holds other decks',
+                isEnabled: false,
+                onTap: () {},
+              ),
+            ],
+            dismissLabel: 'Cancel',
+            onDismiss: () {},
+            emptyTitle: 'Nowhere to move',
+          ),
+          MxDeckPickerSheet(
+            title: 'Move to deck',
+            rule: 'Cards keep their progress.',
+            candidates: const [],
+            dismissLabel: 'OK',
+            onDismiss: () {},
+            emptyTitle: 'Nowhere to move',
+            emptyBody: 'Create another deck first.',
+          ),
+        ],
       ),
     );
   });
