@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Gate: every BR-n, UC-n and invariant Qn cited in the V8 docs keep-set
-resolves to a real definition, and every keep-set file exists.
+"""Gate: every BR-<CODE>-nnn, UC-<CODE>-nnn and invariant Qn cited in the V8
+docs keep-set resolves to a real definition, and every keep-set file exists.
 
     python tools/check_docs_refs.py [path ...]
 
@@ -16,25 +16,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 
-BR_FILES = [DOCS / "business-rules.md", DOCS / "business-rules" / "study-mode.md"]
-UC_FILE = DOCS / "use-cases.md"
+BR_DIR = DOCS / "business-rules"
+UC_DIR = DOCS / "use-cases"
 DM_FILE = DOCS / "data-model.md"
+
+BR_FILES = sorted(BR_DIR.glob("*.md"))
+UC_FILES = sorted(UC_DIR.glob("*.md"))
 
 KEEP_SET = [
     DOCS / "README.md",
     DOCS / "document-conventions.md",
-    DOCS / "product.md",
-    UC_FILE,
-    DOCS / "master-flow.md",
+    DOCS / "product" / "product.md",
+    DOCS / "product" / "master-flow.md",
     DM_FILE,
     *BR_FILES,
+    *UC_FILES,
     *sorted((DOCS / "it-scenarios").glob("*.md")),
 ]
 
-BR_DEF = re.compile(r"^(?:\|\s*|#+\s*)BR-(\d+)\b", re.M)
-UC_DEF = re.compile(r"^#+\s*UC-(\d+)\b", re.M)
+# Definitions: a table row `| BR-<CODE>-nnn |` or a heading `### BR-<CODE>-nnn · ...`.
+BR_DEF = re.compile(r"^(?:\|\s*|#+\s*)BR-([A-Z]+-\d+)\b", re.M)
+UC_DEF = re.compile(r"^#+\s*UC-([A-Z]+-\d+)\b", re.M)
 INV_DEF = re.compile(r"^--\s*(\d+)\.", re.M)
-BR_ROW = re.compile(r"^\|\s*BR-\d+\s*\|")
+BR_ROW = re.compile(r"^\|\s*BR-[A-Z]+-\d+\s*\|")
 
 problems: list[str] = []
 
@@ -44,23 +48,32 @@ def fail(path: Path, line_no: int, reason: str) -> None:
     problems.append(f"{shown.as_posix()}:{line_no}: {reason}")
 
 
-def defined_ids(path: Path, pattern: re.Pattern[str]) -> set[int]:
+def defined_ids(paths: list[Path], pattern: re.Pattern[str]) -> set[str]:
+    out: set[str] = set()
+    for path in paths:
+        if not path.exists():
+            continue
+        out |= set(pattern.findall(path.read_text(encoding="utf-8")))
+    return out
+
+
+def defined_int_ids(path: Path, pattern: re.Pattern[str]) -> set[int]:
     if not path.exists():
         return set()
     return {int(m) for m in pattern.findall(path.read_text(encoding="utf-8"))}
 
 
-def check_file(path: Path, br: set[int], uc: set[int], inv: set[int]) -> None:
+def check_file(path: Path, br: set[str], uc: set[str], inv: set[int]) -> None:
     for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         # A rule's definition row still cites other rules in its Related
-        # column — 171 of them do — so drop only the leading `| BR-nnn |`
-        # and scan the rest. Skipping the whole row blinds the check.
+        # column, so drop only the leading `| BR-<CODE>-nnn |` and scan the
+        # rest. Skipping the whole row blinds the check.
         body = BR_ROW.sub("", line.strip(), count=1)
-        for n in re.findall(r"\bBR-(\d+)\b", body):
-            if int(n) not in br:
+        for n in re.findall(r"\bBR-([A-Z]+-\d+)\b", body):
+            if n not in br:
                 fail(path, line_no, f"BR-{n} is cited but never defined")
-        for n in re.findall(r"\bUC-(\d+)\b", line):
-            if int(n) not in uc:
+        for n in re.findall(r"\bUC-([A-Z]+-\d+)\b", line):
+            if n not in uc:
                 fail(path, line_no, f"UC-{n} is cited but never defined")
         for n in re.findall(r"\binvariant Q(\d+)\b", line):
             if int(n) not in inv:
@@ -69,11 +82,9 @@ def check_file(path: Path, br: set[int], uc: set[int], inv: set[int]) -> None:
 
 def main() -> int:
     targets = [Path(a).resolve() for a in sys.argv[1:]] or KEEP_SET
-    br: set[int] = set()
-    for f in BR_FILES:
-        br |= defined_ids(f, BR_DEF)
-    uc = defined_ids(UC_FILE, UC_DEF)
-    inv = defined_ids(DM_FILE, INV_DEF)
+    br = defined_ids(BR_FILES, BR_DEF)
+    uc = defined_ids(UC_FILES, UC_DEF)
+    inv = defined_int_ids(DM_FILE, INV_DEF)
 
     for path in targets:
         if not path.exists():

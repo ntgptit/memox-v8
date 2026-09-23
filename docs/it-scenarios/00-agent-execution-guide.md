@@ -6,7 +6,7 @@
 | **Purpose** | Cung cấp hợp đồng thực thi xác định để AI agent chọn, chuẩn bị, chạy và báo cáo kịch bản IT mà không tự suy diễn |
 | **Scope** | Quy trình của agent, mức sẵn sàng, chuẩn bị, dọn dẹp, dữ liệu dựng sẵn, bằng chứng và kết luận; không định nghĩa lại hành vi sản phẩm |
 | **Source of truth for** | Giao thức AI agent thực thi bộ kịch bản IT |
-| **Depends on** | `README.md`, `scenario-catalog.md`, `../business-rules.md`, `../use-cases.md` |
+| **Depends on** | `README.md`, `scenario-catalog.md`, `../business-rules/`, `../use-cases/` |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ đường dẫn/tên lớp harness V7 và lịch sử fixture v1→v2, phát biểu lại hợp đồng harness theo khả năng cần có |
 | **Last updated** | 2026-09-23 |
 
@@ -251,7 +251,7 @@ Chạy `SETUP-TREE-CARD` và không tạo thêm thẻ. `D-LEAF` có đúng `C-00
 | `ST-04` | `산` | `mountain` | `The mountain is high.` |
 | `ST-05` | `바다` | `sea` | `The sea is calm.` |
 
-Các nghĩa đã chuẩn hóa của năm thẻ MUST khác nhau để đủ BR-121/BR-123. Kịch bản
+Các nghĩa đã chuẩn hóa của năm thẻ MUST khác nhau để đủ BR-STUDY-037/BR-STUDY-039. Kịch bản
 yêu cầu “không có câu ví dụ” dùng đúng mặt trước/mặt sau nhưng để `example` rỗng.
 
 ### SETUP-STUDY-EB-5-FULL
@@ -269,7 +269,7 @@ mong đợi tại màn vào học vẫn là `New 5`, `Due 0`.
 ### SETUP-STUDY-EB-1
 
 Như phần chuẩn bị trên nhưng chỉ tạo `ST-01`. Dùng để chứng minh `match` và `guess` bị
-bỏ qua/vô hiệu hoá theo BR-99, BR-121 và BR-153.
+bỏ qua/vô hiệu hoá theo BR-MODE-009, BR-STUDY-037 và BR-STUDY-045.
 
 ### SETUP-STUDY-EB-4
 
@@ -395,7 +395,7 @@ và được bật. Bộ dữ liệu dựng sẵn MUST không chứa dữ liệu
 Năm nghĩa hợp lệ được báo khả dụng ở màn chọn chế độ, sau đó công cụ tiêm lỗi đã
 phê duyệt làm nguồn phương án nhiễu của đúng câu hỏi hiện tại chỉ trả được ba
 phương án nhiễu hợp lệ. Cơ sở dữ liệu vẫn nguyên vẹn. Kết quả mong đợi là nhánh
-chặn BR-124, không phải bỏ qua giai đoạn và không phải câu hỏi bốn lựa chọn.
+chặn BR-STUDY-040, không phải bỏ qua giai đoạn và không phải câu hỏi bốn lựa chọn.
 
 #### S-STUDY-GUESS-SOURCE-V2
 

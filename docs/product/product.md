@@ -6,8 +6,8 @@
 | **Purpose** | Xác định sản phẩm là gì, cho ai, chạy trên đâu, và phạm vi MVP đến đâu |
 | **Scope** | Vấn đề, người dùng, quyết định nền tảng, phạm vi MVP, luồng nghiệp vụ chính. Ngoài phạm vi: cách triển khai |
 | **Source of truth for** | Phạm vi MVP · phân loại must/should/nice/out · quyết định platform, data posture, auth, dữ liệu nhạy cảm |
-| **Depends on** | `document-conventions.md` |
-| **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trạng thái triển khai và tham chiếu V7 |
+| **Depends on** | `../document-conventions.md` |
+| **Updated by** | `docs/superpowers/specs/2026-09-23-docs-restructure-design.md` — tách theo đối tượng, đánh số lại BR/UC |
 | **Last updated** | 2026-09-23 |
 
 ## Problem
@@ -26,7 +26,7 @@ nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn 
 **Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới
 dạng template để người dùng sao chép về. Nội dung starter hiện tại là
 fixture của dự án, chỉ phục vụ development và test — không phải nội dung
-production (BR-87). Import/export vẫn ở nice-to-have.
+production (BR-STARTER-010). Import/export vẫn ở nice-to-have.
 
 ## Core value
 
@@ -49,7 +49,7 @@ target. Nghĩa là không đánh đổi thiết kế Android để Web đẹp h�
 không được dùng plugin chặn Web build — nếu Web không build được thì mất luôn
 kênh E2E.
 
-Các quyết định nền tảng trên nằm ở `superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §3.
+Các quyết định nền tảng trên nằm ở `../superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §3.
 
 ## Sensitive data
 
@@ -65,7 +65,7 @@ Các quyết định nền tảng trên nằm ở `superpowers/specs/2026-09-21-
 
 Ở MVP không có dữ liệu rời khỏi thiết bị, nên rủi ro chủ yếu là **log** — và đó
 là chỗ dễ vi phạm nhất, vì log nội dung là phản xạ tự nhiên khi debug. Vì thế nó
-là quy tắc (BR-32), không phải sự cẩn thận.
+là quy tắc (BR-STARTER-002), không phải sự cẩn thận.
 
 **Chưa mã hoá database ở MVP** — dữ liệu học từ vựng không đủ nhạy cảm để trả giá
 bằng độ phức tạp của SQLCipher. Nhưng việc mở kết nối database nằm sau một chỗ
@@ -84,7 +84,7 @@ chứng minh kiến trúc local-only (không network) và cơ chế Drift migrat
 
 | # | Feature | Done when |
 |---|---|---|
-| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-03, BR-04) |
+| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-DECK-022, BR-DECK-023) |
 | M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
 | M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
 | M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
@@ -97,10 +97,10 @@ phải chi tiết kỹ thuật:
 
 | Trục | Là gì | Ai chọn |
 |---|---|---|
-| **Thuật toán SRS** | `eight_box` · `sm2` — quyết định **khi nào** thẻ quay lại | chọn một lần lúc tạo root deck, khoá khi thẻ đầu tiên học xong chuỗi học mới (BR-13) |
-| **StudyMode** | `browse` · `self_assess` · `match` · `guess` · `recall` · `fill` — quyết định **cách** thẻ được hỏi | không ai chọn: một phiên chạy chuỗi stage cố định của thuật toán (BR-109, BR-110) |
+| **Thuật toán SRS** | `eight_box` · `sm2` — quyết định **khi nào** thẻ quay lại | chọn một lần lúc tạo root deck, khoá khi thẻ đầu tiên học xong chuỗi học mới (BR-SRS-003) |
+| **StudyMode** | `browse` · `self_assess` · `match` · `guess` · `recall` · `fill` — quyết định **cách** thẻ được hỏi | không ai chọn: một phiên chạy chuỗi stage cố định của thuật toán (BR-MODE-003, BR-MODE-004) |
 
-**Hai loại phiên, tách hẳn** (BR-142):
+**Hai loại phiên, tách hẳn** (BR-STUDY-051):
 
 | | Học mới | Ôn tập |
 |---|---|---|
@@ -112,7 +112,7 @@ phải chi tiết kỹ thuật:
 người học chọn cách ôn. Đó là quyết định về **áp lực**: bắt đi lại năm cách hỏi cho
 một thẻ đã quen là bắt làm bài tập, không phải ôn tập.
 
-**Chuỗi của phiên học mới** (BR-109, BR-110):
+**Chuỗi của phiên học mới** (BR-MODE-003, BR-MODE-004):
 
 | Thuật toán | Chuỗi stage |
 |---|---|
@@ -124,36 +124,36 @@ với hai action của `eight_box`, nhưng chỉ nuôi được hai trong bốn 
 Nên `sm2` dùng `self_assess`: người học lật thẻ và tự chấm, đúng luồng M3 mô tả.
 
 **`browse` và `self_assess` tách nhau vì chúng là hai việc khác nhau.** `browse`
-hiện cả hai mặt cùng lúc để làm quen, không chấm và không đổi lịch (BR-111);
+hiện cả hai mặt cùng lúc để làm quen, không chấm và không đổi lịch (BR-MODE-005);
 `self_assess` che mặt sau cho tới khi người học lật, rồi nhận đánh giá của chính
 họ. Một cái tên ôm cả hai là thứ sẽ phải giải thích lại ở mọi test và mọi màn hình.
 
 **Phạm vi:** `browse` và `self_assess` thuộc MVP (M3). Bốn stage chấm điểm
 `match` · `guess` · `recall` · `fill` có ngưỡng dữ liệu riêng của chúng
-(BR-121, BR-124, BR-153) và câu trả lời cho việc một chuỗi học mới ghi vào lịch
-thế nào (BR-141, BR-144). Màn chọn mode ôn tập chỉ xuất hiện khi thuật toán có
+(BR-STUDY-037, BR-STUDY-040, BR-STUDY-045) và câu trả lời cho việc một chuỗi học mới ghi vào lịch
+thế nào (BR-STUDY-023, BR-STUDY-053). Màn chọn mode ôn tập chỉ xuất hiện khi thuật toán có
 từ hai mode ôn tập: `eight_box` có bốn, `sm2` chỉ có `self_assess` nên vào
-thẳng (BR-146).
+thẳng (BR-STUDY-055).
 
 Mode nào trong sáu mode này thực sự ship ở V8.0 vẫn là open question, do
 product definition (sub-project 2) quyết định — xem
-`superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10.
+`../superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §10.
 
 ## Should-have
 
 | # | Feature | Done when |
 |---|---|---|
-| S1 | Tìm kiếm card trong deck | Trong phạm vi: tìm theo nội dung mặt trước/sau trong deck đang mở, không phân biệt hoa thường và giữ dấu. Tìm toàn thư viện là UC-20 |
-| S2 | Thống kê ôn tập cơ bản | Trong phạm vi (UC-12, BR-190…BR-199): số card đã học hôm nay tách Learning/Reviewing, streak theo ngày, và hoạt động bảy ngày gần nhất. Ngoài phạm vi: accuracy, longest streak, goal, XP, heatmap và lọc theo deck (BR-191) |
-| S3 | Đảo chiều card (nghĩa → từ) | Trong phạm vi (UC-15, BR-203…BR-209): chọn chiều hỏi trước lượt đầu, chỉ cho phiên ôn tập `self_assess` của deck `sm2` |
+| S1 | Tìm kiếm card trong deck | Trong phạm vi: tìm theo nội dung mặt trước/sau trong deck đang mở, không phân biệt hoa thường và giữ dấu. Tìm toàn thư viện là UC-SEARCH-001 |
+| S2 | Thống kê ôn tập cơ bản | Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009…BR-PROGRESS-018): số card đã học hôm nay tách Learning/Reviewing, streak theo ngày, và hoạt động bảy ngày gần nhất. Ngoài phạm vi: accuracy, longest streak, goal, XP, heatmap và lọc theo deck (BR-PROGRESS-010) |
+| S3 | Đảo chiều card (nghĩa → từ) | Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR-MODE-019): chọn chiều hỏi trước lượt đầu, chỉ cho phiên ôn tập `self_assess` của deck `sm2` |
 
 ## Nice-to-have
 
 | # | Feature | Notes |
 |---|---|---|
-| N1 | Import/export | Sub-project sau (UC-10, UC-11, BR-174…BR-181): import CSV/TSV/XLSX, export nội dung — không phải backup |
-| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-17, BR-218…BR-229): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-228) |
-| N3 | Tag/phân loại card | Sub-project sau (UC-18, BR-230…BR-238): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
+| N1 | Import/export | Sub-project sau (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-007…BR-TRANSFER-014): import CSV/TSV/XLSX, export nội dung — không phải backup |
+| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
+| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
 
 ## Explicitly out of MVP
 
@@ -173,11 +173,11 @@ App dùng đúng **bốn** destination ở bottom navigation, thứ tự cố đ
 Nhãn tab đầu là "Thư viện" — cả cây deck, thẻ bên trong và luồng starter —
 trong khi branch nội bộ và màn hình gốc của nó vẫn là Decks.
 
-- Cold start mở Decks (UC-06).
-- **Progress** (UC-12, UC-13): streak, hôm nay và bảy ngày gần nhất đọc từ
+- Cold start mở Decks (UC-DECK-003).
+- **Progress** (UC-PROGRESS-001, UC-PROGRESS-002): streak, hôm nay và bảy ngày gần nhất đọc từ
   lịch sử học thật, rồi bên dưới là hai khoảng 7/30 ngày, bảng tổng và một
-  hàng cho mỗi deck với drill-down xuống từng cấp. **Settings** (UC-16,
-  BR-210…BR-217): mặc định học, theme và ngôn ngữ; nhắc học hằng ngày (UC-17)
+  hàng cho mỗi deck với drill-down xuống từng cấp. **Settings** (UC-SETTINGS-001,
+  BR-SETTINGS-001…BR-SETTINGS-008): mặc định học, theme và ngôn ngữ; nhắc học hằng ngày (UC-REMINDER-001)
   nằm trong branch Settings.
 - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), không phải tab riêng.
 - Không có tab Profile chừng nào chưa có auth/profile domain — nhất quán với
@@ -202,7 +202,7 @@ khỏi UI, state matrix đầy đủ ở màn hình (kể cả empty — "hôm n
 `sm2`. Mỗi deck **bắt buộc chọn một** khi tạo. Sub-deck kế thừa scheduler của
 root deck và không chọn riêng.
 
-**Scheduler bị khoá khi thẻ đầu tiên học xong chuỗi học mới** (BR-13). Trước đó đổi tự do; sau đó muốn
+**Scheduler bị khoá khi thẻ đầu tiên học xong chuỗi học mới** (BR-SRS-003). Trước đó đổi tự do; sau đó muốn
 đổi phải **Reset learning progress**. Lý do: đổi thuật toán giữa chừng đặt ra
 những câu hỏi không có câu trả lời trung thực — box 5 tương ứng ease factor nào,
 history theo luật cũ còn giá trị gì. Mọi ánh xạ đều là bịa đặt. Khoá-và-reset
@@ -227,13 +227,13 @@ answers kèm scheduler type và generation.
 
 **Nội dung: starter deck quản lý như template.** Người dùng chọn dùng thì app tạo
 một **bản sao** vào dữ liệu cá nhân; bản sao là deck bình thường. Cập nhật
-template ở bản app mới không ghi đè nội dung người dùng đã sửa. Xem UC-01.
-Nội dung starter hiện tại là fixture cho development/test (BR-87).
+template ở bản app mới không ghi đè nội dung người dùng đã sửa. Xem UC-STARTER-001.
+Nội dung starter hiện tại là fixture cho development/test (BR-STARTER-010).
 
 **Cấu trúc deck: cây nhiều cấp, mỗi deck chỉ chứa một loại.** Root deck chỉ chứa
 deck con. Deck con mới tạo chưa xác định loại; lần tạo phần tử con đầu tiên xác
 lập nó thành "chứa card" hoặc "chứa deck con", và sau đó không trộn lẫn. Người
-dùng không phải chọn loại lúc tạo deck — lúc đó họ chưa biết. Xem UC-08.
+dùng không phải chọn loại lúc tạo deck — lúc đó họ chưa biết. Xem UC-DECK-004.
 
 Quyết định nội dung/bản sao ở trên vẫn là nghiệp vụ chốt cho M6 khi sub-project
 thư viện starter triển khai; M6 nằm ngoài phạm vi V8.0 theo spec
@@ -242,11 +242,11 @@ phải must-have của V8.0.
 
 | # | Feature | Done when |
 |---|---|---|
-| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân | Sub-project sau (UC-01, BR-31…BR-39, BR-87): cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
+| M6 | Thư viện starter deck với sao chép vào dữ liệu cá nhân | Sub-project sau (UC-STARTER-001, BR-STARTER-001…BR-STARTER-009, BR-STARTER-010): cài mới → mở app → chọn một starter deck → ôn được ngay. Sửa bản sao rồi cập nhật app lên version template mới thì nội dung đã sửa **không** bị ghi đè. Mở lại app **không** tạo deck trùng |
 
-Nửa import của N1 (UC-10): thư viện starter giải quyết "app trống lúc mới
+Nửa import của N1 (UC-TRANSFER-001): thư viện starter giải quyết "app trống lúc mới
 cài", nhưng không giải quyết "bộ thẻ của tôi đang nằm trong một file" — và
 nhập tay từng card không phải câu trả lời cho một file nghìn dòng. Nửa export
-(UC-11): mang bộ thẻ ra khỏi app là điều kiện để "dữ liệu của tôi" không bị
+(UC-TRANSFER-002): mang bộ thẻ ra khỏi app là điều kiện để "dữ liệu của tôi" không bị
 khoá trong một cài đặt duy nhất — nhưng nó là export **nội dung**, không phải
 backup, nên không thay thế được sync.

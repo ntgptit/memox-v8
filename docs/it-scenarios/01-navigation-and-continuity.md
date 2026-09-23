@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra người dùng đi vào đúng điểm bắt đầu, di chuyển giữa các nhánh và không mất ngữ cảnh bộ thẻ, thẻ hoặc phiên học |
 | **Scope** | Khởi động nguội, thanh điều hướng dưới, Back, đường dẫn phân cấp, route không hợp lệ và hành trình bộ thẻ/thẻ/Study xuyên suốt |
 | **Source of truth for** | Kịch bản IT về điều hướng và khả năng tiếp tục của chức năng hiện có |
-| **Depends on** | `README.md`, `../use-cases.md` (UC-04, UC-05, UC-06, UC-12), `../business-rules.md` (BR-82, BR-101, BR-103, BR-190) |
+| **Depends on** | `README.md`, `../use-cases/` (UC-CARD-001, UC-STUDY-001, UC-DECK-003, UC-PROGRESS-001), `../business-rules/` (BR-STUDY-014, BR-STUDY-020, BR-STUDY-072, BR-PROGRESS-009) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ trích dẫn AD, task ID V7 và tài liệu đã xoá khỏi kịch bản điều hướng |
 | **Last updated** | 2026-09-23 |
 
@@ -74,7 +74,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** App ở trạng thái trống; có thể đóng hẳn và mở lại app.
-- **Liên kết:** UC-02, UC-03, UC-04, UC-08.
+- **Liên kết:** UC-DECK-001, UC-DECK-002, UC-CARD-001, UC-DECK-004.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -143,7 +143,7 @@
 
 - **Ưu tiên:** P1
 - **Tiền điều kiện:** App đã cài, dữ liệu bất kỳ; không có phiên Study đang dở.
-- **Liên kết:** UC-06 cho cold start; UC-12 và BR-190 cho branch Tiến độ.
+- **Liên kết:** UC-DECK-003 cho cold start; UC-PROGRESS-001 và BR-PROGRESS-009 cho branch Tiến độ.
 - **Phạm vi deep link:** các bước 4–5 là điều hướng **in-process** — router phân
   giải `/progress`/`/settings` làm initial location (URL development, cùng cơ
   chế IT-NAV-005). App **chưa** khai báo `ACTION_VIEW` intent filter, nên OS
@@ -154,13 +154,13 @@
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
 | 1 | Mở app và quan sát bottom navigation | Đúng bốn destination theo thứ tự Thư viện · Học · Tiến độ · Cài đặt; tab Thư viện đang được chọn |
-| 2 | Chạm tab Tiến độ | Màn Tiến độ mở: chuỗi ngày hiện tại, tổng hôm nay tách Learning/Reviewing và bảy ngày gần nhất (UC-12), rồi bên dưới là bộ chọn 7/30 ngày, bảng tổng và một hàng cho mỗi root deck (UC-13) — hoặc mặt lifetime-empty khi chưa từng học. Không tạo phiên Study; không có ghi database nào (BR-190, BR-188) |
+| 2 | Chạm tab Tiến độ | Màn Tiến độ mở: chuỗi ngày hiện tại, tổng hôm nay tách Learning/Reviewing và bảy ngày gần nhất (UC-PROGRESS-001), rồi bên dưới là bộ chọn 7/30 ngày, bảng tổng và một hàng cho mỗi root deck (UC-PROGRESS-002) — hoặc mặt lifetime-empty khi chưa từng học. Không tạo phiên Study; không có ghi database nào (BR-PROGRESS-009, BR-PROGRESS-007) |
 
 ## IT-NAV-012 — Import wizard là full-screen task phía trên shell
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck loại card có card, và một sub-deck `unset` cùng cây.
-- **Liên kết:** UC-10, BR-175.
+- **Liên kết:** UC-TRANSFER-001, BR-TRANSFER-008.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

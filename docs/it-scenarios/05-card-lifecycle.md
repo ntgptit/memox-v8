@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra người dùng tạo, thêm liên tiếp, sửa, xoá và giữ nội dung card đúng nghiệp vụ |
 | **Scope** | Card list, create/edit form, required/optional fields, discard, persistence, delete và dữ liệu học không bị ảnh hưởng khi sửa |
 | **Source of truth for** | Scenario IT về vòng đời card hiện có |
-| **Depends on** | `README.md`, `../business-rules.md` (BR-07…10, BR-92, BR-95, BR-163), `../use-cases.md` (UC-04) |
+| **Depends on** | `README.md`, `../business-rules/` (BR-CARD-001, BR-CARD-002, BR-CARD-004, BR-CARD-005, BR-CARD-009, BR-CARD-003, BR-DECK-015), `../use-cases/` (UC-CARD-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: gỡ tham chiếu task ID V7 khỏi kịch bản vòng đời card |
 | **Last updated** | 2026-09-23 |
 
@@ -32,7 +32,7 @@
 |---|---|---|
 | 1 | Nhập front `abandon`, back `từ bỏ` | Hai giá trị hiển thị đúng |
 | 2 | Chạm Lưu | Quay về danh sách; card mới xuất hiện ở đầu |
-| 3 | Quan sát card | Hiện đúng front/back và state New; card chưa có due badge vì chưa hoàn tất chuỗi học mới (BR-90, BR-144) |
+| 3 | Quan sát card | Hiện đúng front/back và state New; card chưa có due badge vì chưa hoàn tất chuỗi học mới (BR-CARD-007, BR-STUDY-053) |
 | 4 | Restart app và mở lại deck | Card vẫn tồn tại |
 
 ## IT-CARD-003 — Validation mặt trước và mặt sau
@@ -138,7 +138,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một deck loại card chỉ còn đúng một card.
-- **Liên kết:** UC-04 A2, BR-163.
+- **Liên kết:** UC-CARD-001 A2, BR-DECK-015.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -150,7 +150,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Hai deck cùng root: nguồn loại `card` có đúng một card đã học và có tag, đích `unset`.
-- **Liên kết:** UC-04 A5, BR-165, BR-163.
+- **Liên kết:** UC-CARD-001 A5, BR-CARD-010, BR-DECK-015.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -164,7 +164,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một root khác đã tồn tại, cùng scheduler và cùng generation với root hiện tại.
-- **Liên kết:** UC-04 E5, BR-165.
+- **Liên kết:** UC-CARD-001 E5, BR-CARD-010.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -176,7 +176,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Một sub-deck `unset` hoặc `card` trong root eight_box.
-- **Liên kết:** UC-10, BR-169, BR-171, BR-172.
+- **Liên kết:** UC-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-004, BR-TRANSFER-005.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
@@ -190,7 +190,7 @@
 
 - **Ưu tiên:** P0
 - **Tiền điều kiện:** Có `IT-CARD-014`.
-- **Liên kết:** UC-10 E4/E5, BR-168, BR-170, BR-171.
+- **Liên kết:** UC-TRANSFER-001 E4/E5, BR-TRANSFER-001, BR-TRANSFER-003, BR-TRANSFER-004.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

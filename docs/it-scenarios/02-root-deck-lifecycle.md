@@ -6,7 +6,7 @@
 | **Purpose** | Kiểm tra người dùng tạo, huỷ, đổi tên và xoá root deck đúng ràng buộc nghiệp vụ |
 | **Scope** | Root deck form, scheduler lúc tạo, validation tên, rename, delete và persistence |
 | **Source of truth for** | Scenario IT về vòng đời root deck hiện có |
-| **Depends on** | `README.md`, `../business-rules.md` (BR-01…04, BR-11), `../use-cases.md` (UC-02, UC-03) |
+| **Depends on** | `README.md`, `../business-rules/` (BR-DECK-020…BR-DECK-023, BR-SRS-001), `../use-cases/` (UC-DECK-001, UC-DECK-002) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 

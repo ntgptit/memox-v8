@@ -6,7 +6,7 @@
 | **Purpose** | Chứng minh người dùng đi vào đúng loại phiên, thấy đúng khả năng học và cấu hình phiên trước khi bất kỳ lịch sử nào được ghi |
 | **Scope** | Màn vào học, hai tập thẻ mới/đến hạn, màn chọn chế độ, giới hạn thẻ, thứ tự thẻ mới, tùy chọn toàn ứng dụng và ghi đè ở bộ thẻ gốc |
 | **Source of truth for** | Kịch bản IT về điểm vào và tùy chọn học |
-| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules.md` (BR-24, BR-29, BR-99, BR-101, BR-139, BR-142, BR-145…BR-154), `../use-cases.md` (UC-05) |
+| **Depends on** | `README.md`, `00-agent-execution-guide.md`, `../business-rules/` (BR-STUDY-003, BR-STUDY-008, BR-MODE-009, BR-STUDY-020, BR-STUDY-024, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-058, BR-STUDY-046, BR-STUDY-047, BR-STUDY-050, BR-STUDY-045, BR-STUDY-044), `../use-cases/` (UC-STUDY-001) |
 | **Updated by** | `docs/superpowers/plans/2026-09-23-docs-v8-reset.md` — V8 reset: cập nhật header theo đợt reset V8, nội dung không đổi |
 | **Last updated** | 2026-09-23 |
 
