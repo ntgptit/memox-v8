@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -190,6 +191,42 @@ void main() {
             ],
           ),
         ],
+      ),
+    );
+  });
+
+  testWidgets('MxBottomNav on Library', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_bottom_nav',
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: MxBottomNav(
+          destinations: const [
+            MxNavDestination(
+              icon: AppIcons.library,
+              selectedIcon: AppIcons.librarySelected,
+              label: 'Library',
+            ),
+            MxNavDestination(
+              icon: AppIcons.study,
+              selectedIcon: AppIcons.studySelected,
+              label: 'Study',
+            ),
+            MxNavDestination(
+              icon: AppIcons.progress,
+              selectedIcon: AppIcons.progressSelected,
+              label: 'Progress',
+            ),
+            MxNavDestination(
+              icon: AppIcons.settings,
+              selectedIcon: AppIcons.settingsSelected,
+              label: 'Settings',
+            ),
+          ],
+          selectedIndex: 0,
+          onSelected: (_) {},
+        ),
       ),
     );
   });
