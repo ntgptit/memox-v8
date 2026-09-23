@@ -1,6 +1,7 @@
 # MemoX V8 — Flutter UI base design
 
-Status: draft for review · Date: 2026-09-23 · Path: architectural
+Status: approved 2026-09-23 · amended while writing the phase 1 plan (§3, §4.2, §4.4, §4.6,
+§8.1, §8.3) · Path: architectural
 
 ## 1. Intent
 
@@ -42,7 +43,7 @@ to the feature's own sub-project.
 | App wiring owner | This sub-project owns `main.dart`, `app/app.dart` and the router. Foundation plan Task 10 shrinks to the retry policy and the DB smoke test (§7) |
 | Theme architecture | Material `ColorScheme` + `TextTheme` + component themes, one MemoX `ThemeExtension`, static token classes (approach A) |
 | Icons | Built-in Material Icons (`Icons.*`), mapped from the handoff's Lucide names in one place. No icon dependency |
-| Font | Plus Jakarta Sans, bundled as assets (OFL), weights 400–800. No runtime font fetching: the app is offline |
+| Font | Plus Jakarta Sans, the variable font (wght axis) bundled as one asset (OFL), used at weights 400–800. No runtime font fetching: the app is offline. Weights are set through `AppTypography.withWeight`, which moves the `wght` axis with `fontWeight` (guard `no_bare_font_weight`) |
 | Verification | Widget tests + light/dark goldens per component + a debug-only gallery route |
 
 ## 3. Structure
@@ -66,19 +67,22 @@ lib/
 ├── core/theme/
 │   ├── foundations/
 │   │   ├── app_spacing.dart  app_radius.dart  app_size.dart  app_icon_size.dart
-│   │   ├── app_stroke.dart   app_opacity.dart app_durations.dart app_shadows.dart
-│   │   └── app_icons.dart               Lucide name → Icons.* mapping
+│   │   ├── app_stroke.dart   app_opacity.dart app_effects.dart app_durations.dart
+│   │   ├── app_shadows.dart
+│   │   └── app_icons.dart               Lucide name → Icons.* mapping (phase 2)
 │   ├── app_color_schemes.dart       light + dark ColorScheme
-│   ├── app_typography.dart          TextTheme
-│   ├── mx_semantic_colors.dart      ThemeExtension + derived colours + MasteryRamp
-│   ├── app_component_themes.dart    Material component themes
+│   ├── app_typography.dart          TextTheme + withWeight
+│   ├── mx_semantic_colors.dart      ThemeExtension (nine stored colours)
+│   ├── mx_derived_colors.dart       the derived colours, computed once
+│   ├── mastery_ramp.dart            MasteryRamp utility
+│   ├── app_component_themes.dart    Material component themes (grows per phase)
 │   ├── app_theme.dart               buildLightTheme() / buildDarkTheme()
 │   └── theme_context.dart           context.colors / texts / semanticColors
 ├── l10n/
 │   ├── app_en.arb                   template
 │   └── app_vi.arb
 └── shared/widgets/mx_<name>.dart    one component per file
-assets/fonts/PlusJakartaSans-{Regular,Medium,SemiBold,Bold,ExtraBold}.ttf, OFL.txt
+assets/fonts/PlusJakartaSans-Variable.ttf, OFL.txt
 l10n.yaml
 test/core/theme/  test/shared/widgets/  test/app/  test/flutter_test_config.dart
 ```
@@ -115,9 +119,10 @@ nine `BIND_NOW` `MEMOX_SEMANTIC_COLOR` entries:
 statusMastered · errorFill · onErrorFill`
 
 - The five `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
-  `surfaceHero`, `chromeGlass`) are getters computed once from the stored fields
-  and the `ColorScheme`, at the mix ratios in the foundations. They are not
-  fields.
+  `surfaceHero`, `chromeGlass`) and the `border-ghost` edge colour live in
+  `MxDerivedColors`, built from the `ColorScheme`, the extension and the
+  brightness at the mix ratios in the foundations, and read as
+  `context.derivedColors`. They are not extension fields.
 - The five `M3_ALIAS` entries (`bg`, `surface-muted`, `surface-raised`,
   `progress-track`, `text-secondary`) resolve to their `ColorScheme` role and add
   nothing.
@@ -149,14 +154,15 @@ Static `abstract final class` holders in `core/theme/foundations/`:
 
 | Class | Values |
 |---|---|
-| `AppSpacing` | 4 · 8 · 12 · 16 · 20 · 24 · 32 · 48 |
+| `AppSpacing` | micro 4 · control 8 · grouped 12 · gutter 16 · card 20 · section 24 · major 32 · pageEnd 48 |
 | `AppRadius` | 4 · 8 · 12 · 16 · 20 · 999 (24 and 28 have no V3 call site and are not declared) |
 | `AppSize` | button 48 / 36 / 32 / 28 · input 52 · icon-button ink 36 · app bar 56 · bottom nav 80 (bar 64) · FAB 52 · touch target 48 |
 | `AppIconSize` | 16 · 20 · 24 · 32 · 40 |
 | `AppStroke` | hairline 1 · focus 2, plus each width a component contract states |
-| `AppOpacity` | disabled 0.38 · pressed 0.12 · glass 0.84 |
-| `AppDurations` | the durations the widget contracts state, named by role |
-| `AppShadows` | card · chrome · floating · soft. Functions of the `ColorScheme`, because `shadow` differs per theme and dark has no soft shadow |
+| `AppOpacity` | disabled 0.38 · pressed 0.12 (state tokens) |
+| `AppEffects` | glassOpacity 0.84 · glassBlur 18 (effect tokens, kept out of the state layer) |
+| `AppDurations` | toggle 160 · standard 200 · scrimFade 220 · sheet 260 · spinnerCycle 800 · skeletonPulse 1400 ms — every duration the widget contracts state |
+| `AppShadows` | whisper · overlay · chrome · fab, named by the handoff's semantic (the `shadow-card` token is the overlay shadow). Functions of the `ColorScheme` and brightness, because the values differ per theme and dark has no whisper shadow |
 
 The glass effect on the bottom nav is translucent `chromeGlass` plus
 `BackdropFilter` blur 18. The saturate(180%) part of the CSS filter is dropped:
@@ -176,8 +182,10 @@ Selected, checked, active and error presentation are component-owned (§5).
 
 ### 4.6 Material component themes
 
-Configured centrally only where the Material theme carries the V3 default
-without fighting a MemoX variant: filled/outlined buttons, `InputDecorationTheme`,
+Each is added in the phase that implements the matching `Mx*` widget, so the
+theme slot and the widget land and are reviewed together. Configured centrally
+only where the Material theme carries the V3 default without fighting a MemoX
+variant: filled/outlined buttons, `InputDecorationTheme`,
 dialog, bottom sheet, snackbar, switch, navigation bar, chip, progress indicator.
 A variant richer than the Material theme can express stays in the `Mx*` widget,
 which still reads `ColorScheme`, `TextTheme` and the tokens.
@@ -286,13 +294,14 @@ the same one.
 
 | # | Content | Components |
 |---|---|---|
-| 1 | Foundations: font assets, l10n setup, all of `core/theme/` with its tests | — (`MasteryRamp` utility) |
+| 1 | Foundations: font asset and all of `core/theme/` with its tests | — (`MasteryRamp` utility) |
 | 2 | Chrome, layout and the components they compose | Button, IconButton, EmptyState, AppBar, BottomNav, Breadcrumb, StudyTopBar, Fab, AppShell, ScreenScroll, FooterBar (11) |
-| 3 | App wiring: `main`, `app`, router, shell, placeholder, gallery; foundation plan Task 10 text edit | — |
+| 3 | App wiring: l10n setup, `main`, `app`, router, shell, placeholder, gallery; foundation plan Task 10 text edit | — |
 | 4 | Actions and inputs | FilterChip, ChipTrigger, SearchField, TextField, FieldMessage, Toggle, OptionRow, SelectionCheckbox, SegmentedTray, Stepper (10) |
 | 5 | Surfaces, rows, status and metadata | Card, Section, ListRow, SettingsRow, IconTile, ActionSheetCommandRow, ListSectionHeader, Badge, StatusBadge, TagChip, Note, WorkloadBreakdownLine, MasteryDonut (13) |
 | 6 | Overlays, loading, error | Dialog, BottomSheet, SheetActions, Snackbar, InlineBanner, DeckPickerSheet, Skeleton, Spinner, ErrorState (9) |
 
+l10n arrives in phase 3 with the first UI string, as ADR-011 places `l10n/`.
 `StatusBar` and `Scrim` are `USE_PLATFORM` and get no file. Every component added
 in phases 4–6 also gets its gallery entry.
 
@@ -338,6 +347,10 @@ in phases 4–6 also gets its gallery entry.
 
 - **Phases 1–2:** the five-step gate in `README.md` (`flutter analyze`,
   `flutter test`, `check_architecture.py`, CI tooling tests, guard `memox-v8`).
+- **The first `lib/core/theme/` file (phase 1)** gives
+  `no_raw_duration` and `no_raw_stroke_width` (scope `ui_and_theme_surfaces`)
+  and `no_bare_font_weight` (scope `typography_and_theme_surfaces`) their first
+  target. Their entries are deleted in that commit.
 - **The first `lib/shared/` file (phase 2)** gives the `targets_pending:
   presentation` rules in
   `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`
@@ -346,6 +359,9 @@ in phases 4–6 also gets its gallery entry.
   `targets_pending: app` entries.
 - **From phase 3**, when the first screen exists, the gate is
   `.claude/skills/flutter-workflow/scripts/dod_check.sh`.
+
+**Toolchain.** Every gate runs on the Flutter that `.fvmrc` pins (3.47.5); the
+pubspec needs Dart ^3.13.4, which older SDKs cannot resolve.
 
 The `domain`, `providers` and `data` entries stay pending: they wait for the
 backend foundation plan, which this sub-project does not touch.
