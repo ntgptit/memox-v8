@@ -1,3 +1,4 @@
+import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -35,12 +36,20 @@ final class DeckEntity {
   /// The deepest level a deck may sit at; the root is level 1 (BR-DECK-001).
   static const maxDepth = 10;
 
+  /// BR-DECK-020, in characters as a person sees them (grapheme clusters).
+  static const maxNameLength = 200;
+
   bool get isRoot => parentId == null;
 
-  static Outcome<void, DeckRejection> checkName(String name) =>
-      name.trim().isEmpty
-      ? const Rejected(DeckRejection.blankName)
-      : const Ok(null);
+  /// BR-DECK-020: not blank after trim, at most [maxNameLength] characters.
+  static Outcome<void, DeckRejection> checkName(String name) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return const Rejected(DeckRejection.blankName);
+    if (trimmed.characters.length > maxNameLength) {
+      return const Rejected(DeckRejection.nameTooLong);
+    }
+    return const Ok(null);
+  }
 
   /// A sub-deck goes into a deck that holds decks or nothing yet
   /// (BR-DECK-009), above the deepest level (BR-DECK-001).

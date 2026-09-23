@@ -9,4 +9,13 @@ enum DeckRejection {
   movingIntoOwnSubtree,
   rootCannotMove,
   notFound,
+
+  /// BR-DECK-020: the name is longer than 200 characters.
+  nameTooLong,
+
+  /// BR-SRS-007: the deck and its anchor no longer share a parent.
+  notSiblings,
+
+  /// A move to the parent the deck already has.
+  sameParent,
 }

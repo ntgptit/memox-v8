@@ -20,6 +20,24 @@ void main() {
     test('a real name is accepted', () {
       expect(DeckEntity.checkName('Korean 101'), isA<_Allowed>());
     });
+    test('200 characters is the longest name (BR-DECK-020)', () {
+      expect(DeckEntity.checkName('a' * 200), isA<_Allowed>());
+      expect(
+        _reasonOf(DeckEntity.checkName('a' * 201)),
+        DeckRejection.nameTooLong,
+      );
+    });
+    test('a character is what a person sees, not a code unit', () {
+      // e + combining acute accent: one character, two code units.
+      expect(DeckEntity.checkName('e\u0301' * 200), isA<_Allowed>());
+      expect(
+        _reasonOf(DeckEntity.checkName('e\u0301' * 201)),
+        DeckRejection.nameTooLong,
+      );
+    });
+    test('spaces around the name do not count', () {
+      expect(DeckEntity.checkName(' ${'a' * 200} '), isA<_Allowed>());
+    });
   });
 
   group('checkCreateSubDeck', () {
