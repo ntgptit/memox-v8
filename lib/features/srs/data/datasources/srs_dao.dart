@@ -12,9 +12,11 @@ final class SrsDao {
 
   final AppDatabase _db;
 
-  Future<Deck?> deckRow(String id) => (_db.select(
-    _db.deck,
-  )..where((deck) => deck.id.equals(id))).getSingleOrNull();
+  /// The deck [id] names, unless it is in the Trash (spec §8).
+  Future<Deck?> deckRow(String id) =>
+      (_db.select(_db.deck)
+            ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
+          .getSingleOrNull();
 
   /// The root of [cardId]'s tree, reached through `card.deck_id` and then
   /// `deck.root_id` — never `COALESCE(parent_id, id)` (BR-DECK-003).

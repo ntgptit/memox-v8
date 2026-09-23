@@ -444,4 +444,28 @@ void main() {
       SrsRejection.notFound,
     );
   });
+
+  test('changeScheduler and resetLearning do not reach a root in the Trash (spec §8)', () async {
+    // The whole tree in one batch, as deleting a deck will leave it.
+    await _tree(db, 'r');
+    await db.customStatement(
+      "UPDATE deck SET delete_batch_id = 'b' WHERE root_id = 'r'",
+    );
+    await db.customStatement(
+      "UPDATE card SET delete_batch_id = 'b' WHERE id = 'r-card'",
+    );
+    final before = await _writes(db);
+    final isNotFound = isA<Rejected<void, SrsRejection>>().having(
+      (rejected) => rejected.reason,
+      'reason',
+      SrsRejection.notFound,
+    );
+
+    expect(
+      await repo.changeScheduler(rootDeckId: 'r', newType: SchedulerType.sm2),
+      isNotFound,
+    );
+    expect(await repo.resetLearning(rootDeckId: 'r'), isNotFound);
+    expect(await _writes(db), before);
+  });
 }
