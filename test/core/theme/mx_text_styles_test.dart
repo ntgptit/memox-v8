@@ -305,4 +305,54 @@ void main() {
       contains(const FontFeature.tabularFigures()),
     );
   });
+
+  test('compact title 16/700/-0.2; dialog body 14 onSurface', () {
+    expectStyle(
+      styles.compactTitle,
+      size: 16,
+      weight: FontWeight.w700,
+      tracking: -0.2,
+      color: scheme.onSurface,
+    );
+    expectStyle(
+      styles.dialogBody,
+      size: 14,
+      weight: FontWeight.w400,
+      color: scheme.onSurface,
+    );
+  });
+
+  test('banner: 12/700 title and a 12 message at 1.55, lead or detail', () {
+    expectStyle(
+      styles.bannerTitle,
+      size: 12,
+      weight: FontWeight.w700,
+      color: scheme.onSurface,
+    );
+    expect(styles.bannerTitle.height, 1.55);
+    expect(styles.bannerMessage(isLead: true).color, scheme.onSurface);
+    expectStyle(
+      styles.bannerMessage(isLead: false),
+      size: 12,
+      weight: FontWeight.w600,
+      color: scheme.onSurfaceVariant,
+    );
+    expect(styles.bannerMessage(isLead: false).height, 1.55);
+  });
+
+  test('snackbar: 14 message at 1.4, 14/700 inverse-primary action', () {
+    expectStyle(
+      styles.snackbarMessage,
+      size: 14,
+      weight: FontWeight.w400,
+      color: scheme.onInverseSurface,
+    );
+    expect(styles.snackbarMessage.height, 1.4);
+    expectStyle(
+      styles.snackbarAction,
+      size: 14,
+      weight: FontWeight.w700,
+      color: scheme.inversePrimary,
+    );
+  });
 }

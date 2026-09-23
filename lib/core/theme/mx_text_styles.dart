@@ -23,6 +23,9 @@ final class MxTextStyles {
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
   static const double _donutLabelSize = 9;
+  static const double _compactTitleTracking = -0.2;
+  static const double _bannerHeight = 1.55;
+  static const double _snackbarHeight = 1.4;
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
@@ -205,6 +208,43 @@ final class MxTextStyles {
         letterSpacing: _labelTracking,
         color: ink,
       );
+
+  /// Compact title (ErrorState, DeckPickerSheet head, Dialog): 16/700, -0.2.
+  TextStyle get compactTitle => AppTypography.withWeight(
+    _texts.bodyLarge!,
+    FontWeight.w700,
+  ).copyWith(letterSpacing: _compactTitleTracking, color: _scheme.onSurface);
+
+  /// Dialog body: 14 in onSurface (O5).
+  TextStyle get dialogBody =>
+      _texts.bodyMedium!.copyWith(color: _scheme.onSurface);
+
+  /// InlineBanner title: 12/700 at line-height 1.55, onSurface.
+  TextStyle get bannerTitle => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w700,
+  ).copyWith(height: _bannerHeight, color: _scheme.onSurface);
+
+  /// InlineBanner message: the caption role at 1.55 (I5, O6). It is the
+  /// onSurface lead without a title, and the onSurfaceVariant detail under
+  /// one.
+  TextStyle bannerMessage({required bool isLead}) =>
+      _texts.labelSmall!.copyWith(
+        height: _bannerHeight,
+        color: isLead ? _scheme.onSurface : _scheme.onSurfaceVariant,
+      );
+
+  /// Snackbar message: 14 at line-height 1.4 on the inverse surface.
+  TextStyle get snackbarMessage => _texts.bodyMedium!.copyWith(
+    height: _snackbarHeight,
+    color: _scheme.onInverseSurface,
+  );
+
+  /// Snackbar action: 14/700 in inversePrimary.
+  TextStyle get snackbarAction => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w700,
+  ).copyWith(color: _scheme.inversePrimary);
 
   /// SegmentedTray label: the caption role, onSurface when selected (I5).
   TextStyle trayLabel({required bool isSelected}) =>
