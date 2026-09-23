@@ -76,6 +76,153 @@ def _fixture_repo(root: Path, *tests: str) -> Path:
     return root
 
 
+# ADR-010 fixture for `VerificationPlanBuilderTest`.
+#
+# `build_verification_plan.py`'s classification rules are exercised here
+# against a small, self-contained ADR-010-shaped repository (feature slugs
+# from ADR-010 #1, `domain/data/presentation/di` layers from ADR-010 #2) —
+# never against the real memox-v8 tree. Before `flutter create` runs that tree
+# has no `lib/` or `test/` at all; after it runs, it will have V8 feature
+# names and layout, not V7's (`test/app/router/...`, `lib/presentation/shared/
+# ...`, a `tag` feature). A planner-logic test tied to either shape breaks the
+# other. See ADR-010 and CLAUDE.md ("V7 is a reference, not a template").
+_ADR010_SOURCE_FILES: dict[str, str] = {
+    "lib/features/card/domain/repositories/card_repository.dart": "// fixture\n",
+    "lib/features/card/data/repositories/card_repository_impl.dart": "// fixture\n",
+    "lib/features/card/presentation/screens/card_list_screen.dart": "// fixture\n",
+    "lib/features/card/presentation/widgets/items/card_tile_widget.dart": "// fixture\n",
+    "lib/features/deck/domain/repositories/deck_repository.dart": "// fixture\n",
+    "lib/features/study/domain/usecases/start_study_session_use_case.dart": "// fixture\n",
+    "lib/core/database/tables/cards.drift": "-- fixture\n",
+    "lib/core/database/queries/study.drift": "-- fixture\n",
+}
+
+# Each maps to the `package:memox/...` import(s) that make it a transitive
+# consumer of the matching source file above, the way a real app_router test
+# or a cross-feature repository test would be.
+_ADR010_TEST_FILES: dict[str, str] = {
+    "test/features/card/domain/card_text_test.dart":
+        "void main() { test('t', () {}); }\n",
+    "test/features/card/presentation/card_list_screen_test.dart":
+        "import 'package:memox/features/card/presentation/screens/card_list_screen.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/features/card/data/card_repository_impl_test.dart":
+        "import 'package:memox/features/card/data/repositories/card_repository_impl.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/features/deck/data/web/deck_repository_web_test.dart":
+        "import 'package:memox/features/card/data/repositories/card_repository_impl.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/features/study/data/study_flow_test.dart":
+        "import 'package:memox/features/study/domain/usecases/start_study_session_use_case.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/app/router/app_router_test.dart":
+        "import 'package:memox/features/card/presentation/screens/card_list_screen.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/integration/widgets/navigation_widget_test.dart":
+        "import 'package:memox/features/card/presentation/screens/card_list_screen.dart';\n"
+        "void main() { test('t', () {}); }\n",
+    "test/integration/flows/answer_kind_flow_test.dart":
+        "void main() { test('t', () {}); }\n",
+    "test/integration/flows/stored_not_inferred_flow_test.dart":
+        "void main() { test('t', () {}); }\n",
+    "test/database/invariants_after_flow_test.dart":
+        "void main() { test('t', () {}); }\n",
+    # Filename alone marks this golden-only (`is_golden_only_test`); content
+    # does not matter.
+    "test/shared/widgets/mx_components_golden_test.dart":
+        "void main() {}\n",
+}
+
+
+def _adr010_plan_fixture(root: Path) -> Path:
+    """A committed, ADR-010-shaped Flutter repository for planner-logic tests.
+
+    Deliberately small and synthetic: enough features, layers and import
+    chains to exercise every classification rule `build_verification_plan.py`
+    has, without describing the real app (which does not exist yet, and once
+    it does will not look like this fixture either).
+    """
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    (root / "pubspec.yaml").write_text("name: memox\n", encoding="utf-8")
+    (root / ".gitignore").write_text(".dart_tool/\n", encoding="utf-8")
+    for relative, content in {**_ADR010_SOURCE_FILES, **_ADR010_TEST_FILES}.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), "-c", "user.name=test", "-c", "user.email=test@example.com",
+         "commit", "-q", "-m", "fixture"],
+        check=True,
+    )
+    return root
+
+
+# A synthetic impact map, deliberately decoupled from
+# `verification_impact_map.json`: it exercises the same classification logic
+# (feature-dependency BFS, database-query ownership, shard-count thresholds)
+# without being tied to production data that other tests (`ImpactMapCoverage
+# Test`, `ImpactMapMatchesTheDocsTest`) keep in sync with `docs/features/`.
+# The shard-weight thresholds are lowered so the small fixture above still
+# exercises the 1/2/5-shard boundaries meaningfully.
+_ADR010_IMPACT_MAP_RAW: dict[str, object] = {
+    "version": 1,
+    "feature_dependencies": {
+        "card": ["search", "srs", "starter_decks", "study", "tags", "transfer", "trash"],
+        "deck": [
+            "card", "progress", "reminders", "search", "settings", "srs",
+            "starter_decks", "study", "transfer", "trash",
+        ],
+        "progress": [],
+        "reminders": [],
+        "search": [],
+        "settings": [],
+        "srs": ["progress", "settings", "study", "study_mode", "trash"],
+        "starter_decks": [],
+        "study": ["progress", "reminders", "settings"],
+        "study_mode": ["study"],
+        "tags": ["search", "transfer"],
+        "transfer": [],
+        "trash": [],
+    },
+    "database_query_features": {"study": ["study", "progress"]},
+    "full_scope_prefixes": [
+        ".github/",
+        ".claude/skills/flutter-workflow/scripts/",
+        "lib/app/",
+        "lib/core/theme/",
+        "lib/l10n/",
+        "integration_test/",
+        "e2e/",
+        "android/",
+        "ios/",
+        "linux/",
+        "macos/",
+        "web/",
+        "windows/",
+    ],
+    "full_scope_files": [
+        ".fvmrc",
+        "analysis_options.yaml",
+        "build.yaml",
+        "dart_test.yaml",
+        "pubspec.lock",
+        "pubspec.yaml",
+    ],
+    "inert_prefixes": [".vscode/", ".idea/", ".github/ISSUE_TEMPLATE/"],
+    "inert_files": [
+        ".editorconfig",
+        ".gitattributes",
+        ".gitignore",
+        ".github/CODEOWNERS",
+        ".github/FUNDING.yml",
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        "LICENSE",
+    ],
+    "shard_weight_thresholds": {"one": 2, "two": 5},
+}
+
+
 class DodCheckStampTest(unittest.TestCase):
     """The pass stamp: run twice on an unchanged tree, pay once.
 
@@ -179,18 +326,40 @@ class DodCheckStampTest(unittest.TestCase):
 
 
 class VerificationPlanBuilderTest(unittest.TestCase):
+    """Planner-classification logic, against the ADR-010 fixture above.
+
+    Never against `REPO_ROOT`: before Flutter is initialised it has no
+    `lib/`/`test/`, and after it is, it will have V8's feature names and
+    layout rather than the V7 paths some of these tests used to assert
+    (`test/app/router/app_router_test.dart` importing a V7 `tag` feature,
+    etc.). The fixture makes every assertion below true regardless of what
+    the real tree currently contains.
+    """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.module = _load("build_verification_plan")
+        cls._temp = tempfile.TemporaryDirectory()
+        temp_root = Path(cls._temp.name)
+        cls.root = _adr010_plan_fixture(temp_root / "repo")
+        impact_map_path = temp_root / "impact_map.json"
+        impact_map_path.write_text(
+            json.dumps(_ADR010_IMPACT_MAP_RAW), encoding="utf-8"
+        )
+        cls.impact_map = cls.module.ImpactMap.load(impact_map_path)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._temp.cleanup()
 
     def _plan(self, *paths: str, force_full: bool = False):
         return self.module.build_plan(
             paths,
-            root=REPO_ROOT,
+            root=self.root,
+            impact_map=self.impact_map,
             force_full=force_full,
         )
 
-    @requires_app_tree
     def test_a_shared_widget_change_selects_the_golden_job(self) -> None:
         """#337's shape: six components relaid out, no picture redrawn.
 
@@ -208,7 +377,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         plan = self._plan("test/demo/goldens/deck_list_empty_light.png")
         self.assertTrue(plan.needs_goldens)
 
-    @requires_app_tree
     def test_a_demo_test_change_selects_the_golden_job(self) -> None:
         plan = self._plan("test/demo/deck_screens_demo_test.dart")
         self.assertTrue(plan.needs_goldens)
@@ -237,7 +405,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertEqual(0, plan.shard_count)
         self.assertEqual("pixels", plan.risk)
 
-    @requires_app_tree
     def test_a_picture_beside_its_widget_still_verifies_the_widget(self) -> None:
         """The narrowing must not survive contact with a real code change."""
         plan = self._plan(
@@ -297,7 +464,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             self.module.normalize_path(r"./.github\workflows\ci.yml"),
         )
 
-    @requires_app_tree
     def test_newline_input_does_not_turn_a_known_path_into_full_scope(self) -> None:
         plan = self._plan(
             "\ufefflib/features/card/presentation/screens/card_list_screen.dart\r"
@@ -325,7 +491,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.docs_only)
         self.assertFalse(plan.code_required)
 
-    @requires_app_tree
     def test_presentation_change_adds_transitive_app_consumers(self) -> None:
         plan = self._plan(
             "lib/features/card/presentation/screens/card_list_screen.dart"
@@ -346,7 +511,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertTrue(plan.needs_widgetbook)
 
-    @requires_app_tree
     def test_data_change_adds_cross_feature_harness_consumers(self) -> None:
         plan = self._plan(
             "lib/features/card/data/repositories/card_repository_impl.dart"
@@ -362,7 +526,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertFalse(plan.needs_widgetbook)
 
-    @requires_app_tree
     def test_use_case_change_adds_data_flow_consumers(self) -> None:
         plan = self._plan(
             "lib/features/study/domain/usecases/start_study_session_use_case.dart"
@@ -374,7 +537,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertTrue(plan.needs_widgetbook)
 
-    @requires_app_tree
     def test_public_domain_contract_expands_transitive_dependents(self) -> None:
         plan = self._plan(
             "lib/features/deck/domain/repositories/deck_repository.dart"
@@ -386,7 +548,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertEqual(("data", "domain", "presentation"), plan.affected_layers)
         self.assertGreaterEqual(plan.shard_count, 2)
 
-    @requires_app_tree
     def test_database_query_uses_declared_feature_owner(self) -> None:
         plan = self._plan("lib/core/database/queries/study.drift")
         self.assertIn("study", plan.affected_features)
@@ -405,7 +566,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertFalse(plan.full_suite)
 
-    @requires_app_tree
     def test_schema_change_promotes_to_full_suite(self) -> None:
         plan = self._plan("lib/core/database/tables/cards.drift")
         self.assertTrue(plan.full_suite)
@@ -413,7 +573,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.needs_widgetbook)
         self.assertEqual(("test",), plan.local_test_targets)
 
-    @requires_app_tree
     def test_shared_theme_router_native_and_dependency_changes_are_full(self) -> None:
         for path in (
             "lib/core/theme/app_theme.dart",
@@ -425,20 +584,17 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue(self._plan(path).full_suite)
 
-    @requires_app_tree
     def test_ci_tooling_change_is_full_so_the_new_gate_proves_itself(self) -> None:
         plan = self._plan(".github/workflows/ci.yml")
         self.assertTrue(plan.full_suite)
         self.assertEqual(5, plan.shard_count)
 
-    @requires_app_tree
     def test_test_only_change_runs_exact_tracked_test(self) -> None:
         path = "test/features/card/domain/card_text_test.dart"
         plan = self._plan(path)
         self.assertEqual((path,), plan.test_files)
         self.assertEqual(1, plan.shard_count)
 
-    @requires_app_tree
     def test_golden_only_change_uses_runnable_surrogates(self) -> None:
         path = "test/shared/widgets/mx_components_golden_test.dart"
         plan = self._plan(path)
@@ -447,7 +603,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.needs_widgetbook)
         self.assertTrue(
             all(
-                not self.module.is_golden_only_test(REPO_ROOT / test_path)
+                not self.module.is_golden_only_test(self.root / test_path)
                 for test_path in plan.test_files
             )
         )
@@ -506,7 +662,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             first.clear()
             self.assertGreater(len(self.module.discover_tests(repo)), 1)
 
-    @requires_app_tree
     def test_deleted_test_support_selects_its_layer(self) -> None:
         plan = self._plan("test/features/card/data/support/deleted_fixture.dart")
         self.assertTrue(plan.test_files)
@@ -514,7 +669,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             all(path.startswith("test/features/card/data/") for path in plan.test_files)
         )
 
-    @requires_app_tree
     def test_widgetbook_only_change_skips_host_tests(self) -> None:
         plan = self._plan("widgetbook/lib/main.dart")
         self.assertTrue(plan.code_required)
@@ -522,7 +676,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.needs_widgetbook)
         self.assertFalse(plan.needs_host_tests)
 
-    @requires_app_tree
     def test_new_feature_without_tests_promotes_instead_of_trusting_widgetbook(self) -> None:
         plan = self._plan(
             "lib/features/not_yet_mapped/presentation/screens/new_screen.dart"
@@ -542,7 +695,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(plan.full_suite)
         self.assertTrue(plan.code_required)
 
-    @requires_app_tree
     def test_sealed_plan_is_immutable_and_json_is_deterministic(self) -> None:
         first = self._plan(
             "lib/features/card/data/repositories/card_repository_impl.dart",
@@ -579,6 +731,16 @@ class VerificationPlanBuilderTest(unittest.TestCase):
 
 @requires_app_tree
 class ImpactMapCoverageTest(unittest.TestCase):
+    """Facts about the real repo's `lib/features/`, checked against the map.
+
+    Unlike `VerificationPlanBuilderTest`, this class is deliberately tied to
+    the real tree: it is exactly the thing that must stay true of *memox-v8*,
+    not of a fixture. Before `lib/features/` exists (fresh post-`flutter
+    create` tree, or today, pre-init) each check degrees to "no features to
+    check" and passes — a directory that legitimately has nothing in it yet is
+    not a coverage gap.
+    """
+
     def _impact(self) -> dict[str, object]:
         return json.loads(
             (SCRIPTS / "verification_impact_map.json").read_text(encoding="utf-8")
@@ -596,9 +758,13 @@ class ImpactMapCoverageTest(unittest.TestCase):
         nodes = set(graph)
         for dependents in graph.values():
             nodes.update(dependents)
+        # `.glob("*")` rather than `.iterdir()`: a freshly-created V8 tree has
+        # no `lib/features/` at all yet, and `iterdir()` on a missing
+        # directory raises `FileNotFoundError` where `glob()` yields nothing —
+        # an empty feature set is not a coverage gap.
         actual = {
             path.name
-            for path in (REPO_ROOT / "lib/features").iterdir()
+            for path in (REPO_ROOT / "lib/features").glob("*")
             if path.is_dir()
         }
         self.assertEqual(set(), actual - nodes)
@@ -612,14 +778,43 @@ class ImpactMapCoverageTest(unittest.TestCase):
                 bad.append(path.relative_to(REPO_ROOT).as_posix())
         self.assertEqual([], bad)
 
+
+class DependencyGraphCycleSafetyTest(unittest.TestCase):
+    """`require_downstream`'s BFS must terminate on a graph with a real cycle.
+
+    Deliberately independent of `verification_impact_map.json`: the real
+    `feature_dependencies` graph (rightly) has none, being derived from
+    `docs/features/`'s acyclic `depends_on` declarations and guarded by
+    `ImpactMapMatchesTheDocsTest`. Cycle-safety is a property of the BFS in
+    `build_verification_plan.py`, so this test builds a small `ImpactMap` with
+    an actual cycle rather than assume the production graph will ever have
+    one to exercise it with.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.module = _load("build_verification_plan")
+
     def test_dependency_graph_closure_terminates_even_with_cycles(self) -> None:
-        module = _load("build_verification_plan")
-        plan = module.build_plan(
-            ["lib/features/tag/domain/repositories/tag_repository.dart"],
-            root=REPO_ROOT,
+        impact_map = self.module.ImpactMap(
+            feature_dependencies={"a": ("b",), "b": ("a",)},
+            database_query_features={},
+            full_scope_prefixes=(),
+            full_scope_files=frozenset(),
+            inert_prefixes=(),
+            inert_files=frozenset(),
+            one_shard_max_weight=240,
+            two_shard_max_weight=800,
         )
-        self.assertIn("tag", plan.affected_features)
-        self.assertIn("card", plan.affected_features)
+        with tempfile.TemporaryDirectory() as temp:
+            root = _fixture_repo(Path(temp))
+            plan = self.module.build_plan(
+                ["lib/features/a/domain/repositories/a_repository.dart"],
+                root=root,
+                impact_map=impact_map,
+            )
+        self.assertIn("a", plan.affected_features)
+        self.assertIn("b", plan.affected_features)
 
 
 class ImpactMapMatchesTheDocsTest(unittest.TestCase):

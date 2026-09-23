@@ -224,7 +224,7 @@ trang 50 thẻ đi từ 1193µs xuống 102µs.
 
 ## `tags`
 
-**Phạm vi:** sub-project sau — Tags. Bảng giữ ở đây để nghiệp vụ không phải đào lại.
+**Phạm vi:** V8.0 cho việc gắn/gỡ tag trên thẻ (ADR-009 quyết định 4; chủ dự án chốt ngày 2026-09-23). Tag Management (UC-TAG-001) vẫn là sub-project sau.
 
 Nhãn phân loại nội dung do người dùng đặt — `noun`, `people`, `verb`. Nội dung,
 không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
@@ -250,7 +250,7 @@ chúng là các tag khác nhau.
 
 ## `card_tags`
 
-**Phạm vi:** sub-project sau — Tags.
+**Phạm vi:** V8.0 — như `tags` ở trên.
 
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
