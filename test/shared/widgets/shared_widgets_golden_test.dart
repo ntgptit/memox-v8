@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -98,6 +99,39 @@ void main() {
             body: 'Try another word.',
             tone: MxEmptyStateTone.neutral,
             isCompact: true,
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxAppBar both densities', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_app_bar',
+      Column(
+        children: [
+          const MxAppBar(title: 'Library'),
+          MxAppBar(
+            title: 'Japanese N5 · Verbs of motion and a very long name',
+            density: MxAppBarDensity.content,
+            leading: MxIconButton(
+              icon: AppIcons.back,
+              semanticLabel: 'Back',
+              onPressed: () {},
+            ),
+            actions: [
+              MxIconButton(
+                icon: AppIcons.search,
+                semanticLabel: 'Search',
+                onPressed: () {},
+              ),
+              MxIconButton(
+                icon: AppIcons.more,
+                semanticLabel: 'More',
+                onPressed: () {},
+              ),
+            ],
           ),
         ],
       ),
