@@ -106,6 +106,11 @@ mode available, because it is indistinguishable from a hang.
 
 ## 6.2 Environments and flavors
 
+> **Not in V8 yet.** MemoX V8 is local-only (ADR-001): no API base URL, no
+> staging backend, no analytics. So it has no flavors, no `EnvConfig` and no
+> `app/config/` (ADR-011). The rest of this section applies once an ADR opens
+> networking.
+
 Three flavors: development, staging, production. Each carries app name,
 application ID suffix, API base URL, log level, feature flags and analytics
 config.

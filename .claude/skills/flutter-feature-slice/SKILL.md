@@ -53,16 +53,18 @@ features/<feature>/domain/
 ├── entities/       <name>_entity.dart
 ├── repositories/   <name>_repository.dart          # abstract contract
 ├── models/         <name>_model.dart               # read model / value object / enum
-├── usecases/       <verb>_<noun>_use_case.dart     # only when warranted
-└── failures/       <name>_failure.dart             # only when feature-specific
+├── usecases/       <verb>_<noun>_use_case.dart     # one per UI interaction (AD-12)
+└── failures/       <name>_failure.dart             # the feature's rejection enum
 ```
 
 **The folder does not replace the suffix.** `entities/deck_entity.dart`, not
 `entities/deck.dart`: the role is carried by the *file name*, which
 `memox.naming.domain_file_role_suffix` enforces and which several guard scopes
-select on. `check_architecture.sh` additionally pairs each folder with its
-required suffix. See `assets/feature_blueprint.md` — it is the authority on
-layout, and this block is a summary of it.
+select on. `check_architecture.py` additionally pairs each folder with its
+required suffix. The authority on layout is ADR-011
+(`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`), and this block is a
+summary of it. `assets/feature_blueprint.md` is V7's worked example: read it
+for the reasoning, never for a path.
 
 - Entities are immutable, with value equality, in domain language. Entity state
   is the enum or sealed class from `docs/features/<feature>/data.md` (state
@@ -98,13 +100,14 @@ features/<feature>/data/
 ├── repositories/   <name>_repository_impl.dart
 ├── mappers/        <name>_mapper.dart              # Row → Entity, AggregateResult → ReadModel
 ├── datasources/    <name>_dao.dart
-└── models/         <name>_model.dart               # DTOs — none exist yet
+└── models/         <name>_model.dart               # DTOs, with the first wire format
 ```
 
-`models/` is present and empty on purpose: **there is no DTO layer**. `dio` is
-deliberately not a dependency (AD-05), Drift is the source of truth (AD-01), and a
-DTO would be a second shape for data that already has two. It gets files with the
-first real request, not in anticipation of one.
+`models/` does not exist yet: **there is no DTO layer**, and a folder appears
+with its first real file (ADR-011 D1). The app is local-only (ADR-001), Drift is
+the source of truth, and a DTO would be a second shape for data that already has
+two. The folder comes with the first real wire format, not in anticipation of
+one.
 
 Order: the DAO first, then the mapper, then the repository. The repository is
 where Drift exceptions become `Failure`s — nowhere else. **There is no cache or
@@ -171,7 +174,7 @@ Minimum for a feature to be done:
       What is in doubt is the SQL: the cascade, the transaction rollback, the NULL
       semantics of a predicate. A mocked data source would only prove the code
       calls the API it was written to call, which is the one thing nobody doubts.
-      Use `test/database/support/test_database.dart` and a per-feature harness.
+      Use `test/support/test_database.dart` and a per-feature harness.
       There is no cache fallback to cover — see Step 2.
 - [ ] Mapper tests, including a null field and an unknown enum value.
 - [ ] Controller tests: initial state, loading→loaded, loading→error, refresh,
@@ -200,7 +203,7 @@ and the counts the Deck slice ended up with as a size reference.
 ## Step 5 — Close it out
 
 - [ ] `.claude/skills/flutter-workflow/scripts/dod_check.sh` passes.
-- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7` clean
+- [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
 - [ ] `docs/wbs.md` updated in this commit — status, and anything descoped with
       the reason.
@@ -214,8 +217,9 @@ and the counts the Deck slice ended up with as a size reference.
 paste into a WBS entry or PR description.
 
 `assets/feature_blueprint.md` is the same ground covered from the other
-direction: what the *existing* `features/deck` slice settled, measured against
-the code rather than described in the abstract. Read it before starting the
+direction: what V7's `features/deck` slice settled, measured against V7's code
+rather than described in the abstract. Its paths are V7's; the V8 layout is
+ADR-011. Read it before starting the
 second feature of a kind — it records which folder layouts the guards actually
 accept, what already lives in `core/` and `shared/` so you do not rebuild it,
 the five steps every write controller follows, which test belongs at which level,

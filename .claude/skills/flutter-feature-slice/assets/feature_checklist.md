@@ -16,8 +16,9 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] `domain/{entities,repositories,models,usecases,failures}/`
 - [ ] `data/{repositories,mappers,datasources,models}/`
 - [ ] `presentation/{screens,controllers,states,widgets,providers}/`
-- [ ] `di/` — one provider per contract the feature needs, declared as the
-      **domain type**, bound in `app/di/repository_bindings.dart`
+- [ ] `di/` — one provider per contract the feature needs, typed as the
+      **domain type**, constructing the implementation itself (ADR-011: no
+      `app/di/`)
 - [ ] Every file carries the suffix its folder admits — the folder does not
       replace the suffix
 - [ ] No controller reads a repository; the dependency direction is
@@ -107,7 +108,7 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] `dod_check.sh` passes
 - [ ] CI green on the PR — the same gates, plus the web build and the
       generated-code check
-- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7` clean
+- [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
 - [ ] `docs/wbs.md` updated in this commit
 - [ ] Affected docs updated in this commit
 - [ ] Descoped items recorded with reasons

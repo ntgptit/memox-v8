@@ -1,5 +1,13 @@
 # What memox-v7 has already settled
 
+> **V7 baseline.** This file records what memox-v7 settled. V8 keeps its layout
+> decisions where ADR-010 and ADR-011 do — tables and named queries in
+> `lib/core/database/{tables,queries}/`, DAOs in each feature's
+> `data/datasources/` — but V8's table and column names come from
+> `docs/shared/data/schema.md`: `parent_id`, `root_id`, singular table names, and
+> `delete_batch_id` in a later sub-project. Where this file and `schema.md`
+> differ, `schema.md` wins.
+
 Read this before proposing a structural change. Everything below is in the code
 today; some of it deliberately differs from generic Drift guidance, and the
 difference is a decision, not an oversight. Changing any of it is a task of its
