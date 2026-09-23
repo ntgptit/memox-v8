@@ -1,9 +1,12 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
+import 'package:memox/features/card/domain/models/card_move_target_model.dart';
+import 'package:memox/features/card/domain/models/review_history_model.dart';
 
 /// The one implementation is `CardRepositoryImpl` (data layer). The contract
 /// exists for ADR-010's reason: domain stays framework-free and tests
@@ -66,4 +69,19 @@ abstract interface class CardRepository {
     required CardListQuery query,
     required DateTime now,
   });
+
+  /// BR-CARD-014: the card with its tags and schedule, again whenever one of
+  /// them changes; null once it is gone or in the Trash (BR-CARD-019).
+  /// Reading writes nothing (BR-CARD-013).
+  Stream<CardDetail?> watchDetail(String cardId);
+
+  /// BR-CARD-015: the page of the card's history after [after], the newest
+  /// page when it is null; null when the card is not active.
+  Future<ReviewHistoryPage?> historyPage({
+    required String cardId,
+    ReviewHistoryCursor? after,
+  });
+
+  /// BR-CARD-010: where the cards of [sourceDeckId] may move, in tree order.
+  Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId);
 }

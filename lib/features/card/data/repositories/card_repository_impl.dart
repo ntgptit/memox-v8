@@ -3,16 +3,21 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
+import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
 import 'package:memox/features/card/data/mappers/card_mapper.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
+import 'package:memox/features/card/domain/models/card_move_target_model.dart';
+import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
@@ -27,6 +32,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime Function()? now,
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
+       _detailDao = CardDetailDao(_db),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
@@ -34,6 +40,7 @@ final class CardRepositoryImpl implements CardRepository {
   final TagRepository _tags;
   final CardDao _dao;
   final CardListDao _listDao;
+  final CardDetailDao _detailDao;
   final DateTime Function() _now;
 
   @override
@@ -204,6 +211,55 @@ final class CardRepositoryImpl implements CardRepository {
     required CardListQuery query,
     required DateTime now,
   }) => _mapped(() => _listDao.ids(deckId: deckId, query: query, now: now));
+
+  @override
+  Stream<CardDetail?> watchDetail(String cardId) => _detailDao
+      .watchDetail(cardId)
+      .map((rows) => rows.isEmpty ? null : cardDetailOf(rows.single))
+      .mapDatabaseErrors();
+
+  @override
+  Future<ReviewHistoryPage?> historyPage({
+    required String cardId,
+    ReviewHistoryCursor? after,
+  }) => _mapped(() async {
+    final rows = await _detailDao.historyRows(
+      cardId,
+      afterAnsweredAt: after?.answeredAt,
+      afterId: after?.id,
+      limit: ReviewHistoryPage.size + 1,
+    );
+    if (rows.isEmpty) return null;
+    final logs = [
+      for (final row in rows)
+        if (row.r case final ReviewLog log) log,
+    ];
+    final entries = [
+      for (final log in logs.take(ReviewHistoryPage.size)) historyEntryOf(log),
+    ];
+    return ReviewHistoryPage(
+      entries: entries,
+      next: logs.length > ReviewHistoryPage.size
+          ? ReviewHistoryCursor(
+              answeredAt: entries.last.answeredAt,
+              id: entries.last.id,
+            )
+          : null,
+    );
+  });
+
+  @override
+  Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId) =>
+      _detailDao
+          .watchMoveTargetRows(sourceDeckId)
+          .map(
+            (rows) => candidatesInTreeOrder(
+              [for (final row in rows) deckTreeNodeOf(row)],
+              (node, path) =>
+                  CardMoveTarget(id: node.id, name: node.name, path: path),
+            ),
+          )
+          .mapDatabaseErrors();
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
   /// refusal here is a bug: throwing rolls the whole write back.
