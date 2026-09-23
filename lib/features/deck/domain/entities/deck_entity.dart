@@ -3,8 +3,6 @@ import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-const _maxDepth = 10;
-
 final class DeckEntity {
   const DeckEntity({
     required this.id,
@@ -34,6 +32,9 @@ final class DeckEntity {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// The deepest level a deck may sit at; the root is level 1 (BR-DECK-001).
+  static const maxDepth = 10;
+
   bool get isRoot => parentId == null;
 
   static Outcome<void, DeckRejection> checkName(String name) =>
@@ -41,11 +42,20 @@ final class DeckEntity {
       ? const Rejected(DeckRejection.blankName)
       : const Ok(null);
 
+  /// A sub-deck goes into a deck that holds decks or nothing yet
+  /// (BR-DECK-009), above the deepest level (BR-DECK-001).
   static Outcome<void, DeckRejection> checkCreateSubDeck({
     required int parentDepth,
-  }) => parentDepth >= _maxDepth
-      ? const Rejected(DeckRejection.depthExceeded)
-      : const Ok(null);
+    required DeckContentType parentContentType,
+  }) {
+    if (parentContentType == DeckContentType.card) {
+      return const Rejected(DeckRejection.notADeckContainer);
+    }
+    if (parentDepth >= maxDepth) {
+      return const Rejected(DeckRejection.depthExceeded);
+    }
+    return const Ok(null);
+  }
 
   static Outcome<void, DeckRejection> checkCreateCard({
     required DeckContentType parentContentType,
@@ -60,12 +70,15 @@ final class DeckEntity {
   /// - [targetDepth]: depth the target parent is at today.
   /// - [subtreeHeight]: how many levels deep the moving subtree goes below
   ///   `movingId` itself (a leaf has height 1).
+  /// - [targetContentType]: a deck that holds cards takes no sub-deck
+  ///   (BR-DECK-009).
   static Outcome<void, DeckRejection> checkMove({
     required String movingId,
     required String targetParentId,
     required List<String> targetAncestorIds,
     required int targetDepth,
     required int subtreeHeight,
+    required DeckContentType targetContentType,
     required SchedulerType? movingRootScheduler,
     required int? movingRootGeneration,
     required SchedulerType? targetRootScheduler,
@@ -74,7 +87,10 @@ final class DeckEntity {
     if (targetParentId == movingId || targetAncestorIds.contains(movingId)) {
       return const Rejected(DeckRejection.movingIntoOwnSubtree);
     }
-    if (targetDepth + subtreeHeight > _maxDepth) {
+    if (targetContentType == DeckContentType.card) {
+      return const Rejected(DeckRejection.notADeckContainer);
+    }
+    if (targetDepth + subtreeHeight > maxDepth) {
       return const Rejected(DeckRejection.depthExceeded);
     }
     if (movingRootScheduler != targetRootScheduler ||

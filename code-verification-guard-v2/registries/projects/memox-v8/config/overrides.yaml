@@ -22,9 +22,6 @@ overrides:
     # stale_targets_pending WARNING once it has targets. When that warning
     # appears, delete the rule's entry here in the same commit that added the
     # layer. The list must be empty before the full dod_check.sh gate applies.
-    # -- `data`: waits for the first lib/features/*/data/ file (foundation plan Task 7)
-    memox.naming.data_file_role_suffix:
-      targets_pending: data
     # -- `app`: waits for the first lib/app/ file (foundation plan Task 10)
     memox.design_token.no_raw_text_style:
       targets_pending: app

@@ -24,11 +24,36 @@ void main() {
 
   group('checkCreateSubDeck', () {
     test('depth 10 is the deepest a sub-deck may be created at', () {
-      final result = DeckEntity.checkCreateSubDeck(parentDepth: 10);
+      final result = DeckEntity.checkCreateSubDeck(
+        parentDepth: 10,
+        parentContentType: DeckContentType.deck,
+      );
       expect(_reasonOf(result), DeckRejection.depthExceeded);
     });
     test('depth 9 may still get a child at depth 10', () {
-      expect(DeckEntity.checkCreateSubDeck(parentDepth: 9), isA<_Allowed>());
+      expect(
+        DeckEntity.checkCreateSubDeck(
+          parentDepth: 9,
+          parentContentType: DeckContentType.deck,
+        ),
+        isA<_Allowed>(),
+      );
+    });
+    test('a deck that holds cards refuses a sub-deck (BR-DECK-009)', () {
+      final result = DeckEntity.checkCreateSubDeck(
+        parentDepth: 2,
+        parentContentType: DeckContentType.card,
+      );
+      expect(_reasonOf(result), DeckRejection.notADeckContainer);
+    });
+    test('an unset deck accepts a sub-deck', () {
+      expect(
+        DeckEntity.checkCreateSubDeck(
+          parentDepth: 2,
+          parentContentType: DeckContentType.unset,
+        ),
+        isA<_Allowed>(),
+      );
     });
   });
 
@@ -60,12 +85,14 @@ void main() {
       int subtreeHeight = 1,
       SchedulerType targetRootScheduler = SchedulerType.eightBox,
       int targetRootGeneration = 1,
+      DeckContentType targetContentType = DeckContentType.deck,
     }) => DeckEntity.checkMove(
       movingId: movingId,
       targetParentId: targetParentId,
       targetAncestorIds: targetAncestorIds,
       targetDepth: targetDepth,
       subtreeHeight: subtreeHeight,
+      targetContentType: targetContentType,
       movingRootScheduler: SchedulerType.eightBox,
       movingRootGeneration: 1,
       targetRootScheduler: targetRootScheduler,
@@ -103,6 +130,13 @@ void main() {
         );
       },
     );
+
+    test('moving under a deck that holds cards is rejected (BR-DECK-009)', () {
+      expect(
+        _reasonOf(move(targetContentType: DeckContentType.card)),
+        DeckRejection.notADeckContainer,
+      );
+    });
 
     test('a same-root, in-depth move is accepted', () {
       expect(move(), isA<_Allowed>());
