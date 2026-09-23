@@ -67,7 +67,7 @@ là: **luôn chọn tầng thấp nhất bắt được đúng loại lỗi.**
 
 | Hồ sơ | Chạy bằng | Dùng cho |
 |---|---|---|
-| `HOST-FLOW` | `flutter test` | Use case + repository + DAO + Drift + SQLite in-memory thật, clock inject, `Random` có seed. Không render UI nếu không cần. Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, tính `due_at`, resume, generation |
+| `HOST-FLOW` | `flutter test` | Rule + store + Drift + SQLite in-memory thật, clock inject, `Random` có seed. Không render UI nếu không cần. Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, tính `due_at`, resume, generation |
 | `HOST-WIDGET` | `flutter test` | Pump app/widget thật trên `ProviderScope`, GoRouter, localization và database thật. Thao tác người dùng, form, dialog, điều hướng, trạng thái loading/empty/error, việc UI phản ánh đúng state nghiệp vụ |
 | `DEVICE-E2E` | Android/iOS emulator hoặc thiết bị | Chỉ những gì hai hồ sơ trên không chứng minh nổi: khởi động nguội, chết tiến trình, deep link từ hệ điều hành, cử chỉ nền tảng, plugin native, smoke trước phát hành |
 

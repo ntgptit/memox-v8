@@ -61,7 +61,7 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-CARD-006 | `HOST-WIDGET` | Per-field 240 limit. |
 | IT-CARD-007 | `HOST-WIDGET` | Save-and-add-another keeps the sheet open. |
 | IT-CARD-008 / IT-CARD-008F | `HOST-WIDGET + HOST-FLOW` | Editing keeps list position (UI) and the edited row persists (SQL). |
-| IT-CARD-009 | `HOST-FLOW` | Editing content MUST NOT touch card_review_states — the single most important cross-table invariant here, and only the DB can show it. |
+| IT-CARD-009 | `HOST-FLOW` | Editing content MUST NOT touch card_schedule — the single most important cross-table invariant here, and only the DB can show it. |
 | IT-CARD-010 / IT-CARD-010F | `HOST-WIDGET + HOST-FLOW` | Confirm dialog vs the delete actually landing. |
 | IT-CARD-011 | `HOST-FLOW` | Deleting the last card puts the deck back to `unset` in one transaction (BR-163). |
 | IT-CONT-001 / IT-PLAT-003 | `HOST-FLOW + DEVICE-E2E` | Resuming at the stored cursor (BR-79/102/103) is a DB read; being killed by the OS is the platform boundary. |
@@ -74,9 +74,9 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-CONT-008 | `DEVICE-E2E` | Whole session offline. Same note as IT-NAV-007: kept as a release smoke because there is nothing to fail. |
 | IT-CONT-009 | `HOST-FLOW` | Reset invalidates the open session with scheduler_reset (BR-83/152) — one transaction. |
 | IT-CONT-010 | `HOST-FLOW` | A stale-generation session is refused atomically (BR-46/84) — the reset-un-resets-itself guard. |
-| IT-CONT-011 | `HOST-FLOW` | A transient write failure does not advance and a retry writes once (BR-25) — inject the failure at the DAO, not at the UI. |
+| IT-CONT-011 | `HOST-FLOW` | A transient write failure does not advance and a retry writes once (BR-25) — inject the failure at the store, not at the UI. |
 | IT-CONT-012 | `HOST-FLOW` | An unrecoverable failure closes the session as failed and keeps prior turns (BR-85/86). |
-| IT-CONT-013 / IT-CONT-013W | `HOST-FLOW + HOST-WIDGET` | The read failure and the retry are repository; the Retry affordance keeping the cursor is the screen. |
+| IT-CONT-013 / IT-CONT-013W | `HOST-FLOW + HOST-WIDGET` | The read failure and the retry are store; the Retry affordance keeping the cursor is the screen. |
 | IT-CONT-014 | `HOST-FLOW` | Choosing review with a same-day session open abandons it (BR-82/103). |
 | IT-DECK-001 / IT-DECK-001F | `HOST-WIDGET + HOST-FLOW` | Creating through the form is UI; that the row persists with scheduler=eight_box is SQL. |
 | IT-DECK-002 | `HOST-WIDGET` | Duplicate names allowed (BR-02) — form submits, list shows two. |
@@ -119,7 +119,7 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-MODE-011 | `HOST-FLOW` | Hint recorded without changing the action, one submission only (BR-135/136/137/138). |
 | IT-MODE-012 | `HOST-WIDGET` | Self assess shows actions only after a flip. |
 | IT-MODE-013 | `HOST-WIDGET` | Screen reader and large text — meetsGuideline and textScaler are host matchers. No device needed. |
-| IT-MODE-014 | `HOST-FLOW` | Atomic block when a question cannot be built (BR-121/124) — a repository refusal, not a fault-injection UI. |
+| IT-MODE-014 | `HOST-FLOW` | Atomic block when a question cannot be built (BR-121/124) — a store refusal, not a fault-injection UI. |
 | IT-MODE-015 | `HOST-FLOW` | Distractors come from the same tree and never leak an unseen new card (BR-121/122/123). |
 | IT-NAV-001 | `HOST-WIDGET` | Router lands on the deck list. Real cold start is proved once by IT-PLAT-001. |
 | IT-NAV-002 | `HOST-WIDGET` | Shell keeps branch state; pure GoRouter + widget. |
@@ -165,18 +165,18 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-STUDY-010 | `HOST-FLOW` | The card limit is frozen at open (BR-24/139) — a session-row assertion. |
 | IT-STUDY-011 | `HOST-FLOW` | Session scope is the deck subtree (BR-23/142) — a recursive query. |
 | IT-STUDY-012 | `HOST-FLOW` | Created/Random selection and stability on resume (BR-102/139/148) needs a seeded Random and the DB. |
-| IT-STUDY-013 | `HOST-FLOW` | Unreadable root config falls back to defaults (BR-24/147/148) — a repository failure path, not a fault-injection UI. |
-| IT-TREE-001 / IT-TREE-001F | `HOST-WIDGET + HOST-FLOW` | BR-58/59 is a repository rule inside runInTransaction; the chooser only reflects it. |
+| IT-STUDY-013 | `HOST-FLOW` | Unreadable root config falls back to defaults (BR-24/147/148) — a store failure path, not a fault-injection UI. |
+| IT-TREE-001 / IT-TREE-001F | `HOST-WIDGET + HOST-FLOW` | BR-58/59 is a store rule inside runInTransaction; the chooser only reflects it. |
 | IT-TREE-002 | `HOST-WIDGET` | An unset deck offers both actions — presentation of BR-60/61. |
 | IT-TREE-003 / IT-TREE-003F | `HOST-WIDGET + HOST-FLOW` | First-child locking is a transaction rule (BR-62/63); the UI only stops offering the other kind. |
 | IT-TREE-004 / IT-TREE-004F | `HOST-WIDGET + HOST-FLOW` | Same rule, the other branch. |
 | IT-TREE-005 | `HOST-FLOW` | A refused write must leave content_type unset — provable only against the DB. |
 | IT-TREE-006 | `HOST-FLOW` | Emptying a sub-deck resets its type in the same transaction; pure persistence (BR-163). |
 | IT-TREE-007 | `HOST-FLOW` | Manual reset is gone (BR-163); the ID now covers the move transition, which is pure persistence. |
-| IT-TREE-008 | `HOST-FLOW` | Refusal to reset a non-empty deck is a repository guard. |
+| IT-TREE-008 | `HOST-FLOW` | Refusal to reset a non-empty deck is a store guard. |
 | IT-TREE-009 / IT-TREE-009F | `HOST-WIDGET + HOST-FLOW` | Move UI vs the subtree rewrite (root_id, depth) in one transaction. |
 | IT-TREE-010 | `HOST-FLOW` | Cycle refusal (BR-69/70) is checked inside the write. |
-| IT-TREE-011 | `HOST-FLOW` | BR-64 refusal at the repository. |
+| IT-TREE-011 | `HOST-FLOW` | BR-64 refusal at the store. |
 | IT-TREE-012 | `HOST-FLOW` | Cross-scheduler move refusal (BR-73/74) — never silently converted. |
 | IT-TREE-013 | `HOST-FLOW` | Depth-10 refusal (BR-55) is checked before anything is written. |
 | IT-TREE-014 | `HOST-FLOW` | Reset after the last card — persistence. |

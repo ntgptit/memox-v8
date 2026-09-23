@@ -21,14 +21,14 @@ không nói kịch bản phải chạy ở đâu** — cột `Profile` của
 
 | Profile | Chạy bằng | Chứng minh cái gì |
 |---|---|---|
-| `HOST-FLOW` | `flutter test` | Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, `due_at`, resume — qua use case và repository thật trên SQLite in-memory thật |
+| `HOST-FLOW` | `flutter test` | Luật nghiệp vụ, scheduler, truy vấn, transaction, hàng đợi, `due_at`, resume — qua rule và store thật trên SQLite in-memory thật |
 | `HOST-WIDGET` | `flutter test` | Người dùng thao tác được qua giao diện Flutter thật, và giao diện phản ánh đúng state nghiệp vụ |
 | `DEVICE-E2E` | emulator/thiết bị | Chỉ ranh giới với hệ điều hành: khởi động nguội, chết tiến trình, deep link, cử chỉ nền tảng, smoke phát hành |
 
 **"Mọi bước kiểm tra phải đi qua UI" chỉ đúng cho `DEVICE-E2E`.** Ở đó, gọi
-thẳng repository là bỏ qua chính ranh giới đang cần chứng minh. Áp luật đó cho
+thẳng store là bỏ qua chính ranh giới đang cần chứng minh. Áp luật đó cho
 *mọi* kịch bản thì mọi kịch bản đều đòi emulator theo mặc định. Một luật
-`due_at` chứng minh bằng use case + SQLite thật là bằng chứng **mạnh hơn**,
+`due_at` chứng minh bằng store + SQLite thật là bằng chứng **mạnh hơn**,
 không yếu hơn, so với việc đọc một con số trên màn hình.
 
 Một bộ dữ liệu dựng sẵn MAY được dùng để chuẩn bị trạng thái. Với `DEVICE-E2E`
