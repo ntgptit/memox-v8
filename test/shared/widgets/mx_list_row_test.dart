@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -171,7 +172,7 @@ void main() {
         ),
       ),
     );
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(MxSpinner), findsOneWidget);
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
   });
 

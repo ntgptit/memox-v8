@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -137,7 +138,7 @@ void main() {
     await tester.tap(find.byType(MxButton), warnIfMissed: false);
 
     expect(tester.getSize(_painted.first).width, restingWidth);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(MxSpinner), findsOneWidget);
     expect(taps, 0);
   });
 
@@ -198,5 +199,26 @@ void main() {
     );
 
     await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('loading: a filled button spins onPrimary, outline primary', (
+    tester,
+  ) async {
+    for (final (tone, isOnFill) in [
+      (MxButtonTone.primary, true),
+      (MxButtonTone.destructive, true),
+      (MxButtonTone.secondary, false),
+      (MxButtonTone.outline, false),
+    ]) {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: () {}),
+      );
+
+      expect(
+        tester.widget<MxSpinner>(find.byType(MxSpinner)).isOnFill,
+        isOnFill,
+      );
+    }
   });
 }

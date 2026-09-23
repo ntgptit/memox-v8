@@ -4,28 +4,18 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
-import 'package:memox/shared/widgets/mx_icon_tile.dart';
-
-import 'package:memox/shared/widgets/mx_icon_button.dart';
-
-import 'package:memox/shared/widgets/mx_list_row.dart';
-
-import 'package:memox/shared/widgets/mx_settings_row.dart';
-
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
-
-import 'package:memox/shared/widgets/mx_toggle.dart';
-
-import 'package:memox/shared/widgets/mx_stepper.dart';
-
-import 'package:memox/shared/widgets/mx_section.dart';
-
-import 'package:memox/shared/widgets/mx_list_section_header.dart';
-
-import 'package:memox/shared/widgets/mx_note.dart';
-
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_settings_row.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/golden_harness.dart';
 

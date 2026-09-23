@@ -8,6 +8,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
 /// the busy spinner and the disabled dim. The bounds, the clamping and the
@@ -71,13 +72,7 @@ class MxStepper extends StatelessWidget {
             child: Center(
               widthFactor: 1,
               child: isBusy
-                  ? SizedBox.square(
-                      dimension: AppIconSize.inline,
-                      child: CircularProgressIndicator(
-                        strokeWidth: AppStroke.indicator,
-                        color: colors.primary,
-                      ),
-                    )
+                  ? const MxSpinner()
                   : Text(
                       value.toString(),
                       style: context.textStyles.stepperValue(
