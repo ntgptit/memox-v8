@@ -40,6 +40,19 @@ final class DeckDao {
         DeckCompanion(siblingPosition: Value(position), updatedAt: Value(now)),
       );
 
+  /// The decks under [parentId], the roots when it is null, with the counts
+  /// of their subtrees: one statement per emission (`deck_queries.drift`).
+  Stream<List<DeckTileRow>> watchLevel({
+    required String? parentId,
+    required DateTime now,
+    required DateTime startOfToday,
+  }) {
+    if (parentId == null) {
+      return _db.deckLevelOfRoots(startOfToday, now).watch();
+    }
+    return _db.deckLevelOfChildren(parentId, startOfToday, now).watch();
+  }
+
   /// One statement (`deck_queries.drift`); null when [id] is not an active
   /// deck.
   Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>

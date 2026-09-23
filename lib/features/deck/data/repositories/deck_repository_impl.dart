@@ -8,6 +8,7 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
+import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -239,6 +240,16 @@ final class DeckRepositoryImpl implements DeckRepository {
     return row == null ? null : _toEntity(row);
   });
 
+  @override
+  Stream<List<DeckTile>> watchLevel({
+    required String? parentId,
+    required DateTime now,
+    required DateTime startOfToday,
+  }) => _dao
+      .watchLevel(parentId: parentId, now: now, startOfToday: startOfToday)
+      .map((rows) => [for (final row in rows) _toTile(row, startOfToday)])
+      .mapDatabaseErrors();
+
   /// A sub-deck's content type follows what it holds (BR-DECK-006..008,
   /// BR-DECK-015); a root is always a deck of decks (BR-DECK-004).
   Future<void> _refreshContentType(String deckId, DateTime at) async {
@@ -287,4 +298,19 @@ DeckEntity _toEntity(Deck row) => DeckEntity(
   siblingPosition: row.siblingPosition,
   createdAt: row.createdAt,
   updatedAt: row.updatedAt,
+);
+
+DeckTile _toTile(DeckTileRow row, DateTime startOfToday) => DeckTile(
+  id: row.id,
+  name: row.name,
+  siblingPosition: row.siblingPosition,
+  createdAt: row.createdAt,
+  schedulerType: SchedulerType.fromCode(row.schedulerType!),
+  subDeckCount: row.subDeckCount,
+  cardCount: row.cardCount,
+  newCount: row.newCount,
+  overdueCount: row.overdueCount,
+  dueTodayCount: row.dueTodayCount,
+  oldestDueAt: row.oldestDueAt,
+  startOfToday: startOfToday,
 );

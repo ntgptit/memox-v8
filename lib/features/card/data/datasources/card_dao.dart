@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/text/folded_text.dart';
 
 /// Row access for `card`, plus the reads and writes of the owning `deck` row
 /// that card writes need. It returns Drift rows, never domain entities, and
@@ -37,8 +38,8 @@ final class CardDao {
           deckId: deckId,
           front: front.trim(),
           back: back.trim(),
-          frontFolded: Value(_folded(front)),
-          backFolded: Value(_folded(back)),
+          frontFolded: Value(foldText(front)),
+          backFolded: Value(foldText(back)),
           example: Value(_trimmedOrNull(example)),
           hint: Value(_trimmedOrNull(hint)),
           pronunciation: Value(_trimmedOrNull(pronunciation)),
@@ -73,9 +74,6 @@ final class CardDao {
     DeckCompanion(contentType: Value(contentType), updatedAt: Value(now)),
   );
 }
-
-/// `front_folded` / `back_folded` (schema.md): trim, then Unicode lowercase.
-String _folded(String side) => side.trim().toLowerCase();
 
 String? _trimmedOrNull(String? value) {
   final trimmed = value?.trim();

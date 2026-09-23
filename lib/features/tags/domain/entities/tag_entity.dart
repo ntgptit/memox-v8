@@ -1,5 +1,6 @@
 import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 
 /// A tag, as a card carries it (BR-TAG-001).
@@ -31,10 +32,9 @@ final class TagEntity {
     return const Ok(null);
   }
 
-  /// The form uniqueness is judged on (BR-TAG-001): trim, then lowercase, the
-  /// same fold schema.md defines for `front_folded`. Written in Dart because
-  /// SQLite's `lower()` is ASCII-only.
-  static String fold(String name) => name.trim().toLowerCase();
+  /// The form uniqueness is judged on (BR-TAG-001): `name_folded` in
+  /// schema.md, the fold every name and search term shares.
+  static String fold(String name) => foldText(name);
 }
 
 /// Unicode category Cc: C0 controls, DEL and C1 controls.

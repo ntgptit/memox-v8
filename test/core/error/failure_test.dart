@@ -37,4 +37,12 @@ void main() {
     const failure = ConstraintFailure(cause: 'x');
     expect(mapDatabaseError(failure), same(failure));
   });
+
+  test('a watch reports a database error as its Failure', () async {
+    final watch = Stream<int>.error(
+      sqlite3.SqliteException(extendedResultCode: 5, message: 'locked'),
+    ).mapDatabaseErrors();
+
+    await expectLater(watch, emitsError(isA<DatabaseLockedFailure>()));
+  });
 }

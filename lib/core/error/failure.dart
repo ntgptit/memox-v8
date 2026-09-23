@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/isolate.dart' show DriftRemoteException;
 import 'package:sqlite3/sqlite3.dart' as sqlite3;
 
@@ -52,4 +54,14 @@ Failure mapDatabaseError(Object error) {
     _sqliteBusy || _sqliteLocked => DatabaseLockedFailure(cause: cause),
     _ => UnknownDatabaseFailure(cause: cause),
   };
+}
+
+/// A watch reports its database errors the way a one-shot read does.
+extension DatabaseErrorStream<T> on Stream<T> {
+  Stream<T> mapDatabaseErrors() => transform(
+    StreamTransformer.fromHandlers(
+      handleError: (error, stackTrace, sink) =>
+          sink.addError(mapDatabaseError(error), stackTrace),
+    ),
+  );
 }

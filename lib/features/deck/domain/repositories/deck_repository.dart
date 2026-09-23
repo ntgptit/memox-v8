@@ -2,6 +2,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
+import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -51,4 +52,13 @@ abstract interface class DeckRepository {
   Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId});
 
   Future<DeckEntity?> findById(String id);
+
+  /// UC-DECK-003: the decks under [parentId], the roots when it is null, in
+  /// manual order, with the counts of their subtrees as of [now] and the
+  /// local day starting at [startOfToday]. Emits again on every change.
+  Stream<List<DeckTile>> watchLevel({
+    required String? parentId,
+    required DateTime now,
+    required DateTime startOfToday,
+  });
 }
