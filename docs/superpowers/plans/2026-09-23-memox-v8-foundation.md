@@ -136,18 +136,13 @@ made and recorded so review can push back on them, not gaps.
    logic, owned by the core-learning-slice sub-project (spec §2,
    decomposition item 3). `app_settings` is explicitly "**Phạm vi:** V8.0"
    too — created now as schema only, same reasoning, owned by the future
-   `settings` feature. `tags` and `card_tags` are explicitly "**Phạm vi:**
-   sub-project sau — Tags" in schema.md — **not created** in this plan, no
-   columns, no table.
-   **OPEN QUESTION:** ADR-009 decision 4 puts "gắn/gỡ tag trên thẻ" (BR-TAG-001,
-   BR-TAG-002, UC-CARD-001 A8) in V8.0 scope, but schema.md still marks
-   `tags`/`card_tags` "sub-project sau" throughout. This plan follows
-   schema.md's per-table scope note literally and defers both tables,
-   because schema.md is the stated authority for the data model and a card
-   CRUD feature that needs tags is out of this plan's own scope (no product
-   UI) regardless. Confirm before the core-learning-slice plan is written,
-   since that plan is where the contradiction must actually be resolved —
-   it cannot ship "tag a card" without the tables ADR-009 says are in scope.
+   `settings` feature. `tags` and `card_tags` are V8.0 for tagging a card
+   (ADR-009 decision 4; schema.md updated on 2026-09-23 to match) — created
+   now as schema only (all columns, the unique `(owner_id, name_folded)`
+   index, both cascading FKs); the tag/untag write path is the
+   core-learning-slice's card feature. Tag Management (UC-TAG-001) stays a
+   later sub-project. **Resolved 2026-09-23 (project owner):** follow
+   ADR-009 and create the tables in this plan.
 2. **`deck_templates` and `delete_batches` do not exist yet** — they belong
    to `docs/features/starter-decks/data.md` and `docs/features/trash/data.md`,
    owned by their own sub-projects, and schema.md is explicit that
@@ -160,11 +155,9 @@ made and recorded so review can push back on them, not gaps.
    FK constraint is added by the sub-project that creates the referenced
    table, as a migration. No Dart code reads or writes these columns in this
    plan.
-   **OPEN QUESTION:** confirm that a nullable column added without its FK,
-   with the FK arriving in a later migration, is acceptable, versus not
-   adding the column at all until the FK can be added atomically. This plan
-   assumes the former because schema.md's wording ("giữ ở đây") reads as an
-   instruction to add the column now.
+   **Resolved 2026-09-23 (project owner):** add these columns now, nullable
+   and without a FK; the FK arrives with the sub-project that creates the
+   referenced table.
 3. **Public surface of a feature** is its `domain/` layer, reached through a
    barrel file `lib/features/<f>/<f>.dart` that exports domain types
    (entities, the repository contract, `Rejection`s) and, once one exists,
@@ -1182,16 +1175,16 @@ git commit -m "feat(srs): add sm2 scheduler and scheduler lookup" -m "Co-Authore
 
 ### Task 5: Central database schema and `AppDatabase`
 
-This is the schema task. It creates the 7 tables in scope for V8.0 per
-schema.md (Clarification 1): `deck`, `card`, `card_schedule`, `review_log`,
-`study_session`, `study_queue_items`, `app_settings`. `tags` and `card_tags`
-are not created (Clarification 1, OPEN QUESTION). Every `CHECK` and column
+This is the schema task. It creates the 9 tables in scope for V8.0 per
+schema.md (Clarification 1): `deck`, `card`, `tags`, `card_tags`,
+`card_schedule`, `review_log`, `study_session`, `study_queue_items`,
+`app_settings`. Every `CHECK` and column
 below is transcribed from `docs/shared/data/schema.md`; every invariant query
 is transcribed from its "Bất biến" section, run in `test/database/invariants_test.dart`.
 
 **Files:**
-- Create: `lib/core/database/tables/deck.drift`, `card.drift`, `srs.drift`,
-  `study.drift`, `settings.drift`, `lib/core/database/app_database.dart`,
+- Create: `lib/core/database/tables/deck.drift`, `card.drift`, `tags.drift`,
+  `srs.drift`, `study.drift`, `settings.drift`, `lib/core/database/app_database.dart`,
   `lib/core/database/connection.dart`, `lib/core/database/di/database_provider.dart`,
   `test/support/test_database.dart`, `drift_schemas/drift_schema_v1.json` (generated)
 - Test: `test/database/schema_test.dart`, `test/database/invariants_test.dart`
@@ -1202,7 +1195,8 @@ is transcribed from its "Bất biến" section, run in `test/database/invariants
   - `class AppDatabase extends _$AppDatabase` with `schemaVersion == 1`,
     foreign keys ON at open.
   - Generated row/companion classes for `Deck`, `CardRow`, `CardSchedule`,
-    `ReviewLog`, `StudySession`, `StudyQueueItem`, `AppSetting`.
+    `ReviewLog`, `StudySession`, `StudyQueueItem`, `AppSetting`, `Tag`,
+    `CardTag`.
   - `AppDatabase openTestDatabase()` in `test/support/test_database.dart`
     (in-memory, foreign keys ON).
   - `AppDatabase openAppDatabase()` in `lib/core/database/connection.dart`,
@@ -1455,6 +1449,38 @@ CREATE TABLE app_settings (
 ) AS AppSetting;
 ```
 
+`lib/core/database/tables/tags.drift`:
+
+```sql
+import 'card.drift';
+
+-- Scope: V8.0, tagging a card only (ADR-009 decision 4). Tag Management
+-- (UC-TAG-001) is a later sub-project.
+CREATE TABLE tags (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  -- lower(trim(name)), written by Dart: SQLite NOCASE/lower() are ASCII-only.
+  name_folded TEXT NOT NULL,
+  owner_id TEXT,
+  created_at DATETIME NOT NULL
+) AS Tag;
+
+CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (owner_id, name_folded);
+
+CREATE TABLE card_tags (
+  card_id TEXT NOT NULL REFERENCES card (id) ON DELETE CASCADE,
+  tag_id TEXT NOT NULL REFERENCES tags (id) ON DELETE CASCADE,
+  PRIMARY KEY (card_id, tag_id)
+) AS CardTag;
+
+CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id);
+```
+
+SQLite treats `NULL`s as distinct in a unique index, so `(NULL, 'noun')` twice
+would pass; the local profile's `owner_id` is `NULL` (schema.md), so the tag
+write path (core-learning slice) must check the folded name before insert
+until an owner exists. This plan only creates the schema.
+
 - [ ] **Step 2: Write `AppDatabase` and the connection helper**
 
 `lib/core/database/app_database.dart`:
@@ -1468,6 +1494,7 @@ part 'app_database.g.dart';
   include: {
     'package:memox/core/database/tables/deck.drift',
     'package:memox/core/database/tables/card.drift',
+    'package:memox/core/database/tables/tags.drift',
     'package:memox/core/database/tables/srs.drift',
     'package:memox/core/database/tables/study.drift',
     'package:memox/core/database/tables/settings.drift',
@@ -1686,6 +1713,37 @@ void main() {
     expect(await _failureOf(() => insert('completed', 'user_exit', ended: 1)), isA<ConstraintFailure>());
     expect(await _failureOf(() => insert('abandoned', 'stale_generation', ended: 1)), isA<ConstraintFailure>());
     expect(await _failureOf(() => insert('in_progress', null, ended: 1)), isA<ConstraintFailure>());
+  });
+
+  test('deleting a card or a tag removes its card_tags links', () async {
+    await _root(db, 'r');
+    await _child(db, 'd', 'r', 'r', 2, content: 'card');
+    await db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
+      "VALUES ('c1', 'd', 'f', 'b', 0, 0), ('c2', 'd', 'f', 'b', 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) "
+      "VALUES ('t1', 'Noun', 'noun', 0), ('t2', 'Verb', 'verb', 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('c1', 't1'), ('c2', 't2')",
+    );
+    await db.customStatement("DELETE FROM card WHERE id = 'c1'");
+    await db.customStatement("DELETE FROM tags WHERE id = 't2'");
+    expect(await _count(db, 'card_tags'), 0);
+  });
+
+  test('a tag name is unique per owner after folding', () async {
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, owner_id, created_at) "
+      "VALUES ('t1', 'Động từ', 'động từ', 'p', 0)",
+    );
+    final f = await _failureOf(() => db.customStatement(
+          "INSERT INTO tags (id, name, name_folded, owner_id, created_at) "
+          "VALUES ('t2', 'động từ', 'động từ', 'p', 0)",
+        ));
+    expect(f, isA<ConstraintFailure>());
   });
 
   test('a snapshot exists for the current schema version', () {
@@ -2837,8 +2895,8 @@ Tasks 6–7. §7 data flow (transactional writes): Tasks 7–9. §8 errors
 testing (unit SRS, unit deck rules, Drift in-memory, migration snapshot,
 import boundary): Tasks 1, 3–4, 5, 6–9. §10 open questions: superseded by
 ADR-009 (modes/search/nav/tags in scope; Trash still deferred) — reflected
-in Clarification 1's deferral of `tags`/`card_tags` and the OPEN QUESTION
-about the ADR-009/schema.md contradiction. ADR-010 decisions 1–3: folder
+in Clarification 1 and Task 5 (`tags`/`card_tags` created; resolved with the
+project owner on 2026-09-23). ADR-010 decisions 1–3: folder
 names (File Structure), layering (Clarifications 3, 9, 10; Tasks 6–9),
 Flutter version (Task 1, package table). schema.md's per-table scope notes:
 Clarification 1, Task 5.
