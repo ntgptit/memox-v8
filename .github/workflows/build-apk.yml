@@ -55,34 +55,12 @@ jobs:
             echo "tag=build-${GITHUB_RUN_NUMBER}-${sha8}"
           } >> "$GITHUB_OUTPUT"
 
+      # A re-run of the same run reuses the tag; the script replaces the asset.
       - name: publish pre-release
         env:
           APK: ${{ steps.build.outputs.apk }}
           TAG: ${{ steps.build.outputs.tag }}
-        run: |
-          set -euo pipefail
-          {
-            echo "Built from \`${GITHUB_SHA:0:8}\` on \`${GITHUB_REF_NAME}\` (run ${GITHUB_RUN_NUMBER})."
-            echo
-            echo "| file | size |"
-            echo "|---|---|"
-            # Backticks are markdown code spans, not shell expansion.
-            # shellcheck disable=SC2016
-            printf '| `%s` | %s |\n' "$APK" "$(du -h "$APK" | cut -f1)"
-            echo
-            echo "Signed with the debug key: allow \"Install from unknown sources\","
-            echo "and note it cannot be upgraded over by a production-signed build."
-          } > notes.md
-          gh release create "$TAG" "$APK" \
-            --prerelease \
-            --target "$GITHUB_SHA" \
-            --title "MemoX build ${GITHUB_RUN_NUMBER} (${GITHUB_SHA:0:8})" \
-            --notes-file notes.md
-          {
-            echo "### Published \`$TAG\`"
-            echo
-            cat notes.md
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: bash .github/scripts/publish-build-release.sh "$APK" "$TAG"
 
       # Runs only when every step above succeeded, so a failed build never
       # deletes the previous APKs.

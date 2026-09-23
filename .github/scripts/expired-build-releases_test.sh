@@ -34,6 +34,10 @@ check "selects only build- releases strictly older than 7 days" \
   "$(printf 'build-30-dddddddd\nbuild-8-aaaaaaaa')" \
   "$(printf '%s' "$fixture" | bash "$script" "$now")"
 
+check "accepts createdAt with fractional seconds" "build-9-eeeeeeee" \
+  "$(printf '[{"tagName": "build-9-eeeeeeee", "createdAt": "%s"}]' \
+      "$(date -u -d "@$((now - 9 * day))" +%Y-%m-%dT%H:%M:%S.123Z)" | bash "$script" "$now")"
+
 check "empty list selects nothing and exits 0" "rc=0" \
   "$(printf '[]' | bash "$script" "$now"; echo "rc=$?")"
 
