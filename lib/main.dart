@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/app/app.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      // DB errors are mapped to Failure explicitly (core/error/failure.dart);
+      // Riverpod's default retry-on-error would otherwise sit a failed
+      // provider in a hidden retry loop while showing AsyncLoading.
+      retry: _noRetry,
+      child: MemoxApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
-    );
-  }
-}
+Duration? _noRetry(int retryCount, Object error) => null;
