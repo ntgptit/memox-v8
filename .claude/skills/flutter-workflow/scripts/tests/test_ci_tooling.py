@@ -622,6 +622,56 @@ class ImpactMapCoverageTest(unittest.TestCase):
         self.assertIn("card", plan.affected_features)
 
 
+class ImpactMapMatchesTheDocsTest(unittest.TestCase):
+    """`feature_dependencies` is derived, not authored.
+
+    The feature READMEs under `docs/features/` declare `depends_on`; the map
+    stores the inverse (a change to a feature verifies the features that depend
+    on it). Feature keys are the docs slugs in snake_case, the `lib/features/`
+    directory names. Hand-editing either side without the other fails here.
+    """
+
+    @staticmethod
+    def _declared_dependents() -> dict[str, list[str]]:
+        spec = importlib.util.spec_from_file_location(
+            "docs_generate", REPO_ROOT / "tools/docs/generate.py"
+        )
+        assert spec and spec.loader
+        docs = importlib.util.module_from_spec(spec)
+        sys.modules["docs_generate"] = docs
+        spec.loader.exec_module(docs)
+
+        depends_on: dict[str, list[str]] = {}
+        for readme in sorted((REPO_ROOT / "docs/features").glob("*/README.md")):
+            meta, _, error = docs.split_frontmatter(readme.read_text(encoding="utf-8"))
+            assert meta is not None and error is None, readme
+            declared = meta.get("depends_on")
+            feature = readme.parent.name.replace("-", "_")
+            depends_on[feature] = [
+                name.replace("-", "_")
+                for name in (declared if isinstance(declared, list) else [])
+            ]
+        return {
+            feature: sorted(
+                dependent
+                for dependent, needs in depends_on.items()
+                if feature in needs
+            )
+            for feature in sorted(depends_on)
+        }
+
+    def test_feature_dependencies_are_the_inverse_of_docs_depends_on(self) -> None:
+        impact = json.loads(
+            (SCRIPTS / "verification_impact_map.json").read_text(encoding="utf-8")
+        )
+        declared = self._declared_dependents()
+        self.assertTrue(declared, "no feature READMEs found under docs/features/")
+        self.assertEqual(
+            declared,
+            {key: sorted(value) for key, value in impact["feature_dependencies"].items()},
+        )
+
+
 class AggregateGateTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
