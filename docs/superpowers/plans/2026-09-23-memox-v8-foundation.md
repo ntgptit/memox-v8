@@ -269,7 +269,13 @@ made and recorded so review can push back on them, not gaps.
     reads schedule rows without writing reviews. The study sub-project
     replaces the branch and adds the completion event (`completeLearning`,
     schema.md invariant 30). For the same reason Task 5's `CHECK` holds
-    invariant 28 only.
+    invariant 28 only. Running Tasks 3–4 showed that the review branch
+    differs too, and it stays as written for the same reason: a `forgotten`
+    scheduled review keeps its box here, where BR-SRS-008 sends it to box 1
+    and reschedules it; `sm2`'s `again` is `q = 2` here and `q = 0` in
+    BR-SRS-010; and the scheduler derives `kind` from the state, where
+    BR-SRS-017/018 let the session say which turn is `relearning`, so a lapse
+    is counted on the `forgotten`/`again` of a learned card.
 
 ## Review Focus
 
