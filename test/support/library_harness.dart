@@ -15,6 +15,7 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
+import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
@@ -166,7 +167,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onOpenDeck,
   ValueChanged<String?>? onOpenAncestor,
   ValueChanged<String>? onAddCard,
-  Widget Function(String deckId)? cardContent,
+  Widget Function(DeckView view)? cardContent,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
   ValueChanged<String>? onOpenAlgorithm,

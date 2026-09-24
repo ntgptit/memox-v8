@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -27,6 +31,7 @@ final _en = lookupAppLocalizations(const Locale('en'));
 Widget _section(String deckId) => Scaffold(
   body: CardListSectionWidget(
     deckId: deckId,
+    algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
   ),
@@ -73,6 +78,14 @@ Future<String> _seed(LibraryEnv env) async {
   return words.id;
 }
 
+/// The app bar's search action (screen 07): here, straight on the state.
+Future<void> _openSearch(WidgetTester tester, String deckId) async {
+  ProviderScope.containerOf(tester.element(find.byType(CardListSectionWidget)))
+      .read(cardSearchOpenProvider(deckId).notifier)
+      .open();
+  await tester.pumpAndSettle();
+}
+
 int? _chipCount(WidgetTester tester, String label) =>
     tester.widget<MxFilterChip>(find.widgetWithText(MxFilterChip, label)).count;
 
@@ -92,7 +105,13 @@ void main() {
     expect(find.text('annyeong'), findsOneWidget);
     expect(find.text('hello'), findsOneWidget);
     expect(find.byType(CardRowWidget), findsNWidgets(4));
-    expect(find.byType(MxStatusBadge), findsNWidgets(4));
+    expect(
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.byType(MxStatusBadge),
+      ),
+      findsNWidgets(4),
+    );
     expect(find.byIcon(AppIcons.flagged), findsOneWidget);
   });
 
@@ -124,6 +143,7 @@ void main() {
   libraryTest('search matches the front or the back', (tester, env) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
+    await _openSearch(tester, deckId);
     await tester.enterText(find.byType(EditableText), 'thank');
     await tester.pumpAndSettle();
 
@@ -137,7 +157,7 @@ void main() {
   ) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.tap(find.text(_en.cardSortTrigger(_en.cardSortNewest)));
+    await tester.tap(find.widgetWithText(MxChipTrigger, _en.cardSortNewest));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.cardSortDueFirst));
     await tester.pumpAndSettle();
@@ -179,15 +199,6 @@ void main() {
     expect(find.text('annyeong'), findsOneWidget);
   });
 
-  libraryTest('a search with no hit names the term', (tester, env) async {
-    final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.enterText(find.byType(EditableText), 'zzz');
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.cardSearchEmptyTitle('zzz')), findsOneWidget);
-  });
-
   libraryTest('the window grows near the end and keeps its rows (RF4)', (
     tester,
     env,
@@ -203,19 +214,32 @@ void main() {
       );
     }
     await pumpLibraryScreen(tester, env, _section(words.id));
-    expect(find.byType(CardRowWidget), findsNWidgets(cardListWindowStep));
+    // E-L5: rows build only in view.
+    expect(
+      find.byType(CardRowWidget, skipOffstage: false).evaluate().length,
+      lessThan(cardListWindowStep),
+    );
 
-    await tester.drag(find.byType(ListView), const Offset(0, -6000));
+    for (var i = 0; i < 12; i++) {
+      await tester.drag(find.byType(ListView), const Offset(0, -1200));
+      await tester.pump();
+    }
     await tester.pump();
     expect(find.byType(MxSkeletonRow), findsNothing);
-    expect(
-      find.byType(CardRowWidget),
-      findsAtLeastNWidgets(cardListWindowStep),
-    );
-    await tester.pump();
-    await tester.pump();
+    final request = ProviderScope.containerOf(
+      tester.element(find.byType(CardListSectionWidget)),
+    ).read(cardListRequestProvider(words.id));
+    expect(request.windowSize, cardListWindowStep * 2);
+  });
 
-    expect(find.byType(CardRowWidget), findsNWidgets(60));
+  libraryTest('a search with no hit names the term', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await _openSearch(tester, deckId);
+    await tester.enterText(find.byType(EditableText), 'zzz');
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardSearchEmptyTitle('zzz')), findsOneWidget);
+    expect(find.text(_en.cardSearchEmptyBody(4)), findsOneWidget);
   });
 
   libraryTest('a load error says so plainly and offers Retry', (
@@ -301,7 +325,10 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text(_en.cardEmptyTitle), findsOneWidget);
+    expect(
+      find.widgetWithText(MxEmptyState, _en.cardEmptyTitle),
+      findsOneWidget,
+    );
 
     stream.addError(StateError('disk I/O error'));
     await tester.pump();
@@ -321,8 +348,9 @@ void main() {
       env,
       deckScreen(
         deckId: deckId,
-        cardContent: (id) => CardListSectionWidget(
-          deckId: id,
+        cardContent: (view) => CardListSectionWidget(
+          deckId: view.deck.id,
+          algorithm: 'Eight boxes',
           onAddCard: () => adds++,
           onOpenCard: (_) {},
         ),
@@ -349,6 +377,7 @@ void main() {
         Scaffold(
           body: CardListSectionWidget(
             deckId: deckId,
+            algorithm: 'Eight boxes',
             onAddCard: () {},
             onOpenCard: opened.add,
           ),

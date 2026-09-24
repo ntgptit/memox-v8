@@ -51,8 +51,9 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(
-              deckId: id,
+            cardContent: (view) => CardListSectionWidget(
+              deckId: view.deck.id,
+              algorithm: 'Eight boxes',
               onAddCard: () {},
               onOpenCard: (_) {},
             ),
@@ -72,8 +73,9 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(
-              deckId: id,
+            cardContent: (view) => CardListSectionWidget(
+              deckId: view.deck.id,
+              algorithm: 'Eight boxes',
               onAddCard: () {},
               onOpenCard: (_) {},
             ),

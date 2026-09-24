@@ -3,46 +3,55 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
+import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_delete_dialog_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_flag_sheet_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_move_sheet_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_sort_sheet_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_tag_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_toolbar_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_selection_header_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
-import 'package:memox/l10n/failure_message.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/features/card/presentation/widgets/overlays/card_delete_dialog_widget.dart';
-import 'package:memox/features/card/presentation/widgets/overlays/card_move_sheet_widget.dart';
-import 'package:memox/features/card/presentation/widgets/overlays/card_tag_dialog_widget.dart';
-import 'package:memox/features/card/presentation/widgets/overlays/card_flag_sheet_widget.dart';
-import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
-import 'package:memox/core/error/outcome.dart';
 
-/// A deck's cards (spec §6.4): search, the filters with their counts, a
-/// sort, and the rows of a window that grows as the list nears its end. A
-/// long-press starts selection mode, with its header and bulk bar.
+/// A deck's cards (screen 07, UC-CARD-001): the search the app bar reveals,
+/// the deck summary, the filters, "Showing n of total" with the sort, then
+/// one card per row. A long-press starts selection: the app bar turns into
+/// the selection header (spec A14) and the bulk bar shows.
 class CardListSectionWidget extends ConsumerStatefulWidget {
   const CardListSectionWidget({
     super.key,
     required this.deckId,
+    required this.algorithm,
     required this.onAddCard,
     required this.onOpenCard,
   });
 
   final String deckId;
+
+  /// The deck's scheduler, named, for the summary.
+  final String algorithm;
 
   /// New card: the router opens the card editor.
   final VoidCallback onAddCard;
@@ -68,6 +77,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
 
   /// The window a growth was asked from, so one end of list asks once.
   int? _grownFrom;
+
+  /// Ruling E-L6: the last bulk command failed; the selection stays.
+  var _hasBulkFailed = false;
 
   @override
   void dispose() {
@@ -98,24 +110,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     _selection().clear();
   }
 
-  /// Every card the query lets through, not only the loaded rows
-  /// (BR-CARD-012).
-  Future<void> _selectAll(CardListQuery query) async {
-    try {
-      final ids = await ref
-          .read(cardActionsControllerProvider.notifier)
-          .selectAll(deckId: widget.deckId, query: query);
-      if (!mounted) return;
-      _selection().selectAll(ids);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
-  }
-
   /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
-  /// write landed (IT-ORG-014).
+  /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6).
   Future<void> _flag(Set<String> cardIds) async {
+    setState(() => _hasBulkFailed = false);
     final isFlagged = await showCardFlagSheet(context);
     if (isFlagged == null || !mounted) return;
     try {
@@ -136,43 +134,26 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         case Rejected(:final reason):
           showMxSnackbar(context, message: l10n.cardRejection(reason));
       }
-    } on Failure catch (failure) {
+    } on Failure {
       if (!mounted) return;
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() => _hasBulkFailed = true);
     }
   }
 
-  /// Each overlay shows its own snackbar; the selection goes once the write
+  /// Each overlay says its own outcome; the selection goes once the write
   /// landed. The section may be gone by then (the deck emptied), hence the
   /// `mounted` check.
   Future<void> _clearAfter(Future<bool> write) async {
+    setState(() => _hasBulkFailed = false);
     if (await write && mounted) _selection().clear();
   }
 
-  /// The bulk bar's commands over [selected] (ruling P3-L7).
-  List<CardBulkAction> _bulkActions(
-    CardListRequestState request,
-    Set<String> selected,
-  ) {
+  /// The bulk bar's commands over [selected]: Move, Flag, Tag, Delete.
+  /// Export waits under Coming soon (spec A4, amended); Select all is in the
+  /// app bar (spec A14).
+  List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
     return [
-      (
-        icon: AppIcons.selectAll,
-        label: l10n.cardSelectAll,
-        onTap: () => unawaited(_selectAll(request.query)),
-      ),
-      (
-        icon: AppIcons.flag,
-        label: l10n.cardFlag,
-        onTap: () => unawaited(_flag(selected)),
-      ),
-      (
-        icon: AppIcons.tag,
-        label: l10n.cardTag,
-        onTap: () => unawaited(
-          _clearAfter(showCardTagDialog(context, cardIds: selected)),
-        ),
-      ),
       (
         icon: AppIcons.folder,
         label: l10n.cardMove,
@@ -187,6 +168,18 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         ),
       ),
       (
+        icon: AppIcons.flag,
+        label: l10n.cardFlag,
+        onTap: () => unawaited(_flag(selected)),
+      ),
+      (
+        icon: AppIcons.tag,
+        label: l10n.cardTag,
+        onTap: () => unawaited(
+          _clearAfter(showCardTagDialog(context, cardIds: selected)),
+        ),
+      ),
+      (
         icon: AppIcons.delete,
         label: l10n.cardDelete,
         onTap: () => unawaited(
@@ -196,12 +189,27 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     ];
   }
 
+  void _sort(CardListRequestState request) => unawaited(
+    showCardSortSheet(
+      context,
+      selected: request.sort,
+      onSelected: (sort) => _request().sortBy(sort),
+    ),
+  );
+
+  /// Closing the search clears its field as well as its term.
+  void _onSearchOpen(bool? wasOpen, bool isOpen) {
+    if (wasOpen == true && !isOpen) _query.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    ref.listen(cardSearchOpenProvider(widget.deckId), _onSearchOpen);
     final request = ref.watch(cardListRequestProvider(widget.deckId));
     final selected = ref.watch(cardSelectionProvider(widget.deckId));
     final isSelecting = selected.isNotEmpty;
+    final isSearchOpen = ref.watch(cardSearchOpenProvider(widget.deckId));
     final provider = cardListProvider(
       deckId: widget.deckId,
       filter: request.filter,
@@ -233,39 +241,6 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     }
     // A larger window is asked for only once the current one has loaded.
     final canGrow = async.hasValue && view.hasMore;
-    final list = NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (canGrow &&
-            notification.depth == 0 &&
-            notification.metrics.extentAfter < _growWithin) {
-          _growFrom(request.windowSize);
-        }
-        return false;
-      },
-      child: _CardListScroll(
-        toolbar: CardListToolbarWidget(
-          searchController: _query,
-          request: request,
-          counts: view.counts,
-          onSearch: _search,
-          onFilter: _show,
-          onSort: () => unawaited(
-            showCardSortSheet(
-              context,
-              selected: request.sort,
-              onSelected: (sort) => _request().sortBy(sort),
-            ),
-          ),
-        ),
-        request: request,
-        items: view.items,
-        selected: selected,
-        onToggle: (cardId) => _selection().toggle(cardId),
-        onShowAll: () => _show(CardListFilter.all),
-        onAddCard: widget.onAddCard,
-        onOpenCard: widget.onOpenCard,
-      ),
-    );
     // Back leaves selection before it leaves the deck (IT-ORG-013).
     return PopScope(
       canPop: !isSelecting,
@@ -274,90 +249,120 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       },
       child: Column(
         children: [
-          if (isSelecting)
-            CardSelectionHeaderWidget(
-              count: selected.length,
-              onClose: () => _selection().clear(),
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (canGrow &&
+                    notification.depth == 0 &&
+                    notification.metrics.extentAfter < _growWithin) {
+                  _growFrom(request.windowSize);
+                }
+                return false;
+              },
+              // E-L5: each row is its own child, built only in view.
+              child: MxScreenScroll(
+                children: _children(view, request, selected, isSearchOpen),
+              ),
             ),
-          Expanded(child: list),
-          if (isSelecting)
-            CardBulkBarWidget(actions: _bulkActions(request, selected)),
+          ),
+          if (isSelecting && _hasBulkFailed)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.gutter,
+              ),
+              child: MxInlineBanner(
+                tone: MxBannerTone.danger,
+                title: l10n.cardBulkFailedTitle,
+                message: l10n.cardBulkFailedBody,
+              ),
+            ),
+          if (isSelecting) CardBulkBarWidget(actions: _bulkActions(selected)),
         ],
       ),
     );
   }
-}
 
-/// The toolbar, then the rows or why none show, in the section's one
-/// scroll.
-class _CardListScroll extends StatelessWidget {
-  const _CardListScroll({
-    required this.toolbar,
-    required this.request,
-    required this.items,
-    required this.selected,
-    required this.onToggle,
-    required this.onShowAll,
-    required this.onAddCard,
-    required this.onOpenCard,
-  });
-
-  final Widget toolbar;
-  final CardListRequestState request;
-  final List<CardListItem> items;
-  final Set<String> selected;
-  final ValueChanged<String> onToggle;
-  final VoidCallback onShowAll;
-  final VoidCallback onAddCard;
-  final ValueChanged<String> onOpenCard;
-
-  @override
-  Widget build(BuildContext context) {
+  /// The search, the summary and the filters (none while selecting), the
+  /// header, then the rows or why none show.
+  List<Widget> _children(
+    CardListView view,
+    CardListRequestState request,
+    Set<String> selected,
+    bool isSearchOpen,
+  ) {
+    final l10n = context.l10n;
     final isSelecting = selected.isNotEmpty;
-    return MxScreenScroll(
-      children: [
-        toolbar,
-        if (items.isEmpty)
-          _CardListEmpty(
-            request: request,
-            onShowAll: onShowAll,
-            onAddCard: onAddCard,
-          )
-        else
-          // Ruling P3-L6: one card over the current window.
-          MxCard(
-            isFullBleed: true,
-            child: Column(
-              children: [
-                for (final item in items)
-                  CardRowWidget(
-                    item: item,
-                    isSelecting: isSelecting,
-                    isSelected: selected.contains(item.id),
-                    // BR-CARD-020: a tap opens the card; while selecting it
-                    // only toggles.
-                    onTap: isSelecting
-                        ? () => onToggle(item.id)
-                        : () => onOpenCard(item.id),
-                    onLongPress: () => onToggle(item.id),
-                  ),
-              ],
-            ),
+    final total = view.counts.of(request.filter);
+    return [
+      const SizedBox(height: AppSpacing.control),
+      if (isSearchOpen)
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.grouped),
+          child: MxSearchField(
+            controller: _query,
+            hintText: l10n.cardSearchHint,
+            clearLabel: l10n.cardSearchClear,
+            onChanged: _search,
           ),
+        ),
+      if (!isSelecting) ...[
+        CardDeckSummaryWidget(view: view, algorithm: widget.algorithm),
+        CardListToolbarWidget(
+          request: request,
+          counts: view.counts,
+          onFilter: _show,
+        ),
       ],
-    );
+      MxListSectionHeader(
+        label: isSelecting
+            ? l10n.cardSelectedOf(selected.length, total)
+            : l10n.cardShowingOf(view.items.length, total),
+        trailing: isSelecting
+            ? null
+            : MxChipTrigger(
+                label: l10n.cardSort(request.sort),
+                icon: AppIcons.sort,
+                onPressed: () => _sort(request),
+              ),
+      ),
+      if (view.items.isEmpty)
+        _CardListEmpty(
+          request: request,
+          total: view.statusCounts.total,
+          onShowAll: () => _show(CardListFilter.all),
+          onAddCard: widget.onAddCard,
+        )
+      else
+        for (final item in view.items)
+          CardRowWidget(
+            item: item,
+            isSelecting: isSelecting,
+            isSelected: selected.contains(item.id),
+            // BR-CARD-020: a tap opens the card; while selecting it only
+            // toggles.
+            onTap: isSelecting
+                ? () => _selection().toggle(item.id)
+                : () => widget.onOpenCard(item.id),
+            onLongPress: () => _selection().toggle(item.id),
+          ),
+    ];
   }
 }
 
-/// Why no row shows: a search, a filter, or an empty deck.
+/// Why no row shows: a search or a filter with no hit. A deck left with no
+/// card is unset again (ruling E-L1), so it never reaches this section.
 class _CardListEmpty extends StatelessWidget {
   const _CardListEmpty({
     required this.request,
+    required this.total,
     required this.onShowAll,
     required this.onAddCard,
   });
 
   final CardListRequestState request;
+
+  /// Every card of the deck, for the search's way back.
+  final int total;
   final VoidCallback onShowAll;
   final VoidCallback onAddCard;
 
@@ -369,6 +374,7 @@ class _CardListEmpty extends StatelessWidget {
       return MxEmptyState(
         icon: AppIcons.search,
         title: l10n.cardSearchEmptyTitle(term),
+        body: l10n.cardSearchEmptyBody(total),
         tone: MxEmptyStateTone.neutral,
         isCompact: true,
       );

@@ -61,7 +61,7 @@ class DeckLevelScreen extends StatelessWidget {
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
-  final Widget Function(String deckId) cardContent;
+  final Widget Function(DeckView view) cardContent;
 
   /// New card for [deckId]: the router opens the card editor.
   final ValueChanged<String> onAddCard;
@@ -197,7 +197,7 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
-  final Widget Function(String deckId) cardContent;
+  final Widget Function(DeckView view) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -268,7 +268,7 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
-  final Widget Function(String deckId) cardContent;
+  final Widget Function(DeckView view) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -336,7 +336,7 @@ class _OpenDeckContent extends ConsumerWidget {
           ),
           Expanded(
             child: switch (deck.contentType) {
-              DeckContentType.card => cardContent(deck.id),
+              DeckContentType.card => cardContent(view),
               DeckContentType.deck ||
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,
