@@ -432,5 +432,309 @@
   "srsRejectionNotARootDeck": "Only a top-level deck has a scheduler.",
   "@srsRejectionNotARootDeck": {
     "description": "Scheduler refusal: not a root deck."
+  },
+  "cardSearchHint": "Search cards",
+  "@cardSearchHint": {
+    "description": "Hint in the card list search field."
+  },
+  "cardSearchClear": "Clear search",
+  "@cardSearchClear": {
+    "description": "Accessible name of the card search clear button."
+  },
+  "cardFilterAll": "All",
+  "@cardFilterAll": {
+    "description": "Card filter chip: every card."
+  },
+  "cardFilterDue": "Due",
+  "@cardFilterDue": {
+    "description": "Card filter chip: learned cards due now."
+  },
+  "cardFilterNew": "New",
+  "@cardFilterNew": {
+    "description": "Card filter chip: cards not learned yet."
+  },
+  "cardFilterFlagged": "Flagged",
+  "@cardFilterFlagged": {
+    "description": "Card filter chip: flagged cards."
+  },
+  "cardSortTitle": "Sort cards",
+  "@cardSortTitle": {
+    "description": "Title of the card sort sheet."
+  },
+  "cardSortTrigger": "Sort: {order}",
+  "@cardSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Card sort chip; order is the current sort."
+  },
+  "cardSortNewest": "Newest",
+  "@cardSortNewest": {
+    "description": "Card sort: newest first."
+  },
+  "cardSortDueFirst": "Due first",
+  "@cardSortDueFirst": {
+    "description": "Card sort: soonest due first."
+  },
+  "cardStatusNew": "New",
+  "@cardStatusNew": {
+    "description": "Card status: not learned yet."
+  },
+  "cardStatusBeginning": "Learning",
+  "@cardStatusBeginning": {
+    "description": "Card status: early in its schedule."
+  },
+  "cardStatusReviewing": "Reviewing",
+  "@cardStatusReviewing": {
+    "description": "Card status: in regular review."
+  },
+  "cardStatusMastered": "Mastered",
+  "@cardStatusMastered": {
+    "description": "Card status: mastered."
+  },
+  "cardFlagged": "Flagged",
+  "@cardFlagged": {
+    "description": "Accessible name of a card row's flag glyph."
+  },
+  "cardEmptyTitle": "No cards yet",
+  "@cardEmptyTitle": {
+    "description": "Card list empty state title."
+  },
+  "cardEmptyBody": "The cards you add to this deck show here.",
+  "@cardEmptyBody": {
+    "description": "Card list empty state body."
+  },
+  "cardFilterEmptyTitle": "No cards under “{filter}”",
+  "@cardFilterEmptyTitle": {
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    },
+    "description": "Card list empty under a filter; filter is its name."
+  },
+  "cardShowAll": "Show all cards",
+  "@cardShowAll": {
+    "description": "Action that clears the card filter."
+  },
+  "cardSearchEmptyTitle": "No card matches “{term}”",
+  "@cardSearchEmptyTitle": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Card search with no hit; term is what was typed."
+  },
+  "cardLoadErrorTitle": "Couldn't load the cards",
+  "@cardLoadErrorTitle": {
+    "description": "Card list error state title."
+  },
+  "cardSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "@cardSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Selection header: how many cards are selected."
+  },
+  "cardSelectionClose": "Close selection",
+  "@cardSelectionClose": {
+    "description": "Accessible name of the selection close action."
+  },
+  "cardSelectAll": "Select all",
+  "@cardSelectAll": {
+    "description": "Bulk bar action."
+  },
+  "cardFlag": "Flag",
+  "@cardFlag": {
+    "description": "Bulk bar action."
+  },
+  "cardTag": "Tag",
+  "@cardTag": {
+    "description": "Bulk bar action."
+  },
+  "cardMove": "Move",
+  "@cardMove": {
+    "description": "Bulk bar action."
+  },
+  "cardDelete": "Delete",
+  "@cardDelete": {
+    "description": "Bulk bar action and delete confirm."
+  },
+  "cardFlagSet": "Flag cards",
+  "@cardFlagSet": {
+    "description": "Flag sheet command that sets the flag."
+  },
+  "cardFlagClear": "Remove flag",
+  "@cardFlagClear": {
+    "description": "Flag sheet command that clears the flag."
+  },
+  "cardFlaggedToast": "{count, plural, =1{1 card flagged} other{{count} cards flagged}}",
+  "@cardFlaggedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after flagging."
+  },
+  "cardUnflaggedToast": "{count, plural, =1{Flag removed from 1 card} other{Flag removed from {count} cards}}",
+  "@cardUnflaggedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after clearing flags."
+  },
+  "cardTagTitle": "Add a tag",
+  "@cardTagTitle": {
+    "description": "Title of the bulk tag sheet."
+  },
+  "cardTagHint": "Tag name",
+  "@cardTagHint": {
+    "description": "Hint in the tag name field."
+  },
+  "cardTagConfirm": "Add",
+  "@cardTagConfirm": {
+    "description": "Confirm of the tag sheet."
+  },
+  "cardTaggedToast": "{count, plural, =1{1 card tagged “{tag}”} other{{count} cards tagged “{tag}”}}",
+  "@cardTaggedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after tagging."
+  },
+  "cardMoveTitle": "Move to deck",
+  "@cardMoveTitle": {
+    "description": "Title of the card move picker."
+  },
+  "cardMoveRule": "Cards keep their learning. Only decks that hold cards in this top-level deck are offered.",
+  "@cardMoveRule": {
+    "description": "One sentence under the card move picker title."
+  },
+  "cardMoveEmptyTitle": "Nowhere to move",
+  "@cardMoveEmptyTitle": {
+    "description": "Card move picker title with no target."
+  },
+  "cardMoveEmptyBody": "No other deck here can hold cards.",
+  "@cardMoveEmptyBody": {
+    "description": "Card move picker body with no target."
+  },
+  "cardMovedToast": "{count, plural, =1{1 card moved to {deck}} other{{count} cards moved to {deck}}}",
+  "@cardMovedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after a move; deck is the target's name."
+  },
+  "cardDeleteTitle": "{count, plural, =1{Delete 1 card?} other{Delete {count} cards?}}",
+  "@cardDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Delete dialog title."
+  },
+  "cardDeleteBody": "The cards and their learning history are deleted for good. This can't be undone.",
+  "@cardDeleteBody": {
+    "description": "Delete dialog body."
+  },
+  "cardDeletedToast": "{count, plural, =1{1 card deleted} other{{count} cards deleted}}",
+  "@cardDeletedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a delete."
+  },
+  "cardRejectionBlankContent": "Enter both the front and the back.",
+  "@cardRejectionBlankContent": {
+    "description": "Card refusal: blank content."
+  },
+  "cardRejectionNotACardContainer": "This deck holds decks, so it can't hold cards.",
+  "@cardRejectionNotACardContainer": {
+    "description": "Card refusal: the deck holds decks."
+  },
+  "cardRejectionNotFound": "This card no longer exists.",
+  "@cardRejectionNotFound": {
+    "description": "Card refusal: the card is gone."
+  },
+  "cardRejectionFrontTooLong": "Keep the front to 60 characters.",
+  "@cardRejectionFrontTooLong": {
+    "description": "Card refusal: front too long."
+  },
+  "cardRejectionBackTooLong": "Keep the back to 240 characters.",
+  "@cardRejectionBackTooLong": {
+    "description": "Card refusal: back too long."
+  },
+  "cardRejectionOptionalFieldTooLong": "Keep it to 240 characters.",
+  "@cardRejectionOptionalFieldTooLong": {
+    "description": "Card refusal: example, hint or pronunciation too long."
+  },
+  "cardRejectionInvalidTagName": "That tag name can't be used.",
+  "@cardRejectionInvalidTagName": {
+    "description": "Card refusal: invalid tag name."
+  },
+  "cardRejectionTooManyTags": "A card holds 10 tags at most.",
+  "@cardRejectionTooManyTags": {
+    "description": "Card refusal: too many tags."
+  },
+  "cardRejectionTargetNotFound": "That deck no longer exists.",
+  "@cardRejectionTargetNotFound": {
+    "description": "Card move refusal: the target is gone."
+  },
+  "cardRejectionTargetIsRoot": "A top-level deck can't hold cards.",
+  "@cardRejectionTargetIsRoot": {
+    "description": "Card move refusal: the target is a root."
+  },
+  "cardRejectionTargetHoldsDecks": "That deck holds decks, so it can't hold cards.",
+  "@cardRejectionTargetHoldsDecks": {
+    "description": "Card move refusal: the target holds decks."
+  },
+  "cardRejectionSameDeck": "The cards are already there.",
+  "@cardRejectionSameDeck": {
+    "description": "Card move refusal: same deck."
+  },
+  "cardRejectionCrossRootMove": "Cards can only move within the same top-level deck.",
+  "@cardRejectionCrossRootMove": {
+    "description": "Card move refusal: another root."
+  },
+  "tagRejectionBlankName": "Enter a tag name.",
+  "@tagRejectionBlankName": {
+    "description": "Tag refusal: blank name."
+  },
+  "tagRejectionNameTooLong": "Keep the tag to 50 characters.",
+  "@tagRejectionNameTooLong": {
+    "description": "Tag refusal: name too long."
+  },
+  "tagRejectionControlCharacter": "A tag can't hold that character.",
+  "@tagRejectionControlCharacter": {
+    "description": "Tag refusal: control character."
+  },
+  "tagRejectionTooManyTags": "A card holds 10 tags at most.",
+  "@tagRejectionTooManyTags": {
+    "description": "Tag refusal: a card would pass 10 tags."
+  },
+  "tagRejectionNotFound": "A card or tag no longer exists.",
+  "@tagRejectionNotFound": {
+    "description": "Tag refusal: a card or tag is gone."
   }
 }

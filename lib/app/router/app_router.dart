@@ -7,6 +7,7 @@ import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -80,6 +81,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) =>
       onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
       onOpenAncestor: (id) => _openAncestor(context, id),
       onSearch: () => context.push(AppRoutes.deckSearch),
+      cardContent: (deckId) => CardListSectionWidget(deckId: deckId),
     );
 
 /// Ruling P2-L5: a breadcrumb tap pops the Library stack back to [deckId],

@@ -41,6 +41,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.onSearch,
+    required this.cardContent,
   });
 
   final String? deckId;
@@ -50,6 +51,10 @@ class DeckLevelScreen extends StatelessWidget {
   final ValueChanged<String?> onOpenAncestor;
   final VoidCallback onSearch;
 
+  /// What a deck of cards shows. The router passes the card feature's list
+  /// section; `deck` never imports `card` (spec D8).
+  final Widget Function(String deckId) cardContent;
+
   @override
   Widget build(BuildContext context) => switch (deckId) {
     null => _LibraryRoot(onOpenDeck: onOpenDeck, onSearch: onSearch),
@@ -57,6 +62,7 @@ class DeckLevelScreen extends StatelessWidget {
       deckId: id,
       onOpenDeck: onOpenDeck,
       onOpenAncestor: onOpenAncestor,
+      cardContent: cardContent,
     ),
   };
 }
@@ -125,11 +131,13 @@ class _OpenDeck extends ConsumerWidget {
     required this.deckId,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.cardContent,
   });
 
   final String deckId;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final Widget Function(String deckId) cardContent;
 
   static const int _skeletonRows = 4;
 
@@ -164,6 +172,7 @@ class _OpenDeck extends ConsumerWidget {
         view: value,
         onOpenDeck: onOpenDeck,
         onOpenAncestor: onOpenAncestor,
+        cardContent: cardContent,
       ),
       AsyncError() => MxAppShell(
         appBar: bar,
@@ -197,11 +206,13 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.view,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.cardContent,
   });
 
   final DeckView view;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final Widget Function(String deckId) cardContent;
 
   /// Opens the chosen command's own dialog or sheet (spec §6.2).
   Future<void> _openActions(
@@ -282,8 +293,7 @@ class _OpenDeckContent extends ConsumerWidget {
           ),
           Expanded(
             child: switch (deck.contentType) {
-              // Ruling P2-L1: the card list arrives in phase 3.
-              DeckContentType.card => const SizedBox.shrink(),
+              DeckContentType.card => cardContent(deck.id),
               DeckContentType.deck ||
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,

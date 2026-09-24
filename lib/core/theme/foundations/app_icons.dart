@@ -31,6 +31,9 @@ abstract final class AppIcons {
   static const IconData dragHandle = Icons.drag_handle; // grip-horizontal
   static const IconData scheduler =
       Icons.event_repeat_outlined; // calendar-clock
+  static const IconData flag = Icons.outlined_flag; // flag
+  static const IconData flagged = Icons.flag; // flag (filled)
+  static const IconData selectAll = Icons.select_all; // check-square
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;
