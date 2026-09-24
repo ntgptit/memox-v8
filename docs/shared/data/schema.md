@@ -388,6 +388,12 @@ Các lượt học đã ghi thành công trước khi phiên kết thúc bất t
 "người dùng bấm thoát" và "hệ điều hành thu hồi app" là hai sự kiện khác nhau, và
 gộp chúng làm lịch sử nói rằng người dùng bỏ cuộc trong khi họ không hề.
 
+**Một phiên mở trong toàn app** (quyết định chủ dự án 2026-09-24): app có tối đa một
+session `in_progress`. Mở phiên mới, ở bất kỳ deck nào, đóng phiên đang mở trước trong
+cùng transaction: `abandoned`/`user_exit` nếu nó bắt đầu trong ngày học hiện tại,
+`abandoned`/`interrupted` nếu nó bắt đầu từ ngày học trước (BR-STUDY-072). Code và test
+giữ luật này; một unique index sẽ cần migration, và migration chờ BE-D1.
+
 ## `study_queue_items`
 
 **Phạm vi:** V8.0 — hàng đợi phiên học.
