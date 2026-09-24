@@ -379,7 +379,11 @@ class _CardListEmpty extends StatelessWidget {
       return MxEmptyState(
         icon: AppIcons.search,
         title: l10n.cardSearchEmptyTitle(term),
-        body: l10n.cardSearchEmptyBody(total),
+        // Clearing the search keeps the filter: only under All does it
+        // bring back the whole deck.
+        body: request.filter == CardListFilter.all
+            ? l10n.cardSearchEmptyBody(total)
+            : l10n.cardSearchEmptyHint,
         tone: MxEmptyStateTone.neutral,
         isCompact: true,
       );

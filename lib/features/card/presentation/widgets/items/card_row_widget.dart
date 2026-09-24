@@ -68,10 +68,14 @@ class CardRowWidget extends StatelessWidget {
                         padding: const EdgeInsets.only(top: AppSpacing.micro),
                         child: isSelecting
                             ? MxSelectionCheckbox(isChecked: isSelected)
-                            : MxStatusBadge(
-                                status: mxCardStatus(status),
-                                label: context.l10n.cardStatus(status),
-                                isDot: true,
+                            // The status line already says it: one
+                            // announcement per row.
+                            : ExcludeSemantics(
+                                child: MxStatusBadge(
+                                  status: mxCardStatus(status),
+                                  label: context.l10n.cardStatus(status),
+                                  isDot: true,
+                                ),
                               ),
                       ),
                       Expanded(child: _Content(item: item)),
