@@ -5,6 +5,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 
+import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 
@@ -145,5 +146,16 @@ void main() {
     );
 
     expect(_barTitle(_en.navLibrary), findsOneWidget);
+  });
+
+  libraryTest('a deck of cards lists its cards', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'new1', deckId: words.id, front: 'annyeong');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+
+    expect(find.text('annyeong'), findsOneWidget);
   });
 }
