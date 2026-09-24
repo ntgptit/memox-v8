@@ -136,7 +136,7 @@
   "@deckNameHint": {
     "description": "Hint of the deck name field."
   },
-  "deckSchedulerEightBox": "Eight box",
+  "deckSchedulerEightBox": "Eight boxes",
   "@deckSchedulerEightBox": {
     "description": "Scheduler choice: the eight-box (Leitner) scheduler."
   },
@@ -1558,5 +1558,211 @@
   "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
+  },
+  "algorithmUnlockedTitle": "Can still be changed",
+  "@algorithmUnlockedTitle": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmUnlockedTitle."
+  },
+  "algorithmUnlockedBody": "Locks once the first card finishes learning.",
+  "@algorithmUnlockedBody": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmUnlockedBody."
+  },
+  "algorithmLockedTitle": "Locked · cycle {cycle}",
+  "@algorithmLockedTitle": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): algorithmLockedTitle."
+  },
+  "algorithmLockedBody": "The first card finished learning on {date}. Only a reset opens a new cycle.",
+  "@algorithmLockedBody": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): algorithmLockedBody."
+  },
+  "algorithmHeader": "Algorithm",
+  "@algorithmHeader": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmHeader."
+  },
+  "algorithmEightBoxDescription": "Remembered → one box up (1 · 2 · 4 · 8 · 16 · 32 · 64 · 128 days). Forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill.",
+  "@algorithmEightBoxDescription": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmEightBoxDescription."
+  },
+  "algorithmSm2Description": "Intervals adapt to how well you recall each card; you grade yourself again · hard · good · easy. One review mode: self-assess.",
+  "@algorithmSm2Description": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSm2Description."
+  },
+  "algorithmSwitchNote": "Switching re-initialises every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing.",
+  "@algorithmSwitchNote": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchNote."
+  },
+  "algorithmLockedNote": "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle.",
+  "@algorithmLockedNote": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmLockedNote."
+  },
+  "algorithmStartOverHeader": "Start over",
+  "@algorithmStartOverHeader": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmStartOverHeader."
+  },
+  "algorithmResetTitle": "Reset learning progress",
+  "@algorithmResetTitle": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmResetTitle."
+  },
+  "algorithmResetBody": "Every card in this tree becomes new and a new cycle begins. You choose the algorithm for it. Decks, cards, tags and past history are kept.",
+  "@algorithmResetBody": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmResetBody."
+  },
+  "algorithmResetAction": "Reset learning progress…",
+  "@algorithmResetAction": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmResetAction."
+  },
+  "algorithmSwitchTitle": "Switch to {algorithm}?",
+  "@algorithmSwitchTitle": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchTitle."
+  },
+  "algorithmSwitchBody": "Every card's schedule in this tree starts over and any open study session closes. No history is lost.",
+  "@algorithmSwitchBody": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchBody."
+  },
+  "algorithmSwitchConfirm": "Switch",
+  "@algorithmSwitchConfirm": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchConfirm."
+  },
+  "algorithmSwitchedToast": "Switched to {algorithm} · every card starts fresh",
+  "@algorithmSwitchedToast": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchedToast."
+  },
+  "algorithmSwitchFailedTitle": "Couldn’t switch.",
+  "@algorithmSwitchFailedTitle": {
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchFailedTitle."
+  },
+  "algorithmSwitchFailedBody": "The deck still uses {algorithm}.",
+  "@algorithmSwitchFailedBody": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchFailedBody."
+  },
+  "resetDialogTitle": "Reset learning progress?",
+  "@resetDialogTitle": {
+    "description": "Screen handoff 02 (library alignment phase D): resetDialogTitle."
+  },
+  "resetDialogIntro": "This starts cycle {cycle} for {deck} and its {count, plural, =1{1 card} other{{count} cards}}.",
+  "@resetDialogIntro": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      },
+      "deck": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetDialogIntro."
+  },
+  "resetKeptLabel": "Kept",
+  "@resetKeptLabel": {
+    "description": "Screen handoff 02 (library alignment phase D): resetKeptLabel."
+  },
+  "resetKeptBody": "Decks, sub-decks, cards, tags, notes, and every past answer (labelled cycle {cycle})",
+  "@resetKeptBody": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetKeptBody."
+  },
+  "resetLostLabel": "Lost",
+  "@resetLostLabel": {
+    "description": "Screen handoff 02 (library alignment phase D): resetLostLabel."
+  },
+  "resetLostBody": "Every card's schedule, due date and progress. {count, plural, =1{The card becomes new} other{All {count} cards become new}}",
+  "@resetLostBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetLostBody."
+  },
+  "resetLostBodyWithSession": "Every card's schedule, due date and progress; the open session. {count, plural, =1{The card becomes new} other{All {count} cards become new}}",
+  "@resetLostBodyWithSession": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetLostBodyWithSession."
+  },
+  "resetNothingToLose": "Nothing has been studied in this cycle yet, so there is nothing to lose. A new cycle starts with the algorithm you pick.",
+  "@resetNothingToLose": {
+    "description": "Screen handoff 02 (library alignment phase D): resetNothingToLose."
+  },
+  "resetAlgorithmHeader": "Algorithm for the new cycle",
+  "@resetAlgorithmHeader": {
+    "description": "Screen handoff 02 (library alignment phase D): resetAlgorithmHeader."
+  },
+  "resetKeep": "Keep {algorithm}",
+  "@resetKeep": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetKeep."
+  },
+  "resetSwitchTo": "Switch to {algorithm}",
+  "@resetSwitchTo": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetSwitchTo."
+  },
+  "resetConfirm": "Reset and start cycle {cycle}",
+  "@resetConfirm": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetConfirm."
+  },
+  "resetRunning": "Resetting…",
+  "@resetRunning": {
+    "description": "Screen handoff 02 (library alignment phase D): resetRunning."
+  },
+  "resetDoneToast": "Cycle {cycle} started · {count, plural, =1{1 card is new again} other{{count} cards are new again}}",
+  "@resetDoneToast": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 02 (library alignment phase D): resetDoneToast."
   }
 }
