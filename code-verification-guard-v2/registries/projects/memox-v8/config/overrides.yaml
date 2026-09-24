@@ -22,37 +22,6 @@ overrides:
     # stale_targets_pending WARNING once it has targets. When that warning
     # appears, delete the rule's entry here in the same commit that added the
     # layer. The list must be empty before the full dod_check.sh gate applies.
-    # -- `presentation`: waits for the first presentation/ or shared/ UI file (UI sub-project)
-    memox.architecture.presentation_no_data_import:
-      targets_pending: presentation
-    memox.architecture.widgets_grouped_into_buckets:
-      targets_pending: presentation
-    memox.data_model.review_actions_from_supported_actions:
-      targets_pending: presentation
-    memox.error_handling.no_technical_detail_in_user_message:
-      targets_pending: presentation
-    memox.error_handling.ui_never_sees_infrastructure_exception:
-      targets_pending: presentation
-    memox.naming.presentation_file_role_suffix:
-      targets_pending: presentation
-    memox.state_management.no_shared_is_loading_flag:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_button:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_choice_chip:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_icon_color:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_loading_indicator:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_screen_chrome:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_sheet_route:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_style_escape:
-      targets_pending: presentation
-    memox_v7.design_system.no_raw_widget:
-      targets_pending: presentation
     # -- `visual-audit`: waits for the first test/visual_audit/ companion (UI sub-project)
     memox.visual.production_screen_audit_not_exploratory:
       targets_pending: visual-audit

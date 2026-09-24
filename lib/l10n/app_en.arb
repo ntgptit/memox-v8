@@ -31,5 +31,219 @@
   "openGallery": "Component gallery",
   "@openGallery": {
     "description": "Debug builds only: the Settings action that opens the component gallery."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic cancel action."
+  },
+  "commonRetry": "Retry",
+  "@commonRetry": {
+    "description": "Generic retry action after a failure."
+  },
+  "libraryDecksHeader": "Decks",
+  "@libraryDecksHeader": {
+    "description": "Overline above the list of decks in the Library."
+  },
+  "libraryCreateDeck": "Create deck",
+  "@libraryCreateDeck": {
+    "description": "Action and FAB label: create a new top-level deck."
+  },
+  "libraryEmptyTitle": "No decks yet",
+  "@libraryEmptyTitle": {
+    "description": "First-run empty state title: the Library has no deck."
+  },
+  "libraryEmptyBody": "Create a deck, then add the words you want to remember.",
+  "@libraryEmptyBody": {
+    "description": "First-run empty state body."
+  },
+  "libraryNothingDueTitle": "Nothing due",
+  "@libraryNothingDueTitle": {
+    "description": "Empty state when the due filter leaves no deck."
+  },
+  "libraryNothingDueBody": "No deck has cards to review today.",
+  "@libraryNothingDueBody": {
+    "description": "Body of the nothing-due empty state."
+  },
+  "libraryShowAllDecks": "Show all decks",
+  "@libraryShowAllDecks": {
+    "description": "Action that clears the due filter."
+  },
+  "libraryLoadErrorTitle": "Couldn't load your decks",
+  "@libraryLoadErrorTitle": {
+    "description": "Error state title when the decks fail to load."
+  },
+  "libraryLoadErrorBody": "Nothing was lost. Try again in a moment.",
+  "@libraryLoadErrorBody": {
+    "description": "Error state body; says first that nothing was lost."
+  },
+  "workloadOverdue": "{count} overdue",
+  "@workloadOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Workload term: cards past their due day."
+  },
+  "workloadToday": "{count} today",
+  "@workloadToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Workload term: cards due today."
+  },
+  "workloadNew": "{count} new",
+  "@workloadNew": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Workload term: cards never studied."
+  },
+  "workloadNothingDue": "{count, plural, =1{1 card · nothing due} other{{count} cards · nothing due}}",
+  "@workloadNothingDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Workload line when nothing is due; count is every card."
+  },
+  "workloadNoCards": "No cards yet",
+  "@workloadNoCards": {
+    "description": "Workload line for a deck or level with no card."
+  },
+  "deckSortTitle": "Sort decks",
+  "@deckSortTitle": {
+    "description": "Title of the deck sort sheet."
+  },
+  "deckSortTrigger": "Sort: {order}",
+  "@deckSortTrigger": {
+    "placeholders": {
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Chip naming the current deck order."
+  },
+  "deckSortManual": "Manual",
+  "@deckSortManual": {
+    "description": "Deck order: the person's own order."
+  },
+  "deckSortName": "Name",
+  "@deckSortName": {
+    "description": "Deck order: by name."
+  },
+  "deckSortRecent": "Newest",
+  "@deckSortRecent": {
+    "description": "Deck order: newest first."
+  },
+  "deckSortDue": "Most due",
+  "@deckSortDue": {
+    "description": "Deck order: most due cards first."
+  },
+  "deckFilterTitle": "Show",
+  "@deckFilterTitle": {
+    "description": "Title of the deck filter sheet."
+  },
+  "deckFilterTrigger": "Show: {filter}",
+  "@deckFilterTrigger": {
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    },
+    "description": "Chip naming which decks show."
+  },
+  "deckFilterAll": "All decks",
+  "@deckFilterAll": {
+    "description": "Deck filter: every deck."
+  },
+  "deckFilterDue": "Due decks",
+  "@deckFilterDue": {
+    "description": "Deck filter: decks with cards due."
+  },
+  "deckCreateRootTitle": "New deck",
+  "@deckCreateRootTitle": {
+    "description": "Title of the new top-level deck dialog."
+  },
+  "deckNameHint": "Deck name",
+  "@deckNameHint": {
+    "description": "Hint of the deck name field."
+  },
+  "deckSchedulerEightBox": "Eight box",
+  "@deckSchedulerEightBox": {
+    "description": "Scheduler choice: the eight-box (Leitner) scheduler."
+  },
+  "deckSchedulerSm2": "SM-2",
+  "@deckSchedulerSm2": {
+    "description": "Scheduler choice: the SM-2 scheduler."
+  },
+  "deckSchedulerNote": "The scheduler locks after the first review. Changing it later resets learning progress.",
+  "@deckSchedulerNote": {
+    "description": "Note explaining that the scheduler locks after the first review."
+  },
+  "deckCreateConfirm": "Create",
+  "@deckCreateConfirm": {
+    "description": "Confirm action of the new deck dialog."
+  },
+  "deckRejectionBlankName": "Enter a name.",
+  "@deckRejectionBlankName": {
+    "description": "Why a deck write was refused: blank name."
+  },
+  "deckRejectionNameTooLong": "Keep the name to 200 characters.",
+  "@deckRejectionNameTooLong": {
+    "description": "Why a deck write was refused: name too long."
+  },
+  "deckRejectionDepthExceeded": "Decks nest 10 levels deep at most.",
+  "@deckRejectionDepthExceeded": {
+    "description": "Why a deck write was refused: depth exceeded."
+  },
+  "deckRejectionNotADeckContainer": "This deck holds cards, so it can't hold decks.",
+  "@deckRejectionNotADeckContainer": {
+    "description": "Why a deck write was refused: not a deck container."
+  },
+  "deckRejectionNotACardContainer": "This deck holds decks, so it can't hold cards.",
+  "@deckRejectionNotACardContainer": {
+    "description": "Why a deck write was refused: not a card container."
+  },
+  "deckRejectionSubtreeSchedulerMismatch": "That deck uses a different scheduler.",
+  "@deckRejectionSubtreeSchedulerMismatch": {
+    "description": "Why a deck write was refused: subtree scheduler mismatch."
+  },
+  "deckRejectionMovingIntoOwnSubtree": "A deck can't move inside itself.",
+  "@deckRejectionMovingIntoOwnSubtree": {
+    "description": "Why a deck write was refused: moving into own subtree."
+  },
+  "deckRejectionRootCannotMove": "A top-level deck can't be moved.",
+  "@deckRejectionRootCannotMove": {
+    "description": "Why a deck write was refused: root cannot move."
+  },
+  "deckRejectionNotFound": "This deck no longer exists.",
+  "@deckRejectionNotFound": {
+    "description": "Why a deck write was refused: not found."
+  },
+  "deckRejectionNotSiblings": "The order changed. Try again.",
+  "@deckRejectionNotSiblings": {
+    "description": "Why a deck write was refused: not siblings."
+  },
+  "deckRejectionSameParent": "The deck is already there.",
+  "@deckRejectionSameParent": {
+    "description": "Why a deck write was refused: same parent."
+  },
+  "failureConstraint": "Nothing was saved: the change breaks a data rule.",
+  "@failureConstraint": {
+    "description": "A write was refused by a data rule; nothing was saved."
+  },
+  "failureBusy": "Nothing was lost. The data is busy, so try again.",
+  "@failureBusy": {
+    "description": "The database was busy; nothing was lost."
+  },
+  "failureUnknown": "Nothing was lost, but something went wrong. Try again.",
+  "@failureUnknown": {
+    "description": "An unexpected database error; nothing was lost."
   }
 }
