@@ -21,6 +21,7 @@ class MxTextField extends StatelessWidget {
     this.isMultiline = false,
     this.isEnabled = true,
     this.onChanged,
+    this.onSubmitted,
     this.textInputAction,
     this.leading,
     this.trailing,
@@ -37,6 +38,9 @@ class MxTextField extends StatelessWidget {
   final bool isMultiline;
   final bool isEnabled;
   final ValueChanged<String>? onChanged;
+
+  /// The keyboard's action key (Done, Search…) was pressed.
+  final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
   final Widget? leading;
   final Widget? trailing;
@@ -65,6 +69,7 @@ class MxTextField extends StatelessWidget {
       focusNode: focusNode,
       enabled: isEnabled,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
       textInputAction: textInputAction,
       maxLines: isMultiline ? null : 1,
       keyboardType: isMultiline ? TextInputType.multiline : null,

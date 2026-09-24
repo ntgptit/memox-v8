@@ -5,11 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/app.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../support/golden_harness.dart';
+import '../support/library_harness.dart';
 
-Future<void> _pumpApp(WidgetTester tester, Brightness brightness) async {
+Future<void> _pumpApp(
+  WidgetTester tester,
+  LibraryEnv env,
+  Brightness brightness,
+) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
   tester.view.padding = const FakeViewPadding(top: 72, bottom: 60);
@@ -17,9 +24,15 @@ Future<void> _pumpApp(WidgetTester tester, Brightness brightness) async {
   tester.platformDispatcher.platformBrightnessTestValue = brightness;
   addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
   await tester.pumpWidget(
-    const RepaintBoundary(
+    RepaintBoundary(
       key: goldenBoundaryKey,
-      child: ProviderScope(child: MemoxApp()),
+      child: ProviderScope(
+        overrides: [
+          databaseProvider.overrideWithValue(env.db),
+          dayClockProvider.overrideWithValue(env.clock),
+        ],
+        child: const MemoxApp(),
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -37,9 +50,9 @@ void main() {
   final en = lookupAppLocalizations(const Locale('en'));
 
   for (final brightness in Brightness.values) {
-    testWidgets('Library tab, ${brightness.name}', (tester) async {
+    libraryTest('Library tab, ${brightness.name}', (tester, env) async {
       await withRealShadows(() async {
-        await _pumpApp(tester, brightness);
+        await _pumpApp(tester, env, brightness);
         await expectBoundaryGolden(
           tester,
           'goldens/app_library_${brightness.name}.png',
@@ -47,9 +60,9 @@ void main() {
       });
     });
 
-    testWidgets('Gallery, ${brightness.name}', (tester) async {
+    libraryTest('Gallery, ${brightness.name}', (tester, env) async {
       await withRealShadows(() async {
-        await _pumpApp(tester, brightness);
+        await _pumpApp(tester, env, brightness);
         await tester.tap(find.text(en.navSettings));
         await tester.pumpAndSettle();
         await tester.tap(find.byTooltip(en.openGallery));

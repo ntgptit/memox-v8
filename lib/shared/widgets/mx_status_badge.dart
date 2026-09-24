@@ -41,6 +41,14 @@ class MxStatusBadge extends StatelessWidget {
       MxCardStatus.reviewing => semantic.statusReviewing,
       MxCardStatus.mastered => semantic.statusMastered,
     };
+    final derived = context.derivedColors;
+    // The label reads in the status ink (AA); dot and fill keep the colour.
+    final ink = switch (status) {
+      MxCardStatus.newCard => derived.statusNewInk,
+      MxCardStatus.learning => derived.statusLearningInk,
+      MxCardStatus.reviewing => derived.statusReviewingInk,
+      MxCardStatus.mastered => derived.statusMasteredInk,
+    };
     if (isDot) {
       return Semantics(
         container: true,
@@ -69,7 +77,7 @@ class MxStatusBadge extends StatelessWidget {
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(color),
+                style: context.textStyles.badgeLabel(ink),
               ),
             ],
           ),

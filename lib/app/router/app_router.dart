@@ -5,6 +5,7 @@ import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -19,7 +20,15 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
       builder: (context, state, navigationShell) =>
           _TabShell(navigationShell: navigationShell),
       branches: [
-        _branch(AppRoutes.decks, (context) => context.l10n.navLibrary),
+        // The Library (library spec §4); its child routes arrive in phase 2.
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.decks,
+              builder: (context, state) => const DeckLevelScreen(),
+            ),
+          ],
+        ),
         _branch(AppRoutes.study, (context) => context.l10n.navStudy),
         _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
         StatefulShellBranch(

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
@@ -56,5 +57,37 @@ void main() {
   test('warningBorder: warning at 26% light, 32% dark (O6)', () {
     expect(light.warningBorder, isColorCloseTo(0x42F59E0B));
     expect(dark.warningBorder, isColorCloseTo(0x52FFC658));
+  });
+
+  test('status inks reach 4.5:1 on every ground and tint (L6)', () {
+    double ratio(Color a, Color b) {
+      final la = a.computeLuminance();
+      final lb = b.computeLuminance();
+      final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+      return (hi + 0.05) / (lo + 0.05);
+    }
+
+    for (final (scheme, semantic) in [
+      (AppColorSchemes.light, MxSemanticColors.light),
+      (AppColorSchemes.dark, MxSemanticColors.dark),
+    ]) {
+      final derived = MxDerivedColors.resolve(scheme, semantic);
+      for (final (status, ink) in [
+        (semantic.statusNew, derived.statusNewInk),
+        (semantic.statusLearning, derived.statusLearningInk),
+        (semantic.statusReviewing, derived.statusReviewingInk),
+        (semantic.statusMastered, derived.statusMasteredInk),
+      ]) {
+        for (final ground in [
+          scheme.surface,
+          scheme.surfaceContainerLowest,
+          scheme.surfaceContainer,
+        ]) {
+          final tint = Color.alphaBlend(status.withValues(alpha: 0.12), ground);
+          expect(ratio(ink, ground), greaterThanOrEqualTo(4.5));
+          expect(ratio(ink, tint), greaterThanOrEqualTo(4.5));
+        }
+      }
+    }
   });
 }
