@@ -19,7 +19,7 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_stat
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
+import 'package:memox/shared/widgets/mx_unavailable.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -129,21 +129,24 @@ class _LibraryRoot extends ConsumerWidget {
             ? const [_ReorderDone(parentId: null)]
             // Starter decks, tags and trash have no screen yet (spec A6).
             : [
-                DeckUnavailableWidget(
+                MxUnavailable(
+                  hint: context.l10n.commonNotAvailableYet,
                   child: MxIconButton(
                     icon: AppIcons.starterDecks,
                     semanticLabel: l10n.libraryStarterDecks,
                     onPressed: null,
                   ),
                 ),
-                DeckUnavailableWidget(
+                MxUnavailable(
+                  hint: context.l10n.commonNotAvailableYet,
                   child: MxIconButton(
                     icon: AppIcons.tag,
                     semanticLabel: l10n.libraryTags,
                     onPressed: null,
                   ),
                 ),
-                DeckUnavailableWidget(
+                MxUnavailable(
+                  hint: context.l10n.commonNotAvailableYet,
                   child: MxIconButton(
                     icon: AppIcons.delete,
                     semanticLabel: l10n.libraryTrash,

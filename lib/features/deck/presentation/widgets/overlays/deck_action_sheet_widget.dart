@@ -4,7 +4,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
+import 'package:memox/shared/widgets/mx_unavailable.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -83,7 +83,8 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckOpen,
           onTap: () => choose(DeckAction.open),
         ),
-      DeckUnavailableWidget(
+      MxUnavailable(
+        hint: context.l10n.commonNotAvailableYet,
         child: MxActionSheetCommandRow(
           icon: AppIcons.play,
           label: l10n.deckStudyThis,
@@ -97,7 +98,8 @@ class DeckActionSheetWidget extends StatelessWidget {
         onTap: () => choose(DeckAction.rename),
       ),
       if (deck.isRoot) ...[
-        DeckUnavailableWidget(
+        MxUnavailable(
+          hint: context.l10n.commonNotAvailableYet,
           child: MxActionSheetCommandRow(
             icon: AppIcons.settings,
             label: l10n.deckStudyOptions,

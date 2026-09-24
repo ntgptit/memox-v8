@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The base surface. Light lifts it with the whisper shadow; dark draws the
@@ -13,6 +14,7 @@ class MxCard extends StatelessWidget {
     this.isFullBleed = false,
     this.isHero = false,
     this.isWarning = false,
+    this.isSelected = false,
   }) : assert(!(isHero && isWarning), 'a hero or a warning card');
 
   final Widget child;
@@ -28,6 +30,10 @@ class MxCard extends StatelessWidget {
   /// strip, owner decision D-O1).
   final bool isWarning;
 
+  /// A primary edge: the card is selected (a card row while selecting,
+  /// screen 07, owner decision E-O5).
+  final bool isSelected;
+
   @override
   Widget build(BuildContext context) {
     final surface = switch ((isHero, isWarning)) {
@@ -42,7 +48,9 @@ class MxCard extends StatelessWidget {
       _ => AppDecorations.raisedCard(context.colors, context.derivedColors),
     };
     final radius = surface.borderRadius!;
-    final edge = surface.border as Border?;
+    final edge = isSelected
+        ? BorderSide(color: context.colors.primary, width: AppStroke.focus)
+        : (surface.border as Border?)?.top ?? BorderSide.none;
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
@@ -52,10 +60,7 @@ class MxCard extends StatelessWidget {
         ),
         child: Material(
           color: surface.color,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: edge?.top ?? BorderSide.none,
-          ),
+          shape: RoundedRectangleBorder(borderRadius: radius, side: edge),
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: isFullBleed

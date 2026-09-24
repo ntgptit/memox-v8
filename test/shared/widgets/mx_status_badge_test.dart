@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
@@ -84,5 +85,41 @@ void main() {
     expect(find.text('Mastered'), findsNothing);
     expect(find.bySemanticsLabel('Mastered'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('a plain badge is its label, uppercase, in the status ink', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxStatusBadge(
+        status: MxCardStatus.learning,
+        label: 'Beginning',
+        isPlain: true,
+      ),
+    );
+    final context = tester.element(find.byType(MxStatusBadge));
+    final text = tester.widget<Text>(find.text('BEGINNING'));
+
+    expect(text.style!.color, context.derivedColors.statusLearningInk);
+    expect(
+      find.descendant(
+        of: find.byType(MxStatusBadge),
+        matching: find.byType(DecoratedBox),
+      ),
+      findsNothing,
+    );
+  });
+
+  test('a badge is a dot or a plain label, not both', () {
+    expect(
+      () => MxStatusBadge(
+        status: MxCardStatus.learning,
+        label: 'x',
+        isDot: true,
+        isPlain: true,
+      ),
+      throwsAssertionError,
+    );
   });
 }

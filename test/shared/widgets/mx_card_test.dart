@@ -145,4 +145,13 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  testWidgets('a selected card edges in primary (E-O5)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxCard(isSelected: true, child: SizedBox(height: 40)),
+    );
+
+    expect(_shape(tester).side.color, AppColorSchemes.light.primary);
+  });
 }

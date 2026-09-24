@@ -4,7 +4,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
+import 'package:memox/shared/widgets/mx_unavailable.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -62,7 +62,8 @@ class DeckSummaryCardWidget extends StatelessWidget {
                 : null,
           ),
           const SizedBox(height: AppSpacing.grouped),
-          DeckUnavailableWidget(
+          MxUnavailable(
+            hint: context.l10n.commonNotAvailableYet,
             child: MxButton(
               label: due > 0 ? l10n.deckStudyThisDue(due) : l10n.deckStudyThis,
               icon: AppIcons.play,
