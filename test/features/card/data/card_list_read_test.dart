@@ -338,4 +338,18 @@ void main() {
     expect(view.statusCounts.total, 4);
     expect(counter.selects, 3);
   });
+
+  test(
+    'the workload counts the whole deck, whatever the search (E-L1)',
+    () async {
+      final view = await list(query: const CardListQuery(searchTerm: 'zzz'));
+
+      expect(view.items, isEmpty);
+      expect(
+        (view.workload.overdue, view.workload.today, view.workload.newCards),
+        (1, 1, 1),
+      );
+      expect(view.workload.due, 2);
+    },
+  );
 }

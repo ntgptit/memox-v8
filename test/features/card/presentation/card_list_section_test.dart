@@ -297,6 +297,7 @@ void main() {
           reviewing: 0,
           mastered: 0,
         ),
+        workload: CardWorkload(overdue: 0, today: 0, newCards: 0),
       ),
     );
     await tester.pump();
