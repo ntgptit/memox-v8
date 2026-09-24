@@ -1,6 +1,6 @@
 # MemoX V8 — Study session backend design (package 2a)
 
-Status: decisions approved in chat 2026-09-24 · spec awaiting review · Path: architectural
+Status: approved 2026-09-24 · amended while writing the plan (its Clarifications 1–11: §4, §5.3, §6.2–§6.5, §7.1, §7.3, §8.1, §8.4, §11, §13, §15) · Path: architectural
 
 ## 1. Intent
 
@@ -97,7 +97,6 @@ lib/features/study_mode/                        new feature, domain only
 lib/features/srs/
 ├── domain/models/{srs_scheduler, eight_box_scheduler, sm2_scheduler}.dart   §6.1
 ├── domain/models/review_turn_model.dart        new: ReviewTurn
-├── domain/failures/srs_failure.dart            notLearned, alreadyLearned
 ├── domain/repositories/schedule_repository.dart  recordTurn, completeLearning;
 │                                               recordReview removed
 └── data/                                       DAO and implementation follow
@@ -106,18 +105,18 @@ lib/features/settings/                          one-shot read of the options (§
 
 lib/features/study/                             new feature
 ├── domain/
-│   ├── entities/study_session_entity.dart      StudySessionEntity, SessionStatus,
-│   │                                           SessionEndReason
-│   ├── models/                                 queue building, progression, entry
+│   ├── models/session_status_model.dart        SessionStatus, SessionEndReason
+│   ├── models/                                 queue building, turn kinds, entry
 │   │                                           and session read models
 │   ├── failures/study_failure.dart             StudyRejection
+│   ├── repositories/study_entry_repository.dart
 │   ├── repositories/study_session_repository.dart
 │   └── usecases/                               eight use cases (§8.3)
 ├── data/
 │   ├── datasources/                            session, queue and read DAOs
 │   ├── mappers/
-│   └── repositories/study_session_repository_impl.dart
-└── di/study_session_repository_provider.dart
+│   └── repositories/                           the two implementations (§8.4)
+└── di/                                         one provider per repository
 
 test/architecture/boundary_rules.dart           'study_mode': {'srs'},
                                                 'study': {'study_mode', 'srs',
@@ -157,8 +156,8 @@ them.
 
 ### 5.3 Data conditions
 
-**`StudyCardFacts`** holds what the conditions read: the card id, whether it has an
-`example`, and its `back_folded`. A handler answers
+**`StudyCardFacts`** holds what the conditions read: the card id and whether it
+has an `example`. A handler answers
 `eligibility(cards, distinctMeaningCount)` with **`StageEligibility`**:
 
 - `StageRuns(cardIds)`: the cards that get rows;
@@ -173,7 +172,7 @@ them.
 | `guess` | every card | at least five distinct meanings in the distractor source (D5) |
 
 `distinctMeaningCount` counts distinct `back_folded` over the session's cards and
-the learned, active cards of the root's tree; the DAO stops counting at five. A
+the learned, active cards of the root's tree, in one SQL count. A
 learning session skips a stage that does not run (BR-MODE-009). The review entry
 uses the same function to count each mode's cards and to disable a mode with its
 reason (BR-STUDY-044, BR-MODE-009). Opening a review session refuses a mode that
@@ -276,9 +275,12 @@ In one transaction, which joins the caller's:
    otherwise `notFound`. The turn's `generation` must equal the root's and the
    schedule row's; otherwise `staleGeneration` (BR-SRS-026). The action must be in
    the root scheduler's `supportedActions`; otherwise `unsupportedAction`.
-2. **`scheduled`.** The card must be learned; otherwise `notLearned`
-   (BR-STUDY-058, invariant 25). `next()` runs, the schedule row takes the new
-   state, and `review_log` gets the before and after values (BR-SRS-019).
+2. **`scheduled`.** The card must be learned (BR-STUDY-058, invariant 25).
+   `next()` runs, the schedule row takes the new state, and `review_log` gets the
+   before and after values (BR-SRS-019). A `scheduled` turn on a card still
+   learning is a bug a session never makes: the scheduler throws
+   `ArgumentError`, the transaction rolls back, and the caller gets
+   `UnknownDatabaseFailure` (§6.5).
 3. **`learning` and `relearning`.** Only `last_answered_at` changes (BR-SRS-017,
    BR-SRS-018, BR-STUDY-053). `review_log` gets before = after, which is
    invariant 14, and `next_due_at` = the current `due_at`.
@@ -295,8 +297,9 @@ scheduler change, as before.
 `completeLearning({cardId, generation, now})` returns `Outcome<void, SrsRejection>`
 and joins the caller's transaction.
 
-- Guards: the card active (§6.4) and the generation equal (as in §6.2). A card
-  already learned is refused with `alreadyLearned`.
+- Guards: the card active (§6.4) and the generation equal (as in §6.2).
+  Completing a card already learned is a bug: the scheduler throws
+  `ArgumentError` and nothing is written (§6.5).
 - The schedule row takes `learned(state, now)`. No `review_log` row is written
   (BR-STUDY-053).
 - If the root's `first_answered_at` is NULL, it becomes `now` in the same
@@ -312,12 +315,13 @@ deletes for good, so the filter guards the Trash sub-project's future rows.
 
 ### 6.5 `SrsRejection`
 
-Two values are added:
-
-- `notLearned`: a `scheduled` turn on a card that is not learned;
-- `alreadyLearned`: `completeLearning` on a learned card.
-
-`study` never causes either one when it is correct (§7.3).
+`SrsRejection` keeps its five values (amended while writing the plan).
+`lib/features/deck/presentation/widgets/support/srs_rejection_message_widget.dart`
+switches over the enum with no default, so a new value would break the UI's
+build, and this package does not touch presentation. The two cases once named
+`notLearned` and `alreadyLearned` are bugs `study` never causes when it is
+correct (§7.3): the scheduler throws `ArgumentError`, the transaction rolls
+back, and the caller gets `UnknownDatabaseFailure` (E3, D9).
 
 ## 7. Sessions and queues (BE-A4)
 
@@ -341,7 +345,9 @@ transaction:
      (`modeNotOffered`), the stage must run (`modeUnavailable`), and the direction
      must match BR-MODE-013. A missing direction where one is needed is refused as
      `directionRequired`, a validation error. A direction where none is accepted is
-     refused as `directionNotAllowed`, a conflict (BR-MODE-018).
+     refused as `directionNotAllowed`, a conflict (BR-MODE-018). The request is
+     checked before the cards: the mode, then the direction, then a due card, then
+     the stage.
 3. **Close the open session** of the app, whatever its deck (D2). Every refusal
    comes before this step, so a refused opening writes nothing and leaves the open
    session as it was.
@@ -397,7 +403,9 @@ It returns the new session's id.
    - `LeaveAtCap` also calls `CardRepository.setFlagged({cardId}, true)`;
    - `StayAndEnroll` and `LeaveAndEnroll` insert the card's row in round
      `round + 1` if it is not there yet (the primary key dedupes, BR-STUDY-060).
-     That row gets the next free provisional position.
+     That row has `position = -1` until its round is built (§7.4); the served-row
+     query skips it, and a round not built yet is listed by card id, so a seeded
+     shuffle of it repeats.
 6. **The cursor:** `cursor` + 1, once per answered turn and per `browse` advance
    (BR-STUDY-048).
 7. **Progression** (§7.4).
@@ -479,8 +487,11 @@ the other features do. Database errors leave through `mapDatabaseErrors()`.
 
 The use case wraps the repository in `watchEachLocalDay` with the `DayClock`, as
 `WatchDeckLevel` does, so "due" and "today" move at midnight without a write. The
-repository combines the settings stream with its own statement through a small
-private `switchMap`. There is no rxdart dependency.
+repository watches the rows the entry reads — `deck`, `card`, `card_schedule`,
+`app_settings`, `study_session`, `study_queue_items` — and on every emission reads
+the options through the one-shot `studyOptionsOf`, so a change of the options
+emits again, as the card list reads its counts. No stream helper is added, and
+there is no rxdart dependency.
 
 ### 8.2 `WatchStudySession(sessionId)` — the session screen
 
@@ -530,20 +541,27 @@ storage, and `abandonStaleSessions` closes the session on a later day.
 
 ### 8.4 Repository and providers
 
-- **`StudySessionRepository`** (contract) is implemented by
-  `StudySessionRepositoryImpl(db, ScheduleRepository, CardRepository,
-  SettingsRepository, {now, random})`. Its operations are:
-  - open learning, open review, answer, abandon, resume, abandon stale, fail;
-  - watch entry, watch session.
-  Writes run in `_write`: one transaction and `mapDatabaseError`. The `srs` and
-  `card` calls join it, as `CardRepositoryImpl` already does with
-  `initializeCard`.
+- **Two repositories** (amended while writing the plan: one implementation would
+  pass the guard's 400-line warning, and the two halves depend on different
+  features):
+  - **`StudyEntryRepository`**, implemented by
+    `StudyEntryRepositoryImpl(db, SettingsRepository, {now, random})`: open
+    learning, open review, watch entry.
+  - **`StudySessionRepository`**, implemented by
+    `StudySessionRepositoryImpl(db, ScheduleRepository, CardRepository, {now,
+    random})`: answer, abandon, resume, abandon stale, fail, watch session.
+
+  Writes run in `_write`: one transaction and `mapDatabaseError`. The `settings`,
+  `srs` and `card` calls join it, as `CardRepositoryImpl` already does with
+  `initializeCard`. The use cases of §8.3 keep their names and signatures; each
+  takes the repository it calls.
 - **`SettingsRepository.studyOptionsOf({deckId})`:** a one-shot
   `Future<EffectiveStudyOptions?>` that joins the caller's transaction. It is null
   when the deck does not exist or is in the Trash, and it resolves the options as
   `watchStudyOptions` does.
-- **`studySessionRepositoryProvider`** lives in `lib/features/study/di/`. The use
-  case providers belong to `presentation/providers/`, which the UI session writes.
+- **`studyEntryRepositoryProvider`** and **`studySessionRepositoryProvider`** live
+  in `lib/features/study/di/`. The use case providers belong to
+  `presentation/providers/`, which the UI session writes.
 - `recordTurn`, `completeLearning` and `studyOptionsOf` get no use case: no
   interaction calls them (ADR-011 D4 covers interactions).
 
@@ -587,7 +605,9 @@ between E2 and E3.
 
 - **`code:`** of UC-STUDY-001, UC-STUDY-003 and the study and study-mode READMEs.
   Both READMEs lose their stale "no `lib/`" warning. The study README's
-  `depends_on` gains `settings`, whose options it reads.
+  `depends_on` stays as it is: the settings README already declares
+  `settings → study`, the docs check refuses a cycle, and `docs/README.md` lets the
+  documentation graph differ from the import graph.
 - **`schema.md`:**
   - The `study_session` notes record D2: at most one `in_progress` session in the
     app.
@@ -597,7 +617,8 @@ between E2 and E3.
     ends.
 - **`docs/features/study/data.md`:** the `completed` row also covers a queue whose
   remaining rows vanished (D12).
-- **`docs/wbs_BE.md`:** BE-A3, BE-A4, BE-C3 and BE-A5 (backend) become `xong`, and
+- **`docs/wbs_BE.md`:** BE-A3, BE-A4, BE-C3 and BE-A5 (backend) become `xong`; a
+  new row, BE-A10, holds the mechanics of the four graded modes (package 2b); and
   package 3 is BE-A6.
 - **`docs/_generated/`** is regenerated, since tests name the scenario and use case
   ids.
@@ -675,7 +696,7 @@ between E2 and E3.
   - the use cases of §8.3, `StudyEntry`, `StudySessionView` and `StudyAnswer`;
   - the `study_mode` domain the UI renders from (`stageSequenceOf`,
     `reviewModesOf`, `acceptsDirection`);
-  - the provider in `study/di/`.
+  - the two providers in `study/di/`.
 - Shared files touched:
   - `test/architecture/boundary_rules.dart` (two entries);
   - the `ScheduleRepository` and `SettingsRepository` contracts. Their only fakes are
@@ -711,5 +732,5 @@ between E2 and E3.
 - **D2 is enforced in code, not by an index.** Opening a session runs in one
   transaction on SQLite's single writer, and a test checks the rule after every
   scenario. A unique partial index needs a migration and waits for BE-D1.
-- **The private `switchMap`.** It gets its own tests: switching cancels the
-  previous inner stream, and errors pass through.
+- **The entry re-reads on every watched write.** Each emission runs a handful of
+  reads over the deck's subtree. Rollback: narrow the watched tables.
