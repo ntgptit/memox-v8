@@ -21,6 +21,25 @@ void main() {
     final l10n = lookupAppLocalizations(locale);
     final code = locale.languageCode;
 
+    test('screen 07 has $code copy', () {
+      for (final copy in [
+        l10n.cardSummaryOverline('SM-2'),
+        l10n.cardSummaryMastered(80, 420),
+        l10n.cardStudyThisDue(40),
+        l10n.cardListShowing(7, 420),
+        l10n.cardListSelectedOf(2, 420),
+        l10n.cardSelectAllCount(420),
+        l10n.cardDueIn(17),
+        l10n.cardDueOverdue(30),
+        l10n.cardTagsMore(8),
+        l10n.deckImportCards,
+        l10n.deckExportAll,
+      ]) {
+        expect(copy.trim(), isNotEmpty);
+        expect(copy, isNot(contains('{')));
+      }
+    });
+
     test('every card and tag rejection has plain $code copy', () {
       for (final reason in CardRejection.values) {
         final copy = l10n.cardRejection(reason);

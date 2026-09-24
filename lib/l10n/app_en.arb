@@ -1752,5 +1752,139 @@
       }
     },
     "description": "Screen handoff 02 (library alignment phase D): resetDoneToast."
+  },
+  "cardSummaryOverline": "Deck progress · {algorithm}",
+  "@cardSummaryOverline": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardSummaryOverline."
+  },
+  "cardSummaryMastered": "{mastered} of {total, plural, =1{1 card} other{{total} cards}} mastered",
+  "@cardSummaryMastered": {
+    "placeholders": {
+      "mastered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardSummaryMastered."
+  },
+  "cardStudyThisDue": "Study this deck · {count} due",
+  "@cardStudyThisDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardStudyThisDue."
+  },
+  "cardStudyThis": "Study this deck",
+  "@cardStudyThis": {
+    "description": "Screen handoff 07 (library alignment phase E): cardStudyThis."
+  },
+  "cardFilterTags": "Tags",
+  "@cardFilterTags": {
+    "description": "Screen handoff 07 (library alignment phase E): cardFilterTags."
+  },
+  "cardListShowing": "Showing {shown} of {total}",
+  "@cardListShowing": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardListShowing."
+  },
+  "cardListSelectedOf": "{selected} of {total} selected",
+  "@cardListSelectedOf": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardListSelectedOf."
+  },
+  "cardSelectAllCount": "Select all {count}",
+  "@cardSelectAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardSelectAllCount."
+  },
+  "cardOpenSearch": "Search cards",
+  "@cardOpenSearch": {
+    "description": "Screen handoff 07 (library alignment phase E): cardOpenSearch."
+  },
+  "cardCloseSearch": "Close search",
+  "@cardCloseSearch": {
+    "description": "Screen handoff 07 (library alignment phase E): cardCloseSearch."
+  },
+  "cardExport": "Export",
+  "@cardExport": {
+    "description": "Screen handoff 07 (library alignment phase E): cardExport."
+  },
+  "cardDueNew": "New",
+  "@cardDueNew": {
+    "description": "Screen handoff 07 (library alignment phase E): cardDueNew."
+  },
+  "cardDueToday": "Due today",
+  "@cardDueToday": {
+    "description": "Screen handoff 07 (library alignment phase E): cardDueToday."
+  },
+  "cardDueIn": "In {days}d",
+  "@cardDueIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardDueIn."
+  },
+  "cardDueOverdue": "{days}d overdue",
+  "@cardDueOverdue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardDueOverdue."
+  },
+  "cardTagsMore": "+{count}",
+  "@cardTagsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 07 (library alignment phase E): cardTagsMore."
+  },
+  "cardSortNewestPill": "Newest first",
+  "@cardSortNewestPill": {
+    "description": "Screen handoff 07 (library alignment phase E): cardSortNewestPill."
+  },
+  "cardSortDuePill": "Due first",
+  "@cardSortDuePill": {
+    "description": "Screen handoff 07 (library alignment phase E): cardSortDuePill."
+  },
+  "deckImportCards": "Import cards",
+  "@deckImportCards": {
+    "description": "Screen handoff 07 (library alignment phase E): deckImportCards."
+  },
+  "deckExportAll": "Export all cards",
+  "@deckExportAll": {
+    "description": "Screen handoff 07 (library alignment phase E): deckExportAll."
   }
 }
