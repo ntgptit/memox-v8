@@ -5,19 +5,33 @@ import 'package:go_router/go_router.dart';
 import 'package:memox/app/app.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
+import '../support/library_harness.dart';
+
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Future<void> _pumpApp(WidgetTester tester, {bool hasGallery = true}) async {
+Future<void> _pumpApp(
+  WidgetTester tester,
+  LibraryEnv env, {
+  bool hasGallery = true,
+}) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    ProviderScope(child: MemoxApp(hasGallery: hasGallery)),
+    ProviderScope(
+      overrides: [
+        databaseProvider.overrideWithValue(env.db),
+        dayClockProvider.overrideWithValue(env.clock),
+      ],
+      child: MemoxApp(hasGallery: hasGallery),
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -36,15 +50,15 @@ Finder _tab(String label) =>
     find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
 
 void main() {
-  testWidgets('cold start lands on Library', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('cold start lands on Library', (tester, env) async {
+    await _pumpApp(tester, env);
 
     expect(_barTitle(_en.navLibrary), findsOneWidget);
     expect(_nav(tester).selectedIndex, 0);
   });
 
-  testWidgets('no debug banner over the app', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('no debug banner over the app', (tester, env) async {
+    await _pumpApp(tester, env);
 
     expect(
       tester
@@ -54,8 +68,8 @@ void main() {
     );
   });
 
-  testWidgets('four tabs in navigation.md order', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('four tabs in navigation.md order', (tester, env) async {
+    await _pumpApp(tester, env);
 
     expect(_nav(tester).destinations.map((d) => d.label), [
       _en.navLibrary,
@@ -65,8 +79,11 @@ void main() {
     ]);
   });
 
-  testWidgets('switching tabs keeps the other branch alive', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('switching tabs keeps the other branch alive', (
+    tester,
+    env,
+  ) async {
+    await _pumpApp(tester, env);
     await tester.tap(_tab(_en.navStudy));
     await tester.pumpAndSettle();
 
@@ -75,8 +92,11 @@ void main() {
     expect(_barTitle(_en.navLibrary, skipOffstage: false), findsOneWidget);
   });
 
-  testWidgets('re-tapping the current tab keeps it selected', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('re-tapping the current tab keeps it selected', (
+    tester,
+    env,
+  ) async {
+    await _pumpApp(tester, env);
     await tester.tap(_tab(_en.navLibrary));
     await tester.pumpAndSettle();
 
@@ -84,17 +104,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('each tab shows the neutral placeholder', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('Library opens on its screen; the other tabs are placeholders', (
+    tester,
+    env,
+  ) async {
+    await _pumpApp(tester, env);
+    expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
+    expect(find.text(_en.placeholderTitle), findsNothing);
 
+    await tester.tap(_tab(_en.navStudy));
+    await tester.pumpAndSettle();
     expect(find.text(_en.placeholderTitle), findsOneWidget);
-    expect(find.text(_en.placeholderBody), findsOneWidget);
   });
 
-  testWidgets('Vietnamese device locale gives Vietnamese tabs', (tester) async {
+  libraryTest('Vietnamese device locale gives Vietnamese tabs', (
+    tester,
+    env,
+  ) async {
     tester.platformDispatcher.localesTestValue = const [Locale('vi')];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await _pumpApp(tester);
+    await _pumpApp(tester, env);
     final vi = lookupAppLocalizations(const Locale('vi'));
 
     expect(_nav(tester).destinations.map((d) => d.label), [
@@ -105,18 +134,24 @@ void main() {
     ]);
   });
 
-  testWidgets('an unsupported locale falls back to English', (tester) async {
+  libraryTest('an unsupported locale falls back to English', (
+    tester,
+    env,
+  ) async {
     tester.platformDispatcher.localesTestValue = const [Locale('fr')];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await _pumpApp(tester);
+    await _pumpApp(tester, env);
 
     expect(_barTitle(_en.navLibrary), findsOneWidget);
   });
 
-  testWidgets('dark system theme gives the dark page ground', (tester) async {
+  libraryTest('dark system theme gives the dark page ground', (
+    tester,
+    env,
+  ) async {
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    await _pumpApp(tester);
+    await _pumpApp(tester, env);
 
     expect(
       tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
@@ -124,30 +159,35 @@ void main() {
     );
   });
 
-  testWidgets('the status inset is consumed once, above the tab app bar', (
+  libraryTest('the status inset is consumed once, above the tab app bar', (
     tester,
+    env,
   ) async {
     tester.view.padding = const FakeViewPadding(top: 72, bottom: 60);
     addTearDown(tester.view.resetPadding);
-    await _pumpApp(tester);
+    await _pumpApp(tester, env);
 
     // 72 physical px at 3x = 24 logical.
     expect(tester.getTopLeft(find.byType(MxAppBar)).dy, 24);
     expect(tester.getSize(find.byType(MxAppBar)).height, 56);
   });
 
-  testWidgets('Settings offers the gallery in debug builds', (tester) async {
-    await _pumpApp(tester);
+  libraryTest('Settings offers the gallery in debug builds', (
+    tester,
+    env,
+  ) async {
+    await _pumpApp(tester, env);
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 
     expect(find.byTooltip(_en.openGallery), findsOneWidget);
   });
 
-  testWidgets('without the gallery there is no route and no action', (
+  libraryTest('without the gallery there is no route and no action', (
     tester,
+    env,
   ) async {
-    await _pumpApp(tester, hasGallery: false);
+    await _pumpApp(tester, env, hasGallery: false);
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
 

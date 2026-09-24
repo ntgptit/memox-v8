@@ -48,7 +48,7 @@ void main() {
     );
   });
 
-  testWidgets('the trailing affordance sits 8 after the label, 4 inset', (
+  testWidgets('the trailing affordance sits at the end, 4 inset', (
     tester,
   ) async {
     await pumpMx(
@@ -64,8 +64,28 @@ void main() {
     expect(
       tester.getTopLeft(find.byKey(_countKey)).dx -
           tester.getTopRight(find.text('DECKS')).dx,
-      8,
+      greaterThanOrEqualTo(8),
     );
     expect(tester.getTopRight(find.byKey(_countKey)).dx, 356);
+  });
+
+  testWidgets('a trailing too wide for the row moves under the label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxListSectionHeader(
+          label: 'Decks',
+          trailing: SizedBox(key: _countKey, width: 340, height: 20),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getTopLeft(find.byKey(_countKey)).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.text('DECKS')).dy),
+    );
   });
 }

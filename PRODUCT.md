@@ -35,7 +35,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 ## Operating Context
 
-- Study happens on an Android phone, in short and interrupted sessions, often offline. Tablets are also a target (see Capabilities and Constraints).
+- Study happens on an Android phone, in short and interrupted sessions, often offline.
 - The user creates their own decks and cards. Starter decks exist only as templates to copy; the current starter content is a development and test fixture, not production content (`ADR-005`, `BR-STARTER-010`).
 - Decks form a tree; a root deck owns its subtree (`docs/glossary.md`).
 - Each root deck chooses one of two schedulers, locked after its first review (`ADR-003`, `ADR-004`):
@@ -48,7 +48,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 - **Local-only.** No network, no account, and one local profile. Drift (SQLite) is the source of truth (`ADR-001`). Login, multi-device sync, deck sharing and role permissions are out of MVP until a backend exists.
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
-- **Phones and tablets are both targets.** Tablets need their own adaptive layout (navigation rail, wide layouts). The current UI base is phone-shaped; this gap is recorded in spec §9 row 63.
+- **Phones only, for now.** Tablet layouts (navigation rail, two-pane, wide layouts) are deferred by the owner (2026-09-24). On a tablet the app only needs to stay usable; the adaptive gap stays recorded in spec §9 row 63 until tablets are picked up.
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
 - **Data handling:**
   - User content is never logged (`BR-CORE-002`).
@@ -81,7 +81,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 1. **Built to be changed by its owner.** Prefer simple, well-bounded mechanisms the owner can read and customize over generality nobody asked for.
 2. **The right word at the right time, anywhere.** Every study path works offline, and the schedule, not the user's memory, decides what comes next.
 3. **The learner's content stays the learner's.** Decks live on the device, are never logged, and leave it only on explicit request.
-4. **Phone first, tablet for real.** Layouts are designed for one-handed phone use in short sessions and adapt properly on tablets rather than stretching.
+4. **Phone first.** Layouts are designed for one-handed phone use in short sessions.
 5. **Accessible by default.** Accessibility is a requirement, not a polish pass.
 
 ## Accessibility & Inclusion

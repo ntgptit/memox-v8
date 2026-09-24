@@ -55,7 +55,7 @@ void main() {
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
     expect(_termStyle(tester, '3 overdue')!.color, derived.warningInk);
     expect(_termStyle(tester, '5 today')!.color, scheme.primary);
-    expect(_termStyle(tester, '2 new')!.color, semantic.statusNew);
+    expect(_termStyle(tester, '2 new')!.color, derived.statusNewInk);
     expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w600);
     expect(_root(tester).style!.fontWeight, FontWeight.w400);
     expect(_root(tester).style!.color, scheme.onSurfaceVariant);

@@ -18,6 +18,10 @@ final class MxDerivedColors {
     required this.chromeGlass,
     required this.ghostBorder,
     required this.warningInk,
+    required this.statusNewInk,
+    required this.statusLearningInk,
+    required this.statusReviewingInk,
+    required this.statusMasteredInk,
   });
 
   factory MxDerivedColors.resolve(
@@ -56,6 +60,30 @@ final class MxDerivedColors {
       // text on light surfaces, so light inks with onWarning and dark with
       // the amber itself.
       warningInk: isDark ? semantic.warning : semantic.onWarning,
+      // Status TEXT (StatusBadge label, the workload "new" term): the
+      // status colour pulled toward onSurface until it reads at 4.5:1 on
+      // every ground and on its own 12% tint (library spec §7, ruling L6).
+      // Dots, fills and tints keep the status colour itself.
+      statusNewInk: _ink(
+        semantic.statusNew,
+        scheme,
+        isDark ? _newInkDark : _newInkLight,
+      ),
+      statusLearningInk: _ink(
+        semantic.statusLearning,
+        scheme,
+        isDark ? _learningInkDark : _learningInkLight,
+      ),
+      statusReviewingInk: _ink(
+        semantic.statusReviewing,
+        scheme,
+        isDark ? _reviewingInkDark : _reviewingInkLight,
+      ),
+      statusMasteredInk: _ink(
+        semantic.statusMastered,
+        scheme,
+        isDark ? _masteredInkDark : _masteredInkLight,
+      ),
     );
   }
 
@@ -71,6 +99,17 @@ final class MxDerivedColors {
   static const double _surfaceHeroDark = 0.12;
   static const double _ghostBorderLight = 0.14;
   static const double _ghostBorderDark = 0.16;
+  static const double _newInkLight = 0.40;
+  static const double _newInkDark = 0.40;
+  static const double _learningInkLight = 0.50;
+  static const double _learningInkDark = 0;
+  static const double _reviewingInkLight = 0.25;
+  static const double _reviewingInkDark = 0.10;
+  static const double _masteredInkLight = 0.25;
+  static const double _masteredInkDark = 0;
+
+  static Color _ink(Color status, ColorScheme scheme, double mix) =>
+      Color.lerp(status, scheme.onSurface, mix)!;
 
   /// ErrorState tile tint.
   final Color dangerSoft;
@@ -95,4 +134,11 @@ final class MxDerivedColors {
 
   /// Warning TEXT (FieldMessage), never the warning fill.
   final Color warningInk;
+
+  /// Status TEXT inks (StatusBadge label, WorkloadBreakdownLine new term),
+  /// never the status dot or fill.
+  final Color statusNewInk;
+  final Color statusLearningInk;
+  final Color statusReviewingInk;
+  final Color statusMasteredInk;
 }

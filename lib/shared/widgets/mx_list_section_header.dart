@@ -4,7 +4,8 @@ import 'package:memox/core/theme/theme_context.dart';
 
 /// The overline that introduces a list, with one optional trailing
 /// affordance (a ChipTrigger, a Badge, a Button or a plain count). The
-/// trailing widget owns its own colours.
+/// trailing widget owns its own colours and moves under the label when the
+/// row cannot hold both.
 class MxListSectionHeader extends StatelessWidget {
   const MxListSectionHeader({
     super.key,
@@ -35,17 +36,16 @@ class MxListSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: isAfterFilterBand ? _afterFilterBandPadding : _padding,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
+    // A trailing too wide for the row (large text) moves under the label.
+    child: OverflowBar(
+      alignment: MainAxisAlignment.spaceBetween,
       spacing: AppSpacing.control,
+      overflowSpacing: AppSpacing.control,
       children: [
-        Expanded(
-          child: Text(
-            label.toUpperCase(),
-            semanticsLabel: label,
-            style: context.textStyles.overline,
-          ),
+        Text(
+          label.toUpperCase(),
+          semanticsLabel: label,
+          style: context.textStyles.overline,
         ),
         ?trailing,
       ],
