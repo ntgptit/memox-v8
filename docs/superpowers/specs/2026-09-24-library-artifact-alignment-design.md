@@ -210,6 +210,10 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 | `MxEmptyState` | An optional secondary action between the primary action and the footnote; a null callback draws it disabled (C-O3). |
 | `MxActionSheetCommandRow` | `isEnabled`: a disabled command is dimmed and announced as disabled. |
 | Theme | Icons `starterDecks`, `dueNow`, `cardDeck`; text role `rowTitleMatch` for the emphasised part of a search hit (C-O4). |
+| `MxIconTile` | `tone`: `tinted` (default), `primary` and `warning` solid fills with `onPrimary` / `onWarning` glyphs; `seed` only with `tinted` (phase D, owner decision D-O1). |
+| `MxCard` | `isWarning`: the warning-soft ground with the warning border, for screen 02's locked strip (D-O1). |
+| `MxOutcomeTile` | New: a label in its ink over a tinted ground and a body, tones `kept` (`statusMasteredInk` over the mastery tint, A10) and `lost` (`warningInk` over `warningSoft`) (D-O2). |
+| Theme (phase D) | Icons `lock`, `lockOpen`, `resetProgress`. |
 
 ## 7. Routing and composition
 

@@ -58,3 +58,4 @@ Not in the artifact, required by V8:
 |---|---|---|
 | A tap on the other algorithm switches at once | A confirmation dialog first | UC-DECK-002 steps 3–4 |
 | "Kept" coloured with the mastery token | `statusMasteredInk`, 4.5:1 | Spec A10, WCAG 2.2 AA |
+| Refused because the tree just locked: a message on the screen | The locked state from the stream, and the reason as a snackbar | Ruling D-L1 |
