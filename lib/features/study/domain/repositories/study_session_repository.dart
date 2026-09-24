@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 
 /// The one implementation is `StudySessionRepositoryImpl` (data layer). The
@@ -55,4 +56,9 @@ abstract interface class StudySessionRepository {
   /// local midnight becomes `abandoned`/`interrupted` (BR-STUDY-072). The app
   /// calls it when it starts; no read does (BR-STUDY-075).
   Future<void> abandonStaleSessions({DateTime? now});
+
+  /// UC-STUDY-001 steps 6–13 (spec §8.2): the session screen, again on every
+  /// write it can see; null once the session is gone (A5). It writes nothing
+  /// (BR-STUDY-075).
+  Stream<StudySessionView?> watchSession(String sessionId);
 }

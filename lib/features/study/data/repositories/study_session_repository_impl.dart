@@ -11,9 +11,12 @@ import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
+import 'package:memox/features/study/data/datasources/study_view_dao.dart';
+import 'package:memox/features/study/data/mappers/study_session_view_mapper.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/queue_plan_model.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
+import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
@@ -34,6 +37,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     Random? random,
   }) : _dao = StudySessionDao(_db),
        _queue = StudyQueueDao(_db),
+       _views = StudyViewDao(_db),
        _now = now ?? DateTime.now,
        _random = random ?? Random();
 
@@ -42,6 +46,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
   final CardRepository _cards;
   final StudySessionDao _dao;
   final StudyQueueDao _queue;
+  final StudyViewDao _views;
   final DateTime Function() _now;
 
   /// Every shuffle of a later round (BR-STUDY-061).
@@ -141,6 +146,55 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
         now: at,
       );
     });
+  }
+
+  @override
+  Stream<StudySessionView?> watchSession(String sessionId) => _views
+      .watchSessionRow(sessionId)
+      .asyncMap((row) async => row == null ? null : _viewOf(row))
+      .mapDatabaseErrors();
+
+  /// The rest of [row]'s screen, read in the same emission (spec §8.2): an
+  /// open session shows the card it serves, an ended one its summary,
+  /// whatever rows it left.
+  Future<StudySessionView> _viewOf(SessionViewRow row) async {
+    final session = row.session;
+    final modes = await _views.modesOf(session.id);
+    if (session.status == SessionStatus.inProgress.code) {
+      return studySessionViewOf(
+        row,
+        modes: modes,
+        served: await _servedOf(session),
+        counts: null,
+      );
+    }
+    return studySessionViewOf(
+      row,
+      modes: modes,
+      served: null,
+      counts: await _views.summaryCounts(
+        session.id,
+        lapseActions: lapseActionsOf(SchedulerType.fromCode(row.schedulerType)),
+      ),
+    );
+  }
+
+  /// The row [session] serves, with its card and the counts of its round;
+  /// null while nothing is left to serve (spec D12).
+  Future<ServedRow?> _servedOf(StudySession session) async {
+    final head = await _queue.headRow(
+      session.id,
+      session.currentMode,
+      session.cursor,
+    );
+    if (head == null) return null;
+    final card = await _views.cardRow(head.cardId);
+    if (card == null) return null;
+    return (
+      row: head,
+      card: card,
+      round: await _views.roundCounts(session.id, head.mode, head.round),
+    );
   }
 
   /// [session] and its root while the session is open and its generation
