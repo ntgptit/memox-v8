@@ -13,6 +13,7 @@ import 'package:memox/features/card/presentation/states/card_selection_state.dar
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_sort_sheet_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_toolbar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -253,6 +254,15 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           searchFocus: _searchFocus,
           isSearchShown: request.isSearchOpen && !isSelecting,
           isFilterShown: !isSelecting,
+          summary: isSelecting || view.statusCounts.total == 0
+              ? null
+              : CardDeckSummaryWidget(
+                  status: view.statusCounts,
+                  workload: view.workload,
+                  schedulerType: widget.schedulerType,
+                ),
+          shownCount: view.items.length,
+          selectedCount: selected.length,
           request: request,
           counts: view.counts,
           onSearch: _search,

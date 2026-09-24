@@ -137,7 +137,7 @@ void main() {
   ) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.tap(find.text(_en.cardSortTrigger(_en.cardSortNewest)));
+    await tester.tap(find.text(_en.cardSortNewestPill));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.cardSortDueFirst));
     await tester.pumpAndSettle();

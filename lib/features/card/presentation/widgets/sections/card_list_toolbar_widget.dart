@@ -8,11 +8,14 @@ import 'package:memox/features/card/presentation/widgets/support/card_list_label
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/shared/widgets/mx_unavailable.dart';
 
-/// Search within the deck when the app bar opened it (E-O3), the four
-/// filters with their counts, and the sort (screen 07). While selecting,
-/// neither the search nor the filters show.
+/// Above the rows (screen 07): the search the app bar opened (E-O3), the
+/// deck's summary, the four filters with their counts and Tags (not yet),
+/// then a header counting what shows, with the sort. While selecting, the
+/// header counts the selection and nothing else shows (ruling E-L3).
 class CardListToolbarWidget extends StatelessWidget {
   const CardListToolbarWidget({
     super.key,
@@ -20,6 +23,9 @@ class CardListToolbarWidget extends StatelessWidget {
     required this.searchFocus,
     required this.isSearchShown,
     required this.isFilterShown,
+    required this.summary,
+    required this.shownCount,
+    required this.selectedCount,
     required this.request,
     required this.counts,
     required this.onSearch,
@@ -31,6 +37,16 @@ class CardListToolbarWidget extends StatelessWidget {
   final FocusNode searchFocus;
   final bool isSearchShown;
   final bool isFilterShown;
+
+  /// The deck's summary card, above the filters; null while selecting or
+  /// when the deck holds no card.
+  final Widget? summary;
+
+  /// The rows loaded; the header's "Showing N".
+  final int shownCount;
+
+  /// The cards selected; zero when not selecting.
+  final int selectedCount;
   final CardListRequestState request;
   final CardListCounts counts;
   final ValueChanged<String> onSearch;
@@ -40,6 +56,9 @@ class CardListToolbarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final total = counts.of(request.filter);
+    final isSelecting = selectedCount > 0;
+    final summary = this.summary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -52,6 +71,10 @@ class CardListToolbarWidget extends StatelessWidget {
             clearLabel: l10n.cardSearchClear,
             onChanged: onSearch,
           ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
+        if (summary != null) ...[
+          summary,
           const SizedBox(height: AppSpacing.grouped),
         ],
         // The chips never shrink or wrap, so their row scrolls.
@@ -68,15 +91,32 @@ class CardListToolbarWidget extends StatelessWidget {
                     isSelected: filter == request.filter,
                     onSelected: (_) => onFilter(filter),
                   ),
-                MxChipTrigger(
-                  label: l10n.cardSortTrigger(l10n.cardSort(request.sort)),
-                  icon: AppIcons.sort,
-                  onPressed: onSort,
+                // Spec A4: tags filtering waits for FE-B2.
+                MxUnavailable(
+                  hint: l10n.commonNotAvailableYet,
+                  child: MxFilterChip(
+                    label: l10n.cardFilterTags,
+                    icon: AppIcons.tag,
+                    isSelected: false,
+                    onSelected: null,
+                  ),
                 ),
               ],
             ),
           ),
-        const SizedBox(height: AppSpacing.grouped),
+        MxListSectionHeader(
+          label: isSelecting
+              ? l10n.cardListSelectedOf(selectedCount, total)
+              : l10n.cardListShowing(shownCount, total),
+          trailing: isSelecting
+              ? null
+              : MxChipTrigger(
+                  label: request.sort == CardListSort.newest
+                      ? l10n.cardSortNewestPill
+                      : l10n.cardSortDuePill,
+                  onPressed: onSort,
+                ),
+        ),
       ],
     );
   }
