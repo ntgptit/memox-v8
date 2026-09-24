@@ -8,4 +8,16 @@ abstract final class AppRoutes {
 
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
+
+  /// The path parameter that names an open deck.
+  static const String deckIdParam = 'deckId';
+
+  /// The Library's child routes (library spec §4), relative to [decks].
+  static const String deckChild = 'deck/:$deckIdParam';
+  static const String searchChild = 'search';
+
+  static const String deckSearch = '$decks/$searchChild';
+
+  /// An open deck's location.
+  static String deck(String deckId) => '$decks/deck/$deckId';
 }

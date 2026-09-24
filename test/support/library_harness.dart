@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/app/app.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
@@ -148,3 +149,15 @@ DeckLevelScreen deckScreen({
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onSearch: () {},
 );
+
+/// The whole app over [env] on a 1080×2400 (3x) phone, settled on the
+/// Library root.
+Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    ProviderScope(overrides: _backend(env), child: const MemoxApp()),
+  );
+  await tester.pumpAndSettle();
+}
