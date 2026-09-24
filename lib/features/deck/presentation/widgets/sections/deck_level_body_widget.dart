@@ -2,7 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
+import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_list_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_reorder_list_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -36,15 +38,18 @@ class DeckLevelBodyWidget extends ConsumerWidget {
       sort: query.sort,
       filter: query.filter,
     );
+    final isReordering = ref.watch(deckReorderModeProvider(parentId));
     return ref
         .watch(provider)
         .when(
-          data: (level) => DeckLevelListWidget(
-            level: level,
-            parentId: parentId,
-            onOpenDeck: onOpenDeck,
-            emptyState: emptyState,
-          ),
+          data: (level) => isReordering
+              ? DeckReorderListWidget(tiles: level.tiles)
+              : DeckLevelListWidget(
+                  level: level,
+                  parentId: parentId,
+                  onOpenDeck: onOpenDeck,
+                  emptyState: emptyState,
+                ),
           loading: () => MxScreenScroll(
             clearance: MxScrollClearance.fabAboveNav,
             children: [

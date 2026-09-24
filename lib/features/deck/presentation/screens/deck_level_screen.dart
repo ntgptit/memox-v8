@@ -9,6 +9,7 @@ import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
+import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
@@ -17,6 +18,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
@@ -62,26 +64,42 @@ class _LibraryRoot extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
 
+  void _startReorder(WidgetRef ref) =>
+      ref.read(deckReorderModeProvider(null).notifier).start();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final isReordering = ref.watch(deckReorderModeProvider(null));
+    final canReorder = ref.watch(deckLevelCanReorderProvider(null));
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navLibrary,
-        actions: [
-          MxIconButton(
-            icon: AppIcons.search,
-            semanticLabel: l10n.libraryOpenSearch,
-            onPressed: onSearch,
-          ),
-        ],
+        actions: isReordering
+            ? const [_ReorderDone(parentId: null)]
+            : [
+                MxIconButton(
+                  icon: AppIcons.search,
+                  semanticLabel: l10n.libraryOpenSearch,
+                  onPressed: onSearch,
+                ),
+                // Ruling P2-L2: the roots reorder from the app bar.
+                if (canReorder)
+                  MxIconButton(
+                    icon: AppIcons.reorder,
+                    semanticLabel: l10n.libraryReorder,
+                    onPressed: () => _startReorder(ref),
+                  ),
+              ],
       ),
-      fab: MxFab(
-        icon: AppIcons.add,
-        semanticLabel: l10n.libraryCreateDeck,
-        onPressed: createDeck,
-      ),
+      fab: isReordering
+          ? null
+          : MxFab(
+              icon: AppIcons.add,
+              semanticLabel: l10n.libraryCreateDeck,
+              onPressed: createDeck,
+            ),
       body: DeckLevelBodyWidget(
         parentId: null,
         onOpenDeck: onOpenDeck,
@@ -185,6 +203,7 @@ class _OpenDeckContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final deck = view.deck;
+    final isReordering = ref.watch(deckReorderModeProvider(deck.id));
     final canCreateDeck = view.createOptions.contains(DeckCreateOption.deck);
     void createSubDeck() =>
         unawaited(showCreateSubDeckDialog(context, parentId: deck.id));
@@ -193,8 +212,9 @@ class _OpenDeckContent extends ConsumerWidget {
         title: deck.name,
         density: MxAppBarDensity.content,
         leading: const _BackButton(),
+        actions: [if (isReordering) _ReorderDone(parentId: deck.id)],
       ),
-      fab: canCreateDeck
+      fab: canCreateDeck && !isReordering
           ? MxFab(
               icon: AppIcons.add,
               semanticLabel: l10n.deckCreateSub,
@@ -247,5 +267,22 @@ class _BackButton extends StatelessWidget {
     icon: AppIcons.back,
     semanticLabel: context.l10n.commonBack,
     onPressed: () => unawaited(Navigator.of(context).maybePop()),
+  );
+}
+
+/// Ends reorder mode for its level (ruling P2-L3).
+class _ReorderDone extends ConsumerWidget {
+  const _ReorderDone({required this.parentId});
+
+  final String? parentId;
+
+  void _finish(WidgetRef ref) =>
+      ref.read(deckReorderModeProvider(parentId).notifier).finish();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => MxButton(
+    label: context.l10n.libraryReorderDone,
+    size: MxButtonSize.compact,
+    onPressed: () => _finish(ref),
   );
 }
