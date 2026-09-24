@@ -51,6 +51,50 @@ final class StudyViewDao {
               ),
       );
 
+  /// [deckId]'s row, unless it is gone or in the Trash. Emits again on every
+  /// write the Study Entry can see: decks and their options, cards,
+  /// schedules, sessions and queues.
+  Stream<Deck?> watchDeckRow(String deckId) => _db
+      .customSelect(
+        'SELECT * FROM deck WHERE id = ? AND delete_batch_id IS NULL',
+        variables: [Variable<String>(deckId)],
+        readsFrom: {
+          _db.deck,
+          _db.card,
+          _db.cardSchedule,
+          _db.appSettings,
+          _db.studySession,
+          _db.studyQueueItems,
+        },
+      )
+      .watchSingleOrNull()
+      .map((row) => row == null ? null : _db.deck.map(row.data));
+
+  /// The newest open session of [deckId] that Continue can take up
+  /// (BR-STUDY-075): started on or after [startOfToday], at its root's
+  /// generation, with at least one queue row.
+  Future<String?> resumableSessionId(
+    String deckId, {
+    required DateTime startOfToday,
+  }) async {
+    final row = await _db
+        .customSelect(
+          'SELECT s.id FROM study_session s JOIN deck r ON r.id = s.root_id'
+          " WHERE s.deck_id = ? AND s.status = 'in_progress'"
+          ' AND s.started_at >= ? AND s.generation = r.generation'
+          ' AND EXISTS (SELECT 1 FROM study_queue_items q'
+          '  WHERE q.session_id = s.id)'
+          ' ORDER BY s.started_at DESC LIMIT 1',
+          variables: [
+            Variable<String>(deckId),
+            Variable<DateTime>(startOfToday),
+          ],
+          readsFrom: {_db.studySession, _db.deck, _db.studyQueueItems},
+        )
+        .getSingleOrNull();
+    return row?.read<String>('id');
+  }
+
   Future<CardRow?> cardRow(String cardId) => (_db.select(
     _db.card,
   )..where((card) => card.id.equals(cardId))).getSingleOrNull();

@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
@@ -33,5 +34,13 @@ abstract interface class StudyEntryRepository {
     required StudyMode mode,
     DirectionChoice? direction,
     DateTime? now,
+  });
+
+  /// UC-STUDY-001 steps 1–2 and 4 (spec §8.1): the Study Entry of [deckId]
+  /// at [now], again on every write it can see; null once the deck is gone
+  /// or in the Trash. It writes nothing (BR-STUDY-075).
+  Stream<StudyEntry?> watchEntry({
+    required String deckId,
+    required DateTime now,
   });
 }

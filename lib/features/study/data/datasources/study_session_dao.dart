@@ -5,6 +5,17 @@ import 'package:memox/features/study/domain/models/session_status_model.dart';
 /// A card a session can take, as the data conditions read it.
 typedef StudyCardRow = ({String cardId, bool hasExample});
 
+/// The new and the due cards of a subtree, and the next due date.
+typedef SubtreeCounts = ({int newCount, int dueCount, DateTime? nextDueAt});
+
+/// The active decks of the subtree of the first variable, walked through
+/// `parent_id` (schema.md "Duyệt cây").
+const _subtree =
+    'WITH RECURSIVE subtree(id) AS ('
+    ' SELECT id FROM deck WHERE id = ? AND delete_batch_id IS NULL'
+    ' UNION SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id'
+    ' WHERE d.delete_batch_id IS NULL)';
+
 /// Row access for `study_session`, plus the reads of `deck`, `card` and
 /// `card_schedule` a session is built from. It returns Drift rows and
 /// records, never domain values, and runs inside the caller's transaction.
@@ -38,7 +49,7 @@ final class StudySessionDao {
       );
 
   /// The active cards of [deckId]'s subtree matching [where], in [orderBy]
-  /// order. The subtree is walked through `parent_id` (schema.md "Duyệt cây").
+  /// order.
   Future<List<StudyCardRow>> _subtreeCards(
     String deckId, {
     required String where,
@@ -47,12 +58,8 @@ final class StudySessionDao {
   }) async {
     final rows = await _db
         .customSelect(
-          'WITH RECURSIVE subtree(id) AS ('
-          ' SELECT id FROM deck WHERE id = ? AND delete_batch_id IS NULL'
-          ' UNION SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id'
-          ' WHERE d.delete_batch_id IS NULL)'
-          ' SELECT c.id, c.example IS NOT NULL AS has_example FROM card c'
-          ' JOIN card_schedule cs ON cs.card_id = c.id'
+          '$_subtree SELECT c.id, c.example IS NOT NULL AS has_example'
+          ' FROM card c JOIN card_schedule cs ON cs.card_id = c.id'
           ' WHERE c.deck_id IN (SELECT id FROM subtree)'
           ' AND c.delete_batch_id IS NULL AND $where'
           ' ORDER BY $orderBy',
@@ -67,6 +74,35 @@ final class StudySessionDao {
           hasExample: row.read<bool>('has_example'),
         ),
     ];
+  }
+
+  /// The new and the due cards of [deckId]'s subtree at [now], and the
+  /// earliest `due_at` after [now] (BR-STUDY-051, BR-STUDY-008).
+  Future<SubtreeCounts> subtreeCounts(String deckId, DateTime now) async {
+    final row = await _db
+        .customSelect(
+          '$_subtree SELECT'
+          ' COUNT(CASE WHEN cs.learned_at IS NULL THEN 1 END) AS new_count,'
+          ' COUNT(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at <= ?'
+          '  THEN 1 END) AS due_count,'
+          ' MIN(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at > ?'
+          '  THEN cs.due_at END) AS next_due_at'
+          ' FROM card c JOIN card_schedule cs ON cs.card_id = c.id'
+          ' WHERE c.deck_id IN (SELECT id FROM subtree)'
+          ' AND c.delete_batch_id IS NULL',
+          variables: [
+            Variable<String>(deckId),
+            Variable<DateTime>(now),
+            Variable<DateTime>(now),
+          ],
+          readsFrom: {_db.deck, _db.card, _db.cardSchedule},
+        )
+        .getSingle();
+    return (
+      newCount: row.read<int>('new_count'),
+      dueCount: row.read<int>('due_count'),
+      nextDueAt: row.read<DateTime?>('next_due_at'),
+    );
   }
 
   /// The distinct meanings (`back_folded`) of [sessionCardIds] and of the

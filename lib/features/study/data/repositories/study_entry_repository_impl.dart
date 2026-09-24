@@ -11,19 +11,21 @@ import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
+import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/queue_plan_model.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
+import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/domain/repositories/study_entry_repository.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// Opens sessions on a deck (UC-STUDY-001 steps 3–5, UC-STUDY-003). Every
-/// write is one transaction, which the settings reads it makes join: the
-/// rules read the rows as they are at the moment of writing, and a
-/// refusal writes nothing.
+/// What the Study Entry of a deck shows, and the sessions it opens
+/// (UC-STUDY-001 steps 1–5, UC-STUDY-003). Every write is one transaction,
+/// which the settings reads it makes join: the rules read the rows as they
+/// are at the moment of writing, and a refusal writes nothing.
 final class StudyEntryRepositoryImpl implements StudyEntryRepository {
   StudyEntryRepositoryImpl(
     this._db,
@@ -32,6 +34,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     Random? random,
   }) : _dao = StudySessionDao(_db),
        _queue = StudyQueueDao(_db),
+       _views = StudyViewDao(_db),
        _now = now ?? DateTime.now,
        _random = random ?? Random();
 
@@ -39,6 +42,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
   final SettingsRepository _settings;
   final StudySessionDao _dao;
   final StudyQueueDao _queue;
+  final StudyViewDao _views;
   final DateTime Function() _now;
 
   /// Every shuffle and draw of a session (BR-STUDY-022, BR-STUDY-057).
@@ -118,6 +122,45 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
           );
       }
     });
+  }
+
+  @override
+  Stream<StudyEntry?> watchEntry({
+    required String deckId,
+    required DateTime now,
+  }) => _views
+      .watchDeckRow(deckId)
+      .asyncMap((deck) async => deck == null ? null : _entryOf(deckId, now))
+      .mapDatabaseErrors();
+
+  /// The Study Entry of [deckId] as it stands (spec §8.1): the options come
+  /// from the one-shot settings read, so a change of them emits again
+  /// through [watchEntry].
+  Future<StudyEntry?> _entryOf(String deckId, DateTime now) async {
+    final scope = await _scope(deckId);
+    if (scope == null) return null;
+    final (root, options) = scope;
+    final type = SchedulerType.fromCode(root.schedulerType!);
+    final due = _factsOf(await _dao.dueCards(deckId, now))
+        .take(options.cardLimit)
+        .toList();
+    final counts = await _dao.subtreeCounts(deckId, now);
+    return StudyEntry(
+      schedulerType: type,
+      cardLimit: options.cardLimit,
+      newCardCount: counts.newCount,
+      dueCardCount: counts.dueCount,
+      nextDueAt: counts.nextDueAt,
+      reviewModes: reviewModeOptions(
+        type,
+        due,
+        distinctMeaningCount: await _meaningsOf(root, due),
+      ),
+      resumableSessionId: await _views.resumableSessionId(
+        deckId,
+        startOfToday: startOfLocalDay(now),
+      ),
+    );
   }
 
   /// The root of [deckId] and the options it studies with; null when the
