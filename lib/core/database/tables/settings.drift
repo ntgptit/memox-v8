@@ -1,0 +1,15 @@
+-- Scope: V8.0 (schema.md) — schema only in this plan; read/write of these
+-- values is the future `settings` feature. reminder_* columns are
+-- scope: sub-project sau (daily reminders); kept here per schema.md so the
+-- business logic is not re-derived later.
+CREATE TABLE app_settings (
+  id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+  card_limit INTEGER NOT NULL DEFAULT 20,
+  new_card_order TEXT NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random')),
+  theme_mode TEXT NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark')),
+  language TEXT NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi')),
+  reminder_enabled INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)),
+  reminder_minute_of_day INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439),
+  reminder_last_delivered_at DATETIME,
+  updated_at DATETIME NOT NULL
+) AS AppSetting;

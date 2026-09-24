@@ -49,7 +49,10 @@
     "transfer": [],
     "trash": []
   },
-  "database_query_features": {},
+  "database_query_features": {
+    "card_queries": ["card"],
+    "deck_queries": ["deck"]
+  },
   "full_scope_prefixes": [
     ".github/",
     ".claude/skills/flutter-workflow/scripts/",

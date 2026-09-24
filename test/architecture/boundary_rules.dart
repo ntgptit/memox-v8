@@ -18,8 +18,9 @@ class SourceFile {
 /// at the base. A new feature adds its entry in the commit that creates it.
 const allowedFeatureImports = <String, Set<String>>{
   'srs': {},
+  'tags': {},
   'deck': {'srs'},
-  'card': {'deck', 'srs'},
+  'card': {'deck', 'srs', 'tags'},
 };
 
 const _package = 'package:memox/';

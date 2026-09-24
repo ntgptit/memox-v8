@@ -1,0 +1,20 @@
+import 'deck.drift';
+
+CREATE TABLE card (
+  id TEXT NOT NULL PRIMARY KEY,
+  deck_id TEXT NOT NULL REFERENCES deck (id) ON DELETE CASCADE,
+  front TEXT NOT NULL,
+  back TEXT NOT NULL,
+  front_folded TEXT NOT NULL DEFAULT '',
+  back_folded TEXT NOT NULL DEFAULT '',
+  is_flagged INTEGER NOT NULL DEFAULT 0 CHECK (is_flagged IN (0, 1)),
+  example TEXT,
+  hint TEXT,
+  pronunciation TEXT,
+  -- Scope: sub-project sau (Trash). No FK yet: delete_batches does not exist.
+  delete_batch_id TEXT,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) AS CardRow;
+
+CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id);

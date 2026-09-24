@@ -1,0 +1,169 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/srs.drift';
+
+-- BR-DECK-023: the active decks below :deck_id and the active cards of its
+-- subtree. No row when :deck_id is not an active deck.
+deckDeletionSummary:
+WITH RECURSIVE subtree(id) AS (
+  SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
+  UNION
+  SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id
+  WHERE d.delete_batch_id IS NULL
+)
+SELECT
+  (SELECT COUNT(*) - 1 FROM subtree) AS sub_deck_count,
+  (SELECT COUNT(*) FROM card c
+   WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL)
+    AS card_count
+FROM deck
+WHERE id = :deck_id AND delete_batch_id IS NULL;
+
+-- UC-DECK-003: every root deck with the counts of its whole tree, grouped by
+-- root_id in one statement. The sets are those of BR-STUDY-047 and
+-- BR-STUDY-051: New is an unlearned card; Due is a learned card whose due_at
+-- is at or before :now, Overdue before :start_of_today and Due today from it
+-- on (BR-STUDY-068). Both come from Dart (BR-STUDY-068).
+deckLevelOfRoots(:start_of_today AS DATETIME, :now AS DATETIME)
+  AS DeckTileRow:
+SELECT
+  d.id, d.name, d.sibling_position, d.created_at, d.scheduler_type,
+  (SELECT COUNT(*) FROM deck s
+   WHERE s.parent_id = d.id AND s.delete_batch_id IS NULL) AS sub_deck_count,
+  COALESCE(t.card_count, 0) AS card_count,
+  COALESCE(t.new_count, 0) AS new_count,
+  COALESCE(t.overdue_count, 0) AS overdue_count,
+  COALESCE(t.due_today_count, 0) AS due_today_count,
+  t.oldest_due_at AS oldest_due_at
+FROM deck d
+LEFT JOIN (
+  SELECT k.root_id AS tile_id,
+    COUNT(*) AS card_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NULL) AS new_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at < :start_of_today) AS overdue_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at >= :start_of_today AND cs.due_at <= :now) AS due_today_count,
+    MIN(cs.due_at) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at <= :now) AS oldest_due_at
+  FROM card c
+  JOIN deck k ON k.id = c.deck_id
+  JOIN card_schedule cs ON cs.card_id = c.id
+  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+  GROUP BY k.root_id
+) t ON t.tile_id = d.id
+WHERE d.parent_id IS NULL AND d.delete_batch_id IS NULL
+ORDER BY d.sibling_position, d.id;
+
+-- UC-DECK-003: every deck directly under :parent_id with the counts of its
+-- subtree, in one statement: a recursive walk anchored at each child, cycle
+-- safe (UNION) and never capped. The sets are those of deckLevelOfRoots.
+deckLevelOfChildren(:parent_id AS TEXT, :start_of_today AS DATETIME,
+  :now AS DATETIME) AS DeckTileRow:
+WITH RECURSIVE tree(tile_id, deck_id) AS (
+  SELECT id, id FROM deck
+  WHERE parent_id = :parent_id AND delete_batch_id IS NULL
+  UNION
+  SELECT tree.tile_id, d.id FROM deck d JOIN tree ON d.parent_id = tree.deck_id
+  WHERE d.delete_batch_id IS NULL
+),
+counts AS (
+  SELECT tree.tile_id AS tile_id,
+    COUNT(*) AS card_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NULL) AS new_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at < :start_of_today) AS overdue_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at >= :start_of_today AND cs.due_at <= :now) AS due_today_count,
+    MIN(cs.due_at) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND cs.due_at <= :now) AS oldest_due_at
+  FROM tree
+  JOIN card c ON c.deck_id = tree.deck_id AND c.delete_batch_id IS NULL
+  JOIN card_schedule cs ON cs.card_id = c.id
+  GROUP BY tree.tile_id
+)
+SELECT
+  d.id, d.name, d.sibling_position, d.created_at, r.scheduler_type,
+  (SELECT COUNT(*) FROM deck s
+   WHERE s.parent_id = d.id AND s.delete_batch_id IS NULL) AS sub_deck_count,
+  COALESCE(counts.card_count, 0) AS card_count,
+  COALESCE(counts.new_count, 0) AS new_count,
+  COALESCE(counts.overdue_count, 0) AS overdue_count,
+  COALESCE(counts.due_today_count, 0) AS due_today_count,
+  counts.oldest_due_at AS oldest_due_at
+FROM deck d
+JOIN deck r ON r.id = d.root_id
+LEFT JOIN counts ON counts.tile_id = d.id
+WHERE d.parent_id = :parent_id AND d.delete_batch_id IS NULL
+ORDER BY d.sibling_position, d.id;
+
+-- An open deck: the deck and every deck above it, root first. No row when
+-- :deck_id is not an active deck.
+deckAndAncestors(:deck_id AS TEXT):
+WITH RECURSIVE up(id, parent_id) AS (
+  SELECT id, parent_id FROM deck
+  WHERE id = :deck_id AND delete_batch_id IS NULL
+  UNION
+  SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id
+)
+SELECT * FROM deck WHERE id IN (SELECT id FROM up) ORDER BY depth;
+
+-- UC-DECK-005: the decks a move of :deck_id may pick, and the decks on their
+-- paths. The rules are DeckEntity.checkMove's, read the same way: active
+-- decks of every tree whose root runs the same scheduler at the same
+-- generation as the deck's root (BR-DECK-024), outside the deck's subtree
+-- (BR-DECK-017), holding decks or nothing (BR-DECK-009) and shallow enough
+-- for the subtree's height (BR-DECK-001). The current parent comes back with
+-- is_candidate false: it is only a step of the other paths. No row for a
+-- root, a missing deck or a deck in the Trash.
+deckMoveTargets(:deck_id AS TEXT, :max_depth AS INTEGER) AS DeckForestRow:
+WITH RECURSIVE
+  moving AS (
+    SELECT d.id, d.parent_id, r.scheduler_type, r.generation
+    FROM deck d JOIN deck r ON r.id = d.root_id
+    WHERE d.id = :deck_id AND d.parent_id IS NOT NULL
+      AND d.delete_batch_id IS NULL
+  ),
+  subtree(id, height) AS (
+    SELECT id, 1 FROM moving
+    UNION ALL
+    SELECT d.id, subtree.height + 1 FROM deck d
+    JOIN subtree ON d.parent_id = subtree.id
+    WHERE subtree.height < :max_depth
+  )
+SELECT d.id, d.name, d.parent_id, d.sibling_position,
+  d.id <> m.parent_id AS is_candidate
+FROM deck d
+JOIN deck r ON r.id = d.root_id
+JOIN moving m
+  ON r.scheduler_type = m.scheduler_type AND r.generation = m.generation
+WHERE d.delete_batch_id IS NULL
+  AND d.content_type IN ('deck', 'unset')
+  AND d.id NOT IN (SELECT id FROM subtree)
+  AND d.depth + (SELECT MAX(height) FROM subtree) <= :max_depth;
+
+-- IT-DISC-006: the decks a search inside :scope_id looks through, and the
+-- decks on their paths. is_candidate marks the decks strictly below
+-- :scope_id, or every active deck when :scope_id is null. Matching the name
+-- is Dart's: deck has no folded name, and SQLite's lower() folds ASCII only.
+deckSearchScope(:scope_id AS TEXT OR NULL) AS DeckForestRow:
+WITH RECURSIVE
+  up(id, parent_id) AS (
+    SELECT id, parent_id FROM deck
+    WHERE id = :scope_id AND delete_batch_id IS NULL
+    UNION
+    SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id
+  ),
+  down(id) AS (
+    SELECT id FROM up WHERE id = :scope_id
+    UNION
+    SELECT d.id FROM deck d JOIN down ON d.parent_id = down.id
+    WHERE d.delete_batch_id IS NULL
+  )
+SELECT d.id, d.name, d.parent_id, d.sibling_position,
+  (:scope_id IS NULL OR (d.id IN (SELECT id FROM down) AND d.id <> :scope_id))
+    AS is_candidate
+FROM deck d
+WHERE d.delete_batch_id IS NULL
+  AND (:scope_id IS NULL
+    OR d.id IN (SELECT id FROM up) OR d.id IN (SELECT id FROM down));

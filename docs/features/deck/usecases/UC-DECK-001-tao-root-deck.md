@@ -3,7 +3,7 @@ id: UC-DECK-001
 title: Tạo root deck
 status: ready
 rules: [BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS-001]
-code: []
+code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

@@ -1,0 +1,37 @@
+CREATE TABLE deck (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  parent_id TEXT REFERENCES deck (id) ON DELETE CASCADE,
+  root_id TEXT NOT NULL,
+  depth INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10),
+  content_type TEXT NOT NULL DEFAULT 'unset'
+    CHECK (content_type IN ('unset', 'card', 'deck')),
+  owner_id TEXT, -- NULL = local profile. Scope: sub-project sau (auth).
+  scheduler_type TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')),
+  scheduler_version INTEGER,
+  scheduler_config TEXT, -- JSON. Only on root, same NULL rule as scheduler_type.
+  study_config TEXT, -- JSON. Only on root (BR-STUDY-056).
+  generation INTEGER,
+  first_answered_at DATETIME,
+  -- Scope: sub-project sau (Starter decks). No FK yet: deck_templates does not exist.
+  source_template_id TEXT,
+  source_template_version INTEGER,
+  -- Scope: sub-project sau (Trash). No FK yet: delete_batches does not exist.
+  delete_batch_id TEXT,
+  sibling_position INTEGER NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  -- root deck rules: BR-DECK-002, BR-DECK-004
+  CHECK ((parent_id IS NULL) = (root_id = id)),
+  CHECK (parent_id IS NOT NULL OR content_type = 'deck'),
+  -- scheduler columns only on root: BR-DECK-025
+  CHECK ((parent_id IS NULL) = (scheduler_type IS NOT NULL)),
+  CHECK ((parent_id IS NULL) = (generation IS NOT NULL)),
+  CHECK ((parent_id IS NULL) = (scheduler_version IS NOT NULL)),
+  CHECK (parent_id IS NULL OR scheduler_config IS NULL),
+  CHECK (parent_id IS NULL OR study_config IS NULL),
+  CHECK (parent_id IS NULL OR generation IS NULL)
+) AS Deck;
+
+CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id);
+CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id);

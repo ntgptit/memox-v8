@@ -1,6 +1,6 @@
 ---
 feature: tags
-code: []
+code: [lib/features/tags/domain, lib/features/tags/data, lib/features/tags/di]
 depends_on: [card]
 ---
 ## Phạm vi
@@ -10,8 +10,6 @@ depends_on: [card]
 Mô hình dữ liệu tag (BR-TAG-001, BR-TAG-002) và Tag Management v1: catalog, lọc theo tag, đổi tên/gộp, xoá.
 
 Ngoại lệ: gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)); Tag Management vẫn là sub-project sau.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

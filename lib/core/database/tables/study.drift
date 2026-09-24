@@ -1,0 +1,67 @@
+import 'card.drift';
+import 'deck.drift';
+
+CREATE TABLE study_session (
+  id TEXT NOT NULL PRIMARY KEY,
+  deck_id TEXT NOT NULL REFERENCES deck (id) ON DELETE CASCADE,
+  root_id TEXT NOT NULL,
+  generation INTEGER NOT NULL,
+  session_kind TEXT NOT NULL CHECK (session_kind IN ('learning', 'reviewing')),
+  current_mode TEXT NOT NULL
+    CHECK (current_mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')),
+  status TEXT NOT NULL CHECK (
+    status IN ('in_progress', 'completed', 'abandoned', 'invalidated', 'failed')
+  ),
+  end_reason TEXT CHECK (
+    end_reason IN (
+      'user_exit', 'interrupted', 'scheduler_reset', 'scheduler_changed',
+      'stale_generation', 'persistence_error', 'content_deleted'
+    )
+  ),
+  cursor INTEGER NOT NULL DEFAULT 0,
+  card_limit INTEGER NOT NULL DEFAULT 20,
+  direction TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean', 'mixed')),
+  started_at DATETIME NOT NULL,
+  ended_at DATETIME,
+  -- invariant 12
+  CHECK (
+    (status IN ('in_progress', 'completed') AND end_reason IS NULL)
+    OR (status = 'abandoned' AND end_reason IN ('user_exit', 'interrupted'))
+    OR (status = 'invalidated' AND end_reason IN (
+      'scheduler_reset', 'scheduler_changed', 'stale_generation', 'content_deleted'
+    ))
+    OR (status = 'failed' AND end_reason = 'persistence_error')
+  ),
+  -- invariant 13
+  CHECK ((status = 'in_progress') = (ended_at IS NULL)),
+  -- invariant 31 (session half): direction only on reviewing + self_assess
+  CHECK (direction IS NULL OR (session_kind = 'reviewing' AND current_mode = 'self_assess'))
+) AS StudySession;
+
+-- Scope: V8.0 (schema.md) — schema and invariants only in this plan; the
+-- write path (opening a session, building rounds) is study/session business
+-- logic, owned by the core-learning-slice sub-project (Clarification 1).
+CREATE TABLE study_queue_items (
+  session_id TEXT NOT NULL REFERENCES study_session (id) ON DELETE CASCADE,
+  mode TEXT NOT NULL
+    CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')),
+  round INTEGER NOT NULL DEFAULT 1 CHECK (round >= 1),
+  card_id TEXT NOT NULL REFERENCES card (id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('pending', 'completed')),
+  available_at INTEGER NOT NULL DEFAULT 0 CHECK (available_at >= 0),
+  answers_in_session INTEGER NOT NULL DEFAULT 0 CHECK (answers_in_session >= 0),
+  remaining_ms INTEGER CHECK (remaining_ms IS NULL OR remaining_ms BETWEEN 0 AND 20000),
+  is_revealed INTEGER NOT NULL DEFAULT 0 CHECK (is_revealed IN (0, 1)),
+  direction TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')),
+  PRIMARY KEY (session_id, mode, round, card_id),
+  -- invariant 17: the relearning cap (1 scheduled + 3 relearning turns) holds on
+  -- self_assess only; the graded stages repeat by round with no cap (BR-STUDY-069).
+  CHECK (mode <> 'self_assess' OR answers_in_session <= 4),
+  -- invariant 21 (recall-only timer state)
+  CHECK (mode = 'recall' OR (remaining_ms IS NULL AND is_revealed = 0)),
+  -- invariant 31 (queue half): direction only on self_assess
+  CHECK (mode = 'self_assess' OR direction IS NULL)
+) AS StudyQueueItem;
+
+CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position);

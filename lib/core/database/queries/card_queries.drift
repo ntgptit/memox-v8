@@ -1,0 +1,48 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/tags.drift';
+import '../tables/srs.drift';
+
+-- BR-CARD-014: an active card, its schedule row and its tags in folded-name
+-- order. Drift reads the tags with a second statement and watches all four
+-- tables, so a tag change emits again. No row when :card_id is not an active
+-- card (BR-CARD-019).
+cardDetail(:card_id AS TEXT):
+SELECT c.**, s.**,
+  LIST(SELECT t.* FROM tags t JOIN card_tags ct ON ct.tag_id = t.id
+       WHERE ct.card_id = c.id ORDER BY t.name_folded, t.id) AS tags
+FROM card c
+JOIN card_schedule s ON s.card_id = c.id
+WHERE c.id = :card_id AND c.delete_batch_id IS NULL;
+
+-- BR-CARD-015: one page of a card's review log in one statement, newest
+-- first by keyset on (answered_at DESC, id DESC), after the row
+-- (:after_answered_at, :after_id), or from the newest when they are null.
+-- The card is the left side of the join: no row at all means it is not an
+-- active card; one row with a null log means it has no answer on this page
+-- (BR-CARD-018). :row_limit is the page size plus one, which tells the
+-- caller whether another page follows.
+cardHistoryPage(:card_id AS TEXT, :after_answered_at AS DATETIME OR NULL,
+  :after_id AS TEXT OR NULL, :row_limit AS INTEGER) AS CardHistoryRow:
+SELECT c.id AS card_id, r.**
+FROM card c
+LEFT JOIN review_log r ON r.card_id = c.id
+  AND (:after_answered_at IS NULL
+    OR r.answered_at < :after_answered_at
+    OR (r.answered_at = :after_answered_at AND r.id < :after_id))
+WHERE c.id = :card_id AND c.delete_batch_id IS NULL
+ORDER BY r.answered_at DESC, r.id DESC
+LIMIT :row_limit;
+
+-- BR-CARD-010: the decks the cards of :source_deck_id may move to, and the
+-- decks on their paths: every active deck of the source's tree.
+-- is_candidate marks a sub-deck that holds cards or nothing, other than the
+-- source. No row when the source is not an active deck.
+cardMoveTargets(:source_deck_id AS TEXT) AS DeckForestRow:
+SELECT d.id, d.name, d.parent_id, d.sibling_position,
+  (d.parent_id IS NOT NULL AND d.content_type IN ('unset', 'card')
+    AND d.id <> :source_deck_id) AS is_candidate
+FROM deck d
+JOIN deck source ON source.root_id = d.root_id
+WHERE source.id = :source_deck_id AND source.delete_batch_id IS NULL
+  AND d.delete_batch_id IS NULL;

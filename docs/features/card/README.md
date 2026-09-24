@@ -1,13 +1,11 @@
 ---
 feature: card
-code: []
+code: [lib/features/card/domain, lib/features/card/data, lib/features/card/di, lib/core/database/queries/card_queries.drift]
 depends_on: [deck]
 ---
 ## Phạm vi
 
 Nội dung card, cờ, di chuyển, thao tác hàng loạt và chi tiết card kèm lịch sử học (V8.0): quản lý card trong một deck loại `card` và màn chi tiết chỉ đọc.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

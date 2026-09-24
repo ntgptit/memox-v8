@@ -3,7 +3,7 @@ id: UC-DECK-004
 title: Tạo phần tử con và xác lập `content_type`
 status: ready
 rules: [BR-CARD-004, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-019]
-code: []
+code: [lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/usecases/create_sub_deck_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

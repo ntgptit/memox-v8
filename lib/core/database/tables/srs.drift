@@ -1,0 +1,75 @@
+import 'card.drift';
+
+CREATE TABLE card_schedule (
+  card_id TEXT NOT NULL PRIMARY KEY REFERENCES card (id) ON DELETE CASCADE,
+  scheduler_type TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')),
+  scheduler_version INTEGER NOT NULL,
+  generation INTEGER NOT NULL,
+  learned_at DATETIME,
+  due_at DATETIME,
+  last_answered_at DATETIME,
+  answer_count INTEGER NOT NULL DEFAULT 0,
+  lapse_count INTEGER NOT NULL DEFAULT 0,
+  current_box INTEGER CHECK (current_box BETWEEN 1 AND 8),
+  ease_factor REAL,
+  interval_days INTEGER,
+  repetitions INTEGER,
+  -- exactly one scheduler's state, matching scheduler_type
+  CHECK ((scheduler_type = 'eight_box') = (current_box IS NOT NULL)),
+  CHECK ((scheduler_type = 'sm2') = (ease_factor IS NOT NULL)),
+  CHECK ((ease_factor IS NULL) = (interval_days IS NULL)),
+  CHECK ((ease_factor IS NULL) = (repetitions IS NULL)),
+  -- invariant 28: no due date before learning is done. Invariant 24, the other
+  -- direction, is not a CHECK yet (Clarification 15).
+  CHECK (learned_at IS NOT NULL OR due_at IS NULL)
+) AS CardSchedule;
+
+CREATE INDEX idx_card_schedule_due ON card_schedule (due_at);
+
+-- session_id has no foreign key on purpose: srs must not depend on study's table.
+CREATE TABLE review_log (
+  id TEXT NOT NULL PRIMARY KEY,
+  card_id TEXT NOT NULL REFERENCES card (id) ON DELETE CASCADE,
+  session_id TEXT NOT NULL,
+  scheduler_type TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')),
+  generation INTEGER NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('learning', 'scheduled', 'relearning')),
+  mode TEXT NOT NULL
+    CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')),
+  outcome_reason TEXT CHECK (outcome_reason IS NULL OR outcome_reason = 'timeout'),
+  comparison_version INTEGER,
+  used_hint INTEGER CHECK (used_hint IS NULL OR used_hint IN (0, 1)),
+  direction TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')),
+  -- Quoted: ACTION is a keyword to drift's SQL parser, which drops the column
+  -- (with only a build warning) when it is bare.
+  "action" TEXT NOT NULL
+    CHECK ("action" IN ('forgotten', 'remembered', 'again', 'hard', 'good', 'easy')),
+  answered_at DATETIME NOT NULL,
+  next_due_at DATETIME,
+  previous_box INTEGER,
+  next_box INTEGER,
+  previous_ease_factor REAL,
+  next_ease_factor REAL,
+  previous_interval_days INTEGER,
+  next_interval_days INTEGER,
+  -- invariant 23: fill-only columns only on mode = fill
+  CHECK (mode = 'fill' OR (comparison_version IS NULL AND used_hint IS NULL)),
+  -- invariant 22: timeout only on recall
+  CHECK (outcome_reason IS NULL OR mode = 'recall')
+) AS ReviewLog;
+
+CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at);
+CREATE INDEX idx_review_log_session ON review_log (session_id);
+
+CREATE TRIGGER review_log_append_only
+BEFORE UPDATE ON review_log
+BEGIN
+  SELECT RAISE(ABORT, 'review_log is append-only');
+END;
+
+CREATE TRIGGER review_log_no_delete
+BEFORE DELETE ON review_log
+WHEN OLD.card_id IN (SELECT id FROM card)
+BEGIN
+  SELECT RAISE(ABORT, 'review_log rows are only removed by a card cascade');
+END;

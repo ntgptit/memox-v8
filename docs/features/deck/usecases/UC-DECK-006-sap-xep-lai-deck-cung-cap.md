@@ -3,7 +3,7 @@ id: UC-DECK-006
 title: Sắp xếp lại Deck cùng cấp
 status: ready
 rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-SRS-007]
-code: []
+code: [lib/features/deck/domain/usecases/reorder_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

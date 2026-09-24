@@ -40,6 +40,11 @@ as amended by [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)
 (scope) and [ADR-010](../../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md)
 (layering, folder names, Flutter version). Data model authority:
 [`docs/shared/data/schema.md`](../../shared/data/schema.md).
+Tasks 7–9 also carry stage 1 of
+[`2026-09-23-deck-card-backend-design.md`](../specs/2026-09-23-deck-card-backend-design.md)
+(§4): the sibling position of a new or moved deck, the start values of a
+schedule row, the scheduler change and the reset, and a card created with its
+schedule row.
 
 This plan replaces `docs/superpowers/plans/2026-09-21-memox-v8-foundation.md`,
 which is kept as history and must not be executed.
@@ -68,6 +73,11 @@ Every task's requirements implicitly include these.
 - Drift tables and named `.drift` queries are central in
   `lib/core/database/{tables,queries}`, never per-feature. DAOs are
   feature-owned, under `lib/features/<f>/data/datasources/`.
+- A DAO writes through Drift's table API (`into`, `update`, `delete`) or
+  `customInsert` / `customUpdate` with `updates:`, never `customStatement`:
+  only those tell Drift's `watch()` streams that a table changed, and the read
+  models of the deck/card backend spec are streams. `customStatement` stays for
+  pragmas and test fixtures.
 - `domain/` is pure Dart: no `package:flutter`, no `package:drift`, no
   `package:memox/core/database/`.
 - `SrsScheduler` is the only cross-implementation interface in this plan (two
@@ -162,7 +172,12 @@ made and recorded so review can push back on them, not gaps.
    or use case is written for them here**: the session/queue write path
    (opening a session, building rounds, answering) is session/study business
    logic, owned by the core-learning-slice sub-project (spec §2,
-   decomposition item 3). `app_settings` is explicitly "**Phạm vi:** V8.0"
+   decomposition item 3). One write reaches `study_session` anyway:
+   `ScheduleRepository.changeScheduler` and `resetLearning` close the root's
+   `in_progress` sessions as `invalidated` in their own transaction
+   (BR-STUDY-015, BR-STUDY-016; deck/card backend spec §4), through the srs DAO
+   that already reads `study_session.generation` for `recordReview` (Task 8).
+   `app_settings` is explicitly "**Phạm vi:** V8.0"
    too — created now as schema only, same reasoning, owned by the future
    `settings` feature. `tags` and `card_tags` are V8.0 for tagging a card
    (ADR-009 decision 4; schema.md updated on 2026-09-23 to match) — created
@@ -232,6 +247,35 @@ made and recorded so review can push back on them, not gaps.
     produces those values — the table must accept exactly the domain
     schema.md defines from day one, so a later migration is not needed just
     to loosen a `CHECK`.
+13. **The scheduler a root already runs is a no-op, even on a locked tree**
+    (Task 8). BR-SRS-002 makes that choice a no-op with no condition, and a
+    request that changes nothing breaks no lock, so `changeScheduler` answers
+    `Ok` before it looks at `first_answered_at`.
+14. **`resetLearning` of a sub-deck answers `SrsRejection.notARootDeck`**, as
+    `changeScheduler` does (deck/card backend spec §4). The generation and the
+    scheduler live on the root (BR-DECK-025); without the check, the sub-deck's
+    `root_id` would reach every schedule row of the tree while the root's
+    generation stays as it is.
+15. **Known gap, owned by the core-learning slice: the new-card branch of the
+    schedulers** (Tasks 3, 4, 8). BR-STUDY-053 makes finishing the new-card
+    chain an event, not a review: until then `card_schedule` does not change,
+    and the event sets `learned_at`, the lowest level (`eight_box` box 1, `sm2`
+    interval 1) and `due_at` at the next local midnight, with no `scheduled`
+    log. This plan's `recordReview` instead moves a new card on its first
+    `remembered`/`good` (box 2, interval 1) and sets `learned_at` without
+    `due_at`, which breaks invariant 24 (BR-STUDY-058) until the card's next
+    review. It stays as written (project owner, 2026-09-23): nothing calls
+    `recordReview` before the study sub-project, and the deck/card backend
+    reads schedule rows without writing reviews. The study sub-project
+    replaces the branch and adds the completion event (`completeLearning`,
+    schema.md invariant 30). For the same reason Task 5's `CHECK` holds
+    invariant 28 only. Running Tasks 3–4 showed that the review branch
+    differs too, and it stays as written for the same reason: a `forgotten`
+    scheduled review keeps its box here, where BR-SRS-008 sends it to box 1
+    and reschedules it; `sm2`'s `again` is `q = 2` here and `q = 0` in
+    BR-SRS-010; and the scheduler derives `kind` from the state, where
+    BR-SRS-017/018 let the session say which turn is `relearning`, so a lapse
+    is counted on the `forgotten`/`again` of a learned card.
 
 ## Review Focus
 
@@ -606,7 +650,7 @@ triggers a lint, fix it in place.
 
 ```bash
 git add -A
-git commit -m "chore: scaffold Flutter project, pin toolchain, add boundary guard" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "chore: scaffold Flutter project, pin toolchain, add boundary guard" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -839,7 +883,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/core test/core
-git commit -m "feat(core): add id, outcome and failure-mapping primitives" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(core): add id, outcome and failure-mapping primitives" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -1107,7 +1151,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/srs test/features/srs code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
-git commit -m "feat(srs): add SRS domain types, due-date rule and eight_box scheduler" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(srs): add SRS domain types, due-date rule and eight_box scheduler" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 Expected: every command exits 0; the guard shows no `stale_targets_pending`.
@@ -1277,7 +1321,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/srs test/features/srs
-git commit -m "feat(srs): add sm2 scheduler and scheduler lookup" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(srs): add sm2 scheduler and scheduler lookup" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -1411,7 +1455,8 @@ CREATE TABLE card_schedule (
   CHECK ((scheduler_type = 'sm2') = (ease_factor IS NOT NULL)),
   CHECK ((ease_factor IS NULL) = (interval_days IS NULL)),
   CHECK ((ease_factor IS NULL) = (repetitions IS NULL)),
-  -- invariant 24/28: learned_at and due_at move together
+  -- invariant 28: no due date before learning is done. Invariant 24, the other
+  -- direction, is not a CHECK yet (Clarification 15).
   CHECK (learned_at IS NOT NULL OR due_at IS NULL)
 ) AS CardSchedule;
 
@@ -1978,7 +2023,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/core/database test/support test/database drift_schemas code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
-git commit -m "feat(db): add v1 schema, AppDatabase and data invariants" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(db): add v1 schema, AppDatabase and data invariants" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 Expected: every command exits 0; the guard shows no `stale_targets_pending`.
@@ -2317,7 +2362,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/deck test/features/deck
-git commit -m "feat(deck): add deck entity, pure tree rules and repository contract" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(deck): add deck entity, pure tree rules and repository contract" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -2333,12 +2378,16 @@ git commit -m "feat(deck): add deck entity, pure tree rules and repository contr
 **Interfaces:**
 - Consumes: `AppDatabase` and its Drift row class `Deck` (Task 5); `DeckEntity`
   and its rules `DeckEntity.checkName` / `checkCreateSubDeck` / `checkMove`,
-  `DeckRepository`, `DeckRejection`, `DeckContentType` (Task 6); `Outcome`,
-  `mapDatabaseError` (Task 2).
+  `DeckRepository`, `DeckRejection`, `DeckContentType` (Task 6); `schedulerFor`
+  (Task 4, for the root's `scheduler_version`); `Outcome`, `mapDatabaseError`
+  (Task 2).
 - Produces: `class DeckRepositoryImpl implements DeckRepository` with
   constructor `DeckRepositoryImpl(AppDatabase db, {DateTime Function()? now})`;
   `Provider<DeckRepository> deckRepositoryProvider` (depends on `databaseProvider`)
-  in `lib/features/deck/di/deck_repository_provider.dart`.
+  in `lib/features/deck/di/deck_repository_provider.dart`. A created or moved
+  deck takes the end of its sibling group: its `siblingPosition` is the
+  group's largest plus one, or `0` for the first child (deck/card backend
+  spec §4, BR-SRS-007).
 
 Every method runs inside `db.transaction(() async { ... })`. Per
 `flutter-architecture`'s "a rule that needs the data as it stands at the
@@ -2384,7 +2433,8 @@ void main() {
   test('createRootDeck rejects a blank name and writes nothing', () async {
     final result = await repo.createRootDeck(name: '   ', schedulerType: SchedulerType.eightBox);
     expect((result as Rejected<DeckEntity, DeckRejection>).reason, DeckRejection.blankName);
-    expect(await db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle(), isNotNull);
+    final count = await db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle();
+    expect(count.read<int>('n'), 0);
   });
 
   test('createSubDeck on a fresh root sets content_type unset', () async {
@@ -2458,6 +2508,35 @@ void main() {
     final result = await repo.moveDeck(deckId: rootA.id, newParentId: rootB.id);
     expect((result as Rejected<void, DeckRejection>).reason, DeckRejection.rootCannotMove);
   });
+
+  test('a new deck goes to the end of its sibling group (BR-SRS-007)', () async {
+    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final first = ((await repo.createSubDeck(parentId: rootA.id, name: 'first')) as Ok<DeckEntity, DeckRejection>).value;
+    final second = ((await repo.createSubDeck(parentId: rootA.id, name: 'second')) as Ok<DeckEntity, DeckRejection>).value;
+    await repo.deleteDeck(deckId: first.id);
+    final third = ((await repo.createSubDeck(parentId: rootA.id, name: 'third')) as Ok<DeckEntity, DeckRejection>).value;
+    final onlyUnderB = ((await repo.createSubDeck(parentId: rootB.id, name: 'only')) as Ok<DeckEntity, DeckRejection>).value;
+
+    expect([rootA.siblingPosition, rootB.siblingPosition], [0, 1], reason: 'roots share the NULL-parent group');
+    expect([first.siblingPosition, second.siblingPosition], [0, 1]);
+    expect(third.siblingPosition, 2, reason: 'the end is the largest position plus one, not the sibling count');
+    expect(onlyUnderB.siblingPosition, 0, reason: 'each parent numbers its own group');
+  });
+
+  test('a moved deck goes to the end of its new sibling group', () async {
+    final rootA = ((await repo.createRootDeck(name: 'a', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final rootB = ((await repo.createRootDeck(name: 'b', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final branch = ((await repo.createSubDeck(parentId: rootA.id, name: 'branch')) as Ok<DeckEntity, DeckRejection>).value;
+    final gone = ((await repo.createSubDeck(parentId: rootB.id, name: 'gone')) as Ok<DeckEntity, DeckRejection>).value;
+    final kept = ((await repo.createSubDeck(parentId: rootB.id, name: 'kept')) as Ok<DeckEntity, DeckRejection>).value;
+    await repo.deleteDeck(deckId: gone.id);
+
+    final result = await repo.moveDeck(deckId: branch.id, newParentId: rootB.id);
+
+    expect(result, isA<Ok<void, DeckRejection>>());
+    expect((await repo.findById(branch.id))!.siblingPosition, kept.siblingPosition + 1);
+  });
 }
 ```
 
@@ -2474,19 +2553,32 @@ class from Task 5; a DAO never returns a domain entity), `subtreeIds`
 (recursive `UNION`, per schema.md's "Duyệt cây" note: cycle-safe, never
 depth-capped), `subtreeHeight` (probe query with a caller-supplied cap
 constant), `ancestorIds`, and the raw `insert`/`update` calls
-`DeckRepositoryImpl` composes inside its own transaction.
+`DeckRepositoryImpl` composes inside its own transaction. It also answers
+`Future<int> nextSiblingPosition(String? parentId)`, the end of a sibling
+group; `IS` makes a `NULL` parent select the roots:
+
+```sql
+SELECT COALESCE(MAX(sibling_position) + 1, 0) AS next FROM deck WHERE parent_id IS ?
+```
 
 `lib/features/deck/data/repositories/deck_repository_impl.dart` implements
 each `DeckRepository` method: run the matching `DeckEntity` rule(s) against
 data read from the DAO inside `db.transaction`, then write via the DAO, mapping
 each `Deck` row to a `DeckEntity` on the way out and any thrown DB error through
-`mapDatabaseError` into `Rejected`/rethrow as appropriate. `moveDeck`
-additionally: rejects when `deckId`'s row has `parentId == null`
-(`DeckRejection.rootCannotMove`) before calling `DeckEntity.checkMove`; on success, updates `root_id`/`depth` for the moving
-node and every descendant via the DAO's recursive CTE update
-(BR-DECK-018); recomputes `content_type` on the old and new parent in the
-same transaction. `deleteDeck` cascades via the DB's `ON DELETE CASCADE`
-and then recomputes the parent's `content_type`.
+`mapDatabaseError` into `Rejected`/rethrow as appropriate. `createRootDeck`
+writes `generation = 1`, `scheduler_version = schedulerFor(schedulerType).version`
+and `scheduler_type` as `'eight_box'` or `'sm2'` (schema.md). `createRootDeck`
+and `createSubDeck` write `sibling_position = nextSiblingPosition(parentId)`,
+read inside their transaction. `moveDeck` additionally: rejects when
+`deckId`'s row has `parentId == null` (`DeckRejection.rootCannotMove`) before
+calling `DeckEntity.checkMove`; on success, updates `root_id`/`depth` for the
+moving node and every descendant via the DAO's recursive CTE update
+(BR-DECK-018); sets the moving deck's `sibling_position` to
+`nextSiblingPosition(newParentId)`, read before its `parent_id` changes (its
+descendants keep theirs: their parents do not change); recomputes
+`content_type` on the old and new parent in the same transaction. `deleteDeck`
+cascades via the DB's `ON DELETE CASCADE` and then recomputes the parent's
+`content_type`.
 
 `lib/features/deck/di/deck_repository_provider.dart`:
 
@@ -2532,7 +2624,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/deck test/features/deck code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
-git commit -m "feat(deck): add transactional deck repository and provider" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(deck): add transactional deck repository and provider" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -2545,32 +2637,132 @@ git commit -m "feat(deck): add transactional deck repository and provider" -m "C
   `lib/features/srs/domain/repositories/schedule_repository.dart`,
   `lib/features/srs/domain/failures/srs_failure.dart`,
   `lib/features/srs/di/schedule_repository_provider.dart`
-- Test: `test/features/srs/data/schedule_repository_impl_test.dart`
+- Modify: `lib/features/srs/domain/models/card_schedule_state_model.dart` (Task 3):
+  add `CardScheduleState.initial`
+- Test: `test/features/srs/domain/card_schedule_state_model_test.dart`,
+  `test/features/srs/data/schedule_repository_impl_test.dart`
 
 **Interfaces:**
 - Consumes: `AppDatabase` (Task 5); `SrsScheduler`, `schedulerFor`,
   `CardScheduleState`, `ReviewLogEntry`, `SchedulerType`, `EightBoxAction`,
   `Sm2Action` (Tasks 3–4); `Outcome`, `mapDatabaseError` (Task 2). `srs` imports
   no feature (ADR-011 import map: `srs → ∅`): it reads the card's `deck_id` and the
-  root deck's `scheduler_type`/`generation`/`first_answered_at` through its own DAO
-  over the central tables in `lib/core/database/`.
-- Produces: `enum SrsRejection { unsupportedAction, schedulerLocked, staleGeneration, notFound }`
-  (`srs_failure.dart`); `abstract interface class ScheduleRepository` with
-  `Future<Outcome<void, SrsRejection>> recordReview({required String cardId, required String sessionId, required Object action, DateTime? now})`,
-  `Future<Outcome<void, SrsRejection>> resetLearning({required String rootDeckId})`,
-  `Future<Outcome<void, SrsRejection>> changeScheduler({required String rootDeckId, required SchedulerType newType})`;
-  `class ScheduleRepositoryImpl implements ScheduleRepository`;
-  `Provider<ScheduleRepository> scheduleRepositoryProvider` in
-  `lib/features/srs/di/schedule_repository_provider.dart`.
+  root deck's `scheduler_type`/`scheduler_version`/`generation`/`first_answered_at`
+  through its own DAO over the central tables in `lib/core/database/`.
+- Produces:
+  - `factory CardScheduleState.initial(SchedulerType type, {required int generation})`
+    (`card_schedule_state_model.dart`): the start values of a schedule row
+    (BR-CARD-004). Card creation, the scheduler change and the reset all write
+    it; nothing else defines start values.
+  - `enum SrsRejection { unsupportedAction, schedulerLocked, staleGeneration, notFound, notARootDeck }`
+    (`srs_failure.dart`).
+  - `abstract interface class ScheduleRepository` with
+    `Future<void> initializeCard({required String cardId})`,
+    `Future<Outcome<void, SrsRejection>> recordReview({required String cardId, required String sessionId, required Object action, DateTime? now})`,
+    `Future<Outcome<void, SrsRejection>> resetLearning({required String rootDeckId})`,
+    `Future<Outcome<void, SrsRejection>> changeScheduler({required String rootDeckId, required SchedulerType newType})`.
+    Task 9's `CardRepositoryImpl.createCard` calls `initializeCard` inside its own
+    transaction.
+  - `class ScheduleRepositoryImpl implements ScheduleRepository` with constructor
+    `ScheduleRepositoryImpl(AppDatabase db, {DateTime Function()? now})`.
+  - `Provider<ScheduleRepository> scheduleRepositoryProvider` in
+    `lib/features/srs/di/schedule_repository_provider.dart`.
 
-- [ ] **Step 1: Write the failing repository tests**
+- [ ] **Step 1: Write the failing start-values test**
 
-`test/features/srs/data/schedule_repository_impl_test.dart` — set up a root deck
-and a card by raw inserts (`srs` imports no feature, so its tests do not either),
-then cover:
+`test/features/srs/domain/card_schedule_state_model_test.dart`:
 
 ```dart
-import 'package:drift/drift.dart' show Variable;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+
+void main() {
+  test('an eight_box card starts in box 1, unlearned and unscheduled (BR-CARD-004)', () {
+    final state = CardScheduleState.initial(SchedulerType.eightBox, generation: 3);
+    expect(state.generation, 3);
+    expect(state.learnedAt, isNull);
+    expect(state.dueAt, isNull);
+    expect(state.lastAnsweredAt, isNull);
+    expect(state.answerCount, 0);
+    expect(state.lapseCount, 0);
+    expect(state.currentBox, 1);
+    expect(state.easeFactor, isNull);
+    expect(state.intervalDays, isNull);
+    expect(state.repetitions, isNull);
+  });
+
+  test('an sm2 card starts at ease 2.5, interval 0, repetition 0 (BR-CARD-004)', () {
+    final state = CardScheduleState.initial(SchedulerType.sm2, generation: 1);
+    expect(state.generation, 1);
+    expect(state.learnedAt, isNull);
+    expect(state.dueAt, isNull);
+    expect(state.lastAnsweredAt, isNull);
+    expect(state.answerCount, 0);
+    expect(state.lapseCount, 0);
+    expect(state.currentBox, isNull);
+    expect(state.easeFactor, 2.5);
+    expect(state.intervalDays, 0);
+    expect(state.repetitions, 0);
+  });
+}
+```
+
+- [ ] **Step 2: Run to verify it fails**
+
+Run: `flutter test test/features/srs/domain/card_schedule_state_model_test.dart`
+Expected: FAIL — `CardScheduleState` has no member `initial`.
+
+- [ ] **Step 3: Add `CardScheduleState.initial`**
+
+In `lib/features/srs/domain/models/card_schedule_state_model.dart`, import
+`package:memox/features/srs/domain/models/scheduler_type_model.dart` and add this
+factory next to the `eightBox`/`sm2` constructors:
+
+```dart
+  /// The row a card starts with (BR-CARD-004), and the row the scheduler
+  /// change (BR-SRS-004) and the reset (BR-SRS-020) write again: nothing
+  /// learned, nothing scheduled, the lowest level of [type], at [generation].
+  factory CardScheduleState.initial(
+    SchedulerType type, {
+    required int generation,
+  }) => switch (type) {
+    SchedulerType.eightBox => CardScheduleState.eightBox(
+      generation: generation,
+      learnedAt: null,
+      dueAt: null,
+      lastAnsweredAt: null,
+      answerCount: 0,
+      lapseCount: 0,
+      currentBox: 1,
+    ),
+    SchedulerType.sm2 => CardScheduleState.sm2(
+      generation: generation,
+      learnedAt: null,
+      dueAt: null,
+      lastAnsweredAt: null,
+      answerCount: 0,
+      lapseCount: 0,
+      easeFactor: 2.5,
+      intervalDays: 0,
+      repetitions: 0,
+    ),
+  };
+```
+
+- [ ] **Step 4: Run to verify it passes**
+
+Run: `flutter test test/features/srs/domain`
+Expected: PASS, the Task 3 and Task 4 tests included.
+
+- [ ] **Step 5: Write the failing repository tests**
+
+`test/features/srs/data/schedule_repository_impl_test.dart`. The fixtures are raw
+inserts: `srs` imports no feature, so its tests do not either. `_writes` reads
+SQLite's `total_changes()`, so "writes nothing" is measured, not assumed.
+
+```dart
+import 'package:drift/drift.dart' show QueryRow, Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -2580,6 +2772,106 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/test_database.dart';
+
+Future<void> _addCard(AppDatabase db, String cardId, String deckId) => db.customStatement(
+  "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES (?, ?, 'f', 'b', 0, 0)",
+  [cardId, deckId],
+);
+
+/// One tree per [rootId]: a root at generation 1 running [scheduler], a
+/// sub-deck `<rootId>-leaf` holding one card, that card's start-value
+/// schedule row, and an `in_progress` session of the root.
+/// Returns (rootId, cardId, sessionId).
+Future<(String, String, String)> _tree(
+  AppDatabase db,
+  String rootId, {
+  String scheduler = 'eight_box',
+}) async {
+  final cardId = '$rootId-card';
+  final sessionId = '$rootId-session';
+  await db.customStatement(
+    'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, '
+    'scheduler_version, generation, sibling_position, created_at, updated_at) '
+    "VALUES (?, 'root', NULL, ?, 1, 'deck', ?, 1, 1, 0, 0, 0)",
+    [rootId, rootId, scheduler],
+  );
+  await db.customStatement(
+    'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, '
+    'sibling_position, created_at, updated_at) '
+    "VALUES (?, 'leaf', ?, ?, 2, 'card', 0, 0, 0)",
+    ['$rootId-leaf', rootId, rootId],
+  );
+  await _addCard(db, cardId, '$rootId-leaf');
+  await db.customStatement(
+    scheduler == 'sm2'
+        ? 'INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, '
+              "ease_factor, interval_days, repetitions) VALUES (?, 'sm2', 1, 1, 2.5, 0, 0)"
+        : 'INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, '
+              "current_box) VALUES (?, 'eight_box', 1, 1, 1)",
+    [cardId],
+  );
+  await db.customStatement(
+    'INSERT INTO study_session (id, deck_id, root_id, generation, session_kind, current_mode, '
+    "status, cursor, card_limit, started_at) VALUES (?, ?, ?, 1, 'learning', 'self_assess', "
+    "'in_progress', 0, 20, 0)",
+    [sessionId, rootId, rootId],
+  );
+  return (rootId, cardId, sessionId);
+}
+
+/// A card two levels below [rootId] (root → branch → deep) in an `eight_box`
+/// tree: a statement that reaches only the root's children misses it.
+Future<String> _deepCard(AppDatabase db, String rootId) async {
+  final cardId = '$rootId-deep-card';
+  await db.customStatement(
+    'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, '
+    'sibling_position, created_at, updated_at) '
+    "VALUES (?, 'branch', ?, ?, 2, 'deck', 1, 0, 0), (?, 'deep', ?, ?, 3, 'card', 0, 0, 0)",
+    ['$rootId-branch', rootId, rootId, '$rootId-deep', '$rootId-branch', rootId],
+  );
+  await _addCard(db, cardId, '$rootId-deep');
+  await db.customStatement(
+    'INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, current_box) '
+    "VALUES (?, 'eight_box', 1, 1, 1)",
+    [cardId],
+  );
+  return cardId;
+}
+
+Future<QueryRow> _row(AppDatabase db, String table, String column, String id) => db
+    .customSelect('SELECT * FROM $table WHERE $column = ?', variables: [Variable(id)])
+    .getSingle();
+
+Future<QueryRow> _deck(AppDatabase db, String id) => _row(db, 'deck', 'id', id);
+
+Future<QueryRow> _schedule(AppDatabase db, String cardId) =>
+    _row(db, 'card_schedule', 'card_id', cardId);
+
+Future<QueryRow> _session(AppDatabase db, String id) => _row(db, 'study_session', 'id', id);
+
+/// Rows inserted, updated or deleted on this connection so far: the same
+/// number before and after a call proves the call wrote nothing.
+Future<int> _writes(AppDatabase db) async =>
+    (await db.customSelect('SELECT total_changes() AS n').getSingle()).read<int>('n');
+
+void _expectStartValues(QueryRow row, {required String scheduler, required int generation}) {
+  expect(row.read<String>('scheduler_type'), scheduler);
+  expect(row.read<int>('generation'), generation);
+  expect(row.data['learned_at'], isNull);
+  expect(row.data['due_at'], isNull);
+  expect(row.data['last_answered_at'], isNull);
+  expect(row.read<int>('answer_count'), 0);
+  expect(row.read<int>('lapse_count'), 0);
+  if (scheduler == 'sm2') {
+    expect(row.data['current_box'], isNull);
+    expect(row.read<double>('ease_factor'), 2.5);
+    expect(row.read<int>('interval_days'), 0);
+    expect(row.read<int>('repetitions'), 0);
+    return;
+  }
+  expect(row.read<int>('current_box'), 1);
+  expect(row.data['ease_factor'], isNull);
+}
 
 void main() {
   late AppDatabase db;
@@ -2591,28 +2883,32 @@ void main() {
   });
   tearDown(() => db.close());
 
-  // Fixture helper: inserts a root deck (eight_box, generation 1), a card in
-  // it, an initial card_schedule row (box 1, learnedAt null) and an
-  // in_progress study_session at that generation. Returns (rootId, cardId, sessionId).
-  Future<(String, String, String)> _fixture() async { /* raw inserts per schema.md shapes */ }
+  test('initializeCard writes the start values of the root scheduler at the root generation (BR-CARD-004)', () async {
+    await _tree(db, 'r', scheduler: 'sm2');
+    await db.customStatement("UPDATE deck SET generation = 3 WHERE id = 'r'");
+    await _addCard(db, 'new', 'r-leaf');
+
+    await repo.initializeCard(cardId: 'new');
+
+    _expectStartValues(await _schedule(db, 'new'), scheduler: 'sm2', generation: 3);
+  });
+
+  test('initializeCard of a missing card throws', () async {
+    await expectLater(repo.initializeCard(cardId: 'missing'), throwsStateError);
+  });
 
   test('recordReview rejects an action the deck scheduler does not support', () async {
-    final (_, cardId, sessionId) = await _fixture(); // eight_box deck
+    final (_, cardId, sessionId) = await _tree(db, 'r'); // eight_box
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: Sm2Action.good);
     expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.unsupportedAction);
   });
 
   test('recordReview writes card_schedule and an append-only review_log row', () async {
-    final (_, cardId, sessionId) = await _fixture();
+    final (_, cardId, sessionId) = await _tree(db, 'r');
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
     expect(result, isA<Ok<void, SrsRejection>>());
 
-    final schedule = await db.customSelect(
-      'SELECT current_box, learned_at FROM card_schedule WHERE card_id = ?',
-      variables: [Variable(cardId)],
-    ).getSingle();
-    expect(schedule.read<int>('current_box'), 2);
-
+    expect((await _schedule(db, cardId)).read<int>('current_box'), 2);
     final logCount = await db.customSelect(
       'SELECT COUNT(*) AS n FROM review_log WHERE card_id = ?',
       variables: [Variable(cardId)],
@@ -2621,7 +2917,7 @@ void main() {
   });
 
   test('reviewing a card deleted mid-session returns notFound and writes no log row', () async {
-    final (_, cardId, sessionId) = await _fixture();
+    final (_, cardId, sessionId) = await _tree(db, 'r');
     await db.customStatement('DELETE FROM card WHERE id = ?', [cardId]);
 
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
@@ -2631,7 +2927,7 @@ void main() {
   });
 
   test('a review from a stale-generation session is rejected, not applied', () async {
-    final (rootId, cardId, sessionId) = await _fixture();
+    final (rootId, cardId, sessionId) = await _tree(db, 'r');
     await repo.resetLearning(rootDeckId: rootId); // bumps generation to 2
 
     final result = await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
@@ -2639,42 +2935,142 @@ void main() {
   });
 
   test('resetLearning bumps generation and recreates card_schedule', () async {
-    final (rootId, cardId, sessionId) = await _fixture();
+    final (rootId, cardId, sessionId) = await _tree(db, 'r');
     await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
 
     await repo.resetLearning(rootDeckId: rootId);
 
-    final schedule = await db.customSelect(
-      'SELECT generation, learned_at, current_box FROM card_schedule WHERE card_id = ?',
-      variables: [Variable(cardId)],
-    ).getSingle();
-    expect(schedule.read<int>('generation'), 2);
-    expect(schedule.data['learned_at'], isNull);
-    expect(schedule.read<int>('current_box'), 1);
+    expect((await _deck(db, rootId)).read<int>('generation'), 2);
+    _expectStartValues(await _schedule(db, cardId), scheduler: 'eight_box', generation: 2);
+  });
+
+  test('resetLearning of an sm2 tree writes sm2 start values', () async {
+    final (rootId, cardId, sessionId) = await _tree(db, 'r', scheduler: 'sm2');
+    await repo.recordReview(cardId: cardId, sessionId: sessionId, action: Sm2Action.good);
+
+    await repo.resetLearning(rootDeckId: rootId);
+
+    _expectStartValues(await _schedule(db, cardId), scheduler: 'sm2', generation: 2);
+  });
+
+  test('resetLearning unlocks the scheduler and closes the open sessions (BR-SRS-024, BR-STUDY-015)', () async {
+    final (rootId, cardId, sessionId) = await _tree(db, 'r');
+    await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
+
+    await repo.resetLearning(rootDeckId: rootId);
+
+    expect((await _deck(db, rootId)).data['first_answered_at'], isNull);
+    final session = await _session(db, sessionId);
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'scheduler_reset');
+    expect(session.data['ended_at'], isNotNull);
+  });
+
+  test('resetLearning of a sub-deck is rejected with notARootDeck and writes nothing', () async {
+    await _tree(db, 'r');
+    final before = await _writes(db);
+
+    final result = await repo.resetLearning(rootDeckId: 'r-leaf');
+
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.notARootDeck);
+    expect(await _writes(db), before);
   });
 
   test('changeScheduler before the first review is allowed and keeps generation', () async {
-    final (rootId, _, __) = await _fixture();
+    final (rootId, _, _) = await _tree(db, 'r');
     final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
     expect(result, isA<Ok<void, SrsRejection>>());
+
+    final root = await _deck(db, rootId);
+    expect(root.read<String>('scheduler_type'), 'sm2');
+    expect(root.read<int>('generation'), 1, reason: 'BR-SRS-002: a change is not a reset');
+  });
+
+  test('changeScheduler starts every card of the tree over under the new scheduler (BR-SRS-004)', () async {
+    final (rootId, cardId, _) = await _tree(db, 'r');
+    final deepCardId = await _deepCard(db, rootId);
+
+    await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
+
+    _expectStartValues(await _schedule(db, cardId), scheduler: 'sm2', generation: 1);
+    _expectStartValues(await _schedule(db, deepCardId), scheduler: 'sm2', generation: 1);
+  });
+
+  test('changeScheduler closes the open sessions of the tree (BR-STUDY-016)', () async {
+    final (rootId, _, sessionId) = await _tree(db, 'r');
+
+    await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
+
+    final session = await _session(db, sessionId);
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'scheduler_changed');
+    expect(session.data['ended_at'], isNotNull);
+  });
+
+  test('changeScheduler leaves other trees alone', () async {
+    final (rootId, _, _) = await _tree(db, 'r');
+    final (_, otherCardId, otherSessionId) = await _tree(db, 'other');
+
+    await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
+
+    _expectStartValues(await _schedule(db, otherCardId), scheduler: 'eight_box', generation: 1);
+    expect((await _session(db, otherSessionId)).read<String>('status'), 'in_progress');
+  });
+
+  test('changeScheduler to the scheduler the root runs writes nothing (UC-DECK-002 A4)', () async {
+    final (rootId, _, _) = await _tree(db, 'r');
+    final before = await _writes(db);
+
+    final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.eightBox);
+
+    expect(result, isA<Ok<void, SrsRejection>>());
+    expect(await _writes(db), before);
+  });
+
+  test('the scheduler the root runs is a no-op on a locked tree too, not a rejection', () async {
+    final (rootId, cardId, sessionId) = await _tree(db, 'r');
+    await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
+    final before = await _writes(db);
+
+    final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.eightBox);
+
+    expect(result, isA<Ok<void, SrsRejection>>());
+    expect(await _writes(db), before);
   });
 
   test('changeScheduler after the first review is rejected (locked)', () async {
-    final (rootId, cardId, sessionId) = await _fixture();
+    final (rootId, cardId, sessionId) = await _tree(db, 'r');
     await repo.recordReview(cardId: cardId, sessionId: sessionId, action: EightBoxAction.remembered);
+    final before = await _writes(db);
 
     final result = await repo.changeScheduler(rootDeckId: rootId, newType: SchedulerType.sm2);
     expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.schedulerLocked);
+    expect(await _writes(db), before);
+  });
+
+  test('changeScheduler of a sub-deck is rejected with notARootDeck and writes nothing', () async {
+    await _tree(db, 'r');
+    final before = await _writes(db);
+
+    final result = await repo.changeScheduler(rootDeckId: 'r-leaf', newType: SchedulerType.sm2);
+
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.notARootDeck);
+    expect(await _writes(db), before);
+  });
+
+  test('changeScheduler of a missing deck is notFound', () async {
+    final result = await repo.changeScheduler(rootDeckId: 'missing', newType: SchedulerType.sm2);
+    expect((result as Rejected<void, SrsRejection>).reason, SrsRejection.notFound);
   });
 }
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [ ] **Step 6: Run to verify it fails**
 
 Run: `flutter test test/features/srs/data/schedule_repository_impl_test.dart`
 Expected: FAIL — `ScheduleRepositoryImpl` does not exist.
 
-- [ ] **Step 3: Implement `srs_failure.dart`, `schedule_repository.dart`, `srs_dao.dart`, `schedule_repository_impl.dart`**
+- [ ] **Step 7: Implement `srs_failure.dart`, `schedule_repository.dart`, `srs_dao.dart`, `schedule_repository_impl.dart`**
 
 `lib/features/srs/domain/failures/srs_failure.dart`:
 
@@ -2691,8 +3087,12 @@ enum SrsRejection {
   /// The session's generation is older than the root's (BR-SRS-026).
   staleGeneration,
 
-  /// The card or its schedule row no longer exists.
+  /// The card, its schedule row or the deck no longer exists.
   notFound,
+
+  /// The deck is a sub-deck: the scheduler and the generation live on its
+  /// root (BR-DECK-025).
+  notARootDeck,
 }
 ```
 
@@ -2707,6 +3107,13 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 /// contract exists for ADR-010's reason: domain stays framework-free and tests
 /// substitute a fake.
 abstract interface class ScheduleRepository {
+  /// Writes the schedule row of a card just created (BR-CARD-004): the start
+  /// values of its root's scheduler, at the root's generation. Joins the
+  /// caller's transaction. Throws [StateError] when the card does not exist:
+  /// the caller inserts the card first, in that same transaction, so a
+  /// missing card is a bug, not a business outcome.
+  Future<void> initializeCard({required String cardId});
+
   Future<Outcome<void, SrsRejection>> recordReview({
     required String cardId,
     required String sessionId,
@@ -2714,10 +3121,16 @@ abstract interface class ScheduleRepository {
     DateTime? now,
   });
 
+  /// Reset learning progress: a new generation, every schedule row of the
+  /// tree back to its start values, the scheduler unlocked, the open sessions
+  /// closed.
   Future<Outcome<void, SrsRejection>> resetLearning({
     required String rootDeckId,
   });
 
+  /// Changes the scheduler of an unlocked tree: every schedule row of the tree
+  /// starts over under [newType] at the same generation, and the open sessions
+  /// are closed. The scheduler the root already runs changes nothing.
   Future<Outcome<void, SrsRejection>> changeScheduler({
     required String rootDeckId,
     required SchedulerType newType,
@@ -2725,26 +3138,98 @@ abstract interface class ScheduleRepository {
 }
 ```
 
-`srs_dao.dart` wraps raw row access for `card_schedule`
-and `review_log`, plus a read of the owning root deck's
-`scheduler_type`/`generation`/`first_answered_at` (via `card.deck_id` →
-`deck.root_id`, never `COALESCE`). `schedule_repository_impl.dart`:
-`recordReview` runs inside one transaction — load the card's schedule row
-and its root deck's current scheduler/generation (404 → `SrsRejection.notFound`
-if the card is gone); reject if `action` is outside
-`schedulerFor(type).supportedActions` (`SrsRejection.unsupportedAction`);
-reject if the session's stored `generation` (read from `study_session`)
-differs from the root's current `generation` (`SrsRejection.staleGeneration`);
-otherwise call `SrsScheduler.next`, write the new `card_schedule` row and one
-`review_log` row, and — if this is the first `learnedAt` ever set for the
-root — set `deck.first_answered_at` in the same transaction (BR-SRS-003).
-`resetLearning` bumps `deck.generation` by 1, clears `first_answered_at`,
-and re-creates every `card_schedule` row under the root at box 1 /
-`learnedAt = null` / `dueAt = null` at the new generation — `review_log` is
-never touched (append-only, kept across resets). `changeScheduler` rejects
-with `SrsRejection.schedulerLocked` when `first_answered_at IS NOT NULL`
-(locked); otherwise updates `deck.scheduler_type` in place, generation
-unchanged.
+`srs_dao.dart` wraps raw row access for `card_schedule` and `review_log`, the
+read of the owning root deck's `scheduler_type`/`scheduler_version`/`generation`/
+`first_answered_at` (via `card.deck_id` → `deck.root_id`, never `COALESCE`), and
+the tree-wide statements below. The `scheduler_type` text is `'eight_box'` or
+`'sm2'` (schema.md). Datetimes are bound as `Variable<DateTime>`, never as a
+hand-made epoch, so Drift's storage mode (Clarification 11) applies.
+
+`schedule_repository_impl.dart`, every method inside one `db.transaction` (a
+nested one joins the caller's transaction):
+
+- `initializeCard` reads the card's root:
+
+  ```sql
+  SELECT root.scheduler_type, root.scheduler_version, root.generation
+  FROM card c
+  JOIN deck d ON d.id = c.deck_id
+  JOIN deck root ON root.id = d.root_id
+  WHERE c.id = ?
+  ```
+
+  No row throws `StateError`. Otherwise it inserts the row of
+  `CardScheduleState.initial(type, generation: generation)` with the root's
+  `scheduler_version`.
+- `recordReview` loads the card's schedule row and its root deck's current
+  scheduler/generation (`SrsRejection.notFound` if the card is gone); rejects an
+  `action` outside `schedulerFor(type).supportedActions`
+  (`SrsRejection.unsupportedAction`); rejects when the session's stored
+  `generation` (read from `study_session`) differs from the root's current
+  `generation` (`SrsRejection.staleGeneration`); otherwise calls
+  `SrsScheduler.next`, writes the new `card_schedule` row and one `review_log`
+  row, and — if this is the first `learnedAt` ever set for the root — sets
+  `deck.first_answered_at` in the same transaction (BR-SRS-003).
+- `changeScheduler` reads the deck row and answers, in this order:
+  1. no row: `SrsRejection.notFound`;
+  2. `parent_id IS NOT NULL`: `SrsRejection.notARootDeck`;
+  3. `scheduler_type` is already `newType`: `Ok`, with no write (BR-SRS-002,
+     UC-DECK-002 A4). This is checked before the lock, so it holds on a locked
+     tree too (Clarification 13);
+  4. `first_answered_at IS NOT NULL`: `SrsRejection.schedulerLocked`
+     (BR-SRS-003);
+  5. otherwise it updates the root, with `schedulerFor(newType).version`:
+
+     ```sql
+     UPDATE deck SET scheduler_type = ?, scheduler_version = ?, updated_at = ? WHERE id = ?
+     ```
+
+     then replaces the tree's rows with
+     `CardScheduleState.initial(newType, generation: <the root's generation>)`
+     (BR-SRS-004), and closes the tree's open sessions with
+     `end_reason = 'scheduler_changed'` (BR-STUDY-016).
+- `resetLearning` answers `notFound` and `notARootDeck` as `changeScheduler`
+  does (Clarification 14), then:
+
+  ```sql
+  UPDATE deck SET generation = generation + 1, first_answered_at = NULL, updated_at = ? WHERE id = ?
+  ```
+
+  then replaces the tree's rows with
+  `CardScheduleState.initial(<the root's scheduler>, generation: <the new generation>)`
+  at the root's `scheduler_version`, and closes the tree's open sessions with
+  `end_reason = 'scheduler_reset'` (BR-STUDY-015). `review_log` is never
+  touched: it is append-only and kept across resets (BR-SRS-023).
+
+Replacing the tree's rows is a delete and a re-insert (schema.md: a
+`card_schedule` row is deleted and created again on reset). It covers every
+card whose deck has this `root_id`, at any depth. Every inserted column is bound
+from the `CardScheduleState` value, so `CardScheduleState.initial` stays the only
+definition of the start values:
+
+```sql
+DELETE FROM card_schedule
+WHERE card_id IN (
+  SELECT c.id FROM card c JOIN deck d ON d.id = c.deck_id WHERE d.root_id = ?
+);
+
+INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation,
+  learned_at, due_at, last_answered_at, answer_count, lapse_count,
+  current_box, ease_factor, interval_days, repetitions)
+SELECT c.id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+FROM card c JOIN deck d ON d.id = c.deck_id
+WHERE d.root_id = ?;
+```
+
+Closing the tree's open sessions sets `ended_at` to the repository's `now()`.
+`srs` writes `study_session` here because no `study` feature exists yet
+(Clarification 1):
+
+```sql
+UPDATE study_session
+SET status = 'invalidated', end_reason = ?, ended_at = ?
+WHERE root_id = ? AND status = 'in_progress';
+```
 
 `lib/features/srs/di/schedule_repository_provider.dart`:
 
@@ -2761,7 +3246,7 @@ ScheduleRepository scheduleRepository(Ref ref) =>
     ScheduleRepositoryImpl(ref.watch(databaseProvider));
 ```
 
-- [ ] **Step 4: Generate and run to verify it passes**
+- [ ] **Step 8: Generate and run to verify it passes**
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
@@ -2770,7 +3255,7 @@ flutter test test/features/srs/data/schedule_repository_impl_test.dart
 
 Expected: PASS.
 
-- [ ] **Step 5: Import-boundary and full-suite check**
+- [ ] **Step 9: Import-boundary and full-suite check**
 
 ```bash
 flutter test test/architecture
@@ -2779,7 +3264,7 @@ flutter test test/features/srs
 
 Expected: PASS.
 
-- [ ] **Step 6: Gate and commit**
+- [ ] **Step 10: Gate and commit**
 
 ```bash
 flutter analyze
@@ -2788,7 +3273,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/srs test/features/srs
-git commit -m "feat(srs): add transactional schedule repository (review, reset, scheduler change)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(srs): add transactional schedule repository (start values, review, reset, scheduler change)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -2805,10 +3290,12 @@ git commit -m "feat(srs): add transactional schedule repository (review, reset, 
 - Test: `test/features/card/data/card_repository_impl_test.dart`
 
 **Interfaces:**
-- Consumes: `AppDatabase` (Task 5); `DeckRepository`, `DeckEntity.checkCreateCard`,
+- Consumes: `AppDatabase` (Task 5); `DeckEntity.checkCreateCard` and
   `DeckContentType` (Task 6, to check the parent deck's `content_type` and maintain
   it after create/delete — `card → deck` is an edge of the ADR-011 import map);
-  `deckRepositoryProvider` (Task 7); `Outcome`, `mapDatabaseError` (Task 2).
+  `ScheduleRepository.initializeCard` and `scheduleRepositoryProvider` (Task 8, to
+  write the card's schedule row — `card → srs` is an edge too); `Outcome`,
+  `mapDatabaseError` (Task 2).
 - Produces: `enum CardRejection { blankContent, notACardContainer, notFound }`
   (`card_failure.dart`); `final class CardEntity` mirroring `card` (schema.md, minus
   `delete_batch_id` which this plan does not expose), with the rule
@@ -2816,7 +3303,8 @@ git commit -m "feat(srs): add transactional schedule repository (review, reset, 
   (ADR-011 D7); `abstract interface class CardRepository` with
   `Future<Outcome<CardEntity, CardRejection>> createCard({required String deckId, required String front, required String back, String? example, String? hint, String? pronunciation, DateTime? now})`,
   `Future<Outcome<void, CardRejection>> deleteCard({required String cardId})`;
-  `class CardRepositoryImpl implements CardRepository`;
+  `class CardRepositoryImpl implements CardRepository` with constructor
+  `CardRepositoryImpl(AppDatabase db, ScheduleRepository schedules, {DateTime Function()? now})`;
   `Provider<CardRepository> cardRepositoryProvider` in
   `lib/features/card/di/card_repository_provider.dart`.
 
@@ -2836,9 +3324,27 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 
 import '../../../support/test_database.dart';
+
+DateTime _now() => DateTime(2026, 9, 23);
+
+Future<int> _count(AppDatabase db, String table) async =>
+    (await db.customSelect('SELECT COUNT(*) AS n FROM $table').getSingle()).read<int>('n');
+
+/// Fails the one call `createCard` makes, to prove that the card and its
+/// schedule row are written in one transaction (BR-CARD-004).
+final class _FailingScheduleRepository implements ScheduleRepository {
+  @override
+  Future<void> initializeCard({required String cardId}) async =>
+      throw StateError('schedule row not written');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late AppDatabase db;
@@ -2846,8 +3352,8 @@ void main() {
   late CardRepositoryImpl cards;
   setUp(() {
     db = openTestDatabase();
-    decks = DeckRepositoryImpl(db, now: () => DateTime(2026, 9, 23));
-    cards = CardRepositoryImpl(db, decks, now: () => DateTime(2026, 9, 23));
+    decks = DeckRepositoryImpl(db, now: _now);
+    cards = CardRepositoryImpl(db, ScheduleRepositoryImpl(db, now: _now), now: _now);
   });
   tearDown(() => db.close());
 
@@ -2860,10 +3366,42 @@ void main() {
     expect((await decks.findById(leaf.id))!.contentType, DeckContentType.card);
   });
 
+  test('creating a card creates its schedule row from the root scheduler and generation (BR-CARD-004)', () async {
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.sm2)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
+
+    final card = ((await cards.createCard(deckId: leaf.id, front: 'f', back: 'b')) as Ok<CardEntity, CardRejection>).value;
+
+    final row = await db.customSelect(
+      'SELECT scheduler_type, generation, ease_factor, current_box, learned_at, due_at '
+      'FROM card_schedule WHERE card_id = ?',
+      variables: [Variable(card.id)],
+    ).getSingle();
+    expect(row.read<String>('scheduler_type'), 'sm2');
+    expect(row.read<int>('generation'), 1);
+    expect(row.read<double>('ease_factor'), 2.5);
+    expect(row.data['current_box'], isNull);
+    expect(row.data['learned_at'], isNull);
+    expect(row.data['due_at'], isNull);
+  });
+
+  test('when the schedule row cannot be written, the card is not created either', () async {
+    final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
+    final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'l')) as Ok<DeckEntity, DeckRejection>).value;
+    final failing = CardRepositoryImpl(db, _FailingScheduleRepository(), now: _now);
+
+    await expectLater(failing.createCard(deckId: leaf.id, front: 'f', back: 'b'), throwsA(anything));
+
+    expect(await _count(db, 'card'), 0);
+    expect((await decks.findById(leaf.id))!.contentType, DeckContentType.unset);
+  });
+
   test('a card cannot be created directly on a root deck', () async {
     final root = ((await decks.createRootDeck(name: 'r', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
     final result = await cards.createCard(deckId: root.id, front: 'f', back: 'b');
     expect((result as Rejected<CardEntity, CardRejection>).reason, CardRejection.notACardContainer);
+    expect(await _count(db, 'card'), 0);
+    expect(await _count(db, 'card_schedule'), 0);
   });
 
   test('a card cannot be created in a deck that already holds sub-decks', () async {
@@ -3015,25 +3553,35 @@ schema.md), and trimming `example`/`hint`/`pronunciation` to `null` when
 blank.
 
 `lib/features/card/data/repositories/card_repository_impl.dart`:
-`CardRepositoryImpl(AppDatabase db, DeckRepository decks, {DateTime Function()? now})`.
-`createCard` runs inside `db.transaction`: apply `CardEntity.checkContent`
-(`CardRejection.blankContent`); read the parent deck's `content_type` via the
-DAO (not `decks.findById`, to stay inside the same transaction) and apply
-`DeckEntity.checkCreateCard`, answering `CardRejection.notACardContainer` when it
-refuses (`CardRejection.notFound` when the deck is gone); insert the card; if the
-parent was `unset`, update it to `card` in the same transaction (BR-DECK-008).
-`deleteCard` deletes the row, then re-checks the parent: if no card remains,
-set `content_type` back to `unset` in the same transaction (BR-DECK-015,
-invariant 29).
+`CardRepositoryImpl(AppDatabase db, ScheduleRepository schedules, {DateTime Function()? now})`.
+`createCard` runs inside `db.transaction`, in this order (UC-CARD-001 step 4):
+
+1. `CardEntity.checkContent` (`CardRejection.blankContent`);
+2. read the parent deck's `content_type` via the DAO and apply
+   `DeckEntity.checkCreateCard`, answering `CardRejection.notACardContainer` when
+   it refuses (`CardRejection.notFound` when the deck is gone);
+3. insert the card;
+4. `await schedules.initializeCard(cardId: <the new id>)`: the schedule row joins
+   this transaction (BR-CARD-004);
+5. if the parent was `unset`, update it to `card` (BR-DECK-008).
+
+Nothing inside the transaction callback catches an exception: a throw leaves the
+callback, and Drift rolls the card, its schedule row and the deck's
+`content_type` back together. `deleteCard` deletes the row (its `card_schedule`
+row and its review log go by cascade), then re-checks the parent: if no card
+remains, set `content_type` back to `unset` in the same transaction
+(BR-DECK-015, invariant 29).
 
 `lib/features/card/di/card_repository_provider.dart` (`card/di` may import
-`deck/di`: ADR-011 lets `di/` reach another feature's `di/`):
+`srs/di`: ADR-011 lets `di/` reach another feature's `di/` along an edge of the
+import map). Both repositories get the one `AppDatabase` of `databaseProvider`,
+which is what lets `initializeCard` join the card's transaction:
 
 ```dart
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
-import 'package:memox/features/deck/di/deck_repository_provider.dart';
+import 'package:memox/features/srs/di/schedule_repository_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_repository_provider.g.dart';
@@ -3041,16 +3589,9 @@ part 'card_repository_provider.g.dart';
 @riverpod
 CardRepository cardRepository(Ref ref) => CardRepositoryImpl(
   ref.watch(databaseProvider),
-  ref.watch(deckRepositoryProvider),
+  ref.watch(scheduleRepositoryProvider),
 );
 ```
-
-> ⚠️ OPEN QUESTION: BR-CARD-004 says creating a card also creates its
-> `card_schedule` row (the root's scheduler and `generation`, `due_at = NULL`,
-> per-scheduler start values). This task does not write that row, and Task 10's
-> smoke test calls `recordReview` right after `createCard`, which then answers
-> `SrsRejection.notFound`. Decide with the project owner, before this task runs,
-> where the start values come from; the ADR-011 import map allows `card → srs`.
 
 - [ ] **Step 4: Generate and run to verify it passes**
 
@@ -3065,7 +3606,7 @@ Expected: PASS.
 
 Run: `flutter test test/architecture`
 Expected: PASS — `card` imports only `deck`'s and `srs`'s public buckets, and
-`deck`'s `di/` from its own `di/`.
+`srs`'s `di/` from its own `di/`.
 
 - [ ] **Step 6: Gate and commit**
 
@@ -3076,7 +3617,7 @@ python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 git add lib/features/card test/features/card
-git commit -m "feat(card): add transactional card repository with content-type maintenance" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01Lrb8DBAxRPn2iqeZo8a1Um"
+git commit -m "feat(card): add transactional card repository with schedule row and content-type maintenance" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
 ```
 
 ---
@@ -3150,8 +3691,8 @@ void main() {
     addTearDown(db.close);
     final now = DateTime(2026, 9, 23);
     final decks = DeckRepositoryImpl(db, now: () => now);
-    final cards = CardRepositoryImpl(db, decks, now: () => now);
     final schedules = ScheduleRepositoryImpl(db, now: () => now);
+    final cards = CardRepositoryImpl(db, schedules, now: () => now);
 
     final root = ((await decks.createRootDeck(name: 'Korean', schedulerType: SchedulerType.eightBox)) as Ok<DeckEntity, DeckRejection>).value;
     final leaf = ((await decks.createSubDeck(parentId: root.id, name: 'Nouns')) as Ok<DeckEntity, DeckRejection>).value;
@@ -3228,7 +3769,9 @@ in Clarification 1 and Task 5 (`tags`/`card_tags` created; resolved with the
 project owner on 2026-09-23). ADR-010 decisions 1–3: folder
 names (File Structure), layering (Clarifications 3, 9, 10; Tasks 6–9),
 Flutter version (Task 1, package table). schema.md's per-table scope notes:
-Clarification 1, Task 5.
+Clarification 1, Task 5. The deck/card backend spec's stage 1 (§4): sibling
+positions (Task 7); start values, `initializeCard`, the scheduler change and
+the reset (Task 8); a card created with its schedule row (Task 9).
 
 **2. Placeholder scan.** No "TBD"/"handle edge cases"/"similar to Task N"
 strings. Every code step has real code or, where a full listing would only
@@ -3251,6 +3794,9 @@ Every import is a file path from the File Structure list; there is no barrel. `C
 Provider names (`deckRepositoryProvider`, `scheduleRepositoryProvider`,
 `cardRepositoryProvider`, `databaseProvider`) are declared once (Tasks 5,
 7–9) and referenced, never redeclared, afterwards.
+`CardScheduleState.initial`, `ScheduleRepository.initializeCard` and
+`SrsRejection.notARootDeck` are declared once (Task 8); `CardRepositoryImpl(db,
+schedules)` (Task 9) and Task 10's smoke test build on them.
 
 **4. Review Focus.** All five items (blank name/content, unsupported
 action, move-into-own-subtree, delete-mid-session, due-date month/year
