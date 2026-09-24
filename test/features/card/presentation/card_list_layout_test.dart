@@ -193,4 +193,20 @@ void main() {
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });
+
+  libraryTest('a row keeps its own state when the summary steps aside', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    final row = find.widgetWithText(CardRowWidget, 'gamsa');
+    final before = tester.element(row);
+
+    await tester.longPress(row);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CardDeckSummaryWidget), findsNothing);
+    expect(identical(tester.element(row), before), isTrue);
+  });
 }

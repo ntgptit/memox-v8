@@ -337,6 +337,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       else
         for (final item in view.items)
           CardRowWidget(
+            // The summary and the filters step aside while selecting; the
+            // key keeps each row's state (its ink) on its own card.
+            key: ValueKey(item.id),
             item: item,
             isSelecting: isSelecting,
             isSelected: selected.contains(item.id),

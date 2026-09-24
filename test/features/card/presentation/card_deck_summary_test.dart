@@ -104,4 +104,21 @@ void main() {
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });
+
+  libraryTest('the four-state bar paints a segment per state, full height', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+
+    final segments = find.descendant(
+      of: find.byType(ExcludeSemantics),
+      matching: find.byType(ColoredBox),
+    );
+    // The track and one segment per state.
+    expect(segments, findsNWidgets(5));
+    for (final segment in segments.evaluate()) {
+      expect(segment.size!.height, greaterThan(0));
+    }
+  });
 }

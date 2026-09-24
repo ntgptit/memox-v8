@@ -142,6 +142,7 @@ class _StatusBar extends StatelessWidget {
           child: ColoredBox(
             color: context.colors.surfaceContainer,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (final (count, color) in fills)
                   if (count > 0)
