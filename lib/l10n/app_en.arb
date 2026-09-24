@@ -1028,5 +1028,13 @@
   "deckUnsetNote": "The first card or sub-deck decides what this deck holds. Once it is empty again, both options come back.",
   "@deckUnsetNote": {
     "description": "Note under the unset deck's buttons."
+  },
+  "deckRootEmptyTitle": "This deck is empty",
+  "@deckRootEmptyTitle": {
+    "description": "Empty state title of a top-level deck, which holds sub-decks only."
+  },
+  "deckRootEmptyBody": "Add a sub-deck to start organising it.",
+  "@deckRootEmptyBody": {
+    "description": "Empty state body of a top-level deck."
   }
 }

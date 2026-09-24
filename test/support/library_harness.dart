@@ -154,13 +154,17 @@ DeckLevelScreen deckScreen({
   String? deckId,
   ValueChanged<String>? onOpenDeck,
   ValueChanged<String?>? onOpenAncestor,
+  ValueChanged<String>? onAddCard,
   Widget Function(String deckId)? cardContent,
+  Widget Function(String deckId)? cardFab,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onSearch: () {},
+  onAddCard: onAddCard ?? (_) {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
+  cardFab: cardFab ?? (_) => const SizedBox.shrink(),
 );
 
 /// The whole app over [env] on a 1080×2400 (3x) phone, settled on the

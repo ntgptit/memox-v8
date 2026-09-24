@@ -220,5 +220,7 @@
   "cardNewCard": "Thẻ mới",
   "deckNewCard": "Thẻ mới",
   "deckNewSubDeck": "Bộ thẻ con mới",
-  "deckUnsetNote": "Thẻ hoặc bộ thẻ con đầu tiên quyết định bộ thẻ này chứa gì. Khi trống lại, cả hai lựa chọn sẽ quay lại."
+  "deckUnsetNote": "Thẻ hoặc bộ thẻ con đầu tiên quyết định bộ thẻ này chứa gì. Khi trống lại, cả hai lựa chọn sẽ quay lại.",
+  "deckRootEmptyTitle": "Bộ thẻ này đang trống",
+  "deckRootEmptyBody": "Thêm bộ thẻ con để bắt đầu sắp xếp."
 }

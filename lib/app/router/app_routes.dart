@@ -18,6 +18,12 @@ abstract final class AppRoutes {
 
   static const String deckSearch = '$decks/$searchChild';
 
+  /// A deck's card editor in create mode, relative to [deckChild].
+  static const String cardNewChild = 'cards/new';
+
   /// An open deck's location.
   static String deck(String deckId) => '$decks/deck/$deckId';
+
+  /// The card editor adding cards to [deckId].
+  static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';
 }

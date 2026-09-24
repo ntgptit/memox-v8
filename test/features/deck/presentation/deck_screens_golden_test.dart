@@ -66,11 +66,12 @@ void main() {
 
     libraryTest('empty deck, $theme', (tester, env) async {
       final korean = await env.decks.root('Korean');
+      final words = await env.decks.sub(korean.id, 'Words');
       await withRealShadows(() async {
         await pumpLibraryGolden(
           tester,
           env,
-          deckScreen(deckId: korean.id),
+          deckScreen(deckId: words.id),
           brightness,
         );
         await expectBoundaryGolden(
