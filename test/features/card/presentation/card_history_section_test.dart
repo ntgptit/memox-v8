@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/load_card_history_page_use_case.dart';
@@ -137,6 +138,15 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_en.cardModeFill), findsOneWidget);
+    // The mode carries the Study glyph, not the Library's.
+    expect(
+      find.descendant(
+        of: find.byType(CardHistoryEventWidget),
+        matching: find.byIcon(AppIcons.study),
+      ),
+      findsNWidgets(2),
+    );
+    expect(find.byIcon(AppIcons.library), findsNothing);
     expect(find.text(_en.cardHistoryBoxMove(2, 3)), findsOneWidget);
     expect(find.text(_en.cardHistoryHintUsed), findsOneWidget);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
