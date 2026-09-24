@@ -148,6 +148,32 @@ void main() {
     },
   );
 
+  test('a reset closes an open session of another tree that holds a card '
+      'moved into this one (BR-STUDY-015, BR-SRS-006)', () async {
+    await insertStudyTree(db, 'r');
+    await insertStudyTree(db, 'other');
+    await moveLeafWithQueuedCard(db, 'r', 'other');
+
+    await repo.resetLearning(rootDeckId: 'other');
+
+    final session = await sessionRowOf(db, 'r-session');
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'scheduler_reset');
+  });
+
+  test('a scheduler change closes an open session of another tree that holds '
+      'a card moved into this one (BR-STUDY-016, BR-SRS-006)', () async {
+    await insertStudyTree(db, 'r');
+    await insertStudyTree(db, 'other');
+    await moveLeafWithQueuedCard(db, 'r', 'other');
+
+    await repo.changeScheduler(rootDeckId: 'other', newType: SchedulerType.sm2);
+
+    final session = await sessionRowOf(db, 'r-session');
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'scheduler_changed');
+  });
+
   test('changeScheduler leaves other trees alone', () async {
     final (rootId, _, _) = await insertStudyTree(db, 'r');
     final (_, otherCardId, otherSessionId) = await insertStudyTree(db, 'other');

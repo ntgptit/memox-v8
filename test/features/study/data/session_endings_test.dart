@@ -8,6 +8,7 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
@@ -339,5 +340,40 @@ void main() {
     final session = await sessionOf(db, id);
     expect(session.read<String>('status'), 'in_progress');
     expect(session.read<int>('cursor'), 2);
+  });
+
+  test('a sub-deck moved into another tree whose root is then reset ends the '
+      'session holding its cards, so no answer is refused for good '
+      '(BR-STUDY-015, BR-STUDY-017, BR-SRS-006)', () async {
+    final (leaf, id) = await learning(['a', 'b']);
+    final other = await decks.root('Other');
+    await answer(id, const AdvanceAnswer());
+    await answer(id, const AdvanceAnswer());
+    expect(
+      await decks.moveDeck(deckId: leaf.id, newParentId: other.id),
+      isA<Ok<void, DeckRejection>>(),
+    );
+
+    expect(
+      await ScheduleRepositoryImpl(
+        db,
+        now: () => clock,
+      ).resetLearning(rootDeckId: other.id),
+      isA<Ok<void, SrsRejection>>(),
+    );
+
+    final session = await sessionOf(db, id);
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'scheduler_reset');
+    expect(
+      await sessions.answerTurn(
+        sessionId: id,
+        cardId: 'a',
+        answer: const GradedAnswer(isCorrect: true),
+      ),
+      _refusedWith(StudyRejection.sessionClosed),
+    );
+    final entry = await entries.watchEntry(deckId: leaf.id, now: clock).first;
+    expect(entry!.resumableSessionId, isNull);
   });
 }

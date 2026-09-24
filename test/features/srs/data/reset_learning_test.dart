@@ -332,6 +332,22 @@ void main() {
     },
   );
 
+  test('the summary counts an open session of another tree that holds a card '
+      'moved into this one, since the reset closes it (UC-SRS-001 step 2, '
+      'BR-SRS-006)', () async {
+    await insertStudyTree(db, 'r');
+    await insertStudyTree(db, 'other');
+    await db.customStatement(
+      "DELETE FROM study_session WHERE id = 'other-session'",
+    );
+    await moveLeafWithQueuedCard(db, 'r', 'other');
+
+    final summary = await summaryOf('other');
+
+    expect(summary.openSessionCount, 1);
+    expect(summary.hasProgressToLose, isTrue);
+  });
+
   test('a sub-deck, a missing root and a root in the Trash have no summary '
       '(UC-SRS-001 A4)', () async {
     await insertStudyTree(db, 'r');

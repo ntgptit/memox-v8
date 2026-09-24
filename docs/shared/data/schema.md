@@ -394,6 +394,13 @@ cùng transaction: `abandoned`/`user_exit` nếu nó bắt đầu trong ngày h�
 `abandoned`/`interrupted` nếu nó bắt đầu từ ngày học trước (BR-STUDY-072). Code và test
 giữ luật này; một unique index sẽ cần migration, và migration chờ BE-D1.
 
+**Phiên của một cây:** Reset và đổi scheduler của một root đóng mọi session `in_progress`
+của cây đó (BR-STUDY-015, BR-STUDY-016): session mở trên chính root đó (`root_id`), và
+session đang giữ trong hàng đợi một card nay thuộc cây đó. Một deck chỉ chuyển sang cây
+khác khi hai root cùng scheduler và generation (BR-SRS-006), và card của nó ở lại hàng đợi
+của session đang mở (IT-CONT-006). Không đóng session ấy thì mọi lượt trên các card đó bị
+từ chối mãi (BR-STUDY-017) mà session vẫn mở.
+
 ## `study_queue_items`
 
 **Phạm vi:** V8.0 — hàng đợi phiên học.
