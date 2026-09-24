@@ -131,7 +131,7 @@ WITH RECURSIVE
     JOIN subtree ON d.parent_id = subtree.id
     WHERE subtree.height < :max_depth
   )
-SELECT d.id, d.name, d.parent_id, d.sibling_position,
+SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   d.id <> m.parent_id AS is_candidate
 FROM deck d
 JOIN deck r ON r.id = d.root_id
@@ -160,7 +160,7 @@ WITH RECURSIVE
     SELECT d.id FROM deck d JOIN down ON d.parent_id = down.id
     WHERE d.delete_batch_id IS NULL
   )
-SELECT d.id, d.name, d.parent_id, d.sibling_position,
+SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   (:scope_id IS NULL OR (d.id IN (SELECT id FROM down) AND d.id <> :scope_id))
     AS is_candidate
 FROM deck d

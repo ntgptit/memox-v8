@@ -9,17 +9,23 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 /// What the deck action sheet can start (spec §6.2).
-enum DeckAction { rename, move, changeScheduler, reorder, delete }
+enum DeckAction { open, rename, move, changeScheduler, reorder, delete }
 
-/// The open deck's commands. It completes with the chosen one, which the
-/// screen then opens, or with null when dismissed.
+/// A deck's commands (screen 01), from its row's ⋮ or the open deck's ⋮. It
+/// completes with the chosen one, which the caller then opens, or with null
+/// when dismissed.
 Future<DeckAction?> showDeckActionSheet(
   BuildContext context, {
   required DeckView view,
   required bool canReorder,
+  required bool hasOpen,
 }) => showMxBottomSheet<DeckAction>(
   context,
-  builder: (_) => DeckActionSheetWidget(view: view, canReorder: canReorder),
+  builder: (_) => DeckActionSheetWidget(
+    view: view,
+    canReorder: canReorder,
+    hasOpen: hasOpen,
+  ),
 );
 
 class DeckActionSheetWidget extends StatelessWidget {
@@ -27,16 +33,18 @@ class DeckActionSheetWidget extends StatelessWidget {
     super.key,
     required this.view,
     required this.canReorder,
+    required this.hasOpen,
   });
 
   final DeckView view;
   final bool canReorder;
 
+  /// From a row, the deck is not open yet; Open leads.
+  final bool hasOpen;
+
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final deck = view.deck;
-    void choose(DeckAction action) => Navigator.of(context).pop(action);
     return MxBottomSheet(
       header: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -54,45 +62,75 @@ class DeckActionSheetWidget extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
-        child: Column(
-          children: [
-            MxActionSheetCommandRow(
-              icon: AppIcons.edit,
-              label: l10n.deckRename,
-              onTap: () => choose(DeckAction.rename),
-            ),
-            // Ruling P2-L8: a root cannot move, and only a root has a
-            // scheduler.
-            if (!deck.isRoot)
-              MxActionSheetCommandRow(
-                icon: AppIcons.folder,
-                label: l10n.deckMove,
-                hasChevron: true,
-                onTap: () => choose(DeckAction.move),
-              ),
-            if (deck.isRoot)
-              MxActionSheetCommandRow(
-                icon: AppIcons.scheduler,
-                label: l10n.deckChangeScheduler,
-                subtitle: l10n.schedulerType(view.schedulerType),
-                hasChevron: true,
-                onTap: () => choose(DeckAction.changeScheduler),
-              ),
-            if (canReorder)
-              MxActionSheetCommandRow(
-                icon: AppIcons.reorder,
-                label: l10n.deckReorder,
-                onTap: () => choose(DeckAction.reorder),
-              ),
-            MxActionSheetCommandRow(
-              icon: AppIcons.delete,
-              label: l10n.deckDelete,
-              isDestructive: true,
-              onTap: () => choose(DeckAction.delete),
-            ),
-          ],
-        ),
+        child: Column(children: _rows(context)),
       ),
     );
+  }
+
+  /// Study and Study options exist in the handoff but not in V8.0 yet: they
+  /// show disabled (spec A4). Root decks own the algorithm and cannot move
+  /// (ruling P2-L8).
+  List<Widget> _rows(BuildContext context) {
+    final l10n = context.l10n;
+    final deck = view.deck;
+    void choose(DeckAction action) => Navigator.of(context).pop(action);
+    final algorithm = l10n.schedulerType(view.schedulerType);
+    return [
+      if (hasOpen)
+        MxActionSheetCommandRow(
+          icon: AppIcons.folder,
+          label: l10n.deckOpen,
+          onTap: () => choose(DeckAction.open),
+        ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.play,
+        label: l10n.deckStudyThis,
+        onTap: () {},
+        isEnabled: false,
+      ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.edit,
+        label: l10n.deckRename,
+        onTap: () => choose(DeckAction.rename),
+      ),
+      if (deck.isRoot) ...[
+        MxActionSheetCommandRow(
+          icon: AppIcons.settings,
+          label: l10n.deckStudyOptions,
+          subtitle: l10n.deckStudyOptionsHint,
+          onTap: () {},
+          isEnabled: false,
+        ),
+        MxActionSheetCommandRow(
+          icon: AppIcons.scheduler,
+          label: l10n.deckReviewAlgorithm,
+          subtitle: view.isSchedulerLocked
+              ? l10n.deckReviewAlgorithmLocked(algorithm)
+              : algorithm,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.changeScheduler),
+        ),
+      ],
+      if (!deck.isRoot)
+        MxActionSheetCommandRow(
+          icon: AppIcons.folder,
+          label: l10n.deckMove,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.move),
+        ),
+      if (canReorder)
+        MxActionSheetCommandRow(
+          icon: AppIcons.reorder,
+          label: l10n.deckReorder,
+          subtitle: l10n.deckReorderHint,
+          onTap: () => choose(DeckAction.reorder),
+        ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.delete,
+        label: l10n.deckDelete,
+        isDestructive: true,
+        onTap: () => choose(DeckAction.delete),
+      ),
+    ];
   }
 }

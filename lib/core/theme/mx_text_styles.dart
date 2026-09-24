@@ -128,6 +128,13 @@ final class MxTextStyles {
     FontWeight.w600,
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
+  /// The matched part of a search hit's name (screen 04): the list row
+  /// title, bold, in primary, so it sits on the title's line unchanged.
+  TextStyle get rowTitleMatch => AppTypography.withWeight(
+    listRowTitle,
+    FontWeight.w700,
+  ).copyWith(color: _scheme.primary);
+
   /// Row description (OptionRow, SettingsRow sub): the caption role at
   /// line-height 1.45 (I5, S5).
   TextStyle get rowDescription => _texts.labelSmall!.copyWith(

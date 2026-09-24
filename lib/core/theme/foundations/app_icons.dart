@@ -53,6 +53,9 @@ abstract final class AppIcons {
   static const IconData textScale = Icons.format_size;
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
+  static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
+  static const IconData dueNow = Icons.bolt_outlined; // zap
+  static const IconData cardDeck = Icons.copy_all_outlined; // copy
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;

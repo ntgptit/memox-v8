@@ -194,6 +194,8 @@ The only changes outside `presentation/`, each test-first:
 | `card` domain + data | **Status counts:** for a deck, the number of cards in each `CardDisplayStatus` in one query, as a stream that updates with the list. `CardDisplayStatus` stays the single definition (BR-CARD-008, BR-SRS-013). |
 | `card` domain + data | **Tags on list items:** `CardListItem` carries its tags, sorted by folded name (BR-TAG-001), read for the whole page in one query; no read per card. |
 | `card` domain | **Due label:** a pure helper from `dueAt` and the list's start of day to new / today / in N days / N days overdue, next to `CardDisplayStatus`. |
+| `deck` domain | `DeckLevel.deckCount`: every deck of the level whatever the filter, for the open deck's summary (phase C, owner decision C-O1). |
+| `deck` domain + data, `deck_queries.drift`, `card_queries.drift` | `contentType` on `DeckTreeNode` and `DeckSearchHit`, read from `d.content_type` in the three queries that share `DeckForestRow` (C-O2). No schema change. |
 
 No schema change and no migration. If either read needs one, the phase stops and raises it (BE-D1 would come first).
 
@@ -205,6 +207,9 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 |---|---|
 | `MxSearchField` | A trigger mode: read-only, an `onTap`, button semantics. |
 | `MxAppBar` | A `titleWidget` slot as an alternative to the title string; the title still gives up width first. |
+| `MxEmptyState` | An optional secondary action between the primary action and the footnote; a null callback draws it disabled (C-O3). |
+| `MxActionSheetCommandRow` | `isEnabled`: a disabled command is dimmed and announced as disabled. |
+| Theme | Icons `starterDecks`, `dueNow`, `cardDeck`; text role `rowTitleMatch` for the emphasised part of a search hit (C-O4). |
 
 ## 7. Routing and composition
 
@@ -217,7 +222,7 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 - **Per phase:** the tests in §5–§6; a widget test for every state row in 4.1–4.4 that V8 supports; light/dark goldens at 3x; `test/visual_audit/` companions; ARB entries in en and vi; the `HOST-WIDGET` IT scenarios of the touched UCs; `expectAccessibleTargets` and text scale 2 (phones only).
 - **Gate:** the one the root `README.md` names at the time of the phase (the five commands, or `dod_check.sh` once FE-D2 lands).
 - **Visual check:** app screenshots against the handoff images, state by state: one inspection round, one batch of fixes, at most one confirming round.
-- **Goldens on Linux (FE-D1):** before phase C, check which platform produced the goldens of #28–#31 and generate on the same one. If that is impossible here, say so in the PR and do not claim the golden suite passes.
+- **Goldens on Linux (FE-D1):** a phase regenerates, on Linux, only the goldens of the screens it changes (owner decision, 2026-09-24). The other goldens stay as the owner's platform produced them, and fail on Linux as before.
 - **Ledgers:** `docs/wbs_FE.md` and `docs/wbs_BE.md` change in the commit of the work they describe. Phase A also corrects `wbs_FE.md`, which still lists FE-A1 as not started although #28–#31 merged.
 
 ## 9. Phases

@@ -87,7 +87,14 @@ void main() {
       }
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, deckScreen(), brightness);
-        await tester.tap(find.byTooltip(_en.libraryReorder));
+        // Reorder starts from a row's sheet (ruling C-L4).
+        await tester.tap(
+          find
+              .byTooltip(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}'))
+              .first,
+        );
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckReorder));
         await _settleOverlay(tester);
         await expectBoundaryGolden(
           tester,

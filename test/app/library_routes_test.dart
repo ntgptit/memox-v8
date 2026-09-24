@@ -88,7 +88,7 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.byTooltip(_en.libraryOpenSearch));
+    await _tap(tester, find.text(_en.deckSearchHint));
     await tester.enterText(find.byType(EditableText), 'verb');
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Verbs'));

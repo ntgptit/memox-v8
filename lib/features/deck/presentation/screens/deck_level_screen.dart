@@ -4,20 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_action_sheet_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_move_sheet_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_scheduler_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -28,8 +27,8 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
-import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// One level of the deck tree (spec §6.1): the Library root when [deckId] is
 /// null, otherwise an open deck under its breadcrumb. Navigation arrives as
@@ -85,33 +84,33 @@ class _LibraryRoot extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
 
-  void _startReorder(WidgetRef ref) =>
-      ref.read(deckReorderModeProvider(null).notifier).start();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final isReordering = ref.watch(deckReorderModeProvider(null));
-    final canReorder = ref.watch(deckLevelCanReorderProvider(null));
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navLibrary,
         actions: isReordering
             ? const [_ReorderDone(parentId: null)]
+            // Starter decks, tags and trash have no screen yet (spec A6).
             : [
                 MxIconButton(
-                  icon: AppIcons.search,
-                  semanticLabel: l10n.libraryOpenSearch,
-                  onPressed: onSearch,
+                  icon: AppIcons.starterDecks,
+                  semanticLabel: l10n.libraryStarterDecks,
+                  onPressed: null,
                 ),
-                // Ruling P2-L2: the roots reorder from the app bar.
-                if (canReorder)
-                  MxIconButton(
-                    icon: AppIcons.reorder,
-                    semanticLabel: l10n.libraryReorder,
-                    onPressed: () => _startReorder(ref),
-                  ),
+                MxIconButton(
+                  icon: AppIcons.tag,
+                  semanticLabel: l10n.libraryTags,
+                  onPressed: null,
+                ),
+                MxIconButton(
+                  icon: AppIcons.delete,
+                  semanticLabel: l10n.libraryTrash,
+                  onPressed: null,
+                ),
               ],
       ),
       fab: isReordering
@@ -121,16 +120,40 @@ class _LibraryRoot extends ConsumerWidget {
               semanticLabel: l10n.libraryCreateDeck,
               onPressed: createDeck,
             ),
-      body: DeckLevelBodyWidget(
-        parentId: null,
-        onOpenDeck: onOpenDeck,
-        emptyState: MxEmptyState(
-          icon: AppIcons.library,
-          title: l10n.libraryEmptyTitle,
-          body: l10n.libraryEmptyBody,
-          actionLabel: l10n.libraryCreateDeck,
-          onAction: createDeck,
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.micro,
+              AppSpacing.gutter,
+              AppSpacing.control,
+            ),
+            child: MxSearchField.trigger(
+              hintText: l10n.deckSearchHint,
+              onTap: onSearch,
+            ),
+          ),
+          Expanded(
+            child: DeckLevelBodyWidget(
+              parentId: null,
+              onOpenDeck: onOpenDeck,
+              schedulerType: null,
+              hasDeepestSubDecks: false,
+              emptyState: MxEmptyState(
+                icon: AppIcons.library,
+                title: l10n.libraryEmptyTitle,
+                body: l10n.libraryEmptyBody,
+                actionLabel: l10n.libraryCreateDeck,
+                onAction: createDeck,
+                // Starter decks have no screen yet (spec A6).
+                secondaryActionLabel: l10n.libraryBrowseStarter,
+                footnote: l10n.libraryEmptyFootnote,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -156,27 +179,10 @@ class _OpenDeck extends ConsumerWidget {
 
   static const int _skeletonRows = 4;
 
-  /// Ruling P2-L7: the deck is gone. Say so once and step back.
-  void _leaveWhenGone(
-    BuildContext context,
-    AsyncValue<Outcome<DeckView, DeckRejection>>? previous,
-    AsyncValue<Outcome<DeckView, DeckRejection>> next,
-  ) {
-    if (previous?.value case Rejected()) return;
-    if (next.value case Rejected(reason: DeckRejection.notFound)) {
-      showMxSnackbar(context, message: context.l10n.deckDeletedToast);
-      unawaited(Navigator.of(context).maybePop());
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = deckViewProvider(deckId);
-    ref.listen(
-      provider,
-      (previous, next) => _leaveWhenGone(context, previous, next),
-    );
     final bar = MxAppBar(
       title: l10n.navLibrary,
       density: MxAppBarDensity.content,
@@ -204,7 +210,11 @@ class _OpenDeck extends ConsumerWidget {
           ],
         ),
       ),
-      // Loading, or gone and about to pop.
+      // Spec A8: deleted while open. Say so; the way back is the Library.
+      AsyncData(value: Rejected()) => MxAppShell(
+        appBar: bar,
+        body: DeckGoneStateWidget(onBackToLibrary: () => onOpenAncestor(null)),
+      ),
       _ => MxAppShell(
         appBar: bar,
         body: MxScreenScroll(
@@ -235,38 +245,11 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
-  /// Opens the chosen command's own dialog or sheet (spec §6.2).
-  Future<void> _openActions(
-    BuildContext context,
-    WidgetRef ref, {
-    required bool canReorder,
-  }) async {
-    final action = await showDeckActionSheet(
-      context,
-      view: view,
-      canReorder: canReorder,
-    );
-    if (action == null || !context.mounted) return;
-    switch (action) {
-      case DeckAction.rename:
-        await showRenameDeckDialog(context, deck: view.deck);
-      case DeckAction.move:
-        await showMoveDeckSheet(context, deck: view.deck);
-      case DeckAction.changeScheduler:
-        await showDeckSchedulerSheet(context, view: view);
-      case DeckAction.reorder:
-        ref.read(deckReorderModeProvider(view.deck.id).notifier).start();
-      case DeckAction.delete:
-        await showDeleteDeckDialog(context, deck: view.deck);
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final deck = view.deck;
     final isReordering = ref.watch(deckReorderModeProvider(deck.id));
-    final canReorder = ref.watch(deckLevelCanReorderProvider(deck.id));
     final canCreateDeck = view.createOptions.contains(DeckCreateOption.deck);
     final canCreateCard = view.createOptions.contains(DeckCreateOption.card);
     void createSubDeck() =>
@@ -283,7 +266,14 @@ class _OpenDeckContent extends ConsumerWidget {
                   icon: AppIcons.more,
                   semanticLabel: l10n.deckActions,
                   onPressed: () => unawaited(
-                    _openActions(context, ref, canReorder: canReorder),
+                    openDeckActions(
+                      context,
+                      ref,
+                      deckId: deck.id,
+                      parentId: deck.parentId,
+                      onOpenDeck: onOpenDeck,
+                      isOpenDeck: true,
+                    ),
                   ),
                 ),
               ],
@@ -323,6 +313,9 @@ class _OpenDeckContent extends ConsumerWidget {
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
+                schedulerType: view.schedulerType,
+                // Owner decision C-O6: its sub-decks are at level 10.
+                hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
                 emptyState: DeckUnsetStateWidget(
                   onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
                   onCreateSubDeck: canCreateDeck ? createSubDeck : null,
