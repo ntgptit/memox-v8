@@ -59,10 +59,14 @@ class CardRowWidget extends StatelessWidget {
                 style: styles.compactTitle,
                 child: isSelecting
                     ? MxSelectionCheckbox(isChecked: isSelected)
-                    : MxStatusBadge(
-                        status: status,
-                        label: statusLabel,
-                        isDot: true,
+                    // The status line below already says it: one
+                    // announcement per row.
+                    : ExcludeSemantics(
+                        child: MxStatusBadge(
+                          status: status,
+                          label: statusLabel,
+                          isDot: true,
+                        ),
                       ),
               ),
               Expanded(

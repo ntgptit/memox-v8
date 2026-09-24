@@ -364,5 +364,6 @@
   "cardSortNewestPill": "Mới nhất trước",
   "cardSortDuePill": "Đến hạn trước",
   "cardListNoMatches": "Không có kết quả",
-  "cardSearchEmptyBody": "{total, plural, other{Thử từ khác, hoặc xoá từ tìm kiếm để xem cả {total} thẻ.}}"
+  "cardSearchEmptyBody": "{total, plural, other{Thử từ khác, hoặc xoá từ tìm kiếm để xem cả {total} thẻ.}}",
+  "cardSearchEmptyHint": "Thử từ khác, hoặc xoá từ tìm kiếm."
 }

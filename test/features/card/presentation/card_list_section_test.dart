@@ -194,6 +194,24 @@ void main() {
     expect(find.text(_en.cardSearchEmptyBody(4)), findsOneWidget);
   });
 
+  libraryTest('under a filter, a search with no hit names no deck total', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardFilterFlagged));
+    await tester.pumpAndSettle();
+    await _openSearch(tester);
+    await tester.enterText(find.byType(EditableText), 'zzz');
+    await tester.pumpAndSettle();
+
+    // Clearing the search keeps the filter, so the deck's 4 would be wrong.
+    expect(find.text(_en.cardSearchEmptyBody(4)), findsNothing);
+    expect(find.text(_en.cardSearchEmptyHint), findsOneWidget);
+  });
+
   libraryTest('the Flagged chip carries the flag glyph', (tester, env) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));

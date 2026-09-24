@@ -119,6 +119,24 @@ void main() {
     expect(find.widgetWithText(MxBadge, _en.cardDueNew), findsOneWidget);
   });
 
+  libraryTest('the row names its status once to a screen reader', (
+    tester,
+    env,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pump(tester, env, _item(status: CardDisplayStatus.reviewing));
+    final label = tester
+        // The front's node is the row's merged node.
+        .getSemantics(find.text('front'))
+        .getSemanticsData()
+        .label
+        .toLowerCase();
+    final status = _en.cardStatus(CardDisplayStatus.reviewing).toLowerCase();
+
+    expect(status.allMatches(label), hasLength(1), reason: label);
+    semantics.dispose();
+  });
+
   libraryTest('selecting shows a checkbox and edges the selected card', (
     tester,
     env,

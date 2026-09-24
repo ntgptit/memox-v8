@@ -1868,5 +1868,9 @@
       }
     },
     "description": "Under the no-match title: how to get the deck's cards back (screen 07)."
+  },
+  "cardSearchEmptyHint": "Try a different term, or clear the search.",
+  "@cardSearchEmptyHint": {
+    "description": "Under the no-match title while a filter is on: clearing the search keeps the filter, so no count (screen 07)."
   }
 }
