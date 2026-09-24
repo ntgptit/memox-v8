@@ -65,6 +65,30 @@ void main() {
     expect(find.byIcon(Icons.flag), findsOneWidget);
   });
 
+  libraryTest('the row names its status once to a screen reader', (
+    tester,
+    env,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(item: _item(), isSelecting: false, isSelected: false),
+      ]),
+    );
+    // The front's node is the row's merged node.
+    final label = tester
+        .getSemantics(find.text('gongbuhada'))
+        .getSemanticsData()
+        .label
+        .toLowerCase();
+    final status = _en.cardStatusReviewing.toLowerCase();
+
+    expect(status.allMatches(label), hasLength(1), reason: label);
+    semantics.dispose();
+  });
+
   libraryTest('selecting shows a checkbox, checked when selected', (
     tester,
     env,

@@ -242,6 +242,24 @@ void main() {
     expect(find.text(_en.cardSearchEmptyBody(4)), findsOneWidget);
   });
 
+  libraryTest('under a filter, a search with no hit names no deck total', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.pumpAndSettle();
+    await _tapChip(tester, _en.cardFilterFlagged);
+    await _openSearch(tester, deckId);
+    await tester.enterText(find.byType(EditableText), 'zzz');
+    await tester.pumpAndSettle();
+
+    // Clearing the search keeps the filter, so the deck's 4 would be wrong.
+    expect(find.text(_en.cardSearchEmptyTitle('zzz')), findsOneWidget);
+    expect(find.text(_en.cardSearchEmptyBody(4)), findsNothing);
+    expect(find.text(_en.cardSearchEmptyHint), findsOneWidget);
+  });
+
   libraryTest('a load error says so plainly and offers Retry', (
     tester,
     env,
