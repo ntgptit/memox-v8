@@ -196,6 +196,7 @@ The only changes outside `presentation/`, each test-first:
 | `card` domain | **Due label:** a pure helper from `dueAt` and the list's start of day to new / today / in N days / N days overdue, next to `CardDisplayStatus`. |
 | `deck` domain | `DeckLevel.deckCount`: every deck of the level whatever the filter, for the open deck's summary (phase C, owner decision C-O1). |
 | `deck` domain + data, `deck_queries.drift`, `card_queries.drift` | `contentType` on `DeckTreeNode` and `DeckSearchHit`, read from `d.content_type` in the three queries that share `DeckForestRow` (C-O2). No schema change. |
+| `card` domain + data | **Deck workload** (phase E, ruling E-L1): `CardListView.workload`, the overdue, today and new counts of the whole deck, counted from the schedules the list already reads with `CardDue.of`. No query or schema change. |
 
 No schema change and no migration. If either read needs one, the phase stops and raises it (BE-D1 would come first).
 
@@ -214,6 +215,12 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 | `MxCard` | `isWarning`: the warning-soft ground with the warning border, for screen 02's locked strip (D-O1). |
 | `MxOutcomeTile` | New: a label in its ink over a tinted ground and a body, tones `kept` (`statusMasteredInk` over the mastery tint, A10) and `lost` (`warningInk` over `warningSoft`) (D-O2). |
 | Theme (phase D) | Icons `lock`, `lockOpen`, `resetProgress`. |
+| Theme (phase E) | `streak` / `onStreak` semantic colours (#F97316 / #FFAE6E, #FFFFFF) and `streakInk` (light: 20% toward onSurface; dark: streak), owner decisions E-O2, E-O4. Icons `exportFile`, `importFile`. |
+| `MxFlagMark` | New: the flag glyph in `streakInk` with its accessible label (E-O2). |
+| `MxStatusDistribution` | New: the four display states as one stacked bar with a legend of counts (A13, E-O2). |
+| `MxCard` | `isSelected`: a primary border (E-O5). |
+| `MxStatusBadge` | `isPlain`: the uppercase label in its status ink, no pill (the card row's status line). |
+| `MxUnavailable` | Moved from `deck` (ruling E-L2): a not-yet control announced as "Not available yet". |
 
 ## 7. Routing and composition
 

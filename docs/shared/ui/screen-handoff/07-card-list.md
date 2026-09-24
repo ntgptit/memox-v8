@@ -51,6 +51,8 @@ and `trashed` (Undo; no Trash in V8.0).
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
 | Tags filter, Import, Export | Disabled | Spec A4 |
+| "Export all {n} cards" in the deck sheet | "Export all cards", no count | Ruling E-L4: the sheet reads only `DeckView`, which has no card count |
+| Flag in #F97316 | `streakInk` (#CA601D light) | E-O4: the kit orange reads 2.8:1 on the card, below the 3:1 non-text floor |
 
 ## Copy
 
