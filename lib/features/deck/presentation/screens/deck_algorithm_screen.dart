@@ -9,6 +9,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
+import 'package:memox/features/deck/presentation/widgets/overlays/deck_reset_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_switch_algorithm_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_algorithm_options_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_state_widget.dart';
@@ -201,7 +202,10 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                 icon: isLocked ? AppIcons.lock : AppIcons.info,
               ),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),
-              DeckStartOverWidget(onReset: () {}),
+              DeckStartOverWidget(
+                onReset: () =>
+                    unawaited(showResetLearningDialog(context, view: view)),
+              ),
             ],
           ),
         ),
