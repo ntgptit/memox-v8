@@ -282,8 +282,12 @@ final class DeckRepositoryImpl implements DeckRepository {
         (rows) => [
           for (final hit in candidatesInTreeOrder(
             [for (final row in rows) _nodeOf(row)],
-            (node, path) =>
-                DeckSearchHit(id: node.id, name: node.name, path: path),
+            (node, path) => DeckSearchHit(
+              id: node.id,
+              name: node.name,
+              path: path,
+              contentType: node.contentType,
+            ),
           ))
             if (foldText(hit.name).contains(foldedTerm)) hit,
         ],
@@ -376,4 +380,5 @@ DeckTreeNode _nodeOf(DeckForestRow row) => DeckTreeNode(
   parentId: row.parentId,
   siblingPosition: row.siblingPosition,
   isCandidate: row.isCandidate,
+  contentType: DeckContentType.values.byName(row.contentType),
 );

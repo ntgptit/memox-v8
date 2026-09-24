@@ -63,6 +63,7 @@ final class DeckLevel {
     required this.newCount,
     required this.scheduledCount,
     required this.maxOverdueDays,
+    required this.deckCount,
   });
 
   factory DeckLevel.of(
@@ -86,6 +87,7 @@ final class DeckLevel {
         (longest, tile) =>
             tile.overdueDays > longest ? tile.overdueDays : longest,
       ),
+      deckCount: tiles.length,
     );
   }
 
@@ -95,4 +97,7 @@ final class DeckLevel {
   final int newCount;
   final int scheduledCount;
   final int maxOverdueDays;
+
+  /// Every deck of the level, whatever the filter (the open deck's summary).
+  final int deckCount;
 }

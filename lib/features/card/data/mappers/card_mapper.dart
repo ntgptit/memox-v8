@@ -5,6 +5,7 @@ import 'package:memox/features/card/domain/models/card_display_status_model.dart
 import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
@@ -127,4 +128,5 @@ DeckTreeNode deckTreeNodeOf(DeckForestRow row) => DeckTreeNode(
   parentId: row.parentId,
   siblingPosition: row.siblingPosition,
   isCandidate: row.isCandidate,
+  contentType: DeckContentType.values.byName(row.contentType),
 );

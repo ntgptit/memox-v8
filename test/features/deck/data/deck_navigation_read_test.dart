@@ -6,6 +6,7 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -205,6 +206,26 @@ void main() {
           .first;
 
       expect(shown(hits), [('Ăn uống', 'D-EB')]);
+    });
+
+    test('each hit carries what its deck holds', () async {
+      final eat =
+          (await repo
+                  .watchSearch(scopeDeckId: null, foldedTerm: 'ăn uống')
+                  .first)
+              .single;
+      await insertCard(db, id: 'meal', deckId: eat.id);
+
+      final hits = {
+        for (final hit
+            in await repo.watchSearch(scopeDeckId: null, foldedTerm: '').first)
+          hit.name: hit.contentType,
+      };
+
+      expect(hits['D-EB'], DeckContentType.deck);
+      expect(hits['Vocabulary'], DeckContentType.deck);
+      expect(hits['Academic words'], DeckContentType.unset);
+      expect(hits['Ăn uống'], DeckContentType.card);
     });
 
     test('the scope itself is not a hit', () async {
