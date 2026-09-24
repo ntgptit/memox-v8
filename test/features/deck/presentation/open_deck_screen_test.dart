@@ -240,6 +240,12 @@ void main() {
       find.widgetWithText(MxButton, _en.deckStudyThisDue(1)),
     );
     expect(study.onPressed, isNull);
+    expect(
+      tester.getSemantics(
+        find.widgetWithText(MxButton, _en.deckStudyThisDue(1)),
+      ),
+      isSemantics(hint: _en.commonNotAvailableYet),
+    );
     expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
   });
 

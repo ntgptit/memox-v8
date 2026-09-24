@@ -316,5 +316,6 @@
   "searchHoldsDecks": "{path} · chứa bộ thẻ con",
   "searchHoldsNothing": "{path} · trống",
   "searchErrorTitle": "Không tìm được",
-  "searchErrorBody": "Thư viện của bạn vẫn an toàn trên máy này. Hãy thử lại sau giây lát."
+  "searchErrorBody": "Thư viện của bạn vẫn an toàn trên máy này. Hãy thử lại sau giây lát.",
+  "commonNotAvailableYet": "Chưa khả dụng"
 }

@@ -474,6 +474,7 @@ item names where it comes from.
 | 88 | The card detail's deck path includes the destination line of the editor's header, which the kit's detail does not show | library phase 4b P4b-L8 |
 | 89 | The card detail puts the status badge and flag above the front, not beside it, so a long front keeps the full width | library phase 4b (Task 5 golden review) |
 | 90 | A history event's badge carries the kind only (Learning, Review, Repeat) and the action is text beside it: `MxBadge` never wraps, so the kit's "kind · action" pill overflowed at text scale 2 | library deferred minors |
+| 91 | On the empty Library, "Browse starter decks" is disabled without the spec A4 "not available yet" hint: `MxEmptyState` has no slot for a hint on its secondary action. Every other waiting control on screen 01 carries it | Impeccable review (critique + audit) |
 | 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
 | 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
 | 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D | library alignment phase C (C-L3) |
