@@ -337,9 +337,10 @@ in phases 4–6 also gets its gallery entry.
 - `test/flutter_test_config.dart` loads the real Plus Jakarta Sans, so text does
   not render as Ahem boxes.
 - Tolerance is zero.
-- Goldens are generated on Windows, the only machine that runs the suite: the
-  repository's only workflow is `build-apk.yml`. When a Linux CI test job
-  exists, the goldens are regenerated there (§9).
+- Goldens are generated in the Linux container built from
+  `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (owner decision
+  2026-09-25): the same pixels on any machine with Docker. A Windows or macOS
+  run excludes the `golden` tag and never passes `--update-goldens`.
 
 **App** (`test/app/`):
 
@@ -392,7 +393,7 @@ item names where it comes from.
 | 6 | AppBar title 16/700 in `app-bar.md` vs 20/700 in `02-theme-binding.md`: the widget spec (16/700) is implemented | critique P1, §5 rule |
 | 7 | ListRow title 14/600 vs foundations 16/500: the widget spec is implemented | critique P1, §5 rule |
 | 8 | MasteryDonut label under the 12px floor: the widget spec is implemented | critique P1, §5 rule |
-| 9 | Goldens are Windows-generated and must be regenerated when Linux CI exists | §8.2 |
+| 9 | Goldens are Windows-generated and must be regenerated when Linux CI exists — closed by library alignment phase E: goldens come from the Linux container | §8.2 |
 | 10 | AppBar, StudyTopBar (56) and the BottomNav bar (64) are minimum heights that grow with text scaling; MxAppShell places the app bar in-flow instead of `Scaffold.appBar` | phase 2 plan R1, R3 |
 | 11 | Button chip size paints `surfaceContainerLowest` + ghost edge with `onSurface` ink whatever the tone; the contract leaves chip ink unspecified | phase 2 plan R2 |
 | 12 | Breadcrumb ancestor segments have a 48×48 hit area; the row is 48 tall instead of 2 + text + 8 | phase 2 plan R4 |
