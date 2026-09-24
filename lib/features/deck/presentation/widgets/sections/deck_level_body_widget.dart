@@ -20,6 +20,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
     super.key,
     required this.parentId,
     required this.onOpenDeck,
+    required this.onOpenAlgorithm,
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
@@ -27,6 +28,9 @@ class DeckLevelBodyWidget extends ConsumerWidget {
 
   final String? parentId;
   final ValueChanged<String> onOpenDeck;
+
+  /// A root's review algorithm (screen 02), from a row's action sheet.
+  final ValueChanged<String> onOpenAlgorithm;
 
   /// The open deck's algorithm for its summary card; null at the root.
   final SchedulerType? schedulerType;
@@ -59,6 +63,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
                   level: level,
                   parentId: parentId,
                   onOpenDeck: onOpenDeck,
+                  onOpenAlgorithm: onOpenAlgorithm,
                   emptyState: emptyState,
                   schedulerType: schedulerType,
                   hasDeepestSubDecks: hasDeepestSubDecks,

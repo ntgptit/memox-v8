@@ -44,6 +44,9 @@ abstract final class AppIcons {
   static const IconData learned = Icons.check_circle_outline; // check-circle-2
   static const IconData repeat = Icons.repeat; // repeat
   static const IconData lapses = Icons.replay; // rotate-ccw
+  static const IconData resetProgress = Icons.replay; // rotate-ccw
+  static const IconData lock = Icons.lock_outline; // lock
+  static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off
   static const IconData calendar = Icons.event; // calendar
 

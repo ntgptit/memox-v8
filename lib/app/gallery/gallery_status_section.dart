@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
@@ -36,6 +37,25 @@ class GalleryStatusSection extends StatelessWidget {
             label: '12 ready',
             tone: MxBadgeTone.mastery,
             icon: AppIcons.check,
+          ),
+        ],
+      ),
+      Row(
+        spacing: AppSpacing.control,
+        children: [
+          Expanded(
+            child: MxOutcomeTile(
+              label: 'Kept',
+              body: 'Decks, cards and history',
+              tone: MxOutcomeTone.kept,
+            ),
+          ),
+          Expanded(
+            child: MxOutcomeTile(
+              label: 'Lost',
+              body: 'Schedules and due dates',
+              tone: MxOutcomeTone.lost,
+            ),
           ),
         ],
       ),

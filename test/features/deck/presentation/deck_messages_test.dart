@@ -33,6 +33,20 @@ void main() {
       }
     });
 
+    test('screen 02 has ${locale.languageCode} copy', () {
+      for (final copy in [
+        l10n.algorithmLockedTitle(2),
+        l10n.algorithmLockedBody('15 Oct 2025'),
+        l10n.resetDialogIntro(2, 'Korean', 1248),
+        l10n.resetLostBodyWithSession(1),
+        l10n.resetDoneToast(2, 1),
+        l10n.algorithmSwitchedToast('SM-2'),
+      ]) {
+        expect(copy.trim(), isNotEmpty);
+        expect(copy, isNot(contains('{')));
+      }
+    });
+
     test('every srs rejection has plain ${locale.languageCode} copy', () {
       for (final reason in SrsRejection.values) {
         final copy = l10n.srsRejection(reason);

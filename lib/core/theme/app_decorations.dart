@@ -30,4 +30,21 @@ abstract final class AppDecorations {
           width: AppStroke.hairline,
         ),
       );
+
+  /// The warning Card: the warning-soft ground over the raised fill, edged
+  /// with the warning border, for a state that asks for care such as a
+  /// locked review algorithm (screen 02, owner decision D-O1).
+  static BoxDecoration warningCard(
+    ColorScheme scheme,
+    MxDerivedColors derived,
+  ) {
+    final raised = raisedCard(scheme, derived);
+    return raised.copyWith(
+      color: Color.alphaBlend(derived.warningSoft, raised.color!),
+      border: Border.all(
+        color: derived.warningBorder,
+        width: AppStroke.hairline,
+      ),
+    );
+  }
 }

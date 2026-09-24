@@ -11,6 +11,7 @@ import 'package:memox/features/card/presentation/screens/card_detail_screen.dart
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
+import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
@@ -47,6 +48,13 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                       builder: (context, state) => CardEditorScreen.create(
                         deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                         deckContext: _deckContext,
+                      ),
+                    ),
+                    GoRoute(
+                      path: AppRoutes.algorithmChild,
+                      builder: (context, state) => DeckAlgorithmScreen(
+                        deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                        onOpenAncestor: (id) => _openAncestor(context, id),
                       ),
                     ),
                   ],
@@ -113,6 +121,8 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
     onOpenAncestor: (id) => _openAncestor(context, id),
     onSearch: () => context.push(AppRoutes.deckSearch),
+    onOpenAlgorithm: (id) =>
+        unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onAddCard: addCard,
     cardContent: (id) => CardListSectionWidget(
       deckId: id,

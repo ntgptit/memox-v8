@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
@@ -61,6 +60,14 @@ void main() {
           .isEnabled,
       isFalse,
     );
+    // Spec A4: what waits for its feature says so to TalkBack.
+    for (final label in [_en.deckStudyThis, _en.deckStudyOptions]) {
+      expect(
+        tester.getSemantics(find.text(label)),
+        isSemantics(hint: _en.commonNotAvailableYet),
+        reason: label,
+      );
+    }
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (
@@ -161,39 +168,20 @@ void main() {
     expect(find.text(_en.commonOk), findsOneWidget);
   });
 
-  libraryTest('an unlocked scheduler warns, then changes', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await _choose(tester, _en.deckReviewAlgorithm);
-
-    expect(find.text(_en.deckSchedulerChangeWarning), findsOneWidget);
-    await tester.tap(find.text(_en.deckSchedulerSm2));
-    await tester.pumpAndSettle();
-
-    expect(
-      (await env.decks.findById(korean.id))!.schedulerType,
-      SchedulerType.sm2,
-    );
-    expect(find.text(_en.deckSchedulerChangedToast), findsOneWidget);
-  });
-
-  libraryTest('a locked scheduler explains itself and cannot change', (
+  libraryTest('Review algorithm opens screen 02 for a root (ruling D-L5)', (
     tester,
     env,
   ) async {
     final korean = await env.decks.root('Korean');
-    await lockScheduler(env.db, korean.id);
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    final opened = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id, onOpenAlgorithm: opened.add),
+    );
     await _choose(tester, _en.deckReviewAlgorithm);
 
-    expect(find.text(_en.deckSchedulerLockedNote), findsOneWidget);
-    await tester.tap(find.text(_en.deckSchedulerSm2), warnIfMissed: false);
-    await tester.pumpAndSettle();
-
-    expect(
-      (await env.decks.findById(korean.id))!.schedulerType,
-      SchedulerType.eightBox,
-    );
+    expect(opened, [korean.id]);
   });
 
   libraryTest('Reorder from the sheet shows the drag handles', (

@@ -4,12 +4,13 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 /// What the deck action sheet can start (spec §6.2).
-enum DeckAction { open, rename, move, changeScheduler, reorder, delete }
+enum DeckAction { open, rename, move, reviewAlgorithm, reorder, delete }
 
 /// A deck's commands (screen 01), from its row's ⋮ or the open deck's ⋮. It
 /// completes with the chosen one, which the caller then opens, or with null
@@ -82,11 +83,13 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckOpen,
           onTap: () => choose(DeckAction.open),
         ),
-      MxActionSheetCommandRow(
-        icon: AppIcons.play,
-        label: l10n.deckStudyThis,
-        onTap: () {},
-        isEnabled: false,
+      DeckUnavailableWidget(
+        child: MxActionSheetCommandRow(
+          icon: AppIcons.play,
+          label: l10n.deckStudyThis,
+          onTap: () {},
+          isEnabled: false,
+        ),
       ),
       MxActionSheetCommandRow(
         icon: AppIcons.edit,
@@ -94,12 +97,14 @@ class DeckActionSheetWidget extends StatelessWidget {
         onTap: () => choose(DeckAction.rename),
       ),
       if (deck.isRoot) ...[
-        MxActionSheetCommandRow(
-          icon: AppIcons.settings,
-          label: l10n.deckStudyOptions,
-          subtitle: l10n.deckStudyOptionsHint,
-          onTap: () {},
-          isEnabled: false,
+        DeckUnavailableWidget(
+          child: MxActionSheetCommandRow(
+            icon: AppIcons.settings,
+            label: l10n.deckStudyOptions,
+            subtitle: l10n.deckStudyOptionsHint,
+            onTap: () {},
+            isEnabled: false,
+          ),
         ),
         MxActionSheetCommandRow(
           icon: AppIcons.scheduler,
@@ -108,7 +113,7 @@ class DeckActionSheetWidget extends StatelessWidget {
               ? l10n.deckReviewAlgorithmLocked(algorithm)
               : algorithm,
           hasChevron: true,
-          onTap: () => choose(DeckAction.changeScheduler),
+          onTap: () => choose(DeckAction.reviewAlgorithm),
         ),
       ],
       if (!deck.isRoot)

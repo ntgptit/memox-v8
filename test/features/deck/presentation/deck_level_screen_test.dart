@@ -78,6 +78,12 @@ void main() {
       find.widgetWithText(MxButton, _en.libraryBrowseStarter),
     );
     expect(starter.onPressed, isNull);
+    expect(
+      tester.getSemantics(
+        find.widgetWithText(MxButton, _en.libraryBrowseStarter),
+      ),
+      isSemantics(hint: _en.commonNotAvailableYet),
+    );
     expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
   });
 
@@ -100,6 +106,8 @@ void main() {
   libraryTest('the FAB opens the create dialog', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
+    // The FAB comes in once the Library has loaded a deck.
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(MxFab));
     await tester.pumpAndSettle();
 
@@ -250,13 +258,17 @@ void main() {
   ) async {
     await env.decks.root(List.filled(12, '한국어 어휘 공부').join(' '));
     await pumpLibraryScreen(tester, env, deckScreen(), textScale: 2);
+    // The FAB scales in once a deck has loaded; measure it at rest.
+    await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    await expectAccessibleTargets(tester);
   });
 
   libraryTest('meets the target guidelines', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
+    await tester.pumpAndSettle();
 
     await expectAccessibleTargets(tester);
   });
@@ -323,5 +335,43 @@ void main() {
     await pumpLibraryScreen(tester, env, deckScreen());
 
     expect(find.byType(DeckDueStripWidget), findsNothing);
+  });
+
+  libraryTest('the FAB waits for a first deck; the empty state offers it', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
+    expect(find.byType(MxFab), findsNothing);
+
+    await env.decks.root('Korean');
+    await tester.pumpAndSettle();
+    expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  libraryTest('controls that wait for their feature say so (spec A4)', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpLibraryScreen(tester, env, deckScreen());
+    for (final label in [
+      _en.libraryStarterDecks,
+      _en.libraryTags,
+      _en.libraryTrash,
+    ]) {
+      expect(
+        tester.getSemantics(find.byTooltip(label)),
+        isSemantics(hint: _en.commonNotAvailableYet),
+        reason: label,
+      );
+    }
+
+    await tester.tap(find.text(_en.deckSortManual));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(find.text(_en.deckSortProgress)),
+      isSemantics(hint: _en.commonNotAvailableYet),
+    );
   });
 }

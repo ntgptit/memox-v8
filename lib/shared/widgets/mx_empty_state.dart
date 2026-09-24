@@ -25,6 +25,7 @@ class MxEmptyState extends StatelessWidget {
     this.onAction,
     this.secondaryActionLabel,
     this.onSecondaryAction,
+    this.secondaryActionHint,
     this.footnote,
   }) : assert(
          (actionLabel == null) == (onAction == null),
@@ -49,6 +50,10 @@ class MxEmptyState extends StatelessWidget {
   /// null.
   final String? secondaryActionLabel;
   final VoidCallback? onSecondaryAction;
+
+  /// What TalkBack adds after the secondary action's label, such as why it
+  /// is disabled (spec A4: "Not available yet").
+  final String? secondaryActionHint;
 
   /// A product rule under the action, drawn as an MxNote (ruling S19).
   final String? footnote;
@@ -113,11 +118,17 @@ class MxEmptyState extends StatelessWidget {
               ],
               if (secondaryActionLabel case final label?) ...[
                 const SizedBox(height: AppSpacing.control),
-                MxButton(
-                  label: label,
-                  tone: MxButtonTone.secondary,
-                  onPressed: onSecondaryAction,
-                  isBlock: true,
+                // Its own node, so the hint reads with this button only.
+                MergeSemantics(
+                  child: Semantics(
+                    hint: secondaryActionHint,
+                    child: MxButton(
+                      label: label,
+                      tone: MxButtonTone.secondary,
+                      onPressed: onSecondaryAction,
+                      isBlock: true,
+                    ),
+                  ),
                 ),
               ],
               if (footnote case final rule?) ...[

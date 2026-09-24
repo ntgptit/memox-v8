@@ -9,7 +9,9 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
+import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
+import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
@@ -17,6 +19,7 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_stat
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -40,6 +43,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.onSearch,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -51,6 +55,9 @@ class DeckLevelScreen extends StatelessWidget {
   /// A breadcrumb tap: a deck above this one, or null for the Library root.
   final ValueChanged<String?> onOpenAncestor;
   final VoidCallback onSearch;
+
+  /// A root's review algorithm: the router opens screen 02.
+  final ValueChanged<String> onOpenAlgorithm;
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
@@ -65,11 +72,16 @@ class DeckLevelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (deckId) {
-    null => _LibraryRoot(onOpenDeck: onOpenDeck, onSearch: onSearch),
+    null => _LibraryRoot(
+      onOpenDeck: onOpenDeck,
+      onSearch: onSearch,
+      onOpenAlgorithm: onOpenAlgorithm,
+    ),
     final id => _OpenDeck(
       deckId: id,
       onOpenDeck: onOpenDeck,
       onOpenAncestor: onOpenAncestor,
+      onOpenAlgorithm: onOpenAlgorithm,
       cardContent: cardContent,
       onAddCard: onAddCard,
       cardFab: cardFab,
@@ -79,15 +91,36 @@ class DeckLevelScreen extends StatelessWidget {
 
 /// The roots with today's work first (UC-DECK-003).
 class _LibraryRoot extends ConsumerWidget {
-  const _LibraryRoot({required this.onOpenDeck, required this.onSearch});
+  const _LibraryRoot({
+    required this.onOpenDeck,
+    required this.onSearch,
+    required this.onOpenAlgorithm,
+  });
 
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
+  final ValueChanged<String> onOpenAlgorithm;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final isReordering = ref.watch(deckReorderModeProvider(null));
+    final query = ref.watch(deckLevelQueryProvider(null));
+    // Kit 01: no FAB while the Library loads, fails or is empty; the body
+    // then offers its own action.
+    final hasDecks =
+        (ref
+                .watch(
+                  deckLevelProvider(
+                    parentId: null,
+                    sort: query.sort,
+                    filter: query.filter,
+                  ),
+                )
+                .value
+                ?.deckCount ??
+            0) >
+        0;
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(
@@ -96,24 +129,30 @@ class _LibraryRoot extends ConsumerWidget {
             ? const [_ReorderDone(parentId: null)]
             // Starter decks, tags and trash have no screen yet (spec A6).
             : [
-                MxIconButton(
-                  icon: AppIcons.starterDecks,
-                  semanticLabel: l10n.libraryStarterDecks,
-                  onPressed: null,
+                DeckUnavailableWidget(
+                  child: MxIconButton(
+                    icon: AppIcons.starterDecks,
+                    semanticLabel: l10n.libraryStarterDecks,
+                    onPressed: null,
+                  ),
                 ),
-                MxIconButton(
-                  icon: AppIcons.tag,
-                  semanticLabel: l10n.libraryTags,
-                  onPressed: null,
+                DeckUnavailableWidget(
+                  child: MxIconButton(
+                    icon: AppIcons.tag,
+                    semanticLabel: l10n.libraryTags,
+                    onPressed: null,
+                  ),
                 ),
-                MxIconButton(
-                  icon: AppIcons.delete,
-                  semanticLabel: l10n.libraryTrash,
-                  onPressed: null,
+                DeckUnavailableWidget(
+                  child: MxIconButton(
+                    icon: AppIcons.delete,
+                    semanticLabel: l10n.libraryTrash,
+                    onPressed: null,
+                  ),
                 ),
               ],
       ),
-      fab: isReordering
+      fab: isReordering || !hasDecks
           ? null
           : MxFab(
               icon: AppIcons.add,
@@ -139,6 +178,7 @@ class _LibraryRoot extends ConsumerWidget {
             child: DeckLevelBodyWidget(
               parentId: null,
               onOpenDeck: onOpenDeck,
+              onOpenAlgorithm: onOpenAlgorithm,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(
@@ -149,6 +189,7 @@ class _LibraryRoot extends ConsumerWidget {
                 onAction: createDeck,
                 // Starter decks have no screen yet (spec A6).
                 secondaryActionLabel: l10n.libraryBrowseStarter,
+                secondaryActionHint: l10n.commonNotAvailableYet,
                 footnote: l10n.libraryEmptyFootnote,
               ),
             ),
@@ -165,6 +206,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.deckId,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -173,6 +215,7 @@ class _OpenDeck extends ConsumerWidget {
   final String deckId;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(String deckId) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -193,6 +236,7 @@ class _OpenDeck extends ConsumerWidget {
         view: value,
         onOpenDeck: onOpenDeck,
         onOpenAncestor: onOpenAncestor,
+        onOpenAlgorithm: onOpenAlgorithm,
         cardContent: cardContent,
         onAddCard: onAddCard,
         cardFab: cardFab,
@@ -233,6 +277,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.view,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -241,6 +286,7 @@ class _OpenDeckContent extends ConsumerWidget {
   final DeckView view;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(String deckId) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -272,6 +318,7 @@ class _OpenDeckContent extends ConsumerWidget {
                       deckId: deck.id,
                       parentId: deck.parentId,
                       onOpenDeck: onOpenDeck,
+                      onOpenAlgorithm: onOpenAlgorithm,
                       isOpenDeck: true,
                     ),
                   ),
@@ -313,6 +360,7 @@ class _OpenDeckContent extends ConsumerWidget {
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
+                onOpenAlgorithm: onOpenAlgorithm,
                 schedulerType: view.schedulerType,
                 // Owner decision C-O6: its sub-decks are at level 10.
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
