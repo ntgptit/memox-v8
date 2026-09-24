@@ -458,6 +458,10 @@ item names where it comes from.
 | 72 | The Library root reorders from an app bar action; the library spec names Reorder only in an open deck's overflow | library phase 2 P2-L2 |
 | 73 | After the open deck moves, the back stack keeps its old parents: Back returns to a level that no longer lists it | library phase 2 review focus 5 |
 | 74 | Deck search always covers the whole library; a search scoped to one deck is not offered | library phase 2 P2-L9 |
+| 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) | library phase 3 P3-L1 |
+| 76 | Bulk Tag only adds a tag. Removing one from a selection needs a read of the tags the selection carries, which the backend lacks (finding) | library phase 3 P3-L2 |
+| 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 | library phase 3 P3-L3 |
+| 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet does not pad for the keyboard (row 64) | library phase 3 P3-L9 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
