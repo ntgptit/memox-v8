@@ -199,19 +199,24 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       windowSize: request.windowSize,
     );
     final async = ref.watch(provider);
+    // A failure always says so, even over rows loaded before (spec §5).
+    if (async.hasError) {
+      return MxScreenScroll(
+        children: [
+          MxErrorState(
+            title: l10n.cardLoadErrorTitle,
+            body: l10n.libraryLoadErrorBody,
+            retryLabel: l10n.commonRetry,
+            onRetry: () => ref.invalidate(provider),
+          ),
+        ],
+      );
+    }
     final view = _lastView = async.value ?? _lastView;
     if (view == null) {
       return MxScreenScroll(
         children: [
-          if (async.hasError)
-            MxErrorState(
-              title: l10n.cardLoadErrorTitle,
-              body: l10n.libraryLoadErrorBody,
-              retryLabel: l10n.commonRetry,
-              onRetry: () => ref.invalidate(provider),
-            )
-          else
-            for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
+          for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
         ],
       );
     }

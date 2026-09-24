@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -254,5 +256,43 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('an error after the rows loaded still says so, with Retry', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    final stream = StreamController<CardListView>();
+    addTearDown(stream.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(deckId),
+      overrides: [
+        cardListProvider(
+          deckId: deckId,
+          filter: CardListFilter.all,
+          sort: CardListSort.newest,
+          searchTerm: '',
+          windowSize: cardListWindowStep,
+        ).overrideWith((ref) => stream.stream),
+      ],
+    );
+    stream.add(
+      const CardListView(
+        items: [],
+        hasMore: false,
+        counts: CardListCounts(all: 0, due: 0, newCards: 0, flagged: 0),
+      ),
+    );
+    await tester.pump();
+    expect(find.text(_en.cardEmptyTitle), findsOneWidget);
+
+    stream.addError(StateError('disk I/O error'));
+    await tester.pump();
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsOneWidget);
   });
 }
