@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
@@ -13,12 +15,27 @@ Color? _fill(WidgetTester tester, Finder finder) =>
 void main() {
   final semantic = MxSemanticColors.light;
 
-  testWidgets('the status fixes the dot, label and 12% fill', (tester) async {
-    for (final (status, color) in [
-      (MxCardStatus.newCard, semantic.statusNew),
-      (MxCardStatus.learning, semantic.statusLearning),
-      (MxCardStatus.reviewing, semantic.statusReviewing),
-      (MxCardStatus.mastered, semantic.statusMastered),
+  testWidgets('the status fixes the dot and fill; the label is its ink', (
+    tester,
+  ) async {
+    final derived = MxDerivedColors.resolve(AppColorSchemes.light, semantic);
+    for (final (status, color, ink) in [
+      (MxCardStatus.newCard, semantic.statusNew, derived.statusNewInk),
+      (
+        MxCardStatus.learning,
+        semantic.statusLearning,
+        derived.statusLearningInk,
+      ),
+      (
+        MxCardStatus.reviewing,
+        semantic.statusReviewing,
+        derived.statusReviewingInk,
+      ),
+      (
+        MxCardStatus.mastered,
+        semantic.statusMastered,
+        derived.statusMasteredInk,
+      ),
     ]) {
       await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
       final pill = find
@@ -30,7 +47,7 @@ void main() {
 
       expect(_fill(tester, pill), color.withValues(alpha: 0.12));
       expect(_fill(tester, find.byKey(_dotKey)), color);
-      expect(tester.widget<Text>(find.text('State')).style!.color, color);
+      expect(tester.widget<Text>(find.text('State')).style!.color, ink);
     }
   });
 
