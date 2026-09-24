@@ -94,18 +94,25 @@ class _FieldHeader extends StatelessWidget {
         spacing: AppSpacing.micro,
         children: [
           if (icon != null) Icon(icon, size: AppIconSize.inline),
-          Flexible(
-            child: Text(
-              label.toUpperCase(),
-              semanticsLabel: label,
-              style: styles.overline,
+          // The label and its marker take the room the count leaves, and
+          // wrap as a pair rather than splitting the label.
+          Expanded(
+            child: Wrap(
+              spacing: AppSpacing.micro,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  semanticsLabel: label,
+                  style: styles.overline,
+                ),
+                if (isRequired)
+                  Text(l10n.cardRequiredLegend, style: styles.requiredMarker)
+                else
+                  Text(l10n.cardOptional, style: styles.rowDescription),
+              ],
             ),
           ),
-          if (isRequired)
-            Text(l10n.cardRequiredLegend, style: styles.requiredMarker)
-          else
-            Text(l10n.cardOptional, style: styles.rowDescription),
-          const Spacer(),
           ValueListenableBuilder<TextEditingValue>(
             valueListenable: controller,
             builder: (context, value, _) {

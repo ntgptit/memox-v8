@@ -311,12 +311,17 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
       if (!_isCreating && !_isGone)
-        Semantics(
-          toggled: _isFlagged,
-          child: MxIconButton(
-            icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
-            semanticLabel: _isFlagged ? l10n.cardFlagClear : l10n.cardFlagLabel,
-            onPressed: () => setState(() => _isFlagged = !_isFlagged),
+        // One node: the button and its toggled state.
+        MergeSemantics(
+          child: Semantics(
+            toggled: _isFlagged,
+            child: MxIconButton(
+              icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
+              semanticLabel: _isFlagged
+                  ? l10n.cardFlagClear
+                  : l10n.cardFlagLabel,
+              onPressed: () => setState(() => _isFlagged = !_isFlagged),
+            ),
           ),
         ),
       if (!_isGone)

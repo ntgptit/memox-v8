@@ -288,4 +288,25 @@ void main() {
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });
+
+  libraryTest('the flag toggle reports its state (ruling P4a-L6)', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(deckId);
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(find.byTooltip(_en.cardFlagLabel)),
+      isSemantics(hasToggledState: true, isToggled: false),
+    );
+
+    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.pump();
+    expect(
+      tester.getSemantics(find.byTooltip(_en.cardFlagClear)),
+      isSemantics(hasToggledState: true, isToggled: true),
+    );
+  });
 }
