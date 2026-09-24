@@ -1,14 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_view_model.dart';
+import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -218,5 +225,29 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('the deck context holds its place while the deck loads', (
+    tester,
+    env,
+  ) async {
+    final pending = StreamController<Outcome<DeckView, DeckRejection>>();
+    addTearDown(pending.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: DeckContextHeaderWidget(
+          deckId: 'words',
+          currentLabel: _en.cardAddTitle,
+        ),
+      ),
+      overrides: [
+        deckViewProvider('words').overrideWith((ref) => pending.stream),
+      ],
+    );
+
+    expect(find.byType(MxSkeleton), findsWidgets);
+    expect(find.byType(MxBreadcrumb), findsNothing);
   });
 }

@@ -8,7 +8,9 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/create_card_use_case.dart';
+import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/presentation/providers/create_card_use_case_provider.dart';
+import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -58,6 +60,27 @@ bool _isEnabled(WidgetTester tester, String label) =>
     tester.widget<MxButton>(_footerSave(label)).onPressed != null;
 
 /// Cards whose create fails the first way a real database can.
+/// Counts the edits it passes on to [_cards].
+final class _CountingEdits implements CardRepository {
+  _CountingEdits(this._cards);
+
+  final CardRepository _cards;
+  var edits = 0;
+
+  @override
+  Future<Outcome<void, CardRejection>> editCard({
+    required String cardId,
+    required CardDraft draft,
+    DateTime? now,
+  }) {
+    edits++;
+    return _cards.editCard(cardId: cardId, draft: draft, now: now);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 final class _FailingCards implements CardRepository {
   @override
   Future<Outcome<CardEntity, CardRejection>> createCard({
@@ -324,5 +347,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardDiscardNewTitle), findsOneWidget);
+  });
+
+  libraryTest('a double tap on Save changes writes once', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(deckId);
+    final counting = _CountingEdits(env.cards);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _edit(card.id),
+      overrides: [
+        editCardUseCaseProvider.overrideWithValue(EditCardUseCase(counting)),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'changed');
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.tap(_footerSave(_en.cardSaveChanges), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(counting.edits, 1);
   });
 }

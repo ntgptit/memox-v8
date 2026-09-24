@@ -39,12 +39,16 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     super.key,
     required this.deckId,
     required this.onAddCard,
+    required this.onOpenCard,
   });
 
   final String deckId;
 
   /// New card: the router opens the card editor.
   final VoidCallback onAddCard;
+
+  /// A row tap outside selection: the router opens the card's detail.
+  final ValueChanged<String> onOpenCard;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -259,6 +263,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         onToggle: (cardId) => _selection().toggle(cardId),
         onShowAll: () => _show(CardListFilter.all),
         onAddCard: widget.onAddCard,
+        onOpenCard: widget.onOpenCard,
       ),
     );
     // Back leaves selection before it leaves the deck (IT-ORG-013).
@@ -294,6 +299,7 @@ class _CardListScroll extends StatelessWidget {
     required this.onToggle,
     required this.onShowAll,
     required this.onAddCard,
+    required this.onOpenCard,
   });
 
   final Widget toolbar;
@@ -303,6 +309,7 @@ class _CardListScroll extends StatelessWidget {
   final ValueChanged<String> onToggle;
   final VoidCallback onShowAll;
   final VoidCallback onAddCard;
+  final ValueChanged<String> onOpenCard;
 
   @override
   Widget build(BuildContext context) {
@@ -327,8 +334,11 @@ class _CardListScroll extends StatelessWidget {
                     item: item,
                     isSelecting: isSelecting,
                     isSelected: selected.contains(item.id),
-                    // BR-CARD-020: while selecting, a tap only toggles.
-                    onTap: isSelecting ? () => onToggle(item.id) : null,
+                    // BR-CARD-020: a tap opens the card; while selecting it
+                    // only toggles.
+                    onTap: isSelecting
+                        ? () => onToggle(item.id)
+                        : () => onOpenCard(item.id),
                     onLongPress: () => onToggle(item.id),
                     hasDivider: index < items.length - 1,
                   ),

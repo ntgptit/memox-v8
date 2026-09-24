@@ -21,9 +21,22 @@ abstract final class AppRoutes {
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
+  /// The path parameter that names a card.
+  static const String cardIdParam = 'cardId';
+
+  /// A card's detail, relative to [decks], and its editor, relative to it.
+  static const String cardChild = 'card/:$cardIdParam';
+  static const String cardEditChild = 'edit';
+
   /// An open deck's location.
   static String deck(String deckId) => '$decks/deck/$deckId';
 
   /// The card editor adding cards to [deckId].
   static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';
+
+  /// A card's detail.
+  static String card(String cardId) => '$decks/card/$cardId';
+
+  /// The card editor for [cardId].
+  static String editCard(String cardId) => '${card(cardId)}/$cardEditChild';
 }

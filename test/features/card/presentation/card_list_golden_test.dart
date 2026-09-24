@@ -51,8 +51,11 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) =>
-                CardListSectionWidget(deckId: id, onAddCard: () {}),
+            cardContent: (id) => CardListSectionWidget(
+              deckId: id,
+              onAddCard: () {},
+              onOpenCard: (_) {},
+            ),
             cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
           ),
           brightness,
@@ -69,8 +72,11 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) =>
-                CardListSectionWidget(deckId: id, onAddCard: () {}),
+            cardContent: (id) => CardListSectionWidget(
+              deckId: id,
+              onAddCard: () {},
+              onOpenCard: (_) {},
+            ),
             cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
           ),
           brightness,

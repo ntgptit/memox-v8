@@ -40,6 +40,12 @@ abstract final class AppIcons {
   static const IconData pronunciation = Icons.text_fields; // type
   static const IconData clock = Icons.schedule; // clock
   static const IconData searchOff = Icons.search_off; // search-x
+  static const IconData history = Icons.history; // history
+  static const IconData learned = Icons.check_circle_outline; // check-circle-2
+  static const IconData repeat = Icons.repeat; // repeat
+  static const IconData lapses = Icons.replay; // rotate-ccw
+  static const IconData timeout = Icons.timer_off_outlined; // timer-off
+  static const IconData calendar = Icons.event; // calendar
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;

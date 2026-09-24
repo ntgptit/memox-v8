@@ -460,19 +460,25 @@ item names where it comes from.
 | 74 | Deck search always covers the whole library; a search scoped to one deck is not offered | library phase 2 P2-L9 |
 | 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) | library phase 3 P3-L1 |
 | 76 | Bulk Tag only adds a tag. Removing one from a selection needs a read of the tags the selection carries, which the backend lacks (finding) | library phase 3 P3-L2 |
-| 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 — "Add card" closed by library phase 4a | library phase 3 P3-L3 |
+| 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 — "Add card" closed by library phase 4a — row tap closed by library phase 4b | library phase 3 P3-L3 |
 | 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet does not pad for the keyboard (row 64) | library phase 3 P3-L9 |
 | 79 | The card editor follows the V3 kit (08, 09) over library spec §6.5: live validation with Save disabled until valid, failures inside the form (inline banner, warning banner, gone state), and a discard confirm | library phase 4a P4a-L1…L5 |
 | 80 | A new card has no flag control; the flag toggles from the edit app bar, and its glyph changes but does not recolour (`Icon(color:)` is banned) | library phase 4a P4a-L6 |
 | 81 | The editor's deck context drops the kit's pill border, and Add tag is an outline chip, not dashed: no `BorderSide`, and no dashed-border token | library phase 4a P4a-L7, P4a-L8 |
 | 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b | library phase 4a P4a-L10 |
-| 83 | The edit mode is built and tested in phase 4a but has no route until phase 4b adds the card detail, which opens it | library phase 4a split |
+| 83 | The edit mode is built and tested in phase 4a but has no route until phase 4b adds the card detail, which opens it — closed by library phase 4b | library phase 4a split |
 | 84 | A top-level deck holds sub-decks only, so its empty state offers New sub-deck alone, with its own copy; New card shows where the deck's create options include cards | library phase 4a (Task 4 ruling) |
-| 85 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
-| 86 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
-| 87 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D | library alignment phase C (C-L3) |
-| 88 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
-| 89 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
+| 85 | The card detail follows the V3 kit (10) over library spec §6.6: a schedule card with the eight-box ramp or the SM-2 facts, history grouped by cycle, Load older history, and an end-of-history line | library phase 4b P4b-L1 |
+| 86 | History events show the absolute date and time only, with no timeline rail or dots and no "Finished learning" note; cycle headers carry no reset date, which the backend does not store | library phase 4b P4b-L3, P4b-L4 |
+| 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash | library phase 4b P4b-L5 |
+| 88 | The card detail's deck path includes the destination line of the editor's header, which the kit's detail does not show | library phase 4b P4b-L8 |
+| 89 | The card detail puts the status badge and flag above the front, not beside it, so a long front keeps the full width | library phase 4b (Task 5 golden review) |
+| 90 | A history event's badge carries the kind only (Learning, Review, Repeat) and the action is text beside it: `MxBadge` never wraps, so the kit's "kind · action" pill overflowed at text scale 2 | library deferred minors |
+| 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
+| 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
+| 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D | library alignment phase C (C-L3) |
+| 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
+| 95 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
