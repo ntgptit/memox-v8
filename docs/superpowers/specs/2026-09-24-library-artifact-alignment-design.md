@@ -27,13 +27,13 @@ Settled with the owner in brainstorming on 2026-09-24:
 | A7 | Deck rows drop the overdue · today · new line. The breakdown lives on the root strip and the deck summary card; a row carries one "N due" badge. |
 | A8 | A deck that vanishes while open shows the artifact's "This deck is no longer here" empty state. This replaces ruling P2-L7 (snackbar and pop). An operation that fails because its deck vanished still returns with a snackbar (UC-DECK-002 E1). |
 | A9 | Changing the review algorithm while unlocked asks for confirmation in a non-destructive dialog (UC-DECK-002 steps 3–4), although the artifact switches on tap. |
-| A10 | A new mastery ink token carries the "Kept" label of the reset dialog at 4.5:1, in both themes, like the status ink tokens of Library phase 1. |
+| A10 | The "Kept" label of the reset dialog uses `statusMasteredInk`. `statusMastered` equals `mastery` in both themes, and that ink is already pinned at ≥ 4.5:1 on every ground and on its own tint (`mx_derived_colors_test`). No new token. |
 | A11 | Library search shows decks only. The Cards group, tag names on card rows, "Load more" and the card/tag hints wait for BE-A8. The field hint is "Search decks". |
 | A12 | `MxAppBar` gets a title-widget slot so the search field sits in the app bar. |
 | A13 | The card deck summary shows the mastery donut and the New/Beginning/Reviewing/Mastered distribution. A new read counts the four display states (BR-CARD-008, BR-SRS-013) in one query. |
 | A14 | The deck app bar carries the card list's search action and selection header. `app/` injects them into the deck screen, as it injects the card content (D8 of the Library spec holds; UI-base debt row 75 closes). |
 | A15 | Card rows show up to two tags and "+N". The card list read returns each card's tags without N+1. |
-| A16 | The card list has no "New card" FAB and the empty deck no "Add first card" until Library phase 4. |
+| A16 | Superseded by #33 (Library phase 4a): the card list's "New card" FAB and the unset deck's "New card" exist, and phases C–E keep them. The card detail (phase 4b) stays outside this project. |
 | A17 | Five phases, one plan and one PR each (§9). |
 
 ## 3. Screen handoff
@@ -136,7 +136,7 @@ A new `DeckAlgorithmScreen` in `deck/presentation` (`deck → srs` is allowed). 
 1. The dialog loads `ResetLearningSummary`.
 2. Nothing to lose (`hasProgressToLose == false`): one sentence, "Nothing has been studied in this cycle yet, so there is nothing to lose. A new cycle starts with the algorithm you pick."
 3. Otherwise: "This starts cycle N+1 for {deck} and its {cardCount} cards.", then two tiles:
-   - **Kept** (mastery ink, A10): decks, cards, tags and every past answer, labelled cycle N;
+   - **Kept** (`statusMasteredInk`, A10): decks, cards, tags and every past answer, labelled cycle N;
    - **Lost** (warning ink): every card's schedule, due date and progress; "the open session" only when `openSessionCount > 0`.
 4. "Algorithm for the new cycle": Keep {current} (selected) / Switch to {other}.
 5. Cancel / "Reset and start cycle N+1"; while running, a spinner and "Resetting…".
@@ -169,14 +169,14 @@ Pending BE-A8 (A11): the Cards group, tag names on card rows, "Load more", the c
 | Header | "Showing N of M" (while selecting "N of M selected") with the sort pill "Newest first ⌄" / "Due first ⌄". |
 | Rows | One card per row: status dot (checkbox while selecting), front 16/700 and back 12, one line each with ellipsis; the uppercase status label in its ink, up to two `MxTagChip`s and "+N" (A15); trailing flag in the streak colour and the due chip ("New", "Due today", "In Nd", "Nd overdue") from a domain helper. |
 | Bulk bar | Move · Flag · Tag · Export *(disabled, FE-B3)* · Delete. |
-| FAB | None until Library phase 4 (A16). |
+| FAB | "New card", as #33 built it (A16); hidden while selecting. |
 
 **States and deviations:**
 
 | Artifact state | V8 |
 |---|---|
 | loading | Skeletons shaped like the card row. |
-| empty | "No cards in this deck yet"; "Import cards" disabled; `MxNote` on when studying opens. "Add first card" waits for phase 4 (A16). |
+| empty | "No cards in this deck yet"; "Import cards" disabled; `MxNote` on when studying opens. "Add first card" opens the #33 editor (A16). |
 | search empty | Neutral empty state naming the term. |
 | error, not found | As 4.1. |
 | selection, select all | Long-press selects (BR-CARD-020); "Select all" covers the whole filtered set. |
@@ -205,7 +205,6 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 |---|---|
 | `MxSearchField` | A trigger mode: read-only, an `onTap`, button semantics. |
 | `MxAppBar` | A `titleWidget` slot as an alternative to the title string; the title still gives up width first. |
-| Theme | A mastery ink token at ≥ 4.5:1 on its tint in both themes (A10), recorded in spec UI-base §9. |
 
 ## 7. Routing and composition
 
@@ -228,7 +227,7 @@ One spec; one plan and one PR per phase; a phase's plan is written after the pre
 | # | Content | Usable result |
 |---|---|---|
 | A | The handoff: `screen-handoff/00-index.md`, detail files 01, 02, 04, 07, images, capture script; `wbs_FE.md` corrected. | Screens are specified in the repository. |
-| B | Foundations: `MxSearchField` trigger mode, `MxAppBar` title slot, mastery ink token; the card status counts, tags on list items and the due label helper. | The pieces C–E compose exist and are tested. |
+| B | Foundations: `MxSearchField` trigger mode, `MxAppBar` title slot; the card status counts, tags on list items and the due label helper. | The pieces C–E compose exist and are tested. |
 | C | 01 Deck list (root and open deck, action sheet, sort & filter sheet, dialogs, states) and 04 Library search. | The deck tree matches the handoff. |
 | D | 02 Review algorithm & reset; the scheduler sheet is removed. | The algorithm can be switched and progress reset from its own screen (FE-A4). |
 | E | 07 Card list: injected app bar, summary card, filters, rows, bulk bar. | The card list matches the handoff. |

@@ -15,13 +15,21 @@ enum MxAppBarDensity { content, screen }
 class MxAppBar extends StatelessWidget {
   const MxAppBar({
     super.key,
-    required this.title,
+    this.title,
+    this.titleWidget,
     this.density = MxAppBarDensity.screen,
     this.leading,
     this.actions = const [],
-  });
+  }) : assert(
+         (title == null) != (titleWidget == null),
+         'MxAppBar takes a title or a titleWidget, not both',
+       );
 
-  final String title;
+  final String? title;
+
+  /// Takes the title's place and its width, such as the search field of
+  /// screen 04. It brings its own semantics; no header flag is added.
+  final Widget? titleWidget;
   final MxAppBarDensity density;
 
   /// Usually an MxIconButton (back, or close in selection mode).
@@ -49,17 +57,19 @@ class MxAppBar extends StatelessWidget {
               children: [
                 ?leading,
                 Expanded(
-                  child: Semantics(
-                    header: true,
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: isContent
-                          ? styles.contentTitle
-                          : styles.screenTitle,
-                    ),
-                  ),
+                  child:
+                      titleWidget ??
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          title!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: isContent
+                              ? styles.contentTitle
+                              : styles.screenTitle,
+                        ),
+                      ),
                 ),
                 ...actions,
               ],

@@ -61,6 +61,7 @@ Quy ước:
 | BE-05 | Tag trên thẻ: gắn, gỡ, thay tag trong transaction của card (BR-TAG-001, BR-TAG-002) | xong | BE-02 | — | PR #26; test trong `test/features/tags/` | — |
 | BE-A1 | Settings, 8 use case (UC-SETTINGS-001): dòng `app_settings` có từ lần mở database đầu tiên, đọc qua một stream, mỗi lần lưu là một transaction, reset về mặc định; tuỳ chọn học riêng của root deck: lưu, dùng lại mặc định, đọc giá trị hiệu lực (BR-SETTINGS-001…BR-SETTINGS-008, BR-STUDY-003, BR-STUDY-056) | xong | BE-02 | S | [spec](superpowers/specs/2026-09-24-settings-reset-backend-design.md) và [plan](superpowers/plans/2026-09-24-settings-reset-backend.md) gói BE-A1 + BE-A2; test trong `test/features/settings/` | — |
 | BE-A2 | Reset learning progress, 2 use case (UC-SRS-001): reset giữ hoặc đổi scheduler, bản tóm tắt cho bước xác nhận (BR-SRS-020…BR-SRS-030, BR-STUDY-015) | xong | BE-02 | S | Spec và plan gói BE-A1 + BE-A2; test trong `test/features/srs/` | — |
+| BE-A9 | Read của danh sách card cho screen handoff: mỗi card mang tag (một statement theo trang) và nhãn hạn (`CardDue`); view đếm 4 trạng thái hiển thị của cả deck; stream phát lại khi tag của card đổi | xong | BE-04, BE-05 | S | [spec căn Thư viện](superpowers/specs/2026-09-24-library-artifact-alignment-design.md) §5, phase B; test trong `test/features/card/` | Phase E đọc các trường này |
 
 ### V8.0 — còn lại
 

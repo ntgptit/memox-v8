@@ -287,6 +287,12 @@ void main() {
         items: [],
         hasMore: false,
         counts: CardListCounts(all: 0, due: 0, newCards: 0, flagged: 0),
+        statusCounts: CardStatusCounts(
+          newCards: 0,
+          beginning: 0,
+          reviewing: 0,
+          mastered: 0,
+        ),
       ),
     );
     await tester.pump();
