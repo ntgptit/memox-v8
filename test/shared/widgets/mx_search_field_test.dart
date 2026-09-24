@@ -149,11 +149,7 @@ void main() {
 
       expect(
         tester.getSemantics(find.byType(MxSearchField)),
-        isSemantics(
-          label: 'Search decks',
-          isButton: true,
-          hasTapAction: true,
-        ),
+        isSemantics(label: 'Search decks', isButton: true, hasTapAction: true),
       );
       expect(find.byType(MxIconButton), findsNothing);
       semantics.dispose();
