@@ -106,6 +106,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   @override
   Future<Outcome<void, SrsRejection>> resetLearning({
     required String rootDeckId,
+    SchedulerType? schedulerType,
   }) {
     final at = _now();
     return _write(() async {
@@ -114,22 +115,30 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       if (root.parentId != null) {
         return const Rejected(SrsRejection.notARootDeck);
       }
+      final current = SchedulerType.fromCode(root.schedulerType!);
+      final type = schedulerType ?? current;
+      // The scheduler the root keeps keeps its version; another one starts at
+      // the version this app runs, as changeScheduler does (spec D7).
+      final version = type == current
+          ? root.schedulerVersion!
+          : schedulerFor(type).version;
       final generation = root.generation! + 1;
       await _dao.updateDeck(
         rootDeckId,
         DeckCompanion(
+          schedulerType: Value(type.code),
+          schedulerVersion: Value(version),
           generation: Value(generation),
           firstAnsweredAt: const Value(null),
           updatedAt: Value(at),
         ),
       );
-      final type = SchedulerType.fromCode(root.schedulerType!);
       await _dao.replaceTreeSchedules(
         rootDeckId,
         _columnsOf(
           CardScheduleState.initial(type, generation: generation),
           type: type,
-          version: root.schedulerVersion!,
+          version: version,
         ),
       );
       await _dao.invalidateOpenSessions(

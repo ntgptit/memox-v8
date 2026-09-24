@@ -20,11 +20,15 @@ abstract interface class ScheduleRepository {
     DateTime? now,
   });
 
-  /// Reset learning progress: a new generation, every schedule row of the
-  /// tree back to its start values, the scheduler unlocked, the open sessions
-  /// closed.
+  /// Reset learning progress (UC-SRS-001), all of it or nothing of it
+  /// (BR-SRS-027): a new generation, every schedule row of the tree back to
+  /// the start values of the scheduler it ends up with, the scheduler
+  /// unlocked, the open sessions closed. A [schedulerType] other than the
+  /// root's switches the scheduler too; null keeps it. This is the only way
+  /// to change the scheduler of a locked tree (BR-SRS-024).
   Future<Outcome<void, SrsRejection>> resetLearning({
     required String rootDeckId,
+    SchedulerType? schedulerType,
   });
 
   /// Changes the scheduler of an unlocked tree: every schedule row of the tree
