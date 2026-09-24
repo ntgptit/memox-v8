@@ -329,7 +329,7 @@ class _CardListScroll extends StatelessWidget {
             isFullBleed: true,
             child: Column(
               children: [
-                for (final (index, item) in items.indexed)
+                for (final item in items)
                   CardRowWidget(
                     item: item,
                     isSelecting: isSelecting,
@@ -340,7 +340,6 @@ class _CardListScroll extends StatelessWidget {
                         ? () => onToggle(item.id)
                         : () => onOpenCard(item.id),
                     onLongPress: () => onToggle(item.id),
-                    hasDivider: index < items.length - 1,
                   ),
               ],
             ),
