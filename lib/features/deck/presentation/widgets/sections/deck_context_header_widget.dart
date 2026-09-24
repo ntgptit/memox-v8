@@ -8,6 +8,7 @@ import 'package:memox/features/deck/presentation/providers/deck_view_provider.da
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// Where a card operation writes (kit 08/09): the deck's path ending in the
 /// operation, and a line naming the destination deck. It is not a picker.
@@ -63,6 +64,35 @@ class DeckContextHeaderWidget extends ConsumerWidget {
             ),
           ],
         ),
-        _ => const SizedBox.shrink(),
+        // The page says why when the deck fails or is gone.
+        AsyncData() || AsyncError() => const SizedBox.shrink(),
+        _ => const _LoadingHeader(),
       };
+}
+
+/// The path and destination lines' place while the deck loads, so the form
+/// below does not jump when they arrive.
+class _LoadingHeader extends StatelessWidget {
+  const _LoadingHeader();
+
+  static const double _pathWidth = 200;
+  static const double _nameWidth = 120;
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.fromLTRB(
+      AppSpacing.gutter,
+      AppSpacing.control,
+      AppSpacing.gutter,
+      AppSpacing.control,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.grouped,
+      children: [
+        MxSkeleton(width: _pathWidth),
+        MxSkeleton(width: _nameWidth),
+      ],
+    ),
+  );
 }

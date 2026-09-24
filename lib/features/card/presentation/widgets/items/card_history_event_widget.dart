@@ -47,13 +47,23 @@ class CardHistoryEventWidget extends StatelessWidget {
               spacing: AppSpacing.control,
               runSpacing: AppSpacing.micro,
               children: [
-                MxBadge(
-                  label: l10n.cardHistoryEvent(
-                    l10n.cardHistoryKind(entry.kind),
-                    l10n.cardHistoryAction(action),
-                  ),
-                  tone: tone,
-                  icon: icon,
+                // The badge holds the short kind only: it never wraps, so
+                // the action beside it can at large text sizes.
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.control,
+                  runSpacing: AppSpacing.micro,
+                  children: [
+                    MxBadge(
+                      label: l10n.cardHistoryKind(entry.kind),
+                      tone: tone,
+                      icon: icon,
+                    ),
+                    Text(
+                      l10n.cardHistoryAction(action),
+                      style: context.textStyles.rowTitle,
+                    ),
+                  ],
                 ),
                 Text(
                   DateFormat.MMMd(locale)
@@ -81,7 +91,7 @@ class CardHistoryEventWidget extends StatelessWidget {
   List<(IconData, String)> _meta(AppLocalizations l10n, String locale) {
     final ease = NumberFormat(_easePattern, locale).format;
     return [
-      (AppIcons.library, l10n.cardHistoryMode(entry.mode)),
+      (AppIcons.study, l10n.cardHistoryMode(entry.mode)),
       if ((entry.previousBox, entry.nextBox) case (final from?, final to?))
         (AppIcons.progress, l10n.cardHistoryBoxMove(from, to)),
       if ((entry.previousEaseFactor, entry.nextEaseFactor) case (

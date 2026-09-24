@@ -1211,18 +1211,6 @@
   "@cardHistoryKindRelearning": {
     "description": "History kind: relearning."
   },
-  "cardHistoryEvent": "{kind} · {action}",
-  "@cardHistoryEvent": {
-    "placeholders": {
-      "kind": {
-        "type": "String"
-      },
-      "action": {
-        "type": "String"
-      }
-    },
-    "description": "History badge: the kind, then the action."
-  },
   "cardActionForgotten": "Forgot",
   "@cardActionForgotten": {
     "description": "History action: forgotten."

@@ -15,22 +15,29 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
-/// A card's review history (UC-CARD-002, kit 10): newest first, grouped by
-/// cycle (BR-CARD-017), with older pages on request and a line where it
-/// begins (rulings P4b-L3, P4b-L6).
-class CardHistorySectionWidget extends ConsumerWidget {
-  const CardHistorySectionWidget({
+/// The card detail's scroll, ending in the card's review history
+/// (UC-CARD-002, kit 10): newest first, grouped by cycle (BR-CARD-017), with
+/// older pages on request and a line where it begins (rulings P4b-L3,
+/// P4b-L6). Each history row is its own child of the scroll, so a long
+/// history builds only the rows in view.
+class CardHistoryScrollWidget extends ConsumerWidget {
+  const CardHistoryScrollWidget({
     super.key,
     required this.cardId,
     required this.addedAt,
+    required this.leading,
   });
 
   final String cardId;
 
   /// When the card was made: the end-of-history line names it.
   final DateTime addedAt;
+
+  /// The rows above the history, such as the content and the schedule.
+  final List<Widget> leading;
 
   static const int _skeletonRows = 3;
 
@@ -42,23 +49,19 @@ class CardHistorySectionWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = cardHistoryControllerProvider(cardId);
-    return switch (ref.watch(provider)) {
-      AsyncData(:final value) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _history(context, value, () => _loadMore(ref)),
-      ),
-      AsyncError() => MxErrorState(
-        title: l10n.cardHistoryLoadErrorTitle,
-        body: l10n.libraryLoadErrorBody,
-        retryLabel: l10n.commonRetry,
-        onRetry: () => ref.invalidate(provider),
-      ),
-      _ => Column(
-        children: [
-          for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
-        ],
-      ),
+    final history = switch (ref.watch(provider)) {
+      AsyncData(:final value) => _history(context, value, () => _loadMore(ref)),
+      AsyncError() => [
+        MxErrorState(
+          title: l10n.cardHistoryLoadErrorTitle,
+          body: l10n.libraryLoadErrorBody,
+          retryLabel: l10n.commonRetry,
+          onRetry: () => ref.invalidate(provider),
+        ),
+      ],
+      _ => [for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow()],
     };
+    return MxScreenScroll(children: [...leading, ...history]);
   }
 
   List<Widget> _history(
