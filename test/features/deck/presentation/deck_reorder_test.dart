@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,6 +29,35 @@ final class _RefusingDecks implements DeckRepository {
     required DeckPlacement placement,
     DateTime? now,
   }) async => const Rejected(DeckRejection.notSiblings);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Decks whose reorder waits for [release], then saves for real.
+final class _GatedDecks implements DeckRepository {
+  _GatedDecks(this._real);
+
+  final DeckRepository _real;
+  final _gate = Completer<void>();
+
+  void release() => _gate.complete();
+
+  @override
+  Future<Outcome<void, DeckRejection>> reorderDeck({
+    required String deckId,
+    required String anchorId,
+    required DeckPlacement placement,
+    DateTime? now,
+  }) async {
+    await _gate.future;
+    return _real.reorderDeck(
+      deckId: deckId,
+      anchorId: anchorId,
+      placement: placement,
+      now: now,
+    );
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -194,5 +225,37 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('a level update while a drop saves keeps the dropped order', (
+    tester,
+    env,
+  ) async {
+    final decks = [
+      for (final name in ['A', 'B', 'C']) await env.decks.root(name),
+    ];
+    final gated = _GatedDecks(env.decks);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(),
+      overrides: [
+        reorderDeckUseCaseProvider.overrideWithValue(ReorderDeckUseCase(gated)),
+      ],
+    );
+    await _startReorder(tester);
+    await _dragPastNext(tester, 'A');
+    expect(_shownOrder(tester), ['B', 'A', 'C']);
+
+    // Another change reaches the level while the drop is still saving.
+    await env.decks.renameDeck(deckId: decks.last.id, name: 'Cc');
+    await tester.pump();
+    await tester.pump();
+    expect(_shownOrder(tester), ['B', 'A', 'Cc']);
+
+    gated.release();
+    await tester.pumpAndSettle();
+    expect(_shownOrder(tester), ['B', 'A', 'Cc']);
+    expect(await _rootOrder(env), ['B', 'A', 'Cc']);
   });
 }

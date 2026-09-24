@@ -30,10 +30,24 @@ class DeckReorderListWidget extends ConsumerStatefulWidget {
 class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   late List<DeckTile> _order = widget.tiles;
 
+  /// Drops still saving. Until they land, the level may still carry the old
+  /// order, so an update keeps the dropped order and takes only fresh data.
+  var _savingDrops = 0;
+
   @override
   void didUpdateWidget(DeckReorderListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _order = widget.tiles;
+    _order = _savingDrops == 0 ? widget.tiles : _inDroppedOrder(widget.tiles);
+  }
+
+  List<DeckTile> _inDroppedOrder(List<DeckTile> fresh) {
+    final byId = {for (final tile in fresh) tile.id: tile};
+    final shown = {for (final tile in _order) tile.id};
+    return [
+      for (final tile in _order) ?byId[tile.id],
+      for (final tile in fresh)
+        if (!shown.contains(tile.id)) tile,
+    ];
   }
 
   Future<void> _drop(int oldIndex, int newIndex) async {
@@ -49,6 +63,7 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
         ..removeAt(oldIndex)
         ..insert(newIndex, moving);
     });
+    _savingDrops++;
     try {
       final outcome = await ref
           .read(deckActionsControllerProvider.notifier)
@@ -57,12 +72,14 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
             anchorId: anchor.anchorId,
             placement: anchor.placement,
           );
+      _savingDrops--;
       if (!mounted) return;
       if (outcome case Rejected(:final reason)) {
         setState(() => _order = widget.tiles);
         showMxSnackbar(context, message: context.l10n.deckRejection(reason));
       }
     } on Failure catch (failure) {
+      _savingDrops--;
       if (!mounted) return;
       setState(() => _order = widget.tiles);
       showMxSnackbar(context, message: context.l10n.failure(failure));
