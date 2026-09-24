@@ -86,6 +86,10 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 | Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for BE-A8) |
 | No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
 | Summary "Study this deck" starts study entry | Disabled | Spec A4 (waits for FE-A6) |
+| Layers and copy glyphs in the row's meta | Text only: "4 sub-decks · 1,248 cards" | Guard: no `Icon(color:)` in feature code |
+| Solid primary tile on the due strip | Tinted `MxIconTile` | Guard: no `Icon(color:)` in feature code |
+| Row name 14/700 | `rowTitle`, 14/600 | Guard: no per-site text styling |
+| "Review algorithm" opens screen 02 | Opens the scheduler sheet until phase D | Spec §9 row D |
 
 ## Pending
 

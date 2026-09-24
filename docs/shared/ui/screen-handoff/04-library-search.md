@@ -42,3 +42,4 @@ rather than disabled.
 | Artifact | V8 | Wins |
 |---|---|---|
 | Searches decks, cards and tags | Decks only | Spec A11; UI-base debt row 74 |
+| Match emphasised in primary 700 with a tinted mark | `rowTitleMatch` (primary, 700), no background mark | Guard: no per-site decoration of text |
