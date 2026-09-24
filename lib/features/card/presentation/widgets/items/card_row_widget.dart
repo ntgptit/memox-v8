@@ -59,10 +59,13 @@ class CardRowWidget extends StatelessWidget {
       onTap: onTap,
       hasDivider: hasDivider,
     );
-    // The row carries the checked state; the box is only painted (ruling I6).
-    return Semantics(
-      checked: isSelecting ? isSelected : null,
-      child: GestureDetector(onLongPress: onLongPress, child: row),
+    // One node carries the label, the checked state, the tap and the
+    // long-press; the box is only painted (ruling I6).
+    return MergeSemantics(
+      child: Semantics(
+        checked: isSelecting ? isSelected : null,
+        child: GestureDetector(onLongPress: onLongPress, child: row),
+      ),
     );
   }
 }
