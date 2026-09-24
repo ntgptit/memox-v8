@@ -63,6 +63,29 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   kit.
 - **After building a screen,** update its row in the screen handoff index.
 
+## Vendored ECC skills
+
+`.claude/skills/` holds 19 skills copied, unchanged, from
+[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) at commit
+`bf70150eb2df8070024e5bdf08e4aa08959e2735`:
+
+| Area | Skills |
+|---|---|
+| Flutter/Dart | `dart-flutter-patterns`, `flutter-dart-code-review` |
+| Java/Spring | `java-coding-standards`, `jpa-patterns`, `springboot-patterns`, `springboot-security`, `springboot-tdd`, `springboot-verification` |
+| Security | `security-review` |
+| Mobile | `android-clean-architecture`, `compose-multiplatform-patterns`, `kotlin-coroutines-flows`, `swiftui-patterns`, `swift-concurrency-6-2`, `swift-actor-persistence`, `swift-protocol-di-testing`, `react-native-patterns`, `foundation-models-on-device`, `liquid-glass-design` |
+
+- **They are reference material, not process.** When one conflicts with the
+  rest of this file, this file wins: Superpowers and Impeccable own the
+  workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
+  (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
+  not BLoC, Dio or Freezed.
+- **Not vendored:** `ios-icon-gen` ships executable scripts, and `security-scan`
+  runs the npm package `ecc-agentshield`. Both run third-party code.
+- **To update:** copy the new versions from a pinned ECC commit, review the
+  diff, and update the commit above.
+
 ## No speculative structure
 
 Avoid speculative abstractions.
