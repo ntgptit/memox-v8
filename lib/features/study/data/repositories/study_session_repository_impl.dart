@@ -64,6 +64,21 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     });
   }
 
+  @override
+  Future<void> failSession({required String sessionId, DateTime? now}) {
+    final at = now ?? _now();
+    return _write(() async {
+      final session = await _dao.sessionRow(sessionId);
+      if (session?.status != SessionStatus.inProgress.code) return;
+      await _dao.endSession(
+        sessionId,
+        status: SessionStatus.failed,
+        reason: SessionEndReason.persistenceError,
+        now: at,
+      );
+    });
+  }
+
   /// [session] and its root while the session is open and its generation
   /// still holds (spec §7.3 step 1). A session whose root was reset since it
   /// opened is invalidated on the way (BR-STUDY-017, IT-CONT-010).

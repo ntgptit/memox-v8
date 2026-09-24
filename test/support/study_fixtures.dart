@@ -6,6 +6,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
@@ -30,13 +31,15 @@ StudyEntryRepositoryImpl studyEntryRepository(
 
 /// The study session repository over [db], composing the real srs and card
 /// repositories, reading the time from [now] and shuffling with a seeded
-/// source.
+/// source. [schedules] stands in for the real srs writes when a test injects
+/// a fault into them.
 StudySessionRepositoryImpl studySessionRepository(
   AppDatabase db,
   DateTime Function() now, {
   int seed = 1,
+  ScheduleRepository? schedules,
 }) {
-  final schedules = ScheduleRepositoryImpl(db, now: now);
+  schedules ??= ScheduleRepositoryImpl(db, now: now);
   return StudySessionRepositoryImpl(
     db,
     schedules,

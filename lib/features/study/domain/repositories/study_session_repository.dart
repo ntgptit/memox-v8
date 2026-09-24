@@ -24,4 +24,10 @@ abstract interface class StudySessionRepository {
     required StudyAnswer answer,
     DateTime? now,
   });
+
+  /// UC-STUDY-001 E3: an open session becomes `failed`/`persistence_error`
+  /// (BR-STUDY-018), and the turns it recorded stay (BR-STUDY-019). A
+  /// session that has ended, or is gone, is left as it is. Only the E3 path
+  /// of `AnswerStudyTurnUseCase` calls it (spec D9).
+  Future<void> failSession({required String sessionId, DateTime? now});
 }
