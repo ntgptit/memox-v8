@@ -1,6 +1,6 @@
 # MemoX V8 — Graded study modes backend design (package 2b)
 
-Status: draft 2026-09-24, for the owner's review · Path: architectural
+Status: approved 2026-09-24 · amended while writing the plan (its Clarifications: §4, §5.1, §5.4, §6.3, §6.4, §7.2, §7.3, §7.7, §8.2, §8.5, §9, §11, §12) · Path: architectural
 
 ## 1. Intent
 
@@ -114,7 +114,7 @@ lib/features/study_mode/domain/
 ├── models/round_preparation_model.dart     RoundRowFacts, MeaningCard,
 │                                           RoundPreparation (§7.7)
 ├── models/study_mode.dart                  judge replaces actionOf; prepareRound;
-│                                           asksWithOptions
+│                                           asksWithOptions; turnTimeMs
 ├── models/graded_mode.dart                 the right/wrong mapping the four share
 ├── models/fill_mode.dart                   §7.3
 ├── models/recall_mode.dart                 new: RecallModeHandler (§7.4)
@@ -129,7 +129,7 @@ lib/features/study/
 ├── domain/models/turn_result_model.dart    TurnResult (§8.1)
 ├── domain/models/study_session_view_model.dart
 │                                           GuessQuestion, GuessOption, MatchBoard,
-│                                           MatchTile, hintShown (§9)
+│                                           MatchTile, isHintShown (§9)
 ├── domain/failures/study_failure.dart      seven new reasons (§7.8)
 ├── domain/repositories/
 │   ├── study_session_repository.dart       answerTurn returns TurnResult; the three
@@ -139,6 +139,9 @@ lib/features/study/
 │                                           SaveRecallTime, ShowFillHint are new
 ├── data/datasources/study_round_dao.dart   new: round facts, meaning slots, options,
 │                                           the meaning source (§8.2)
+├── data/datasources/study_round_data_source.dart
+│                                           new: builds and prepares the rounds of
+│                                           both writers (§8.2)
 ├── data/datasources/                       the current board, the row flags
 ├── data/repositories/                      both writers prepare rounds; the view
 │                                           repository is new (§8.5)
@@ -165,7 +168,8 @@ dart run drift_dev schema generate drift_schemas/ test/drift/generated/
   the schema of its own version, never on the tables of today's code (the skill's
   rule against current application code in a migration).
 - `schema generate` writes the `SchemaVerifier` helpers and the versioned schemas the
-  tests open.
+  tests open. It creates one directory level only, so `test/drift/generated/` is
+  made first (`mkdir -p`).
 
 ### 5.2 `AppDatabase`
 
@@ -205,8 +209,11 @@ passing, now for v2.
   `test/drift/generated/` are committed. Nobody writes them, and a released schema
   cannot be regenerated once the `.drift` files move on.
 - The guard's length rule excludes `schema_versions.dart`, as it already excludes
-  `test/drift/generated/**`. The analyzer excludes a generated file only if it
-  reports lints in it; the plan records any such case.
+  `test/drift/generated/**`.
+- The analyzer excludes `test/drift/generated/**`: `schema_v1.dart` and
+  `schema_v2.dart` report 19 `strict_raw_type` warnings, a language option that
+  their `ignore_for_file: type=lint` does not cover. `schema_versions.dart` reports
+  none.
 
 ### 5.5 The repo skill
 
@@ -266,11 +273,8 @@ CREATE INDEX idx_study_guess_options_option ON study_guess_options (option_card_
 `from1To2` adds `hint_shown` and `meaning_slot` to `study_queue_items`, creates
 `study_guess_options`, then creates its index. It rewrites no row.
 
-Whether `addColumn` is enough for the verifier (§5.3: claim 1 and the check that a
-fresh and an upgraded database end at the same schema), or the column order of a
-fresh table forces a `TableMigration` of `study_queue_items`, is settled by the
-plan's prototype and recorded there. A `TableMigration` copies every row as
-it is, so neither path changes a value.
+`addColumn` is enough: a fresh database and an upgraded one both validate against
+snapshot v2 (§5.3), so `study_queue_items` needs no `TableMigration`.
 
 ### 6.4 Invariants 38–40
 
@@ -300,6 +304,9 @@ HAVING COUNT(*) > 5 OR SUM(option_card_id = card_id) <> 1;
 
 - The parser of `invariant_queries.dart` runs 1–32 and 38 onward. 33–37 still wait
   for `delete_batches`.
+- The table's primary key and `UNIQUE` refuse a sixth option and a second right
+  option before invariant 40 could see them. Its test plants a question that lost
+  its right option, and the `CHECK` on `slot` refuses a sixth slot.
 - Two options with the same `back_folded` (BR-STUDY-039) is not an invariant: editing
   a card after its question was built can make it true legitimately. The question
   builder enforces it, and a test pins it (§7.5).
@@ -344,7 +351,8 @@ answer right or wrong in any mode (a right `recall` answer reveals first).
 
 - **`TurnContext`** holds the facts the session reads in the turn's transaction:
   - `card`, a `TurnCard`: the card's id, `frontFolded` and `backFolded`;
-  - `isRevealed` and `hintShown` of the row;
+  - `isRevealed` and `isHintShown` of the row (the guard reads a boolean as a
+    predicate);
   - `guessOptionIds`: the stored options of the row, in slot order (`guess`);
   - `boardMeanings`: card id → `backFolded` of the pending pairs of the current board
     (`match`).
@@ -372,7 +380,7 @@ answer right or wrong in any mode (a right `recall` answer reveals first).
 - The verdict carries `comparisonVersion = fillComparisonVersion`, which is 1 for
   this policy. Changing the policy raises the constant and never touches earlier
   turns (BR-STUDY-027).
-- The verdict carries `usedHint = context.hintShown`, which changes neither the
+- The verdict carries `usedHint = context.isHintShown`, which changes neither the
   action nor the schedule (BR-STUDY-028).
 
 ### 7.4 `recall` (BR-STUDY-031 to BR-STUDY-036, BR-STUDY-065, BR-STUDY-066)
@@ -433,10 +441,12 @@ its first turn; the controller ignores a second tap while a write runs (2a §14)
 
 ### 7.7 Preparing a round
 
-Two new members of `StudyModeHandler`:
+Three new members of `StudyModeHandler`:
 
 - `asksWithOptions`, true for `guess`. The session then reads the meaning source and
   the stored options.
+- `turnTimeMs`, `recallTurnMs` for `recall` and null for the others: the time of a
+  row that stores none (§9).
 - `prepareRound(facts, meaningSource: …, random: …)`, which returns a
   `RoundPreparation` and is empty by default.
   - The input is `RoundRowFacts` for each built row of the round: card id, position,
@@ -488,8 +498,11 @@ person chose.
 - the handler decides (§7.7);
 - `StudyRoundDao` reads the round's facts and the meaning source, and writes the
   slots and the options;
-- the repository reads, calls `prepareRound` and writes, in the caller's transaction.
-  This is the pattern 2a uses for `learningQueues` and `insertFirstRound`.
+- `StudyRoundDataSource` (`data/datasources/`) reads, calls `prepareRound` and
+  writes, in the caller's transaction. Both writers call it, and 2a's numbering of a
+  later round moves into it (`build`), so a round is built and prepared in one place.
+  The entry repository gets its `Random` through a factory constructor, so both
+  writers shuffle with the one they are given.
 
 Writing a question replaces the row's options: a rebuilt question, or one that
 cannot be built, first removes the options left from before.
@@ -563,8 +576,9 @@ board and the options of §9:
 - its implementation is `StudySessionViewRepositoryImpl(db)`;
 - `WatchStudySession` takes it, and it gets a provider.
 
-The writes stay in `StudySessionRepository`. If the plan's prototype shows the write
-side still over 400, the plan records the next cut as a Clarification.
+The writes stay in `StudySessionRepository`. The write side ends this package at 395
+logical lines, under the warning, so no further cut is made; the next change to it
+cuts first.
 
 ## 9. The session read model
 
@@ -576,9 +590,9 @@ re-emits when `study_guess_options` changes too. Additions:
     the option card's `back`;
   - empty with `isBlocked` when fewer than five are stored (BR-STUDY-040: the
     question is not rendered).
-- **`StudyItem.remainingMs`** (`recall` only): the stored time, or `recallTurnMs`
-  while the row has none.
-- **`StudyItem.hintShown`**: the row's flag for `fill`, false otherwise.
+- **`StudyItem.remainingMs`** (`recall` only): the stored time, or the handler's
+  `turnTimeMs` (`recallTurnMs`) while the row has none.
+- **`StudyItem.isHintShown`**: the row's flag for `fill`, false otherwise.
 - **`StudySessionView.board`** (`match` only) is a `MatchBoard` of the current board:
   - `terms`: in position order;
   - `meanings`: in `meaning_slot` order, then position;
@@ -594,7 +608,7 @@ What the kit's states read:
 | 17 Match | idle, selected, matched | `board`; `selected` is UI state; `isMatched` from the row |
 | 18 Guess | options; correct, wrong, faded after a pick | `guess.options`; `TurnResult.isCorrect`; the right option is the one whose `cardId` is the item's |
 | 19 Recall | hidden, revealed, timedOut | `isRevealed`, `remainingMs`; timedOut is the screen after a committed `timedOut` turn |
-| 20 Fill | input, hint, wrong | `hint`, `hintShown`; wrong from `TurnResult`, with `front` as the answer shown (BR-STUDY-026) |
+| 20 Fill | input, hint, wrong | `hint`, `isHintShown`; wrong from `TurnResult`, with `front` as the answer shown (BR-STUDY-026) |
 
 ## 10. Use cases — the contract for the UI
 
@@ -610,7 +624,10 @@ The other use cases of 2a do not change.
 
 ## 11. Tests
 
-Test first, on in-memory SQLite with the real repositories, as in 2a.
+Test first, on in-memory SQLite with the real repositories, as in 2a. The graded
+scenarios run on a review of learned, due cards (the cards of
+`SETUP-STUDY-EB-5-FULL` once learned): a turn is judged the same way in a learning
+session.
 
 **Scenarios (`HOST-FLOW`).** Each test names its id:
 
@@ -622,7 +639,7 @@ Test first, on in-memory SQLite with the real repositories, as in 2a.
 | IT-MODE-008F | A reveal records nothing and stops the time. Then one self-assessment records once, and a second is refused |
 | IT-MODE-009F | A timeout records wrong with `timeout`. The saved time survives Continue, and a reveal or a second timeout afterwards is refused |
 | IT-MODE-010 | `  cÔnG  ` is right on front `Công`, and `cong` is wrong. A blank answer writes nothing and does not move the cursor. The typed text is stored nowhere |
-| IT-MODE-011 | A shown hint is recorded as `used_hint = 1` without changing a wrong result. One submission only |
+| IT-MODE-011 | A shown hint is recorded as `used_hint = 1` without changing a wrong result. One submission per question: the row leaves after it, and with the one card of `S-STUDY-FILL-V2` the card's next question is a new turn of round 2 (BR-STUDY-059) |
 | IT-MODE-014 | A `QueryInterceptor` cuts the meaning source to three distractors, with the database untouched. The question is blocked: no options in the view, the answer refused, cursor and progress unchanged. A new session without the fault gets five options |
 | IT-MODE-015 | The options come from learned cards of the same tree: no new card outside the session, no card of another root, at most one card per `back_folded` |
 
@@ -678,7 +695,8 @@ Changed in the same commits as the code they describe:
   trước `Công`, mặt sau `Nghề nghiệp`. The example, the hint and the rest stay.
 - **`docs/features/study/rules/BR-STUDY-026-…md`, rationale (D11):** "dùng lại
   `back_folded`" becomes "dùng lại `front_folded`". Nothing else in the file changes.
-- **`code:` fields:** UC-STUDY-001, and the READMEs of `study` and `study-mode`.
+- **`code:` fields:** UC-STUDY-001. The READMEs of `study` and `study-mode` already
+  name their feature folders, which hold the new files.
 - **`docs/wbs_BE.md`:**
   - BE-D1 and BE-A10 done;
   - BE-B1 brings migration v2 → v3;
