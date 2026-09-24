@@ -187,6 +187,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                   ],
                 ),
               ],
+              const SizedBox(height: AppSpacing.grouped),
               MxListSectionHeader(label: l10n.algorithmHeader),
               DeckAlgorithmOptionsWidget(
                 current: view.schedulerType,
@@ -201,6 +202,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                     : l10n.algorithmSwitchNote,
                 icon: isLocked ? AppIcons.lock : AppIcons.info,
               ),
+              const SizedBox(height: AppSpacing.grouped),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),
               DeckStartOverWidget(
                 onReset: () =>

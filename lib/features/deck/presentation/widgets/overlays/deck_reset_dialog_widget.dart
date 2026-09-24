@@ -112,8 +112,10 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (value.isLoading) const MxSkeletonRow(),
-          if (summary != null && summary.hasProgressToLose)
+          if (summary != null && summary.hasProgressToLose) ...[
             _Consequences(summary: summary, cycle: view.deck.generation!),
+            const SizedBox(height: AppSpacing.grouped),
+          ],
           MxListSectionHeader(label: l10n.resetAlgorithmHeader),
           _AlgorithmChoice(
             current: view.schedulerType,

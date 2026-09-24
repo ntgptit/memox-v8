@@ -293,22 +293,6 @@
     },
     "description": "Snackbar after a move; deck is the new parent's name."
   },
-  "deckSchedulerTitle": "Scheduler",
-  "@deckSchedulerTitle": {
-    "description": "Title of the scheduler sheet."
-  },
-  "deckSchedulerChangeWarning": "Changing the scheduler restarts the schedule of every card in this deck and ends study sessions in progress.",
-  "@deckSchedulerChangeWarning": {
-    "description": "Warning in the scheduler sheet while a change is possible."
-  },
-  "deckSchedulerLockedNote": "The scheduler is locked because cards in this deck have been reviewed.",
-  "@deckSchedulerLockedNote": {
-    "description": "Note in the scheduler sheet once it is locked."
-  },
-  "deckSchedulerChangedToast": "Scheduler changed",
-  "@deckSchedulerChangedToast": {
-    "description": "Snackbar after the scheduler changes."
-  },
   "deckReorder": "Reorder",
   "@deckReorder": {
     "description": "Deck action sheet command that starts drag-to-reorder."
