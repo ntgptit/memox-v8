@@ -171,6 +171,10 @@ final class MxTextStyles {
         color: _scheme.onSurfaceVariant,
       );
 
+  /// A card row's status label (screen 07): the overline's 12/700 and 0.6
+  /// tracking, in its status ink. The widget upper-cases the text.
+  TextStyle statusLabel(Color ink) => overline.copyWith(color: ink);
+
   /// A card field's "Required" marker: the overline in primary (kit 08).
   TextStyle get requiredMarker => overline.copyWith(color: _scheme.primary);
 
