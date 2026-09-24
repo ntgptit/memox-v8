@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -46,11 +47,20 @@ void main() {
     await _openSheet(tester);
 
     expect(find.text(_en.deckRename), findsOneWidget);
-    expect(find.text(_en.deckChangeScheduler), findsOneWidget);
+    expect(find.text(_en.deckReviewAlgorithm), findsOneWidget);
     expect(find.text(_en.deckSchedulerEightBox), findsOneWidget);
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
+    expect(find.text(_en.deckStudyOptions), findsOneWidget);
+    expect(
+      tester
+          .widget<MxActionSheetCommandRow>(
+            find.widgetWithText(MxActionSheetCommandRow, _en.deckStudyThis),
+          )
+          .isEnabled,
+      isFalse,
+    );
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (
@@ -66,7 +76,7 @@ void main() {
 
     expect(find.text(_en.deckMove), findsOneWidget);
     expect(find.text(_en.deckReorder), findsOneWidget);
-    expect(find.text(_en.deckChangeScheduler), findsNothing);
+    expect(find.text(_en.deckReviewAlgorithm), findsNothing);
   });
 
   libraryTest('Rename renames the open deck', (tester, env) async {
@@ -155,7 +165,7 @@ void main() {
   libraryTest('an unlocked scheduler warns, then changes', (tester, env) async {
     final korean = await env.decks.root('Korean');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await _choose(tester, _en.deckChangeScheduler);
+    await _choose(tester, _en.deckReviewAlgorithm);
 
     expect(find.text(_en.deckSchedulerChangeWarning), findsOneWidget);
     await tester.tap(find.text(_en.deckSchedulerSm2));
@@ -175,7 +185,7 @@ void main() {
     final korean = await env.decks.root('Korean');
     await lockScheduler(env.db, korean.id);
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await _choose(tester, _en.deckChangeScheduler);
+    await _choose(tester, _en.deckReviewAlgorithm);
 
     expect(find.text(_en.deckSchedulerLockedNote), findsOneWidget);
     await tester.tap(find.text(_en.deckSchedulerSm2), warnIfMissed: false);
@@ -210,5 +220,34 @@ void main() {
     await _openSheet(tester);
 
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('a row’s ⋮ opens that deck’s sheet, with Open first', (
+    tester,
+    env,
+  ) async {
+    await env.decks.root('Korean');
+    await env.decks.root('Kanji');
+    await pumpLibraryScreen(tester, env, deckScreen());
+
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Kanji')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckOpen), findsOneWidget);
+    expect(find.text(_en.deckReorder), findsOneWidget);
+  });
+
+  libraryTest('a row’s actions on a vanished deck say so', (tester, env) async {
+    final kanji = await env.decks.root('Kanji');
+    await env.decks.root('Korean');
+    await pumpLibraryScreen(tester, env, deckScreen());
+
+    // Deleted elsewhere; the row is still on screen until the next frame.
+    await env.decks.deleteDeck(deckId: kanji.id);
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Kanji')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckOpen), findsNothing);
+    expect(find.text(_en.deckDeletedToast), findsOneWidget);
   });
 }

@@ -11,13 +11,10 @@ import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_action_sheet_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_move_sheet_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_scheduler_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -235,38 +232,11 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
-  /// Opens the chosen command's own dialog or sheet (spec §6.2).
-  Future<void> _openActions(
-    BuildContext context,
-    WidgetRef ref, {
-    required bool canReorder,
-  }) async {
-    final action = await showDeckActionSheet(
-      context,
-      view: view,
-      canReorder: canReorder,
-    );
-    if (action == null || !context.mounted) return;
-    switch (action) {
-      case DeckAction.rename:
-        await showRenameDeckDialog(context, deck: view.deck);
-      case DeckAction.move:
-        await showMoveDeckSheet(context, deck: view.deck);
-      case DeckAction.changeScheduler:
-        await showDeckSchedulerSheet(context, view: view);
-      case DeckAction.reorder:
-        ref.read(deckReorderModeProvider(view.deck.id).notifier).start();
-      case DeckAction.delete:
-        await showDeleteDeckDialog(context, deck: view.deck);
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final deck = view.deck;
     final isReordering = ref.watch(deckReorderModeProvider(deck.id));
-    final canReorder = ref.watch(deckLevelCanReorderProvider(deck.id));
     final canCreateDeck = view.createOptions.contains(DeckCreateOption.deck);
     final canCreateCard = view.createOptions.contains(DeckCreateOption.card);
     void createSubDeck() =>
@@ -283,7 +253,14 @@ class _OpenDeckContent extends ConsumerWidget {
                   icon: AppIcons.more,
                   semanticLabel: l10n.deckActions,
                   onPressed: () => unawaited(
-                    _openActions(context, ref, canReorder: canReorder),
+                    openDeckActions(
+                      context,
+                      ref,
+                      deckId: deck.id,
+                      parentId: deck.parentId,
+                      onOpenDeck: onOpenDeck,
+                      isOpenDeck: true,
+                    ),
                   ),
                 ),
               ],

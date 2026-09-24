@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -7,9 +9,9 @@ import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_header_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
@@ -76,18 +78,25 @@ class DeckLevelListWidget extends ConsumerWidget {
             onAction: () => _showAll(ref),
           )
         else
-          MxCard(
-            isFullBleed: true,
-            child: Column(
-              children: [
-                for (final (index, tile) in tiles.indexed)
-                  DeckRowWidget(
-                    tile: tile,
-                    onTap: () => onOpenDeck(tile.id),
-                    hasDivider: index < tiles.length - 1,
+          Column(
+            spacing: AppSpacing.control,
+            children: [
+              for (final tile in tiles)
+                DeckRowWidget(
+                  tile: tile,
+                  onTap: () => onOpenDeck(tile.id),
+                  onMore: () => unawaited(
+                    openDeckActions(
+                      context,
+                      ref,
+                      deckId: tile.id,
+                      parentId: parentId,
+                      onOpenDeck: onOpenDeck,
+                      isOpenDeck: false,
+                    ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
       ],
     );
