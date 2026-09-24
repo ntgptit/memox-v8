@@ -128,6 +128,17 @@ void main() {
     expect(await _decks(env), [('Korean', 'sm2')]);
   });
 
+  libraryTest('the keyboard Done action creates the deck', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'Korean');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxDialog), findsNothing);
+    expect(await _decks(env), [('Korean', 'eight_box')]);
+  });
+
   libraryTest('a double tap on Create makes one deck (RF3)', (
     tester,
     env,

@@ -184,6 +184,40 @@ void main() {
     expect(find.textContaining('disk'), findsNothing);
   });
 
+  libraryTest('Retry after a load error loads the level again', (
+    tester,
+    env,
+  ) async {
+    var attempts = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const DeckLevelScreen(),
+      overrides: [
+        deckLevelProvider(
+          sort: DeckLevelSort.manual,
+          filter: DeckLevelFilter.all,
+        ).overrideWith(
+          (ref) => ++attempts == 1
+              ? Stream<DeckLevel>.error(StateError('disk I/O error'))
+              : Stream.value(
+                  DeckLevel.of(
+                    const [],
+                    sort: DeckLevelSort.manual,
+                    filter: DeckLevelFilter.all,
+                  ),
+                ),
+        ),
+      ],
+    );
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pumpAndSettle();
+
+    expect(attempts, 2);
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
+  });
+
   libraryTest('a long Korean name at 2x ellipsizes without overflow (RF5)', (
     tester,
     env,

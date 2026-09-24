@@ -95,6 +95,7 @@ class _CreateRootDeckDialogWidgetState
               final reason => l10n.deckRejection(reason),
             },
             textInputAction: TextInputAction.done,
+            onSubmitted: _isSubmitting ? null : (_) => _submit(),
           ),
           MxSegmentedTray<SchedulerType>(
             segments: [
