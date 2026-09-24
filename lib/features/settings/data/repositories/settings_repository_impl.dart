@@ -4,8 +4,10 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/data/datasources/settings_dao.dart';
 import 'package:memox/features/settings/data/mappers/app_settings_mapper.dart';
+import 'package:memox/features/settings/data/mappers/study_config_mapper.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
+import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
@@ -65,6 +67,54 @@ final class SettingsRepositoryImpl implements SettingsRepository {
         language: Value(defaults.language.name),
       ),
     );
+  }
+
+  @override
+  Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId}) =>
+      _dao
+          .watchRootAndSettings(deckId)
+          .map(
+            (rows) => switch (rows) {
+              (final Deck root, final AppSetting settings) =>
+                effectiveStudyOptionsOf(root, settings),
+              null => null,
+            },
+          )
+          .mapDatabaseErrors();
+
+  @override
+  Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({
+    required String rootDeckId,
+    required StudyOptions options,
+  }) {
+    final at = _now();
+    return _write(() async {
+      if (options.check() case Rejected(:final reason)) return Rejected(reason);
+      final root = await _dao.deckRow(rootDeckId);
+      if (root == null) return const Rejected(SettingsRejection.deckNotFound);
+      if (root.parentId != null) {
+        return const Rejected(SettingsRejection.notARootDeck);
+      }
+      await _dao.setStudyConfig(rootDeckId, studyConfigOf(options), at);
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<Outcome<void, SettingsRejection>> clearRootStudyOptions({
+    required String rootDeckId,
+  }) {
+    final at = _now();
+    return _write(() async {
+      final root = await _dao.deckRow(rootDeckId);
+      if (root == null) return const Rejected(SettingsRejection.deckNotFound);
+      if (root.parentId != null) {
+        return const Rejected(SettingsRejection.notARootDeck);
+      }
+      if (root.studyConfig == null) return const Ok(null);
+      await _dao.setStudyConfig(rootDeckId, null, at);
+      return const Ok(null);
+    });
   }
 
   /// [values] and `updated_at`, in one transaction of their own.

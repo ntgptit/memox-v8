@@ -1,6 +1,7 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
+import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
@@ -30,4 +31,24 @@ abstract interface class SettingsRepository {
   /// The four values a person can set back to their defaults, and nothing
   /// else (BR-SETTINGS-008).
   Future<Outcome<void, SettingsRejection>> resetToDefaults();
+
+  /// The options [deckId] studies with: its root's override, or the app-wide
+  /// defaults when there is none or it cannot be read (BR-STUDY-056,
+  /// IT-STUDY-013). Again when either changes; null when the deck does not
+  /// exist or is in the Trash.
+  Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId});
+
+  /// Gives the root [rootDeckId] options of its own, for the sessions opened
+  /// after it (BR-SETTINGS-003). A sub-deck has none (BR-STUDY-056).
+  Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({
+    required String rootDeckId,
+    required StudyOptions options,
+  });
+
+  /// Removes the root's override, readable or not, so the app-wide defaults
+  /// apply again (UC-SETTINGS-001 A1). A root without one is `Ok` and
+  /// nothing is written.
+  Future<Outcome<void, SettingsRejection>> clearRootStudyOptions({
+    required String rootDeckId,
+  });
 }
