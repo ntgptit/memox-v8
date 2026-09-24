@@ -9,6 +9,7 @@ import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
 import 'golden_harness.dart';
@@ -134,3 +135,16 @@ Future<void> pumpLibraryGolden(
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
 }
+
+/// A deck level whose navigation goes nowhere, for screen tests: the Library
+/// root when [deckId] is null.
+DeckLevelScreen deckScreen({
+  String? deckId,
+  ValueChanged<String>? onOpenDeck,
+  ValueChanged<String?>? onOpenAncestor,
+}) => DeckLevelScreen(
+  deckId: deckId,
+  onOpenDeck: onOpenDeck ?? (_) {},
+  onOpenAncestor: onOpenAncestor ?? (_) {},
+  onSearch: () {},
+);

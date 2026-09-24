@@ -25,7 +25,11 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.decks,
-              builder: (context, state) => const DeckLevelScreen(),
+              builder: (context, state) => DeckLevelScreen(
+                onOpenDeck: (_) {},
+                onOpenAncestor: (_) {},
+                onSearch: () {},
+              ),
             ),
           ],
         ),

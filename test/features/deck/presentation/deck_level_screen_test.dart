@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
-import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -50,7 +49,7 @@ void main() {
     tester,
     env,
   ) async {
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
 
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
     await tester.tap(
@@ -68,7 +67,7 @@ void main() {
     env,
   ) async {
     await _seed(env);
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
 
     // The level line and the Korean row say the same.
     expect(_rich('1 overdue · 1 today · 1 new'), findsNWidgets(2));
@@ -81,7 +80,7 @@ void main() {
 
   libraryTest('the FAB opens the create dialog', (tester, env) async {
     await _seed(env);
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
     await tester.tap(find.byType(MxFab));
     await tester.pumpAndSettle();
 
@@ -90,7 +89,7 @@ void main() {
 
   libraryTest('sort by name reorders the decks', (tester, env) async {
     await _seed(env);
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
     await tester.tap(find.text(_en.deckSortTrigger(_en.deckSortManual)));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckSortName));
@@ -108,7 +107,7 @@ void main() {
     env,
   ) async {
     await env.decks.root('Kanji');
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
     await tester.tap(find.text(_en.deckFilterTrigger(_en.deckFilterAll)));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckFilterDue));
@@ -126,7 +125,7 @@ void main() {
     env,
   ) async {
     await env.decks.root('Kanji');
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
     await env.decks.root('Hanja');
     await tester.pump();
     await tester.pump();
@@ -139,7 +138,7 @@ void main() {
     env,
   ) async {
     await _seed(env);
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
     env.clock.startDay(DateTime(2026, 9, 25));
     await tester.pump();
     await tester.pump();
@@ -151,7 +150,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const DeckLevelScreen(),
+      deckScreen(),
       overrides: [
         deckLevelProvider(
           sort: DeckLevelSort.manual,
@@ -167,7 +166,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const DeckLevelScreen(),
+      deckScreen(),
       overrides: [
         deckLevelProvider(
           sort: DeckLevelSort.manual,
@@ -192,7 +191,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const DeckLevelScreen(),
+      deckScreen(),
       overrides: [
         deckLevelProvider(
           sort: DeckLevelSort.manual,
@@ -223,14 +222,14 @@ void main() {
     env,
   ) async {
     await env.decks.root(List.filled(12, '한국어 어휘 공부').join(' '));
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen(), textScale: 2);
+    await pumpLibraryScreen(tester, env, deckScreen(), textScale: 2);
 
     expect(tester.takeException(), isNull);
   });
 
   libraryTest('meets the target guidelines', (tester, env) async {
     await _seed(env);
-    await pumpLibraryScreen(tester, env, const DeckLevelScreen());
+    await pumpLibraryScreen(tester, env, deckScreen());
 
     await expectAccessibleTargets(tester);
   });
@@ -240,7 +239,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const DeckLevelScreen(),
+      deckScreen(),
       locale: const Locale('vi'),
     );
 

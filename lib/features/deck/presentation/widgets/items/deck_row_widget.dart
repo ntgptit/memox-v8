@@ -5,12 +5,17 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_workload_l
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
-/// One deck of a level: its tile, its name and its workload. Opening a deck
-/// arrives in phase 2 (ruling L1).
+/// One deck of a level: its tile, its name and its workload. A tap opens it.
 class DeckRowWidget extends StatelessWidget {
-  const DeckRowWidget({super.key, required this.tile, this.hasDivider = true});
+  const DeckRowWidget({
+    super.key,
+    required this.tile,
+    required this.onTap,
+    this.hasDivider = true,
+  });
 
   final DeckTile tile;
+  final VoidCallback onTap;
   final bool hasDivider;
 
   @override
@@ -26,6 +31,8 @@ class DeckRowWidget extends StatelessWidget {
       newCount: tile.newCount,
       cardCount: tile.cardCount,
     ),
+    hasChevron: true,
+    onTap: onTap,
     hasDivider: hasDivider,
   );
 }
