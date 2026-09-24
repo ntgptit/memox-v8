@@ -198,6 +198,45 @@ void main() {
     expect(find.text(_en.libraryReorderDone), findsOneWidget);
   });
 
+  libraryTest('a deck of cards offers Import and Export, not available yet', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'a', deckId: words.id);
+    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: words.id));
+    await _openSheet(tester);
+
+    for (final label in [_en.deckImportCards, _en.deckExportAll]) {
+      final row = find.widgetWithText(MxActionSheetCommandRow, label);
+      expect(
+        tester.widget<MxActionSheetCommandRow>(row).isEnabled,
+        isFalse,
+        reason: label,
+      );
+      expect(
+        tester.getSemantics(row),
+        isSemantics(hint: _en.commonNotAvailableYet),
+        reason: label,
+      );
+    }
+    expect(find.text(_en.deckMove), findsOneWidget);
+  });
+
+  libraryTest('a deck of decks offers no Import or Export', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    await env.decks.sub(korean.id, 'Words');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    await _openSheet(tester);
+
+    expect(find.text(_en.deckImportCards), findsNothing);
+    expect(find.text(_en.deckExportAll), findsNothing);
+  });
+
   libraryTest('the action sheet meets the target guidelines', (
     tester,
     env,

@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -65,6 +67,41 @@ Finder _inDialog(String text) =>
     find.descendant(of: find.byType(MxDialog), matching: find.text(text));
 
 void main() {
+  libraryTest(
+    'the bulk bar is Move · Flag · Tag · Export · Delete; Export is not '
+    'available yet',
+    (tester, env) async {
+      final seeded = await _seed(env);
+      await pumpLibraryScreen(tester, env, _section(seeded.words));
+      await tester.longPress(find.byType(CardRowWidget).first);
+      await tester.pumpAndSettle();
+      final bar = find.byType(CardBulkBarWidget);
+      Finder inBar(String label) =>
+          find.descendant(of: bar, matching: find.text(label));
+      final xs = [
+        for (final label in [
+          _en.cardMove,
+          _en.cardFlag,
+          _en.cardTag,
+          _en.cardExport,
+          _en.cardDelete,
+        ])
+          tester.getCenter(inBar(label)).dx,
+      ];
+
+      expect(xs, orderedEquals([...xs]..sort()));
+      expect(inBar(_en.cardSelectAll), findsNothing);
+      expect(
+        tester.getSemantics(inBar(_en.cardExport)),
+        isSemantics(
+          hint: _en.commonNotAvailableYet,
+          hasEnabledState: true,
+          isEnabled: false,
+        ),
+      );
+    },
+  );
+
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));
