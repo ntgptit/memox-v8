@@ -243,6 +243,30 @@ void main() {
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
   });
 
+  libraryTest('a card deck searches from its bar; closing shows every card', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
+    await insertCard(env.db, id: 'c1', deckId: words.id, front: 'mul');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+
+    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
+    await tester.enterText(find.byType(EditableText), 'bap');
+    await tester.pumpAndSettle();
+    expect(find.byType(CardRowWidget), findsOneWidget);
+
+    await _tap(tester, find.byTooltip(_en.cardSearchClose));
+    expect(find.byType(EditableText), findsNothing);
+    expect(find.byType(CardRowWidget), findsNWidgets(2));
+  });
+
   libraryTest('a row opens its card; Back returns to the list as it was', (
     tester,
     env,
@@ -268,6 +292,7 @@ void main() {
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Words'));
+    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
     await tester.enterText(find.byType(EditableText), 'bap');
     await tester.pumpAndSettle();
     await _tap(

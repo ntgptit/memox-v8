@@ -1,4 +1,5 @@
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
+import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -16,6 +17,14 @@ extension CardListLabel on AppLocalizations {
   String cardSort(CardListSort sort) => switch (sort) {
     CardListSort.newest => cardSortNewest,
     CardListSort.dueFirst => cardSortDueFirst,
+  };
+
+  /// When a card comes back (screen 07's due chip).
+  String cardDue(CardDue due) => switch (due.kind) {
+    CardDueKind.newCard => cardDueNew,
+    CardDueKind.today => cardDueToday,
+    CardDueKind.later => cardDueIn(due.days),
+    CardDueKind.overdue => cardDueOverdue(due.days),
   };
 
   String cardStatus(CardDisplayStatus status) => switch (status) {

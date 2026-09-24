@@ -66,6 +66,21 @@ final class CardStatusCounts {
   int get total => newCards + beginning + reviewing + mastered;
 }
 
+/// The deck's work by when it is due (BR-STUDY-067, BR-STUDY-068), whatever
+/// the search and the filter: the summary's breakdown line (owner decision
+/// E-O1).
+final class CardWorkload {
+  const CardWorkload({
+    required this.overdue,
+    required this.today,
+    required this.newCards,
+  });
+
+  final int overdue;
+  final int today;
+  final int newCards;
+}
+
 /// The card list as it stands: a window of items and the filter counts.
 final class CardListView {
   const CardListView({
@@ -73,6 +88,7 @@ final class CardListView {
     required this.hasMore,
     required this.counts,
     required this.statusCounts,
+    required this.workload,
   });
 
   final List<CardListItem> items;
@@ -82,4 +98,7 @@ final class CardListView {
   final bool hasMore;
   final CardListCounts counts;
   final CardStatusCounts statusCounts;
+
+  /// The deck's overdue, today and new counts (E-O1).
+  final CardWorkload workload;
 }

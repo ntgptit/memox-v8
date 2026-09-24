@@ -33,7 +33,6 @@ abstract final class AppIcons {
       Icons.event_repeat_outlined; // calendar-clock
   static const IconData flag = Icons.outlined_flag; // flag
   static const IconData flagged = Icons.flag; // flag (filled)
-  static const IconData selectAll = Icons.select_all; // check-square
   static const IconData details = Icons.auto_awesome_outlined; // sparkles
   static const IconData example = Icons.chat_bubble_outline; // message-square
   static const IconData hint = Icons.lightbulb_outline; // lightbulb

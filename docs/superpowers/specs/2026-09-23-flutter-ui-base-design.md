@@ -337,9 +337,10 @@ in phases 4–6 also gets its gallery entry.
 - `test/flutter_test_config.dart` loads the real Plus Jakarta Sans, so text does
   not render as Ahem boxes.
 - Tolerance is zero.
-- Goldens are generated on Windows, the only machine that runs the suite: the
-  repository's only workflow is `build-apk.yml`. When a Linux CI test job
-  exists, the goldens are regenerated there (§9).
+- Goldens are generated in the Linux container built from
+  `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (owner decision
+  2026-09-25): the same pixels on any machine with Docker. A Windows or macOS
+  run excludes the `golden` tag and never passes `--update-goldens`.
 
 **App** (`test/app/`):
 
@@ -392,7 +393,7 @@ item names where it comes from.
 | 6 | AppBar title 16/700 in `app-bar.md` vs 20/700 in `02-theme-binding.md`: the widget spec (16/700) is implemented | critique P1, §5 rule |
 | 7 | ListRow title 14/600 vs foundations 16/500: the widget spec is implemented | critique P1, §5 rule |
 | 8 | MasteryDonut label under the 12px floor: the widget spec is implemented | critique P1, §5 rule |
-| 9 | Goldens are Windows-generated and must be regenerated when Linux CI exists | §8.2 |
+| 9 | Goldens are Windows-generated and must be regenerated when Linux CI exists — closed by library alignment phase E: goldens come from the Linux container | §8.2 |
 | 10 | AppBar, StudyTopBar (56) and the BottomNav bar (64) are minimum heights that grow with text scaling; MxAppShell places the app bar in-flow instead of `Scaffold.appBar` | phase 2 plan R1, R3 |
 | 11 | Button chip size paints `surfaceContainerLowest` + ghost edge with `onSurface` ink whatever the tone; the contract leaves chip ink unspecified | phase 2 plan R2 |
 | 12 | Breadcrumb ancestor segments have a 48×48 hit area; the row is 48 tall instead of 2 + text + 8 | phase 2 plan R4 |
@@ -458,7 +459,7 @@ item names where it comes from.
 | 72 | The Library root reorders from an app bar action; the library spec names Reorder only in an open deck's overflow — closed by library alignment phase C (C-L4) | library phase 2 P2-L2 |
 | 73 | After the open deck moves, the back stack keeps its old parents: Back returns to a level that no longer lists it | library phase 2 review focus 5 |
 | 74 | Deck search always covers the whole library; a search scoped to one deck is not offered | library phase 2 P2-L9 |
-| 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) | library phase 3 P3-L1 |
+| 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) — closed by library alignment phase E | library phase 3 P3-L1 |
 | 76 | Bulk Tag only adds a tag. Removing one from a selection needs a read of the tags the selection carries, which the backend lacks (finding) | library phase 3 P3-L2 |
 | 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 — "Add card" closed by library phase 4a — row tap closed by library phase 4b | library phase 3 P3-L3 |
 | 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet does not pad for the keyboard (row 64) | library phase 3 P3-L9 |
@@ -481,6 +482,9 @@ item names where it comes from.
 | 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D — closed by library alignment phase D | library alignment phase C (C-L3) |
 | 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
 | 95 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
+| 96 | A card row's flag is drawn in the warning colour, not the kit's streak colour: the theme has no streak token | library alignment phase E (E-L2) |
+| 97 | The selection header's "Select all {n}" is a compact secondary `MxButton`, not the kit's text link: no bare-text button in the widget set | library alignment phase E (E-L3) |
+| 98 | A card row's due chip is an `MxBadge` (overdue warning, today primary, else neutral), not the kit's bespoke pill | library alignment phase E (E-L4) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

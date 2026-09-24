@@ -247,6 +247,7 @@ final class CardRepositoryImpl implements CardRepository {
         flagged: counts.flagged,
       ),
       statusCounts: statusCountsOf(schedules),
+      workload: workloadOf(schedules, startOfToday),
     );
   }
 

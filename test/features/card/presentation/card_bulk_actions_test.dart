@@ -17,6 +17,7 @@ final _en = lookupAppLocalizations(const Locale('en'));
 Widget _section(String deckId) => Scaffold(
   body: CardListSectionWidget(
     deckId: deckId,
+    algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
   ),
@@ -149,7 +150,7 @@ void main() {
 
       expect(find.text(_en.tagRejectionTooManyTags), findsOneWidget);
       expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 10);
-      expect(find.text(_en.cardSelectedCount(2)), findsOneWidget);
+      expect(find.text(_en.cardSelectedOf(2, 3).toUpperCase()), findsOneWidget);
     },
   );
 
@@ -185,7 +186,7 @@ void main() {
     expect(find.text(_en.cardDeleteTitle(2)), findsOneWidget);
     await tester.tap(_inDialog(_en.commonCancel));
     await tester.pumpAndSettle();
-    expect(find.text(_en.cardSelectedCount(2)), findsOneWidget);
+    expect(find.text(_en.cardSelectedOf(2, 3).toUpperCase()), findsOneWidget);
 
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.cardDelete));

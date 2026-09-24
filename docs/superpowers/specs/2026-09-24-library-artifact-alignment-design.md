@@ -194,6 +194,7 @@ The only changes outside `presentation/`, each test-first:
 | `card` domain + data | **Status counts:** for a deck, the number of cards in each `CardDisplayStatus` in one query, as a stream that updates with the list. `CardDisplayStatus` stays the single definition (BR-CARD-008, BR-SRS-013). |
 | `card` domain + data | **Tags on list items:** `CardListItem` carries its tags, sorted by folded name (BR-TAG-001), read for the whole page in one query; no read per card. |
 | `card` domain | **Due label:** a pure helper from `dueAt` and the list's start of day to new / today / in N days / N days overdue, next to `CardDisplayStatus`. |
+| `card` domain + data | **Workload:** `CardListView.workload`, the deck's overdue, today and new counts, from the schedules the status counts read, in the same pass (phase E, owner decision E-O1). |
 | `deck` domain | `DeckLevel.deckCount`: every deck of the level whatever the filter, for the open deck's summary (phase C, owner decision C-O1). |
 | `deck` domain + data, `deck_queries.drift`, `card_queries.drift` | `contentType` on `DeckTreeNode` and `DeckSearchHit`, read from `d.content_type` in the three queries that share `DeckForestRow` (C-O2). No schema change. |
 

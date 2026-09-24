@@ -1,5 +1,7 @@
-# A Linux renderer that matches `ci.yml`'s `goldens (linux)` job, for
-# regenerating goldens from a Windows or macOS checkout.
+# The Linux renderer that writes this repo's goldens (spec §8.2, owner decision
+# 2026-09-25), for regenerating them from a Windows or macOS checkout. The
+# history below is inherited; the repo has no golden CI job yet, so this image
+# is the baseline itself.
 #
 # **Why this file exists.** Goldens have exactly one authoring platform and
 # since M100.24 it is Linux (`dart_test.yaml` carries the reasoning). A Windows
@@ -15,23 +17,23 @@
 # different rasteriser — and the whole contract of a golden is that one platform
 # wrote it.
 #
-# **Validate before trusting it.** Run the golden suite on unmodified `main`
+# **Validate before trusting it.** Run the golden suite on unmodified `master`
 # content first; it must be green. A container that disagrees with the committed
 # PNGs will not agree with CI either, and regenerating from it would replace 300
 # correct pictures with 300 wrong ones.
 #
 #   docker build -f .claude/skills/flutter-testing/scripts/golden.Dockerfile \
-#     -t memox-golden:3.44.8 .claude/skills/flutter-testing/scripts
+#     -t memox-golden:3.47.5 .claude/skills/flutter-testing/scripts
 #
 #   # 1. validate — must print "All tests passed!"
-#   git worktree add /tmp/mainref origin/main
-#   docker run --rm -v /tmp/mainref:/src memox-golden:3.44.8 bash -lc '
+#   git worktree add /tmp/mainref origin/master
+#   docker run --rm -v /tmp/mainref:/src memox-golden:3.47.5 bash -lc '
 #     cp -a /src /w2 && cd /w2 && flutter pub get &&
 #     dart run build_runner build --delete-conflicting-outputs &&
 #     TZ=UTC flutter test --tags golden'
 #
 #   # 2. regenerate — writes back into the mounted checkout
-#   docker run --rm -v "$PWD":/w memox-golden:3.44.8 bash -lc '
+#   docker run --rm -v "$PWD":/w memox-golden:3.47.5 bash -lc '
 #     flutter pub get &&
 #     dart run build_runner build --delete-conflicting-outputs &&
 #     TZ=UTC flutter test --tags golden --update-goldens'
@@ -49,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Keep in step with `.fvmrc`, which is what the CI job reads.
-ARG FLUTTER_VERSION=3.44.8
+ARG FLUTTER_VERSION=3.47.5
 RUN curl -fsSL -o /tmp/flutter.tar.xz \
       "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
     && tar -xJf /tmp/flutter.tar.xz -C /opt \
