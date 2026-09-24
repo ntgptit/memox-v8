@@ -66,8 +66,9 @@ final class CardStatusCounts {
   int get total => newCards + beginning + reviewing + mastered;
 }
 
-/// What the whole deck asks of today (screen 07's summary, ruling E-L1):
-/// overdue, due today and new cards, whatever the search and the filter.
+/// The deck's work by when it is due (BR-STUDY-067, BR-STUDY-068), whatever
+/// the search and the filter: the summary's breakdown line (owner decision
+/// E-O1).
 final class CardWorkload {
   const CardWorkload({
     required this.overdue,
@@ -78,9 +79,6 @@ final class CardWorkload {
   final int overdue;
   final int today;
   final int newCards;
-
-  /// The cards a session would review now.
-  int get due => overdue + today;
 }
 
 /// The card list as it stands: a window of items and the filter counts.
@@ -101,6 +99,6 @@ final class CardListView {
   final CardListCounts counts;
   final CardStatusCounts statusCounts;
 
-  /// The deck's workload, whatever the search and the filter.
+  /// The deck's overdue, today and new counts (E-O1).
   final CardWorkload workload;
 }

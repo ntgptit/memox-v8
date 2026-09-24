@@ -48,11 +48,4 @@ void main() {
   test('lerp against a foreign extension keeps this one', () {
     expect(MxSemanticColors.light.lerp(null, 0.5), MxSemanticColors.light);
   });
-
-  test('streak is the kit accent in both themes (E-O2)', () {
-    expect(MxSemanticColors.light.streak, const Color(0xFFF97316));
-    expect(MxSemanticColors.dark.streak, const Color(0xFFFFAE6E));
-    expect(MxSemanticColors.light.onStreak, const Color(0xFFFFFFFF));
-    expect(MxSemanticColors.dark.onStreak, const Color(0xFFFFFFFF));
-  });
 }

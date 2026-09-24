@@ -1,132 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_chip_trigger.dart';
-import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
-import 'package:memox/shared/widgets/mx_status_distribution.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
-import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-/// Korean › Words: one overdue, one due today, one new, one mastered.
-Future<String> _deckWithWork(LibraryEnv env) async {
-  final korean = await env.decks.root('Korean');
-  final words = await env.decks.sub(korean.id, 'Words');
-  await insertCard(
-    env.db,
-    id: 'late',
-    deckId: words.id,
-    front: 'late',
-    learnedAt: DateTime(2026, 9, 1),
-    dueAt: DateTime(2026, 9, 20),
-    box: 2,
-  );
-  await insertCard(
-    env.db,
-    id: 'today',
-    deckId: words.id,
-    front: 'today',
-    learnedAt: DateTime(2026, 9, 1),
-    dueAt: DateTime(2026, 9, 24),
-    box: 5,
-  );
-  await insertCard(env.db, id: 'new', deckId: words.id, front: 'new');
-  await insertCard(
-    env.db,
-    id: 'known',
-    deckId: words.id,
-    front: 'known',
-    learnedAt: DateTime(2026, 5, 1),
-    dueAt: DateTime(2026, 12, 1),
-    box: 8,
-  );
-  return words.id;
-}
+const _view = CardListView(
+  items: [],
+  hasMore: false,
+  counts: CardListCounts(all: 420, due: 40, newCards: 100, flagged: 3),
+  statusCounts: CardStatusCounts(
+    newCards: 100,
+    beginning: 140,
+    reviewing: 100,
+    mastered: 80,
+  ),
+  workload: CardWorkload(overdue: 20, today: 20, newCards: 100),
+);
+
+Widget _host({CardListView view = _view}) => Scaffold(
+  body: ListView(
+    padding: const EdgeInsets.all(16),
+    children: [CardDeckSummaryWidget(view: view, algorithm: 'SM-2')],
+  ),
+);
 
 void main() {
-  libraryTest('the summary: algorithm, mastered of total, workload, the '
-      'distribution, Study disabled', (tester, env) async {
-    final deckId = await _deckWithWork(env);
-    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: deckId));
-    await tester.pumpAndSettle();
+  libraryTest('the summary names progress, the workload and each state', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
 
     expect(
-      find.text(
-        _en.cardSummaryOverline(_en.cardSchedulerEightBox).toUpperCase(),
-      ),
+      find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
       findsOneWidget,
     );
-    expect(find.text(_en.cardSummaryMastered(1, 4)), findsOneWidget);
-    expect(
-      find.text('1 overdue · 1 today · 1 new', findRichText: true),
-      findsOneWidget,
-    );
-    expect(find.byType(MxStatusDistribution), findsOneWidget);
+    expect(find.text(_en.cardMasteredOf(80, 420)), findsOneWidget);
     expect(
       tester.widget<MxMasteryDonut>(find.byType(MxMasteryDonut)).fraction,
-      0.25,
+      80 / 420,
     );
-    // Study waits under Coming soon (spec A4, amended).
+    final workload = tester.widget<MxWorkloadBreakdownLine>(
+      find.byType(MxWorkloadBreakdownLine),
+    );
     expect(
-      find.descendant(
-        of: find.byType(CardDeckSummaryWidget),
-        matching: find.byType(MxButton),
-      ),
-      findsNothing,
+      (workload.overdueCount, workload.todayCount, workload.newCount),
+      (20, 20, 100),
     );
-  });
-
-  libraryTest('the filters are All, Due, New and Flagged; Tags waits under '
-      'Coming soon', (tester, env) async {
-    final deckId = await _deckWithWork(env);
-    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: deckId));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MxFilterChip), findsNWidgets(4));
-  });
-
-  libraryTest('the header counts what shows and names the sort; selecting '
-      'hides the summary', (tester, env) async {
-    final deckId = await _deckWithWork(env);
-    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: deckId));
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.cardListShowing(4, 4).toUpperCase()), findsOneWidget);
-    expect(
-      find.widgetWithText(MxChipTrigger, _en.cardSortNewestPill),
-      findsOneWidget,
-    );
-    await tester.longPress(find.byType(CardRowWidget).first);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(CardDeckSummaryWidget), findsNothing);
-    expect(
-      find.text(_en.cardListSelectedOf(1, 4).toUpperCase()),
-      findsOneWidget,
-    );
-    expect(find.byType(MxChipTrigger), findsNothing);
-  });
-
-  libraryTest('a deck with no mastered card reads 0%', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    for (final id in ['a', 'b', 'c']) {
-      await insertCard(env.db, id: id, deckId: words.id);
+    for (final (label, count) in [
+      (_en.cardStatusNew, 100),
+      (_en.cardStatusBeginning, 140),
+      (_en.cardStatusReviewing, 100),
+      (_en.cardStatusMastered, 80),
+    ]) {
+      expect(
+        find.text(_en.cardStatusCount(label, count)),
+        findsOneWidget,
+        reason: label,
+      );
     }
-    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: words.id));
-    await tester.pumpAndSettle();
+  });
 
-    expect(
-      tester.widget<MxMasteryDonut>(find.byType(MxMasteryDonut)).fraction,
-      0,
+  libraryTest('a deck with no card yet reads 0 of 0, no division by zero', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        view: const CardListView(
+          items: [],
+          hasMore: false,
+          counts: CardListCounts(all: 0, due: 0, newCards: 0, flagged: 0),
+          statusCounts: CardStatusCounts(
+            newCards: 0,
+            beginning: 0,
+            reviewing: 0,
+            mastered: 0,
+          ),
+          workload: CardWorkload(overdue: 0, today: 0, newCards: 0),
+        ),
+      ),
     );
+
+    expect(find.text(_en.cardMasteredOf(0, 0)), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the summary holds at 2x and meets the target guidelines', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host(), textScale: 2);
+
+    expect(tester.takeException(), isNull);
+    await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('the four-state bar paints a segment per state, full height', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+
+    final segments = find.descendant(
+      of: find.byType(ExcludeSemantics),
+      matching: find.byType(ColoredBox),
+    );
+    // The track and one segment per state.
+    expect(segments, findsNWidgets(5));
+    for (final segment in segments.evaluate()) {
+      expect(segment.size!.height, greaterThan(0));
+    }
   });
 }

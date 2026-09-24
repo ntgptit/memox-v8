@@ -61,35 +61,6 @@ CardListItem listItemOf(
   tags: [for (final tag in tags) TagEntity(id: tag.id, name: tag.name)],
 );
 
-/// The deck's workload from its schedule rows, by the rows' own due rule
-/// (ruling E-L1).
-CardWorkload workloadOf(
-  Iterable<CardSchedule> schedules, {
-  required DateTime startOfToday,
-}) {
-  var overdue = 0;
-  var today = 0;
-  var newCards = 0;
-  for (final schedule in schedules) {
-    final due = CardDue.of(
-      isLearned: schedule.learnedAt != null,
-      dueAt: schedule.dueAt,
-      startOfToday: startOfToday,
-    );
-    switch (due.kind) {
-      case CardDueKind.overdue:
-        overdue++;
-      case CardDueKind.today:
-        today++;
-      case CardDueKind.newCard:
-        newCards++;
-      case CardDueKind.later:
-        break;
-    }
-  }
-  return CardWorkload(overdue: overdue, today: today, newCards: newCards);
-}
-
 /// The display state of every schedule row, counted once each.
 CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
   var newCards = 0;
@@ -114,6 +85,34 @@ CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
     reviewing: reviewing,
     mastered: mastered,
   );
+}
+
+/// Every schedule row by when it comes back, counted once each (E-O1).
+CardWorkload workloadOf(
+  Iterable<CardSchedule> schedules,
+  DateTime startOfToday,
+) {
+  var overdue = 0;
+  var today = 0;
+  var newCards = 0;
+  for (final schedule in schedules) {
+    final due = CardDue.of(
+      isLearned: schedule.learnedAt != null,
+      dueAt: schedule.dueAt,
+      startOfToday: startOfToday,
+    );
+    switch (due.kind) {
+      case CardDueKind.overdue:
+        overdue++;
+      case CardDueKind.today:
+        today++;
+      case CardDueKind.newCard:
+        newCards++;
+      case CardDueKind.later:
+        break;
+    }
+  }
+  return CardWorkload(overdue: overdue, today: today, newCards: newCards);
 }
 
 CardDetail cardDetailOf(CardDetailResult row) => CardDetail(

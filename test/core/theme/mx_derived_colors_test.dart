@@ -90,28 +90,4 @@ void main() {
       }
     }
   });
-
-  test('streakInk reads 3:1 as a glyph on every card ground (E-O4)', () {
-    double ratio(Color a, Color b) {
-      final la = a.computeLuminance();
-      final lb = b.computeLuminance();
-      final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-      return (hi + 0.05) / (lo + 0.05);
-    }
-
-    for (final (scheme, derived) in [
-      (AppColorSchemes.light, light),
-      (AppColorSchemes.dark, dark),
-    ]) {
-      for (final ground in [
-        scheme.surface,
-        scheme.surfaceContainerLowest,
-        scheme.surfaceContainer,
-      ]) {
-        expect(ratio(derived.streakInk, ground), greaterThanOrEqualTo(3));
-      }
-    }
-    expect(dark.streakInk, MxSemanticColors.dark.streak);
-    expect(light.streakInk, isColorCloseTo(0xFFCA601D));
-  });
 }

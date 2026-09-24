@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
+import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
+import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -18,109 +19,108 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
-/// The app bar of a deck of cards (screen 07, owner decision E-O1): the
-/// deck's back, name and `⋮` with the card search action, or, while cards
-/// are selected, close, "N selected" and "Select all M". The deck screen
-/// hands in [leading] and [actions]; `deck` never imports `card` (D8).
+/// A deck of cards' app bar (screen 07): Back, the deck's name, the search
+/// action and the deck's actions; while cards are selected it becomes the
+/// selection header, Close, the count and Select all (A14, ruling E-L3).
 class CardDeckAppBarWidget extends ConsumerWidget {
   const CardDeckAppBarWidget({
     super.key,
-    required this.deckId,
-    required this.title,
-    required this.leading,
-    required this.actions,
+    required this.view,
+    required this.deckActions,
   });
 
-  final String deckId;
-  final String title;
-  final Widget leading;
-  final List<Widget> actions;
+  final DeckView view;
 
-  CardListRequest _request(WidgetRef ref) =>
-      ref.read(cardListRequestProvider(deckId).notifier);
+  /// The deck's ⋮, from the deck screen.
+  final Widget deckActions;
 
-  CardSelection _selection(WidgetRef ref) =>
-      ref.read(cardSelectionProvider(deckId).notifier);
+  String get _deckId => view.deck.id;
 
-  /// Every card the query lets through, not only the loaded rows
-  /// (BR-CARD-012).
-  Future<void> _selectAll(
-    BuildContext context,
-    WidgetRef ref,
-    CardListQuery query,
-  ) async {
+  /// Every card the filter and the term let through, beyond the loaded
+  /// window (RF1).
+  Future<void> _selectAll(BuildContext context, WidgetRef ref) async {
+    final query = ref.read(cardListRequestProvider(_deckId)).query;
     try {
       final ids = await ref
           .read(cardActionsControllerProvider.notifier)
-          .selectAll(deckId: deckId, query: query);
+          .selectAll(deckId: _deckId, query: query);
       if (!context.mounted) return;
-      _selection(ref).selectAll(ids);
+      ref.read(cardSelectionProvider(_deckId).notifier).selectAll(ids);
     } on Failure catch (failure) {
       if (!context.mounted) return;
       showMxSnackbar(context, message: context.l10n.failure(failure));
     }
   }
 
+  void _toggleSearch(WidgetRef ref, {required bool isOpen}) {
+    final search = ref.read(cardSearchOpenProvider(_deckId).notifier);
+    if (isOpen) return search.close();
+    search.open();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final request = ref.watch(cardListRequestProvider(deckId));
-    final selected = ref.watch(cardSelectionProvider(deckId));
-    if (selected.isEmpty) {
-      final isOpen = request.isSearchOpen;
+    final selected = ref.watch(cardSelectionProvider(_deckId));
+    if (selected.isNotEmpty) {
+      final request = ref.watch(cardListRequestProvider(_deckId));
+      final list = ref.watch(
+        cardListProvider(
+          deckId: _deckId,
+          filter: request.filter,
+          sort: request.sort,
+          searchTerm: request.searchTerm,
+          windowSize: request.windowSize,
+        ),
+      );
+      final total = list.value?.counts.of(request.filter);
       return MxAppBar(
-        title: title,
         density: MxAppBarDensity.content,
-        leading: leading,
-        actions: [
-          MxIconButton(
-            icon: isOpen ? AppIcons.close : AppIcons.search,
-            semanticLabel: isOpen ? l10n.cardCloseSearch : l10n.cardOpenSearch,
-            onPressed: isOpen
-                ? () => _request(ref).closeSearch()
-                : () => _request(ref).openSearch(),
+        leading: MxIconButton(
+          icon: AppIcons.close,
+          semanticLabel: l10n.cardSelectionClose,
+          onPressed: () =>
+              ref.read(cardSelectionProvider(_deckId).notifier).clear(),
+        ),
+        // TalkBack reads the new count as it changes.
+        titleWidget: Semantics(
+          liveRegion: true,
+          child: Text(
+            l10n.cardSelectedCount(selected.length),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.textStyles.compactTitle,
           ),
-          ...actions,
+        ),
+        actions: [
+          if (total != null)
+            MxButton(
+              label: l10n.cardSelectAllCount(total),
+              tone: MxButtonTone.secondary,
+              size: MxButtonSize.compact,
+              onPressed: () => unawaited(_selectAll(context, ref)),
+            ),
         ],
       );
     }
-    // The same list the section shows, so the count matches its rows.
-    final view = ref
-        .watch(
-          cardListProvider(
-            deckId: deckId,
-            filter: request.filter,
-            sort: request.sort,
-            searchTerm: request.searchTerm,
-            windowSize: request.windowSize,
-          ),
-        )
-        .value;
-    final total = view?.counts.of(request.filter);
+    final isSearchOpen = ref.watch(cardSearchOpenProvider(_deckId));
     return MxAppBar(
-      titleWidget: Semantics(
-        liveRegion: true,
-        child: Text(
-          l10n.cardSelectedCount(selected.length),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textStyles.contentTitle,
-        ),
-      ),
+      title: view.deck.name,
       density: MxAppBarDensity.content,
       leading: MxIconButton(
-        icon: AppIcons.close,
-        semanticLabel: l10n.cardSelectionClose,
-        onPressed: () => _selection(ref).clear(),
+        icon: AppIcons.back,
+        semanticLabel: l10n.commonBack,
+        onPressed: () => unawaited(Navigator.of(context).maybePop()),
       ),
       actions: [
-        if (total != null)
-          MxButton(
-            label: l10n.cardSelectAllCount(total),
-            size: MxButtonSize.compact,
-            tone: MxButtonTone.secondary,
-            onPressed: () => unawaited(_selectAll(context, ref, request.query)),
-          ),
+        MxIconButton(
+          icon: isSearchOpen ? AppIcons.close : AppIcons.search,
+          semanticLabel: isSearchOpen
+              ? l10n.cardSearchClose
+              : l10n.cardSearchOpen,
+          onPressed: () => _toggleSearch(ref, isOpen: isSearchOpen),
+        ),
+        deckActions,
       ],
     );
   }

@@ -56,8 +56,10 @@ another harness goes through `AGENTS.md` or `docs/`.
 - Hooks are repo-owned and small: `.claude/hooks/` and `.claude/settings.json`.
 - They run the repo's own tools, such as `dart format`, `flutter analyze` and
   the guard. They never run third-party scripts, including ECC's hooks.
-- The full test suite stays at the task gate, not at every edit or commit,
-  because goldens are generated on Windows only.
+- The full test suite stays at the task gate, not at every edit or commit.
+  Goldens render in the Linux container only
+  (`.claude/skills/flutter-testing/scripts/golden.Dockerfile`); on Windows the
+  gate runs `flutter test --exclude-tags golden` and never `--update-goldens`.
 
 ## V7 is a reference, not a template
 

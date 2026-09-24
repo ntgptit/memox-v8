@@ -146,12 +146,16 @@ void main() {
     );
   });
 
-  testWidgets('a selected card edges in primary (E-O5)', (tester) async {
+  testWidgets('selected: a primary control-weight edge (screen 07 rows)', (
+    tester,
+  ) async {
+    final scheme = AppColorSchemes.light;
     await pumpMx(
       tester,
       const MxCard(isSelected: true, child: SizedBox(height: 40)),
     );
 
-    expect(_shape(tester).side.color, AppColorSchemes.light.primary);
+    expect(_shape(tester).side, BorderSide(color: scheme.primary, width: 2));
+    expect(_surface(tester).color, scheme.surfaceContainerLowest);
   });
 }

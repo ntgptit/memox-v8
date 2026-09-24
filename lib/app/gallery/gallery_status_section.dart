@@ -3,12 +3,10 @@ import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
-import 'package:memox/shared/widgets/mx_flag_mark.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
-import 'package:memox/shared/widgets/mx_status_distribution.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
@@ -42,7 +40,6 @@ class GalleryStatusSection extends StatelessWidget {
           ),
         ],
       ),
-      _CardListSamples(),
       Row(
         spacing: AppSpacing.control,
         children: [
@@ -116,49 +113,6 @@ class GalleryStatusSection extends StatelessWidget {
           MxMasteryDonut(fraction: 0.5),
           MxMasteryDonut(fraction: 1),
         ],
-      ),
-    ],
-  );
-}
-
-String _statusName(MxCardStatus status) => switch (status) {
-  MxCardStatus.newCard => 'New',
-  MxCardStatus.learning => 'Beginning',
-  MxCardStatus.reviewing => 'Reviewing',
-  MxCardStatus.mastered => 'Mastered',
-};
-
-/// The card list's marks (screen 07): the flag, a plain status label and the
-/// status distribution.
-class _CardListSamples extends StatelessWidget {
-  const _CardListSamples();
-
-  @override
-  Widget build(BuildContext context) => const Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: AppSpacing.grouped,
-    children: [
-      Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          MxFlagMark(semanticLabel: 'Flagged'),
-          MxStatusBadge(
-            status: MxCardStatus.reviewing,
-            label: 'Reviewing',
-            isPlain: true,
-          ),
-        ],
-      ),
-      MxStatusDistribution(
-        counts: MxStatusCounts(
-          newCards: 100,
-          learning: 140,
-          reviewing: 100,
-          mastered: 80,
-        ),
-        label: _statusName,
       ),
     ],
   );

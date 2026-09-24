@@ -339,17 +339,26 @@ void main() {
     expect(counter.selects, 3);
   });
 
-  test(
-    'the workload counts the whole deck, whatever the search (E-L1)',
-    () async {
-      final view = await list(query: const CardListQuery(searchTerm: 'zzz'));
+  test('the workload counts the deck: overdue, due today, new', () async {
+    final view = await list();
 
-      expect(view.items, isEmpty);
-      expect(
-        (view.workload.overdue, view.workload.today, view.workload.newCards),
-        (1, 1, 1),
-      );
-      expect(view.workload.due, 2);
-    },
-  );
+    expect(
+      (view.workload.overdue, view.workload.today, view.workload.newCards),
+      (1, 1, 1),
+    );
+  });
+
+  test('the workload ignores the search and the filter', () async {
+    final view = await list(
+      query: const CardListQuery(
+        filter: CardListFilter.flagged,
+        searchTerm: 'benevolent',
+      ),
+    );
+
+    expect(
+      (view.workload.overdue, view.workload.today, view.workload.newCards),
+      (1, 1, 1),
+    );
+  });
 }

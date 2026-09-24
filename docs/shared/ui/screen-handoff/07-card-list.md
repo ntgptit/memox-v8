@@ -15,7 +15,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck" waits under Coming soon (spec A4). Hidden while selecting. |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
-| Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the streak colour and the due chip: "New", "Due today", "In {n}d", "{n}d overdue". |
+| Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with four icon buttons | Move · Flag · Tag · Delete; Export waits under Coming soon (FE-B3). |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting. |
 
@@ -28,22 +28,22 @@ Rename · Move to another deck · Delete. Study, Import and Export wait under Co
 
 | State | Light | Dark | V8 |
 |---|---|---|---|
-| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | No FAB; no Tags chip (Coming soon). |
-| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | "Add first card" opens the editor (#33); no Import (Coming soon). |
+| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn, without Study and the Tags chip (Coming soon). |
+| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | The deck is unset again (E-L1): screen 01's unset state. |
 | searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
 | error | ![](img/07-card-list/error-light.png) | ![](img/07-card-list/error-dark.png) | As drawn. |
 | notFound | ![](img/07-card-list/notFound-light.png) | ![](img/07-card-list/notFound-dark.png) | As screen 01 deckNotFound. |
 | deckActions | ![](img/07-card-list/deckActions-light.png) | ![](img/07-card-list/deckActions-dark.png) | Delete replaces Move to Trash. |
-| selection | ![](img/07-card-list/selection-light.png) | ![](img/07-card-list/selection-dark.png) | Long-press selects (BR-CARD-020). |
+| selection | ![](img/07-card-list/selection-light.png) | ![](img/07-card-list/selection-dark.png) | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | ![](img/07-card-list/moveTargets-light.png) | ![](img/07-card-list/moveTargets-dark.png) | As drawn. |
 | noMoveTarget | ![](img/07-card-list/noMoveTarget-light.png) | ![](img/07-card-list/noMoveTarget-dark.png) | As drawn. |
-| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | The selection stays. |
+| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Delete keep their sheet or dialog open and say it there. The selection stays. |
 | delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | **Deviation:** permanent delete. |
 | delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | **Deviation:** permanent delete. |
 
-Not captured: `cardActions` (open and edit wait for Library phase 4; UI-base debt row 77)
-and `trashed` (Undo; no Trash in V8.0).
+Not captured: `trashed` (Undo; no Trash in V8.0). `cardActions` gives way to the card
+detail: a tap opens it (#35).
 
 ## Deviations
 
@@ -51,19 +51,15 @@ and `trashed` (Undo; no Trash in V8.0).
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
 | Tags filter, Import, Export, Study | Hidden; named under Coming soon | Spec A4 (amended) |
-| Flag in #F97316 | `streakInk` (#CA601D light) | E-O4: the kit orange reads 2.8:1 on the card, below the 3:1 non-text floor |
-| Status "Beginning" | "Learning" | The V8 status copy (`cardStatusBeginning`), shared with the card detail |
-| Filter counts in `searchEmpty` stay the whole deck's | Counts follow the search | IT-ORG-005 |
-| Selected card edged at 1px | 2px primary (`AppStroke.focus`) | E-O5: the selection stroke of the design system |
-| "Select all {n}" as a text link | A compact secondary button | MxButton has no text tone |
-| Sort pill with a leading ⇅ | Label and chevron only | MxChipTrigger draws a trailing glyph only, as in screen 01's header (UI-base debt row 97) |
-| Due chip and tags as small squares | Pills (MxBadge, MxTagChip dense) | The shared badge and tag shapes |
-| `empty`: "No cards in this deck yet", Add first card, a study note, no FAB | "No cards yet", New card, the FAB stays; no note | The note speaks of a study that waits under Coming soon (spec A4); the FAB is P4a-L9 |
+| An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
+| The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
+| "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |
+| The due chip as a bespoke pill | `MxBadge`: overdue warning, today primary, else neutral | Ruling E-L4 |
 
 ## Copy
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
-- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first" · "No matches" (a search with no hit).
+- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first".
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Delete".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
 - Search empty: "No cards match “{term}”" · "Try a different term, or clear the search to see all {n} cards."

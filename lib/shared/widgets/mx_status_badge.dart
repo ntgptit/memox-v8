@@ -6,28 +6,6 @@ import 'package:memox/core/theme/theme_context.dart';
 /// The card lifecycle, in order.
 enum MxCardStatus { newCard, learning, reviewing, mastered }
 
-/// A status's colour: dots, fills and tints.
-Color mxStatusColor(BuildContext context, MxCardStatus status) {
-  final semantic = context.semanticColors;
-  return switch (status) {
-    MxCardStatus.newCard => semantic.statusNew,
-    MxCardStatus.learning => semantic.statusLearning,
-    MxCardStatus.reviewing => semantic.statusReviewing,
-    MxCardStatus.mastered => semantic.statusMastered,
-  };
-}
-
-/// A status's text ink, 4.5:1 on every ground (AA).
-Color mxStatusInk(BuildContext context, MxCardStatus status) {
-  final derived = context.derivedColors;
-  return switch (status) {
-    MxCardStatus.newCard => derived.statusNewInk,
-    MxCardStatus.learning => derived.statusLearningInk,
-    MxCardStatus.reviewing => derived.statusReviewingInk,
-    MxCardStatus.mastered => derived.statusMasteredInk,
-  };
-}
-
 /// Names a card's lifecycle state; a Badge counts things. The status fixes
 /// the colour. The caller passes the localized name (ruling S6), which the
 /// bare dot uses as its semantics label.
@@ -37,18 +15,13 @@ class MxStatusBadge extends StatelessWidget {
     required this.status,
     required this.label,
     this.isDot = false,
-    this.isPlain = false,
-  }) : assert(!(isDot && isPlain), 'a dot or a plain label');
+  });
 
   final MxCardStatus status;
   final String label;
 
   /// The bare 8 indicator for dense card rows.
   final bool isDot;
-
-  /// The label alone, uppercase, in the status ink: the status line of a
-  /// card row (screen 07).
-  final bool isPlain;
 
   /// A minimum: text scaling grows the pill (ruling S11).
   static const double _height = 22;
@@ -61,17 +34,21 @@ class MxStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = mxStatusColor(context, status);
+    final semantic = context.semanticColors;
+    final color = switch (status) {
+      MxCardStatus.newCard => semantic.statusNew,
+      MxCardStatus.learning => semantic.statusLearning,
+      MxCardStatus.reviewing => semantic.statusReviewing,
+      MxCardStatus.mastered => semantic.statusMastered,
+    };
+    final derived = context.derivedColors;
     // The label reads in the status ink (AA); dot and fill keep the colour.
-    final ink = mxStatusInk(context, status);
-    if (isPlain) {
-      return Text(
-        label.toUpperCase(),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: context.textStyles.badgeLabel(ink),
-      );
-    }
+    final ink = switch (status) {
+      MxCardStatus.newCard => derived.statusNewInk,
+      MxCardStatus.learning => derived.statusLearningInk,
+      MxCardStatus.reviewing => derived.statusReviewingInk,
+      MxCardStatus.mastered => derived.statusMasteredInk,
+    };
     if (isDot) {
       return Semantics(
         container: true,

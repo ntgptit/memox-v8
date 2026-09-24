@@ -30,8 +30,8 @@ class MxCard extends StatelessWidget {
   /// strip, owner decision D-O1).
   final bool isWarning;
 
-  /// A primary edge: the card is selected (a card row while selecting,
-  /// screen 07, owner decision E-O5).
+  /// A primary edge at the control weight over the card's own ground: a
+  /// picked row of a selection (screen 07).
   final bool isSelected;
 
   @override
@@ -49,8 +49,8 @@ class MxCard extends StatelessWidget {
     };
     final radius = surface.borderRadius!;
     final edge = isSelected
-        ? BorderSide(color: context.colors.primary, width: AppStroke.focus)
-        : (surface.border as Border?)?.top ?? BorderSide.none;
+        ? Border.all(color: context.colors.primary, width: AppStroke.control)
+        : surface.border as Border?;
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
@@ -60,7 +60,10 @@ class MxCard extends StatelessWidget {
         ),
         child: Material(
           color: surface.color,
-          shape: RoundedRectangleBorder(borderRadius: radius, side: edge),
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: edge?.top ?? BorderSide.none,
+          ),
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: isFullBleed

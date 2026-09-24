@@ -22,7 +22,6 @@ final class MxDerivedColors {
     required this.statusLearningInk,
     required this.statusReviewingInk,
     required this.statusMasteredInk,
-    required this.streakInk,
   });
 
   factory MxDerivedColors.resolve(
@@ -85,13 +84,6 @@ final class MxDerivedColors {
         scheme,
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
-      // The flag glyph (E-O4): streak pulled toward onSurface until it reads
-      // 3:1 as a glyph on every card ground; the dark accent already does.
-      streakInk: _ink(
-        semantic.streak,
-        scheme,
-        isDark ? _streakInkDark : _streakInkLight,
-      ),
     );
   }
 
@@ -115,8 +107,6 @@ final class MxDerivedColors {
   static const double _reviewingInkDark = 0.10;
   static const double _masteredInkLight = 0.25;
   static const double _masteredInkDark = 0;
-  static const double _streakInkLight = 0.20;
-  static const double _streakInkDark = 0;
 
   static Color _ink(Color status, ColorScheme scheme, double mix) =>
       Color.lerp(status, scheme.onSurface, mix)!;
@@ -151,7 +141,4 @@ final class MxDerivedColors {
   final Color statusLearningInk;
   final Color statusReviewingInk;
   final Color statusMasteredInk;
-
-  /// The flag glyph: streak at 3:1 or more on every card ground (E-O4).
-  final Color streakInk;
 }

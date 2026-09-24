@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 /// MemoX product colours that Material has no honest role for
 /// (02-theme-binding MEMOX_SEMANTIC_COLOR, BIND_NOW only).
 ///
-/// Holds exactly the semantics a V3 component paints. Aliases resolve to
+/// Holds exactly the nine semantics a V3 component paints. Aliases resolve to
 /// their ColorScheme role, derived colours live in MxDerivedColors, and the
-/// PRESERVE_ONLY semantics (success, mastery-fixed…) get no field until a
-/// component consumes them; streak is bound since the flag mark (library
-/// alignment phase E). Green means mastery, never tertiary.
+/// PRESERVE_ONLY semantics (success, streak, mastery-fixed…) get no field
+/// until a component consumes them. Green means mastery, never tertiary.
 @immutable
 final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   const MxSemanticColors({
@@ -20,8 +19,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     required this.statusMastered,
     required this.errorFill,
     required this.onErrorFill,
-    required this.streak,
-    required this.onStreak,
   });
 
   static const MxSemanticColors light = MxSemanticColors(
@@ -34,8 +31,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusMastered: Color(0xFF1F8A5B),
     errorFill: Color(0xFFDC2D4E),
     onErrorFill: Color(0xFFFFFFFF),
-    streak: Color(0xFFF97316),
-    onStreak: Color(0xFFFFFFFF),
   );
 
   static const MxSemanticColors dark = MxSemanticColors(
@@ -48,8 +43,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusMastered: Color(0xFF6FE0BD),
     errorFill: Color(0xFFB0485C),
     onErrorFill: Color(0xFFFFFFFF),
-    streak: Color(0xFFFFAE6E),
-    onStreak: Color(0xFFFFFFFF),
   );
 
   /// Mastery and progress green.
@@ -69,13 +62,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// Label on [errorFill].
   final Color onErrorFill;
 
-  /// The streak accent (a flagged card, E-O2); as a glyph it reads in
-  /// MxDerivedColors.streakInk.
-  final Color streak;
-
-  /// Ink on a [streak] fill.
-  final Color onStreak;
-
   @override
   MxSemanticColors copyWith({
     Color? mastery,
@@ -87,8 +73,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     Color? statusMastered,
     Color? errorFill,
     Color? onErrorFill,
-    Color? streak,
-    Color? onStreak,
   }) => MxSemanticColors(
     mastery: mastery ?? this.mastery,
     warning: warning ?? this.warning,
@@ -99,8 +83,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusMastered: statusMastered ?? this.statusMastered,
     errorFill: errorFill ?? this.errorFill,
     onErrorFill: onErrorFill ?? this.onErrorFill,
-    streak: streak ?? this.streak,
-    onStreak: onStreak ?? this.onStreak,
   );
 
   @override
@@ -120,8 +102,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
       statusMastered: Color.lerp(statusMastered, other.statusMastered, t)!,
       errorFill: Color.lerp(errorFill, other.errorFill, t)!,
       onErrorFill: Color.lerp(onErrorFill, other.onErrorFill, t)!,
-      streak: Color.lerp(streak, other.streak, t)!,
-      onStreak: Color.lerp(onStreak, other.onStreak, t)!,
     );
   }
 }
