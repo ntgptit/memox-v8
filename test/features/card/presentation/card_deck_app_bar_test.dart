@@ -8,6 +8,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -110,6 +111,38 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(_barText(_en.cardSelectedCount(60)), findsOneWidget);
+  });
+
+  libraryTest('Select all honours the filter under the search too', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    for (var i = 0; i < 60; i++) {
+      await insertCard(
+        env.db,
+        id: 'c${i.toString().padLeft(2, '0')}',
+        deckId: words.id,
+        front: 'card $i',
+        isFlagged: i < 55,
+      );
+    }
+    await insertCard(env.db, id: 'x', deckId: words.id, front: 'bap');
+    await pumpLibraryScreen(tester, env, _screen(words.id));
+    await tester.tap(find.byTooltip(_en.cardSearchOpen));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText), 'card');
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
+    await tester.pumpAndSettle();
+
+    await tester.longPress(find.byType(CardRowWidget).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MxButton, _en.cardSelectAllCount(55)));
+    await tester.pumpAndSettle();
+
+    expect(_barText(_en.cardSelectedCount(55)), findsOneWidget);
   });
 
   libraryTest('Close clears the selection; the deck bar returns', (

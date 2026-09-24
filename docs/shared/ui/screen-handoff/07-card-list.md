@@ -38,7 +38,7 @@ Rename · Move to another deck · Delete. Study, Import and Export wait under Co
 | selection | ![](img/07-card-list/selection-light.png) | ![](img/07-card-list/selection-dark.png) | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | ![](img/07-card-list/moveTargets-light.png) | ![](img/07-card-list/moveTargets-dark.png) | As drawn. |
 | noMoveTarget | ![](img/07-card-list/noMoveTarget-light.png) | ![](img/07-card-list/noMoveTarget-dark.png) | As drawn. |
-| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | An inline banner above the bulk bar (E-L6); the selection stays. |
+| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Delete keep their sheet or dialog open and say it there. The selection stays. |
 | delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | **Deviation:** permanent delete. |
 | delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | **Deviation:** permanent delete. |
 

@@ -78,7 +78,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// The window a growth was asked from, so one end of list asks once.
   int? _grownFrom;
 
-  /// Ruling E-L6: the last bulk command failed; the selection stays.
+  /// Ruling E-L6: the last Flag failed; the selection stays. Flag's sheet
+  /// closes before the write, so the section says so; Move, Tag and Delete
+  /// keep their overlay open and say it there.
   var _hasBulkFailed = false;
 
   @override
