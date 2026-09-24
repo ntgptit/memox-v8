@@ -2,6 +2,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
+import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
@@ -39,14 +40,51 @@ CardScheduleState scheduleStateOf(CardSchedule row) =>
       repetitions: row.repetitions,
     );
 
-CardListItem listItemOf(CardRow card, CardSchedule schedule) => CardListItem(
+CardListItem listItemOf(
+  CardRow card,
+  CardSchedule schedule, {
+  required List<Tag> tags,
+  required DateTime startOfToday,
+}) => CardListItem(
   id: card.id,
   front: card.front,
   back: card.back,
   isFlagged: card.isFlagged == 1,
   dueAt: schedule.dueAt,
   displayStatus: CardDisplayStatus.of(scheduleStateOf(schedule)),
+  due: CardDue.of(
+    isLearned: schedule.learnedAt != null,
+    dueAt: schedule.dueAt,
+    startOfToday: startOfToday,
+  ),
+  tags: [for (final tag in tags) TagEntity(id: tag.id, name: tag.name)],
 );
+
+/// The display state of every schedule row, counted once each.
+CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
+  var newCards = 0;
+  var beginning = 0;
+  var reviewing = 0;
+  var mastered = 0;
+  for (final schedule in schedules) {
+    switch (CardDisplayStatus.of(scheduleStateOf(schedule))) {
+      case CardDisplayStatus.newCard:
+        newCards++;
+      case CardDisplayStatus.beginning:
+        beginning++;
+      case CardDisplayStatus.reviewing:
+        reviewing++;
+      case CardDisplayStatus.mastered:
+        mastered++;
+    }
+  }
+  return CardStatusCounts(
+    newCards: newCards,
+    beginning: beginning,
+    reviewing: reviewing,
+    mastered: mastered,
+  );
+}
 
 CardDetail cardDetailOf(CardDetailResult row) => CardDetail(
   card: cardEntityOf(row.c),
