@@ -30,6 +30,7 @@
 | C-O3 | `MxEmptyState` gains a secondary action, so the first-run state shows "Browse starter decks" disabled between Create deck and the footnote. |
 | C-O4 | Search results emphasise the matched part of a name, found with `foldText`, the search's own normalisation (BR-SEARCH-002). |
 | C-O5 | Only the goldens of the screens this phase changes are regenerated, on Linux. The other goldens stay as they are (FE-D1). |
+| C-O6 | **"N sub-decks · level 10" heads the sub-decks that sit at level 10**, so it shows on an open deck at level 9. BR-DECK-001 lets no deck at level 10 hold sub-decks, and the artifact draws its level-10 deck the way BR-DECK-001 places a level-9 deck (its banner says the sub-decks below can hold only cards). Asked in the popup during Task 7. |
 
 ## Plan rulings
 
@@ -1384,7 +1385,7 @@ In `deck_level_list_widget.dart`, add `schedulerType` as a constructor parameter
 - `DeckSummaryCardWidget(level: level, schedulerType: schedulerType!)`, then `SizedBox(height: AppSpacing.grouped)`;
 - the header, with `label` set to:
   - `filter == DeckLevelFilter.due ? l10n.libraryDueDecksHeader : ...`,
-  - or at depth 10, `l10n.deckDepthHeader(level.deckCount)` (pass `isDeepest` from `_OpenDeckContent` through the body: `deck.depth == DeckEntity.maxDepth`),
+  - or when its sub-decks sit at level 10 (C-O6), `l10n.deckDepthHeader(level.deckCount)` (pass `hasDeepestSubDecks` from `_OpenDeckContent` through the body: `deck.depth == DeckEntity.maxDepth - 1`),
   - or otherwise `l10n.deckSubDeckCount(level.deckCount)`.
 
 `DeckLevelBodyWidget` gains `schedulerType` and `isDeepest` parameters and passes them on. The root passes `null` and `false`.

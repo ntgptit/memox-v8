@@ -106,8 +106,7 @@ void main() {
     expect(find.text(_en.deckDeleteTitle('Words')), findsOneWidget);
     expect(find.text(_en.deckDeleteSummary(1, 2)), findsOneWidget);
     await tester.tap(find.text(_en.deckDelete));
-    // The deck is gone, so the screen (the test's only route) shows its
-    // skeleton, which never settles.
+    // The screen is the test's only route: nothing to pop back to.
     await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));

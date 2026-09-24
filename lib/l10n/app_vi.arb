@@ -256,7 +256,7 @@
   "deckReviewAlgorithm": "Thuật toán ôn tập",
   "deckReviewAlgorithmLocked": "{algorithm} · đã khoá · đặt lại để bắt đầu lại",
   "deckReorderHint": "Đưa lên trước hoặc sau một bộ thẻ cùng cấp",
-  "deckScheduledCount": "{count} đã lên lịch",
+  "deckScheduledCount": "· {count} đã lên lịch",
   "deckDepthHeader": "{count} bộ thẻ con · cấp 10",
   "deckGoneTitle": "Bộ thẻ này không còn nữa",
   "deckGoneBody": "Nó đã bị xoá trong lúc bạn không ở đây.",

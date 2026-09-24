@@ -4,13 +4,17 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_header_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_summary_card_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -23,6 +27,8 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.parentId,
     required this.onOpenDeck,
     required this.emptyState,
+    required this.schedulerType,
+    required this.hasDeepestSubDecks,
   });
 
   final DeckLevel level;
@@ -32,12 +38,28 @@ class DeckLevelListWidget extends ConsumerWidget {
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
 
+  /// The open deck's algorithm for its summary card; null at the root.
+  final SchedulerType? schedulerType;
+
+  /// The open deck's sub-decks sit at [DeckEntity.maxDepth]: the header
+  /// names that level (owner decision C-O6).
+  final bool hasDeepestSubDecks;
+
   bool get _hasCards =>
       level.overdueCount +
           level.dueTodayCount +
           level.newCount +
           level.scheduledCount >
       0;
+
+  /// "6 decks" at the root, "4 sub-decks" in a deck, or the filter's
+  /// heading whichever level it is.
+  String _headerLabel(AppLocalizations l10n, DeckLevelFilter filter) {
+    if (filter == DeckLevelFilter.due) return l10n.libraryDueDecksHeader;
+    if (parentId == null) return l10n.libraryDecksCount(level.deckCount);
+    if (hasDeepestSubDecks) return l10n.deckDepthHeader(level.deckCount);
+    return l10n.deckSubDeckCount(level.deckCount);
+  }
 
   void _showAll(WidgetRef ref) => ref
       .read(deckLevelQueryProvider(parentId).notifier)
@@ -62,15 +84,16 @@ class DeckLevelListWidget extends ConsumerWidget {
       clearance: MxScrollClearance.fabAboveNav,
       children: [
         const SizedBox(height: AppSpacing.gutter),
-        if (parentId == null && _hasCards) ...[
+        if (schedulerType case final algorithm?) ...[
+          DeckSummaryCardWidget(level: level, schedulerType: algorithm),
+          const SizedBox(height: AppSpacing.grouped),
+        ] else if (_hasCards) ...[
           DeckDueStripWidget(level: level),
           const SizedBox(height: AppSpacing.grouped),
         ],
         DeckLevelHeaderWidget(
           parentId: parentId,
-          label: filter == DeckLevelFilter.due
-              ? l10n.libraryDueDecksHeader
-              : l10n.libraryDecksCount(level.deckCount),
+          label: _headerLabel(l10n, filter),
         ),
         if (tiles.isEmpty)
           MxEmptyState(

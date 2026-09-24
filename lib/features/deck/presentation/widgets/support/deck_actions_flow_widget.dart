@@ -66,6 +66,26 @@ Future<void> openDeckActions(
     case DeckAction.reorder:
       ref.read(deckReorderModeProvider(reorderLevel).notifier).start();
     case DeckAction.delete:
-      await showDeleteDeckDialog(context, deck: view.deck);
+      await _deleteDeck(context, view: view, isOpenDeck: isOpenDeck);
   }
+}
+
+/// Deleting the open deck steps back to its parent and says so (C-L5); a
+/// row's deck just leaves its list.
+Future<void> _deleteDeck(
+  BuildContext context, {
+  required DeckView view,
+  required bool isOpenDeck,
+}) async {
+  // Taken before the dialog: once the deck is gone its screen swaps its
+  // content, and [context] with it.
+  final navigator = Navigator.of(context);
+  final navigatorContext = navigator.context;
+  final isDeleted = await showDeleteDeckDialog(context, deck: view.deck);
+  if (!isDeleted || !isOpenDeck || !navigatorContext.mounted) return;
+  showMxSnackbar(
+    navigatorContext,
+    message: navigatorContext.l10n.deckDeletedToast,
+  );
+  await navigator.maybePop();
 }

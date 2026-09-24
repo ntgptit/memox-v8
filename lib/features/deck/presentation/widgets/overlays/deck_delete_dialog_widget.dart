@@ -12,14 +12,17 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
-/// Asks before [deck] and everything below it are deleted for good.
-Future<void> showDeleteDeckDialog(
+/// Asks before [deck] and everything below it are deleted for good. True
+/// once the deck is deleted.
+Future<bool> showDeleteDeckDialog(
   BuildContext context, {
   required DeckEntity deck,
-}) => showMxDialog<void>(
-  context,
-  builder: (_) => DeckDeleteDialogWidget(deck: deck),
-);
+}) async =>
+    await showMxDialog<bool>(
+      context,
+      builder: (_) => DeckDeleteDialogWidget(deck: deck),
+    ) ??
+    false;
 
 /// The body states how many sub-decks and cards go with the deck
 /// (BR-DECK-023). The confirm waits for that count and is destructive.
@@ -47,9 +50,7 @@ class _DeckDeleteDialogWidgetState
       if (outcome case Rejected(:final reason)) {
         showMxSnackbar(context, message: context.l10n.deckRejection(reason));
       }
-      // On Ok the open deck's screen says "Deck deleted" and steps back
-      // (ruling P2-L7).
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(outcome is Ok);
     } on Failure catch (failure) {
       if (!mounted) return;
       setState(() => _isDeleting = false);

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
@@ -13,6 +13,7 @@ import 'package:memox/features/deck/presentation/providers/deck_view_provider.da
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
@@ -28,7 +29,6 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
-import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// One level of the deck tree (spec §6.1): the Library root when [deckId] is
 /// null, otherwise an open deck under its breadcrumb. Navigation arrives as
@@ -139,6 +139,8 @@ class _LibraryRoot extends ConsumerWidget {
             child: DeckLevelBodyWidget(
               parentId: null,
               onOpenDeck: onOpenDeck,
+              schedulerType: null,
+              hasDeepestSubDecks: false,
               emptyState: MxEmptyState(
                 icon: AppIcons.library,
                 title: l10n.libraryEmptyTitle,
@@ -177,27 +179,10 @@ class _OpenDeck extends ConsumerWidget {
 
   static const int _skeletonRows = 4;
 
-  /// Ruling P2-L7: the deck is gone. Say so once and step back.
-  void _leaveWhenGone(
-    BuildContext context,
-    AsyncValue<Outcome<DeckView, DeckRejection>>? previous,
-    AsyncValue<Outcome<DeckView, DeckRejection>> next,
-  ) {
-    if (previous?.value case Rejected()) return;
-    if (next.value case Rejected(reason: DeckRejection.notFound)) {
-      showMxSnackbar(context, message: context.l10n.deckDeletedToast);
-      unawaited(Navigator.of(context).maybePop());
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = deckViewProvider(deckId);
-    ref.listen(
-      provider,
-      (previous, next) => _leaveWhenGone(context, previous, next),
-    );
     final bar = MxAppBar(
       title: l10n.navLibrary,
       density: MxAppBarDensity.content,
@@ -225,7 +210,11 @@ class _OpenDeck extends ConsumerWidget {
           ],
         ),
       ),
-      // Loading, or gone and about to pop.
+      // Spec A8: deleted while open. Say so; the way back is the Library.
+      AsyncData(value: Rejected()) => MxAppShell(
+        appBar: bar,
+        body: DeckGoneStateWidget(onBackToLibrary: () => onOpenAncestor(null)),
+      ),
       _ => MxAppShell(
         appBar: bar,
         body: MxScreenScroll(
@@ -324,6 +313,9 @@ class _OpenDeckContent extends ConsumerWidget {
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
+                schedulerType: view.schedulerType,
+                // Owner decision C-O6: its sub-decks are at level 10.
+                hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
                 emptyState: DeckUnsetStateWidget(
                   onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
                   onCreateSubDeck: canCreateDeck ? createSubDeck : null,
