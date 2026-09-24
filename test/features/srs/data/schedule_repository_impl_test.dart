@@ -1,10 +1,8 @@
-import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
-import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/srs_fixtures.dart';
@@ -38,91 +36,9 @@ void main() {
     await expectLater(repo.initializeCard(cardId: 'missing'), throwsStateError);
   });
 
-  test(
-    'recordReview rejects an action the deck scheduler does not support',
-    () async {
-      final (_, cardId, sessionId) = await insertStudyTree(
-        db,
-        'r',
-      ); // eight_box
-      final result = await repo.recordReview(
-        cardId: cardId,
-        sessionId: sessionId,
-        action: Sm2Action.good,
-      );
-      expect(
-        (result as Rejected<void, SrsRejection>).reason,
-        SrsRejection.unsupportedAction,
-      );
-    },
-  );
-
-  test(
-    'recordReview writes card_schedule and an append-only review_log row',
-    () async {
-      final (_, cardId, sessionId) = await insertStudyTree(db, 'r');
-      final result = await repo.recordReview(
-        cardId: cardId,
-        sessionId: sessionId,
-        action: EightBoxAction.remembered,
-      );
-      expect(result, isA<Ok<void, SrsRejection>>());
-
-      expect((await scheduleRowOf(db, cardId)).read<int>('current_box'), 2);
-      final logCount = await db
-          .customSelect(
-            'SELECT COUNT(*) AS n FROM review_log WHERE card_id = ?',
-            variables: [Variable(cardId)],
-          )
-          .getSingle();
-      expect(logCount.read<int>('n'), 1);
-    },
-  );
-
-  test('reviewing a card deleted mid-session returns notFound and writes no log row', () async {
-    final (_, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await db.customStatement('DELETE FROM card WHERE id = ?', [cardId]);
-
-    final result = await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
-    expect(
-      (result as Rejected<void, SrsRejection>).reason,
-      SrsRejection.notFound,
-    );
-    final logCount = await db
-        .customSelect('SELECT COUNT(*) AS n FROM review_log')
-        .getSingle();
-    expect(logCount.read<int>('n'), 0);
-  });
-
-  test(
-    'a review from a stale-generation session is rejected, not applied',
-    () async {
-      final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-      await repo.resetLearning(rootDeckId: rootId); // bumps generation to 2
-
-      final result = await repo.recordReview(
-        cardId: cardId,
-        sessionId: sessionId,
-        action: EightBoxAction.remembered,
-      );
-      expect(
-        (result as Rejected<void, SrsRejection>).reason,
-        SrsRejection.staleGeneration,
-      );
-    },
-  );
-
   test('resetLearning bumps generation and recreates card_schedule', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
+    await repo.completeLearning(cardId: cardId, generation: 1);
 
     await repo.resetLearning(rootDeckId: rootId);
 
@@ -135,16 +51,12 @@ void main() {
   });
 
   test('resetLearning of an sm2 tree writes sm2 start values', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(
+    final (rootId, cardId, _) = await insertStudyTree(
       db,
       'r',
       scheduler: 'sm2',
     );
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: Sm2Action.good,
-    );
+    await repo.completeLearning(cardId: cardId, generation: 1);
 
     await repo.resetLearning(rootDeckId: rootId);
 
@@ -157,11 +69,7 @@ void main() {
 
   test('resetLearning unlocks the scheduler and closes the open sessions (BR-SRS-024, BR-STUDY-015)', () async {
     final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+    await repo.completeLearning(cardId: cardId, generation: 1);
 
     await repo.resetLearning(rootDeckId: rootId);
 
@@ -271,12 +179,8 @@ void main() {
   });
 
   test('the scheduler the root runs is a no-op on a locked tree too, not a rejection', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
+    await repo.completeLearning(cardId: cardId, generation: 1);
     final before = await totalChanges(db);
 
     final result = await repo.changeScheduler(
@@ -288,13 +192,10 @@ void main() {
     expect(await totalChanges(db), before);
   });
 
-  test('changeScheduler after the first review is rejected (locked)', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+  test('changeScheduler once a card finished learning is rejected (locked, '
+      'BR-SRS-003)', () async {
+    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
+    await repo.completeLearning(cardId: cardId, generation: 1);
     final before = await totalChanges(db);
 
     final result = await repo.changeScheduler(

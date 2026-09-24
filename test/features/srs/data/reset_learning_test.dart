@@ -9,6 +9,8 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
+import 'package:memox/features/srs/domain/models/review_kind_model.dart';
+import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 
@@ -39,6 +41,21 @@ final class _FailingScheduleInsert extends QueryInterceptor {
 Matcher _refusedWith<T>(SrsRejection reason) => isA<Rejected<T, SrsRejection>>()
     .having((rejected) => rejected.reason, 'reason', reason);
 
+/// A `remembered` answer of [sessionId] at generation 1.
+ReviewTurn _turn(
+  String cardId,
+  String sessionId, {
+  ReviewKind kind = ReviewKind.learning,
+}) => ReviewTurn(
+  cardId: cardId,
+  sessionId: sessionId,
+  generation: 1,
+  kind: kind,
+  modeCode: 'recall',
+  action: EightBoxAction.remembered,
+  answeredAt: DateTime(2026, 9, 24),
+);
+
 void main() {
   late AppDatabase db;
   late ScheduleRepositoryImpl repo;
@@ -49,22 +66,18 @@ void main() {
   });
   tearDown(() => db.close());
 
-  for (final (from, to, learn) in <(String, SchedulerType, Object)>[
-    ('sm2', SchedulerType.eightBox, Sm2Action.good),
-    ('eight_box', SchedulerType.sm2, EightBoxAction.remembered),
+  for (final (from, to) in <(String, SchedulerType)>[
+    ('sm2', SchedulerType.eightBox),
+    ('eight_box', SchedulerType.sm2),
   ]) {
     test('a reset switches a locked $from tree to ${to.code} at its start '
         'values (UC-SRS-001 steps 3 and 5)', () async {
-      final (rootId, cardId, sessionId) = await insertStudyTree(
+      final (rootId, cardId, _) = await insertStudyTree(
         db,
         'r',
         scheduler: from,
       );
-      await repo.recordReview(
-        cardId: cardId,
-        sessionId: sessionId,
-        action: learn,
-      );
+      await repo.completeLearning(cardId: cardId, generation: 1);
       expect(
         (await deckRowOf(db, rootId)).data['first_answered_at'],
         isNotNull,
@@ -92,16 +105,12 @@ void main() {
 
   test('a reset that names the scheduler the root runs keeps it '
       '(UC-SRS-001 A1)', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(
+    final (rootId, cardId, _) = await insertStudyTree(
       db,
       'r',
       scheduler: 'sm2',
     );
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: Sm2Action.good,
-    );
+    await repo.completeLearning(cardId: cardId, generation: 1);
 
     final result = await repo.resetLearning(
       rootDeckId: rootId,
@@ -123,18 +132,10 @@ void main() {
   test('a reset while a session is open closes it, refuses its next answer '
       'and keeps the answers given before (IT-CONT-009, host half)', () async {
     final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
-    await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+    await repo.recordTurn(_turn(cardId, sessionId));
 
     await repo.resetLearning(rootDeckId: rootId);
-    final lateAnswer = await repo.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
-    );
+    final lateAnswer = await repo.recordTurn(_turn(cardId, sessionId));
 
     final session = await sessionRowOf(db, sessionId);
     expect(session.read<String>('status'), 'invalidated');
@@ -189,10 +190,9 @@ void main() {
     addTearDown(failing.close);
     final broken = ScheduleRepositoryImpl(failing, now: () => now);
     final (rootId, cardId, sessionId) = await insertStudyTree(failing, 'r');
-    await broken.recordReview(
-      cardId: cardId,
-      sessionId: sessionId,
-      action: EightBoxAction.remembered,
+    await broken.completeLearning(cardId: cardId, generation: 1);
+    await broken.recordTurn(
+      _turn(cardId, sessionId, kind: ReviewKind.scheduled),
     );
 
     await expectLater(
@@ -242,11 +242,8 @@ void main() {
         (cardId, sessionId),
         (otherCardId, otherSessionId),
       ]) {
-        await repo.recordReview(
-          cardId: card,
-          sessionId: session,
-          action: EightBoxAction.remembered,
-        );
+        await repo.completeLearning(cardId: card, generation: 1);
+        await repo.recordTurn(_turn(card, session, kind: ReviewKind.scheduled));
       }
 
       await repo.resetLearning(
@@ -298,7 +295,7 @@ void main() {
 
   test('the summary counts the learned cards and the open sessions of the '
       'whole tree, outside the Trash (UC-SRS-001 step 2)', () async {
-    final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
+    final (rootId, cardId, _) = await insertStudyTree(db, 'r');
     final deepCardId = await insertDeepCard(db, rootId);
     await insertBareCard(db, 'r-trashed', 'r-leaf');
     await db.customStatement(
@@ -310,11 +307,7 @@ void main() {
       "UPDATE card SET delete_batch_id = 'b' WHERE id = 'r-trashed'",
     );
     for (final id in [cardId, deepCardId]) {
-      await repo.recordReview(
-        cardId: id,
-        sessionId: sessionId,
-        action: EightBoxAction.remembered,
-      );
+      await repo.completeLearning(cardId: id, generation: 1);
     }
 
     final summary = await summaryOf(rootId);

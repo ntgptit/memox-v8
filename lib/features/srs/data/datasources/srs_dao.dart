@@ -5,8 +5,8 @@ const _inProgress = 'in_progress';
 const _invalidated = 'invalidated';
 
 /// Row access for `card_schedule` and `review_log`, plus the reads of `deck`
-/// and `study_session` srs needs. It returns Drift rows, never domain
-/// values, and runs inside the caller's transaction.
+/// srs needs and the sessions a reset closes. It returns Drift rows, never
+/// domain values, and runs inside the caller's transaction.
 final class SrsDao {
   SrsDao(this._db);
 
@@ -19,14 +19,16 @@ final class SrsDao {
           .getSingleOrNull();
 
   /// The root of [cardId]'s tree, reached through `card.deck_id` and then
-  /// `deck.root_id` — never `COALESCE(parent_id, id)` (BR-DECK-003).
+  /// `deck.root_id` — never `COALESCE(parent_id, id)` (BR-DECK-003); null
+  /// when the card or its deck is in the Trash (BE-C3).
   Future<Deck?> rootOfCard(String cardId) async {
     final row = await _db
         .customSelect(
           'SELECT root.* FROM card c'
           ' JOIN deck d ON d.id = c.deck_id'
           ' JOIN deck root ON root.id = d.root_id'
-          ' WHERE c.id = ?',
+          ' WHERE c.id = ? AND c.delete_batch_id IS NULL'
+          ' AND d.delete_batch_id IS NULL',
           variables: [Variable<String>(cardId)],
           readsFrom: {_db.card, _db.deck},
         )
@@ -74,10 +76,6 @@ final class SrsDao {
   Future<CardSchedule?> scheduleRow(String cardId) => (_db.select(
     _db.cardSchedule,
   )..where((schedule) => schedule.cardId.equals(cardId))).getSingleOrNull();
-
-  Future<StudySession?> sessionRow(String id) => (_db.select(
-    _db.studySession,
-  )..where((session) => session.id.equals(id))).getSingleOrNull();
 
   Future<void> insertSchedule(CardScheduleCompanion row) =>
       _db.into(_db.cardSchedule).insert(row);
