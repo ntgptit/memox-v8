@@ -1036,5 +1036,292 @@
   "deckRootEmptyBody": "Add a sub-deck to start organising it.",
   "@deckRootEmptyBody": {
     "description": "Empty state body of a top-level deck."
+  },
+  "cardDetailTitle": "Card",
+  "@cardDetailTitle": {
+    "description": "Card detail title, and its breadcrumb segment."
+  },
+  "cardEditAction": "Edit",
+  "@cardEditAction": {
+    "description": "Card detail app bar action that opens the editor."
+  },
+  "cardFlaggedLabel": "Flagged",
+  "@cardFlaggedLabel": {
+    "description": "Accessible name of the flag glyph on a flagged card."
+  },
+  "cardDetailGoneBody": "It was deleted while this page was open.",
+  "@cardDetailGoneBody": {
+    "description": "Body of the card detail's gone state."
+  },
+  "cardScheduleBox": "Current schedule · Box {box} of {count}",
+  "@cardScheduleBox": {
+    "placeholders": {
+      "box": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Overline of the schedule card of an eight-box card."
+  },
+  "cardScheduleSm2": "Current schedule · SM-2",
+  "@cardScheduleSm2": {
+    "description": "Overline of the schedule card of an SM-2 card."
+  },
+  "cardBoxRampStart": "Box 1 · 1 day",
+  "@cardBoxRampStart": {
+    "description": "Under the box ramp, its first box and interval (BR-SRS-009)."
+  },
+  "cardBoxRampEnd": "Box 8 · 128 days",
+  "@cardBoxRampEnd": {
+    "description": "Under the box ramp, its last box and interval (BR-SRS-009)."
+  },
+  "cardFactDue": "Due",
+  "@cardFactDue": {
+    "description": "Schedule fact: the due date."
+  },
+  "cardFactLearned": "Learned",
+  "@cardFactLearned": {
+    "description": "Schedule fact: when learning finished."
+  },
+  "cardFactLastAnswered": "Last answered",
+  "@cardFactLastAnswered": {
+    "description": "Schedule fact: the last answer."
+  },
+  "cardFactAnswers": "Answers",
+  "@cardFactAnswers": {
+    "description": "Schedule fact: answers so far."
+  },
+  "cardFactLapses": "Lapses",
+  "@cardFactLapses": {
+    "description": "Schedule fact: lapses so far."
+  },
+  "cardFactScheduler": "Algorithm",
+  "@cardFactScheduler": {
+    "description": "Schedule fact: the scheduler."
+  },
+  "cardFactSchedulerValue": "{scheduler} · cycle {generation}",
+  "@cardFactSchedulerValue": {
+    "placeholders": {
+      "scheduler": {
+        "type": "String"
+      },
+      "generation": {
+        "type": "int"
+      }
+    },
+    "description": "The scheduler and its generation."
+  },
+  "cardFactEase": "Ease",
+  "@cardFactEase": {
+    "description": "Schedule fact (SM-2): the ease factor."
+  },
+  "cardFactInterval": "Interval",
+  "@cardFactInterval": {
+    "description": "Schedule fact (SM-2): the interval."
+  },
+  "cardFactIntervalValue": "{count, plural, =1{1 day} other{{count} days}}",
+  "@cardFactIntervalValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "An interval in days."
+  },
+  "cardFactRepetitions": "Repetitions",
+  "@cardFactRepetitions": {
+    "description": "Schedule fact (SM-2): the repetitions."
+  },
+  "cardFactNotYet": "Not yet",
+  "@cardFactNotYet": {
+    "description": "Schedule fact that has not happened yet."
+  },
+  "cardSchedulerEightBox": "Eight boxes",
+  "@cardSchedulerEightBox": {
+    "description": "The eight-box scheduler's name."
+  },
+  "cardSchedulerSm2": "SM-2",
+  "@cardSchedulerSm2": {
+    "description": "The SM-2 scheduler's name."
+  },
+  "cardHistory": "History",
+  "@cardHistory": {
+    "description": "Header of an empty card history."
+  },
+  "cardHistoryNewestFirst": "History · newest first",
+  "@cardHistoryNewestFirst": {
+    "description": "Header of a card history with answers."
+  },
+  "cardHistoryCycle": "Cycle {generation} · {scheduler}",
+  "@cardHistoryCycle": {
+    "placeholders": {
+      "generation": {
+        "type": "int"
+      },
+      "scheduler": {
+        "type": "String"
+      }
+    },
+    "description": "Header of one scheduler generation in the history (BR-CARD-017)."
+  },
+  "cardHistoryEmptyTitle": "Not studied yet",
+  "@cardHistoryEmptyTitle": {
+    "description": "Empty history title (BR-CARD-018)."
+  },
+  "cardHistoryEmptyBody": "Every answer in a learning or review session will appear here, newest first.",
+  "@cardHistoryEmptyBody": {
+    "description": "Empty history body."
+  },
+  "cardHistoryLoadMore": "Load older history",
+  "@cardHistoryLoadMore": {
+    "description": "Loads the next page of history."
+  },
+  "cardHistoryLoadMoreFailedTitle": "Couldn't load older history.",
+  "@cardHistoryLoadMoreFailedTitle": {
+    "description": "Banner title when an older page fails."
+  },
+  "cardHistoryLoadMoreFailedBody": "What is shown is complete up to here.",
+  "@cardHistoryLoadMoreFailedBody": {
+    "description": "Banner body when an older page fails."
+  },
+  "cardHistoryEnd": "Beginning of history · card added {date}",
+  "@cardHistoryEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Line after the oldest answer (A5)."
+  },
+  "cardHistoryLoadErrorTitle": "Couldn't load the history",
+  "@cardHistoryLoadErrorTitle": {
+    "description": "Error state title when the first history page fails."
+  },
+  "cardHistoryKindLearning": "Learning",
+  "@cardHistoryKindLearning": {
+    "description": "History kind: learning."
+  },
+  "cardHistoryKindScheduled": "Review",
+  "@cardHistoryKindScheduled": {
+    "description": "History kind: scheduled review."
+  },
+  "cardHistoryKindRelearning": "Repeat",
+  "@cardHistoryKindRelearning": {
+    "description": "History kind: relearning."
+  },
+  "cardHistoryEvent": "{kind} · {action}",
+  "@cardHistoryEvent": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "action": {
+        "type": "String"
+      }
+    },
+    "description": "History badge: the kind, then the action."
+  },
+  "cardActionForgotten": "Forgot",
+  "@cardActionForgotten": {
+    "description": "History action: forgotten."
+  },
+  "cardActionRemembered": "Remembered",
+  "@cardActionRemembered": {
+    "description": "History action: remembered."
+  },
+  "cardActionAgain": "Again",
+  "@cardActionAgain": {
+    "description": "History action (SM-2): again."
+  },
+  "cardActionHard": "Hard",
+  "@cardActionHard": {
+    "description": "History action (SM-2): hard."
+  },
+  "cardActionGood": "Good",
+  "@cardActionGood": {
+    "description": "History action (SM-2): good."
+  },
+  "cardActionEasy": "Easy",
+  "@cardActionEasy": {
+    "description": "History action (SM-2): easy."
+  },
+  "cardModeBrowse": "Browse",
+  "@cardModeBrowse": {
+    "description": "Study mode: browse."
+  },
+  "cardModeSelfAssess": "Self-assess",
+  "@cardModeSelfAssess": {
+    "description": "Study mode: self-assess."
+  },
+  "cardModeMatch": "Match",
+  "@cardModeMatch": {
+    "description": "Study mode: match."
+  },
+  "cardModeGuess": "Guess",
+  "@cardModeGuess": {
+    "description": "Study mode: guess."
+  },
+  "cardModeRecall": "Recall",
+  "@cardModeRecall": {
+    "description": "Study mode: recall."
+  },
+  "cardModeFill": "Fill",
+  "@cardModeFill": {
+    "description": "Study mode: fill."
+  },
+  "cardHistoryBoxMove": "Box {from} → {to}",
+  "@cardHistoryBoxMove": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    },
+    "description": "History: the box before and after."
+  },
+  "cardHistoryEaseMove": "Ease {from} → {to}",
+  "@cardHistoryEaseMove": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    },
+    "description": "History: the ease before and after, formatted."
+  },
+  "cardHistoryIntervalMove": "Interval {from}d → {to}d",
+  "@cardHistoryIntervalMove": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    },
+    "description": "History: the interval in days before and after."
+  },
+  "cardHistoryHintUsed": "Hint used",
+  "@cardHistoryHintUsed": {
+    "description": "History: a fill answer that used the hint."
+  },
+  "cardHistoryTimedOut": "Time ran out",
+  "@cardHistoryTimedOut": {
+    "description": "History: a recall answer that timed out."
+  },
+  "cardHistoryNextDue": "Next due {date}",
+  "@cardHistoryNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "History: the due date the answer set."
   }
 }
