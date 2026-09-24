@@ -83,3 +83,53 @@ extension CardFixtures on CardRepository {
     ),
   };
 }
+
+/// A review_log row as the study flow writes it (BR-CARD-016). The history
+/// shows it by [at], newest first. `usedHint` goes with `fill` only and
+/// `isTimedOut` with `recall` only (schema invariants 22, 23).
+Future<void> logReview(
+  AppDatabase db, {
+  required String id,
+  required String cardId,
+  required DateTime at,
+  int generation = 1,
+  String schedulerType = 'eight_box',
+  String kind = 'scheduled',
+  String mode = 'recall',
+  String action = 'remembered',
+  DateTime? nextDueAt,
+  int? previousBox,
+  int? nextBox,
+  double? previousEase,
+  double? nextEase,
+  int? previousInterval,
+  int? nextInterval,
+  bool? usedHint,
+  bool isTimedOut = false,
+}) => db.customInsert(
+  'INSERT INTO review_log (id, card_id, session_id, scheduler_type, '
+  'generation, kind, mode, outcome_reason, used_hint, "action", answered_at, '
+  'next_due_at, previous_box, next_box, previous_ease_factor, '
+  'next_ease_factor, previous_interval_days, next_interval_days) '
+  "VALUES (?, ?, 's', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  variables: [
+    Variable<String>(id),
+    Variable<String>(cardId),
+    Variable<String>(schedulerType),
+    Variable<int>(generation),
+    Variable<String>(kind),
+    Variable<String>(mode),
+    Variable<String>(isTimedOut ? 'timeout' : null),
+    Variable<bool>(usedHint),
+    Variable<String>(action),
+    Variable<DateTime>(at),
+    Variable<DateTime>(nextDueAt),
+    Variable<int>(previousBox),
+    Variable<int>(nextBox),
+    Variable<double>(previousEase),
+    Variable<double>(nextEase),
+    Variable<int>(previousInterval),
+    Variable<int>(nextInterval),
+  ],
+  updates: {db.reviewLog},
+);
