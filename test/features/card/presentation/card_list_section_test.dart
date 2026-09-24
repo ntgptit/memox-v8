@@ -91,7 +91,8 @@ void main() {
     expect(find.text('annyeong'), findsOneWidget);
     expect(find.text('hello'), findsOneWidget);
     expect(find.byType(CardRowWidget), findsNWidgets(4));
-    expect(find.byType(MxStatusBadge), findsNWidgets(4));
+    // A dot and a status label on each row (screen 07).
+    expect(find.byType(MxStatusBadge), findsNWidgets(8));
     expect(find.byIcon(AppIcons.flagged), findsOneWidget);
   });
 
@@ -345,8 +346,12 @@ void main() {
       await tester.tap(find.byType(CardRowWidget).first);
       expect(opened, hasLength(1));
 
+      await tester.ensureVisible(find.byType(CardRowWidget).last);
+      await tester.pumpAndSettle();
       await tester.longPress(find.byType(CardRowWidget).last);
       await tester.pump();
+      await tester.ensureVisible(find.byType(CardRowWidget).first);
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(CardRowWidget).first);
       await tester.pump();
       expect(opened, hasLength(1));

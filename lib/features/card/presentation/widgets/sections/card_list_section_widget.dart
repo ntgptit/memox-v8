@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
@@ -19,7 +20,6 @@ import 'package:memox/features/card/presentation/widgets/support/card_list_label
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -338,26 +338,23 @@ class _CardListScroll extends StatelessWidget {
             onAddCard: onAddCard,
           )
         else
-          // Ruling P3-L6: one card over the current window.
-          MxCard(
-            isFullBleed: true,
-            child: Column(
-              children: [
-                for (final (index, item) in items.indexed)
-                  CardRowWidget(
-                    item: item,
-                    isSelecting: isSelecting,
-                    isSelected: selected.contains(item.id),
-                    // BR-CARD-020: a tap opens the card; while selecting it
-                    // only toggles.
-                    onTap: isSelecting
-                        ? () => onToggle(item.id)
-                        : () => onOpenCard(item.id),
-                    onLongPress: () => onToggle(item.id),
-                    hasDivider: index < items.length - 1,
-                  ),
-              ],
-            ),
+          // Each card is a card of its own (screen 07).
+          Column(
+            spacing: AppSpacing.control,
+            children: [
+              for (final item in items)
+                CardRowWidget(
+                  item: item,
+                  isSelecting: isSelecting,
+                  isSelected: selected.contains(item.id),
+                  // BR-CARD-020: a tap opens the card; while selecting it
+                  // only toggles.
+                  onTap: isSelecting
+                      ? () => onToggle(item.id)
+                      : () => onOpenCard(item.id),
+                  onLongPress: () => onToggle(item.id),
+                ),
+            ],
           ),
       ],
     );

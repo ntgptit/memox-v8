@@ -144,9 +144,13 @@ void main() {
   ) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa']);
     await pumpLibraryScreen(tester, env, _section(deckId), textScale: 2);
+    // At 2x the summary pushes the rows below the fold.
+    await tester.ensureVisible(find.text('annyeong'));
+    await tester.pumpAndSettle();
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
+    expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });
