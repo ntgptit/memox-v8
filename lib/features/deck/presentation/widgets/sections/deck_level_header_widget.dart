@@ -11,15 +11,17 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 
 /// "DECKS" and the two chips that name the level's order and filter (L5).
 class DeckLevelHeaderWidget extends ConsumerWidget {
-  const DeckLevelHeaderWidget({super.key});
+  const DeckLevelHeaderWidget({super.key, required this.parentId});
+
+  final String? parentId;
 
   DeckLevelQuery _query(WidgetRef ref) =>
-      ref.read(deckLevelQueryProvider.notifier);
+      ref.read(deckLevelQueryProvider(parentId).notifier);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final query = ref.watch(deckLevelQueryProvider);
+    final query = ref.watch(deckLevelQueryProvider(parentId));
     return MxListSectionHeader(
       label: l10n.libraryDecksHeader,
       trailing: Wrap(

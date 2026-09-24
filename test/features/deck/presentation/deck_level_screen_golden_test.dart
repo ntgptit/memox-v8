@@ -3,7 +3,6 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -35,12 +34,7 @@ void main() {
       );
       await insertCard(env.db, id: 'new', deckId: words.id);
       await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          const DeckLevelScreen(),
-          brightness,
-        );
+        await pumpLibraryGolden(tester, env, deckScreen(), brightness);
         await expectBoundaryGolden(
           tester,
           'goldens/library_decks_${brightness.name}.png',
@@ -50,12 +44,7 @@ void main() {
 
     libraryTest('Library first run, ${brightness.name}', (tester, env) async {
       await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          const DeckLevelScreen(),
-          brightness,
-        );
+        await pumpLibraryGolden(tester, env, deckScreen(), brightness);
         await expectBoundaryGolden(
           tester,
           'goldens/library_empty_${brightness.name}.png',

@@ -73,13 +73,16 @@ void main() {
 
   test('the level query starts manual and all, and changes on demand', () {
     final container = _container(db);
-    final notifier = container.read(deckLevelQueryProvider.notifier);
+    final notifier = container.read(deckLevelQueryProvider(null).notifier);
 
-    expect(container.read(deckLevelQueryProvider).sort, DeckLevelSort.manual);
+    expect(
+      container.read(deckLevelQueryProvider(null)).sort,
+      DeckLevelSort.manual,
+    );
     notifier
       ..sortBy(DeckLevelSort.due)
       ..show(DeckLevelFilter.due);
-    final query = container.read(deckLevelQueryProvider);
+    final query = container.read(deckLevelQueryProvider(null));
     expect(
       (query.sort, query.filter),
       (DeckLevelSort.due, DeckLevelFilter.due),

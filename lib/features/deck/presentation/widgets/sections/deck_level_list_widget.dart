@@ -18,19 +18,26 @@ class DeckLevelListWidget extends ConsumerWidget {
   const DeckLevelListWidget({
     super.key,
     required this.level,
-    required this.onCreateDeck,
+    required this.parentId,
+    required this.onOpenDeck,
+    required this.emptyState,
   });
 
   final DeckLevel level;
-  final VoidCallback onCreateDeck;
+  final String? parentId;
+  final ValueChanged<String> onOpenDeck;
 
-  void _showAll(WidgetRef ref) =>
-      ref.read(deckLevelQueryProvider.notifier).show(DeckLevelFilter.all);
+  /// Shown when the level holds no deck at all (ruling L4).
+  final Widget emptyState;
+
+  void _showAll(WidgetRef ref) => ref
+      .read(deckLevelQueryProvider(parentId).notifier)
+      .show(DeckLevelFilter.all);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final filter = ref.watch(deckLevelQueryProvider).filter;
+    final filter = ref.watch(deckLevelQueryProvider(parentId)).filter;
     final tiles = level.tiles;
     // Ruling L4: an empty level is the first run; an empty filter is not.
     if (tiles.isEmpty && filter == DeckLevelFilter.all) {
@@ -38,13 +45,7 @@ class DeckLevelListWidget extends ConsumerWidget {
         clearance: MxScrollClearance.fabAboveNav,
         children: [
           const SizedBox(height: AppSpacing.gutter),
-          MxEmptyState(
-            icon: AppIcons.library,
-            title: l10n.libraryEmptyTitle,
-            body: l10n.libraryEmptyBody,
-            actionLabel: l10n.libraryCreateDeck,
-            onAction: onCreateDeck,
-          ),
+          emptyState,
         ],
       );
     }
@@ -63,7 +64,7 @@ class DeckLevelListWidget extends ConsumerWidget {
               level.scheduledCount,
         ),
         const SizedBox(height: AppSpacing.section),
-        const DeckLevelHeaderWidget(),
+        DeckLevelHeaderWidget(parentId: parentId),
         if (tiles.isEmpty)
           MxEmptyState(
             icon: AppIcons.library,
@@ -82,6 +83,7 @@ class DeckLevelListWidget extends ConsumerWidget {
                 for (final (index, tile) in tiles.indexed)
                   DeckRowWidget(
                     tile: tile,
+                    onTap: () => onOpenDeck(tile.id),
                     hasDivider: index < tiles.length - 1,
                   ),
               ],
