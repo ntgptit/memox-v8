@@ -3622,62 +3622,26 @@ git commit -m "feat(card): add transactional card repository with schedule row a
 
 ---
 
-### Task 10: Wiring (app shell, retry policy) and end-to-end smoke test
+### Task 10: Provider retry policy and end-to-end smoke test
+
+The UI base sub-project already created `lib/main.dart`, `lib/app/app.dart`,
+the router and `test/app/app_test.dart`
+(spec `2026-09-23-flutter-ui-base-design.md` §7). This task adds only what the
+backend owns. It does not create or restructure `app.dart` or the router, and
+the `app` guard entries it used to retire are already gone.
 
 **Files:**
-- Create: `lib/app/app.dart`, `lib/app/router/app_router.dart`
-- Modify: `lib/main.dart`,
-  `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`
-  (retire the two `app` entries, Step 7)
-- Test: `test/app/app_test.dart`, `test/integration/foundation_smoke_test.dart`
+- Modify: `lib/main.dart` (the existing `ProviderScope`)
+- Test: `test/integration/foundation_smoke_test.dart`
 
 **Interfaces:**
 - Consumes: `deckRepositoryProvider`, `cardRepositoryProvider`,
   `scheduleRepositoryProvider` (Tasks 7–9); `databaseProvider` (Task 5).
-- Produces: `MemoxApp` widget; `RetryOptions noRetry` (or equivalent
-  Riverpod disable-retry override) applied at `ProviderScope` root.
+- Produces: Riverpod retry disabled at the `ProviderScope` root.
 
-- [ ] **Step 1: Write the failing app-shell test**
-
-`test/app/app_test.dart`:
+- [ ] **Step 1: Disable provider retry in `lib/main.dart`**
 
 ```dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/app/app.dart';
-
-void main() {
-  testWidgets('MemoxApp renders a placeholder route with no crash', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: MemoxApp()));
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-  });
-}
-```
-
-- [ ] **Step 2: Run to verify it fails**
-
-Run: `flutter test test/app/app_test.dart`
-Expected: FAIL — `lib/app/app.dart` does not exist.
-
-- [ ] **Step 3: Implement `app_router.dart`, `app.dart`, `main.dart`**
-
-`lib/app/router/app_router.dart`: a `GoRouter` with one placeholder route (`/`) showing
-a `Scaffold` with the text `"MemoX foundation"` — no feature UI, per the
-spec's "no product UI".
-
-`lib/app/app.dart`: `MemoxApp` is a `ConsumerWidget` returning
-`MaterialApp.router(routerConfig: ...)`, reading `noRetry`-style provider
-overrides are supplied at `ProviderScope` construction in `main.dart`, not
-inside `app.dart`.
-
-`lib/main.dart`:
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/app/app.dart';
-
 void main() {
   runApp(
     const ProviderScope(
@@ -3693,12 +3657,10 @@ void main() {
 Duration? _noRetry(int retryCount, Object error) => null;
 ```
 
-- [ ] **Step 4: Run to verify it passes**
+Run: `flutter test test/app`
+Expected: PASS. The app tests still pump `ProviderScope(child: MemoxApp())`.
 
-Run: `flutter test test/app/app_test.dart`
-Expected: PASS.
-
-- [ ] **Step 5: Write the end-to-end smoke test**
+- [ ] **Step 2: Write the end-to-end smoke test**
 
 `test/integration/foundation_smoke_test.dart` — the one test that proves the
 whole foundation works together: create a root deck, a sub-deck, a card,
@@ -3767,26 +3729,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 6: Run to verify it passes**
+- [ ] **Step 3: Run to verify it passes**
 
 Run: `flutter test test/integration/foundation_smoke_test.dart`
 Expected: PASS.
 
-- [ ] **Step 7: Retire the `app` waiting entries and run the full gate**
-
-`lib/app/app.dart` is the first `lib/app/` file, so the guard now reports
-`guard.config.stale_targets_pending` for two rules. Delete these two entries,
-each with its `targets_pending: app` line, and the group's comment line (it
-starts with `# --` and names `app`), from
-`code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`:
-
-```
-memox.design_token.no_raw_text_style
-memox_v7.design_system.no_bare_font_weight
-```
-
-What remains in the list are the 28 rules that wait for the UI sub-project
-(`presentation`, `l10n`, `visual-audit`).
+- [ ] **Step 4: Run the full gate and commit**
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
@@ -3795,17 +3743,11 @@ flutter test
 python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
 python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
+git add lib/main.dart test/integration
+git commit -m "feat(app): disable provider retry, add foundation smoke test" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-Expected: 0 analyzer issues, all tests pass (including `test/architecture/`),
-every command exits 0, and the guard shows no `stale_targets_pending`.
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add lib/app lib/main.dart test/app test/integration code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml
-git commit -m "feat(app): wire app shell, disable provider retry, add foundation smoke test" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_011wW1S4MF4eFSFWEhdj3FtD"
-```
+Expected: 0 analyzer issues, all tests pass, and every command exits 0.
 
 ---
 

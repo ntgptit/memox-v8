@@ -1,0 +1,11 @@
+{
+  "@@locale": "vi",
+  "appTitle": "MemoX",
+  "navLibrary": "Thư viện",
+  "navStudy": "Học",
+  "navProgress": "Tiến độ",
+  "navSettings": "Cài đặt",
+  "placeholderTitle": "Sắp có",
+  "placeholderBody": "Màn hình này đang được xây dựng.",
+  "openGallery": "Thư viện component"
+}
