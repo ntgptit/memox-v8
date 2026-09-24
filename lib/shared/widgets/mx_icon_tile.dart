@@ -7,6 +7,11 @@ import 'package:memox/core/theme/theme_context.dart';
 /// leads settings rows, large leads deck rows.
 enum MxIconTileSize { small, medium, large }
 
+/// The fill: the primary or seed tint (default), or a solid primary or
+/// warning square whose glyph takes the matching on-colour (screen 02's lock
+/// strip, owner decision D-O1).
+enum MxIconTileTone { tinted, primary, warning }
+
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
 class MxIconTile extends StatelessWidget {
@@ -16,7 +21,12 @@ class MxIconTile extends StatelessWidget {
     this.child,
     this.size = MxIconTileSize.small,
     this.seed,
-  }) : assert((icon == null) != (child == null), 'an icon or a child');
+    this.tone = MxIconTileTone.tinted,
+  }) : assert((icon == null) != (child == null), 'an icon or a child'),
+       assert(
+         seed == null || tone == MxIconTileTone.tinted,
+         'a seed only tints',
+       );
 
   final IconData? icon;
 
@@ -27,6 +37,7 @@ class MxIconTile extends StatelessWidget {
   /// A per-deck colour from the caller's data (ruling S16). Null tints with
   /// primary.
   final Color? seed;
+  final MxIconTileTone tone;
 
   static const double _smallBox = 28;
   static const double _mediumBox = 36;
@@ -38,7 +49,7 @@ class MxIconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = seed ?? colors.primary;
+    final tinted = seed ?? colors.primary;
     final tint = switch ((seed, colors.brightness)) {
       (_?, _) => _seedTint,
       (null, Brightness.light) => _primaryTintLight,
@@ -49,11 +60,19 @@ class MxIconTile extends StatelessWidget {
       MxIconTileSize.medium => (_mediumBox, AppRadius.md, AppIconSize.compact),
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
+    final (fill, ink) = switch (tone) {
+      MxIconTileTone.tinted => (tinted.withValues(alpha: tint), tinted),
+      MxIconTileTone.primary => (colors.primary, colors.onPrimary),
+      MxIconTileTone.warning => (
+        context.semanticColors.warning,
+        context.semanticColors.onWarning,
+      ),
+    };
     return SizedBox.square(
       dimension: box,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: ink.withValues(alpha: tint),
+          color: fill,
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Center(

@@ -12,7 +12,8 @@ class MxCard extends StatelessWidget {
     required this.child,
     this.isFullBleed = false,
     this.isHero = false,
-  });
+    this.isWarning = false,
+  }) : assert(!(isHero && isWarning), 'a hero or a warning card');
 
   final Widget child;
 
@@ -23,11 +24,23 @@ class MxCard extends StatelessWidget {
   /// The surface-hero tint, with the ghost edge in both themes.
   final bool isHero;
 
+  /// The warning-soft ground with the warning border (screen 02's locked
+  /// strip, owner decision D-O1).
+  final bool isWarning;
+
   @override
   Widget build(BuildContext context) {
-    final surface = isHero
-        ? AppDecorations.heroCard(context.colors, context.derivedColors)
-        : AppDecorations.raisedCard(context.colors, context.derivedColors);
+    final surface = switch ((isHero, isWarning)) {
+      (true, _) => AppDecorations.heroCard(
+        context.colors,
+        context.derivedColors,
+      ),
+      (_, true) => AppDecorations.warningCard(
+        context.colors,
+        context.derivedColors,
+      ),
+      _ => AppDecorations.raisedCard(context.colors, context.derivedColors),
+    };
     final radius = surface.borderRadius!;
     final edge = surface.border as Border?;
     return SizedBox(

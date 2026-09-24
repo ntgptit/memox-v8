@@ -43,6 +43,10 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           trailing: MxBadge(label: '23 due', isSolid: true),
         ),
       ),
+      const MxCard(
+        isWarning: true,
+        child: MxListSectionHeader(label: 'Warning card'),
+      ),
       Row(
         spacing: AppSpacing.grouped,
         children: [
@@ -55,6 +59,16 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           MxIconTile(
             icon: AppIcons.folder,
             seed: context.semanticColors.mastery,
+          ),
+          const MxIconTile(
+            icon: AppIcons.lockOpen,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.primary,
+          ),
+          const MxIconTile(
+            icon: AppIcons.lock,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.warning,
           ),
         ],
       ),
