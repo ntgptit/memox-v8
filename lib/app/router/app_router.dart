@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +8,7 @@ import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -20,12 +23,27 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
       builder: (context, state, navigationShell) =>
           _TabShell(navigationShell: navigationShell),
       branches: [
-        // The Library (library spec §4); its child routes arrive in phase 2.
+        // The Library (library spec §4): one page per deck level.
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: AppRoutes.decks,
-              builder: (context, state) => const DeckLevelScreen(),
+              builder: (context, state) => _deckLevel(context),
+              routes: [
+                GoRoute(
+                  path: AppRoutes.deckChild,
+                  builder: (context, state) => _deckLevel(
+                    context,
+                    deckId: state.pathParameters[AppRoutes.deckIdParam],
+                  ),
+                ),
+                GoRoute(
+                  path: AppRoutes.searchChild,
+                  builder: (context, state) => DeckSearchScreen(
+                    onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -53,6 +71,34 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
       ),
   ],
 );
+
+/// A Library level wired to the router: each deck opened is one more page,
+/// so Back climbs one level (library spec §4).
+DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) =>
+    DeckLevelScreen(
+      deckId: deckId,
+      onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+      onOpenAncestor: (id) => _openAncestor(context, id),
+      onSearch: () => context.push(AppRoutes.deckSearch),
+    );
+
+/// Ruling P2-L5: a breadcrumb tap pops the Library stack back to [deckId],
+/// or to the root for null. A deck that is not on the stack (it was opened
+/// from search) is pushed over the root instead.
+void _openAncestor(BuildContext context, String? deckId) {
+  final router = GoRouter.of(context);
+  var isOnStack = false;
+  Navigator.of(context).popUntil((route) {
+    final arguments = route.settings.arguments;
+    isOnStack =
+        deckId != null &&
+        arguments is Map &&
+        arguments[AppRoutes.deckIdParam] == deckId;
+    return isOnStack || route.isFirst;
+  });
+  if (deckId == null || isOnStack) return;
+  unawaited(router.push(AppRoutes.deck(deckId)));
+}
 
 StatefulShellBranch _branch(String path, String Function(BuildContext) title) =>
     StatefulShellBranch(

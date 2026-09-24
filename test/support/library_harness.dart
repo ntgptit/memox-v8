@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/app/app.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
@@ -9,6 +10,7 @@ import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
 import 'golden_harness.dart';
@@ -133,4 +135,29 @@ Future<void> pumpLibraryGolden(
   );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
+}
+
+/// A deck level whose navigation goes nowhere, for screen tests: the Library
+/// root when [deckId] is null.
+DeckLevelScreen deckScreen({
+  String? deckId,
+  ValueChanged<String>? onOpenDeck,
+  ValueChanged<String?>? onOpenAncestor,
+}) => DeckLevelScreen(
+  deckId: deckId,
+  onOpenDeck: onOpenDeck ?? (_) {},
+  onOpenAncestor: onOpenAncestor ?? (_) {},
+  onSearch: () {},
+);
+
+/// The whole app over [env] on a 1080×2400 (3x) phone, settled on the
+/// Library root.
+Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    ProviderScope(overrides: _backend(env), child: const MemoxApp()),
+  );
+  await tester.pumpAndSettle();
 }

@@ -1,0 +1,149 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+
+import '../support/deck_fixtures.dart';
+import '../support/library_harness.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
+
+Finder _barTitle(String title) =>
+    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
+
+Finder _crumb(String label) =>
+    find.descendant(of: find.byType(MxBreadcrumb), matching: find.text(label));
+
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
+Future<void> _back(WidgetTester tester) =>
+    _tap(tester, find.byTooltip(_en.commonBack));
+
+/// Korean › Words › Verbs, with Grammar beside Words.
+Future<void> _seed(LibraryEnv env) async {
+  final korean = await env.decks.root('Korean');
+  final words = await env.decks.sub(korean.id, 'Words');
+  await env.decks.sub(korean.id, 'Grammar');
+  await env.decks.sub(words.id, 'Verbs');
+}
+
+Future<void> _openVerbs(WidgetTester tester) async {
+  await _tap(tester, find.text('Korean'));
+  await _tap(tester, find.text('Words'));
+  await _tap(tester, find.text('Verbs'));
+}
+
+void main() {
+  libraryTest('each level is one page; Back climbs one level', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _openVerbs(tester);
+    expect(_barTitle('Verbs'), findsOneWidget);
+
+    for (final level in ['Words', 'Korean', _en.navLibrary]) {
+      await _back(tester);
+      expect(_barTitle(level), findsOneWidget);
+    }
+  });
+
+  libraryTest('a crumb pops back to its level (ruling P2-L5)', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _openVerbs(tester);
+    await _tap(tester, _crumb('Korean'));
+
+    expect(_barTitle('Korean'), findsOneWidget);
+    await _back(tester);
+    expect(_barTitle(_en.navLibrary), findsOneWidget);
+  });
+
+  libraryTest('the Library crumb returns to the root', (tester, env) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _openVerbs(tester);
+    await _tap(tester, _crumb(_en.navLibrary));
+
+    expect(_barTitle(_en.navLibrary), findsOneWidget);
+    expect(find.byTooltip(_en.commonBack), findsNothing);
+  });
+
+  libraryTest('from search, a crumb off the stack opens over the root', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.byTooltip(_en.libraryOpenSearch));
+    await tester.enterText(find.byType(EditableText), 'verb');
+    await tester.pumpAndSettle();
+    await _tap(tester, find.text('Verbs'));
+    expect(_barTitle('Verbs'), findsOneWidget);
+
+    await _tap(tester, _crumb('Korean'));
+    expect(_barTitle('Korean'), findsOneWidget);
+    await _back(tester);
+    expect(_barTitle(_en.navLibrary), findsOneWidget);
+  });
+
+  libraryTest('deleting the open deck returns to its parent once (RF1)', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _openVerbs(tester);
+    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, find.text(_en.deckDelete));
+    await _tap(tester, find.text(_en.deckDelete));
+
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+  });
+
+  libraryTest('moving the open deck updates its path at once (RF5)', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Grammar'));
+    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, find.text(_en.deckMove));
+    await _tap(tester, find.text('Korean › Words'));
+
+    expect(_crumb('Words'), findsOneWidget);
+    await _back(tester);
+    expect(_barTitle('Korean'), findsOneWidget);
+    expect(find.text('Grammar'), findsNothing);
+  });
+
+  libraryTest('re-tapping the Library tab returns to the root', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _openVerbs(tester);
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(MxBottomNav),
+        matching: find.text(_en.navLibrary),
+      ),
+    );
+
+    expect(_barTitle(_en.navLibrary), findsOneWidget);
+  });
+}
