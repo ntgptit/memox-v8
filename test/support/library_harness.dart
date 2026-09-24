@@ -167,11 +167,13 @@ DeckLevelScreen deckScreen({
   Widget Function(String deckId)? cardContent,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
+  ValueChanged<String>? onOpenAlgorithm,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onSearch: onSearch ?? () {},
+  onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
