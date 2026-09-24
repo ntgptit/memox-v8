@@ -1,0 +1,81 @@
+{
+  "artifact": "https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE",
+  "version": "1790244159-01e6",
+  "screens": [
+    {
+      "num": "01",
+      "dir": "01-deck-list",
+      "title": "Deck list · recursive",
+      "states": [
+        { "id": "rootLoaded", "label": "Root · decks" },
+        { "id": "rootLoading", "label": "Root · loading" },
+        { "id": "rootEmpty", "label": "Root · first launch" },
+        { "id": "rootError", "label": "Root · error" },
+        { "id": "rootSearch", "label": "Root · search" },
+        { "id": "rootSortFilter", "label": "Root · sort & filter" },
+        { "id": "rootDueEmpty", "label": "Root · due filter, none" },
+        { "id": "rootOverflow", "label": "Root · deck actions" },
+        { "id": "rootCreate", "label": "Root · create deck" },
+        { "id": "rootRename", "label": "Root · rename" },
+        { "id": "rootDelete", "label": "Root · move to Trash" },
+        { "id": "deckLoaded", "label": "In deck · sub-decks" },
+        { "id": "deckEmpty", "label": "In deck · empty deck" },
+        { "id": "deckMaxDepth", "label": "In deck · level 10" },
+        { "id": "deckLoading", "label": "In deck · loading" },
+        { "id": "deckError", "label": "In deck · error" },
+        { "id": "deckNotFound", "label": "In deck · not found" },
+        { "id": "deckOverflow", "label": "In deck · sub-deck actions" },
+        { "id": "deckMove", "label": "In deck · move sheet" },
+        { "id": "deckDelete", "label": "In deck · move to Trash" }
+      ]
+    },
+    {
+      "num": "02",
+      "dir": "02-review-algorithm",
+      "title": "Review algorithm & reset",
+      "states": [
+        { "id": "locked", "label": "Locked" },
+        { "id": "unlocked", "label": "Unlocked" },
+        { "id": "switching", "label": "Switching" },
+        { "id": "switched", "label": "Switched" },
+        { "id": "switchFailed", "label": "Switch failed" },
+        { "id": "resetConfirm", "label": "Reset confirm" },
+        { "id": "resetting", "label": "Resetting" },
+        { "id": "resetDone", "label": "Reset done" },
+        { "id": "nothingToLose", "label": "Nothing to lose" }
+      ]
+    },
+    {
+      "num": "04",
+      "dir": "04-library-search",
+      "title": "Library search",
+      "states": [
+        { "id": "emptyQuery", "label": "Empty" },
+        { "id": "loading", "label": "Searching" },
+        { "id": "results", "label": "Results" },
+        { "id": "noResults", "label": "No results" },
+        { "id": "error", "label": "Error" }
+      ]
+    },
+    {
+      "num": "07",
+      "dir": "07-card-list",
+      "title": "Card list",
+      "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "empty", "label": "Empty" },
+        { "id": "searchEmpty", "label": "Search empty" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" },
+        { "id": "notFound", "label": "Deck not found" },
+        { "id": "deckActions", "label": "Deck actions" },
+        { "id": "selection", "label": "Selection" },
+        { "id": "moveTargets", "label": "Move targets" },
+        { "id": "noMoveTarget", "label": "No move target" },
+        { "id": "bulkFailed", "label": "Bulk failed" },
+        { "id": "delCard", "label": "Card → Trash" },
+        { "id": "delDeck", "label": "Deck → Trash" }
+      ]
+    }
+  ]
+}
