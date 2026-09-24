@@ -57,6 +57,8 @@ abstract final class AppIcons {
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
   static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
+  static const IconData upcoming = Icons.upcoming_outlined; // calendar-plus
+  static const IconData transfer = Icons.import_export; // arrow-up-down
   static const IconData dueNow = Icons.bolt_outlined; // zap
   static const IconData cardDeck = Icons.copy_all_outlined; // copy
   static const IconData library = Icons.layers_outlined;
