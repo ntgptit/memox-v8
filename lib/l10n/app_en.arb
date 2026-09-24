@@ -797,9 +797,9 @@
   "@cardOptionalDetails": {
     "description": "Overline above the optional fields in edit mode."
   },
-  "cardOptional": "optional",
+  "cardOptional": "· optional",
   "@cardOptional": {
-    "description": "Suffix after an optional field's label."
+    "description": "After an optional field's label."
   },
   "cardFieldExample": "Example sentence",
   "@cardFieldExample": {
