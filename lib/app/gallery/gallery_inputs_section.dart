@@ -8,6 +8,9 @@ import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 /// Group C: fields, messages and selection controls, live where they have
 /// state so the gallery can be poked at.
@@ -44,6 +47,19 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         clearLabel: 'Clear search',
       ),
       MxSearchField.trigger(hintText: 'Search decks', onTap: () {}),
+      MxAppBar(
+        density: MxAppBarDensity.content,
+        leading: MxIconButton(
+          icon: AppIcons.back,
+          semanticLabel: 'Back',
+          onPressed: () {},
+        ),
+        titleWidget: MxSearchField(
+          controller: _search,
+          hintText: 'Search decks',
+          clearLabel: 'Clear search',
+        ),
+      ),
       const MxTextField(hintText: 'Deck name'),
       const MxTextField(hintText: 'Deck name', errorText: 'Name is required'),
       const MxTextField(hintText: 'Back of the card', isMultiline: true),

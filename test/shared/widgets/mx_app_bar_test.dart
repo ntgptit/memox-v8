@@ -102,4 +102,44 @@ void main() {
       greaterThanOrEqualTo(56),
     );
   });
+
+  testWidgets(
+    'a title widget takes the title slot between leading and actions',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxAppBar(
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: 'Back',
+            onPressed: () {},
+          ),
+          titleWidget: const SizedBox(key: Key('slot'), height: 40),
+          actions: [
+            MxIconButton(
+              icon: AppIcons.more,
+              semanticLabel: 'More',
+              onPressed: () {},
+            ),
+          ],
+        ),
+      );
+      final slot = tester.getRect(find.byKey(const Key('slot')));
+      final back = tester.getRect(find.byTooltip('Back'));
+      final more = tester.getRect(find.byTooltip('More'));
+
+      expect(slot.left, greaterThanOrEqualTo(back.right));
+      expect(slot.right, lessThanOrEqualTo(more.left));
+      expect(slot.width, greaterThan(200));
+    },
+  );
+
+  test('takes a title or a title widget, not both and not neither', () {
+    expect(
+      () => MxAppBar(title: 'Library', titleWidget: const SizedBox()),
+      throwsAssertionError,
+    );
+    expect(MxAppBar.new, throwsAssertionError);
+  });
 }
