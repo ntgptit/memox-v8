@@ -12,7 +12,7 @@ class MxFlagMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Icon(
-    AppIcons.flagged,
+    AppIcons.flag,
     size: AppIconSize.inline,
     color: context.derivedColors.streakInk,
     semanticLabel: semanticLabel,

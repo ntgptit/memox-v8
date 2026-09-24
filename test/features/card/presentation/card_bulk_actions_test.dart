@@ -90,7 +90,7 @@ void main() {
       ];
 
       expect(xs, orderedEquals([...xs]..sort()));
-      expect(inBar(_en.cardSelectAll), findsNothing);
+      expect(inBar(_en.cardSelectAllCount(3)), findsNothing);
       expect(
         tester.getSemantics(inBar(_en.cardExport)),
         isSemantics(

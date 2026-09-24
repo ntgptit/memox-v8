@@ -35,7 +35,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 04 | Library search | 5 | FE-A1, FE-A10 | aligned | [04-library-search.md](04-library-search.md) |
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |
 | 06 | Trash | 15 | FE-B1 | out of V8 | — |
-| 07 | Card list | 15 | FE-A2 | to align | [07-card-list.md](07-card-list.md) |
+| 07 | Card list | 15 | FE-A2 | aligned | [07-card-list.md](07-card-list.md) |
 | 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
 | 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
 | 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |

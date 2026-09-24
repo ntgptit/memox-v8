@@ -35,6 +35,10 @@ void main() {
 
     expect(widths[0], closeTo(widths[2], 0.5));
     expect(widths[1], greaterThan(widths[0]));
+    // Each segment fills the bar's height, or the bar reads empty.
+    for (final status in MxCardStatus.values) {
+      expect(tester.getSize(_segment(status)).height, greaterThan(0));
+    }
     for (final status in MxCardStatus.values) {
       expect(find.text(status.name), findsOneWidget);
     }

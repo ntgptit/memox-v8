@@ -12,6 +12,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_flag_mark.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
@@ -93,7 +94,7 @@ void main() {
     expect(find.byType(CardRowWidget), findsNWidgets(4));
     // A dot and a status label on each row (screen 07).
     expect(find.byType(MxStatusBadge), findsNWidgets(8));
-    expect(find.byIcon(AppIcons.flagged), findsOneWidget);
+    expect(find.byType(MxFlagMark), findsOneWidget);
   });
 
   libraryTest('each chip counts its filter; a chip filters the rows', (
@@ -188,6 +189,23 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardSearchEmptyTitle('zzz')), findsOneWidget);
+    // Screen 07: the header says so, and the body counts the whole deck.
+    expect(find.text(_en.cardListNoMatches.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.cardSearchEmptyBody(4)), findsOneWidget);
+  });
+
+  libraryTest('the Flagged chip carries the flag glyph', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    final chip = find.ancestor(
+      of: find.text(_en.cardFilterFlagged),
+      matching: find.byType(MxFilterChip),
+    );
+
+    expect(
+      find.descendant(of: chip, matching: find.byIcon(AppIcons.flag)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('the window grows near the end and keeps its rows (RF4)', (
@@ -310,6 +328,21 @@ void main() {
 
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
+  });
+
+  libraryTest('a deck with no card shows the empty state alone (screen 07)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'gone', deckId: words.id, deleteBatchId: 'b');
+    await pumpLibraryScreen(tester, env, _section(words.id));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardEmptyTitle), findsOneWidget);
+    expect(find.byType(MxFilterChip), findsNothing);
+    expect(find.text(_en.cardListShowing(0, 0).toUpperCase()), findsNothing);
   });
 
   libraryTest('New card: the FAB adds, and hides while selecting (P4a-L9)', (

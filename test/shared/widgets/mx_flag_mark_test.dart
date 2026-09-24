@@ -18,7 +18,8 @@ void main() {
       final icon = tester.widget<Icon>(find.byType(Icon));
       final context = tester.element(find.byType(MxFlagMark));
 
-      expect(icon.icon, AppIcons.flagged);
+      // The kit's outline flag, not the filled toggle state.
+      expect(icon.icon, AppIcons.flag);
       expect(icon.color, context.derivedColors.streakInk);
       expect(find.bySemanticsLabel('Flagged'), findsOneWidget);
     });

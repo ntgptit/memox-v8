@@ -53,11 +53,19 @@ and `trashed` (Undo; no Trash in V8.0).
 | Tags filter, Import, Export | Disabled | Spec A4 |
 | "Export all {n} cards" in the deck sheet | "Export all cards", no count | Ruling E-L4: the sheet reads only `DeckView`, which has no card count |
 | Flag in #F97316 | `streakInk` (#CA601D light) | E-O4: the kit orange reads 2.8:1 on the card, below the 3:1 non-text floor |
+| "Study this deck · {n} due" enabled | Disabled, announced "Not available yet" | Spec A4: study arrives with FE-B |
+| Status "Beginning" | "Learning" | The V8 status copy (`cardStatusBeginning`), shared with the card detail |
+| Filter counts in `searchEmpty` stay the whole deck's | Counts follow the search | IT-ORG-005 |
+| Selected card edged at 1px | 2px primary (`AppStroke.focus`) | E-O5: the selection stroke of the design system |
+| "Select all {n}" as a text link | A compact secondary button | MxButton has no text tone |
+| Sort pill with a leading ⇅ | Label and chevron only | MxChipTrigger draws a trailing glyph only, as in screen 01's header (UI-base debt row 97) |
+| Due chip and tags as small squares | Pills (MxBadge, MxTagChip dense) | The shared badge and tag shapes |
+| `empty`: "No cards in this deck yet", Add first card, Import, a study note, no FAB | "No cards yet", New card, the FAB stays; no Import, no note | Import waits (spec A4); the note speaks of a study that is not available yet; the FAB is P4a-L9 |
 
 ## Copy
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
-- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first".
+- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first" · "No matches" (a search with no hit).
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Delete".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
 - Search empty: "No cards match “{term}”" · "Try a different term, or clear the search to see all {n} cards."

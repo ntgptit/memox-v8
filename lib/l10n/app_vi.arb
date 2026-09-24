@@ -87,7 +87,6 @@
   "cardFilterNew": "Mới",
   "cardFilterFlagged": "Đã gắn cờ",
   "cardSortTitle": "Sắp xếp thẻ",
-  "cardSortTrigger": "Sắp xếp: {order}",
   "cardSortNewest": "Mới thêm",
   "cardSortDueFirst": "Đến hạn trước",
   "cardStatusNew": "Mới",
@@ -103,7 +102,6 @@
   "cardLoadErrorTitle": "Không tải được thẻ",
   "cardSelectedCount": "Đã chọn {count}",
   "cardSelectionClose": "Đóng chế độ chọn",
-  "cardSelectAll": "Chọn tất cả",
   "cardFlag": "Gắn cờ",
   "cardTag": "Nhãn",
   "cardMove": "Di chuyển",
@@ -366,5 +364,7 @@
   "cardSortNewestPill": "Mới nhất trước",
   "cardSortDuePill": "Đến hạn trước",
   "deckImportCards": "Nhập thẻ",
-  "deckExportAll": "Xuất mọi thẻ"
+  "deckExportAll": "Xuất mọi thẻ",
+  "cardListNoMatches": "Không có kết quả",
+  "cardSearchEmptyBody": "{total, plural, other{Thử từ khác, hoặc xoá từ tìm kiếm để xem cả {total} thẻ.}}"
 }

@@ -36,6 +36,9 @@ class CardListToolbarWidget extends StatelessWidget {
   final TextEditingController searchController;
   final FocusNode searchFocus;
   final bool isSearchShown;
+
+  /// The filters, and the header when not selecting; off in a deck with no
+  /// card.
   final bool isFilterShown;
 
   /// The deck's summary card, above the filters; null while selecting or
@@ -58,6 +61,7 @@ class CardListToolbarWidget extends StatelessWidget {
     final l10n = context.l10n;
     final total = counts.of(request.filter);
     final isSelecting = selectedCount > 0;
+    final isNoMatch = total == 0 && request.searchTerm.trim().isNotEmpty;
     final summary = this.summary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,6 +91,9 @@ class CardListToolbarWidget extends StatelessWidget {
                 for (final filter in CardListFilter.values)
                   MxFilterChip(
                     label: l10n.cardFilter(filter),
+                    icon: filter == CardListFilter.flagged
+                        ? AppIcons.flag
+                        : null,
                     count: counts.of(filter),
                     isSelected: filter == request.filter,
                     onSelected: (_) => onFilter(filter),
@@ -104,19 +111,22 @@ class CardListToolbarWidget extends StatelessWidget {
               ],
             ),
           ),
-        MxListSectionHeader(
-          label: isSelecting
-              ? l10n.cardListSelectedOf(selectedCount, total)
-              : l10n.cardListShowing(shownCount, total),
-          trailing: isSelecting
-              ? null
-              : MxChipTrigger(
-                  label: request.sort == CardListSort.newest
-                      ? l10n.cardSortNewestPill
-                      : l10n.cardSortDuePill,
-                  onPressed: onSort,
-                ),
-        ),
+        if (isFilterShown || isSelecting)
+          MxListSectionHeader(
+            label: switch ((isSelecting, isNoMatch)) {
+              (true, _) => l10n.cardListSelectedOf(selectedCount, total),
+              (false, true) => l10n.cardListNoMatches,
+              (false, false) => l10n.cardListShowing(shownCount, total),
+            },
+            trailing: isSelecting
+                ? null
+                : MxChipTrigger(
+                    label: request.sort == CardListSort.newest
+                        ? l10n.cardSortNewestPill
+                        : l10n.cardSortDuePill,
+                    onPressed: onSort,
+                  ),
+          ),
       ],
     );
   }

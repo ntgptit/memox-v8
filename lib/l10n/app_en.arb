@@ -391,15 +391,6 @@
   "@cardSortTitle": {
     "description": "Title of the card sort sheet."
   },
-  "cardSortTrigger": "Sort: {order}",
-  "@cardSortTrigger": {
-    "placeholders": {
-      "order": {
-        "type": "String"
-      }
-    },
-    "description": "Card sort chip; order is the current sort."
-  },
   "cardSortNewest": "Newest",
   "@cardSortNewest": {
     "description": "Card sort: newest first."
@@ -449,7 +440,7 @@
   "@cardShowAll": {
     "description": "Action that clears the card filter."
   },
-  "cardSearchEmptyTitle": "No card matches “{term}”",
+  "cardSearchEmptyTitle": "No cards match “{term}”",
   "@cardSearchEmptyTitle": {
     "placeholders": {
       "term": {
@@ -474,10 +465,6 @@
   "cardSelectionClose": "Close selection",
   "@cardSelectionClose": {
     "description": "Accessible name of the selection close action."
-  },
-  "cardSelectAll": "Select all",
-  "@cardSelectAll": {
-    "description": "Bulk bar action."
   },
   "cardFlag": "Flag",
   "@cardFlag": {
@@ -1886,5 +1873,18 @@
   "deckExportAll": "Export all cards",
   "@deckExportAll": {
     "description": "Screen handoff 07 (library alignment phase E): deckExportAll."
+  },
+  "cardListNoMatches": "No matches",
+  "@cardListNoMatches": {
+    "description": "Card list header while a search finds no card (screen 07)."
+  },
+  "cardSearchEmptyBody": "{total, plural, =1{Try a different term, or clear the search to see the one card.} other{Try a different term, or clear the search to see all {total} cards.}}",
+  "@cardSearchEmptyBody": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Under the no-match title: how to get the deck's cards back (screen 07)."
   }
 }

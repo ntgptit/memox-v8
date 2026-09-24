@@ -255,7 +255,8 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           searchController: _query,
           searchFocus: _searchFocus,
           isSearchShown: request.isSearchOpen && !isSelecting,
-          isFilterShown: !isSelecting,
+          // A deck with no card shows its empty state alone (screen 07).
+          isFilterShown: !isSelecting && view.statusCounts.total > 0,
           summary: isSelecting || view.statusCounts.total == 0
               ? null
               : CardDeckSummaryWidget(
@@ -279,6 +280,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         ),
         request: request,
         items: view.items,
+        deckTotal: view.statusCounts.total,
         selected: selected,
         onToggle: (cardId) => _selection().toggle(cardId),
         onShowAll: () => _show(CardListFilter.all),
@@ -311,6 +313,7 @@ class _CardListScroll extends StatelessWidget {
     required this.toolbar,
     required this.request,
     required this.items,
+    required this.deckTotal,
     required this.selected,
     required this.onToggle,
     required this.onShowAll,
@@ -321,6 +324,7 @@ class _CardListScroll extends StatelessWidget {
   final Widget toolbar;
   final CardListRequestState request;
   final List<CardListItem> items;
+  final int deckTotal;
   final Set<String> selected;
   final ValueChanged<String> onToggle;
   final VoidCallback onShowAll;
@@ -336,6 +340,7 @@ class _CardListScroll extends StatelessWidget {
         if (items.isEmpty)
           _CardListEmpty(
             request: request,
+            deckTotal: deckTotal,
             onShowAll: onShowAll,
             onAddCard: onAddCard,
           )
@@ -367,11 +372,15 @@ class _CardListScroll extends StatelessWidget {
 class _CardListEmpty extends StatelessWidget {
   const _CardListEmpty({
     required this.request,
+    required this.deckTotal,
     required this.onShowAll,
     required this.onAddCard,
   });
 
   final CardListRequestState request;
+
+  /// Every card of the deck, whatever the search: what clearing it shows.
+  final int deckTotal;
   final VoidCallback onShowAll;
   final VoidCallback onAddCard;
 
@@ -383,6 +392,7 @@ class _CardListEmpty extends StatelessWidget {
       return MxEmptyState(
         icon: AppIcons.search,
         title: l10n.cardSearchEmptyTitle(term),
+        body: l10n.cardSearchEmptyBody(deckTotal),
         tone: MxEmptyStateTone.neutral,
         isCompact: true,
       );
