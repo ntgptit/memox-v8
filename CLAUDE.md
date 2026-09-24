@@ -1,31 +1,63 @@
 # CLAUDE.md — MemoX V8
 
-## Process ownership
+## Layers and authority
 
-Superpowers is the sole software-development process controller.
+Each layer answers one question; none takes over another's.
 
-Use Superpowers for:
+| Layer | Answers | Owns |
+|---|---|---|
+| Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
+| Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
+| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, this file |
+| ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
 
-- brainstorming
-- architecture
-- specifications
-- implementation plans
-- worktrees
-- TDD
-- debugging
-- implementation
-- code review
-- branch completion
+- **Superpowers is the sole process controller.** Nothing else plans,
+  sequences or gates work, and no other layer repeats its methodology.
+- **Impeccable judges UI against the kit, not against its own taste.** The kit
+  is the design authority ([UI source of truth](#ui-source-of-truth)).
+  Impeccable checks the work against the kit and against the quality floor.
+- **Repo rules hold project invariants only**, such as the architecture,
+  stack, data rules and quality bars. They never restate a workflow.
+- **ECC skills are read on demand** by whoever does the task. They are never
+  routed to as agents, and they never override a layer above.
 
-Use Impeccable for:
+### A screen's workflow
 
-- product definition
-- UX
-- UI design
-- design system
-- accessibility
-- adaptive/responsive behavior
-- visual quality
+1. Read the screen and all its states in the kit.
+2. Run `superpowers:brainstorming`: goal, scope, business rules (BR/UC),
+   constraints.
+3. Run Impeccable before the plan:
+   - critique the design against the kit (what the plan must adopt or rule
+     on);
+   - use `shape` only for a screen or state that the kit does not cover.
+4. Run `superpowers:writing-plans`, then execute it, subagent-driven or
+   native, as the user chooses.
+5. Run Impeccable after the build: critique and audit the goldens against
+   the kit.
+   - Fix everything found in one batch, then confirm once. Never loop on
+     polish.
+6. Run the final whole-branch review, then complete the branch.
+
+### Where knowledge lives
+
+| Knowledge | Home |
+|---|---|
+| Architecture and product decisions | an ADR in `docs/shared/decisions/` |
+| Deviations from the kit or a UI spec | the screen's detail file or the UI-base register (§9) |
+| Plan-time rulings | the plan and its execution ledger, then the PR |
+| The agent's working preferences and lessons | Claude Code auto-memory |
+
+Do not add another store, such as `.ecc/memory/`. Anything meant to outlive
+a session and bind the project goes into the repo through a PR. Handoff to
+another harness goes through `AGENTS.md` or `docs/`.
+
+### Hooks
+
+- Hooks are repo-owned and small: `.claude/hooks/` and `.claude/settings.json`.
+- They run the repo's own tools, such as `dart format`, `flutter analyze` and
+  the guard. They never run third-party scripts, including ECC's hooks.
+- The full test suite stays at the task gate, not at every edit or commit,
+  because goldens are generated on Windows only.
 
 ## V7 is a reference, not a template
 
@@ -81,6 +113,12 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
   (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
   not BLoC, Dio or Freezed.
+- **Java/Spring skills wait for a backend.** V8.0 is local-only (ADR-001), so
+  it has no backend to use them on yet. They apply once a server-side
+  sub-project starts, under that sub-project's ADRs.
+- **Skills only.** ECC's agents, rules, hooks, commands and memory are not
+  used here. A plan task never delegates to an ECC agent; its implementer
+  reads the relevant skill instead.
 - **Not vendored:** `ios-icon-gen` ships executable scripts, and `security-scan`
   runs the npm package `ecc-agentshield`. Both run third-party code.
 - **To update:** copy the new versions from a pinned ECC commit, review the
