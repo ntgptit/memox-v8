@@ -48,19 +48,19 @@
   "@libraryCreateDeck": {
     "description": "Action and FAB label: create a new top-level deck."
   },
-  "libraryEmptyTitle": "No decks yet",
+  "libraryEmptyTitle": "Start your library",
   "@libraryEmptyTitle": {
     "description": "First-run empty state title: the Library has no deck."
   },
-  "libraryEmptyBody": "Create a deck, then add the words you want to remember.",
+  "libraryEmptyBody": "A deck groups the sub-decks that hold your cards. Create one to begin.",
   "@libraryEmptyBody": {
     "description": "First-run empty state body."
   },
-  "libraryNothingDueTitle": "Nothing due",
+  "libraryNothingDueTitle": "Nothing due right now",
   "@libraryNothingDueTitle": {
     "description": "Empty state when the due filter leaves no deck."
   },
-  "libraryNothingDueBody": "No deck has cards to review today.",
+  "libraryNothingDueBody": "No deck has cards waiting.",
   "@libraryNothingDueBody": {
     "description": "Body of the nothing-due empty state."
   },
@@ -339,7 +339,7 @@
     },
     "description": "Snackbar after a move; deck is the new parent's name."
   },
-  "deckChangeScheduler": "Change scheduler",
+  "deckChangeScheduler": "Review algorithm",
   "@deckChangeScheduler": {
     "description": "Deck action sheet command, root decks only."
   },
@@ -392,7 +392,7 @@
   "@deckSearchTitle": {
     "description": "Title of the deck search screen."
   },
-  "deckSearchHint": "Deck name",
+  "deckSearchHint": "Search decks",
   "@deckSearchHint": {
     "description": "Hint in the deck search field."
   },
@@ -400,7 +400,7 @@
   "@deckSearchClear": {
     "description": "Accessible name of the search clear button."
   },
-  "deckSearchEmptyTitle": "No deck matches “{term}”",
+  "deckSearchEmptyTitle": "No matches for “{term}”",
   "@deckSearchEmptyTitle": {
     "placeholders": {
       "term": {
@@ -409,7 +409,7 @@
     },
     "description": "Search empty state; term is what the person typed."
   },
-  "deckSearchEmptyBody": "Check the spelling, or try part of the name.",
+  "deckSearchEmptyBody": "Accents matter — “hoc” does not find “học”. Search covers deck names.",
   "@deckSearchEmptyBody": {
     "description": "Search empty state body."
   },
@@ -1036,5 +1036,297 @@
   "deckRootEmptyBody": "Add a sub-deck to start organising it.",
   "@deckRootEmptyBody": {
     "description": "Empty state body of a top-level deck."
+  },
+  "libraryStarterDecks": "Starter decks",
+  "@libraryStarterDecks": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryStarterDecks."
+  },
+  "libraryTags": "Tags",
+  "@libraryTags": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryTags."
+  },
+  "libraryTrash": "Trash",
+  "@libraryTrash": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryTrash."
+  },
+  "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
+  "@libraryDueTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryDueTitle."
+  },
+  "libraryDecksCount": "{count, plural, =1{1 deck} other{{count} decks}}",
+  "@libraryDecksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryDecksCount."
+  },
+  "libraryDueDecksHeader": "Decks with due cards",
+  "@libraryDueDecksHeader": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryDueDecksHeader."
+  },
+  "libraryBrowseStarter": "Browse starter decks",
+  "@libraryBrowseStarter": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryBrowseStarter."
+  },
+  "libraryEmptyFootnote": "Everything stays on this device. Nothing is added until you choose.",
+  "@libraryEmptyFootnote": {
+    "description": "Screen handoff 01/04 (library alignment phase C): libraryEmptyFootnote."
+  },
+  "deckSubDeckCount": "{count, plural, =1{1 sub-deck} other{{count} sub-decks}}",
+  "@deckSubDeckCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSubDeckCount."
+  },
+  "deckCardCount": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@deckCardCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckCardCount."
+  },
+  "deckRowMeta": "{subDecks} · {cards}",
+  "@deckRowMeta": {
+    "placeholders": {
+      "subDecks": {
+        "type": "String"
+      },
+      "cards": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckRowMeta."
+  },
+  "deckRowEmpty": "Empty · add cards or a sub-deck",
+  "@deckRowEmpty": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckRowEmpty."
+  },
+  "deckDueBadge": "{count} due",
+  "@deckDueBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckDueBadge."
+  },
+  "deckMoreActions": "More actions for {name}",
+  "@deckMoreActions": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckMoreActions."
+  },
+  "deckSortPillDueOnly": "{sort} · Due only",
+  "@deckSortPillDueOnly": {
+    "placeholders": {
+      "sort": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortPillDueOnly."
+  },
+  "deckSortFilterTitle": "Sort & filter",
+  "@deckSortFilterTitle": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortFilterTitle."
+  },
+  "deckSortByHeader": "Sort by",
+  "@deckSortByHeader": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortByHeader."
+  },
+  "deckSortManualHint": "Drag decks to arrange them",
+  "@deckSortManualHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortManualHint."
+  },
+  "deckSortRecentHint": "Newest first",
+  "@deckSortRecentHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortRecentHint."
+  },
+  "deckSortNameHint": "A → Z",
+  "@deckSortNameHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortNameHint."
+  },
+  "deckSortProgress": "Progress",
+  "@deckSortProgress": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortProgress."
+  },
+  "deckSortProgressHint": "Least mastered first",
+  "@deckSortProgressHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckSortProgressHint."
+  },
+  "deckFilterDueOnlyTitle": "Only decks with due cards",
+  "@deckFilterDueOnlyTitle": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckFilterDueOnlyTitle."
+  },
+  "deckFilterDueOnlyBody": "Hides decks where nothing is waiting",
+  "@deckFilterDueOnlyBody": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckFilterDueOnlyBody."
+  },
+  "commonDone": "Done",
+  "@commonDone": {
+    "description": "Screen handoff 01/04 (library alignment phase C): commonDone."
+  },
+  "deckOpen": "Open deck",
+  "@deckOpen": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckOpen."
+  },
+  "deckStudyThis": "Study this deck",
+  "@deckStudyThis": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyThis."
+  },
+  "deckStudyThisDue": "Study this deck · {count} due",
+  "@deckStudyThisDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyThisDue."
+  },
+  "deckStudyOptions": "Study options",
+  "@deckStudyOptions": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
+  },
+  "deckStudyOptionsHint": "Cards per session · new-card order",
+  "@deckStudyOptionsHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptionsHint."
+  },
+  "deckReviewAlgorithm": "Review algorithm",
+  "@deckReviewAlgorithm": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckReviewAlgorithm."
+  },
+  "deckReviewAlgorithmLocked": "{algorithm} · locked · reset to start over",
+  "@deckReviewAlgorithmLocked": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckReviewAlgorithmLocked."
+  },
+  "deckReorderHint": "Move before or after a sibling",
+  "@deckReorderHint": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckReorderHint."
+  },
+  "deckScheduledCount": "{count} scheduled",
+  "@deckScheduledCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckScheduledCount."
+  },
+  "deckDepthHeader": "{count} sub-decks · level 10",
+  "@deckDepthHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): deckDepthHeader."
+  },
+  "deckGoneTitle": "This deck is no longer here",
+  "@deckGoneTitle": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckGoneTitle."
+  },
+  "deckGoneBody": "It was deleted while you were away.",
+  "@deckGoneBody": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckGoneBody."
+  },
+  "deckBackToLibrary": "Back to Library",
+  "@deckBackToLibrary": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckBackToLibrary."
+  },
+  "deckOpenTrash": "Open Trash",
+  "@deckOpenTrash": {
+    "description": "Screen handoff 01/04 (library alignment phase C): deckOpenTrash."
+  },
+  "searchFinds": "Search finds",
+  "@searchFinds": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchFinds."
+  },
+  "searchHintDeckName": "a deck name",
+  "@searchHintDeckName": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchHintDeckName."
+  },
+  "searchHintDeckExample": "TOPIK, Học qua phim",
+  "@searchHintDeckExample": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchHintDeckExample."
+  },
+  "searchAccentNote": "Case does not matter, accents do: “hoc” will not find “học”.",
+  "@searchAccentNote": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchAccentNote."
+  },
+  "searchSearching": "Searching for “{term}”…",
+  "@searchSearching": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): searchSearching."
+  },
+  "searchResultsFor": "Results for “{term}”",
+  "@searchResultsFor": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): searchResultsFor."
+  },
+  "searchDecksGroup": "Decks",
+  "@searchDecksGroup": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchDecksGroup."
+  },
+  "searchHoldsCards": "{path} · holds cards",
+  "@searchHoldsCards": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): searchHoldsCards."
+  },
+  "searchHoldsDecks": "{path} · holds sub-decks",
+  "@searchHoldsDecks": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): searchHoldsDecks."
+  },
+  "searchHoldsNothing": "{path} · empty",
+  "@searchHoldsNothing": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01/04 (library alignment phase C): searchHoldsNothing."
+  },
+  "searchErrorTitle": "Search didn't run",
+  "@searchErrorTitle": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchErrorTitle."
+  },
+  "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
+  "@searchErrorBody": {
+    "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
   }
 }
