@@ -52,7 +52,7 @@
 `tools/design/capture_lib.test.mjs`:
 
 ```js
-// Tests for capture_lib.mjs:  node --test tools/design/
+// Tests for capture_lib.mjs:  node --test 'tools/design/*.test.mjs'
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -164,7 +164,7 @@ test('the committed manifest lists the V8 states of 01, 02, 04 and 07', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `node --test tools/design/`
+Run: `node --test 'tools/design/*.test.mjs'`
 Expected: FAIL with `Cannot find module` for `capture_lib.mjs`.
 
 - [ ] **Step 3: Write `capture_lib.mjs`**
@@ -318,7 +318,7 @@ Labels are the stepper captions of the artifact. States left out are those that 
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `node --test tools/design/`
+Run: `node --test 'tools/design/*.test.mjs'`
 Expected: PASS, 9 tests.
 
 - [ ] **Step 6: Write `capture_screens.mjs`**
@@ -1083,7 +1083,7 @@ Expected: `PASS — 0 error(s), …`, with the same warning count as before the 
 
 Run:
 ```bash
-node --test tools/design/
+node --test 'tools/design/*.test.mjs'
 find docs/shared/ui/design-handoff/screens/img -name '*.png' | wc -l
 cd docs/shared/ui/design-handoff/screens && grep -ho 'img/[^)]*\.png' *.md | sort -u | while read f; do [ -f "$f" ] || echo "missing $f"; done; cd -
 git status --short
