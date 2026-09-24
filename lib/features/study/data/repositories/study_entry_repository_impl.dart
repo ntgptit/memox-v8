@@ -15,8 +15,10 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/queue_plan_model.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/repositories/study_entry_repository.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 /// Opens sessions on a deck (UC-STUDY-001 steps 3–5, UC-STUDY-003). Every
 /// write is one transaction, which the settings reads it makes join: the
@@ -77,6 +79,47 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     });
   }
 
+  @override
+  Future<Outcome<String, StudyRejection>> openReviewSession({
+    required String deckId,
+    required StudyMode mode,
+    DirectionChoice? direction,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final scope = await _scope(deckId);
+      if (scope == null) return const Rejected(StudyRejection.notFound);
+      final (root, options) = scope;
+      final due = _factsOf(await _dao.dueCards(deckId, at));
+      final cards = due.take(options.cardLimit).toList();
+      final planned = reviewQueue(
+        SchedulerType.fromCode(root.schedulerType!),
+        mode,
+        direction: direction,
+        dueCards: cards,
+        distinctMeaningCount: await _meaningsOf(root, cards),
+        random: _random,
+      );
+      switch (planned) {
+        case Rejected(:final reason):
+          return Rejected(reason);
+        case Ok(value: final queue):
+          return Ok(
+            await _open(
+              deckId: deckId,
+              root: root,
+              kind: SessionKind.reviewing,
+              cardLimit: options.cardLimit,
+              queues: [queue],
+              direction: direction,
+              at: at,
+            ),
+          );
+      }
+    });
+  }
+
   /// The root of [deckId] and the options it studies with; null when the
   /// deck is gone or in the Trash.
   Future<(Deck, StudyOptions)?> _scope(String deckId) async {
@@ -93,7 +136,8 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
       .distinctMeaningCount(root.id, [for (final card in cards) card.cardId]);
 
   /// Closes the app's open session (spec D2), then writes the new session
-  /// and round 1 of its [queues], the first of which it starts in.
+  /// and round 1 of its [queues], the first of which it starts in, with the
+  /// session's [direction] choice and each row's own direction (BR-MODE-015).
   Future<String> _open({
     required String deckId,
     required Deck root,
@@ -101,6 +145,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     required int cardLimit,
     required List<StageQueue> queues,
     required DateTime at,
+    DirectionChoice? direction,
   }) async {
     await _dao.closeOpenSessions(now: at, startOfToday: startOfLocalDay(at));
     final id = newId();
@@ -114,11 +159,19 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
         currentMode: queues.first.mode.code,
         status: SessionStatus.inProgress.code,
         cardLimit: Value(cardLimit),
+        direction: Value(direction?.code),
         startedAt: at,
       ),
     );
     for (final queue in queues) {
-      await _queue.insertFirstRound(id, queue.mode.code, queue.cardIds);
+      await _queue.insertFirstRound(
+        id,
+        queue.mode.code,
+        queue.cardIds,
+        directions: queue.directions
+            ?.map((direction) => direction.code)
+            .toList(),
+      );
     }
     return id;
   }

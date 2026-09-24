@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 
 /// `study_queue_items.status` of a row still to serve (BR-STUDY-007).
@@ -10,12 +11,14 @@ final class StudyQueueDao {
 
   final AppDatabase _db;
 
-  /// Round 1 of [mode]: [cardIds] in serving order.
+  /// Round 1 of [mode]: [cardIds] in serving order, each with its entry of
+  /// [directions] when there are directions (BR-MODE-015).
   Future<void> insertFirstRound(
     String sessionId,
     String mode,
-    List<String> cardIds,
-  ) => _db.batch(
+    List<String> cardIds, {
+    List<String>? directions,
+  }) => _db.batch(
     (batch) => batch.insertAll(_db.studyQueueItems, [
       for (final (position, cardId) in cardIds.indexed)
         StudyQueueItemsCompanion.insert(
@@ -24,6 +27,7 @@ final class StudyQueueDao {
           cardId: cardId,
           position: position,
           status: _pending,
+          direction: Value(directions?[position]),
         ),
     ]),
   );

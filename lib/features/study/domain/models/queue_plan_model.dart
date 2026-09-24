@@ -1,17 +1,26 @@
 import 'dart:math';
 
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The first round of one stage: its mode and its cards in serving order
-/// (BR-STUDY-022).
+/// The first round of one stage: its mode, its cards in serving order
+/// (BR-STUDY-022) and, in a review that takes one, each card's direction
+/// (BR-MODE-015).
 final class StageQueue {
-  const StageQueue(this.mode, this.cardIds);
+  const StageQueue(this.mode, this.cardIds, {this.directions});
 
   final StudyMode mode;
   final List<String> cardIds;
+
+  /// One per card of [cardIds], in the same order; null when the session
+  /// takes no direction (BR-MODE-013).
+  final List<QuestionDirection>? directions;
 }
 
 /// The cards a learning session takes (UC-STUDY-001 step 3): at most
@@ -54,6 +63,53 @@ List<StageQueue> learningQueues(
     }
   }
   return queues;
+}
+
+/// Round 1 of a review in [mode] over [dueCards], which come earliest due
+/// first (UC-STUDY-001 step 4, UC-STUDY-003). The request is checked before
+/// the cards, and all before anything is written (spec §7.1): [mode] must be
+/// a review mode of [type] (modeNotOffered, BR-STUDY-055) and [direction]
+/// given exactly when BR-MODE-013 takes one (directionRequired,
+/// directionNotAllowed, BR-MODE-018); then a card must be due (nothingDue,
+/// BR-STUDY-054) and the stage must run on the cards (modeUnavailable,
+/// BR-MODE-009). Round 1 keeps the due order (BR-STUDY-002), and with a
+/// direction every card gets one (BR-MODE-015).
+Outcome<StageQueue, StudyRejection> reviewQueue(
+  SchedulerType type,
+  StudyMode mode, {
+  required DirectionChoice? direction,
+  required List<StudyCardFacts> dueCards,
+  required int distinctMeaningCount,
+  required Random random,
+}) {
+  if (!reviewModesOf(type).contains(mode)) {
+    return const Rejected(StudyRejection.modeNotOffered);
+  }
+  final takesDirection = acceptsDirection(SessionKind.reviewing, type, mode);
+  if (takesDirection && direction == null) {
+    return const Rejected(StudyRejection.directionRequired);
+  }
+  if (!takesDirection && direction != null) {
+    return const Rejected(StudyRejection.directionNotAllowed);
+  }
+  if (dueCards.isEmpty) return const Rejected(StudyRejection.nothingDue);
+  final eligibility = mode.handler.eligibility(
+    dueCards,
+    distinctMeaningCount: distinctMeaningCount,
+  );
+  if (eligibility is! StageRuns) {
+    return const Rejected(StudyRejection.modeUnavailable);
+  }
+  final cardIds = eligibility.cardIds;
+  return Ok(
+    StageQueue(
+      mode,
+      cardIds,
+      directions: direction == null
+          ? null
+          : assignDirections(cardIds.length, direction, random),
+    ),
+  );
 }
 
 /// [cardIds] shuffled with [random], never in the order [previous] gave the

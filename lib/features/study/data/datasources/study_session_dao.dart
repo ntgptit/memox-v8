@@ -27,6 +27,16 @@ final class StudySessionDao {
     orderBy: 'c.created_at, c.id',
   );
 
+  /// The active learned cards of [deckId] and its whole subtree that are due
+  /// at [now], earliest due first (BR-STUDY-001, BR-STUDY-002, BR-STUDY-051).
+  Future<List<StudyCardRow>> dueCards(String deckId, DateTime now) =>
+      _subtreeCards(
+        deckId,
+        where: 'cs.learned_at IS NOT NULL AND cs.due_at <= ?',
+        orderBy: 'cs.due_at, c.created_at, c.id',
+        variables: [Variable<DateTime>(now)],
+      );
+
   /// The active cards of [deckId]'s subtree matching [where], in [orderBy]
   /// order. The subtree is walked through `parent_id` (schema.md "Duyệt cây").
   Future<List<StudyCardRow>> _subtreeCards(

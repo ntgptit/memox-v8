@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/queue_plan_model.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
@@ -149,6 +152,82 @@ void main() {
       expect(
         [for (final queue in queues) queue.mode],
         [StudyMode.browse, StudyMode.selfAssess],
+      );
+    });
+  });
+
+  group('reviewQueue', () {
+    Outcome<StageQueue, StudyRejection> review(
+      SchedulerType type,
+      StudyMode mode, {
+      DirectionChoice? direction,
+      List<String> due = const ['c1', 'c2'],
+    }) => reviewQueue(
+      type,
+      mode,
+      direction: direction,
+      dueCards: _cards(due),
+      distinctMeaningCount: 2,
+      random: Random(1),
+    );
+
+    StudyRejection? refusal(Outcome<StageQueue, StudyRejection> result) =>
+        switch (result) {
+          Rejected(:final reason) => reason,
+          Ok() => null,
+        };
+
+    test('it checks the request before the cards: the mode, the direction, '
+        'then the due cards and the stage (BR-STUDY-055, BR-MODE-018, '
+        'BR-STUDY-054, BR-MODE-009)', () {
+      expect(
+        refusal(review(SchedulerType.sm2, StudyMode.browse, due: [])),
+        StudyRejection.modeNotOffered,
+      );
+      expect(
+        refusal(review(SchedulerType.sm2, StudyMode.selfAssess, due: [])),
+        StudyRejection.directionRequired,
+      );
+      expect(
+        refusal(
+          review(
+            SchedulerType.eightBox,
+            StudyMode.recall,
+            direction: DirectionChoice.mixed,
+            due: [],
+          ),
+        ),
+        StudyRejection.directionNotAllowed,
+      );
+      expect(
+        refusal(review(SchedulerType.eightBox, StudyMode.fill, due: [])),
+        StudyRejection.nothingDue,
+      );
+      expect(
+        refusal(review(SchedulerType.eightBox, StudyMode.fill)),
+        StudyRejection.modeUnavailable,
+      );
+    });
+
+    test('round 1 keeps the due order, with one direction per card when the '
+        'review takes one (BR-STUDY-002, BR-MODE-015)', () {
+      final selfAssess = review(
+        SchedulerType.sm2,
+        StudyMode.selfAssess,
+        direction: DirectionChoice.meaningToKorean,
+        due: ['c2', 'c1'],
+      );
+      final recall = review(SchedulerType.eightBox, StudyMode.recall);
+
+      final queue = (selfAssess as Ok<StageQueue, StudyRejection>).value;
+      expect(queue.cardIds, ['c2', 'c1']);
+      expect(queue.directions, [
+        QuestionDirection.meaningToKorean,
+        QuestionDirection.meaningToKorean,
+      ]);
+      expect(
+        (recall as Ok<StageQueue, StudyRejection>).value.directions,
+        isNull,
       );
     });
   });

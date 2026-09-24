@@ -1,5 +1,7 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 /// The one implementation is `StudyEntryRepositoryImpl` (data layer). The
 /// contract exists for ADR-010's reason: domain stays framework-free and tests
@@ -14,6 +16,22 @@ abstract interface class StudyEntryRepository {
   /// no card is new, and a refusal writes nothing.
   Future<Outcome<String, StudyRejection>> openLearningSession({
     required String deckId,
+    DateTime? now,
+  });
+
+  /// UC-STUDY-001 step 4 and UC-STUDY-003: a review in [mode] on the due
+  /// cards of [deckId] and its whole subtree, at most `card_limit` of them,
+  /// earliest due first (BR-STUDY-002, BR-STUDY-003, BR-STUDY-051). [mode]
+  /// must be a review mode of the root's algorithm (modeNotOffered,
+  /// BR-STUDY-055) that can run on those cards (modeUnavailable,
+  /// BR-MODE-009); [direction] must be given exactly when BR-MODE-013 takes
+  /// one (directionRequired, directionNotAllowed, BR-MODE-018). nothingDue
+  /// when no card is due (BR-STUDY-054). It closes the app's open session
+  /// first (spec D2); a refusal writes nothing.
+  Future<Outcome<String, StudyRejection>> openReviewSession({
+    required String deckId,
+    required StudyMode mode,
+    DirectionChoice? direction,
     DateTime? now,
   });
 }
