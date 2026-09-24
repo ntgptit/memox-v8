@@ -87,6 +87,34 @@ CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
   );
 }
 
+/// Every schedule row by when it comes back, counted once each (E-O1).
+CardWorkload workloadOf(
+  Iterable<CardSchedule> schedules,
+  DateTime startOfToday,
+) {
+  var overdue = 0;
+  var today = 0;
+  var newCards = 0;
+  for (final schedule in schedules) {
+    final due = CardDue.of(
+      isLearned: schedule.learnedAt != null,
+      dueAt: schedule.dueAt,
+      startOfToday: startOfToday,
+    );
+    switch (due.kind) {
+      case CardDueKind.overdue:
+        overdue++;
+      case CardDueKind.today:
+        today++;
+      case CardDueKind.newCard:
+        newCards++;
+      case CardDueKind.later:
+        break;
+    }
+  }
+  return CardWorkload(overdue: overdue, today: today, newCards: newCards);
+}
+
 CardDetail cardDetailOf(CardDetailResult row) => CardDetail(
   card: cardEntityOf(row.c),
   tags: [for (final tag in row.tags) TagEntity(id: tag.id, name: tag.name)],

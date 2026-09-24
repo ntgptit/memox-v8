@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
+import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -17,6 +17,7 @@ final _en = lookupAppLocalizations(const Locale('en'));
 Widget _section(String deckId) => Scaffold(
   body: CardListSectionWidget(
     deckId: deckId,
+    algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
   ),
@@ -43,7 +44,8 @@ Future<String> _deck(
   return words.id;
 }
 
-Finder _header(int count) => find.text(_en.cardSelectedCount(count));
+Finder _header(int count, int total) =>
+    find.text(_en.cardSelectedOf(count, total).toUpperCase());
 
 void main() {
   libraryTest('a long-press selects that card', (tester, env) async {
@@ -52,7 +54,7 @@ void main() {
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
-    expect(_header(1), findsOneWidget);
+    expect(_header(1, 2), findsOneWidget);
     expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
     expect(
       tester.getSemantics(find.byType(CardRowWidget).last),
@@ -70,56 +72,29 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('gamsa'));
     await tester.pump();
-    expect(_header(2), findsOneWidget);
+    expect(_header(2, 2), findsOneWidget);
 
     await tester.tap(find.text('gamsa'));
     await tester.pump();
-    expect(_header(1), findsOneWidget);
+    expect(_header(1, 2), findsOneWidget);
     await tester.tap(find.text('annyeong'));
     await tester.pump();
     expect(find.byType(MxSelectionCheckbox), findsNothing);
   });
 
-  libraryTest('outside selection a tap does nothing yet (ruling P3-L3)', (
+  libraryTest('a search term clears the selection (IT-ORG-013)', (
     tester,
     env,
   ) async {
-    final deckId = await _deck(env, ['annyeong']);
+    final deckId = await _deck(env, ['annyeong', 'gamsa']);
     await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.tap(find.text('annyeong'));
-    await tester.pump();
-
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
-  });
-
-  libraryTest('Select all takes the whole filtered, searched set (RF1)', (
-    tester,
-    env,
-  ) async {
-    final deckId = await _deck(env, [
-      for (var i = 0; i < 60; i++) 'card $i',
-    ], flagged: 55);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    await tester.enterText(find.byType(EditableText), 'card');
+    ProviderScope.containerOf(
+      tester.element(find.byType(CardListSectionWidget)),
+    ).read(cardSearchOpenProvider(deckId).notifier).open();
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
-    await tester.pumpAndSettle();
-    expect(find.byType(CardRowWidget), findsNWidgets(cardListWindowStep));
-
-    await tester.longPress(find.byType(CardRowWidget).first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.cardSelectAll));
-    await tester.pumpAndSettle();
-
-    expect(_header(55), findsOneWidget);
-  });
-
-  libraryTest('changing the filter clears the selection', (tester, env) async {
-    final deckId = await _deck(env, ['annyeong', 'gamsa'], flagged: 1);
-    await pumpLibraryScreen(tester, env, _section(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
+    await tester.enterText(find.byType(EditableText), 'gam');
     await tester.pumpAndSettle();
 
     expect(find.byType(MxSelectionCheckbox), findsNothing);

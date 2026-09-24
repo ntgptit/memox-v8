@@ -391,15 +391,6 @@
   "@cardSortTitle": {
     "description": "Title of the card sort sheet."
   },
-  "cardSortTrigger": "Sort: {order}",
-  "@cardSortTrigger": {
-    "placeholders": {
-      "order": {
-        "type": "String"
-      }
-    },
-    "description": "Card sort chip; order is the current sort."
-  },
   "cardSortNewest": "Newest",
   "@cardSortNewest": {
     "description": "Card sort: newest first."
@@ -458,7 +449,7 @@
     },
     "description": "Card search with no hit; term is what was typed."
   },
-  "cardLoadErrorTitle": "Couldn't load the cards",
+  "cardLoadErrorTitle": "Couldn't open this deck",
   "@cardLoadErrorTitle": {
     "description": "Card list error state title."
   },
@@ -474,10 +465,6 @@
   "cardSelectionClose": "Close selection",
   "@cardSelectionClose": {
     "description": "Accessible name of the selection close action."
-  },
-  "cardSelectAll": "Select all",
-  "@cardSelectAll": {
-    "description": "Bulk bar action."
   },
   "cardFlag": "Flag",
   "@cardFlag": {
@@ -1763,5 +1750,131 @@
   "comingSoonTransferBody": "Cards from and to files.",
   "@comingSoonTransferBody": {
     "description": "Coming soon: what import and export do."
+  },
+  "cardDeckProgress": "Deck progress · {algorithm}",
+  "@cardDeckProgress": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Card deck summary overline, with the scheduler's name."
+  },
+  "cardMasteredOf": "{mastered} of {total} cards mastered",
+  "@cardMasteredOf": {
+    "placeholders": {
+      "mastered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Card deck summary: mastered cards out of all."
+  },
+  "cardShowingOf": "Showing {shown} of {total}",
+  "@cardShowingOf": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Card list header: cards shown out of the filter's total."
+  },
+  "cardSelectedOf": "{selected} of {total} selected",
+  "@cardSelectedOf": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Card list header while selecting."
+  },
+  "cardSelectAllCount": "Select all {count}",
+  "@cardSelectAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Selection app bar: select every card the query lets through."
+  },
+  "cardSearchOpen": "Search in this deck",
+  "@cardSearchOpen": {
+    "description": "Card deck app bar action that reveals the search field."
+  },
+  "cardSearchClose": "Close search",
+  "@cardSearchClose": {
+    "description": "Card deck app bar action that hides the search field and clears it."
+  },
+  "cardDueNew": "New",
+  "@cardDueNew": {
+    "description": "Due chip: a new card."
+  },
+  "cardDueToday": "Due today",
+  "@cardDueToday": {
+    "description": "Due chip: due today."
+  },
+  "cardDueIn": "In {days}d",
+  "@cardDueIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Due chip: due in N days."
+  },
+  "cardDueOverdue": "Overdue {days}d",
+  "@cardDueOverdue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Due chip: overdue by N days."
+  },
+  "cardMoreTags": "+{count}",
+  "@cardMoreTags": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Card row: tags beyond the two shown."
+  },
+  "cardSearchEmptyBody": "Try a different term, or clear the search to see all {count} cards.",
+  "@cardSearchEmptyBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Search with no hit: what to do next."
+  },
+  "cardBulkFailedTitle": "Couldn't finish that.",
+  "@cardBulkFailedTitle": {
+    "description": "Inline banner title when a bulk command fails."
+  },
+  "cardBulkFailedBody": "Nothing changed. The cards stay selected.",
+  "@cardBulkFailedBody": {
+    "description": "Inline banner body when a bulk command fails."
+  },
+  "cardStatusCount": "{label} {count}",
+  "@cardStatusCount": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Card deck summary legend: a display state and its card count."
   }
 }

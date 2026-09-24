@@ -189,6 +189,23 @@ void main() {
     expect(find.text('fab of ${words.id}'), findsOneWidget);
   });
 
+  libraryTest('deleting the last card turns the deck into its unset state', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'only', deckId: words.id);
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: words.id));
+    expect(find.text(_en.deckUnsetTitle), findsNothing);
+
+    // Ruling E-L1 (BR-DECK-015): no empty card list, the unset state.
+    await env.cards.deleteCards(cardIds: {'only'});
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
+  });
+
   libraryTest('a deck deleted while open says it is no longer here (A8)', (
     tester,
     env,

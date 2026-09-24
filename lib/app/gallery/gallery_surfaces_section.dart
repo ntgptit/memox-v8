@@ -47,6 +47,10 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         isWarning: true,
         child: MxListSectionHeader(label: 'Warning card'),
       ),
+      const MxCard(
+        isSelected: true,
+        child: MxListSectionHeader(label: 'Selected card'),
+      ),
       Row(
         spacing: AppSpacing.grouped,
         children: [

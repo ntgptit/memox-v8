@@ -338,4 +338,27 @@ void main() {
     expect(view.statusCounts.total, 4);
     expect(counter.selects, 3);
   });
+
+  test('the workload counts the deck: overdue, due today, new', () async {
+    final view = await list();
+
+    expect(
+      (view.workload.overdue, view.workload.today, view.workload.newCards),
+      (1, 1, 1),
+    );
+  });
+
+  test('the workload ignores the search and the filter', () async {
+    final view = await list(
+      query: const CardListQuery(
+        filter: CardListFilter.flagged,
+        searchTerm: 'benevolent',
+      ),
+    );
+
+    expect(
+      (view.workload.overdue, view.workload.today, view.workload.newCards),
+      (1, 1, 1),
+    );
+  });
 }
