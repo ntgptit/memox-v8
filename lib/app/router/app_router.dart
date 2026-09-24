@@ -7,6 +7,7 @@ import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
@@ -56,6 +57,24 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
                   ),
                 ),
+                GoRoute(
+                  path: AppRoutes.cardChild,
+                  builder: (context, state) => CardDetailScreen(
+                    cardId: state.pathParameters[AppRoutes.cardIdParam]!,
+                    deckContext: _deckContext,
+                    onEdit: (id) =>
+                        unawaited(context.push(AppRoutes.editCard(id))),
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: AppRoutes.cardEditChild,
+                      builder: (context, state) => CardEditorScreen.edit(
+                        cardId: state.pathParameters[AppRoutes.cardIdParam]!,
+                        deckContext: _deckContext,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -95,8 +114,11 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenAncestor: (id) => _openAncestor(context, id),
     onSearch: () => context.push(AppRoutes.deckSearch),
     onAddCard: addCard,
-    cardContent: (id) =>
-        CardListSectionWidget(deckId: id, onAddCard: () => addCard(id)),
+    cardContent: (id) => CardListSectionWidget(
+      deckId: id,
+      onAddCard: () => addCard(id),
+      onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
+    ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );
 }

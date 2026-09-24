@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -225,5 +226,80 @@ void main() {
     await _tap(tester, find.text(_en.cardDiscard));
     expect(_barTitle('Words'), findsOneWidget);
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
+  });
+
+  libraryTest('a row opens its card; Back returns to the list as it was', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(
+      env.db,
+      id: 'c0',
+      deckId: words.id,
+      front: 'bap',
+      back: 'rice',
+    );
+    await insertCard(
+      env.db,
+      id: 'c1',
+      deckId: words.id,
+      front: 'mul',
+      back: 'water',
+    );
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await tester.enterText(find.byType(EditableText), 'bap');
+    await tester.pumpAndSettle();
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.text('bap'),
+      ),
+    );
+    expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
+
+    await _back(tester);
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.byType(CardRowWidget), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      'bap',
+    );
+  });
+
+  libraryTest('Edit from the detail saves and returns to it (UC-CARD-002 A1)', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(
+      env.db,
+      id: 'c0',
+      deckId: words.id,
+      front: 'bap',
+      back: 'rice',
+    );
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await _tap(tester, find.text('bap'));
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardEditAction));
+    expect(_barTitle(_en.cardEditTitle), findsOneWidget);
+
+    await tester.enterText(find.byType(EditableText).at(1), 'cooked rice');
+    await tester.pump();
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardSaveChanges));
+
+    expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
+    expect(find.text('cooked rice'), findsOneWidget);
   });
 }

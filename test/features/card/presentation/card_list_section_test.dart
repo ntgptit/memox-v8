@@ -25,7 +25,11 @@ import '../../../support/widget_harness.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(deckId: deckId, onAddCard: () {}),
+  body: CardListSectionWidget(
+    deckId: deckId,
+    onAddCard: () {},
+    onOpenCard: (_) {},
+  ),
 );
 
 /// Korean › Words: annyeong (new), gamsa (due today), sarang (due
@@ -310,8 +314,11 @@ void main() {
       env,
       deckScreen(
         deckId: deckId,
-        cardContent: (id) =>
-            CardListSectionWidget(deckId: id, onAddCard: () => adds++),
+        cardContent: (id) => CardListSectionWidget(
+          deckId: id,
+          onAddCard: () => adds++,
+          onOpenCard: (_) {},
+        ),
         cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => adds++),
       ),
     );
@@ -323,4 +330,32 @@ void main() {
     await tester.pump();
     expect(find.byType(MxFab), findsNothing);
   });
+
+  libraryTest(
+    'a tap opens the card; while selecting it only toggles (BR-CARD-020)',
+    (tester, env) async {
+      final deckId = await _seed(env);
+      final opened = <String>[];
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: CardListSectionWidget(
+            deckId: deckId,
+            onAddCard: () {},
+            onOpenCard: opened.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CardRowWidget).first);
+      expect(opened, hasLength(1));
+
+      await tester.longPress(find.byType(CardRowWidget).last);
+      await tester.pump();
+      await tester.tap(find.byType(CardRowWidget).first);
+      await tester.pump();
+      expect(opened, hasLength(1));
+    },
+  );
 }
