@@ -60,6 +60,14 @@ void main() {
           .isEnabled,
       isFalse,
     );
+    // Spec A4: what waits for its feature says so to TalkBack.
+    for (final label in [_en.deckStudyThis, _en.deckStudyOptions]) {
+      expect(
+        tester.getSemantics(find.text(label)),
+        isSemantics(hint: _en.commonNotAvailableYet),
+        reason: label,
+      );
+    }
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (

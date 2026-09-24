@@ -81,6 +81,7 @@ Widget _app(
   required List<Override> overrides,
 }) => ProviderScope(
   overrides: [..._backend(env), ...overrides],
+  retry: _noRetry,
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
     themeAnimationDuration: Duration.zero,
@@ -136,6 +137,7 @@ Future<void> pumpLibraryGolden(
   Widget screen,
   Brightness brightness, {
   List<Override> overrides = const [],
+  double textScale = 1,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
@@ -147,7 +149,7 @@ Future<void> pumpLibraryGolden(
         env,
         screen,
         brightness: brightness,
-        textScale: 1,
+        textScale: textScale,
         locale: const Locale('en'),
         overrides: overrides,
       ),
@@ -195,7 +197,14 @@ Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    ProviderScope(overrides: _backend(env), child: const MemoxApp()),
+    ProviderScope(
+      overrides: _backend(env),
+      retry: _noRetry,
+      child: const MemoxApp(),
+    ),
   );
   await tester.pumpAndSettle();
 }
+
+/// As `main.dart`: no hidden retry loop, so a failure shows as a failure.
+Duration? _noRetry(int retryCount, Object error) => null;

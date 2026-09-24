@@ -313,6 +313,7 @@
   "searchHoldsNothing": "{path} · trống",
   "searchErrorTitle": "Không tìm được",
   "searchErrorBody": "Thư viện của bạn vẫn an toàn trên máy này. Hãy thử lại sau giây lát.",
+  "commonNotAvailableYet": "Chưa khả dụng",
   "algorithmUnlockedTitle": "Vẫn còn đổi được",
   "algorithmUnlockedBody": "Sẽ khoá khi thẻ đầu tiên học xong.",
   "algorithmLockedTitle": "Đã khoá · chu kỳ {cycle}",

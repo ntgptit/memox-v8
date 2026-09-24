@@ -1,8 +1,13 @@
 @Tags(['golden'])
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
+import 'package:memox/features/deck/presentation/providers/deck_search_provider.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -153,6 +158,105 @@ void main() {
         await tester.enterText(find.byType(EditableText), 'or');
         await _settleOverlay(tester);
         await expectBoundaryGolden(tester, 'goldens/library_search_$theme.png');
+      });
+    });
+
+    libraryTest('search, blank term, $theme', (tester, env) async {
+      await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          DeckSearchScreen(onOpenDeck: (_) {}),
+          brightness,
+        );
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_search_blank_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('search, no hit, $theme', (tester, env) async {
+      await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          DeckSearchScreen(onOpenDeck: (_) {}),
+          brightness,
+        );
+        await tester.enterText(find.byType(EditableText), 'zzz');
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_search_no_hit_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('search, loading, $theme', (tester, env) async {
+      final pending = StreamController<List<DeckSearchHit>>();
+      addTearDown(pending.close);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          DeckSearchScreen(onOpenDeck: (_) {}),
+          brightness,
+          overrides: [
+            deckSearchProvider('or').overrideWith((ref) => pending.stream),
+          ],
+        );
+        await tester.enterText(find.byType(EditableText), 'or');
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_search_loading_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('search, error, $theme', (tester, env) async {
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          DeckSearchScreen(onOpenDeck: (_) {}),
+          brightness,
+          overrides: [
+            deckSearchProvider('or').overrideWith(
+              (ref) => Stream.error(
+                const UnknownDatabaseFailure(cause: '/data/memox.sqlite'),
+              ),
+            ),
+          ],
+        );
+        await tester.enterText(find.byType(EditableText), 'or');
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_search_error_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('Library at text scale 2, $theme', (tester, env) async {
+      await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          deckScreen(),
+          brightness,
+          textScale: 2,
+        );
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_decks_2x_$theme.png',
+        );
       });
     });
   }
