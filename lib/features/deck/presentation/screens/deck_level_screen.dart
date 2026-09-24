@@ -174,6 +174,7 @@ class _LibraryRoot extends ConsumerWidget {
                 onAction: createDeck,
                 // Starter decks have no screen yet (spec A6).
                 secondaryActionLabel: l10n.libraryBrowseStarter,
+                secondaryActionHint: l10n.commonNotAvailableYet,
                 footnote: l10n.libraryEmptyFootnote,
               ),
             ),

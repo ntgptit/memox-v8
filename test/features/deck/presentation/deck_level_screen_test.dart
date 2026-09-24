@@ -78,6 +78,12 @@ void main() {
       find.widgetWithText(MxButton, _en.libraryBrowseStarter),
     );
     expect(starter.onPressed, isNull);
+    expect(
+      tester.getSemantics(
+        find.widgetWithText(MxButton, _en.libraryBrowseStarter),
+      ),
+      isSemantics(hint: _en.commonNotAvailableYet),
+    );
     expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
   });
 
