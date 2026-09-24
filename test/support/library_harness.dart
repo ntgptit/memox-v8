@@ -63,6 +63,14 @@ List<Override> _backend(LibraryEnv env) => [
   dayClockProvider.overrideWithValue(env.clock),
 ];
 
+/// A provider container over [env]'s backend, for a test that drives
+/// providers without a widget tree. Disposed when the test ends.
+ProviderContainer libraryContainer(LibraryEnv env) {
+  final container = ProviderContainer(overrides: _backend(env));
+  addTearDown(container.dispose);
+  return container;
+}
+
 Widget _app(
   LibraryEnv env,
   Widget screen, {

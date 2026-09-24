@@ -6,6 +6,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:memox/features/deck/presentation/providers/change_deck_scheduler_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/reorder_deck_use_case_provider.dart';
+import 'package:memox/features/deck/presentation/providers/reset_learning_progress_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/move_deck_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/delete_deck_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/rename_deck_use_case_provider.dart';
@@ -68,6 +69,16 @@ class DeckActionsController extends _$DeckActionsController {
     required String rootDeckId,
     required SchedulerType schedulerType,
   }) => ref.read(changeDeckSchedulerUseCaseProvider)(
+    rootDeckId: rootDeckId,
+    schedulerType: schedulerType,
+  );
+
+  /// UC-SRS-001 steps 3 to 5: a new cycle for [rootDeckId]'s tree, keeping
+  /// its algorithm or switching to [schedulerType].
+  Future<Outcome<void, SrsRejection>> resetLearning({
+    required String rootDeckId,
+    SchedulerType? schedulerType,
+  }) => ref.read(resetLearningProgressUseCaseProvider)(
     rootDeckId: rootDeckId,
     schedulerType: schedulerType,
   );
