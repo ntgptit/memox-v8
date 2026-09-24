@@ -43,6 +43,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         hintText: 'Search decks and cards',
         clearLabel: 'Clear search',
       ),
+      MxSearchField.trigger(hintText: 'Search decks', onTap: () {}),
       const MxTextField(hintText: 'Deck name'),
       const MxTextField(hintText: 'Deck name', errorText: 'Name is required'),
       const MxTextField(hintText: 'Back of the card', isMultiline: true),
