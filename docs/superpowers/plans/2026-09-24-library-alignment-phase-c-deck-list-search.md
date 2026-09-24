@@ -31,6 +31,7 @@
 | C-O4 | Search results emphasise the matched part of a name, found with `foldText`, the search's own normalisation (BR-SEARCH-002). |
 | C-O5 | Only the goldens of the screens this phase changes are regenerated, on Linux. The other goldens stay as they are (FE-D1). |
 | C-O6 | **"N sub-decks · level 10" heads the sub-decks that sit at level 10**, so it shows on an open deck at level 9. BR-DECK-001 lets no deck at level 10 hold sub-decks, and the artifact draws its level-10 deck the way BR-DECK-001 places a level-9 deck (its banner says the sub-decks below can hold only cards). Asked in the popup during Task 7. |
+| C-O7 | **`MxListRow` gains an optional `titleMatch` range** drawn in the `rowTitleMatch` role, one line as before. The plan forbade a new slot and had the search hit row redraw the list row, but that needs `Icon(color:)` for the chevron, which the guard bans. `rowTitleMatch` now builds on `listRowTitle`. Asked in the popup during Task 8. |
 
 ## Plan rulings
 

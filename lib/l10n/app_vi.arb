@@ -269,6 +269,7 @@
   "searchSearching": "Đang tìm “{term}”…",
   "searchResultsFor": "Kết quả cho “{term}”",
   "searchDecksGroup": "Bộ thẻ",
+  "searchGroupCount": "{count}",
   "searchHoldsCards": "{path} · chứa thẻ",
   "searchHoldsDecks": "{path} · chứa bộ thẻ con",
   "searchHoldsNothing": "{path} · trống",

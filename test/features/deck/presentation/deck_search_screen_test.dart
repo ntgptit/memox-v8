@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
+import 'package:memox/features/deck/presentation/widgets/items/deck_search_hit_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 
+import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
@@ -21,13 +26,67 @@ Future<void> _type(WidgetTester tester, String text) async {
 }
 
 void main() {
-  libraryTest('a blank term shows nothing', (tester, env) async {
+  libraryTest('a blank term shows what search finds', (tester, env) async {
     await env.decks.root('Korean');
     await pumpLibraryScreen(tester, env, _screen());
     await _type(tester, '   ');
 
-    expect(find.byType(MxListRow), findsNothing);
+    expect(find.text(_en.searchFinds.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.searchHintDeckName), findsOneWidget);
+    expect(find.text(_en.searchAccentNote), findsOneWidget);
+    expect(find.byType(DeckSearchHitRowWidget), findsNothing);
     expect(find.byType(MxEmptyState), findsNothing);
+  });
+
+  libraryTest('the field sits in the app bar and takes focus', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _screen());
+    await tester.pump();
+
+    expect(
+      find.descendant(
+        of: find.byType(MxAppBar),
+        matching: find.byType(MxSearchField),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.testTextInput.hasAnyClients, isTrue);
+  });
+
+  libraryTest('results group under Decks, count and say what each holds', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Korean words');
+    await insertCard(env.db, id: 'c', deckId: words.id);
+    await pumpLibraryScreen(tester, env, _screen());
+    await _type(tester, 'korean');
+
+    expect(
+      find.text(_en.searchResultsFor('korean').toUpperCase()),
+      findsOneWidget,
+    );
+    expect(find.text(_en.searchDecksGroup.toUpperCase()), findsOneWidget);
+    expect(find.widgetWithText(MxBadge, '2'), findsOneWidget);
+    expect(find.text(_en.searchHoldsCards('Korean')), findsOneWidget);
+    expect(find.text(_en.searchHoldsDecks(_en.navLibrary)), findsOneWidget);
+  });
+
+  libraryTest('the matched part of a name is marked', (tester, env) async {
+    await env.decks.root('Academic words');
+    await pumpLibraryScreen(tester, env, _screen());
+    await _type(tester, 'WORDS');
+
+    final row = tester.widget<MxListRow>(
+      find.descendant(
+        of: find.byType(DeckSearchHitRowWidget),
+        matching: find.byType(MxListRow),
+      ),
+    );
+    expect(row.titleMatch, (9, 14));
   });
 
   libraryTest('a term finds decks at any depth, each under its path', (
@@ -40,8 +99,15 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen());
     await _type(tester, 'or');
 
-    expect(find.widgetWithText(MxListRow, 'Korean'), findsNWidgets(2));
-    expect(find.widgetWithText(MxListRow, 'Words'), findsOneWidget);
+    expect(
+      find.widgetWithText(DeckSearchHitRowWidget, 'Korean'),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(DeckSearchHitRowWidget, 'Words'),
+      findsOneWidget,
+    );
+    expect(find.text(_en.searchHoldsNothing('Korean')), findsOneWidget);
     expect(find.text('Kanji'), findsNothing);
   });
 

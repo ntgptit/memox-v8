@@ -128,10 +128,10 @@ final class MxTextStyles {
     FontWeight.w600,
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
-  /// The matched part of a search hit's name (screen 04): the row title,
-  /// bold, in primary.
+  /// The matched part of a search hit's name (screen 04): the list row
+  /// title, bold, in primary, so it sits on the title's line unchanged.
   TextStyle get rowTitleMatch => AppTypography.withWeight(
-    rowTitle,
+    listRowTitle,
     FontWeight.w700,
   ).copyWith(color: _scheme.primary);
 

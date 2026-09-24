@@ -1294,6 +1294,15 @@
   "@searchDecksGroup": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchDecksGroup."
   },
+  "searchGroupCount": "{count}",
+  "@searchGroupCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 04: the badge beside a search result group, how many hits it holds."
+  },
   "searchHoldsCards": "{path} · holds cards",
   "@searchHoldsCards": {
     "placeholders": {
