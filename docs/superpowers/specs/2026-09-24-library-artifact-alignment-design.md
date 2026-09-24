@@ -7,7 +7,7 @@ The Library screens merged in #28–#31 were designed from an Impeccable shape b
 - **Outcome:** the Library looks and behaves like the artifact on every state that V8 supports, and the repository holds a screen handoff that later screens (card editor, study, progress, settings) are built from.
 - **Who it is for:** the owner, on an Android phone (`PRODUCT.md`).
 - **Success:**
-  - `docs/shared/ui/design-handoff/screens/` indexes all 26 artifact screens and details 01, 02, 04 and 07.
+  - `docs/shared/ui/screen-handoff/` indexes all 26 artifact screens and details 01, 02, 04 and 07.
   - Screens 01 Deck list, 02 Review algorithm & reset, 04 Library search and 07 Card list match their handoff images state by state, light and dark, within the deviations recorded in §4.
   - Every count still comes from a read model. The UI derives none (Library spec §1).
   - The current gate passes; every changed screen has widget tests, light/dark goldens, a `test/visual_audit/` companion and en/vi strings.
@@ -20,7 +20,7 @@ Settled with the owner in brainstorming on 2026-09-24:
 |---|---|
 | A1 | The artifact is the official screen handoff. Where it contradicts a BR or UC, the BR/UC wins and the handoff records the deviation. |
 | A2 | The merged Library is realigned to the artifact. Scope: screens 01, 02, 04 and 07. Library phase 4 (card editor and detail, artifact 08–10) follows this project and is built straight from the artifact. |
-| A3 | The handoff lives in `docs/shared/ui/design-handoff/screens/`: an index of all 26 screens now, a detail file per screen when that screen is built. |
+| A3 | The handoff lives in `docs/shared/ui/screen-handoff/`: an index of all 26 screens now, a detail file per screen when that screen is built. |
 | A4 | A **control** whose feature or backend does not exist yet is shown **disabled**, with a TalkBack label saying it is not available yet. |
 | A5 | A **data display** whose data does not exist yet (deck mastery bar, deck mastery donut) is **hidden**: an empty bar would claim 0 % mastered. |
 | A6 | The root due strip is display-only (no chevron, no tap) until Study home (FE-A8) exists. |
@@ -39,7 +39,7 @@ Settled with the owner in brainstorming on 2026-09-24:
 ## 3. Screen handoff
 
 ```
-docs/shared/ui/design-handoff/screens/
+docs/shared/ui/screen-handoff/
   00-index.md               the 26 screens: states, FE item, status, artifact link and version
   01-deck-list.md
   02-review-algorithm.md
@@ -58,7 +58,7 @@ tools/design/capture_screens.mjs
   - the artifact's English copy, the source for the ARB entries.
 - **Images:** 390 px wide, light and dark, only the states V8 supports. States that exist only for Trash or starter decks are listed in the deviation table, not captured.
 - **Capture script:** Playwright renders the downloaded artifact, steps each screen's state stepper and writes the images. It prints in English (`CLAUDE.md`). The artifact HTML itself is not committed; the index names its URL and version.
-- **Generated handoff untouched:** `design-handoff.json`, `tools/docs/split_handoff.py` and the files it writes are not edited. `screens/` files are hand-written and say so in their first line.
+- **Generated handoff untouched:** `design-handoff.json`, `tools/docs/split_handoff.py` and the files it writes are not edited. The screen handoff lives beside `design-handoff/`, not in it: `tools/docs/check.py` rejects any file in `design-handoff/` that the JSON does not produce. Its files are hand-written and say so in their first line.
 
 ## 4. Screens
 
@@ -227,7 +227,7 @@ One spec; one plan and one PR per phase; a phase's plan is written after the pre
 
 | # | Content | Usable result |
 |---|---|---|
-| A | The handoff: `screens/00-index.md`, detail files 01, 02, 04, 07, images, capture script; `wbs_FE.md` corrected. | Screens are specified in the repository. |
+| A | The handoff: `screen-handoff/00-index.md`, detail files 01, 02, 04, 07, images, capture script; `wbs_FE.md` corrected. | Screens are specified in the repository. |
 | B | Foundations: `MxSearchField` trigger mode, `MxAppBar` title slot, mastery ink token; the card status counts, tags on list items and the due label helper. | The pieces C–E compose exist and are tested. |
 | C | 01 Deck list (root and open deck, action sheet, sort & filter sheet, dialogs, states) and 04 Library search. | The deck tree matches the handoff. |
 | D | 02 Review algorithm & reset; the scheduler sheet is removed. | The algorithm can be switched and progress reset from its own screen (FE-A4). |

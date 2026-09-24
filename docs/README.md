@@ -118,6 +118,7 @@ kế) ghi ở
 [`.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md`](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md);
 bản đã sửa tay trước đợt reset docs V8 chỉ còn trong git
 (`git show d0b9250:docs/design/memox-v3/CHANGES.md`).
+Thư mục cạnh đó, `shared/ui/screen-handoff/`, là screen handoff viết tay từ artifact "MemoX — Mobile UI Kit v3" và không do tool sinh ra ([index](shared/ui/screen-handoff/00-index.md)).
 
 ## Thứ tự đọc
 

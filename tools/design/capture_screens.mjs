@@ -92,7 +92,7 @@ async function main() {
   const { values } = parseArgs({
     options: {
       html: { type: 'string' },
-      out: { type: 'string', default: 'docs/shared/ui/design-handoff/screens/img' },
+      out: { type: 'string', default: 'docs/shared/ui/screen-handoff/img' },
       manifest: { type: 'string', default: 'tools/design/screen_states.json' },
       only: { type: 'string' },
     },
