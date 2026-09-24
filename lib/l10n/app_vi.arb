@@ -365,5 +365,6 @@
   "cardMoreTags": "+{count}",
   "cardSearchEmptyBody": "Thử từ khác, hoặc xoá tìm kiếm để xem cả {count} thẻ.",
   "cardBulkFailedTitle": "Chưa làm xong việc đó.",
-  "cardBulkFailedBody": "Không có gì thay đổi. Các thẻ vẫn đang được chọn."
+  "cardBulkFailedBody": "Không có gì thay đổi. Các thẻ vẫn đang được chọn.",
+  "cardStatusCount": "{label} {count}"
 }

@@ -1877,5 +1877,17 @@
   "cardBulkFailedBody": "Nothing changed. The cards stay selected.",
   "@cardBulkFailedBody": {
     "description": "Inline banner body when a bulk command fails."
+  },
+  "cardStatusCount": "{label} {count}",
+  "@cardStatusCount": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Card deck summary legend: a display state and its card count."
   }
 }
