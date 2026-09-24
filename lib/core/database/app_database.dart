@@ -15,7 +15,10 @@ part 'app_database.g.dart';
   },
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase(super.executor);
+  AppDatabase(super.executor, {DateTime Function()? now})
+    : _now = now ?? DateTime.now;
+
+  final DateTime Function() _now;
 
   @override
   int get schemaVersion => 1;
@@ -24,6 +27,19 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // BR-SETTINGS-001: the one settings row exists from the first open, so
+      // every surface reads real values. It changes nothing once it exists.
+      await into(appSettings).insert(
+        AppSettingsCompanion.insert(
+          id: const Value(appSettingsRowId),
+          updatedAt: _now(),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
     },
   );
 }
+
+/// The id of the one `app_settings` row: `CHECK (id = 1)` keeps the table at
+/// this row (BR-SETTINGS-001).
+const appSettingsRowId = 1;

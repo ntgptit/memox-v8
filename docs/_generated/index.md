@@ -281,7 +281,7 @@
 |---|---|---|---|---|
 | [BR-STUDY-001](../features/study/rules/BR-STUDY-001-phien-lay-card-den-han-hoac-chua-co-lich.md) | Phiên lấy card đến hạn hoặc chưa có lịch | deprecated | Đã thay bằng BR-STUDY-051. Một phiên chỉ lấy card có `due_at IS NULL OR due_at <= now`. | — |
 | [BR-STUDY-002](../features/study/rules/BR-STUDY-002-thu-tu-the-trong-phien.md) | Thứ tự thẻ trong phiên | active | Ôn tập theo `due_at` tăng dần; học mới theo `new_card_order`; hai loại phiên không trộn thẻ. | UC-STUDY-001 |
-| [BR-STUDY-003](../features/study/rules/BR-STUDY-003-gioi-han-the-rieng-biet-moi-phien.md) | Giới hạn thẻ riêng biệt mỗi phiên | active | Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit`, mặc định 20, là trần mỗi lần lấy. | UC-SETTINGS-001, UC-STUDY-001 |
+| [BR-STUDY-003](../features/study/rules/BR-STUDY-003-gioi-han-the-rieng-biet-moi-phien.md) | Giới hạn thẻ riêng biệt mỗi phiên | active | Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit` (1–200, mặc định 20), là trần mỗi lần lấy. | UC-SETTINGS-001, UC-STUDY-001 |
 | [BR-STUDY-004](../features/study/rules/BR-STUDY-004-ghi-danh-gia-ngay.md) | Ghi đánh giá ngay | active | Đánh giá được ghi ngay khi người dùng bấm, không chờ hết phiên. | UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-005](../features/study/rules/BR-STUDY-005-self-assess-the-quen-quay-lai.md) | self_assess: thẻ quên quay lại | active | Chỉ `self_assess`: thẻ `forgotten`/`again` quay lại cùng hàng đợi sau ít nhất 3 thẻ khác. | UC-STUDY-001 |
 | [BR-STUDY-006](../features/study/rules/BR-STUDY-006-chi-luot-scheduled-doi-lich-dai-han.md) | Chỉ lượt scheduled đổi lịch dài hạn | active | Chỉ lượt `scheduled` được đổi lịch dài hạn, và chỉ có trong phiên `reviewing`. | UC-STUDY-001 |

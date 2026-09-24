@@ -34,6 +34,43 @@ final class SrsDao {
     return row == null ? null : _db.deck.map(row.data);
   }
 
+  /// The deck [id] names with what a reset of its tree would clear, in one
+  /// statement; null when it does not exist or is in the Trash. The counts
+  /// leave the Trash out, as the deck list does (UC-DECK-003).
+  Future<
+    ({Deck deck, int cardCount, int learnedCardCount, int openSessionCount})?
+  >
+  resetSummaryRow(String id) async {
+    final row = await _db
+        .customSelect(
+          'SELECT d.*,'
+          ' (SELECT COUNT(*) FROM card c JOIN deck k ON k.id = c.deck_id'
+          '  WHERE k.root_id = d.id AND c.delete_batch_id IS NULL'
+          '  AND k.delete_batch_id IS NULL) AS card_count,'
+          ' (SELECT COUNT(*) FROM card c JOIN deck k ON k.id = c.deck_id'
+          '  JOIN card_schedule cs ON cs.card_id = c.id'
+          '  WHERE k.root_id = d.id AND c.delete_batch_id IS NULL'
+          '  AND k.delete_batch_id IS NULL AND cs.learned_at IS NOT NULL)'
+          '  AS learned_card_count,'
+          ' (SELECT COUNT(*) FROM study_session s'
+          '  WHERE s.root_id = d.id AND s.status = ?) AS open_session_count'
+          ' FROM deck d WHERE d.id = ? AND d.delete_batch_id IS NULL',
+          variables: [
+            const Variable<String>(_inProgress),
+            Variable<String>(id),
+          ],
+          readsFrom: {_db.deck, _db.card, _db.cardSchedule, _db.studySession},
+        )
+        .getSingleOrNull();
+    if (row == null) return null;
+    return (
+      deck: _db.deck.map(row.data),
+      cardCount: row.read<int>('card_count'),
+      learnedCardCount: row.read<int>('learned_card_count'),
+      openSessionCount: row.read<int>('open_session_count'),
+    );
+  }
+
   Future<CardSchedule?> scheduleRow(String cardId) => (_db.select(
     _db.cardSchedule,
   )..where((schedule) => schedule.cardId.equals(cardId))).getSingleOrNull();

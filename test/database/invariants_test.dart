@@ -33,7 +33,8 @@ const _seed = <String>[
       "VALUES ('l6', 'c4', 's0', 'sm2', 1, 'scheduled', 'self_assess', 'good', 250, 2.5, 2.5, 1, 6)",
   "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t1', 'Noun', 'noun', 0)",
   "INSERT INTO card_tags (card_id, tag_id) VALUES ('c1', 't1')",
-  "INSERT INTO app_settings (id, updated_at) VALUES (1, 0)",
+  // The settings row exists from the first open (BR-SETTINGS-001).
+  "UPDATE app_settings SET updated_at = 0 WHERE id = 1",
 ];
 
 /// Writes the schema accepts but the invariant must catch.
