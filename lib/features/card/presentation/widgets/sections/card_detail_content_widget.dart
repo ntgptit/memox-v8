@@ -35,19 +35,13 @@ class CardDetailContentWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.grouped,
           children: [
+            // Status first, so a long front keeps the full width.
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.control,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.micro,
-                    children: [
-                      Text(card.front, style: styles.screenTitle),
-                      Text(card.back, style: styles.dialogBody),
-                    ],
-                  ),
+                MxStatusBadge(
+                  status: mxCardStatus(status),
+                  label: l10n.cardStatus(status),
                 ),
                 // Its own node, or the label merges into the card's.
                 if (card.isFlagged)
@@ -59,10 +53,14 @@ class CardDetailContentWidget extends StatelessWidget {
                       semanticLabel: l10n.cardFlaggedLabel,
                     ),
                   ),
-                MxStatusBadge(
-                  status: mxCardStatus(status),
-                  label: l10n.cardStatus(status),
-                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSpacing.micro,
+              children: [
+                Text(card.front, style: styles.screenTitle),
+                Text(card.back, style: styles.dialogBody),
               ],
             ),
             for (final (icon, label, value) in optional)
