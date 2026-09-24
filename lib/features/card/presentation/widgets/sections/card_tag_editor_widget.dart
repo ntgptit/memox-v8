@@ -23,10 +23,14 @@ class CardTagEditorWidget extends StatefulWidget {
     super.key,
     required this.tags,
     required this.onChanged,
+    this.onPendingChanged,
   });
 
   final List<String> tags;
   final ValueChanged<List<String>> onChanged;
+
+  /// Whether a name is typed but not added yet, so leaving would lose it.
+  final ValueChanged<bool>? onPendingChanged;
 
   @override
   State<CardTagEditorWidget> createState() => _CardTagEditorWidgetState();
@@ -36,13 +40,27 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
   final _input = TextEditingController();
   final _focus = FocusNode();
   var _isAdding = false;
+  var _isPending = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _input.addListener(_reportPending);
+  }
 
   @override
   void dispose() {
     _input.dispose();
     _focus.dispose();
     super.dispose();
+  }
+
+  void _reportPending() {
+    final isPending = _input.text.trim().isNotEmpty;
+    if (isPending == _isPending) return;
+    _isPending = isPending;
+    widget.onPendingChanged?.call(isPending);
   }
 
   void _open() {

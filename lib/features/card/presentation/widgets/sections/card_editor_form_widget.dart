@@ -75,6 +75,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   var _deckRejects = false;
   var _isGone = false;
   var _isLeaving = false;
+  var _hasPendingTag = false;
 
   bool get _isCreating => widget.detail == null;
 
@@ -110,7 +111,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   bool get _isDirty {
     final draft = _draft();
-    return draft.front != _saved.front ||
+    return _hasPendingTag ||
+        draft.front != _saved.front ||
         draft.back != _saved.back ||
         draft.example != _saved.example ||
         draft.hint != _saved.hint ||
@@ -368,6 +370,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     CardTagEditorWidget(
       tags: _tags,
       onChanged: (tags) => setState(() => _tags = tags),
+      onPendingChanged: (isPending) =>
+          setState(() => _hasPendingTag = isPending),
     ),
   ];
 

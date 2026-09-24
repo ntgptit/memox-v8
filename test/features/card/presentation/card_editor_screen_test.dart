@@ -309,4 +309,20 @@ void main() {
       isSemantics(hasToggledState: true, isToggled: true),
     );
   });
+
+  libraryTest('a tag typed but not added still asks before leaving', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.tap(find.text(_en.cardAddTag));
+    await tester.pump();
+    await tester.enterText(_field(2), 'food');
+    await tester.pump();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardDiscardNewTitle), findsOneWidget);
+  });
 }
