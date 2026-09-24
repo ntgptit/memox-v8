@@ -17,7 +17,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the streak colour and the due chip: "New", "Due today", "In {n}d", "{n}d overdue". |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (**disabled**, FE-B3) · Delete. |
-| FAB | — | None until Library phase 4 (spec A16). |
+| FAB | `MxFab` | "New card" (#33); hidden while selecting. |
 
 ## Deck action sheet (`⋮`)
 
@@ -29,7 +29,7 @@ cards (**disabled**, FE-B3) · Rename · Move to another deck · Delete.
 | State | Light | Dark | V8 |
 |---|---|---|---|
 | loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | No FAB; Tags chip disabled. |
-| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | No "Add first card" (phase 4); "Import cards" disabled. |
+| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | "Add first card" opens the editor (#33); "Import cards" disabled. |
 | searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
 | error | ![](img/07-card-list/error-light.png) | ![](img/07-card-list/error-dark.png) | As drawn. |
@@ -50,7 +50,6 @@ and `trashed` (Undo; no Trash in V8.0).
 | Artifact | V8 | Wins |
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
-| "Add first card", "New card" FAB | Absent until Library phase 4 | Spec A16 |
 | Tags filter, Import, Export | Disabled | Spec A4 |
 
 ## Copy

@@ -29,7 +29,7 @@ Algorithm descriptions:
 | switching | ![](img/02-review-algorithm/switching-light.png) | ![](img/02-review-algorithm/switching-dark.png) | Reached **after** the confirmation dialog (deviation). |
 | switched | ![](img/02-review-algorithm/switched-light.png) | ![](img/02-review-algorithm/switched-dark.png) | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | ![](img/02-review-algorithm/switchFailed-light.png) | ![](img/02-review-algorithm/switchFailed-dark.png) | Danger banner with Retry (UC-DECK-002 E2). |
-| resetConfirm | ![](img/02-review-algorithm/resetConfirm-light.png) | ![](img/02-review-algorithm/resetConfirm-dark.png) | "Kept" in the mastery ink token (spec A10); "the open session" only when a session is open. |
+| resetConfirm | ![](img/02-review-algorithm/resetConfirm-light.png) | ![](img/02-review-algorithm/resetConfirm-dark.png) | "Kept" in `statusMasteredInk` (spec A10); "the open session" only when a session is open. |
 | resetting | ![](img/02-review-algorithm/resetting-light.png) | ![](img/02-review-algorithm/resetting-dark.png) | As drawn. |
 | resetDone | ![](img/02-review-algorithm/resetDone-light.png) | ![](img/02-review-algorithm/resetDone-dark.png) | Then the unlocked state. |
 | nothingToLose | ![](img/02-review-algorithm/nothingToLose-light.png) | ![](img/02-review-algorithm/nothingToLose-dark.png) | When `hasProgressToLose` is false (UC-SRS-001 A2). |
@@ -57,4 +57,4 @@ Not in the artifact, required by V8:
 | Artifact | V8 | Wins |
 |---|---|---|
 | A tap on the other algorithm switches at once | A confirmation dialog first | UC-DECK-002 steps 3–4 |
-| "Kept" coloured with the mastery token | The mastery ink token, 4.5:1 | Spec A10, WCAG 2.2 AA |
+| "Kept" coloured with the mastery token | `statusMasteredInk`, 4.5:1 | Spec A10, WCAG 2.2 AA |
