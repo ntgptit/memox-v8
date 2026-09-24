@@ -30,3 +30,17 @@ final class SelectCounter extends QueryInterceptor {
     return super.runSelect(executor, statement, args);
   }
 }
+
+/// Fails every UPDATE the way a full disk or a broken constraint does, for
+/// the error flows of a write.
+final class FailingUpdates extends QueryInterceptor {
+  @override
+  Future<int> runUpdate(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) => throw SqliteException(
+    extendedResultCode: 19,
+    message: 'constraint failed',
+  );
+}
