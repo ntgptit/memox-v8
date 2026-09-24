@@ -21,6 +21,7 @@ const allowedFeatureImports = <String, Set<String>>{
   'tags': {},
   'deck': {'srs'},
   'card': {'deck', 'srs', 'tags'},
+  'settings': {},
 };
 
 const _package = 'package:memox/';
