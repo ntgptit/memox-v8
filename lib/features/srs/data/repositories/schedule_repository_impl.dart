@@ -6,6 +6,7 @@ import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/srs/data/datasources/srs_dao.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_log_entry_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -151,6 +152,25 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 
   @override
+  Future<Outcome<ResetLearningSummary, SrsRejection>> resetSummary({
+    required String rootDeckId,
+  }) => _mapped(() async {
+    final row = await _dao.resetSummaryRow(rootDeckId);
+    if (row == null) return const Rejected(SrsRejection.notFound);
+    final root = row.deck;
+    if (root.parentId != null) return const Rejected(SrsRejection.notARootDeck);
+    return Ok(
+      ResetLearningSummary(
+        schedulerType: SchedulerType.fromCode(root.schedulerType!),
+        isSchedulerLocked: root.firstAnsweredAt != null,
+        cardCount: row.cardCount,
+        learnedCardCount: row.learnedCardCount,
+        openSessionCount: row.openSessionCount,
+      ),
+    );
+  });
+
+  @override
   Future<Outcome<void, SrsRejection>> changeScheduler({
     required String rootDeckId,
     required SchedulerType newType,
@@ -197,9 +217,13 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
 
   /// One transaction. An unexpected database error leaves as the [Failure]
   /// `mapDatabaseError` makes of it, with its stack trace, after the rollback.
-  Future<T> _write<T>(Future<T> Function() body) async {
+  Future<T> _write<T>(Future<T> Function() body) =>
+      _mapped(() => _db.transaction(body));
+
+  /// [body], with an unexpected database error leaving as its [Failure].
+  Future<T> _mapped<T>(Future<T> Function() body) async {
     try {
-      return await _db.transaction(body);
+      return await body();
     } on Object catch (error, stackTrace) {
       Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }

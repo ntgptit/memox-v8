@@ -3,7 +3,7 @@ id: UC-SRS-001
 title: Reset learning progress
 status: ready
 rules: [BR-SRS-020, BR-SRS-021, BR-SRS-022, BR-SRS-023, BR-SRS-024, BR-SRS-025, BR-SRS-026, BR-SRS-027, BR-SRS-028, BR-SRS-029, BR-SRS-030, BR-STUDY-015]
-code: []
+code: [lib/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart, lib/features/srs/domain/usecases/reset_learning_progress_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

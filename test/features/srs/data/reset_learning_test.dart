@@ -7,6 +7,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -14,7 +15,7 @@ import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import '../../../support/srs_fixtures.dart';
 import '../../../support/test_database.dart';
 
-// UC-SRS-001: reset learning progress.
+// UC-SRS-001: reset learning progress, and what its confirmation shows.
 
 /// Fails the statement that writes a reset's new schedule rows, after the
 /// root and the old rows already changed in the same transaction.
@@ -267,4 +268,113 @@ void main() {
       );
     },
   );
+
+  Future<ResetLearningSummary> summaryOf(String rootId) async =>
+      switch (await repo.resetSummary(rootDeckId: rootId)) {
+        Ok(:final value) => value,
+        Rejected(:final reason) => fail('resetSummary refused: $reason'),
+      };
+
+  test('the summary of a tree nobody has studied has nothing to lose '
+      '(UC-SRS-001 A2)', () async {
+    final (rootId, _, sessionId) = await insertStudyTree(
+      db,
+      'r',
+      scheduler: 'sm2',
+    );
+    await db.customStatement('DELETE FROM study_session WHERE id = ?', [
+      sessionId,
+    ]);
+
+    final summary = await summaryOf(rootId);
+
+    expect(summary.schedulerType, SchedulerType.sm2);
+    expect(summary.isSchedulerLocked, isFalse);
+    expect(summary.cardCount, 1);
+    expect(summary.learnedCardCount, 0);
+    expect(summary.openSessionCount, 0);
+    expect(summary.hasProgressToLose, isFalse);
+  });
+
+  test('the summary counts the learned cards and the open sessions of the '
+      'whole tree, outside the Trash (UC-SRS-001 step 2)', () async {
+    final (rootId, cardId, sessionId) = await insertStudyTree(db, 'r');
+    final deepCardId = await insertDeepCard(db, rootId);
+    await insertBareCard(db, 'r-trashed', 'r-leaf');
+    await db.customStatement(
+      'INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, '
+      "generation, current_box, learned_at) VALUES ('r-trashed', 'eight_box', "
+      '1, 1, 2, 0)',
+    );
+    await db.customStatement(
+      "UPDATE card SET delete_batch_id = 'b' WHERE id = 'r-trashed'",
+    );
+    for (final id in [cardId, deepCardId]) {
+      await repo.recordReview(
+        cardId: id,
+        sessionId: sessionId,
+        action: EightBoxAction.remembered,
+      );
+    }
+
+    final summary = await summaryOf(rootId);
+
+    expect(summary.isSchedulerLocked, isTrue);
+    expect(summary.cardCount, 2);
+    expect(summary.learnedCardCount, 2);
+    expect(summary.openSessionCount, 1);
+    expect(summary.hasProgressToLose, isTrue);
+  });
+
+  test(
+    'an open session alone is progress to lose (UC-SRS-001 step 2)',
+    () async {
+      final (rootId, _, _) = await insertStudyTree(db, 'r');
+
+      final summary = await summaryOf(rootId);
+
+      expect(summary.learnedCardCount, 0);
+      expect(summary.openSessionCount, 1);
+      expect(summary.hasProgressToLose, isTrue);
+    },
+  );
+
+  test('a sub-deck, a missing root and a root in the Trash have no summary '
+      '(UC-SRS-001 A4)', () async {
+    await insertStudyTree(db, 'r');
+
+    expect(
+      await repo.resetSummary(rootDeckId: 'r-leaf'),
+      _refusedWith<ResetLearningSummary>(SrsRejection.notARootDeck),
+    );
+    expect(
+      await repo.resetSummary(rootDeckId: 'missing'),
+      _refusedWith<ResetLearningSummary>(SrsRejection.notFound),
+    );
+    await db.customStatement(
+      "UPDATE deck SET delete_batch_id = 'b' WHERE root_id = 'r'",
+    );
+    expect(
+      await repo.resetSummary(rootDeckId: 'r'),
+      _refusedWith<ResetLearningSummary>(SrsRejection.notFound),
+    );
+  });
+
+  test('a tree with no cards has nothing to lose and resets all the same '
+      '(UC-SRS-001 A2)', () async {
+    await db.customStatement(
+      'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, '
+      'scheduler_type, scheduler_version, generation, sibling_position, '
+      'created_at, updated_at) '
+      "VALUES ('empty', 'empty', NULL, 'empty', 1, 'deck', 'eight_box', 1, 1, "
+      '0, 0, 0)',
+    );
+
+    final summary = await summaryOf('empty');
+    final result = await repo.resetLearning(rootDeckId: 'empty');
+
+    expect((summary.cardCount, summary.hasProgressToLose), (0, false));
+    expect(result, isA<Ok<void, SrsRejection>>());
+    expect((await deckRowOf(db, 'empty')).read<int>('generation'), 2);
+  });
 }

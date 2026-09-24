@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 /// The one implementation is `ScheduleRepositoryImpl` (data layer). The
@@ -29,6 +30,13 @@ abstract interface class ScheduleRepository {
   Future<Outcome<void, SrsRejection>> resetLearning({
     required String rootDeckId,
     SchedulerType? schedulerType,
+  });
+
+  /// What a reset of [rootDeckId] would clear, for its confirmation
+  /// (UC-SRS-001 step 2): notFound when the root does not exist or is in the
+  /// Trash, notARootDeck for a sub-deck.
+  Future<Outcome<ResetLearningSummary, SrsRejection>> resetSummary({
+    required String rootDeckId,
   });
 
   /// Changes the scheduler of an unlocked tree: every schedule row of the tree

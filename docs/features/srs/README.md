@@ -1,13 +1,11 @@
 ---
 feature: srs
-code: []
+code: [lib/features/srs/domain, lib/features/srs/data, lib/features/srs/di]
 depends_on: [card, deck]
 ---
 ## Phạm vi
 
 Hai scheduler (`eight_box`, `sm2`), chọn và khoá/đổi scheduler, loại lượt ôn, reset learning progress và `generation` (V8.0).
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 
