@@ -4,6 +4,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
@@ -157,5 +158,28 @@ void main() {
     await _tap(tester, find.text('Words'));
 
     expect(find.text('annyeong'), findsOneWidget);
+  });
+
+  libraryTest('Back leaves selection first, then the deck (RF5)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(env.db, id: 'new1', deckId: words.id, front: 'annyeong');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await tester.longPress(find.text('annyeong'));
+    await tester.pumpAndSettle();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_barTitle('Korean'), findsOneWidget);
   });
 }
