@@ -25,12 +25,12 @@ class DeckLevelListWidget extends ConsumerWidget {
   final VoidCallback onCreateDeck;
 
   void _showAll(WidgetRef ref) =>
-      ref.read(deckLevelQueryProvider.notifier).show(DeckLevelFilter.all);
+      ref.read(deckLevelQueryProvider(null).notifier).show(DeckLevelFilter.all);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final filter = ref.watch(deckLevelQueryProvider).filter;
+    final filter = ref.watch(deckLevelQueryProvider(null)).filter;
     final tiles = level.tiles;
     // Ruling L4: an empty level is the first run; an empty filter is not.
     if (tiles.isEmpty && filter == DeckLevelFilter.all) {

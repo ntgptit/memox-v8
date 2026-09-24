@@ -14,12 +14,12 @@ class DeckLevelHeaderWidget extends ConsumerWidget {
   const DeckLevelHeaderWidget({super.key});
 
   DeckLevelQuery _query(WidgetRef ref) =>
-      ref.read(deckLevelQueryProvider.notifier);
+      ref.read(deckLevelQueryProvider(null).notifier);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final query = ref.watch(deckLevelQueryProvider);
+    final query = ref.watch(deckLevelQueryProvider(null));
     return MxListSectionHeader(
       label: l10n.libraryDecksHeader,
       trailing: Wrap(

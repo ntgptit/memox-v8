@@ -245,5 +245,192 @@
   "failureUnknown": "Nothing was lost, but something went wrong. Try again.",
   "@failureUnknown": {
     "description": "An unexpected database error; nothing was lost."
+  },
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Accessible name of the back control."
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Closes a sheet that offers no choice."
+  },
+  "libraryOpenSearch": "Search decks",
+  "@libraryOpenSearch": {
+    "description": "Library app bar action that opens deck search."
+  },
+  "libraryReorder": "Reorder decks",
+  "@libraryReorder": {
+    "description": "App bar action that starts drag-to-reorder."
+  },
+  "libraryReorderDone": "Done",
+  "@libraryReorderDone": {
+    "description": "Ends drag-to-reorder mode."
+  },
+  "deckActions": "Deck actions",
+  "@deckActions": {
+    "description": "Accessible name of an open deck's overflow action."
+  },
+  "deckLoadErrorTitle": "Couldn't open this deck",
+  "@deckLoadErrorTitle": {
+    "description": "Error state title when an open deck fails to load."
+  },
+  "deckDeletedToast": "Deck deleted",
+  "@deckDeletedToast": {
+    "description": "Snackbar after the open deck is deleted."
+  },
+  "deckCreateSub": "Create sub-deck",
+  "@deckCreateSub": {
+    "description": "Action that creates a deck inside the open deck."
+  },
+  "deckCreateSubTitle": "New sub-deck",
+  "@deckCreateSubTitle": {
+    "description": "Title of the create sub-deck dialog."
+  },
+  "deckUnsetTitle": "This deck is empty",
+  "@deckUnsetTitle": {
+    "description": "Title shown in a deck that holds nothing yet."
+  },
+  "deckUnsetBody": "Add a sub-deck to start organising it.",
+  "@deckUnsetBody": {
+    "description": "Body of the empty deck state."
+  },
+  "deckUnsetDeepestBody": "This deck is at the deepest level, so it can't hold more decks.",
+  "@deckUnsetDeepestBody": {
+    "description": "Empty deck body at the maximum depth."
+  },
+  "deckRename": "Rename",
+  "@deckRename": {
+    "description": "Deck action sheet command."
+  },
+  "deckRenameTitle": "Rename deck",
+  "@deckRenameTitle": {
+    "description": "Title of the rename dialog."
+  },
+  "deckRenameConfirm": "Save",
+  "@deckRenameConfirm": {
+    "description": "Confirm of the rename dialog."
+  },
+  "deckMove": "Move",
+  "@deckMove": {
+    "description": "Deck action sheet command."
+  },
+  "deckMoveTitle": "Move to deck",
+  "@deckMoveTitle": {
+    "description": "Title of the deck move picker."
+  },
+  "deckMoveRule": "The deck moves with everything in it. Decks that can't hold it aren't offered.",
+  "@deckMoveRule": {
+    "description": "One sentence under the move picker title."
+  },
+  "deckMoveEmptyTitle": "Nowhere to move",
+  "@deckMoveEmptyTitle": {
+    "description": "Move picker title when no deck can take the deck."
+  },
+  "deckMoveEmptyBody": "No other deck can hold this one.",
+  "@deckMoveEmptyBody": {
+    "description": "Move picker body when no deck can take the deck."
+  },
+  "deckMovedToast": "Moved to {deck}",
+  "@deckMovedToast": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after a move; deck is the new parent's name."
+  },
+  "deckChangeScheduler": "Change scheduler",
+  "@deckChangeScheduler": {
+    "description": "Deck action sheet command, root decks only."
+  },
+  "deckSchedulerTitle": "Scheduler",
+  "@deckSchedulerTitle": {
+    "description": "Title of the scheduler sheet."
+  },
+  "deckSchedulerChangeWarning": "Changing the scheduler restarts the schedule of every card in this deck and ends study sessions in progress.",
+  "@deckSchedulerChangeWarning": {
+    "description": "Warning in the scheduler sheet while a change is possible."
+  },
+  "deckSchedulerLockedNote": "The scheduler is locked because cards in this deck have been reviewed.",
+  "@deckSchedulerLockedNote": {
+    "description": "Note in the scheduler sheet once it is locked."
+  },
+  "deckSchedulerChangedToast": "Scheduler changed",
+  "@deckSchedulerChangedToast": {
+    "description": "Snackbar after the scheduler changes."
+  },
+  "deckReorder": "Reorder",
+  "@deckReorder": {
+    "description": "Deck action sheet command that starts drag-to-reorder."
+  },
+  "deckDelete": "Delete",
+  "@deckDelete": {
+    "description": "Deck action sheet command and delete confirm."
+  },
+  "deckDeleteTitle": "Delete “{deck}”?",
+  "@deckDeleteTitle": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Delete dialog title; deck is the deck's name."
+  },
+  "deckDeleteSummary": "This permanently deletes {subDeckCount, plural, =0{no sub-decks} =1{1 sub-deck} other{{subDeckCount} sub-decks}} and {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}. This can't be undone.",
+  "@deckDeleteSummary": {
+    "placeholders": {
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      }
+    },
+    "description": "Delete dialog body: what the delete takes with it."
+  },
+  "deckSearchTitle": "Search decks",
+  "@deckSearchTitle": {
+    "description": "Title of the deck search screen."
+  },
+  "deckSearchHint": "Deck name",
+  "@deckSearchHint": {
+    "description": "Hint in the deck search field."
+  },
+  "deckSearchClear": "Clear search",
+  "@deckSearchClear": {
+    "description": "Accessible name of the search clear button."
+  },
+  "deckSearchEmptyTitle": "No deck matches “{term}”",
+  "@deckSearchEmptyTitle": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Search empty state; term is what the person typed."
+  },
+  "deckSearchEmptyBody": "Check the spelling, or try part of the name.",
+  "@deckSearchEmptyBody": {
+    "description": "Search empty state body."
+  },
+  "srsRejectionUnsupportedAction": "This answer doesn't fit the deck's scheduler.",
+  "@srsRejectionUnsupportedAction": {
+    "description": "Scheduler refusal: unsupported answer."
+  },
+  "srsRejectionSchedulerLocked": "The scheduler is locked because cards in this deck have been reviewed.",
+  "@srsRejectionSchedulerLocked": {
+    "description": "Scheduler refusal: locked after the first review."
+  },
+  "srsRejectionStaleGeneration": "The deck's schedule changed. Start again.",
+  "@srsRejectionStaleGeneration": {
+    "description": "Scheduler refusal: the schedule was reset meanwhile."
+  },
+  "srsRejectionNotFound": "This deck no longer exists.",
+  "@srsRejectionNotFound": {
+    "description": "Scheduler refusal: the deck is gone."
+  },
+  "srsRejectionNotARootDeck": "Only a top-level deck has a scheduler.",
+  "@srsRejectionNotARootDeck": {
+    "description": "Scheduler refusal: not a root deck."
   }
 }

@@ -25,7 +25,7 @@ class DeckLevelScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final query = ref.watch(deckLevelQueryProvider);
+    final query = ref.watch(deckLevelQueryProvider(null));
     final provider = deckLevelProvider(sort: query.sort, filter: query.filter);
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
