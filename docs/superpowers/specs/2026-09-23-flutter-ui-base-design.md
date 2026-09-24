@@ -450,6 +450,10 @@ item names where it comes from.
 | 64 | P2 keyboard: MxBottomSheet does not pad for the IME inset, so a text field placed in a sheet would sit under the keyboard; no sheet holds a field yet | phase 6 audit |
 | 65 | P3 platform: MxToggle, MxSegmentedTray, MxSpinner and the sheet grabber are handoff-drawn stand-ins for Material's Switch, SegmentedButton, progress indicator and drag handle; they carry the right semantics, but the grabber offers no drag-handle action to a screen reader | phase 6 audit |
 | 66 | P3 polish and performance: at its low pulse the light skeleton is 1.07:1 on surface, and the light banner borders are 1.11:1 on their ground; each MxSkeleton runs its own ticker, and `context.derivedColors` is rebuilt on every read | phase 6 audit |
+| 67 | Status text reads in derived status inks (`statusNewInk`…`statusMasteredInk`): the status colour mixed toward `onSurface` (light 0.40/0.50/0.25/0.25, dark 0.40/0/0.10/0), at least 4.5:1 on surface, surfaceContainerLowest, surfaceContainer and each 12% tint. This resolves row 57's StatusBadge half and row 60; row 57's MasteryDonut label and row 3's remaining status texts stay open | library phase 1 L6 |
+| 68 | A database `Failure` shows ARB copy from `lib/l10n/failure_message.dart`, never `Failure.message`, which stays English for logs | library phase 1 L2 |
+| 69 | The Library root's deck rows open nothing until phase 2 adds the recursive deck screen | library phase 1 L1 |
+| 70 | MxListSectionHeader lays out with `OverflowBar`: a trailing that does not fit beside the label (large text) moves under it, so the label no longer fills the row | library phase 1 Task 4 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
