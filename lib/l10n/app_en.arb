@@ -391,15 +391,6 @@
   "@cardSortTitle": {
     "description": "Title of the card sort sheet."
   },
-  "cardSortTrigger": "Sort: {order}",
-  "@cardSortTrigger": {
-    "placeholders": {
-      "order": {
-        "type": "String"
-      }
-    },
-    "description": "Card sort chip; order is the current sort."
-  },
   "cardSortNewest": "Newest",
   "@cardSortNewest": {
     "description": "Card sort: newest first."
@@ -474,10 +465,6 @@
   "cardSelectionClose": "Close selection",
   "@cardSelectionClose": {
     "description": "Accessible name of the selection close action."
-  },
-  "cardSelectAll": "Select all",
-  "@cardSelectAll": {
-    "description": "Bulk bar action."
   },
   "cardFlag": "Flag",
   "@cardFlag": {

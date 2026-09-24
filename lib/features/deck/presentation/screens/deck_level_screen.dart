@@ -45,6 +45,8 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onSearch,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
+    required this.cardBreadcrumb,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -62,6 +64,15 @@ class DeckLevelScreen extends StatelessWidget {
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
   final Widget Function(DeckView view) cardContent;
+
+  /// A deck of cards' app bar, given the deck's actions button: the card
+  /// feature's, which turns into the selection header while cards are
+  /// selected (A14).
+  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+
+  /// A deck of cards' breadcrumb, given the deck's: the card feature hides
+  /// it while cards are selected.
+  final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
 
   /// New card for [deckId]: the router opens the card editor.
   final ValueChanged<String> onAddCard;
@@ -83,6 +94,8 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenAncestor: onOpenAncestor,
       onOpenAlgorithm: onOpenAlgorithm,
       cardContent: cardContent,
+      cardAppBar: cardAppBar,
+      cardBreadcrumb: cardBreadcrumb,
       onAddCard: onAddCard,
       cardFab: cardFab,
     ),
@@ -189,6 +202,8 @@ class _OpenDeck extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
+    required this.cardBreadcrumb,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -198,6 +213,8 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(DeckView view) cardContent;
+  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+  final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -219,6 +236,8 @@ class _OpenDeck extends ConsumerWidget {
         onOpenAncestor: onOpenAncestor,
         onOpenAlgorithm: onOpenAlgorithm,
         cardContent: cardContent,
+        cardAppBar: cardAppBar,
+        cardBreadcrumb: cardBreadcrumb,
         onAddCard: onAddCard,
         cardFab: cardFab,
       ),
@@ -260,6 +279,8 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
+    required this.cardBreadcrumb,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -269,6 +290,8 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(DeckView view) cardContent;
+  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+  final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -281,31 +304,48 @@ class _OpenDeckContent extends ConsumerWidget {
     final canCreateCard = view.createOptions.contains(DeckCreateOption.card);
     void createSubDeck() =>
         unawaited(showCreateSubDeckDialog(context, parentId: deck.id));
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: deck.name,
-        density: MxAppBarDensity.content,
-        leading: const _BackButton(),
-        actions: isReordering
-            ? [_ReorderDone(parentId: deck.id)]
-            : [
-                MxIconButton(
-                  icon: AppIcons.more,
-                  semanticLabel: l10n.deckActions,
-                  onPressed: () => unawaited(
-                    openDeckActions(
-                      context,
-                      ref,
-                      deckId: deck.id,
-                      parentId: deck.parentId,
-                      onOpenDeck: onOpenDeck,
-                      onOpenAlgorithm: onOpenAlgorithm,
-                      isOpenDeck: true,
-                    ),
-                  ),
-                ),
-              ],
+    final deckActions = MxIconButton(
+      icon: AppIcons.more,
+      semanticLabel: l10n.deckActions,
+      onPressed: () => unawaited(
+        openDeckActions(
+          context,
+          ref,
+          deckId: deck.id,
+          parentId: deck.parentId,
+          onOpenDeck: onOpenDeck,
+          onOpenAlgorithm: onOpenAlgorithm,
+          isOpenDeck: true,
+        ),
       ),
+    );
+    // Ruling P2-L4: Library > ancestors > this deck.
+    final breadcrumb = MxBreadcrumb(
+      segments: [
+        MxBreadcrumbSegment(
+          label: l10n.navLibrary,
+          onTap: () => onOpenAncestor(null),
+        ),
+        for (final entry in view.breadcrumb)
+          MxBreadcrumbSegment(
+            label: entry.name,
+            onTap: () => onOpenAncestor(entry.id),
+          ),
+        MxBreadcrumbSegment(label: deck.name),
+      ],
+    );
+    final isCardDeck = deck.contentType == DeckContentType.card;
+    return MxAppShell(
+      appBar: isCardDeck
+          ? cardAppBar(view, deckActions)
+          : MxAppBar(
+              title: deck.name,
+              density: MxAppBarDensity.content,
+              leading: const _BackButton(),
+              actions: isReordering
+                  ? [_ReorderDone(parentId: deck.id)]
+                  : [deckActions],
+            ),
       // Ruling P4a-L9: a sub-deck where one fits, a card on a deck of cards.
       fab: switch (deck.contentType) {
         DeckContentType.card => cardFab(deck.id),
@@ -319,21 +359,7 @@ class _OpenDeckContent extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Ruling P2-L4: Library › ancestors › this deck.
-          MxBreadcrumb(
-            segments: [
-              MxBreadcrumbSegment(
-                label: l10n.navLibrary,
-                onTap: () => onOpenAncestor(null),
-              ),
-              for (final entry in view.breadcrumb)
-                MxBreadcrumbSegment(
-                  label: entry.name,
-                  onTap: () => onOpenAncestor(entry.id),
-                ),
-              MxBreadcrumbSegment(label: deck.name),
-            ],
-          ),
+          if (isCardDeck) cardBreadcrumb(deck.id, breadcrumb) else breadcrumb,
           Expanded(
             child: switch (deck.contentType) {
               DeckContentType.card => cardContent(view),

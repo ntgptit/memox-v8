@@ -14,6 +14,7 @@ import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
@@ -168,6 +169,8 @@ DeckLevelScreen deckScreen({
   ValueChanged<String?>? onOpenAncestor,
   ValueChanged<String>? onAddCard,
   Widget Function(DeckView view)? cardContent,
+  Widget Function(DeckView view, Widget deckActions)? cardAppBar,
+  Widget Function(String deckId, Widget breadcrumb)? cardBreadcrumb,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
   ValueChanged<String>? onOpenAlgorithm,
@@ -179,6 +182,14 @@ DeckLevelScreen deckScreen({
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
+  cardAppBar:
+      cardAppBar ??
+      (view, actions) => MxAppBar(
+        title: view.deck.name,
+        density: MxAppBarDensity.content,
+        actions: [actions],
+      ),
+  cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
 );
 

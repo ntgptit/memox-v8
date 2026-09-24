@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -246,6 +243,30 @@ void main() {
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
   });
 
+  libraryTest('a card deck searches from its bar; closing shows every card', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
+    await insertCard(env.db, id: 'c1', deckId: words.id, front: 'mul');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+
+    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
+    await tester.enterText(find.byType(EditableText), 'bap');
+    await tester.pumpAndSettle();
+    expect(find.byType(CardRowWidget), findsOneWidget);
+
+    await _tap(tester, find.byTooltip(_en.cardSearchClose));
+    expect(find.byType(EditableText), findsNothing);
+    expect(find.byType(CardRowWidget), findsNWidgets(2));
+  });
+
   libraryTest('a row opens its card; Back returns to the list as it was', (
     tester,
     env,
@@ -271,10 +292,7 @@ void main() {
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Words'));
-    ProviderScope.containerOf(
-      tester.element(find.byType(CardListSectionWidget)),
-    ).read(cardSearchOpenProvider(words.id).notifier).open();
-    await tester.pumpAndSettle();
+    await _tap(tester, find.byTooltip(_en.cardSearchOpen));
     await tester.enterText(find.byType(EditableText), 'bap');
     await tester.pumpAndSettle();
     await _tap(
