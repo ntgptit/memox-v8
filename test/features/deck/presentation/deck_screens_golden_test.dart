@@ -259,5 +259,19 @@ void main() {
         );
       });
     });
+
+    libraryTest('Coming soon sheet, $theme', (tester, env) async {
+      await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, deckScreen(), brightness);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip(_en.libraryComingSoon));
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_coming_soon_$theme.png',
+        );
+      });
+    });
   }
 }

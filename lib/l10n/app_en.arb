@@ -1276,10 +1276,6 @@
   "@libraryDueDecksHeader": {
     "description": "Screen handoff 01/04 (library alignment phase C): libraryDueDecksHeader."
   },
-  "libraryBrowseStarter": "Browse starter decks",
-  "@libraryBrowseStarter": {
-    "description": "Screen handoff 01/04 (library alignment phase C): libraryBrowseStarter."
-  },
   "libraryEmptyFootnote": "Everything stays on this device. Nothing is added until you choose.",
   "@libraryEmptyFootnote": {
     "description": "Screen handoff 01/04 (library alignment phase C): libraryEmptyFootnote."
@@ -1365,14 +1361,6 @@
   "@deckSortNameHint": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortNameHint."
   },
-  "deckSortProgress": "Progress",
-  "@deckSortProgress": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckSortProgress."
-  },
-  "deckSortProgressHint": "Least mastered first",
-  "@deckSortProgressHint": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckSortProgressHint."
-  },
   "deckFilterDueOnlyTitle": "Only decks with due cards",
   "@deckFilterDueOnlyTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckFilterDueOnlyTitle."
@@ -1389,26 +1377,9 @@
   "@deckOpen": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckOpen."
   },
-  "deckStudyThis": "Study this deck",
-  "@deckStudyThis": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyThis."
-  },
-  "deckStudyThisDue": "Study this deck · {count} due",
-  "@deckStudyThisDue": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyThisDue."
-  },
   "deckStudyOptions": "Study options",
   "@deckStudyOptions": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
-  },
-  "deckStudyOptionsHint": "Cards per session · new-card order",
-  "@deckStudyOptionsHint": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptionsHint."
   },
   "deckReviewAlgorithm": "Review algorithm",
   "@deckReviewAlgorithm": {
@@ -1456,10 +1427,6 @@
   "deckBackToLibrary": "Back to Library",
   "@deckBackToLibrary": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckBackToLibrary."
-  },
-  "deckOpenTrash": "Open Trash",
-  "@deckOpenTrash": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckOpenTrash."
   },
   "searchFinds": "Search finds",
   "@searchFinds": {
@@ -1542,10 +1509,6 @@
   "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
-  },
-  "commonNotAvailableYet": "Not available yet",
-  "@commonNotAvailableYet": {
-    "description": "TalkBack hint on a control whose feature does not exist yet (spec A4)."
   },
   "algorithmUnlockedTitle": "Can still be changed",
   "@algorithmUnlockedTitle": {
@@ -1752,5 +1715,53 @@
       }
     },
     "description": "Screen handoff 02 (library alignment phase D): resetDoneToast."
+  },
+  "libraryComingSoon": "Coming soon",
+  "@libraryComingSoon": {
+    "description": "Library app bar action and sheet title: features that arrive later (spec A4, amended)."
+  },
+  "libraryComingSoonBody": "These arrive in a later version. Everything you add now is kept.",
+  "@libraryComingSoonBody": {
+    "description": "Coming soon sheet: the line under its title."
+  },
+  "comingSoonStarterDecksBody": "Ready-made decks to copy.",
+  "@comingSoonStarterDecksBody": {
+    "description": "Coming soon: what starter decks do."
+  },
+  "comingSoonTagsBody": "Label cards, filter by label.",
+  "@comingSoonTagsBody": {
+    "description": "Coming soon: what tags do."
+  },
+  "comingSoonTrashBody": "Restore deleted decks and cards.",
+  "@comingSoonTrashBody": {
+    "description": "Coming soon: what the trash does."
+  },
+  "comingSoonStudy": "Study",
+  "@comingSoonStudy": {
+    "description": "Coming soon: the study feature's name."
+  },
+  "comingSoonStudyBody": "Study a deck's due cards.",
+  "@comingSoonStudyBody": {
+    "description": "Coming soon: what studying a deck does."
+  },
+  "comingSoonStudyOptionsBody": "Session size and new-card order.",
+  "@comingSoonStudyOptionsBody": {
+    "description": "Coming soon: what study options do."
+  },
+  "comingSoonProgressSort": "Sort by progress",
+  "@comingSoonProgressSort": {
+    "description": "Coming soon: the progress sort's name."
+  },
+  "comingSoonProgressSortBody": "Least mastered decks first.",
+  "@comingSoonProgressSortBody": {
+    "description": "Coming soon: what the progress sort does."
+  },
+  "comingSoonTransfer": "Import and export",
+  "@comingSoonTransfer": {
+    "description": "Coming soon: the import and export feature's name."
+  },
+  "comingSoonTransferBody": "Cards from and to files.",
+  "@comingSoonTransferBody": {
+    "description": "Coming soon: what import and export do."
   }
 }

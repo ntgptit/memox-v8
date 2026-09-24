@@ -5,7 +5,6 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_level_query_label_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -75,17 +74,9 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
               description: _hint(l10n, sort),
               isSelected: sort == query.sort,
               onSelected: () => _query(ref).sortBy(sort),
+              // The progress sort waits under Coming soon (spec A4, amended).
+              hasDivider: sort != _sorts.last,
             ),
-          // Progress needs a mastery read model (BE-A7): shown, not usable.
-          DeckUnavailableWidget(
-            child: MxOptionRow(
-              title: l10n.deckSortProgress,
-              description: l10n.deckSortProgressHint,
-              isSelected: false,
-              onSelected: null,
-              hasDivider: false,
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.card,

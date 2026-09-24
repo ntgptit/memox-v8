@@ -14,12 +14,12 @@ import 'package:memox/features/deck/presentation/providers/deck_view_provider.da
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/overlays/deck_coming_soon_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_unavailable_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -127,28 +127,12 @@ class _LibraryRoot extends ConsumerWidget {
         title: l10n.navLibrary,
         actions: isReordering
             ? const [_ReorderDone(parentId: null)]
-            // Starter decks, tags and trash have no screen yet (spec A6).
+            // Features that wait are named in one place (spec A4, amended).
             : [
-                DeckUnavailableWidget(
-                  child: MxIconButton(
-                    icon: AppIcons.starterDecks,
-                    semanticLabel: l10n.libraryStarterDecks,
-                    onPressed: null,
-                  ),
-                ),
-                DeckUnavailableWidget(
-                  child: MxIconButton(
-                    icon: AppIcons.tag,
-                    semanticLabel: l10n.libraryTags,
-                    onPressed: null,
-                  ),
-                ),
-                DeckUnavailableWidget(
-                  child: MxIconButton(
-                    icon: AppIcons.delete,
-                    semanticLabel: l10n.libraryTrash,
-                    onPressed: null,
-                  ),
+                MxIconButton(
+                  icon: AppIcons.upcoming,
+                  semanticLabel: l10n.libraryComingSoon,
+                  onPressed: () => unawaited(showDeckComingSoonSheet(context)),
                 ),
               ],
       ),
@@ -187,9 +171,6 @@ class _LibraryRoot extends ConsumerWidget {
                 body: l10n.libraryEmptyBody,
                 actionLabel: l10n.libraryCreateDeck,
                 onAction: createDeck,
-                // Starter decks have no screen yet (spec A6).
-                secondaryActionLabel: l10n.libraryBrowseStarter,
-                secondaryActionHint: l10n.commonNotAvailableYet,
                 footnote: l10n.libraryEmptyFootnote,
               ),
             ),
