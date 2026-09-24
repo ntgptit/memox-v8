@@ -1558,5 +1558,9 @@
   "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
+  },
+  "commonNotAvailableYet": "Not available yet",
+  "@commonNotAvailableYet": {
+    "description": "TalkBack hint on a control whose feature does not exist yet (spec A4)."
   }
 }

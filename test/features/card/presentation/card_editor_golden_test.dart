@@ -104,5 +104,29 @@ void main() {
         );
       });
     });
+
+    libraryTest('card editor, create at text scale 2, $theme', (
+      tester,
+      env,
+    ) async {
+      final deckId = await _words(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.create(deckId: deckId, deckContext: _context),
+          brightness,
+          textScale: 2,
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(EditableText).at(0), 'gamsahamnida');
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_create_2x_$theme.png',
+        );
+      });
+    });
   }
 }
