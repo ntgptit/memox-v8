@@ -81,6 +81,8 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 docs/
 ├── README.md                    # file này
 ├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
+├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
+├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
