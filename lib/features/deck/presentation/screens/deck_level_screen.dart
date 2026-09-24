@@ -42,6 +42,8 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onOpenAncestor,
     required this.onSearch,
     required this.cardContent,
+    required this.onAddCard,
+    required this.cardFab,
   });
 
   final String? deckId;
@@ -55,6 +57,13 @@ class DeckLevelScreen extends StatelessWidget {
   /// section; `deck` never imports `card` (spec D8).
   final Widget Function(String deckId) cardContent;
 
+  /// New card for [deckId]: the router opens the card editor.
+  final ValueChanged<String> onAddCard;
+
+  /// A deck of cards' FAB, from the card feature like [cardContent] (spec
+  /// D8). It hides itself while cards are selected.
+  final Widget Function(String deckId) cardFab;
+
   @override
   Widget build(BuildContext context) => switch (deckId) {
     null => _LibraryRoot(onOpenDeck: onOpenDeck, onSearch: onSearch),
@@ -63,6 +72,8 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenDeck: onOpenDeck,
       onOpenAncestor: onOpenAncestor,
       cardContent: cardContent,
+      onAddCard: onAddCard,
+      cardFab: cardFab,
     ),
   };
 }
@@ -132,12 +143,16 @@ class _OpenDeck extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.cardContent,
+    required this.onAddCard,
+    required this.cardFab,
   });
 
   final String deckId;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final Widget Function(String deckId) cardContent;
+  final ValueChanged<String> onAddCard;
+  final Widget Function(String deckId) cardFab;
 
   static const int _skeletonRows = 4;
 
@@ -173,6 +188,8 @@ class _OpenDeck extends ConsumerWidget {
         onOpenDeck: onOpenDeck,
         onOpenAncestor: onOpenAncestor,
         cardContent: cardContent,
+        onAddCard: onAddCard,
+        cardFab: cardFab,
       ),
       AsyncError() => MxAppShell(
         appBar: bar,
@@ -207,12 +224,16 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.cardContent,
+    required this.onAddCard,
+    required this.cardFab,
   });
 
   final DeckView view;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final Widget Function(String deckId) cardContent;
+  final ValueChanged<String> onAddCard;
+  final Widget Function(String deckId) cardFab;
 
   /// Opens the chosen command's own dialog or sheet (spec §6.2).
   Future<void> _openActions(
@@ -247,6 +268,7 @@ class _OpenDeckContent extends ConsumerWidget {
     final isReordering = ref.watch(deckReorderModeProvider(deck.id));
     final canReorder = ref.watch(deckLevelCanReorderProvider(deck.id));
     final canCreateDeck = view.createOptions.contains(DeckCreateOption.deck);
+    final canCreateCard = view.createOptions.contains(DeckCreateOption.card);
     void createSubDeck() =>
         unawaited(showCreateSubDeckDialog(context, parentId: deck.id));
     return MxAppShell(
@@ -266,13 +288,16 @@ class _OpenDeckContent extends ConsumerWidget {
                 ),
               ],
       ),
-      fab: canCreateDeck && !isReordering
-          ? MxFab(
-              icon: AppIcons.add,
-              semanticLabel: l10n.deckCreateSub,
-              onPressed: createSubDeck,
-            )
-          : null,
+      // Ruling P4a-L9: a sub-deck where one fits, a card on a deck of cards.
+      fab: switch (deck.contentType) {
+        DeckContentType.card => cardFab(deck.id),
+        _ when canCreateDeck && !isReordering => MxFab(
+          icon: AppIcons.add,
+          semanticLabel: l10n.deckCreateSub,
+          onPressed: createSubDeck,
+        ),
+        _ => null,
+      },
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -299,6 +324,7 @@ class _OpenDeckContent extends ConsumerWidget {
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
                 emptyState: DeckUnsetStateWidget(
+                  onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
                   onCreateSubDeck: canCreateDeck ? createSubDeck : null,
                 ),
               ),

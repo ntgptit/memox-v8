@@ -14,8 +14,9 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) =>
-    Scaffold(body: CardListSectionWidget(deckId: deckId));
+Widget _section(String deckId) => Scaffold(
+  body: CardListSectionWidget(deckId: deckId, onAddCard: () {}),
+);
 
 /// Korean › Words: annyeong (new1), gamsa (due1), mul (flag1, flagged);
 /// Korean › Verbs: gada (verb1).

@@ -164,6 +164,16 @@ final class MxTextStyles {
         color: _scheme.onSurfaceVariant,
       );
 
+  /// A card field's "Required" marker: the overline in primary (kit 08).
+  TextStyle get requiredMarker => overline.copyWith(color: _scheme.primary);
+
+  /// A card field's count: the counter, in error past the limit.
+  TextStyle fieldCount({required bool isOver}) =>
+      isOver ? counter.copyWith(color: _scheme.error) : counter;
+
+  /// A removable tag's label: the tag label in primary, on its tint.
+  TextStyle get removableTagLabel => tagLabel.copyWith(color: _scheme.primary);
+
   /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
   /// label's 0.1 tracking (S4).
   TextStyle badgeLabel(Color ink) =>

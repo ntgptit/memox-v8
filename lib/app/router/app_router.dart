@@ -7,9 +7,12 @@ import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -37,6 +40,15 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                     context,
                     deckId: state.pathParameters[AppRoutes.deckIdParam],
                   ),
+                  routes: [
+                    GoRoute(
+                      path: AppRoutes.cardNewChild,
+                      builder: (context, state) => CardEditorScreen.create(
+                        deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                        deckContext: _deckContext,
+                      ),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: AppRoutes.searchChild,
@@ -75,14 +87,23 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
 
 /// A Library level wired to the router: each deck opened is one more page,
 /// so Back climbs one level (library spec §4).
-DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) =>
-    DeckLevelScreen(
-      deckId: deckId,
-      onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
-      onOpenAncestor: (id) => _openAncestor(context, id),
-      onSearch: () => context.push(AppRoutes.deckSearch),
-      cardContent: (deckId) => CardListSectionWidget(deckId: deckId),
-    );
+DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
+  void addCard(String id) => unawaited(context.push(AppRoutes.newCard(id)));
+  return DeckLevelScreen(
+    deckId: deckId,
+    onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+    onOpenAncestor: (id) => _openAncestor(context, id),
+    onSearch: () => context.push(AppRoutes.deckSearch),
+    onAddCard: addCard,
+    cardContent: (id) =>
+        CardListSectionWidget(deckId: id, onAddCard: () => addCard(id)),
+    cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
+  );
+}
+
+/// The deck path over the card editor (ruling P4a-L7, spec D8).
+Widget _deckContext(String deckId, String currentLabel) =>
+    DeckContextHeaderWidget(deckId: deckId, currentLabel: currentLabel);
 
 /// Ruling P2-L5: a breadcrumb tap pops the Library stack back to [deckId],
 /// or to the root for null. A deck that is not on the stack (it was opened

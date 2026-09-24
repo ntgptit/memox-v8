@@ -14,8 +14,9 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) =>
-    Scaffold(body: CardListSectionWidget(deckId: deckId));
+Widget _section(String deckId) => Scaffold(
+  body: CardListSectionWidget(deckId: deckId, onAddCard: () {}),
+);
 
 /// A deck of cards whose fronts are [fronts]; the first [flagged] are
 /// flagged.

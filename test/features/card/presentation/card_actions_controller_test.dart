@@ -5,6 +5,8 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
@@ -111,5 +113,54 @@ void main() {
     await actions().deleteCards(cardIds: {'a', 'c'});
 
     expect(await count('SELECT COUNT(*) AS n FROM card'), 2);
+  });
+
+  test('createCard saves the content, the flag and the tags', () async {
+    final ids = await seed();
+    final outcome = await actions().createCard(
+      deckId: ids.words,
+      draft: const CardDraft(
+        front: 'bap',
+        back: 'rice',
+        isFlagged: true,
+        tagNames: ['food'],
+      ),
+    );
+
+    expect(outcome, isA<Ok<Object?, CardRejection>>());
+    expect(await count('SELECT COUNT(*) AS n FROM card WHERE is_flagged'), 2);
+    expect(await count('SELECT COUNT(*) AS n FROM card_tags'), 1);
+  });
+
+  test('editCard replaces the content and the tags', () async {
+    await seed();
+    await actions().editCard(
+      cardId: 'a',
+      draft: const CardDraft(front: 'new', back: 'back', tagNames: ['x', 'y']),
+    );
+
+    expect(
+      await count("SELECT COUNT(*) AS n FROM card WHERE front = 'new'"),
+      1,
+    );
+    expect(await count('SELECT COUNT(*) AS n FROM card_tags'), 2);
+  });
+
+  test('editCard is refused for a card that is gone', () async {
+    await seed();
+    await actions().deleteCards(cardIds: {'a'});
+    final outcome = await actions().editCard(
+      cardId: 'a',
+      draft: const CardDraft(front: 'new', back: 'back'),
+    );
+
+    expect(
+      outcome,
+      isA<Rejected<Object?, CardRejection>>().having(
+        (rejected) => rejected.reason,
+        'reason',
+        CardRejection.notFound,
+      ),
+    );
   });
 }
