@@ -406,10 +406,10 @@ Hàng đợi của một phiên (BR-STUDY-021). Một dòng cho mỗi thẻ đư
 | `mode` | TEXT NOT NULL | stage mà dòng này thuộc về (BR-STUDY-022) |
 | `round` | INTEGER NOT NULL DEFAULT 1 | vòng trong stage (BR-STUDY-059). `browse` và `self_assess` luôn `1` |
 | `card_id` | TEXT NOT NULL | → `card(id)` ON DELETE CASCADE |
-| `position` | INTEGER NOT NULL | thứ tự trong round đó (BR-STUDY-002, BR-STUDY-061). **Bất biến một khi round đã dựng** |
+| `position` | INTEGER NOT NULL | thứ tự trong round đó (BR-STUDY-002, BR-STUDY-061). **Bất biến một khi round đã dựng**. Round 1 của mọi stage được dựng lúc mở phiên; một round sau được dựng (xáo lại, đánh số `0…n-1`) khi round trước nó hết dòng `pending`, và tới lúc đó các thẻ đã ghi danh vào nó mang `position = -1` |
 | `status` | TEXT NOT NULL | `pending` \| `completed` (BR-STUDY-007) |
 | `available_at` | INTEGER NOT NULL DEFAULT 0 | mốc `cursor` tối thiểu để thẻ được phục vụ lại (BR-STUDY-005) |
-| `answers_in_session` | INTEGER NOT NULL DEFAULT 0 | số lượt đã đánh giá; `0` ⇒ lượt tới là `scheduled` (BR-SRS-016) |
+| `answers_in_session` | INTEGER NOT NULL DEFAULT 0 | số lượt đã đánh giá của dòng. `0` ở round 1 ⇒ lượt tới là lượt đầu của thẻ trong stage: `learning` ở phiên học mới, `scheduled` ở phiên ôn (BR-SRS-016, BR-STUDY-023). Mọi lượt sau đó, kể cả lượt đầu của round sau, là `relearning` |
 | `remaining_ms` | INTEGER NULL | chỉ `recall`: thời gian còn lại của lượt đang dở (BR-STUDY-036). NULL ở mọi stage khác |
 | `is_revealed` | INTEGER NOT NULL DEFAULT 0 | chỉ `recall`: đáp án đã lật chưa, để Resume không che lại (BR-STUDY-036) |
 | `direction` | TEXT NULL | `korean_to_meaning` \| `meaning_to_korean` — chiều thật của **thẻ này**, gán một lần lúc dựng round (BR-MODE-015). NULL ở mọi stage ngoài `self_assess` của một phiên đủ điều kiện (BR-MODE-013) |

@@ -119,4 +119,35 @@ final class StudySessionDao {
 
   Future<void> insertSession(StudySessionCompanion row) =>
       _db.into(_db.studySession).insert(row);
+
+  Future<StudySession?> sessionRow(String id) => (_db.select(
+    _db.studySession,
+  )..where((session) => session.id.equals(id))).getSingleOrNull();
+
+  Future<void> setCursor(String id, int cursor) =>
+      _updateSession(id, StudySessionCompanion(cursor: Value(cursor)));
+
+  Future<void> setCurrentMode(String id, String mode) =>
+      _updateSession(id, StudySessionCompanion(currentMode: Value(mode)));
+
+  /// Ends the session as [status], for [reason] when it did not finish its
+  /// queue (schema.md's status matrix).
+  Future<void> endSession(
+    String id, {
+    required SessionStatus status,
+    SessionEndReason? reason,
+    required DateTime now,
+  }) => _updateSession(
+    id,
+    StudySessionCompanion(
+      status: Value(status.code),
+      endReason: Value(reason?.code),
+      endedAt: Value(now),
+    ),
+  );
+
+  Future<void> _updateSession(String id, StudySessionCompanion values) =>
+      (_db.update(
+        _db.studySession,
+      )..where((session) => session.id.equals(id))).write(values);
 }

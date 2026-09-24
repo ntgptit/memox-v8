@@ -1,3 +1,6 @@
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dart';
+
 /// Why the study feature refuses an operation (ADR-011 D6).
 enum StudyRejection {
   /// The deck, the session or the card is gone, or in the Trash.
@@ -39,5 +42,22 @@ enum StudyRejection {
   answerDoesNotFitMode,
 
   /// The action is not in the scheduler's `supportedActions` (BR-STUDY-009).
-  unsupportedAction,
+  unsupportedAction;
+
+  /// A mode's refusal of an answer, as the session reports it.
+  static StudyRejection ofModeRefusal(StudyModeRejection reason) =>
+      switch (reason) {
+        StudyModeRejection.answerDoesNotFitMode => answerDoesNotFitMode,
+        StudyModeRejection.unsupportedAction => unsupportedAction,
+      };
+
+  /// srs's refusal of a turn, as the session reports it. A refusal a
+  /// session never causes is a bug (spec §7.3 step 4).
+  static StudyRejection ofTurnRefusal(SrsRejection reason) => switch (reason) {
+    SrsRejection.notFound => notFound,
+    SrsRejection.staleGeneration => staleGeneration,
+    SrsRejection.unsupportedAction => unsupportedAction,
+    SrsRejection.schedulerLocked || SrsRejection.notARootDeck =>
+      throw StateError('srs refused a turn: $reason'),
+  };
 }
