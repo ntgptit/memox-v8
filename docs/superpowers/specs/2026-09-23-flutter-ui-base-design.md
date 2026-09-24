@@ -454,6 +454,10 @@ item names where it comes from.
 | 68 | A database `Failure` shows ARB copy from `lib/l10n/failure_message.dart`, never `Failure.message`, which stays English for logs | library phase 1 L2 |
 | 69 | The Library root's deck rows open nothing until phase 2 adds the recursive deck screen | library phase 1 L1 |
 | 70 | MxListSectionHeader lays out with `OverflowBar`: a trailing that does not fit beside the label (large text) moves under it, so the label no longer fills the row | library phase 1 Task 4 |
+| 71 | A deck that holds cards shows an empty body, and the empty-deck state and the FAB offer no "Add card", until the card list (phase 3) and the editor (phase 4) arrive | library phase 2 P2-L1 |
+| 72 | The Library root reorders from an app bar action; the library spec names Reorder only in an open deck's overflow | library phase 2 P2-L2 |
+| 73 | After the open deck moves, the back stack keeps its old parents: Back returns to a level that no longer lists it | library phase 2 review focus 5 |
+| 74 | Deck search always covers the whole library; a search scoped to one deck is not offered | library phase 2 P2-L9 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
