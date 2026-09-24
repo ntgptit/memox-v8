@@ -16,6 +16,7 @@
 |---|---|
 | D-O1 | **`MxIconTile` gains solid tones** (`primary`, `warning`) and **`MxCard` a warning ground**, so the lock strip draws as the handoff does: open lock on a solid primary tile over the hero ground; lock on a solid warning tile over the warning-soft ground. |
 | D-O2 | **A new shared `MxOutcomeTile({label, body, tone})`**, tones `kept` and `lost`, draws the reset dialog's two tiles: "Kept" in `statusMasteredInk` over the mastery tint (spec A10), "Lost" in `warningInk` over `warningSoft`. |
+| D-O3 | **The reset use case providers live in `srs/di/`** (asked in the popup during Task 8): the boundary test lets `deck` import another feature's `di/`, not its `domain/usecases/`. |
 
 ## Rulings written into this plan
 
