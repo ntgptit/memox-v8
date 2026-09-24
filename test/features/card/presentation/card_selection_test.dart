@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -14,13 +13,7 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
+Widget _section(String deckId) => cardDeckScreen(deckId: deckId);
 
 /// A deck of cards whose fronts are [fronts]; the first [flagged] are
 /// flagged.
@@ -100,6 +93,9 @@ void main() {
       for (var i = 0; i < 60; i++) 'card $i',
     ], flagged: 55);
     await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(_en.cardOpenSearch));
+    await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText), 'card');
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
@@ -108,21 +104,26 @@ void main() {
 
     await tester.longPress(find.byType(CardRowWidget).first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.cardSelectAll));
+    // E-O1: Select all lives in the app bar.
+    await tester.tap(find.text(_en.cardSelectAllCount(55)));
     await tester.pumpAndSettle();
 
     expect(_header(55), findsOneWidget);
   });
 
-  libraryTest('changing the filter clears the selection', (tester, env) async {
+  libraryTest('while selecting, the filters and the search step aside (E-L3)', (
+    tester,
+    env,
+  ) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa'], flagged: 1);
     await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxFilterChip), findsWidgets);
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
-    await tester.pumpAndSettle();
 
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
+    expect(find.byType(MxFilterChip), findsNothing);
+    expect(find.byTooltip(_en.cardOpenSearch), findsNothing);
   });
 
   libraryTest('system Back leaves selection first (RF5)', (tester, env) async {

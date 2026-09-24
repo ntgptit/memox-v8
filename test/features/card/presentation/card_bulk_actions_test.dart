@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -14,13 +13,7 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
+Widget _section(String deckId) => cardDeckScreen(deckId: deckId);
 
 /// Korean › Words: annyeong (new1), gamsa (due1), mul (flag1, flagged);
 /// Korean › Verbs: gada (verb1).

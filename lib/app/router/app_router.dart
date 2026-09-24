@@ -10,6 +10,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
@@ -124,11 +125,22 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onAddCard: addCard,
-    cardContent: (id) => CardListSectionWidget(
-      deckId: id,
-      onAddCard: () => addCard(id),
-      onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
-    ),
+    cardAppBar: (id, {required title, required leading, required actions}) =>
+        CardDeckAppBarWidget(
+          deckId: id,
+          title: title,
+          leading: leading,
+          actions: actions,
+        ),
+    cardContent: (id, {required schedulerType, required breadcrumb}) =>
+        CardListSectionWidget(
+          deckId: id,
+          schedulerType: schedulerType,
+          breadcrumb: breadcrumb,
+          onAddCard: () => addCard(id),
+          onOpenCard: (cardId) =>
+              unawaited(context.push(AppRoutes.card(cardId))),
+        ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );
 }

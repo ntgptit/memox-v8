@@ -14,8 +14,8 @@ import 'package:memox/features/card/presentation/widgets/items/card_row_widget.d
 import 'package:memox/features/card/presentation/widgets/overlays/card_sort_sheet_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_toolbar_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_selection_header_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -31,18 +31,28 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_flag_shee
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/core/error/outcome.dart';
 
-/// A deck's cards (spec §6.4): search, the filters with their counts, a
-/// sort, and the rows of a window that grows as the list nears its end. A
-/// long-press starts selection mode, with its header and bulk bar.
+/// A deck's cards (screen 07): the breadcrumb, the search the app bar
+/// opens, the filters with their counts, a sort, and the rows of a window
+/// that grows as the list nears its end. A long-press starts selection
+/// mode: the breadcrumb, search and filters step aside and the bulk bar
+/// shows; the app bar carries the count (owner decision E-O1).
 class CardListSectionWidget extends ConsumerStatefulWidget {
   const CardListSectionWidget({
     super.key,
     required this.deckId,
+    required this.schedulerType,
+    required this.breadcrumb,
     required this.onAddCard,
     required this.onOpenCard,
   });
 
   final String deckId;
+
+  /// The root's algorithm, named on the summary.
+  final SchedulerType schedulerType;
+
+  /// The deck's path, built by the deck screen; hidden while selecting.
+  final Widget breadcrumb;
 
   /// New card: the router opens the card editor.
   final VoidCallback onAddCard;
@@ -62,6 +72,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   static const double _growWithin = 600;
 
   final _query = TextEditingController();
+  final _searchFocus = FocusNode();
 
   /// Ruling P3-L5: the rows stay while a new window, filter or term loads.
   CardListView? _lastView;
@@ -72,6 +83,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   @override
   void dispose() {
     _query.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -96,21 +108,6 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   void _search(String term) {
     _request().search(term);
     _selection().clear();
-  }
-
-  /// Every card the query lets through, not only the loaded rows
-  /// (BR-CARD-012).
-  Future<void> _selectAll(CardListQuery query) async {
-    try {
-      final ids = await ref
-          .read(cardActionsControllerProvider.notifier)
-          .selectAll(deckId: widget.deckId, query: query);
-      if (!mounted) return;
-      _selection().selectAll(ids);
-    } on Failure catch (failure) {
-      if (!mounted) return;
-      showMxSnackbar(context, message: context.l10n.failure(failure));
-    }
   }
 
   /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
@@ -150,17 +147,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   }
 
   /// The bulk bar's commands over [selected] (ruling P3-L7).
-  List<CardBulkAction> _bulkActions(
-    CardListRequestState request,
-    Set<String> selected,
-  ) {
+  List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
     return [
-      (
-        icon: AppIcons.selectAll,
-        label: l10n.cardSelectAll,
-        onTap: () => unawaited(_selectAll(request.query)),
-      ),
       (
         icon: AppIcons.flag,
         label: l10n.cardFlag,
@@ -196,9 +185,25 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     ];
   }
 
+  /// E-O3: the field takes focus when the app bar opens it, and forgets its
+  /// text when closed.
+  void _onSearchOpened(bool? wasOpen, bool isOpen) {
+    if (isOpen && wasOpen != true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _searchFocus.requestFocus();
+      });
+    }
+    if (!isOpen && wasOpen == true) _query.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    ref.listen(
+      cardListRequestProvider(widget.deckId)
+          .select((request) => request.isSearchOpen),
+      _onSearchOpened,
+    );
     final request = ref.watch(cardListRequestProvider(widget.deckId));
     final selected = ref.watch(cardSelectionProvider(widget.deckId));
     final isSelecting = selected.isNotEmpty;
@@ -245,6 +250,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       child: _CardListScroll(
         toolbar: CardListToolbarWidget(
           searchController: _query,
+          searchFocus: _searchFocus,
+          isSearchShown: request.isSearchOpen && !isSelecting,
+          isFilterShown: !isSelecting,
           request: request,
           counts: view.counts,
           onSearch: _search,
@@ -273,15 +281,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         if (!didPop) _selection().clear();
       },
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isSelecting)
-            CardSelectionHeaderWidget(
-              count: selected.length,
-              onClose: () => _selection().clear(),
-            ),
+          if (!isSelecting) widget.breadcrumb,
           Expanded(child: list),
-          if (isSelecting)
-            CardBulkBarWidget(actions: _bulkActions(request, selected)),
+          if (isSelecting) CardBulkBarWidget(actions: _bulkActions(selected)),
         ],
       ),
     );

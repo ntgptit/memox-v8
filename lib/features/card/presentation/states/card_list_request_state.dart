@@ -14,12 +14,16 @@ final class CardListRequestState {
     this.sort = CardListSort.newest,
     this.searchTerm = '',
     this.windowSize = cardListWindowStep,
+    this.isSearchOpen = false,
   });
 
   final CardListFilter filter;
   final CardListSort sort;
   final String searchTerm;
   final int windowSize;
+
+  /// The search field shows (owner decision E-O3: the app bar opens it).
+  final bool isSearchOpen;
 
   /// The query the list, its counts and Select all share (BR-CARD-012).
   CardListQuery get query =>
@@ -37,19 +41,34 @@ class CardListRequest extends _$CardListRequest {
     filter: filter,
     sort: state.sort,
     searchTerm: state.searchTerm,
+    isSearchOpen: state.isSearchOpen,
   );
 
   void sortBy(CardListSort sort) => state = CardListRequestState(
     filter: state.filter,
     sort: sort,
     searchTerm: state.searchTerm,
+    isSearchOpen: state.isSearchOpen,
   );
 
   void search(String term) => state = CardListRequestState(
     filter: state.filter,
     sort: state.sort,
     searchTerm: term,
+    isSearchOpen: state.isSearchOpen,
   );
+
+  /// E-O3: the app bar's search action opens the field.
+  void openSearch() => state = CardListRequestState(
+    filter: state.filter,
+    sort: state.sort,
+    searchTerm: state.searchTerm,
+    isSearchOpen: true,
+  );
+
+  /// Closing the search clears its term; the filter and sort stay.
+  void closeSearch() =>
+      state = CardListRequestState(filter: state.filter, sort: state.sort);
 
   /// The list neared its end while more cards follow.
   void grow() => state = CardListRequestState(
@@ -57,5 +76,6 @@ class CardListRequest extends _$CardListRequest {
     sort: state.sort,
     searchTerm: state.searchTerm,
     windowSize: state.windowSize + cardListWindowStep,
+    isSearchOpen: state.isSearchOpen,
   );
 }

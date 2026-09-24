@@ -243,6 +243,28 @@ void main() {
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
   });
 
+  libraryTest('a deck of cards shows its search action in the app bar', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(env.db, id: 'c0', deckId: words.id, front: 'bap');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+
+    expect(
+      find.descendant(
+        of: find.byType(MxAppBar),
+        matching: find.byTooltip(_en.cardOpenSearch),
+      ),
+      findsOneWidget,
+    );
+  });
+
   libraryTest('a row opens its card; Back returns to the list as it was', (
     tester,
     env,
@@ -268,6 +290,8 @@ void main() {
     await pumpMemoxApp(tester, env);
     await _tap(tester, find.text('Korean'));
     await _tap(tester, find.text('Words'));
+    // E-O3: the app bar's action opens the search.
+    await _tap(tester, find.byTooltip(_en.cardOpenSearch));
     await tester.enterText(find.byType(EditableText), 'bap');
     await tester.pumpAndSettle();
     await _tap(

@@ -20,6 +20,7 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_level_bod
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
 import 'package:memox/shared/widgets/mx_unavailable.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -33,6 +34,23 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
+/// The app bar of a deck of cards, from the card feature (owner decision
+/// E-O1): the deck hands in its back control and its actions.
+typedef CardDeckAppBarBuilder = Widget Function(
+  String deckId, {
+  required String title,
+  required Widget leading,
+  required List<Widget> actions,
+});
+
+/// What a deck of cards shows, from the card feature, with the root's
+/// algorithm and the breadcrumb the deck built (E-O1).
+typedef CardDeckContentBuilder = Widget Function(
+  String deckId, {
+  required SchedulerType schedulerType,
+  required Widget breadcrumb,
+});
+
 /// One level of the deck tree (spec §6.1): the Library root when [deckId] is
 /// null, otherwise an open deck under its breadcrumb. Navigation arrives as
 /// callbacks; the screen never builds a path (spec §4).
@@ -45,6 +63,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onSearch,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -61,7 +80,8 @@ class DeckLevelScreen extends StatelessWidget {
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
-  final Widget Function(String deckId) cardContent;
+  final CardDeckContentBuilder cardContent;
+  final CardDeckAppBarBuilder cardAppBar;
 
   /// New card for [deckId]: the router opens the card editor.
   final ValueChanged<String> onAddCard;
@@ -83,6 +103,7 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenAncestor: onOpenAncestor,
       onOpenAlgorithm: onOpenAlgorithm,
       cardContent: cardContent,
+      cardAppBar: cardAppBar,
       onAddCard: onAddCard,
       cardFab: cardFab,
     ),
@@ -210,6 +231,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -218,7 +240,8 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
-  final Widget Function(String deckId) cardContent;
+  final CardDeckContentBuilder cardContent;
+  final CardDeckAppBarBuilder cardAppBar;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -240,6 +263,7 @@ class _OpenDeck extends ConsumerWidget {
         onOpenAncestor: onOpenAncestor,
         onOpenAlgorithm: onOpenAlgorithm,
         cardContent: cardContent,
+        cardAppBar: cardAppBar,
         onAddCard: onAddCard,
         cardFab: cardFab,
       ),
@@ -281,6 +305,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.cardContent,
+    required this.cardAppBar,
     required this.onAddCard,
     required this.cardFab,
   });
@@ -289,7 +314,8 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
-  final Widget Function(String deckId) cardContent;
+  final CardDeckContentBuilder cardContent;
+  final CardDeckAppBarBuilder cardAppBar;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
 
@@ -302,31 +328,56 @@ class _OpenDeckContent extends ConsumerWidget {
     final canCreateCard = view.createOptions.contains(DeckCreateOption.card);
     void createSubDeck() =>
         unawaited(showCreateSubDeckDialog(context, parentId: deck.id));
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: deck.name,
-        density: MxAppBarDensity.content,
-        leading: const _BackButton(),
-        actions: isReordering
-            ? [_ReorderDone(parentId: deck.id)]
-            : [
-                MxIconButton(
-                  icon: AppIcons.more,
-                  semanticLabel: l10n.deckActions,
-                  onPressed: () => unawaited(
-                    openDeckActions(
-                      context,
-                      ref,
-                      deckId: deck.id,
-                      parentId: deck.parentId,
-                      onOpenDeck: onOpenDeck,
-                      onOpenAlgorithm: onOpenAlgorithm,
-                      isOpenDeck: true,
-                    ),
-                  ),
+    final isCardDeck = deck.contentType == DeckContentType.card;
+    final actions = isReordering
+        ? [_ReorderDone(parentId: deck.id)]
+        : [
+            MxIconButton(
+              icon: AppIcons.more,
+              semanticLabel: l10n.deckActions,
+              onPressed: () => unawaited(
+                openDeckActions(
+                  context,
+                  ref,
+                  deckId: deck.id,
+                  parentId: deck.parentId,
+                  onOpenDeck: onOpenDeck,
+                  onOpenAlgorithm: onOpenAlgorithm,
+                  isOpenDeck: true,
                 ),
-              ],
-      ),
+              ),
+            ),
+          ];
+    // Ruling P2-L4: Library › ancestors › this deck.
+    final breadcrumb = MxBreadcrumb(
+      segments: [
+        MxBreadcrumbSegment(
+          label: l10n.navLibrary,
+          onTap: () => onOpenAncestor(null),
+        ),
+        for (final entry in view.breadcrumb)
+          MxBreadcrumbSegment(
+            label: entry.name,
+            onTap: () => onOpenAncestor(entry.id),
+          ),
+        MxBreadcrumbSegment(label: deck.name),
+      ],
+    );
+    return MxAppShell(
+      // E-O1: a deck of cards takes its bar from the card feature.
+      appBar: isCardDeck
+          ? cardAppBar(
+              deck.id,
+              title: deck.name,
+              leading: const _BackButton(),
+              actions: actions,
+            )
+          : MxAppBar(
+              title: deck.name,
+              density: MxAppBarDensity.content,
+              leading: const _BackButton(),
+              actions: actions,
+            ),
       // Ruling P4a-L9: a sub-deck where one fits, a card on a deck of cards.
       fab: switch (deck.contentType) {
         DeckContentType.card => cardFab(deck.id),
@@ -337,44 +388,34 @@ class _OpenDeckContent extends ConsumerWidget {
         ),
         _ => null,
       },
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Ruling P2-L4: Library › ancestors › this deck.
-          MxBreadcrumb(
-            segments: [
-              MxBreadcrumbSegment(
-                label: l10n.navLibrary,
-                onTap: () => onOpenAncestor(null),
-              ),
-              for (final entry in view.breadcrumb)
-                MxBreadcrumbSegment(
-                  label: entry.name,
-                  onTap: () => onOpenAncestor(entry.id),
+      body: isCardDeck
+          ? cardContent(
+              deck.id,
+              schedulerType: view.schedulerType,
+              breadcrumb: breadcrumb,
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                breadcrumb,
+                Expanded(
+                  child: DeckLevelBodyWidget(
+                    parentId: deck.id,
+                    onOpenDeck: onOpenDeck,
+                    onOpenAlgorithm: onOpenAlgorithm,
+                    schedulerType: view.schedulerType,
+                    // Owner decision C-O6: its sub-decks are at level 10.
+                    hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
+                    emptyState: DeckUnsetStateWidget(
+                      onAddCard: canCreateCard
+                          ? () => onAddCard(deck.id)
+                          : null,
+                      onCreateSubDeck: canCreateDeck ? createSubDeck : null,
+                    ),
+                  ),
                 ),
-              MxBreadcrumbSegment(label: deck.name),
-            ],
-          ),
-          Expanded(
-            child: switch (deck.contentType) {
-              DeckContentType.card => cardContent(deck.id),
-              DeckContentType.deck ||
-              DeckContentType.unset => DeckLevelBodyWidget(
-                parentId: deck.id,
-                onOpenDeck: onOpenDeck,
-                onOpenAlgorithm: onOpenAlgorithm,
-                schedulerType: view.schedulerType,
-                // Owner decision C-O6: its sub-decks are at level 10.
-                hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
-                emptyState: DeckUnsetStateWidget(
-                  onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
-                  onCreateSubDeck: canCreateDeck ? createSubDeck : null,
-                ),
-              ),
-            },
-          ),
-        ],
-      ),
+              ],
+            ),
     );
   }
 }

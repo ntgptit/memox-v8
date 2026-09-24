@@ -10,12 +10,16 @@ import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
-/// Search within the deck, the four filters with their counts, and the
-/// sort (spec §6.4).
+/// Search within the deck when the app bar opened it (E-O3), the four
+/// filters with their counts, and the sort (screen 07). While selecting,
+/// neither the search nor the filters show.
 class CardListToolbarWidget extends StatelessWidget {
   const CardListToolbarWidget({
     super.key,
     required this.searchController,
+    required this.searchFocus,
+    required this.isSearchShown,
+    required this.isFilterShown,
     required this.request,
     required this.counts,
     required this.onSearch,
@@ -24,6 +28,9 @@ class CardListToolbarWidget extends StatelessWidget {
   });
 
   final TextEditingController searchController;
+  final FocusNode searchFocus;
+  final bool isSearchShown;
+  final bool isFilterShown;
   final CardListRequestState request;
   final CardListCounts counts;
   final ValueChanged<String> onSearch;
@@ -37,34 +44,38 @@ class CardListToolbarWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: AppSpacing.control),
-        MxSearchField(
-          controller: searchController,
-          hintText: l10n.cardSearchHint,
-          clearLabel: l10n.cardSearchClear,
-          onChanged: onSearch,
-        ),
-        const SizedBox(height: AppSpacing.grouped),
-        // The chips never shrink or wrap, so their row scrolls.
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            spacing: AppSpacing.control,
-            children: [
-              for (final filter in CardListFilter.values)
-                MxFilterChip(
-                  label: l10n.cardFilter(filter),
-                  count: counts.of(filter),
-                  isSelected: filter == request.filter,
-                  onSelected: (_) => onFilter(filter),
-                ),
-              MxChipTrigger(
-                label: l10n.cardSortTrigger(l10n.cardSort(request.sort)),
-                icon: AppIcons.sort,
-                onPressed: onSort,
-              ),
-            ],
+        if (isSearchShown) ...[
+          MxSearchField(
+            controller: searchController,
+            focusNode: searchFocus,
+            hintText: l10n.cardSearchHint,
+            clearLabel: l10n.cardSearchClear,
+            onChanged: onSearch,
           ),
-        ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
+        // The chips never shrink or wrap, so their row scrolls.
+        if (isFilterShown)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              spacing: AppSpacing.control,
+              children: [
+                for (final filter in CardListFilter.values)
+                  MxFilterChip(
+                    label: l10n.cardFilter(filter),
+                    count: counts.of(filter),
+                    isSelected: filter == request.filter,
+                    onSelected: (_) => onFilter(filter),
+                  ),
+                MxChipTrigger(
+                  label: l10n.cardSortTrigger(l10n.cardSort(request.sort)),
+                  icon: AppIcons.sort,
+                  onPressed: onSort,
+                ),
+              ],
+            ),
+          ),
         const SizedBox(height: AppSpacing.grouped),
       ],
     );

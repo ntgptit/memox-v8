@@ -3,8 +3,6 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -49,15 +47,7 @@ void main() {
         await pumpLibraryGolden(
           tester,
           env,
-          deckScreen(
-            deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(
-              deckId: id,
-              onAddCard: () {},
-              onOpenCard: (_) {},
-            ),
-            cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
-          ),
+          cardDeckScreen(deckId: deckId),
           brightness,
         );
         await expectBoundaryGolden(tester, 'goldens/card_list_$theme.png');
@@ -70,15 +60,7 @@ void main() {
         await pumpLibraryGolden(
           tester,
           env,
-          deckScreen(
-            deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(
-              deckId: id,
-              onAddCard: () {},
-              onOpenCard: (_) {},
-            ),
-            cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
-          ),
+          cardDeckScreen(deckId: deckId),
           brightness,
         );
         await tester.longPress(find.text('sarang'));

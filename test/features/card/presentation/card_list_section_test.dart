@@ -8,8 +8,6 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
@@ -24,13 +22,14 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) => Scaffold(
-  body: CardListSectionWidget(
-    deckId: deckId,
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-);
+Widget _section(String deckId) => cardDeckScreen(deckId: deckId);
+
+/// E-O3: the app bar's action opens the search field.
+Future<void> _openSearch(WidgetTester tester) async {
+  await tester.pumpAndSettle();
+  await tester.tap(find.byTooltip(_en.cardOpenSearch));
+  await tester.pumpAndSettle();
+}
 
 /// Korean › Words: annyeong (new), gamsa (due today), sarang (due
 /// tomorrow) and mul (new, flagged).
@@ -124,6 +123,7 @@ void main() {
   libraryTest('search matches the front or the back', (tester, env) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
+    await _openSearch(tester);
     await tester.enterText(find.byType(EditableText), 'thank');
     await tester.pumpAndSettle();
 
@@ -182,6 +182,7 @@ void main() {
   libraryTest('a search with no hit names the term', (tester, env) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
+    await _openSearch(tester);
     await tester.enterText(find.byType(EditableText), 'zzz');
     await tester.pumpAndSettle();
 
@@ -319,15 +320,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      deckScreen(
-        deckId: deckId,
-        cardContent: (id) => CardListSectionWidget(
-          deckId: id,
-          onAddCard: () => adds++,
-          onOpenCard: (_) {},
-        ),
-        cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => adds++),
-      ),
+      cardDeckScreen(deckId: deckId, onAddCard: () => adds++),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(MxFab));
@@ -346,13 +339,7 @@ void main() {
       await pumpLibraryScreen(
         tester,
         env,
-        Scaffold(
-          body: CardListSectionWidget(
-            deckId: deckId,
-            onAddCard: () {},
-            onOpenCard: opened.add,
-          ),
-        ),
+        cardDeckScreen(deckId: deckId, onOpenCard: opened.add),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.byType(CardRowWidget).first);

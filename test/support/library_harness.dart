@@ -14,6 +14,10 @@ import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
@@ -166,7 +170,8 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onOpenDeck,
   ValueChanged<String?>? onOpenAncestor,
   ValueChanged<String>? onAddCard,
-  Widget Function(String deckId)? cardContent,
+  CardDeckContentBuilder? cardContent,
+  CardDeckAppBarBuilder? cardAppBar,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
   ValueChanged<String>? onOpenAlgorithm,
@@ -177,8 +182,46 @@ DeckLevelScreen deckScreen({
   onSearch: onSearch ?? () {},
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
-  cardContent: cardContent ?? (_) => const SizedBox.shrink(),
+  cardContent:
+      cardContent ??
+      (_, {required schedulerType, required breadcrumb}) => breadcrumb,
+  cardAppBar:
+      cardAppBar ??
+      (_, {required title, required leading, required actions}) => MxAppBar(
+        title: title,
+        density: MxAppBarDensity.content,
+        leading: leading,
+        actions: actions,
+      ),
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
+);
+
+/// An open deck of cards composed as the router composes it: the card
+/// feature's app bar, section and FAB inside the deck screen (E-O1).
+DeckLevelScreen cardDeckScreen({
+  required String deckId,
+  ValueChanged<String>? onOpenCard,
+  VoidCallback? onAddCard,
+  ValueChanged<String?>? onOpenAncestor,
+}) => deckScreen(
+  deckId: deckId,
+  onOpenAncestor: onOpenAncestor,
+  cardAppBar: (id, {required title, required leading, required actions}) =>
+      CardDeckAppBarWidget(
+        deckId: id,
+        title: title,
+        leading: leading,
+        actions: actions,
+      ),
+  cardContent: (id, {required schedulerType, required breadcrumb}) =>
+      CardListSectionWidget(
+        deckId: id,
+        schedulerType: schedulerType,
+        breadcrumb: breadcrumb,
+        onAddCard: onAddCard ?? () {},
+        onOpenCard: onOpenCard ?? (_) {},
+      ),
+  cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: onAddCard ?? () {}),
 );
 
 /// Screen 02 for [deckId], with its breadcrumb callback.
