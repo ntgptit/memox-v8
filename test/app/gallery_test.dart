@@ -3,12 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/app.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+
+import '../support/library_harness.dart';
 
 Future<void> _pumpGallery(WidgetTester tester) async {
   tester.view.physicalSize = const Size(1080, 2400);
@@ -88,12 +92,23 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Settings opens the gallery and back returns', (tester) async {
+  libraryTest('Settings opens the gallery and back returns', (
+    tester,
+    env,
+  ) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     final en = lookupAppLocalizations(const Locale('en'));
-    await tester.pumpWidget(const ProviderScope(child: MemoxApp()));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          databaseProvider.overrideWithValue(env.db),
+          dayClockProvider.overrideWithValue(env.clock),
+        ],
+        child: const MemoxApp(),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text(en.navSettings));
     await tester.pumpAndSettle();
