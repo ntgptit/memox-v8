@@ -30,7 +30,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | # | Screen | States | FE item | Status | Detail |
 |---|---|---|---|---|---|
 | 01 | Deck list · recursive | 22 | FE-A1 | aligned | [01-deck-list.md](01-deck-list.md) |
-| 02 | Review algorithm & reset | 9 | FE-A4 | not built | [02-review-algorithm.md](02-review-algorithm.md) |
+| 02 | Review algorithm & reset | 9 | FE-A4 | aligned | [02-review-algorithm.md](02-review-algorithm.md) |
 | 03 | Starter decks | 10 | FE-B4 | out of V8 | — |
 | 04 | Library search | 5 | FE-A1, FE-A10 | aligned | [04-library-search.md](04-library-search.md) |
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |

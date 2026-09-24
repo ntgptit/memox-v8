@@ -18,6 +18,9 @@ abstract final class AppRoutes {
 
   static const String deckSearch = '$decks/$searchChild';
 
+  /// A root deck's review algorithm (screen 02), relative to [deckChild].
+  static const String algorithmChild = 'algorithm';
+
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
@@ -30,6 +33,10 @@ abstract final class AppRoutes {
 
   /// An open deck's location.
   static String deck(String deckId) => '$decks/deck/$deckId';
+
+  /// Screen 02 for the root [deckId].
+  static String deckAlgorithm(String deckId) =>
+      '${deck(deckId)}/$algorithmChild';
 
   /// The card editor adding cards to [deckId].
   static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';

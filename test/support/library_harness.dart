@@ -14,6 +14,7 @@ import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
@@ -62,6 +63,14 @@ List<Override> _backend(LibraryEnv env) => [
   databaseProvider.overrideWithValue(env.db),
   dayClockProvider.overrideWithValue(env.clock),
 ];
+
+/// A provider container over [env]'s backend, for a test that drives
+/// providers without a widget tree. Disposed when the test ends.
+ProviderContainer libraryContainer(LibraryEnv env) {
+  final container = ProviderContainer(overrides: _backend(env));
+  addTearDown(container.dispose);
+  return container;
+}
 
 Widget _app(
   LibraryEnv env,
@@ -160,14 +169,25 @@ DeckLevelScreen deckScreen({
   Widget Function(String deckId)? cardContent,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
+  ValueChanged<String>? onOpenAlgorithm,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onSearch: onSearch ?? () {},
+  onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
+);
+
+/// Screen 02 for [deckId], with its breadcrumb callback.
+DeckAlgorithmScreen deckAlgorithmScreen({
+  required String deckId,
+  ValueChanged<String?>? onOpenAncestor,
+}) => DeckAlgorithmScreen(
+  deckId: deckId,
+  onOpenAncestor: onOpenAncestor ?? (_) {},
 );
 
 /// The whole app over [env] on a 1080×2400 (3x) phone, settled on the

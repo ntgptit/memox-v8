@@ -115,6 +115,21 @@ void main() {
     expect(find.text(_en.deckDeletedToast), findsOneWidget);
   });
 
+  libraryTest('Review algorithm pushes screen 02; Back returns to the deck', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(tester, find.text(_en.deckReviewAlgorithm));
+
+    expect(find.text(_en.algorithmHeader.toUpperCase()), findsOneWidget);
+    await _back(tester);
+    expect(_barTitle('Korean'), findsOneWidget);
+  });
+
   libraryTest('moving the open deck updates its path at once (RF5)', (
     tester,
     env,

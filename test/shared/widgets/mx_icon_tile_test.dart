@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -84,6 +85,50 @@ void main() {
   test('an icon or a child, not both', () {
     expect(
       () => MxIconTile(icon: AppIcons.folder, child: const SizedBox()),
+      throwsAssertionError,
+    );
+  });
+
+  testWidgets(
+    'a solid primary tile fills with primary under an onPrimary glyph',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxIconTile(icon: AppIcons.lockOpen, tone: MxIconTileTone.primary),
+      );
+      final scheme = AppColorSchemes.light;
+
+      expect(_tile(tester).color, scheme.primary);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.lockOpen)).color,
+        scheme.onPrimary,
+      );
+    },
+  );
+
+  testWidgets(
+    'a solid warning tile fills with warning under an onWarning glyph',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
+      );
+
+      expect(_tile(tester).color, MxSemanticColors.light.warning);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
+        MxSemanticColors.light.onWarning,
+      );
+    },
+  );
+
+  test('a seed only tints', () {
+    expect(
+      () => MxIconTile(
+        icon: AppIcons.lock,
+        tone: MxIconTileTone.primary,
+        seed: _seed,
+      ),
       throwsAssertionError,
     );
   });

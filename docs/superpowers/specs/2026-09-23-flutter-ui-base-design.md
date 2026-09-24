@@ -477,7 +477,7 @@ item names where it comes from.
 | 91 | On the empty Library, "Browse starter decks" is disabled without the spec A4 "not available yet" hint: `MxEmptyState` has no slot for a hint on its secondary action. Every other waiting control on screen 01 carries it | Impeccable review (critique + audit) |
 | 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
 | 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
-| 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D | library alignment phase C (C-L3) |
+| 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D — closed by library alignment phase D | library alignment phase C (C-L3) |
 | 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
 | 95 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
 

@@ -43,6 +43,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.onSearch,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -54,6 +55,9 @@ class DeckLevelScreen extends StatelessWidget {
   /// A breadcrumb tap: a deck above this one, or null for the Library root.
   final ValueChanged<String?> onOpenAncestor;
   final VoidCallback onSearch;
+
+  /// A root's review algorithm: the router opens screen 02.
+  final ValueChanged<String> onOpenAlgorithm;
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
@@ -68,11 +72,16 @@ class DeckLevelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (deckId) {
-    null => _LibraryRoot(onOpenDeck: onOpenDeck, onSearch: onSearch),
+    null => _LibraryRoot(
+      onOpenDeck: onOpenDeck,
+      onSearch: onSearch,
+      onOpenAlgorithm: onOpenAlgorithm,
+    ),
     final id => _OpenDeck(
       deckId: id,
       onOpenDeck: onOpenDeck,
       onOpenAncestor: onOpenAncestor,
+      onOpenAlgorithm: onOpenAlgorithm,
       cardContent: cardContent,
       onAddCard: onAddCard,
       cardFab: cardFab,
@@ -82,10 +91,15 @@ class DeckLevelScreen extends StatelessWidget {
 
 /// The roots with today's work first (UC-DECK-003).
 class _LibraryRoot extends ConsumerWidget {
-  const _LibraryRoot({required this.onOpenDeck, required this.onSearch});
+  const _LibraryRoot({
+    required this.onOpenDeck,
+    required this.onSearch,
+    required this.onOpenAlgorithm,
+  });
 
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
+  final ValueChanged<String> onOpenAlgorithm;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,6 +178,7 @@ class _LibraryRoot extends ConsumerWidget {
             child: DeckLevelBodyWidget(
               parentId: null,
               onOpenDeck: onOpenDeck,
+              onOpenAlgorithm: onOpenAlgorithm,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(
@@ -190,6 +205,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.deckId,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -198,6 +214,7 @@ class _OpenDeck extends ConsumerWidget {
   final String deckId;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(String deckId) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -218,6 +235,7 @@ class _OpenDeck extends ConsumerWidget {
         view: value,
         onOpenDeck: onOpenDeck,
         onOpenAncestor: onOpenAncestor,
+        onOpenAlgorithm: onOpenAlgorithm,
         cardContent: cardContent,
         onAddCard: onAddCard,
         cardFab: cardFab,
@@ -258,6 +276,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.view,
     required this.onOpenDeck,
     required this.onOpenAncestor,
+    required this.onOpenAlgorithm,
     required this.cardContent,
     required this.onAddCard,
     required this.cardFab,
@@ -266,6 +285,7 @@ class _OpenDeckContent extends ConsumerWidget {
   final DeckView view;
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
+  final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(String deckId) cardContent;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -297,6 +317,7 @@ class _OpenDeckContent extends ConsumerWidget {
                       deckId: deck.id,
                       parentId: deck.parentId,
                       onOpenDeck: onOpenDeck,
+                      onOpenAlgorithm: onOpenAlgorithm,
                       isOpenDeck: true,
                     ),
                   ),
@@ -338,6 +359,7 @@ class _OpenDeckContent extends ConsumerWidget {
               DeckContentType.unset => DeckLevelBodyWidget(
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
+                onOpenAlgorithm: onOpenAlgorithm,
                 schedulerType: view.schedulerType,
                 // Owner decision C-O6: its sub-decks are at level 10.
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,

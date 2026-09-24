@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
@@ -111,6 +112,37 @@ void main() {
             .first,
       ),
       same(_surface(tester)),
+    );
+  });
+
+  testWidgets(
+    'a warning card fills with warning-soft and edges with the warning border',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxCard(isWarning: true, child: SizedBox(height: 40)),
+      );
+      final derived = MxDerivedColors.resolve(
+        AppColorSchemes.light,
+        MxSemanticColors.light,
+      );
+      final raised = AppDecorations.raisedCard(
+        AppColorSchemes.light,
+        derived,
+      ).color!;
+
+      expect(
+        _surface(tester).color,
+        Color.alphaBlend(derived.warningSoft, raised),
+      );
+      expect(_shape(tester).side.color, derived.warningBorder);
+    },
+  );
+
+  test('a card is hero or warning, not both', () {
+    expect(
+      () => MxCard(isHero: true, isWarning: true, child: const SizedBox()),
+      throwsAssertionError,
     );
   });
 }

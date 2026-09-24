@@ -9,7 +9,6 @@ import 'package:memox/features/deck/presentation/widgets/overlays/deck_action_sh
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_move_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_scheduler_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -23,6 +22,7 @@ Future<void> openDeckActions(
   required String deckId,
   required String? parentId,
   required ValueChanged<String> onOpenDeck,
+  required ValueChanged<String> onOpenAlgorithm,
   required bool isOpenDeck,
 }) async {
   // A row's deck has no listener yet: keep its view alive until it emits,
@@ -61,8 +61,8 @@ Future<void> openDeckActions(
       await showRenameDeckDialog(context, deck: view.deck);
     case DeckAction.move:
       await showMoveDeckSheet(context, deck: view.deck);
-    case DeckAction.changeScheduler:
-      await showDeckSchedulerSheet(context, view: view);
+    case DeckAction.reviewAlgorithm:
+      onOpenAlgorithm(deckId);
     case DeckAction.reorder:
       ref.read(deckReorderModeProvider(reorderLevel).notifier).start();
     case DeckAction.delete:
