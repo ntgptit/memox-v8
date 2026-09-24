@@ -38,6 +38,10 @@ abstract interface class SettingsRepository {
   /// exist or is in the Trash.
   Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId});
 
+  /// [watchStudyOptions] read once, for the study session that opens with
+  /// them (BR-STUDY-024). Joins the caller's transaction.
+  Future<EffectiveStudyOptions?> studyOptionsOf({required String deckId});
+
   /// Gives the root [rootDeckId] options of its own, for the sessions opened
   /// after it (BR-SETTINGS-003). A sub-deck has none (BR-STUDY-056).
   Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({

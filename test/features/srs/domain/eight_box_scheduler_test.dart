@@ -4,20 +4,20 @@ import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/eight_box_scheduler.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-CardScheduleState _newCard({int generation = 1}) => CardScheduleState.eightBox(
-  generation: generation,
-  learnedAt: null,
-  dueAt: null,
-  lastAnsweredAt: null,
-  answerCount: 0,
-  lapseCount: 0,
-  currentBox: 1,
+final _now = DateTime(2026, 9, 23, 8);
+
+CardScheduleState _newCard() =>
+    CardScheduleState.initial(SchedulerType.eightBox, generation: 1);
+
+CardScheduleState _learnedIn(int box) => _newCard().copyWith(
+  learnedAt: _now,
+  currentBox: box,
+  dueAt: dueAtLocalMidnight(_now, 1),
 );
 
 void main() {
-  final now = DateTime(2026, 9, 23, 8);
-
   test('supportedActions is exactly forgotten and remembered', () {
     expect(eightBoxScheduler.supportedActions, {
       EightBoxAction.forgotten,
@@ -25,106 +25,98 @@ void main() {
     });
   });
 
-  test('remembered on a new card sets learnedAt and moves to box 2', () {
-    final (next, log) = eightBoxScheduler.next(
-      _newCard(),
-      EightBoxAction.remembered,
-      now,
-    );
-    expect(next.currentBox, 2);
-    expect(next.learnedAt, now);
-    expect(log.kind, ReviewKind.learning);
-    expect(log.previousBox, 1);
-    expect(log.nextBox, 2);
+  test('forgotten is the one lapse (BR-SRS-018)', () {
+    expect(eightBoxScheduler.isLapse(EightBoxAction.forgotten), isTrue);
+    expect(eightBoxScheduler.isLapse(EightBoxAction.remembered), isFalse);
   });
 
-  test(
-    'forgotten on a new card stays in learning, box unchanged, no due date',
-    () {
-      final (next, log) = eightBoxScheduler.next(
-        _newCard(),
-        EightBoxAction.forgotten,
-        now,
-      );
-      expect(next.currentBox, 1);
-      expect(next.dueAt, isNull);
-      expect(log.kind, ReviewKind.learning);
-    },
-  );
+  test('a card that finishes learning starts in box 1, due at the next '
+      'local midnight (BR-STUDY-053, BR-STUDY-074)', () {
+    final learned = eightBoxScheduler.learned(_newCard(), _now);
 
-  test('box 8 remembered schedules 128 days out (BR-SRS box ladder)', () {
-    final learned = _newCard().copyWith(learnedAt: now, currentBox: 8);
-    final (next, log) = eightBoxScheduler.next(
-      learned,
-      EightBoxAction.remembered,
-      now,
-    );
-    expect(next.dueAt, dueAtLocalMidnight(now, 128));
-    expect(log.kind, ReviewKind.scheduled);
-    expect(log.nextDueAt, next.dueAt);
+    expect(learned.learnedAt, _now);
+    expect(learned.currentBox, 1);
+    expect(learned.dueAt, DateTime(2026, 9, 24));
+    expect(learned.lastAnsweredAt, isNull);
+    expect((learned.answerCount, learned.lapseCount), (0, 0));
   });
 
-  test('forgotten after learning is relearning and does not change dueAt', () {
-    final scheduled = _newCard().copyWith(
-      learnedAt: now,
-      currentBox: 4,
-      dueAt: dueAtLocalMidnight(now, 8),
-    );
-    final (next, log) = eightBoxScheduler.next(
-      scheduled,
-      EightBoxAction.forgotten,
-      now,
-    );
-    expect(log.kind, ReviewKind.relearning);
+  test('learning a card that is already learned is a programming error', () {
     expect(
-      next.dueAt,
-      scheduled.dueAt,
-      reason: 'BR-SRS-017: relearning does not change the schedule',
+      () => eightBoxScheduler.learned(_learnedIn(3), _now),
+      throwsArgumentError,
     );
-    expect(log.previousBox, log.nextBox);
   });
 
-  // BR-SRS-018: last_answered_at on every turn, answer_count on scheduled
-  // turns only. A lapse is counted on the forgotten turn of a learned card,
-  // as Task 4 counts sm2's `again` (Clarification 15 records the kind model).
-  test(
-    'every answer stamps lastAnsweredAt; only a scheduled answer counts',
-    () {
-      final (learning, _) = eightBoxScheduler.next(
-        _newCard(),
-        EightBoxAction.forgotten,
-        now,
-      );
-      expect(learning.lastAnsweredAt, now);
-      expect(learning.answerCount, 0);
-
-      final learned = _newCard().copyWith(
-        learnedAt: now,
-        currentBox: 3,
-        dueAt: dueAtLocalMidnight(now, 4),
-      );
-      final (scheduled, _) = eightBoxScheduler.next(
-        learned,
+  for (final (box, target, days) in [
+    (1, 2, 2),
+    (2, 3, 4),
+    (3, 4, 8),
+    (4, 5, 16),
+    (5, 6, 32),
+    (6, 7, 64),
+    (7, 8, 128),
+    (8, 8, 128),
+  ]) {
+    test('remembered in box $box moves to box $target, due in $days days '
+        '(BR-SRS-008, BR-SRS-009)', () {
+      final (state, log) = eightBoxScheduler.next(
+        _learnedIn(box),
         EightBoxAction.remembered,
-        now,
+        _now,
       );
-      expect(scheduled.answerCount, 1);
-      expect(scheduled.lapseCount, 0);
 
-      final (relearning, _) = eightBoxScheduler.next(
-        learned,
-        EightBoxAction.forgotten,
-        now,
-      );
-      expect(relearning.lastAnsweredAt, now);
-      expect(relearning.answerCount, 0);
-      expect(relearning.lapseCount, 1);
-    },
-  );
+      expect(state.currentBox, target);
+      expect(state.dueAt, dueAtLocalMidnight(_now, days));
+      expect(log.kind, ReviewKind.scheduled);
+      expect((log.previousBox, log.nextBox), (box, target));
+      expect(log.nextDueAt, state.dueAt);
+    });
+  }
+
+  test('forgotten sends a learned card back to box 1, due the next day '
+      '(BR-SRS-008)', () {
+    final (state, log) = eightBoxScheduler.next(
+      _learnedIn(5),
+      EightBoxAction.forgotten,
+      _now,
+    );
+
+    expect(state.currentBox, 1);
+    expect(state.dueAt, dueAtLocalMidnight(_now, 1));
+    expect((log.previousBox, log.nextBox), (5, 1));
+  });
+
+  test('a scheduled turn stamps lastAnsweredAt, counts the answer, and '
+      'counts a lapse on forgotten only (BR-SRS-018)', () {
+    final answeredAt = _now.add(const Duration(days: 3));
+    final (remembered, _) = eightBoxScheduler.next(
+      _learnedIn(3),
+      EightBoxAction.remembered,
+      answeredAt,
+    );
+    final (forgotten, _) = eightBoxScheduler.next(
+      _learnedIn(3),
+      EightBoxAction.forgotten,
+      answeredAt,
+    );
+
+    expect(remembered.lastAnsweredAt, answeredAt);
+    expect((remembered.answerCount, remembered.lapseCount), (1, 0));
+    expect((forgotten.answerCount, forgotten.lapseCount), (1, 1));
+  });
+
+  test('a scheduled turn on a card still learning is a programming error '
+      '(BR-STUDY-058)', () {
+    expect(
+      () => eightBoxScheduler.next(_newCard(), EightBoxAction.remembered, _now),
+      throwsArgumentError,
+    );
+  });
 
   test('an action of another scheduler is refused', () {
     expect(
-      () => eightBoxScheduler.next(_newCard(), 'good', now),
+      () => eightBoxScheduler.next(_learnedIn(1), 'good', _now),
       throwsArgumentError,
     );
   });

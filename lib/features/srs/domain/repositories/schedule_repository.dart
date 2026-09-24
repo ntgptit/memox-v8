@@ -1,6 +1,7 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
+import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 /// The one implementation is `ScheduleRepositoryImpl` (data layer). The
@@ -14,10 +15,26 @@ abstract interface class ScheduleRepository {
   /// missing card is a bug, not a business outcome.
   Future<void> initializeCard({required String cardId});
 
-  Future<Outcome<void, SrsRejection>> recordReview({
+  /// Records one answer of a study session (BR-SRS-019). Only a `scheduled`
+  /// turn changes the schedule; `learning` and `relearning` turns stamp
+  /// `last_answered_at` and nothing else (BR-SRS-016, BR-SRS-017,
+  /// BR-SRS-018). Refused, writing nothing, for a card that is gone or in the
+  /// Trash (notFound), a turn of another generation (staleGeneration) and an
+  /// action the root scheduler does not support (unsupportedAction). A
+  /// `scheduled` turn on a card still learning is a bug: it throws and
+  /// writes nothing (BR-STUDY-058). Joins the caller's transaction.
+  Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn);
+
+  /// A card finished learning (BR-STUDY-053): its schedule starts at the
+  /// lowest level, due at the next local midnight, and no `review_log` row is
+  /// written. The first completion of a generation also locks the root's
+  /// scheduler, in one write with it (BR-SRS-003). Refused, writing nothing,
+  /// for a card that is gone or in the Trash (notFound) and another
+  /// generation (staleGeneration). Completing a learned card is a bug: it
+  /// throws and writes nothing. Joins the caller's transaction.
+  Future<Outcome<void, SrsRejection>> completeLearning({
     required String cardId,
-    required String sessionId,
-    required Object action,
+    required int generation,
     DateTime? now,
   });
 

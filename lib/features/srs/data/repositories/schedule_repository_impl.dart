@@ -7,7 +7,9 @@ import 'package:memox/features/srs/data/datasources/srs_dao.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
+import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/review_log_entry_model.dart';
+import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
@@ -15,6 +17,9 @@ import 'package:memox/features/srs/domain/repositories/schedule_repository.dart'
 // `study_session.end_reason` values (schema.md, invariant 12).
 const _schedulerChanged = 'scheduler_changed';
 const _schedulerReset = 'scheduler_reset';
+
+/// The root of a card's tree and the card's schedule.
+typedef _Studied = (Deck, CardScheduleState);
 
 /// Every method runs in one transaction, which joins the caller's when there
 /// is one: the rules read the rows as they are at the moment of writing.
@@ -49,59 +54,99 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       });
 
   @override
-  Future<Outcome<void, SrsRejection>> recordReview({
+  Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>
+      _write(() async {
+        switch (await _studied(turn.cardId, turn.generation)) {
+          case Rejected(:final reason):
+            return Rejected(reason);
+          case Ok(value: (final root, final before)):
+            return _record(turn, root, before);
+        }
+      });
+
+  @override
+  Future<Outcome<void, SrsRejection>> completeLearning({
     required String cardId,
-    required String sessionId,
-    required Object action,
+    required int generation,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _write(() async {
-      final schedule = await _dao.scheduleRow(cardId);
-      final root = await _dao.rootOfCard(cardId);
-      if (schedule == null || root == null) {
-        return const Rejected(SrsRejection.notFound);
+      switch (await _studied(cardId, generation)) {
+        case Rejected(:final reason):
+          return Rejected(reason);
+        case Ok(value: (final root, final before)):
+          return _complete(cardId, root, before, at);
       }
-      final type = SchedulerType.fromCode(root.schedulerType!);
-      final scheduler = schedulerFor(type);
-      if (!scheduler.supportedActions.contains(action)) {
-        return const Rejected(SrsRejection.unsupportedAction);
-      }
-      final session = await _dao.sessionRow(sessionId);
-      if (session == null) return const Rejected(SrsRejection.notFound);
-      if (session.generation != root.generation) {
-        return const Rejected(SrsRejection.staleGeneration);
-      }
-
-      final before = _stateOf(schedule);
-      final (after, entry) = scheduler.next(before, action, at);
-      await _dao.updateSchedule(
-        cardId,
-        _columnsOf(after, type: type, version: root.schedulerVersion!),
-      );
-      await _dao.insertReviewLog(
-        _logOf(
-          entry,
-          cardId: cardId,
-          sessionId: sessionId,
-          mode: session.currentMode,
-          type: type,
-          generation: after.generation,
-          action: action as Enum,
-          at: at,
-        ),
-      );
-      // The first card of the tree to finish learning locks its scheduler
-      // (BR-SRS-003).
-      final learnedNow = before.learnedAt == null && after.learnedAt != null;
-      if (learnedNow && root.firstAnsweredAt == null) {
-        await _dao.updateDeck(
-          root.id,
-          DeckCompanion(firstAnsweredAt: Value(at), updatedAt: Value(at)),
-        );
-      }
-      return const Ok(null);
     });
+  }
+
+  Future<Outcome<void, SrsRejection>> _record(
+    ReviewTurn turn,
+    Deck root,
+    CardScheduleState before,
+  ) async {
+    final type = SchedulerType.fromCode(root.schedulerType!);
+    final scheduler = schedulerFor(type);
+    if (!scheduler.supportedActions.contains(turn.action)) {
+      return const Rejected(SrsRejection.unsupportedAction);
+    }
+    // A scheduled turn on a card still learning is a bug the scheduler throws
+    // on, which rolls the turn back (BR-STUDY-058).
+    final (after, entry) = turn.kind == ReviewKind.scheduled
+        ? scheduler.next(before, turn.action, turn.answeredAt)
+        : _unchanged(before, turn.kind, turn.answeredAt);
+    await _dao.updateSchedule(
+      turn.cardId,
+      _columnsOf(after, type: type, version: root.schedulerVersion!),
+    );
+    await _dao.insertReviewLog(_logOf(entry, turn, type));
+    return const Ok(null);
+  }
+
+  Future<Outcome<void, SrsRejection>> _complete(
+    String cardId,
+    Deck root,
+    CardScheduleState before,
+    DateTime at,
+  ) async {
+    // Completing a learned card again is a bug the scheduler throws on.
+    final type = SchedulerType.fromCode(root.schedulerType!);
+    await _dao.updateSchedule(
+      cardId,
+      _columnsOf(
+        schedulerFor(type).learned(before, at),
+        type: type,
+        version: root.schedulerVersion!,
+      ),
+    );
+    // The first card of the generation to finish learning locks the
+    // scheduler (BR-SRS-003); a later one keeps that mark.
+    if (root.firstAnsweredAt == null) {
+      await _dao.updateDeck(
+        root.id,
+        DeckCompanion(firstAnsweredAt: Value(at), updatedAt: Value(at)),
+      );
+    }
+    return const Ok(null);
+  }
+
+  /// The root and the schedule of [cardId], read inside the caller's
+  /// transaction: notFound when the card is gone or in the Trash (BE-C3),
+  /// staleGeneration when [generation] is not the root's (BR-SRS-026).
+  Future<Outcome<_Studied, SrsRejection>> _studied(
+    String cardId,
+    int generation,
+  ) async {
+    final root = await _dao.rootOfCard(cardId);
+    final schedule = await _dao.scheduleRow(cardId);
+    if (root == null || schedule == null) {
+      return const Rejected(SrsRejection.notFound);
+    }
+    if (generation != root.generation || schedule.generation != generation) {
+      return const Rejected(SrsRejection.staleGeneration);
+    }
+    return Ok((root, _stateOf(schedule)));
   }
 
   @override
@@ -244,6 +289,27 @@ CardScheduleState _stateOf(CardSchedule row) => CardScheduleState.fromColumns(
   repetitions: row.repetitions,
 );
 
+/// A `learning` or `relearning` turn: the schedule stays as it is but for
+/// `last_answered_at`, and the log's before and after values are the same
+/// (BR-SRS-017, BR-SRS-018, invariant 14).
+(CardScheduleState, ReviewLogEntry) _unchanged(
+  CardScheduleState state,
+  ReviewKind kind,
+  DateTime at,
+) => (
+  state.copyWith(lastAnsweredAt: at),
+  ReviewLogEntry(
+    kind: kind,
+    previousBox: state.currentBox,
+    nextBox: state.currentBox,
+    previousEaseFactor: state.easeFactor,
+    nextEaseFactor: state.easeFactor,
+    previousIntervalDays: state.intervalDays,
+    nextIntervalDays: state.intervalDays,
+    nextDueAt: state.dueAt,
+  ),
+);
+
 /// Every column of a `card_schedule` row but `card_id`.
 CardScheduleCompanion _columnsOf(
   CardScheduleState state, {
@@ -265,24 +331,20 @@ CardScheduleCompanion _columnsOf(
 );
 
 ReviewLogCompanion _logOf(
-  ReviewLogEntry entry, {
-  required String cardId,
-  required String sessionId,
-  required String mode,
-  required SchedulerType type,
-  required int generation,
-  required Enum action,
-  required DateTime at,
-}) => ReviewLogCompanion.insert(
+  ReviewLogEntry entry,
+  ReviewTurn turn,
+  SchedulerType type,
+) => ReviewLogCompanion.insert(
   id: newId(),
-  cardId: cardId,
-  sessionId: sessionId,
+  cardId: turn.cardId,
+  sessionId: turn.sessionId,
   schedulerType: type.code,
-  generation: generation,
+  generation: turn.generation,
   kind: entry.kind.name,
-  mode: mode,
-  action: action.name,
-  answeredAt: at,
+  mode: turn.modeCode,
+  direction: Value(turn.directionCode),
+  action: (turn.action as Enum).name,
+  answeredAt: turn.answeredAt,
   nextDueAt: Value(entry.nextDueAt),
   previousBox: Value(entry.previousBox),
   nextBox: Value(entry.nextBox),

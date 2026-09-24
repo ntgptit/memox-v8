@@ -1,6 +1,6 @@
 ---
 feature: study-mode
-code: []
+code: [lib/features/study_mode/domain]
 depends_on: [srs]
 ---
 ## Phạm vi
@@ -49,8 +49,6 @@ họ. Một cái tên ôm cả hai là thứ sẽ phải giải thích lại ở
 thế nào (BR-STUDY-023, BR-STUDY-053). Màn chọn mode ôn tập chỉ xuất hiện khi thuật toán có
 từ hai mode ôn tập: `eight_box` có bốn, `sm2` chỉ có `self_assess` nên vào
 thẳng (BR-STUDY-055).
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 
