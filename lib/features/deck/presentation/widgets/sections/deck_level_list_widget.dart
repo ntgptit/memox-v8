@@ -83,7 +83,8 @@ class DeckLevelListWidget extends ConsumerWidget {
     return MxScreenScroll(
       clearance: MxScrollClearance.fabAboveNav,
       children: [
-        const SizedBox(height: AppSpacing.gutter),
+        // Screen 01: the strip or the summary sits close under the search
+        // field or the breadcrumb, whose own inset is the gap.
         if (schedulerType case final algorithm?) ...[
           DeckSummaryCardWidget(level: level, schedulerType: algorithm),
           const SizedBox(height: AppSpacing.grouped),

@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -31,10 +32,20 @@ class DeckRowWidget extends StatelessWidget {
     _ => AppIcons.folder,
   };
 
+  /// "4 sub-decks · 1,248 cards", "420 cards" for a deck of cards, or the
+  /// empty line (screen 01).
+  String _meta(AppLocalizations l10n) => switch (tile) {
+    DeckTile(subDeckCount: 0, cardCount: 0) => l10n.deckRowEmpty,
+    DeckTile(subDeckCount: 0) => l10n.deckCardCount(tile.cardCount),
+    _ => l10n.deckRowMeta(
+      l10n.deckSubDeckCount(tile.subDeckCount),
+      l10n.deckCardCount(tile.cardCount),
+    ),
+  };
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isEmpty = tile.subDeckCount == 0 && tile.cardCount == 0;
     return MxCard(
       isFullBleed: true,
       child: MxRowInk(
@@ -71,12 +82,7 @@ class DeckRowWidget extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      isEmpty
-                          ? l10n.deckRowEmpty
-                          : l10n.deckRowMeta(
-                              l10n.deckSubDeckCount(tile.subDeckCount),
-                              l10n.deckCardCount(tile.cardCount),
-                            ),
+                      _meta(l10n),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: context.textStyles.rowSubtitle,

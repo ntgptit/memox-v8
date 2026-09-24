@@ -68,6 +68,16 @@ void main() {
     );
   });
 
+  libraryTest('a deck of cards counts only its cards (screen 01)', (
+    tester,
+    env,
+  ) async {
+    await pump(tester, env, _tile(subDecks: 0, cards: 420));
+
+    expect(find.text(_en.deckCardCount(420)), findsOneWidget);
+    expect(find.textContaining(_en.deckSubDeckCount(0)), findsNothing);
+  });
+
   libraryTest('no badge when nothing is due; an empty deck says so', (
     tester,
     env,

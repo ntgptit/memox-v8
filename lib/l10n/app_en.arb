@@ -40,10 +40,6 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
-  "libraryDecksHeader": "Decks",
-  "@libraryDecksHeader": {
-    "description": "Overline above the list of decks in the Library."
-  },
   "libraryCreateDeck": "Create deck",
   "@libraryCreateDeck": {
     "description": "Action and FAB label: create a new top-level deck."
@@ -116,19 +112,6 @@
   "@workloadNoCards": {
     "description": "Workload line for a deck or level with no card."
   },
-  "deckSortTitle": "Sort decks",
-  "@deckSortTitle": {
-    "description": "Title of the deck sort sheet."
-  },
-  "deckSortTrigger": "Sort: {order}",
-  "@deckSortTrigger": {
-    "placeholders": {
-      "order": {
-        "type": "String"
-      }
-    },
-    "description": "Chip naming the current deck order."
-  },
   "deckSortManual": "Manual",
   "@deckSortManual": {
     "description": "Deck order: the person's own order."
@@ -144,27 +127,6 @@
   "deckSortDue": "Most due",
   "@deckSortDue": {
     "description": "Deck order: most due cards first."
-  },
-  "deckFilterTitle": "Show",
-  "@deckFilterTitle": {
-    "description": "Title of the deck filter sheet."
-  },
-  "deckFilterTrigger": "Show: {filter}",
-  "@deckFilterTrigger": {
-    "placeholders": {
-      "filter": {
-        "type": "String"
-      }
-    },
-    "description": "Chip naming which decks show."
-  },
-  "deckFilterAll": "All decks",
-  "@deckFilterAll": {
-    "description": "Deck filter: every deck."
-  },
-  "deckFilterDue": "Due decks",
-  "@deckFilterDue": {
-    "description": "Deck filter: decks with cards due."
   },
   "deckCreateRootTitle": "New deck",
   "@deckCreateRootTitle": {
@@ -254,14 +216,6 @@
   "@commonOk": {
     "description": "Closes a sheet that offers no choice."
   },
-  "libraryOpenSearch": "Search decks",
-  "@libraryOpenSearch": {
-    "description": "Library app bar action that opens deck search."
-  },
-  "libraryReorder": "Reorder decks",
-  "@libraryReorder": {
-    "description": "App bar action that starts drag-to-reorder."
-  },
   "libraryReorderDone": "Done",
   "@libraryReorderDone": {
     "description": "Ends drag-to-reorder mode."
@@ -310,7 +264,7 @@
   "@deckRenameConfirm": {
     "description": "Confirm of the rename dialog."
   },
-  "deckMove": "Move",
+  "deckMove": "Move to another deck",
   "@deckMove": {
     "description": "Deck action sheet command."
   },
@@ -338,10 +292,6 @@
       }
     },
     "description": "Snackbar after a move; deck is the new parent's name."
-  },
-  "deckChangeScheduler": "Review algorithm",
-  "@deckChangeScheduler": {
-    "description": "Deck action sheet command, root decks only."
   },
   "deckSchedulerTitle": "Scheduler",
   "@deckSchedulerTitle": {
@@ -387,10 +337,6 @@
       }
     },
     "description": "Delete dialog body: what the delete takes with it."
-  },
-  "deckSearchTitle": "Search decks",
-  "@deckSearchTitle": {
-    "description": "Title of the deck search screen."
   },
   "deckSearchHint": "Search decks",
   "@deckSearchHint": {

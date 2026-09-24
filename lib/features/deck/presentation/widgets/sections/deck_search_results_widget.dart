@@ -52,6 +52,7 @@ class DeckSearchResultsWidget extends ConsumerWidget {
       ),
       AsyncData(:final value) => MxScreenScroll(
         children: [
+          const SizedBox(height: AppSpacing.control),
           MxListSectionHeader(label: l10n.searchResultsFor(trimmed)),
           MxListSectionHeader(
             label: l10n.searchDecksGroup,
@@ -88,6 +89,7 @@ class DeckSearchResultsWidget extends ConsumerWidget {
       ),
       _ => MxScreenScroll(
         children: [
+          const SizedBox(height: AppSpacing.control),
           MxListSectionHeader(label: l10n.searchSearching(trimmed)),
           for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
         ],
@@ -106,6 +108,7 @@ class _SearchHintsWidget extends StatelessWidget {
     final l10n = context.l10n;
     return MxScreenScroll(
       children: [
+        const SizedBox(height: AppSpacing.control),
         MxListSectionHeader(label: l10n.searchFinds),
         MxCard(
           isFullBleed: true,

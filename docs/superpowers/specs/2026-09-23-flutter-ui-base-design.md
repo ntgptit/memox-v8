@@ -455,7 +455,7 @@ item names where it comes from.
 | 69 | The Library root's deck rows open nothing until phase 2 adds the recursive deck screen | library phase 1 L1 |
 | 70 | MxListSectionHeader lays out with `OverflowBar`: a trailing that does not fit beside the label (large text) moves under it, so the label no longer fills the row | library phase 1 Task 4 |
 | 71 | A deck that holds cards shows an empty body, and the empty-deck state and the FAB offer no "Add card", until the card list (phase 3) and the editor (phase 4) arrive — "Add card" closed by library phase 4a | library phase 2 P2-L1 |
-| 72 | The Library root reorders from an app bar action; the library spec names Reorder only in an open deck's overflow | library phase 2 P2-L2 |
+| 72 | The Library root reorders from an app bar action; the library spec names Reorder only in an open deck's overflow — closed by library alignment phase C (C-L4) | library phase 2 P2-L2 |
 | 73 | After the open deck moves, the back stack keeps its old parents: Back returns to a level that no longer lists it | library phase 2 review focus 5 |
 | 74 | Deck search always covers the whole library; a search scoped to one deck is not offered | library phase 2 P2-L9 |
 | 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) | library phase 3 P3-L1 |
@@ -468,6 +468,11 @@ item names where it comes from.
 | 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b | library phase 4a P4a-L10 |
 | 83 | The edit mode is built and tested in phase 4a but has no route until phase 4b adds the card detail, which opens it | library phase 4a split |
 | 84 | A top-level deck holds sub-decks only, so its empty state offers New sub-deck alone, with its own copy; New card shows where the deck's create options include cards | library phase 4a (Task 4 ruling) |
+| 85 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
+| 86 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
+| 87 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D | library alignment phase C (C-L3) |
+| 88 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
+| 89 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

@@ -43,3 +43,6 @@ rather than disabled.
 |---|---|---|
 | Searches decks, cards and tags | Decks only | Spec A11; UI-base debt row 74 |
 | Match emphasised in primary 700 with a tinted mark | `rowTitleMatch` (primary, 700), no background mark | Guard: no per-site decoration of text |
+| A 40-tall field in the app bar | `MxSearchField` at its 52 input floor inside the 56 bar | The shared field's touch floor |
+| Group label with a tinted glyph and a small count beside it | `MxListSectionHeader` "DECKS" with a neutral `MxBadge` count at the end | Guard: no `Icon(color:)` in feature code; the shared header's anatomy |
+| Subtitle and hint lines in plain 12/500 | The caption role, tracked 1.2 | Guard: no per-site text styling |

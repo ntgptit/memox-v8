@@ -6,6 +6,7 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -290,7 +291,14 @@ void main() {
         );
         expect(button.onPressed, isNull, reason: label);
       }
-      expect(find.byTooltip(_en.libraryReorder), findsNothing);
+      // Reorder moved to a row's sheet (ruling C-L4): three actions only.
+      expect(
+        find.descendant(
+          of: find.byType(MxAppBar),
+          matching: find.byType(MxIconButton),
+        ),
+        findsNWidgets(3),
+      );
     },
   );
 
