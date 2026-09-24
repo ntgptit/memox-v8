@@ -39,7 +39,7 @@ void libraryTest(
       await body(tester, env);
     } finally {
       await tester.pumpWidget(const SizedBox());
-      await tester.pump();
+      await tester.pump(Duration.zero);
       await env.db.close();
     }
   });
