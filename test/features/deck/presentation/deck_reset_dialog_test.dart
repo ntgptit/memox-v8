@@ -1,6 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/srs/di/schedule_repository_provider.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
+import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
@@ -11,6 +21,61 @@ import '../../../support/library_harness.dart';
 import '../../../support/srs_fixtures.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
+
+/// The real schedules; a reset first waits for [gate], and the first one
+/// fails in the database when [isFirstFailing] (UC-SRS-001 E1).
+final class _GatedReset implements ScheduleRepository {
+  _GatedReset(this._real, {this.isFirstFailing = false});
+
+  final ScheduleRepository _real;
+  final bool isFirstFailing;
+  final gate = Completer<void>();
+  var _resets = 0;
+
+  @override
+  Future<Outcome<void, SrsRejection>> resetLearning({
+    required String rootDeckId,
+    SchedulerType? schedulerType,
+  }) async {
+    await gate.future;
+    _resets++;
+    if (isFirstFailing && _resets == 1) {
+      throw const DatabaseLockedFailure(cause: 'locked');
+    }
+    return _real.resetLearning(
+      rootDeckId: rootDeckId,
+      schedulerType: schedulerType,
+    );
+  }
+
+  @override
+  Future<Outcome<void, SrsRejection>> changeScheduler({
+    required String rootDeckId,
+    required SchedulerType newType,
+  }) => _real.changeScheduler(rootDeckId: rootDeckId, newType: newType);
+
+  @override
+  Future<void> initializeCard({required String cardId}) =>
+      _real.initializeCard(cardId: cardId);
+
+  @override
+  Future<Outcome<void, SrsRejection>> recordReview({
+    required String cardId,
+    required String sessionId,
+    required Object action,
+    DateTime? now,
+  }) => _real.recordReview(
+    cardId: cardId,
+    sessionId: sessionId,
+    action: action,
+    now: now,
+  );
+
+  @override
+  Future<Outcome<ResetLearningSummary, SrsRejection>> resetSummary({
+    required String rootDeckId,
+  }) => _real.resetSummary(rootDeckId: rootDeckId);
+}
 
 MxOptionRow _option(WidgetTester tester, String title) =>
     tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, title));
@@ -163,5 +228,91 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text(_en.resetDialogTitle), findsOneWidget);
+  });
+
+  libraryTest('a reset made elsewhere while the dialog is open moves its '
+      'cycle on', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+    await _openReset(tester);
+    expect(find.text(_en.resetConfirm(2)), findsOneWidget);
+
+    await ScheduleRepositoryImpl(env.db).resetLearning(rootDeckId: korean.id);
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.resetConfirm(3)), findsOneWidget);
+  });
+
+  libraryTest('while the reset runs the dialog says so and Cancel waits', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    final schedules = _GatedReset(ScheduleRepositoryImpl(env.db));
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+      overrides: [scheduleRepositoryProvider.overrideWithValue(schedules)],
+    );
+    await _openReset(tester);
+
+    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.pump();
+    expect(find.text(_en.resetRunning), findsOneWidget);
+    expect(
+      _option(tester, _en.resetSwitchTo(_en.deckSchedulerEightBox)).onSelected,
+      isNull,
+    );
+    await tester.tap(find.text(_en.commonCancel));
+    await tester.pump();
+    expect(find.text(_en.resetDialogTitle), findsOneWidget);
+
+    schedules.gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.resetDialogTitle), findsNothing);
+    expect(find.text(_en.resetDoneToast(2, 0)), findsOneWidget);
+  });
+
+  libraryTest('a reset that fails keeps the dialog for another try (E1)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    final schedules = _GatedReset(
+      ScheduleRepositoryImpl(env.db),
+      isFirstFailing: true,
+    )..gate.complete();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+      overrides: [scheduleRepositoryProvider.overrideWithValue(schedules)],
+    );
+    await _openReset(tester);
+
+    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.resetDialogTitle), findsOneWidget);
+    expect(
+      find.text(_en.failure(const DatabaseLockedFailure(cause: 'locked'))),
+      findsOneWidget,
+    );
+    expect(find.text(_en.algorithmLockedTitle(1)), findsOneWidget);
+
+    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.resetDialogTitle), findsNothing);
+    expect(find.text(_en.algorithmUnlockedTitle), findsOneWidget);
   });
 }

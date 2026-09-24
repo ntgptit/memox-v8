@@ -8,6 +8,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
+import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/presentation/providers/reset_learning_summary_provider.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/srs_rejection_message_widget.dart';
@@ -51,12 +52,11 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   var _isResetting = false;
 
   /// The cycle the reset opens.
-  int get _nextCycle => widget.view.deck.generation! + 1;
+  static int _nextCycle(DeckView view) => view.deck.generation! + 1;
 
-  Future<void> _reset(ResetLearningSummary summary) async {
+  Future<void> _reset(DeckView view, ResetLearningSummary summary) async {
     setState(() => _isResetting = true);
-    final view = widget.view;
-    final cycle = _nextCycle;
+    final cycle = _nextCycle(view);
     try {
       final outcome = await ref
           .read(deckActionsControllerProvider.notifier)
@@ -85,7 +85,13 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final view = widget.view;
+    // The live deck, so a reset or switch made meanwhile moves the cycle
+    // and the algorithm named here; the opening snapshot stands in while
+    // the stream has nothing newer.
+    final view = switch (ref.watch(deckViewProvider(widget.view.deck.id))) {
+      AsyncData(value: Ok(:final value)) => value,
+      _ => widget.view,
+    };
     final value = ref.watch(resetLearningSummaryProvider(view.deck.id));
     final summary = switch (value) {
       AsyncData(value: Ok(:final value)) => value,
@@ -95,7 +101,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       AsyncData(value: Ok(:final value)) when !value.hasProgressToLose =>
         l10n.resetNothingToLose,
       AsyncData(value: Ok(:final value)) => l10n.resetDialogIntro(
-        _nextCycle,
+        _nextCycle(view),
         view.deck.name,
         value.cardCount,
       ),
@@ -131,10 +137,10 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         onCancel: _isResetting ? () {} : () => Navigator.of(context).pop(),
         confirmLabel: _isResetting
             ? l10n.resetRunning
-            : l10n.resetConfirm(_nextCycle),
+            : l10n.resetConfirm(_nextCycle(view)),
         confirmIcon: AppIcons.resetProgress,
         onConfirm: summary != null && !_isResetting
-            ? () => unawaited(_reset(summary))
+            ? () => unawaited(_reset(view, summary))
             : null,
       ),
     );
