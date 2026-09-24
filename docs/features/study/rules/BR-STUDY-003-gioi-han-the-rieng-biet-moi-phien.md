@@ -2,14 +2,16 @@
 id: BR-STUDY-003
 title: Giới hạn thẻ riêng biệt mỗi phiên
 status: active
-summary: Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit`, mặc định 20, là trần mỗi lần lấy.
+summary: Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit` (1–200, mặc định 20), là trần mỗi lần lấy.
 superseded_by:
 ---
 ## Rule
 
 Một phiên MUST giới hạn số **thẻ riêng biệt** theo `study_session.card_limit`, mặc định **20**, áp cho **cả hai loại phiên**. Đây là trần **mỗi lần lấy**, MUST NOT được hiểu là hạn mức ngày: số phiên trong một ngày không giới hạn.
 
-**Enforced by:** store
+`card_limit` MUST là số nguyên từ **1** đến **200**, tính cả hai đầu. Giá trị ngoài khoảng đó MUST bị từ chối trước khi ghi, ở mặc định toàn app cũng như ở ghi đè của root deck (BR-STUDY-056).
+
+**Enforced by:** domain + store
 **Liên quan:** BR-STUDY-024
 
 ## Lý do

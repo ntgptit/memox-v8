@@ -514,6 +514,13 @@ trị hiệu lực = giá trị của root nếu có, ngược lại giá trị 
 MUST NOT ghi `study_config`, và xoá `study_config` MUST NOT ghi bảng này
 (BR-SETTINGS-003).
 
+**Dạng của `study_config`:** `{"card_limit": <số nguyên 1–200>, "new_card_order":
+"created" | "random"}`. Thiếu khoá, sai kiểu, `new_card_order` khác hai giá trị đó
+hoặc `card_limit` ngoài 1–200 (BR-STUDY-003) làm giá trị ghi đè **không đọc được**:
+giá trị hiệu lực là giá trị của bảng này, và việc đọc MUST NOT sửa text đã lưu
+(IT-STUDY-013). Cột chỉ đổi khi người dùng lưu tuỳ chọn của root hoặc chọn
+`Use app defaults` (UC-SETTINGS-001 A1). Khoá lạ bị bỏ qua.
+
 ## Bất biến — phải kiểm tra được bằng query
 
 Mỗi query dưới đây **phải luôn trả về 0 dòng**. Chúng là đặc tả cho phần kiểm tra

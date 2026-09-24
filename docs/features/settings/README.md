@@ -1,13 +1,11 @@
 ---
 feature: settings
-code: []
+code: [lib/features/settings/domain, lib/features/settings/data, lib/features/settings/di]
 depends_on: [deck, srs, study]
 ---
 ## Phạm vi
 
 Tuỳ chọn ứng dụng (V8.0): mặc định học toàn app, theme và ngôn ngữ trong một dòng `app_settings`.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 
