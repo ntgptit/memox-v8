@@ -117,6 +117,25 @@ final class StudySessionDao {
     updateKind: UpdateKind.update,
   );
 
+  /// Ends as `interrupted` every open session that started before
+  /// [startOfToday] (BR-STUDY-072).
+  Future<void> closeStaleSessions({
+    required DateTime now,
+    required DateTime startOfToday,
+  }) =>
+      (_db.update(_db.studySession)..where(
+            (session) =>
+                session.status.equals(SessionStatus.inProgress.code) &
+                session.startedAt.isSmallerThanValue(startOfToday),
+          ))
+          .write(
+            StudySessionCompanion(
+              status: Value(SessionStatus.abandoned.code),
+              endReason: Value(SessionEndReason.interrupted.code),
+              endedAt: Value(now),
+            ),
+          );
+
   Future<void> insertSession(StudySessionCompanion row) =>
       _db.into(_db.studySession).insert(row);
 

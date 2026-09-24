@@ -30,4 +30,29 @@ abstract interface class StudySessionRepository {
   /// session that has ended, or is gone, is left as it is. Only the E3 path
   /// of `AnswerStudyTurnUseCase` calls it (spec D9).
   Future<void> failSession({required String sessionId, DateTime? now});
+
+  /// UC-STUDY-001 A3: the person leaves an open session. It becomes
+  /// `abandoned`/`user_exit` (BR-STUDY-014) and keeps its turns
+  /// (BR-STUDY-019); sessionClosed when it has ended, notFound when it is
+  /// gone.
+  Future<Outcome<void, StudyRejection>> abandonSession({
+    required String sessionId,
+    DateTime? now,
+  });
+
+  /// UC-STUDY-001 A3b, Continue. A session of an earlier local day is closed
+  /// as `abandoned`/`interrupted` and refused as sessionExpired
+  /// (BR-STUDY-072); one whose root was reset since is invalidated and
+  /// refused as staleGeneration (BR-STUDY-017). Otherwise the session is
+  /// settled: when the cards left in its current round were deleted, it
+  /// moves on as after a turn, and completes with nothing left (spec D12).
+  Future<Outcome<void, StudyRejection>> resumeSession({
+    required String sessionId,
+    DateTime? now,
+  });
+
+  /// UC-STUDY-001 A3b: every open session that started before today's
+  /// local midnight becomes `abandoned`/`interrupted` (BR-STUDY-072). The app
+  /// calls it when it starts; no read does (BR-STUDY-075).
+  Future<void> abandonStaleSessions({DateTime? now});
 }

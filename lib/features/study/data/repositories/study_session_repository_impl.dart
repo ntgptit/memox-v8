@@ -4,6 +4,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -62,6 +63,69 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
           return _answer(session, root, cardId, answer, at);
       }
     });
+  }
+
+  @override
+  Future<Outcome<void, StudyRejection>> abandonSession({
+    required String sessionId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final session = await _dao.sessionRow(sessionId);
+      if (session == null) return const Rejected(StudyRejection.notFound);
+      if (session.status != SessionStatus.inProgress.code) {
+        return const Rejected(StudyRejection.sessionClosed);
+      }
+      await _dao.endSession(
+        sessionId,
+        status: SessionStatus.abandoned,
+        reason: SessionEndReason.userExit,
+        now: at,
+      );
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<Outcome<void, StudyRejection>> resumeSession({
+    required String sessionId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final session = await _dao.sessionRow(sessionId);
+      if (session != null &&
+          session.status == SessionStatus.inProgress.code &&
+          session.startedAt.isBefore(startOfLocalDay(at))) {
+        await _dao.endSession(
+          sessionId,
+          status: SessionStatus.abandoned,
+          reason: SessionEndReason.interrupted,
+          now: at,
+        );
+        return const Rejected(StudyRejection.sessionExpired);
+      }
+      switch (await _live(session, at)) {
+        case Rejected(:final reason):
+          return Rejected(reason);
+        case Ok(value: (final open, final root)):
+          await _progress(
+            open,
+            SchedulerType.fromCode(root.schedulerType!),
+            at,
+          );
+          return const Ok(null);
+      }
+    });
+  }
+
+  @override
+  Future<void> abandonStaleSessions({DateTime? now}) {
+    final at = now ?? _now();
+    return _write(
+      () => _dao.closeStaleSessions(now: at, startOfToday: startOfLocalDay(at)),
+    );
   }
 
   @override
