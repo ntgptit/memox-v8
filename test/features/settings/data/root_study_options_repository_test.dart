@@ -102,6 +102,28 @@ void main() {
     expect(effective?.hasRootOverride, isTrue);
   });
 
+  test('the one-shot read gives what the stream gives: the root\'s options '
+      'for a sub-deck, none for a missing deck or one in the Trash '
+      '(BR-STUDY-056)', () async {
+    await _insertTree(
+      db,
+      studyConfig: '{"card_limit":30,"new_card_order":"random"}',
+    );
+
+    final ofRoot = await settings.studyOptionsOf(deckId: 'r');
+    final ofSub = await settings.studyOptionsOf(deckId: 's');
+
+    expect(ofRoot?.rootDeckId, 'r');
+    expect(ofRoot?.options.cardLimit, 30);
+    expect(ofRoot?.options.newCardOrder, NewCardOrder.random);
+    expect(ofRoot?.source, StudyOptionsSource.rootOverride);
+    expect(ofSub?.rootDeckId, 'r');
+    expect(ofSub?.options.cardLimit, 30);
+    expect(await settings.studyOptionsOf(deckId: 'missing'), isNull);
+    await _moveTreeToTrash(db);
+    expect(await settings.studyOptionsOf(deckId: 's'), isNull);
+  });
+
   test('a missing deck and a deck in the Trash have no options', () async {
     await _insertTree(db);
     expect(await settings.watchStudyOptions(deckId: 'missing').first, isNull);

@@ -3,7 +3,7 @@ id: UC-STUDY-003
 title: Chọn chiều hỏi cho một phiên self-assess
 status: ready
 rules: [BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-STUDY-004, BR-STUDY-009, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
-code: []
+code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

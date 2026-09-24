@@ -71,16 +71,11 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId}) =>
-      _dao
-          .watchRootAndSettings(deckId)
-          .map(
-            (rows) => switch (rows) {
-              (final Deck root, final AppSetting settings) =>
-                effectiveStudyOptionsOf(root, settings),
-              null => null,
-            },
-          )
-          .mapDatabaseErrors();
+      _dao.watchRootAndSettings(deckId).map(_effectiveOf).mapDatabaseErrors();
+
+  @override
+  Future<EffectiveStudyOptions?> studyOptionsOf({required String deckId}) =>
+      _mapped(() async => _effectiveOf(await _dao.rootAndSettings(deckId)));
 
   @override
   Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({
@@ -126,11 +121,23 @@ final class SettingsRepositoryImpl implements SettingsRepository {
     });
   }
 
-  Future<T> _write<T>(Future<T> Function() body) async {
+  Future<T> _write<T>(Future<T> Function() body) =>
+      _mapped(() => _db.transaction(body));
+
+  /// [body], with an unexpected database error leaving as its [Failure].
+  Future<T> _mapped<T>(Future<T> Function() body) async {
     try {
-      return await _db.transaction(body);
+      return await body();
     } on Object catch (error, stackTrace) {
       Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }
+
+EffectiveStudyOptions? _effectiveOf((Deck, AppSetting)? rows) => switch (rows) {
+  (final Deck root, final AppSetting settings) => effectiveStudyOptionsOf(
+    root,
+    settings,
+  ),
+  null => null,
+};

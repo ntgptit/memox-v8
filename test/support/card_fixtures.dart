@@ -15,6 +15,7 @@ Future<void> insertCard(
   required String deckId,
   String front = 'front',
   String back = 'back',
+  String? example,
   bool isFlagged = false,
   DateTime? learnedAt,
   DateTime? dueAt,
@@ -32,8 +33,8 @@ Future<void> insertCard(
   );
   await db.customInsert(
     'INSERT INTO card (id, deck_id, front, back, front_folded, back_folded, '
-    'is_flagged, delete_batch_id, created_at, updated_at) '
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'example, is_flagged, delete_batch_id, created_at, updated_at) '
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     variables: [
       Variable<String>(id),
       Variable<String>(deckId),
@@ -41,6 +42,7 @@ Future<void> insertCard(
       Variable<String>(back),
       Variable<String>(front.trim().toLowerCase()),
       Variable<String>(back.trim().toLowerCase()),
+      Variable<String>(example),
       Variable<bool>(isFlagged),
       Variable<String>(deleteBatchId),
       Variable<DateTime>(created),

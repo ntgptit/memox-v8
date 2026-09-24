@@ -1,13 +1,11 @@
 ---
 feature: study
-code: []
+code: [lib/features/study/domain, lib/features/study/data, lib/features/study/di]
 depends_on: [card, deck, srs, study-mode]
 ---
 ## Phạm vi
 
 Vòng đời phiên học, hàng đợi, round, Study Home (V8.0): mở, giữ và đóng phiên `learning`/`reviewing`, hành vi từng mode chấm điểm, và tab Study.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

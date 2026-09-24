@@ -53,6 +53,25 @@ Future<(String, String, String)> insertStudyTree(
   return (rootId, cardId, sessionId);
 }
 
+/// Moves `<rootId>-leaf` into [targetRootId]'s tree while the session of
+/// [rootId] holds its card in the queue, as moving a deck between two roots of
+/// the same scheduler and generation does mid-session (BR-SRS-006).
+Future<void> moveLeafWithQueuedCard(
+  AppDatabase db,
+  String rootId,
+  String targetRootId,
+) async {
+  await db.customStatement(
+    'INSERT INTO study_queue_items (session_id, mode, card_id, position, '
+    "status) VALUES (?, 'self_assess', ?, 0, 'pending')",
+    ['$rootId-session', '$rootId-card'],
+  );
+  await db.customStatement(
+    'UPDATE deck SET parent_id = ?, root_id = ? WHERE id = ?',
+    [targetRootId, targetRootId, '$rootId-leaf'],
+  );
+}
+
 /// A card two levels below [rootId] (root → branch → deep) in an `eight_box`
 /// tree: a statement that reaches only the root's children misses it.
 Future<String> insertDeepCard(AppDatabase db, String rootId) async {
