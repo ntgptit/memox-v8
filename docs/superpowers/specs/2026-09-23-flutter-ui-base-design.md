@@ -473,6 +473,7 @@ item names where it comes from.
 | 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash | library phase 4b P4b-L5 |
 | 88 | The card detail's deck path includes the destination line of the editor's header, which the kit's detail does not show | library phase 4b P4b-L8 |
 | 89 | The card detail puts the status badge and flag above the front, not beside it, so a long front keeps the full width | library phase 4b (Task 5 golden review) |
+| 90 | A history event's badge carries the kind only (Learning, Review, Repeat) and the action is text beside it: `MxBadge` never wraps, so the kit's "kind · action" pill overflowed at text scale 2 | library deferred minors |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

@@ -258,7 +258,6 @@
   "cardHistoryKindLearning": "Đang học",
   "cardHistoryKindScheduled": "Ôn tập",
   "cardHistoryKindRelearning": "Học lại",
-  "cardHistoryEvent": "{kind} · {action}",
   "cardActionForgotten": "Quên",
   "cardActionRemembered": "Nhớ",
   "cardActionAgain": "Lại",

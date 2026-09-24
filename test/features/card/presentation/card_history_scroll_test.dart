@@ -8,7 +8,7 @@ import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/load_card_history_page_use_case.dart';
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_history_event_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_history_section_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_history_scroll_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -21,10 +21,21 @@ final _en = lookupAppLocalizations(const Locale('en'));
 final _addedAt = DateTime(2026, 8, 1);
 
 Widget _section() => Scaffold(
-  body: ListView(
-    children: [CardHistorySectionWidget(cardId: 'c', addedAt: _addedAt)],
+  body: CardHistoryScrollWidget(
+    cardId: 'c',
+    addedAt: _addedAt,
+    leading: const [],
   ),
 );
+
+/// When the answer logged [minutes] after the first was given, as the
+/// history shows it.
+String _at(int minutes) =>
+    DateFormat.MMMd('en')
+        .add_Hm()
+        .format(DateTime(2026, 9, 1, 8).add(Duration(minutes: minutes)));
+
+Finder get _scrollable => find.byType(Scrollable).first;
 
 /// Korean › Words holding card `c`.
 Future<void> _card(LibraryEnv env) async {
@@ -69,8 +80,19 @@ final class _FlakyHistory implements CardRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Scrolls to the end-of-history line, which follows the oldest answer.
+Future<void> _scrollToEnd(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.text(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    500,
+    scrollable: _scrollable,
+  );
+  await tester.pumpAndSettle();
+}
+
 Future<void> _tapLoadMore(WidgetTester tester, String label) async {
   final button = find.widgetWithText(MxButton, label);
+  await tester.scrollUntilVisible(button, 500, scrollable: _scrollable);
   await tester.ensureVisible(button);
   await tester.pumpAndSettle();
   await tester.tap(button);
@@ -119,24 +141,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardHistoryNewestFirst.toUpperCase()), findsOneWidget);
-    expect(
-      find.text(
-        _en.cardHistoryEvent(
-          _en.cardHistoryKindScheduled,
-          _en.cardActionRemembered,
-        ),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.text(
-        _en.cardHistoryEvent(
-          _en.cardHistoryKindLearning,
-          _en.cardActionForgotten,
-        ),
-      ),
-      findsOneWidget,
-    );
+    for (final label in [
+      _en.cardHistoryKindScheduled,
+      _en.cardActionRemembered,
+      _en.cardHistoryKindLearning,
+      _en.cardActionForgotten,
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
     expect(find.text(_en.cardModeFill), findsOneWidget);
     // The mode carries the Study glyph, not the Library's.
     expect(
@@ -213,24 +225,20 @@ void main() {
     await _answers(env, ReviewHistoryPage.size + 1);
     await pumpLibraryScreen(tester, env, _section());
     await tester.pumpAndSettle();
-    expect(
-      find.byType(CardHistoryEventWidget),
-      findsNWidgets(ReviewHistoryPage.size),
-    );
+    // The oldest answer is on the second page.
+    expect(find.text(_at(0), skipOffstage: false), findsNothing);
 
     await _tapLoadMore(tester, _en.cardHistoryLoadMore);
+    await _scrollToEnd(tester);
 
+    expect(find.text(_at(0)), findsOneWidget);
     expect(
-      find.byType(CardHistoryEventWidget),
-      findsNWidgets(ReviewHistoryPage.size + 1),
-    );
-    expect(
-      find.widgetWithText(MxButton, _en.cardHistoryLoadMore),
+      find.widgetWithText(
+        MxButton,
+        _en.cardHistoryLoadMore,
+        skipOffstage: false,
+      ),
       findsNothing,
-    );
-    expect(
-      find.text(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
-      findsOneWidget,
     );
   });
 
@@ -254,18 +262,17 @@ void main() {
     await _tapLoadMore(tester, _en.cardHistoryLoadMore);
 
     expect(find.text(_en.cardHistoryLoadMoreFailedTitle), findsOneWidget);
-    expect(
-      find.byType(CardHistoryEventWidget),
-      findsNWidgets(ReviewHistoryPage.size),
-    );
+    expect(find.text(_at(1)), findsOneWidget);
+    expect(find.text(_at(0), skipOffstage: false), findsNothing);
     expect(find.textContaining('sqlite'), findsNothing);
 
     await _tapLoadMore(tester, _en.commonRetry);
+    await _scrollToEnd(tester);
+    expect(find.text(_at(0)), findsOneWidget);
     expect(
-      find.byType(CardHistoryEventWidget),
-      findsNWidgets(ReviewHistoryPage.size + 1),
+      find.text(_en.cardHistoryLoadMoreFailedTitle, skipOffstage: false),
+      findsNothing,
     );
-    expect(find.text(_en.cardHistoryLoadMoreFailedTitle), findsNothing);
   });
 
   libraryTest('the history holds at 2x and meets the guidelines', (
@@ -289,5 +296,20 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('only the answers in view are built', (tester, env) async {
+    await _card(env);
+    await _answers(env, ReviewHistoryPage.size);
+    await pumpLibraryScreen(tester, env, _section());
+    await tester.pumpAndSettle();
+
+    expect(
+      find
+          .byType(CardHistoryEventWidget, skipOffstage: false)
+          .evaluate()
+          .length,
+      lessThan(ReviewHistoryPage.size),
+    );
   });
 }

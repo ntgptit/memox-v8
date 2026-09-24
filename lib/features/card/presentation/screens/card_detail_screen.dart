@@ -10,7 +10,7 @@ import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/providers/card_detail_provider.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_detail_content_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_history_section_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_history_scroll_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_schedule_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -94,15 +94,13 @@ class _DetailBody extends ConsumerWidget {
         children: [
           deckContext(value.card.deckId, l10n.cardDetailTitle),
           Expanded(
-            child: MxScreenScroll(
-              children: [
+            child: CardHistoryScrollWidget(
+              cardId: cardId,
+              addedAt: value.card.createdAt,
+              leading: [
                 const SizedBox(height: AppSpacing.control),
                 CardDetailContentWidget(detail: value),
                 CardScheduleWidget(detail: value),
-                CardHistorySectionWidget(
-                  cardId: cardId,
-                  addedAt: value.card.createdAt,
-                ),
               ],
             ),
           ),
