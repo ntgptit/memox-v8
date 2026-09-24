@@ -169,4 +169,15 @@ void main() {
       expect(level.maxOverdueDays, 1);
     });
   });
+
+  test('deckCount counts every deck of the level, whatever the filter', () {
+    final tiles = [
+      _tile('due', cards: 1, overdue: 1, oldestDueAt: DateTime(2026, 9, 20)),
+      _tile('idle', cards: 1),
+    ];
+    final level = DeckLevel.of(tiles, filter: DeckLevelFilter.due);
+
+    expect(level.deckCount, 2);
+    expect(level.tiles, hasLength(1));
+  });
 }

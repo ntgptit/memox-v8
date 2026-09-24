@@ -1,8 +1,12 @@
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/providers/add_tag_to_cards_use_case_provider.dart';
+import 'package:memox/features/card/presentation/providers/create_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/delete_cards_use_case_provider.dart';
+import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/move_cards_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/select_all_card_ids_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
@@ -53,4 +57,14 @@ class CardActionsController extends _$CardActionsController {
   Future<Outcome<void, CardRejection>> deleteCards({
     required Set<String> cardIds,
   }) => ref.read(deleteCardsUseCaseProvider)(cardIds: cardIds);
+
+  Future<Outcome<CardEntity, CardRejection>> createCard({
+    required String deckId,
+    required CardDraft draft,
+  }) => ref.read(createCardUseCaseProvider)(deckId: deckId, draft: draft);
+
+  Future<Outcome<void, CardRejection>> editCard({
+    required String cardId,
+    required CardDraft draft,
+  }) => ref.read(editCardUseCaseProvider)(cardId: cardId, draft: draft);
 }

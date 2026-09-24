@@ -34,6 +34,18 @@ abstract final class AppIcons {
   static const IconData flag = Icons.outlined_flag; // flag
   static const IconData flagged = Icons.flag; // flag (filled)
   static const IconData selectAll = Icons.select_all; // check-square
+  static const IconData details = Icons.auto_awesome_outlined; // sparkles
+  static const IconData example = Icons.chat_bubble_outline; // message-square
+  static const IconData hint = Icons.lightbulb_outline; // lightbulb
+  static const IconData pronunciation = Icons.text_fields; // type
+  static const IconData clock = Icons.schedule; // clock
+  static const IconData searchOff = Icons.search_off; // search-x
+  static const IconData history = Icons.history; // history
+  static const IconData learned = Icons.check_circle_outline; // check-circle-2
+  static const IconData repeat = Icons.repeat; // repeat
+  static const IconData lapses = Icons.replay; // rotate-ccw
+  static const IconData timeout = Icons.timer_off_outlined; // timer-off
+  static const IconData calendar = Icons.event; // calendar
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;
@@ -41,6 +53,9 @@ abstract final class AppIcons {
   static const IconData textScale = Icons.format_size;
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
+  static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
+  static const IconData dueNow = Icons.bolt_outlined; // zap
+  static const IconData cardDeck = Icons.copy_all_outlined; // copy
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;

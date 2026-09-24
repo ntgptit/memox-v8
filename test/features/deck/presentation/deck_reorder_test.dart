@@ -100,8 +100,23 @@ Future<void> _dragPastNext(WidgetTester tester, String name) async {
   await tester.pumpAndSettle();
 }
 
+/// Reorder starts from a row's action sheet (ruling C-L4).
+Finder get _anyRowMore =>
+    find.byTooltip(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}')).first;
+
+Future<void> _openRowSheet(WidgetTester tester) async {
+  await tester.tap(_anyRowMore);
+  await tester.pumpAndSettle();
+}
+
 Future<void> _startReorder(WidgetTester tester) async {
-  await tester.tap(find.byTooltip(_en.libraryReorder));
+  await _openRowSheet(tester);
+  await tester.tap(find.text(_en.deckReorder));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _closeSheet(WidgetTester tester) async {
+  await tester.tapAt(const Offset(180, 40));
   await tester.pumpAndSettle();
 }
 
@@ -112,18 +127,25 @@ void main() {
   ) async {
     await env.decks.root('A');
     await pumpLibraryScreen(tester, env, deckScreen());
-    expect(find.byTooltip(_en.libraryReorder), findsNothing);
+    await _openRowSheet(tester);
+    expect(find.text(_en.deckReorder), findsNothing);
+    await _closeSheet(tester);
 
     await env.decks.root('B');
     await tester.pump();
     await tester.pump();
-    expect(find.byTooltip(_en.libraryReorder), findsOneWidget);
+    await _openRowSheet(tester);
+    expect(find.text(_en.deckReorder), findsOneWidget);
+    await _closeSheet(tester);
 
-    await tester.tap(find.text(_en.deckSortTrigger(_en.deckSortManual)));
+    await tester.tap(find.text(_en.deckSortManual));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckSortName));
     await tester.pumpAndSettle();
-    expect(find.byTooltip(_en.libraryReorder), findsNothing);
+    await tester.tap(find.text(_en.commonDone));
+    await tester.pumpAndSettle();
+    await _openRowSheet(tester);
+    expect(find.text(_en.deckReorder), findsNothing);
   });
 
   libraryTest('dragging a deck past the next one saves the new order', (

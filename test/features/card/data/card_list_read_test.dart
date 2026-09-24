@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
+import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
@@ -21,6 +22,7 @@ void main() {
   late SelectCounter counter;
   late AppDatabase db;
   late CardRepositoryImpl cards;
+  late TagRepositoryImpl tags;
   late DeckEntity mixed;
 
   setUp(() async {
@@ -28,10 +30,11 @@ void main() {
     db = openTestDatabase(interceptor: counter);
     DateTime clock() => DateTime(2026, 9, 1);
     final decks = DeckRepositoryImpl(db, now: clock);
+    tags = TagRepositoryImpl(db, now: clock);
     cards = CardRepositoryImpl(
       db,
       ScheduleRepositoryImpl(db, now: clock),
-      TagRepositoryImpl(db, now: clock),
+      tags,
       now: clock,
     );
     final root = await decks.root('Due library');
@@ -209,7 +212,7 @@ void main() {
     expect(ids(view), isNot(contains('trashed')));
   });
 
-  test('an emission is two statements, the window and the counts, and a change emits once', () async {
+  test('an emission is four statements, whatever the window holds, and a change emits once', () async {
     counter.selects = 0;
     final views = <CardListView>[];
     final subscription = cards
@@ -221,12 +224,13 @@ void main() {
         )
         .listen(views.add);
     await pumpEventQueue();
-    expect((views.length, counter.selects), (1, 2));
+    // The window, the filter counts, the deck's schedules, the window's tags.
+    expect((views.length, counter.selects), (1, 4));
 
     await insertCard(db, id: 'another', deckId: mixed.id);
     await pumpEventQueue();
 
-    expect((views.length, counter.selects), (2, 4));
+    expect((views.length, counter.selects), (2, 8));
     expect(views.last.counts.all, 5);
     await subscription.cancel();
   });
@@ -245,5 +249,93 @@ void main() {
 
     expect(due, {'begin', 'review'});
     expect(searched, {'new', 'begin'});
+  });
+
+  test(
+    'each item carries its due label, counted from the start of today',
+    () async {
+      final view = await list();
+      final due = {for (final item in view.items) item.id: item.due};
+
+      expect(due, {
+        'new': const CardDue.newCard(),
+        'begin': const CardDue.today(),
+        'review': const CardDue.overdue(1),
+        'master': const CardDue.later(30),
+      });
+    },
+  );
+
+  test('each item carries its tags, by folded name', () async {
+    await tags.attachByName(cardIds: {'begin'}, name: 'verb');
+    await tags.attachByName(cardIds: {'begin'}, name: 'Adjective');
+
+    final view = await list();
+    final begin = view.items.firstWhere((item) => item.id == 'begin');
+    final others = view.items.where((item) => item.id != 'begin');
+
+    expect([for (final tag in begin.tags) tag.name], ['Adjective', 'verb']);
+    expect(others.every((item) => item.tags.isEmpty), isTrue);
+  });
+
+  test('tagging a card re-emits the list with its tags', () async {
+    final views = <CardListView>[];
+    final subscription = cards
+        .watchCardList(
+          deckId: mixed.id,
+          query: const CardListQuery(),
+          windowSize: 50,
+          now: _now,
+        )
+        .listen(views.add);
+    await pumpEventQueue();
+
+    await tags.attachByName(cardIds: {'new'}, name: 'verb');
+    await pumpEventQueue();
+
+    expect(views, hasLength(2));
+    final tagged = views.last.items.firstWhere((item) => item.id == 'new');
+    expect([for (final tag in tagged.tags) tag.name], ['verb']);
+    expect(views.last.counts.all, 4);
+    await subscription.cancel();
+  });
+
+  test(
+    'the status counts cover the deck: one card in each display state',
+    () async {
+      final view = await list();
+
+      expect(
+        (
+          view.statusCounts.newCards,
+          view.statusCounts.beginning,
+          view.statusCounts.reviewing,
+          view.statusCounts.mastered,
+          view.statusCounts.total,
+        ),
+        (1, 1, 1, 1, 4),
+      );
+    },
+  );
+
+  test('the status counts ignore the search and the filter', () async {
+    final view = await list(
+      query: const CardListQuery(
+        filter: CardListFilter.flagged,
+        searchTerm: 'benevolent',
+      ),
+    );
+
+    expect(view.items, hasLength(1));
+    expect(view.statusCounts.total, 4);
+  });
+
+  test('an empty window reads no tags', () async {
+    counter.selects = 0;
+    final view = await list(query: const CardListQuery(searchTerm: 'zzz'));
+
+    expect(view.items, isEmpty);
+    expect(view.statusCounts.total, 4);
+    expect(counter.selects, 3);
   });
 }

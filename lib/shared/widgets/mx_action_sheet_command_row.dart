@@ -19,6 +19,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
     this.subtitle,
     this.isDestructive = false,
     this.hasChevron = false,
+    this.isEnabled = true,
   });
 
   final IconData icon;
@@ -31,6 +32,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
 
   /// The command opens a further surface.
   final bool hasChevron;
+
+  /// A command that exists but cannot run yet: dimmed, announced disabled.
+  final bool isEnabled;
 
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
@@ -46,6 +50,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
     final ink = isDestructive ? colors.error : colors.primary;
     return MxRowInk(
       onTap: onTap,
+      isEnabled: isEnabled,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
         child: Padding(

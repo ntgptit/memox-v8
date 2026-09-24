@@ -1,10 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_list_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_reorder_list_widget.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -19,10 +21,19 @@ class DeckLevelBodyWidget extends ConsumerWidget {
     required this.parentId,
     required this.onOpenDeck,
     required this.emptyState,
+    required this.schedulerType,
+    required this.hasDeepestSubDecks,
   });
 
   final String? parentId;
   final ValueChanged<String> onOpenDeck;
+
+  /// The open deck's algorithm for its summary card; null at the root.
+  final SchedulerType? schedulerType;
+
+  /// The open deck's sub-decks sit at [DeckEntity.maxDepth]: none of them
+  /// can hold a sub-deck.
+  final bool hasDeepestSubDecks;
 
   /// Shown when the level holds no deck at all.
   final Widget emptyState;
@@ -49,6 +60,8 @@ class DeckLevelBodyWidget extends ConsumerWidget {
                   parentId: parentId,
                   onOpenDeck: onOpenDeck,
                   emptyState: emptyState,
+                  schedulerType: schedulerType,
+                  hasDeepestSubDecks: hasDeepestSubDecks,
                 ),
           loading: () => MxScreenScroll(
             clearance: MxScrollClearance.fabAboveNav,

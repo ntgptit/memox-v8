@@ -127,4 +127,47 @@ void main() {
       20,
     );
   });
+
+  testWidgets('a secondary action sits between the action and the footnote', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.library,
+        title: 'Start your library',
+        actionLabel: 'Create deck',
+        onAction: () {},
+        secondaryActionLabel: 'Browse starter decks',
+        footnote: 'Everything stays on this device.',
+      ),
+    );
+    final primary = tester.getTopLeft(find.text('Create deck')).dy;
+    final secondary = tester.getTopLeft(find.text('Browse starter decks')).dy;
+    final note = tester
+        .getTopLeft(find.text('Everything stays on this device.'))
+        .dy;
+
+    expect(primary, lessThan(secondary));
+    expect(secondary, lessThan(note));
+  });
+
+  testWidgets('a secondary action without a callback is disabled', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.library,
+        title: 'Start your library',
+        secondaryActionLabel: 'Browse starter decks',
+      ),
+    );
+    final button = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, 'Browse starter decks'),
+    );
+
+    expect(button.onPressed, isNull);
+    expect(button.tone, MxButtonTone.secondary);
+  });
 }

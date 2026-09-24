@@ -42,6 +42,27 @@ names and the Flutter version follow
 Preserve V7 business behavior and required data compatibility unless an
 approved V8 specification explicitly changes them.
 
+## UI source of truth
+
+The visual authority for every V8 screen is the artifact "MemoX — Mobile UI
+Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
+
+- **Precedence:** a BR or UC beats the kit; the kit beats a UI spec's layout
+  and copy. Record every deviation from the kit, either in the screen's detail
+  file or in the UI-base debt register
+  ([§9](docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md)).
+- **Where it is described:**
+  - the [screen handoff index](docs/shared/ui/screen-handoff/00-index.md)
+    holds the screen numbers, states, FE items, status, and the rules every
+    screen shares;
+  - the [design handoff](docs/shared/ui/design-handoff/00-index.md) holds the
+    foundations, the theme binding and the widgets.
+- **Reading it:** use the Artifact tool's `read` action, not a web fetch. The
+  page is a bundle: each screen and each of its states is its own module.
+- **Before planning a screen,** read that screen and all its states in the
+  kit.
+- **After building a screen,** update its row in the screen handoff index.
+
 ## No speculative structure
 
 Avoid speculative abstractions.

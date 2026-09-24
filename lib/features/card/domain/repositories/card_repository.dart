@@ -54,8 +54,10 @@ abstract interface class CardRepository {
 
   /// UC-CARD-001: the first [windowSize] cards of [deckId] that [query] lets
   /// through, whether more follow, and the count of every filter under the
-  /// same search (IT-ORG-005). Due is due at [now]. Emits again on every
-  /// change of a card or a schedule row.
+  /// same search (IT-ORG-005). Due is due at [now]. Each item carries its
+  /// tags and due label, and the view counts the deck's display states
+  /// whatever the search and filter. Emits again on every change of a card,
+  /// a schedule row or a card's tags.
   Stream<CardListView> watchCardList({
     required String deckId,
     required CardListQuery query,

@@ -35,9 +35,20 @@ import 'package:memox/core/error/outcome.dart';
 /// sort, and the rows of a window that grows as the list nears its end. A
 /// long-press starts selection mode, with its header and bulk bar.
 class CardListSectionWidget extends ConsumerStatefulWidget {
-  const CardListSectionWidget({super.key, required this.deckId});
+  const CardListSectionWidget({
+    super.key,
+    required this.deckId,
+    required this.onAddCard,
+    required this.onOpenCard,
+  });
 
   final String deckId;
+
+  /// New card: the router opens the card editor.
+  final VoidCallback onAddCard;
+
+  /// A row tap outside selection: the router opens the card's detail.
+  final ValueChanged<String> onOpenCard;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -251,6 +262,8 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         selected: selected,
         onToggle: (cardId) => _selection().toggle(cardId),
         onShowAll: () => _show(CardListFilter.all),
+        onAddCard: widget.onAddCard,
+        onOpenCard: widget.onOpenCard,
       ),
     );
     // Back leaves selection before it leaves the deck (IT-ORG-013).
@@ -285,6 +298,8 @@ class _CardListScroll extends StatelessWidget {
     required this.selected,
     required this.onToggle,
     required this.onShowAll,
+    required this.onAddCard,
+    required this.onOpenCard,
   });
 
   final Widget toolbar;
@@ -293,6 +308,8 @@ class _CardListScroll extends StatelessWidget {
   final Set<String> selected;
   final ValueChanged<String> onToggle;
   final VoidCallback onShowAll;
+  final VoidCallback onAddCard;
+  final ValueChanged<String> onOpenCard;
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +318,11 @@ class _CardListScroll extends StatelessWidget {
       children: [
         toolbar,
         if (items.isEmpty)
-          _CardListEmpty(request: request, onShowAll: onShowAll)
+          _CardListEmpty(
+            request: request,
+            onShowAll: onShowAll,
+            onAddCard: onAddCard,
+          )
         else
           // Ruling P3-L6: one card over the current window.
           MxCard(
@@ -313,8 +334,11 @@ class _CardListScroll extends StatelessWidget {
                     item: item,
                     isSelecting: isSelecting,
                     isSelected: selected.contains(item.id),
-                    // BR-CARD-020: while selecting, a tap only toggles.
-                    onTap: isSelecting ? () => onToggle(item.id) : null,
+                    // BR-CARD-020: a tap opens the card; while selecting it
+                    // only toggles.
+                    onTap: isSelecting
+                        ? () => onToggle(item.id)
+                        : () => onOpenCard(item.id),
                     onLongPress: () => onToggle(item.id),
                     hasDivider: index < items.length - 1,
                   ),
@@ -328,10 +352,15 @@ class _CardListScroll extends StatelessWidget {
 
 /// Why no row shows: a search, a filter, or an empty deck.
 class _CardListEmpty extends StatelessWidget {
-  const _CardListEmpty({required this.request, required this.onShowAll});
+  const _CardListEmpty({
+    required this.request,
+    required this.onShowAll,
+    required this.onAddCard,
+  });
 
   final CardListRequestState request;
   final VoidCallback onShowAll;
+  final VoidCallback onAddCard;
 
   @override
   Widget build(BuildContext context) {
@@ -355,11 +384,12 @@ class _CardListEmpty extends StatelessWidget {
         onAction: onShowAll,
       );
     }
-    // Ruling P3-L3: "Add card" arrives with the editor in phase 4.
     return MxEmptyState(
       icon: AppIcons.inbox,
       title: l10n.cardEmptyTitle,
       body: l10n.cardEmptyBody,
+      actionLabel: l10n.cardNewCard,
+      onAction: onAddCard,
     );
   }
 }

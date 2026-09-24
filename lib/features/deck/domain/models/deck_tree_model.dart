@@ -1,3 +1,4 @@
+import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 
 /// A deck as a walk of its tree needs it: where it hangs, and whether the
@@ -9,6 +10,7 @@ final class DeckTreeNode {
     required this.parentId,
     required this.siblingPosition,
     required this.isCandidate,
+    required this.contentType,
   });
 
   final String id;
@@ -16,6 +18,9 @@ final class DeckTreeNode {
   final String? parentId;
   final int siblingPosition;
   final bool isCandidate;
+
+  /// What the deck holds.
+  final DeckContentType contentType;
 }
 
 /// The candidates among [nodes] in tree order — roots first, each deck

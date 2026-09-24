@@ -15,6 +15,7 @@ class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
     required this.title,
+    this.titleMatch,
     this.subtitle,
     this.meta,
     this.leading,
@@ -28,6 +29,10 @@ class MxListRow extends StatelessWidget {
        assert(trailing == null || !hasChevron, 'a trailing or the chevron');
 
   final String title;
+
+  /// A half-open range of [title] drawn in the match role, such as the part
+  /// of a deck name a search term found (screen 04).
+  final (int, int)? titleMatch;
 
   /// The one-line metadata. For a disabled move target, it is the reason
   /// the row cannot take the payload.
@@ -56,6 +61,23 @@ class MxListRow extends StatelessWidget {
   final bool hasDivider;
 
   static const double _subtitleGap = 2;
+
+  TextSpan _titleSpan(TextStyle matchStyle) {
+    final match = titleMatch;
+    if (match == null) return TextSpan(text: title);
+    final (start, end) = match;
+    assert(
+      0 <= start && start <= end && end <= title.length,
+      'titleMatch lies inside the title',
+    );
+    return TextSpan(
+      children: [
+        TextSpan(text: title.substring(0, start)),
+        TextSpan(text: title.substring(start, end), style: matchStyle),
+        TextSpan(text: title.substring(end)),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +126,8 @@ class MxListRow extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
+                        Text.rich(
+                          _titleSpan(styles.rowTitleMatch),
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,

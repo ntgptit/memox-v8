@@ -27,12 +27,9 @@ void main() {
       }
     });
 
-    test('every sort and filter has ${locale.languageCode} copy', () {
+    test('every sort has ${locale.languageCode} copy', () {
       for (final sort in DeckLevelSort.values) {
         expect(l10n.deckSort(sort).trim(), isNotEmpty);
-      }
-      for (final filter in DeckLevelFilter.values) {
-        expect(l10n.deckFilter(filter).trim(), isNotEmpty);
       }
     });
 

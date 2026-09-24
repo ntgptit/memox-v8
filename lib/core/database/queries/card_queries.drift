@@ -39,7 +39,7 @@ LIMIT :row_limit;
 -- is_candidate marks a sub-deck that holds cards or nothing, other than the
 -- source. No row when the source is not an active deck.
 cardMoveTargets(:source_deck_id AS TEXT) AS DeckForestRow:
-SELECT d.id, d.name, d.parent_id, d.sibling_position,
+SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   (d.parent_id IS NOT NULL AND d.content_type IN ('unset', 'card')
     AND d.id <> :source_deck_id) AS is_candidate
 FROM deck d

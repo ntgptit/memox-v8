@@ -238,4 +238,29 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  testWidgets('a title match is drawn in the match role, on one line', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'Academic words', titleMatch: (9, 14))),
+    );
+    final title = tester.widget<Text>(find.text('Academic words'));
+    final spans = (title.textSpan! as TextSpan).children!.cast<TextSpan>();
+
+    expect([for (final span in spans) span.text], ['Academic ', 'words', '']);
+    expect(spans[1].style!.fontWeight, FontWeight.w700);
+    expect(spans[1].style!.color, scheme.primary);
+    expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
+  });
+
+  testWidgets('a title match lies inside the title', (tester) async {
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'abc', titleMatch: (2, 4))),
+    );
+
+    expect(tester.takeException(), isAssertionError);
+  });
 }

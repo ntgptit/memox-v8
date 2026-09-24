@@ -14,7 +14,9 @@
   [spec UI base](superpowers/specs/2026-09-23-flutter-ui-base-design.md) (§2, §9).
 - **Phụ thuộc:** [`wbs_BE.md`](wbs_BE.md), vì mỗi màn hình cần use case của feature
   đó; [`PRODUCT.md`](../PRODUCT.md) là product context cho Impeccable.
-- **Ngữ cảnh bằng chứng:** `master` tại `f28bdfd`, worktree sạch, ngày 2026-09-24.
+- **Ngữ cảnh bằng chứng:** `master` tại `86f2e0d`, ngày 2026-09-24. Thư viện phase 1–3
+  đã merge qua PR #28, #29, #31; spec căn Thư viện theo screen handoff V3 ở
+  [`2026-09-24-library-artifact-alignment-design.md`](superpowers/specs/2026-09-24-library-artifact-alignment-design.md).
   Head của bảy nhánh UI trên remote trùng với head lúc merge của PR #19–#25, nên không
   có commit nào được đẩy lên sau khi merge. Việc session UI còn làm dở mà chưa đẩy lên
   (nếu có) không có trong file này.
@@ -68,16 +70,17 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| FE-A1 | Thư viện: danh sách deck và deck đang mở; tạo root/deck con, sửa, xoá (kèm deletion summary), di chuyển, sắp xếp, đổi scheduler (UC-DECK-001…UC-DECK-006) | chưa bắt đầu | BE-03 | L | Tab Thư viện đang là placeholder; [ui.md](features/deck/ui.md), [kịch bản IT](features/deck/it-scenarios.md) | Thiết kế màn hình, rồi spec → plan. PR đầu tiên kèm FE-D2 |
-| FE-A2 | Card: danh sách card (filter, tìm, đếm, Select all, thao tác hàng loạt), tạo/sửa card có tag, chi tiết card và lịch sử ôn (UC-CARD-001, UC-CARD-002) | chưa bắt đầu | BE-04, BE-05, FE-A1 | L | [ui.md](features/card/ui.md), [kịch bản IT](features/card/it-scenarios.md) | Thiết kế màn hình, rồi spec → plan |
+| FE-A1 | Thư viện: danh sách deck và deck đang mở; tạo root/deck con, sửa, xoá (kèm deletion summary), di chuyển, sắp xếp, đổi scheduler (UC-DECK-001…UC-DECK-006) | đang làm | BE-03 | L | Phase 1–2 của [spec Thư viện](superpowers/specs/2026-09-24-library-screens-design.md): [PR #28](https://github.com/ntgptit/memox-v8/pull/28), [PR #29](https://github.com/ntgptit/memox-v8/pull/29); [ui.md](features/deck/ui.md), [kịch bản IT](features/deck/it-scenarios.md) | Căn theo screen handoff (FE-A11) |
+| FE-A2 | Card: danh sách card (filter, tìm, đếm, Select all, thao tác hàng loạt), tạo/sửa card có tag, chi tiết card và lịch sử ôn (UC-CARD-001, UC-CARD-002) | đang làm | BE-04, BE-05, FE-A1 | L | Danh sách card và thao tác hàng loạt: [PR #31](https://github.com/ntgptit/memox-v8/pull/31) (phase 3); [ui.md](features/card/ui.md), [kịch bản IT](features/card/it-scenarios.md) | Phase 4 (editor, chi tiết) dựng theo màn 08–10 của screen handoff, sau FE-A11 |
 | FE-A3 | Cài đặt: mặc định học, theme, ngôn ngữ, reset về mặc định. Lưu theme và ngôn ngữ thay cho theme hệ thống đang cố định trong `app.dart` (UC-SETTINGS-001; BR-SETTINGS-005, BR-SETTINGS-006) | chưa bắt đầu | BE-A1 | M | `lib/app/app.dart` để `ThemeMode.system` tới khi feature settings lưu được lựa chọn; spec UI base §10 để việc lưu theme và ngôn ngữ ngoài phạm vi; [ui.md](features/settings/ui.md) | Sau BE-A1 |
-| FE-A4 | Xác nhận "Đặt lại tiến độ học" trên một root deck (UC-SRS-001) | chưa bắt đầu | BE-A2, FE-A1 | S | [ui.md](features/srs/ui.md) | Sau BE-A2 |
+| FE-A4 | Xác nhận "Đặt lại tiến độ học" trên một root deck (UC-SRS-001) | đang làm | BE-A2, FE-A1 | S | [ui.md](features/srs/ui.md) | Màn 02 của screen handoff, phase D của FE-A11 |
 | FE-A5 | Thiết kế luồng học (Impeccable): mặt thẻ, lật thẻ, hàng chấm điểm, tổng kết phiên, streak, cách trình bày sáu mode | chưa bắt đầu | FE-07 | M | Critique 2026-09-21, P1 "Study loop not designed"; [ui.md](features/study/ui.md) | Làm sớm, song song với BE-A3 và BE-A4 |
 | FE-A6 | Study Entry, màn hình phiên học và ôn tập cho sáu mode, tổng kết phiên (UC-STUDY-001; BR-MODE-001…BR-MODE-019) | chưa bắt đầu | FE-A5, BE-A3, BE-A4 | XL | Tab Học đang là placeholder; kịch bản IT của [study](features/study/it-scenarios.md) và [study-mode](features/study-mode/it-scenarios.md) | Vertical slice đầu tiên theo `navigation.md` |
 | FE-A7 | Chọn chiều hỏi trước lượt đầu của phiên self-assess (UC-STUDY-003) | chưa bắt đầu | FE-A6, BE-A5 | S | [README study](features/study/README.md) | Sau FE-A6 |
 | FE-A8 | Tab Học: Study Home (UC-STUDY-002) | chưa bắt đầu | FE-A5, BE-A6 | M | Tab Học đang là placeholder | Sau BE-A6 |
 | FE-A9 | Tab Tiến độ và drill-down theo deck (UC-PROGRESS-001, UC-PROGRESS-002) | chưa bắt đầu | BE-A7 | L | Tab Tiến độ đang là placeholder; nội dung theo `navigation.md`; [kịch bản IT](features/progress/it-scenarios.md) | Cần thiết kế màn hình |
 | FE-A10 | Tìm kiếm toàn thư viện từ header của Thư viện, ở mọi cấp (UC-SEARCH-001) | chưa bắt đầu | BE-A8, FE-A1 | M | [README search](features/search/README.md) | Sau BE-A8 |
+| FE-A11 | Căn Thư viện theo screen handoff V3 (artifact "MemoX — Mobile UI Kit v3"): màn 01, 02, 04, 07; 5 phase A–E | đang làm | FE-A1, FE-A2, BE-A2 | L | [spec](superpowers/specs/2026-09-24-library-artifact-alignment-design.md); [screen handoff](shared/ui/screen-handoff/00-index.md) | Phase A (#32), B (#34) xong; phase C (01, 04) trong PR này; phase D sau khi merge |
 
 ### Sub-project sau V8.0
 
@@ -129,7 +132,7 @@ Tại `f28bdfd` không còn nhánh FE nào chưa merge trên remote.
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| FE-A1…FE-A10 | Chưa có screen handoff; luồng học chưa được thiết kế | Mọi màn hình feature | Thiết kế màn hình (Impeccable) trước mỗi hạng mục |
+| FE-A2…FE-A10 | Screen handoff đã có ([index](shared/ui/screen-handoff/00-index.md)); file chi tiết của mỗi màn viết khi làm màn đó | Mọi màn hình feature | Viết file chi tiết của màn trước khi lập plan |
 | FE-A1…FE-A10 | Mỗi màn hình cần use case của hạng mục BE tương ứng | Thứ tự làm | Theo [`wbs_BE.md`](wbs_BE.md) |
 | FE-A1 (một phần) | Panel "Mastered x/y" trên danh sách deck chưa được định nghĩa | Chỉ phần panel đó | Chờ định nghĩa ở BE-A7 |
 | FE-C1 | Quyết định "implement the handoff as written" (spec UI base §2) giữ nguyên các token dưới ngưỡng contrast | Accessibility của toàn app | Chủ dự án quyết có sửa giá trị handoff không |

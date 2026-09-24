@@ -8,9 +8,11 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
@@ -22,8 +24,13 @@ import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-Widget _section(String deckId) =>
-    Scaffold(body: CardListSectionWidget(deckId: deckId));
+Widget _section(String deckId) => Scaffold(
+  body: CardListSectionWidget(
+    deckId: deckId,
+    onAddCard: () {},
+    onOpenCard: (_) {},
+  ),
+);
 
 /// Korean › Words: annyeong (new), gamsa (due today), sarang (due
 /// tomorrow) and mul (new, flagged).
@@ -284,6 +291,12 @@ void main() {
         items: [],
         hasMore: false,
         counts: CardListCounts(all: 0, due: 0, newCards: 0, flagged: 0),
+        statusCounts: CardStatusCounts(
+          newCards: 0,
+          beginning: 0,
+          reviewing: 0,
+          mastered: 0,
+        ),
       ),
     );
     await tester.pump();
@@ -295,4 +308,60 @@ void main() {
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
   });
+
+  libraryTest('New card: the FAB adds, and hides while selecting (P4a-L9)', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    var adds = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(
+        deckId: deckId,
+        cardContent: (id) => CardListSectionWidget(
+          deckId: id,
+          onAddCard: () => adds++,
+          onOpenCard: (_) {},
+        ),
+        cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => adds++),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(MxFab));
+    expect(adds, 1);
+
+    await tester.longPress(find.byType(CardRowWidget).first);
+    await tester.pump();
+    expect(find.byType(MxFab), findsNothing);
+  });
+
+  libraryTest(
+    'a tap opens the card; while selecting it only toggles (BR-CARD-020)',
+    (tester, env) async {
+      final deckId = await _seed(env);
+      final opened = <String>[];
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: CardListSectionWidget(
+            deckId: deckId,
+            onAddCard: () {},
+            onOpenCard: opened.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CardRowWidget).first);
+      expect(opened, hasLength(1));
+
+      await tester.longPress(find.byType(CardRowWidget).last);
+      await tester.pump();
+      await tester.tap(find.byType(CardRowWidget).first);
+      await tester.pump();
+      expect(opened, hasLength(1));
+    },
+  );
 }

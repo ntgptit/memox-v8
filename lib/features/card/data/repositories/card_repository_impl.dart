@@ -18,6 +18,7 @@ import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
@@ -177,36 +178,77 @@ final class CardRepositoryImpl implements CardRepository {
     required CardListQuery query,
     required int windowSize,
     required DateTime now,
-  }) => _listDao
-      .watchWindow(
-        deckId: deckId,
-        query: query,
-        limit: windowSize + 1,
-        now: now,
-      )
-      .asyncMap((rows) async {
-        // The window's watch re-runs on every change the counts could see,
-        // so reading the counts here keeps one emission per change.
-        final counts = await _listDao.counts(
-          deckId: deckId,
-          searchTerm: query.searchTerm,
-          now: now,
-        );
-        return CardListView(
-          items: [
-            for (final (card, schedule) in rows.take(windowSize))
-              listItemOf(card, schedule),
-          ],
-          hasMore: rows.length > windowSize,
-          counts: CardListCounts(
-            all: counts.all,
-            due: counts.due,
-            newCards: counts.newCards,
-            flagged: counts.flagged,
+  }) => _watchCardList(
+    deckId: deckId,
+    query: query,
+    windowSize: windowSize,
+    now: now,
+  ).mapDatabaseErrors();
+
+  /// Once now, then once after every write the list could see (the DAO's
+  /// [CardListDao.changes]); tagging a card is such a write.
+  Stream<CardListView> _watchCardList({
+    required String deckId,
+    required CardListQuery query,
+    required int windowSize,
+    required DateTime now,
+  }) async* {
+    Future<CardListView> read() => _readCardList(
+      deckId: deckId,
+      query: query,
+      windowSize: windowSize,
+      now: now,
+    );
+    yield await read();
+    // yield* over asyncMap, not `await for`: an async* generator suspended
+    // in `await for` over Drift's table updates never completes a cancel.
+    // asyncMap keeps the reads in order, one at a time.
+    yield* _listDao.changes().asyncMap((_) => read());
+  }
+
+  Future<CardListView> _readCardList({
+    required String deckId,
+    required CardListQuery query,
+    required int windowSize,
+    required DateTime now,
+  }) async {
+    final rows = await _listDao.window(
+      deckId: deckId,
+      query: query,
+      limit: windowSize + 1,
+      now: now,
+    );
+    final counts = await _listDao.counts(
+      deckId: deckId,
+      searchTerm: query.searchTerm,
+      now: now,
+    );
+    final schedules = await _listDao.activeSchedules(deckId);
+    final shown = rows.take(windowSize).toList();
+    final tags = await _listDao.tagsOf([
+      for (final (card, _) in shown) card.id,
+    ]);
+    final startOfToday = startOfLocalDay(now);
+    return CardListView(
+      items: [
+        for (final (card, schedule) in shown)
+          listItemOf(
+            card,
+            schedule,
+            tags: tags[card.id] ?? const [],
+            startOfToday: startOfToday,
           ),
-        );
-      })
-      .mapDatabaseErrors();
+      ],
+      hasMore: rows.length > windowSize,
+      counts: CardListCounts(
+        all: counts.all,
+        due: counts.due,
+        newCards: counts.newCards,
+        flagged: counts.flagged,
+      ),
+      statusCounts: statusCountsOf(schedules),
+    );
+  }
 
   @override
   Future<Set<String>> cardIdsMatching({

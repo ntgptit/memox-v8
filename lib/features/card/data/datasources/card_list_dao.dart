@@ -3,7 +3,8 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 
-/// The card list read model (UC-CARD-001). Every read goes through
+/// The card list read model (UC-CARD-001): a window, the filter counts, the
+/// deck's display states and the window's tags. Every filtered read goes through
 /// [_predicate], so the list, its counts and Select all never disagree about
 /// which cards a query lets through (BR-CARD-012).
 final class CardListDao {
@@ -15,13 +16,12 @@ final class CardListDao {
   CardScheduleTable get _schedule => _db.cardSchedule;
 
   /// Up to [limit] cards with their schedule rows, in [query]'s order.
-  /// Emits again whenever a card or a schedule row changes.
-  Stream<List<(CardRow, CardSchedule)>> watchWindow({
+  Future<List<(CardRow, CardSchedule)>> window({
     required String deckId,
     required CardListQuery query,
     required int limit,
     required DateTime now,
-  }) {
+  }) async {
     final select =
         _db.select(_card).join([
             innerJoin(_schedule, _schedule.cardId.equalsExp(_card.id)),
@@ -29,12 +29,10 @@ final class CardListDao {
           ..where(_predicate(deckId: deckId, query: query, now: now))
           ..orderBy(_order(query.sort))
           ..limit(limit);
-    return select.watch().map(
-      (rows) => [
-        for (final row in rows)
-          (row.readTable(_card), row.readTable(_schedule)),
-      ],
-    );
+    return [
+      for (final row in await select.get())
+        (row.readTable(_card), row.readTable(_schedule)),
+    ];
   }
 
   /// All, Due, New and Flagged under [searchTerm], whatever the filter, in
@@ -77,6 +75,45 @@ final class CardListDao {
           ..where(_predicate(deckId: deckId, query: query, now: now));
     return {for (final row in await select.get()) row.read(_card.id)!};
   }
+
+  /// The schedule rows of every active card of [deckId], outside any search
+  /// or filter, for the display-state counts (BR-CARD-008).
+  Future<List<CardSchedule>> activeSchedules(String deckId) {
+    final select = _db.select(_schedule).join([
+      innerJoin(_card, _card.id.equalsExp(_schedule.cardId)),
+    ])..where(_card.deckId.equals(deckId) & _card.deleteBatchId.isNull());
+    return select.map((row) => row.readTable(_schedule)).get();
+  }
+
+  /// The tags of [cardIds] in one statement, each card's by folded name then
+  /// id (BR-TAG-001). No statement for no card.
+  Future<Map<String, List<Tag>>> tagsOf(List<String> cardIds) async {
+    if (cardIds.isEmpty) return const {};
+    final links = _db.cardTags;
+    final tags = _db.tags;
+    final select =
+        _db.select(links).join([
+            innerJoin(tags, tags.id.equalsExp(links.tagId)),
+          ])
+          ..where(links.cardId.isIn(cardIds))
+          ..orderBy([
+            OrderingTerm.asc(tags.nameFolded),
+            OrderingTerm.asc(tags.id),
+          ]);
+    final byCard = <String, List<Tag>>{};
+    for (final row in await select.get()) {
+      byCard
+          .putIfAbsent(row.readTable(links).cardId, () => [])
+          .add(row.readTable(tags));
+    }
+    return byCard;
+  }
+
+  /// Fires after every write to a table the list reads: cards, schedules,
+  /// and the tags on cards. A transaction fires once.
+  Stream<void> changes() => _db.tableUpdates(
+    TableUpdateQuery.onAllTables([_card, _schedule, _db.cardTags, _db.tags]),
+  );
 
   /// The one place that says which cards a query lets through: the active
   /// cards of [deckId], under the search, through the filter. A tag filter

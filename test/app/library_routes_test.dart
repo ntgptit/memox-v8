@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
 import '../support/card_fixtures.dart';
@@ -86,7 +88,7 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.byTooltip(_en.libraryOpenSearch));
+    await _tap(tester, find.text(_en.deckSearchHint));
     await tester.enterText(find.byType(EditableText), 'verb');
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Verbs'));
@@ -181,5 +183,123 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(_barTitle('Korean'), findsOneWidget);
+  });
+
+  libraryTest('New card opens the editor; cards are added one after another', (
+    tester,
+    env,
+  ) async {
+    await env.decks.sub((await env.decks.root('Korean')).id, 'Words');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await _tap(tester, find.widgetWithText(MxButton, _en.deckNewCard));
+    expect(_barTitle(_en.cardAddTitle), findsOneWidget);
+
+    for (final (front, back) in [('bap', 'rice'), ('mul', 'water')]) {
+      await tester.enterText(find.byType(EditableText).at(0), front);
+      await tester.enterText(find.byType(EditableText).at(1), back);
+      await tester.pump();
+      await _tap(tester, find.widgetWithText(MxButton, _en.cardSaveCard));
+    }
+    await _tap(tester, find.byTooltip(_en.cardClose));
+
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.text('bap'), findsOneWidget);
+    expect(find.text('mul'), findsOneWidget);
+  });
+
+  libraryTest('Close on a typed card asks; Discard leaves (RF2)', (
+    tester,
+    env,
+  ) async {
+    await env.decks.sub((await env.decks.root('Korean')).id, 'Words');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await _tap(tester, find.widgetWithText(MxButton, _en.deckNewCard));
+    await tester.enterText(find.byType(EditableText).at(0), 'bap');
+    await tester.pump();
+    await _tap(tester, find.byTooltip(_en.cardClose));
+    expect(find.text(_en.cardDiscardNewTitle), findsOneWidget);
+
+    await _tap(tester, find.text(_en.cardDiscard));
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
+  });
+
+  libraryTest('a row opens its card; Back returns to the list as it was', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(
+      env.db,
+      id: 'c0',
+      deckId: words.id,
+      front: 'bap',
+      back: 'rice',
+    );
+    await insertCard(
+      env.db,
+      id: 'c1',
+      deckId: words.id,
+      front: 'mul',
+      back: 'water',
+    );
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await tester.enterText(find.byType(EditableText), 'bap');
+    await tester.pumpAndSettle();
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.text('bap'),
+      ),
+    );
+    expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
+
+    await _back(tester);
+    expect(_barTitle('Words'), findsOneWidget);
+    expect(find.byType(CardRowWidget), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      'bap',
+    );
+  });
+
+  libraryTest('Edit from the detail saves and returns to it (UC-CARD-002 A1)', (
+    tester,
+    env,
+  ) async {
+    final words = await env.decks.sub(
+      (await env.decks.root('Korean')).id,
+      'Words',
+    );
+    await insertCard(
+      env.db,
+      id: 'c0',
+      deckId: words.id,
+      front: 'bap',
+      back: 'rice',
+    );
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Words'));
+    await _tap(tester, find.text('bap'));
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardEditAction));
+    expect(_barTitle(_en.cardEditTitle), findsOneWidget);
+
+    await tester.enterText(find.byType(EditableText).at(1), 'cooked rice');
+    await tester.pump();
+    await _tap(tester, find.widgetWithText(MxButton, _en.cardSaveChanges));
+
+    expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
+    expect(find.text('cooked rice'), findsOneWidget);
   });
 }

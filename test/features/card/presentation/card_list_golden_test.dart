@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -50,7 +51,12 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(deckId: id),
+            cardContent: (id) => CardListSectionWidget(
+              deckId: id,
+              onAddCard: () {},
+              onOpenCard: (_) {},
+            ),
+            cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
           ),
           brightness,
         );
@@ -66,7 +72,12 @@ void main() {
           env,
           deckScreen(
             deckId: deckId,
-            cardContent: (id) => CardListSectionWidget(deckId: id),
+            cardContent: (id) => CardListSectionWidget(
+              deckId: id,
+              onAddCard: () {},
+              onOpenCard: (_) {},
+            ),
+            cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
           ),
           brightness,
         );

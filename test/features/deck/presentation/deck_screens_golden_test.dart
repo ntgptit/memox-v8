@@ -66,11 +66,12 @@ void main() {
 
     libraryTest('empty deck, $theme', (tester, env) async {
       final korean = await env.decks.root('Korean');
+      final words = await env.decks.sub(korean.id, 'Words');
       await withRealShadows(() async {
         await pumpLibraryGolden(
           tester,
           env,
-          deckScreen(deckId: korean.id),
+          deckScreen(deckId: words.id),
           brightness,
         );
         await expectBoundaryGolden(
@@ -86,7 +87,14 @@ void main() {
       }
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, deckScreen(), brightness);
-        await tester.tap(find.byTooltip(_en.libraryReorder));
+        // Reorder starts from a row's sheet (ruling C-L4).
+        await tester.tap(
+          find
+              .byTooltip(RegExp('^${RegExp.escape(_en.deckMoreActions(''))}'))
+              .first,
+        );
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckReorder));
         await _settleOverlay(tester);
         await expectBoundaryGolden(
           tester,

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_summary_card_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
-import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -20,6 +23,8 @@ const _path = ['Korean', 'Words', 'Verbs'];
 
 Finder _crumb(String label) =>
     find.descendant(of: find.byType(MxBreadcrumb), matching: find.text(label));
+
+Finder _unsetButton(String label) => find.widgetWithText(MxButton, label);
 
 Finder _barTitle(String title) =>
     find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
@@ -82,34 +87,53 @@ void main() {
       deckScreen(deckId: korean.id, onOpenDeck: opened.add),
     );
 
-    // The level line and the Words row both read "1 new".
-    expect(find.text('1 new', findRichText: true), findsNWidgets(2));
+    // Rows carry no workload line on screen 01; Task 7's summary card
+    // brings the level's counts back.
+    expect(find.byType(DeckRowWidget), findsOneWidget);
     expect(find.byType(MxListSectionHeader), findsOneWidget);
     await tester.tap(find.text('Words'));
     expect(opened, [words.id]);
   });
 
-  libraryTest('an empty deck offers a sub-deck; creating one lists it', (
+  libraryTest('an empty sub-deck offers a card or a sub-deck (P4a-L9)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final added = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onAddCard: added.add),
+    );
+
+    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
+    expect(find.text(_en.deckUnsetNote), findsOneWidget);
+    await tester.tap(_unsetButton(_en.deckNewCard));
+    expect(added, [words.id]);
+
+    await tester.tap(_unsetButton(_en.deckNewSubDeck));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(EditableText), 'Verbs');
+    await tester.tap(find.text(_en.deckCreateConfirm));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxDialog), findsNothing);
+    expect(find.text('Verbs'), findsOneWidget);
+  });
+
+  libraryTest('a top-level deck offers sub-decks only (BR-DECK-005)', (
     tester,
     env,
   ) async {
     final korean = await env.decks.root('Korean');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
 
-    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
-    await tester.tap(
-      find.descendant(
-        of: find.byType(MxEmptyState),
-        matching: find.text(_en.deckCreateSub),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(EditableText), 'Words');
-    await tester.tap(find.text(_en.deckCreateConfirm));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MxDialog), findsNothing);
-    expect(find.text('Words'), findsOneWidget);
+    expect(find.text(_en.deckRootEmptyTitle), findsOneWidget);
+    expect(_unsetButton(_en.deckNewCard), findsNothing);
+    expect(_unsetButton(_en.deckNewSubDeck), findsOneWidget);
+    expect(find.text(_en.deckUnsetNote), findsNothing);
   });
 
   libraryTest('the FAB opens the new sub-deck dialog', (tester, env) async {
@@ -118,47 +142,149 @@ void main() {
     await tester.tap(find.byType(MxFab));
     await tester.pumpAndSettle();
 
-    expect(find.text(_en.deckCreateSubTitle), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.text(_en.deckCreateSubTitle),
+      ),
+      findsOneWidget,
+    );
   });
 
-  libraryTest('the deepest deck offers no sub-deck', (tester, env) async {
+  libraryTest('the deepest deck offers a card only', (tester, env) async {
     final chain = await _chain(
       env,
       DeckEntity.maxDepth,
       (level) => 'Level $level',
     );
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: chain.last.id));
+    final added = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: chain.last.id, onAddCard: added.add),
+    );
 
     expect(find.byType(MxFab), findsNothing);
     expect(find.text(_en.deckUnsetDeepestBody), findsOneWidget);
-    expect(find.text(_en.deckCreateSub), findsNothing);
+    expect(_unsetButton(_en.deckNewSubDeck), findsNothing);
+    await tester.tap(_unsetButton(_en.deckNewCard));
+    expect(added, [chain.last.id]);
   });
 
-  libraryTest('a deck of cards shows no deck list yet (ruling P2-L1)', (
+  libraryTest('a deck of cards takes its FAB from the card feature', (
     tester,
     env,
   ) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await insertCard(env.db, id: 'new', deckId: words.id);
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: words.id));
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, cardFab: (deckId) => Text('fab of $deckId')),
+    );
 
     expect(_barTitle('Words'), findsOneWidget);
     expect(find.byType(MxListSectionHeader), findsNothing);
-    expect(find.byType(MxFab), findsNothing);
+    expect(find.text('fab of ${words.id}'), findsOneWidget);
   });
 
-  libraryTest('a deck deleted while open says so (ruling P2-L7)', (
+  libraryTest('a deck deleted while open says it is no longer here (A8)', (
     tester,
     env,
   ) async {
     final korean = await env.decks.root('Korean');
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await env.decks.deleteDeck(deckId: korean.id);
-    await tester.pump();
-    await tester.pump();
+    final words = await env.decks.sub(korean.id, 'Words');
+    String? ancestor = 'unset';
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onOpenAncestor: (id) => ancestor = id),
+    );
 
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    await env.decks.deleteDeck(deckId: words.id);
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckGoneTitle), findsOneWidget);
+    expect(find.text(_en.deckDeletedToast), findsNothing);
+    final trash = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.deckOpenTrash),
+    );
+    expect(trash.onPressed, isNull);
+    await tester.tap(find.text(_en.deckBackToLibrary));
+    expect(ancestor, isNull);
+  });
+
+  libraryTest('a deck of decks leads with its summary; Study is disabled', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await env.decks.sub(korean.id, 'Grammar');
+    await insertCard(
+      env.db,
+      id: 'late',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 22),
+    );
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
+    expect(
+      find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
+      findsOneWidget,
+    );
+    final study = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.deckStudyThisDue(1)),
+    );
+    expect(study.onPressed, isNull);
+    expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
+  });
+
+  libraryTest('the summary counts every sub-deck under the due filter', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await env.decks.sub(korean.id, 'Grammar');
+    await insertCard(
+      env.db,
+      id: 'late',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 22),
+    );
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    await tester.tap(find.text(_en.deckSortManual));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(MxToggle));
+    await tester.tap(find.text(_en.commonDone));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
+      findsOneWidget,
+    );
+    expect(find.text(_en.libraryDueDecksHeader.toUpperCase()), findsOneWidget);
+    expect(find.text('Grammar'), findsNothing);
+  });
+
+  libraryTest('sub-decks at the deepest level name it in the header (C-O6)', (
+    tester,
+    env,
+  ) async {
+    final chain = await _chain(env, DeckEntity.maxDepth, (level) => 'L$level');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: chain[DeckEntity.maxDepth - 2].id),
+    );
+
+    expect(find.text(_en.deckDepthHeader(1).toUpperCase()), findsOneWidget);
   });
 
   libraryTest('a 10-level path at 2x keeps the current level in view (RF4)', (
