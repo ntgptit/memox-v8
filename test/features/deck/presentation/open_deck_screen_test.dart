@@ -207,15 +207,13 @@ void main() {
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
     expect(find.text(_en.deckDeletedToast), findsNothing);
-    final trash = tester.widget<MxButton>(
-      find.widgetWithText(MxButton, _en.deckOpenTrash),
-    );
-    expect(trash.onPressed, isNull);
+    // Trash waits under Coming soon (spec A4, amended): Back is the one way.
+    expect(find.byType(MxButton), findsOneWidget);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
   });
 
-  libraryTest('a deck of decks leads with its summary; Study is disabled', (
+  libraryTest('a deck of decks leads with its summary; no Study yet', (
     tester,
     env,
   ) async {
@@ -236,16 +234,8 @@ void main() {
       find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
       findsOneWidget,
     );
-    final study = tester.widget<MxButton>(
-      find.widgetWithText(MxButton, _en.deckStudyThisDue(1)),
-    );
-    expect(study.onPressed, isNull);
-    expect(
-      tester.getSemantics(
-        find.widgetWithText(MxButton, _en.deckStudyThisDue(1)),
-      ),
-      isSemantics(hint: _en.commonNotAvailableYet),
-    );
+    // Study waits under Coming soon (spec A4, amended).
+    expect(find.byType(MxButton), findsNothing);
     expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
   });
 

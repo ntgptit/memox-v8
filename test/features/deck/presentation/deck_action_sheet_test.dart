@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -51,23 +50,9 @@ void main() {
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
-    expect(find.text(_en.deckStudyOptions), findsOneWidget);
-    expect(
-      tester
-          .widget<MxActionSheetCommandRow>(
-            find.widgetWithText(MxActionSheetCommandRow, _en.deckStudyThis),
-          )
-          .isEnabled,
-      isFalse,
-    );
-    // Spec A4: what waits for its feature says so to TalkBack.
-    for (final label in [_en.deckStudyThis, _en.deckStudyOptions]) {
-      expect(
-        tester.getSemantics(find.text(label)),
-        isSemantics(hint: _en.commonNotAvailableYet),
-        reason: label,
-      );
-    }
+    // Study and Study options wait under Coming soon (spec A4, amended).
+    expect(find.text(_en.deckStudyOptions), findsNothing);
+    expect(find.byIcon(AppIcons.play), findsNothing);
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (

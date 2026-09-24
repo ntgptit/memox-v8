@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -68,22 +69,14 @@ void main() {
     expect(find.byType(MxDialog), findsOneWidget);
   });
 
-  libraryTest('first run: starter decks show disabled, the footnote below', (
+  libraryTest('first run: only Create deck, the footnote below', (
     tester,
     env,
   ) async {
     await pumpLibraryScreen(tester, env, deckScreen());
 
-    final starter = tester.widget<MxButton>(
-      find.widgetWithText(MxButton, _en.libraryBrowseStarter),
-    );
-    expect(starter.onPressed, isNull);
-    expect(
-      tester.getSemantics(
-        find.widgetWithText(MxButton, _en.libraryBrowseStarter),
-      ),
-      isSemantics(hint: _en.commonNotAvailableYet),
-    );
+    // Features that wait are listed under Coming soon (spec A4, amended).
+    expect(find.byType(MxButton), findsOneWidget);
     expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
   });
 
@@ -285,34 +278,36 @@ void main() {
     expect(find.text(_vi.libraryDecksCount(2).toUpperCase()), findsOneWidget);
   });
 
-  libraryTest(
-    'the root app bar offers starter decks, tags and trash, disabled',
-    (tester, env) async {
-      await pumpLibraryScreen(tester, env, deckScreen());
+  libraryTest('the root app bar holds Coming soon, which lists what waits', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
 
-      for (final label in [
-        _en.libraryStarterDecks,
-        _en.libraryTags,
-        _en.libraryTrash,
-      ]) {
-        final button = tester.widget<MxIconButton>(
-          find.ancestor(
-            of: find.byTooltip(label),
-            matching: find.byType(MxIconButton),
-          ),
-        );
-        expect(button.onPressed, isNull, reason: label);
-      }
-      // Reorder moved to a row's sheet (ruling C-L4): three actions only.
-      expect(
-        find.descendant(
-          of: find.byType(MxAppBar),
-          matching: find.byType(MxIconButton),
-        ),
-        findsNWidgets(3),
-      );
-    },
-  );
+    // Reorder moved to a row's sheet (ruling C-L4): one action only.
+    expect(
+      find.descendant(
+        of: find.byType(MxAppBar),
+        matching: find.byType(MxIconButton),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip(_en.libraryComingSoon));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.libraryComingSoonBody), findsOneWidget);
+    for (final feature in [
+      _en.libraryStarterDecks,
+      _en.libraryTags,
+      _en.libraryTrash,
+      _en.comingSoonStudy,
+      _en.deckStudyOptions,
+      _en.comingSoonProgressSort,
+      _en.comingSoonTransfer,
+    ]) {
+      expect(find.text(feature), findsOneWidget, reason: feature);
+    }
+  });
 
   libraryTest('the search field opens the search', (tester, env) async {
     await _seed(env);
@@ -349,29 +344,16 @@ void main() {
     expect(find.byType(MxFab), findsOneWidget);
   });
 
-  libraryTest('controls that wait for their feature say so (spec A4)', (
+  libraryTest('the sort sheet offers only the sorts that work', (
     tester,
     env,
   ) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
-    for (final label in [
-      _en.libraryStarterDecks,
-      _en.libraryTags,
-      _en.libraryTrash,
-    ]) {
-      expect(
-        tester.getSemantics(find.byTooltip(label)),
-        isSemantics(hint: _en.commonNotAvailableYet),
-        reason: label,
-      );
-    }
-
     await tester.tap(find.text(_en.deckSortManual));
     await tester.pumpAndSettle();
-    expect(
-      tester.getSemantics(find.text(_en.deckSortProgress)),
-      isSemantics(hint: _en.commonNotAvailableYet),
-    );
+
+    // Manual, recent, name, due: the progress sort waits (spec A4, amended).
+    expect(find.byType(MxOptionRow), findsNWidgets(4));
   });
 }
