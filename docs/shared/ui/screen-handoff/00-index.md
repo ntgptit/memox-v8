@@ -38,7 +38,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 07 | Card list | 15 | FE-A2 | to align | [07-card-list.md](07-card-list.md) |
 | 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
 | 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
-| 10 | Card detail | 7 | FE-A2 | not built | — |
+| 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
 | 11 | Card import | 16 | FE-B3 | out of V8 | — |
 | 12 | Card export | 9 | FE-B3 | out of V8 | — |
 | 13 | Study home | 7 | FE-A8 | not built | — |
