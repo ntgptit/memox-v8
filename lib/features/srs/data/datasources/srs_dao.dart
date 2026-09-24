@@ -4,9 +4,20 @@ import 'package:memox/core/database/app_database.dart';
 const _inProgress = 'in_progress';
 const _invalidated = 'invalidated';
 
+/// The sessions of the tree of [root]: opened on that root, or holding a card
+/// that now lives in its tree. A deck moves between two trees mid-session
+/// only when their scheduler and generation match (BR-SRS-006), and its cards
+/// stay in the queue (IT-CONT-006); a reset or a scheduler change of the tree
+/// they moved into must close that session too (BR-STUDY-015, BR-STUDY-016).
+/// [session] names the `study_session` row the predicate reads.
+String _ofTree(String session, String root) =>
+    '($session.root_id = $root OR EXISTS (SELECT 1 FROM study_queue_items q'
+    ' JOIN card c ON c.id = q.card_id JOIN deck k ON k.id = c.deck_id'
+    ' WHERE q.session_id = $session.id AND k.root_id = $root))';
+
 /// Row access for `card_schedule` and `review_log`, plus the reads of `deck`
-/// and `study_session` srs needs. It returns Drift rows, never domain
-/// values, and runs inside the caller's transaction.
+/// srs needs and the sessions a reset closes. It returns Drift rows, never
+/// domain values, and runs inside the caller's transaction.
 final class SrsDao {
   SrsDao(this._db);
 
@@ -19,14 +30,16 @@ final class SrsDao {
           .getSingleOrNull();
 
   /// The root of [cardId]'s tree, reached through `card.deck_id` and then
-  /// `deck.root_id` — never `COALESCE(parent_id, id)` (BR-DECK-003).
+  /// `deck.root_id` — never `COALESCE(parent_id, id)` (BR-DECK-003); null
+  /// when the card or its deck is in the Trash (BE-C3).
   Future<Deck?> rootOfCard(String cardId) async {
     final row = await _db
         .customSelect(
           'SELECT root.* FROM card c'
           ' JOIN deck d ON d.id = c.deck_id'
           ' JOIN deck root ON root.id = d.root_id'
-          ' WHERE c.id = ?',
+          ' WHERE c.id = ? AND c.delete_batch_id IS NULL'
+          ' AND d.delete_batch_id IS NULL',
           variables: [Variable<String>(cardId)],
           readsFrom: {_db.card, _db.deck},
         )
@@ -53,13 +66,20 @@ final class SrsDao {
           '  AND k.delete_batch_id IS NULL AND cs.learned_at IS NOT NULL)'
           '  AS learned_card_count,'
           ' (SELECT COUNT(*) FROM study_session s'
-          '  WHERE s.root_id = d.id AND s.status = ?) AS open_session_count'
+          '  WHERE s.status = ? AND ${_ofTree('s', 'd.id')})'
+          '  AS open_session_count'
           ' FROM deck d WHERE d.id = ? AND d.delete_batch_id IS NULL',
           variables: [
             const Variable<String>(_inProgress),
             Variable<String>(id),
           ],
-          readsFrom: {_db.deck, _db.card, _db.cardSchedule, _db.studySession},
+          readsFrom: {
+            _db.deck,
+            _db.card,
+            _db.cardSchedule,
+            _db.studySession,
+            _db.studyQueueItems,
+          },
         )
         .getSingleOrNull();
     if (row == null) return null;
@@ -74,10 +94,6 @@ final class SrsDao {
   Future<CardSchedule?> scheduleRow(String cardId) => (_db.select(
     _db.cardSchedule,
   )..where((schedule) => schedule.cardId.equals(cardId))).getSingleOrNull();
-
-  Future<StudySession?> sessionRow(String id) => (_db.select(
-    _db.studySession,
-  )..where((session) => session.id.equals(id))).getSingleOrNull();
 
   Future<void> insertSchedule(CardScheduleCompanion row) =>
       _db.into(_db.cardSchedule).insert(row);
@@ -133,24 +149,24 @@ final class SrsDao {
   }
 
   /// Closes every `in_progress` session of [rootId]'s tree as `invalidated`
-  /// with [endReason] (BR-STUDY-015, BR-STUDY-016). srs writes
-  /// `study_session` because no `study` feature exists yet (foundation plan,
-  /// Clarification 1).
+  /// with [endReason], in the transaction of the reset or the scheduler
+  /// change (BR-STUDY-015, BR-STUDY-016).
   Future<void> invalidateOpenSessions(
     String rootId, {
     required String endReason,
     required DateTime now,
-  }) =>
-      (_db.update(_db.studySession)..where(
-            (session) =>
-                session.rootId.equals(rootId) &
-                session.status.equals(_inProgress),
-          ))
-          .write(
-            StudySessionCompanion(
-              status: const Value(_invalidated),
-              endReason: Value(endReason),
-              endedAt: Value(now),
-            ),
-          );
+  }) => _db.customUpdate(
+    'UPDATE study_session SET status = ?, end_reason = ?, ended_at = ?'
+    ' WHERE status = ? AND ${_ofTree('study_session', '?')}',
+    variables: [
+      const Variable<String>(_invalidated),
+      Variable<String>(endReason),
+      Variable<DateTime>(now),
+      const Variable<String>(_inProgress),
+      Variable<String>(rootId),
+      Variable<String>(rootId),
+    ],
+    updates: {_db.studySession},
+    updateKind: UpdateKind.update,
+  );
 }

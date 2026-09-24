@@ -5,7 +5,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// The open deck was deleted while it was on screen (spec A8): say so, and
-/// go back to the Library. Trash is deferred, so its door is shut.
+/// go back to the Library. Trash waits under Coming soon (spec A4, amended).
 class DeckGoneStateWidget extends StatelessWidget {
   const DeckGoneStateWidget({super.key, required this.onBackToLibrary});
 
@@ -22,7 +22,6 @@ class DeckGoneStateWidget extends StatelessWidget {
           body: l10n.deckGoneBody,
           actionLabel: l10n.deckBackToLibrary,
           onAction: onBackToLibrary,
-          secondaryActionLabel: l10n.deckOpenTrash,
         ),
       ],
     );

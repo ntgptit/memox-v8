@@ -21,6 +21,21 @@ final class SettingsDao {
   /// either changes; null when [deckId] or its root does not exist or is in
   /// the Trash. The root is reached through `root_id` (BR-DECK-003).
   Stream<(Deck, AppSetting)?> watchRootAndSettings(String deckId) {
+    final (query, read) = _rootAndSettings(deckId);
+    return query.watchSingleOrNull().map(
+      (row) => row == null ? null : read(row),
+    );
+  }
+
+  /// [watchRootAndSettings] read once.
+  Future<(Deck, AppSetting)?> rootAndSettings(String deckId) async {
+    final (query, read) = _rootAndSettings(deckId);
+    final row = await query.getSingleOrNull();
+    return row == null ? null : read(row);
+  }
+
+  (Selectable<TypedResult>, (Deck, AppSetting) Function(TypedResult))
+  _rootAndSettings(String deckId) {
     final deck = _db.deck;
     final root = _db.alias(_db.deck, 'root');
     final settings = _db.appSettings;
@@ -31,10 +46,7 @@ final class SettingsDao {
       ),
       innerJoin(settings, settings.id.equals(appSettingsRowId)),
     ])..where(deck.id.equals(deckId) & deck.deleteBatchId.isNull());
-    return query.watchSingleOrNull().map(
-      (row) =>
-          row == null ? null : (row.readTable(root), row.readTable(settings)),
-    );
+    return (query, (row) => (row.readTable(root), row.readTable(settings)));
   }
 
   /// The deck [id] names, unless it is in the Trash.

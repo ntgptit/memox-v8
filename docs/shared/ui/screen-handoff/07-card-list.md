@@ -12,24 +12,24 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮`. Selecting: close, "{n} selected", "Select all {count}". |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. |
-| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered), "Study this deck · {n} due" **disabled**. Hidden while selecting. |
-| Filters | `MxFilterChip` | All · Due · New · Flagged with counts; Tags **disabled** (FE-B2). |
+| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck" waits under Coming soon (spec A4). Hidden while selecting. |
+| Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the streak colour and the due chip: "New", "Due today", "In {n}d", "{n}d overdue". |
-| Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (**disabled**, FE-B3) · Delete. |
+| Bulk bar | `MxFooterBar` with four icon buttons | Move · Flag · Tag · Delete; Export waits under Coming soon (FE-B3). |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting. |
 
 ## Deck action sheet (`⋮`)
 
-Study this deck (**disabled**) · Import cards (**disabled**, FE-B3) · Export all {n}
-cards (**disabled**, FE-B3) · Rename · Move to another deck · Delete.
+Rename · Move to another deck · Delete. Study, Import and Export wait under Coming soon
+(spec A4; FE-A6, FE-B3).
 
 ## States
 
 | State | Light | Dark | V8 |
 |---|---|---|---|
-| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | No FAB; Tags chip disabled. |
-| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | "Add first card" opens the editor (#33); "Import cards" disabled. |
+| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | No FAB; no Tags chip (Coming soon). |
+| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | "Add first card" opens the editor (#33); no Import (Coming soon). |
 | searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
 | error | ![](img/07-card-list/error-light.png) | ![](img/07-card-list/error-dark.png) | As drawn. |
@@ -50,17 +50,15 @@ and `trashed` (Undo; no Trash in V8.0).
 | Artifact | V8 | Wins |
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
-| Tags filter, Import, Export | Disabled | Spec A4 |
-| "Export all {n} cards" in the deck sheet | "Export all cards", no count | Ruling E-L4: the sheet reads only `DeckView`, which has no card count |
+| Tags filter, Import, Export, Study | Hidden; named under Coming soon | Spec A4 (amended) |
 | Flag in #F97316 | `streakInk` (#CA601D light) | E-O4: the kit orange reads 2.8:1 on the card, below the 3:1 non-text floor |
-| "Study this deck · {n} due" enabled | Disabled, announced "Not available yet" | Spec A4: study arrives with FE-B |
 | Status "Beginning" | "Learning" | The V8 status copy (`cardStatusBeginning`), shared with the card detail |
 | Filter counts in `searchEmpty` stay the whole deck's | Counts follow the search | IT-ORG-005 |
 | Selected card edged at 1px | 2px primary (`AppStroke.focus`) | E-O5: the selection stroke of the design system |
 | "Select all {n}" as a text link | A compact secondary button | MxButton has no text tone |
 | Sort pill with a leading ⇅ | Label and chevron only | MxChipTrigger draws a trailing glyph only, as in screen 01's header (UI-base debt row 97) |
 | Due chip and tags as small squares | Pills (MxBadge, MxTagChip dense) | The shared badge and tag shapes |
-| `empty`: "No cards in this deck yet", Add first card, Import, a study note, no FAB | "No cards yet", New card, the FAB stays; no Import, no note | Import waits (spec A4); the note speaks of a study that is not available yet; the FAB is P4a-L9 |
+| `empty`: "No cards in this deck yet", Add first card, a study note, no FAB | "No cards yet", New card, the FAB stays; no note | The note speaks of a study that waits under Coming soon (spec A4); the FAB is P4a-L9 |
 
 ## Copy
 

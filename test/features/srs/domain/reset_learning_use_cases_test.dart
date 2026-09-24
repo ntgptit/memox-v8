@@ -4,7 +4,6 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
-import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart';
 import 'package:memox/features/srs/domain/usecases/reset_learning_progress_use_case.dart';
@@ -38,11 +37,7 @@ void main() {
       "VALUES ('s', 'r', 'r', 1, 'learning', 'self_assess', 'in_progress', "
       '0, 20, 0)',
     );
-    await schedules.recordReview(
-      cardId: 'c',
-      sessionId: 's',
-      action: EightBoxAction.remembered,
-    );
+    await schedules.completeLearning(cardId: 'c', generation: 1);
   });
   tearDown(() => db.close());
 

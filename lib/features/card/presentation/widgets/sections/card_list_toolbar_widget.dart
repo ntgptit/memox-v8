@@ -10,10 +10,9 @@ import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
-import 'package:memox/shared/widgets/mx_unavailable.dart';
 
 /// Above the rows (screen 07): the search the app bar opened (E-O3), the
-/// deck's summary, the four filters with their counts and Tags (not yet),
+/// deck's summary, the four filters with their counts (Tags waits under Coming soon, spec A4),
 /// then a header counting what shows, with the sort. While selecting, the
 /// header counts the selection and nothing else shows (ruling E-L3).
 class CardListToolbarWidget extends StatelessWidget {
@@ -98,16 +97,6 @@ class CardListToolbarWidget extends StatelessWidget {
                     isSelected: filter == request.filter,
                     onSelected: (_) => onFilter(filter),
                   ),
-                // Spec A4: tags filtering waits for FE-B2.
-                MxUnavailable(
-                  hint: l10n.commonNotAvailableYet,
-                  child: MxFilterChip(
-                    label: l10n.cardFilterTags,
-                    icon: AppIcons.tag,
-                    isSelected: false,
-                    onSelected: null,
-                  ),
-                ),
               ],
             ),
           ),

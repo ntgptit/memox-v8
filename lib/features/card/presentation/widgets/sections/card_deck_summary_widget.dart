@@ -1,21 +1,18 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_status_distribution.dart';
-import 'package:memox/shared/widgets/mx_unavailable.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 /// A deck of cards at a glance (screen 07, spec A13): its algorithm, how
-/// much is mastered, today's work, the cards by display state, and Study,
-/// not available until study sessions exist (spec A4).
+/// much is mastered, today's work and the cards by display state. Study
+/// waits under Coming soon (spec A4).
 class CardDeckSummaryWidget extends StatelessWidget {
   const CardDeckSummaryWidget({
     super.key,
@@ -81,17 +78,6 @@ class CardDeckSummaryWidget extends StatelessWidget {
           MxStatusDistribution(
             counts: mxStatusCounts(status),
             label: (badge) => l10n.cardStatus(cardDisplayStatusOf(badge)),
-          ),
-          MxUnavailable(
-            hint: l10n.commonNotAvailableYet,
-            child: MxButton(
-              label: workload.due > 0
-                  ? l10n.cardStudyThisDue(workload.due)
-                  : l10n.cardStudyThis,
-              icon: AppIcons.play,
-              isBlock: true,
-              onPressed: null,
-            ),
           ),
         ],
       ),

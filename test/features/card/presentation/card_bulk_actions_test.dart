@@ -68,8 +68,8 @@ Finder _inDialog(String text) =>
 
 void main() {
   libraryTest(
-    'the bulk bar is Move · Flag · Tag · Export · Delete; Export is not '
-    'available yet',
+    'the bulk bar is Move · Flag · Tag · Delete; Export waits under Coming '
+    'soon',
     (tester, env) async {
       final seeded = await _seed(env);
       await pumpLibraryScreen(tester, env, _section(seeded.words));
@@ -83,22 +83,14 @@ void main() {
           _en.cardMove,
           _en.cardFlag,
           _en.cardTag,
-          _en.cardExport,
           _en.cardDelete,
         ])
           tester.getCenter(inBar(label)).dx,
       ];
 
       expect(xs, orderedEquals([...xs]..sort()));
+      expect(tester.widget<CardBulkBarWidget>(bar).actions, hasLength(4));
       expect(inBar(_en.cardSelectAllCount(3)), findsNothing);
-      expect(
-        tester.getSemantics(inBar(_en.cardExport)),
-        isSemantics(
-          hint: _en.commonNotAvailableYet,
-          hasEnabledState: true,
-          isEnabled: false,
-        ),
-      );
     },
   );
 

@@ -148,7 +148,8 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   }
 
   /// The bulk bar's commands over [selected] (ruling P3-L7).
-  /// Ruling E-L3: Move · Flag · Tag · Export (not yet) · Delete.
+  /// Ruling E-L3: Move · Flag · Tag · Delete; Export waits under Coming
+  /// soon (spec A4).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
     return [
@@ -177,7 +178,6 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           _clearAfter(showCardTagDialog(context, cardIds: selected)),
         ),
       ),
-      (icon: AppIcons.exportFile, label: l10n.cardExport, onTap: null),
       (
         icon: AppIcons.delete,
         label: l10n.cardDelete,

@@ -73,26 +73,23 @@ void main() {
       tester.widget<MxMasteryDonut>(find.byType(MxMasteryDonut)).fraction,
       0.25,
     );
-    final study = tester.widget<MxButton>(
-      find.widgetWithText(MxButton, _en.cardStudyThisDue(2)),
+    // Study waits under Coming soon (spec A4, amended).
+    expect(
+      find.descendant(
+        of: find.byType(CardDeckSummaryWidget),
+        matching: find.byType(MxButton),
+      ),
+      findsNothing,
     );
-    expect(study.onPressed, isNull);
   });
 
-  libraryTest('Tags shows, disabled, and says it is not available yet', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the filters are All, Due, New and Flagged; Tags waits under '
+      'Coming soon', (tester, env) async {
     final deckId = await _deckWithWork(env);
     await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: deckId));
     await tester.pumpAndSettle();
 
-    final tags = find.widgetWithText(MxFilterChip, _en.cardFilterTags);
-    expect(tester.widget<MxFilterChip>(tags).onSelected, isNull);
-    expect(
-      tester.getSemantics(tags),
-      isSemantics(hint: _en.commonNotAvailableYet),
-    );
+    expect(find.byType(MxFilterChip), findsNWidgets(4));
   });
 
   libraryTest('the header counts what shows and names the sort; selecting '

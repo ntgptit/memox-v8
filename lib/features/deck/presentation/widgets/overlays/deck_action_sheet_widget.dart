@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_unavailable.dart';
 
 /// What the deck action sheet can start (spec §6.2).
 enum DeckAction { open, rename, move, reviewAlgorithm, reorder, delete }
@@ -69,9 +67,8 @@ class DeckActionSheetWidget extends StatelessWidget {
     );
   }
 
-  /// Study and Study options exist in the handoff but not in V8.0 yet: they
-  /// show disabled (spec A4). Root decks own the algorithm and cannot move
-  /// (ruling P2-L8).
+  /// Study and Study options wait under Coming soon (spec A4, amended). Root
+  /// decks own the algorithm and cannot move (ruling P2-L8).
   List<Widget> _rows(BuildContext context) {
     final l10n = context.l10n;
     final deck = view.deck;
@@ -84,53 +81,12 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckOpen,
           onTap: () => choose(DeckAction.open),
         ),
-      MxUnavailable(
-        hint: context.l10n.commonNotAvailableYet,
-        child: MxActionSheetCommandRow(
-          icon: AppIcons.play,
-          label: l10n.deckStudyThis,
-          onTap: () {},
-          isEnabled: false,
-        ),
-      ),
-      // Ruling E-L5: a deck of cards imports and exports them, not yet
-      // (spec A4).
-      if (deck.contentType == DeckContentType.card) ...[
-        MxUnavailable(
-          hint: l10n.commonNotAvailableYet,
-          child: MxActionSheetCommandRow(
-            icon: AppIcons.importFile,
-            label: l10n.deckImportCards,
-            onTap: () {},
-            isEnabled: false,
-          ),
-        ),
-        MxUnavailable(
-          hint: l10n.commonNotAvailableYet,
-          child: MxActionSheetCommandRow(
-            icon: AppIcons.exportFile,
-            label: l10n.deckExportAll,
-            onTap: () {},
-            isEnabled: false,
-          ),
-        ),
-      ],
       MxActionSheetCommandRow(
         icon: AppIcons.edit,
         label: l10n.deckRename,
         onTap: () => choose(DeckAction.rename),
       ),
       if (deck.isRoot) ...[
-        MxUnavailable(
-          hint: context.l10n.commonNotAvailableYet,
-          child: MxActionSheetCommandRow(
-            icon: AppIcons.settings,
-            label: l10n.deckStudyOptions,
-            subtitle: l10n.deckStudyOptionsHint,
-            onTap: () {},
-            isEnabled: false,
-          ),
-        ),
         MxActionSheetCommandRow(
           icon: AppIcons.scheduler,
           label: l10n.deckReviewAlgorithm,

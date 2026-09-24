@@ -9,7 +9,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (large) | "Library". Actions Starter decks, Tags, Trash: **disabled** (FE-B4, FE-B2, FE-B1). |
+| App bar | `MxAppBar` (large) | "Library". One action, "Coming soon": a sheet naming the features that wait (spec A4). |
 | Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today · new. Display-only until Study home (FE-A8). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
@@ -22,7 +22,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 |---|---|---|
 | App bar | `MxAppBar` | Back, deck name, `⋮` (the deck's action sheet). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
-| Summary card | `MxCard` (hero) | For a deck holding sub-decks: the scheduler name ("SM-2"), "N sub-decks · N cards", overdue · today · new · N scheduled, and "Study this deck · N due" **disabled** (FE-A6). |
+| Summary card | `MxCard` (hero) | For a deck holding sub-decks: the scheduler name ("SM-2"), "N sub-decks · N cards", overdue · today · new · N scheduled. "Study this deck" waits under Coming soon (FE-A6). |
 | List | as root | Header "N sub-decks" with the sort pill. |
 | FAB | `MxFab` | "New sub-deck"; none at level 10 (BR-DECK-001). |
 | By content type | — | `unset`: empty state with the two create choices (BR-DECK-007). `card`: the card list, screen 07. |
@@ -32,11 +32,10 @@ One recursive screen for the Library root (`/decks`) and any open deck
 `MxBottomSheet` with a header (tile, name, "N sub-decks · N cards · {algorithm}") and
 `MxActionSheetCommandRow`s:
 
-- **Root deck:** Open deck · Study this deck (**disabled**, "N due · N new") · Rename ·
-  Study options (**disabled**, "Cards per session · new-card order") · Review algorithm
+- **Root deck:** Open deck · Rename · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
   Delete.
-- **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck (**disabled**) · Rename ·
+- **Sub-deck:** Open ("N sub-decks · N cards") · Rename ·
   Move to another deck · Reorder ("Move before or after a sibling") · Delete.
 
 ## Sort & filter sheet
@@ -44,8 +43,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 One `MxBottomSheet`, "Sort & filter":
 
 - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date added
-  "Newest first" · Name "A → Z" · Most due cards · Progress "Least mastered first"
-  (**disabled**, waits for BE-A7).
+  "Newest first" · Name "A → Z" · Most due cards. Progress waits for BE-A7 under Coming soon.
 - Toggle (`MxToggle`): "Only decks with due cards" / "Hides decks where nothing is
   waiting".
 - Button "Done".
@@ -56,22 +54,22 @@ One `MxBottomSheet`, "Sort & filter":
 |---|---|---|---|
 | rootLoaded | ![](img/01-deck-list/rootLoaded-light.png) | ![](img/01-deck-list/rootLoaded-dark.png) | As drawn, without the mastery bars (hidden). |
 | rootLoading | ![](img/01-deck-list/rootLoading-light.png) | ![](img/01-deck-list/rootLoading-dark.png) | Skeletons in the row's shape; header kept. |
-| rootEmpty | ![](img/01-deck-list/rootEmpty-light.png) | ![](img/01-deck-list/rootEmpty-dark.png) | "Browse starter decks" disabled. |
+| rootEmpty | ![](img/01-deck-list/rootEmpty-light.png) | ![](img/01-deck-list/rootEmpty-dark.png) | Create deck only; starter decks wait under Coming soon. |
 | rootError | ![](img/01-deck-list/rootError-light.png) | ![](img/01-deck-list/rootError-dark.png) | As drawn, with Retry. |
 | rootSearch | ![](img/01-deck-list/rootSearch-light.png) | ![](img/01-deck-list/rootSearch-dark.png) | The field is a trigger: a tap opens screen 04 instead of typing here. |
-| rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | "Progress" disabled. |
+| rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | No "Progress" sort (Coming soon). |
 | rootDueEmpty | ![](img/01-deck-list/rootDueEmpty-light.png) | ![](img/01-deck-list/rootDueEmpty-dark.png) | As drawn. |
 | rootOverflow | ![](img/01-deck-list/rootOverflow-light.png) | ![](img/01-deck-list/rootOverflow-dark.png) | Rows as in "Action sheet"; Reorder added; Delete replaces Move to Trash. |
 | rootCreate | ![](img/01-deck-list/rootCreate-light.png) | ![](img/01-deck-list/rootCreate-dark.png) | As drawn (BR-SRS-001). |
 | rootRename | ![](img/01-deck-list/rootRename-light.png) | ![](img/01-deck-list/rootRename-dark.png) | As drawn. |
 | rootDelete | ![](img/01-deck-list/rootDelete-light.png) | ![](img/01-deck-list/rootDelete-dark.png) | **Deviation:** permanent delete. |
-| deckLoaded | ![](img/01-deck-list/deckLoaded-light.png) | ![](img/01-deck-list/deckLoaded-dark.png) | No donut, no "Mastered", Study disabled. |
+| deckLoaded | ![](img/01-deck-list/deckLoaded-light.png) | ![](img/01-deck-list/deckLoaded-dark.png) | No donut, no "Mastered", no Study (Coming soon). |
 | deckEmpty | ![](img/01-deck-list/deckEmpty-light.png) | ![](img/01-deck-list/deckEmpty-dark.png) | `unset` deck: both create choices. |
 | deckMaxDepth | ![](img/01-deck-list/deckMaxDepth-light.png) | ![](img/01-deck-list/deckMaxDepth-dark.png) | No FAB. |
 | deckLoading | ![](img/01-deck-list/deckLoading-light.png) | ![](img/01-deck-list/deckLoading-dark.png) | As drawn. |
 | deckError | ![](img/01-deck-list/deckError-light.png) | ![](img/01-deck-list/deckError-dark.png) | As drawn. |
-| deckNotFound | ![](img/01-deck-list/deckNotFound-light.png) | ![](img/01-deck-list/deckNotFound-dark.png) | "Open Trash" disabled; replaces ruling P2-L7. |
-| deckOverflow | ![](img/01-deck-list/deckOverflow-light.png) | ![](img/01-deck-list/deckOverflow-dark.png) | Study disabled; Delete replaces Move to Trash. |
+| deckNotFound | ![](img/01-deck-list/deckNotFound-light.png) | ![](img/01-deck-list/deckNotFound-dark.png) | Back to Library only; replaces ruling P2-L7. |
+| deckOverflow | ![](img/01-deck-list/deckOverflow-light.png) | ![](img/01-deck-list/deckOverflow-dark.png) | No Study row; Delete replaces Move to Trash. |
 | deckMove | ![](img/01-deck-list/deckMove-light.png) | ![](img/01-deck-list/deckMove-dark.png) | As drawn (UC-DECK-005 checks). |
 | deckDelete | ![](img/01-deck-list/deckDelete-light.png) | ![](img/01-deck-list/deckDelete-dark.png) | **Deviation:** permanent delete. |
 
@@ -85,7 +83,7 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 | Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for BE-A7) |
 | Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for BE-A8) |
 | No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
-| Summary "Study this deck" starts study entry | Disabled | Spec A4 (waits for FE-A6) |
+| Summary "Study this deck" starts study entry | Hidden; named under Coming soon | Spec A4 (waits for FE-A6) |
 | Layers and copy glyphs in the row's meta | Text only: "4 sub-decks · 1,248 cards" | Guard: no `Icon(color:)` in feature code |
 | Solid primary tile on the due strip | Tinted `MxIconTile` | Guard: no `Icon(color:)` in feature code |
 | Row name 14/700 | `rowTitle`, 14/600 | Guard: no per-site text styling |
@@ -93,20 +91,20 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 | Row meta and the first-run footnote in plain 12/500 | The caption role (`rowSubtitle`, `noteText`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
 | Sort pill "⇅ Manual ⌄" | `MxChipTrigger`: "Manual" with the sort glyph after it | The shared chip trigger's anatomy |
 | "Create deck" and "Browse starter decks" carry glyphs | Text-only `MxEmptyState` actions | The shared empty state's anatomy |
-| First-run body offers "or copy a starter deck to begin with content" | "Create one to begin." | Starter decks are disabled (FE-B4); the body must not promise them |
+| First-run body offers "or copy a starter deck to begin with content" | "Create one to begin." | Starter decks wait (FE-B4); the body must not promise them |
 | Action sheet header with the deck's tile and "N sub-decks · N cards · {algorithm}"; Open and Study rows with count subtitles | The deck's name only; no count subtitles | `DeckView` carries no counts; the sheet reads only the view (ruling C-L6) |
 
 ## Pending
 
 | Element | Shown as | Waits for |
 |---|---|---|
-| Starter decks, Tags, Trash actions | disabled | FE-B4, FE-B2, FE-B1 |
-| "Browse starter decks" | disabled | FE-B4 |
-| Study this deck, Study options | disabled | FE-A6, FE-A3 |
-| Sort by progress | disabled | BE-A7 |
+| Starter decks, Tags, Trash actions | under Coming soon | FE-B4, FE-B2, FE-B1 |
+| "Browse starter decks" | under Coming soon | FE-B4 |
+| Study this deck, Study options | under Coming soon | FE-A6, FE-A3 |
+| Sort by progress | under Coming soon | BE-A7 |
 | Mastery bar, donut | hidden | BE-A7 |
 | Due strip tap | not interactive | FE-A8 |
-| "Open Trash" | disabled | FE-B1 |
+| "Open Trash" | under Coming soon (as Trash) | FE-B1 |
 | Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at level 10 | absent; the header says "· level 10" | a later phase (owner decision C-O6) |
 
 ## Copy

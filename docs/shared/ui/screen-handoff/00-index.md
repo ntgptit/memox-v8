@@ -58,8 +58,8 @@ The screens of the V3 handoff. The generated handoff next to this folder
 
 ## Rules shared by every screen
 
-- **Controls without their feature** are shown disabled, with a TalkBack label saying
-  they are not available yet (spec A4).
+- **Controls without their feature** are hidden. The Library root's "Coming soon"
+  sheet names each such feature (spec A4, amended 2026-09-25).
 - **Data displays without their data** are hidden, never drawn empty: an empty mastery
   bar would claim 0 % (spec A5).
 - **Delete is permanent in V8.0** (BR-DECK-022, BR-DECK-023). Every "Move to Trash",

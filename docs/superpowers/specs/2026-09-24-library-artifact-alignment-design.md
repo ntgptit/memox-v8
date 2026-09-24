@@ -21,7 +21,7 @@ Settled with the owner in brainstorming on 2026-09-24:
 | A1 | The artifact is the official screen handoff. Where it contradicts a BR or UC, the BR/UC wins and the handoff records the deviation. |
 | A2 | The merged Library is realigned to the artifact. Scope: screens 01, 02, 04 and 07. Library phase 4 (card editor and detail, artifact 08–10) follows this project and is built straight from the artifact. |
 | A3 | The handoff lives in `docs/shared/ui/screen-handoff/`: an index of all 26 screens now, a detail file per screen when that screen is built. |
-| A4 | A **control** whose feature or backend does not exist yet is shown **disabled**, with a TalkBack label saying it is not available yet. |
+| A4 | A **control** whose feature or backend does not exist yet is **hidden**. The Library root's "Coming soon" app-bar action opens a sheet that names each such feature with one line on what it will do (amended 2026-09-25, owner decision; before, such controls showed disabled). |
 | A5 | A **data display** whose data does not exist yet (deck mastery bar, deck mastery donut) is **hidden**: an empty bar would claim 0 % mastered. |
 | A6 | The root due strip is display-only (no chevron, no tap) until Study home (FE-A8) exists. |
 | A7 | Deck rows drop the overdue · today · new line. The breakdown lives on the root strip and the deck summary card; a row carries one "N due" badge. |
@@ -70,11 +70,11 @@ One recursive screen, `DeckLevelScreen`, as today. Routes, providers and control
 
 | Region | Design |
 |---|---|
-| App bar | Large "Library". Actions Starter decks, Tags, Trash: disabled (A4). The root reorder action leaves the app bar (see the action sheet). |
+| App bar | Large "Library". One action, "Coming soon", opening the sheet of A4 (Starter decks, Tags, Trash and the rest). The root reorder action leaves the app bar (see the action sheet). |
 | Search | `MxSearchField` in trigger mode, hint "Search decks" (A11); a tap pushes `/decks/search`. |
 | Due strip | Hero `MxCard`: bolt tile on primary, "N cards due", `MxWorkloadBreakdownLine` (overdue · today · new). Display-only (A6). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` "N DECKS" with a sort pill, "Manual ⌄"; "Manual · Due only" tinted primary when the filter is on. |
-| Sort & filter | One sheet replacing today's two: the four V8 sorts (manual, name, recent, due), a disabled "Progress" sort (A4, waits for BE-A7), and the "Only decks with due cards" toggle. |
+| Sort & filter | One sheet replacing today's two: the four V8 sorts (manual, name, recent, due; "Progress" waits for BE-A7 under Coming soon, A4), and the "Only decks with due cards" toggle. |
 | Rows | One `MxCard` per deck, 8 apart: 44 px `MxIconTile` (layers / copy / folder-open by content type), name on one line with ellipsis, `MxBadge` "N due" when due > 0, meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck", trailing `⋮`. No mastery bar (A5). No breakdown line (A7). |
 | FAB | "New deck". |
 
@@ -84,15 +84,15 @@ One recursive screen, `DeckLevelScreen`, as today. Routes, providers and control
 |---|---|
 | App bar | Back, deck name, `⋮` opening the same action sheet as its row. |
 | Breadcrumb | Library › ancestors › deck. |
-| Summary card (deck holding sub-decks) | Hero `MxCard`: label with the scheduler name ("SM-2"), "N sub-decks · N cards", breakdown with "N scheduled", disabled "Study this deck · N due" (A4). No donut, no "Mastered" (A5). |
+| Summary card (deck holding sub-decks) | Hero `MxCard`: label with the scheduler name ("SM-2"), "N sub-decks · N cards", breakdown with "N scheduled". "Study this deck" waits under Coming soon (A4). No donut, no "Mastered" (A5). |
 | List | Header "N sub-decks" with the sort pill; rows as at the root. |
 | FAB | "New sub-deck"; none at level 10 (BR-DECK-001). |
 | Content by type | `unset`: today's empty state with its two create choices. `card`: the card list (4.4). |
 
 **Action sheet** (row `⋮` and open-deck `⋮`), with a header naming the deck:
 
-- Root: Open deck · Study this deck *(disabled)* · Rename · Study options *(disabled)* · Review algorithm → screen 02 · Reorder · Delete.
-- Sub-deck: Open · Study this deck *(disabled)* · Rename · Move · Reorder · Delete.
+- Root: Open deck · Rename · Review algorithm → screen 02 · Reorder · Delete.
+- Sub-deck: Open · Rename · Move · Reorder · Delete.
 
 Reorder moves into the sheet at both levels; UI-base debt row 72 closes.
 
@@ -101,7 +101,7 @@ Reorder moves into the sheet at both levels; UI-base debt row 72 closes.
 | Artifact state | V8 |
 |---|---|
 | loading | Skeletons shaped like the deck row. |
-| first launch | "Start your library": Create deck; "Browse starter decks" disabled; footnote "Everything stays on this device." |
+| first launch | "Start your library": Create deck; footnote "Everything stays on this device." |
 | error | `MxErrorState`, local-first copy. |
 | due filter, none | "Nothing due right now" + "Show all decks". |
 | create | Dialog: name, required review algorithm, lock `MxNote`. |
@@ -109,7 +109,7 @@ Reorder moves into the sheet at both levels; UI-base debt row 72 closes.
 | move to Trash, trashed · Undo | **Deviation:** delete is permanent (BR-DECK-022, BR-DECK-023). The dialog names the sub-deck and card counts and confirms with a destructive button; no Undo snackbar. Trash is a later sub-project (UC-TRASH-001). |
 | move sheet | `MxDeckPickerSheet`, ineligible targets disabled with their reason (UC-DECK-005). |
 | level 10 | No FAB; the header says the level. |
-| not found | "This deck is no longer here" + "Back to Library"; "Open Trash" disabled (A8). |
+| not found | "This deck is no longer here" + "Back to Library" (A8); Trash waits under Coming soon (A4). |
 
 ### 4.2 02 Review algorithm & reset — `/decks/deck/:deckId/algorithm`
 
@@ -164,11 +164,11 @@ Pending BE-A8 (A11): the Cards group, tag names on card rows, "Load more", the c
 |---|---|
 | App bar | Back, deck name, search action, `⋮`. While selecting: close, "N selected", "Select all M". Injected by `app/` (A14). |
 | Search | The search action reveals the in-deck search field above the filters; closing it clears the term. |
-| Summary card | Hero `MxCard`: `MxMasteryDonut`, "DECK PROGRESS · {algorithm}", "N of M cards mastered", the breakdown, the four-state distribution bar and its legend (A13), disabled "Study this deck · N due" (A4). Hidden while selecting. |
-| Filters | `MxFilterChip` All · Due · New · Flagged with counts, and Tags disabled (A4, waits for FE-B2). |
+| Summary card | Hero `MxCard`: `MxMasteryDonut`, "DECK PROGRESS · {algorithm}", "N of M cards mastered", the breakdown, the four-state distribution bar and its legend (A13). "Study this deck" waits under Coming soon (A4). Hidden while selecting. |
+| Filters | `MxFilterChip` All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (A4, FE-B2). |
 | Header | "Showing N of M" (while selecting "N of M selected") with the sort pill "Newest first ⌄" / "Due first ⌄". |
 | Rows | One card per row: status dot (checkbox while selecting), front 16/700 and back 12, one line each with ellipsis; the uppercase status label in its ink, up to two `MxTagChip`s and "+N" (A15); trailing flag in the streak colour and the due chip ("New", "Due today", "In Nd", "Nd overdue") from a domain helper. |
-| Bulk bar | Move · Flag · Tag · Export *(disabled, FE-B3)* · Delete. |
+| Bulk bar | Move · Flag · Tag · Delete; Export waits under Coming soon (A4, FE-B3). |
 | FAB | "New card", as #33 built it (A16); hidden while selecting. |
 
 **States and deviations:**
@@ -176,7 +176,7 @@ Pending BE-A8 (A11): the Cards group, tag names on card rows, "Load more", the c
 | Artifact state | V8 |
 |---|---|
 | loading | Skeletons shaped like the card row. |
-| empty | "No cards in this deck yet"; "Import cards" disabled; `MxNote` on when studying opens. "Add first card" opens the #33 editor (A16). |
+| empty | "No cards in this deck yet"; Import waits under Coming soon (A4); `MxNote` on when studying opens. "Add first card" opens the #33 editor (A16). |
 | search empty | Neutral empty state naming the term. |
 | error, not found | As 4.1. |
 | selection, select all | Long-press selects (BR-CARD-020); "Select all" covers the whole filtered set. |
@@ -215,12 +215,11 @@ Each follows `flutter-theme-design`: widget test, light/dark golden, gallery ent
 | `MxCard` | `isWarning`: the warning-soft ground with the warning border, for screen 02's locked strip (D-O1). |
 | `MxOutcomeTile` | New: a label in its ink over a tinted ground and a body, tones `kept` (`statusMasteredInk` over the mastery tint, A10) and `lost` (`warningInk` over `warningSoft`) (D-O2). |
 | Theme (phase D) | Icons `lock`, `lockOpen`, `resetProgress`. |
-| Theme (phase E) | `streak` / `onStreak` semantic colours (#F97316 / #FFAE6E, #FFFFFF) and `streakInk` (light: 20% toward onSurface; dark: streak), owner decisions E-O2, E-O4. Icons `exportFile`, `importFile`. |
+| Theme (phase E) | `streak` / `onStreak` semantic colours (#F97316 / #FFAE6E, #FFFFFF) and `streakInk` (light: 20% toward onSurface; dark: streak), owner decisions E-O2, E-O4. |
 | `MxFlagMark` | New: the flag glyph in `streakInk` with its accessible label (E-O2). |
 | `MxStatusDistribution` | New: the four display states as one stacked bar with a legend of counts (A13, E-O2). |
 | `MxCard` | `isSelected`: a primary border (E-O5). |
 | `MxStatusBadge` | `isPlain`: the uppercase label in its status ink, no pill (the card row's status line). |
-| `MxUnavailable` | Moved from `deck` (ruling E-L2): a not-yet control announced as "Not available yet". |
 
 ## 7. Routing and composition
 
@@ -259,7 +258,7 @@ The UI-base register (`2026-09-23-flutter-ui-base-design.md` §9) stays the only
 ## 11. Out of scope
 
 - Library phase 4 (card editor, card detail; artifact 08–10).
-- Trash, starter decks, tag management, import and export, reminders; their controls appear disabled only.
+- Trash, starter decks, tag management, import and export, reminders; the Coming soon sheet names them (A4).
 - Study, Progress and Settings screens, and anything that starts a session.
 - BE-A7 (deck mastery) and BE-A8 (library-wide search).
 - Tablet layouts (Library spec D4).

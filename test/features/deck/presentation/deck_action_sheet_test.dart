@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -51,23 +50,9 @@ void main() {
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
-    expect(find.text(_en.deckStudyOptions), findsOneWidget);
-    expect(
-      tester
-          .widget<MxActionSheetCommandRow>(
-            find.widgetWithText(MxActionSheetCommandRow, _en.deckStudyThis),
-          )
-          .isEnabled,
-      isFalse,
-    );
-    // Spec A4: what waits for its feature says so to TalkBack.
-    for (final label in [_en.deckStudyThis, _en.deckStudyOptions]) {
-      expect(
-        tester.getSemantics(find.text(label)),
-        isSemantics(hint: _en.commonNotAvailableYet),
-        reason: label,
-      );
-    }
+    // Study and Study options wait under Coming soon (spec A4, amended).
+    expect(find.text(_en.deckStudyOptions), findsNothing);
+    expect(find.byIcon(AppIcons.play), findsNothing);
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (
@@ -196,45 +181,6 @@ void main() {
 
     expect(find.byIcon(AppIcons.dragHandle), findsNWidgets(2));
     expect(find.text(_en.libraryReorderDone), findsOneWidget);
-  });
-
-  libraryTest('a deck of cards offers Import and Export, not available yet', (
-    tester,
-    env,
-  ) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    await insertCard(env.db, id: 'a', deckId: words.id);
-    await pumpLibraryScreen(tester, env, cardDeckScreen(deckId: words.id));
-    await _openSheet(tester);
-
-    for (final label in [_en.deckImportCards, _en.deckExportAll]) {
-      final row = find.widgetWithText(MxActionSheetCommandRow, label);
-      expect(
-        tester.widget<MxActionSheetCommandRow>(row).isEnabled,
-        isFalse,
-        reason: label,
-      );
-      expect(
-        tester.getSemantics(row),
-        isSemantics(hint: _en.commonNotAvailableYet),
-        reason: label,
-      );
-    }
-    expect(find.text(_en.deckMove), findsOneWidget);
-  });
-
-  libraryTest('a deck of decks offers no Import or Export', (
-    tester,
-    env,
-  ) async {
-    final korean = await env.decks.root('Korean');
-    await env.decks.sub(korean.id, 'Words');
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
-    await _openSheet(tester);
-
-    expect(find.text(_en.deckImportCards), findsNothing);
-    expect(find.text(_en.deckExportAll), findsNothing);
   });
 
   libraryTest('the action sheet meets the target guidelines', (
