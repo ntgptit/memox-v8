@@ -355,4 +355,10 @@ void main() {
       color: scheme.inversePrimary,
     );
   });
+
+  test('rowTitleMatch is the row title, bold, in primary', () {
+    expect(styles.rowTitleMatch.fontSize, styles.rowTitle.fontSize);
+    expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
+    expect(styles.rowTitleMatch.color, AppColorSchemes.light.primary);
+  });
 }

@@ -122,4 +122,29 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets('a disabled command is dimmed, announced disabled, and inert', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxActionSheetCommandRow(
+        icon: AppIcons.play,
+        label: 'Study this deck',
+        onTap: () => taps++,
+        isEnabled: false,
+      ),
+    );
+    await tester.tap(find.text('Study this deck'));
+
+    expect(taps, 0);
+    expect(find.byType(Opacity), findsWidgets);
+    expect(
+      tester.getSemantics(find.text('Study this deck')),
+      isSemantics(isButton: true, isEnabled: false),
+    );
+    semantics.dispose();
+  });
 }

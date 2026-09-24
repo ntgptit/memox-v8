@@ -23,10 +23,16 @@ class MxEmptyState extends StatelessWidget {
     this.isCompact = false,
     this.actionLabel,
     this.onAction,
+    this.secondaryActionLabel,
+    this.onSecondaryAction,
     this.footnote,
   }) : assert(
          (actionLabel == null) == (onAction == null),
          'actionLabel and onAction come together',
+       ),
+       assert(
+         onSecondaryAction == null || secondaryActionLabel != null,
+         'onSecondaryAction needs secondaryActionLabel',
        );
 
   final IconData icon;
@@ -38,6 +44,11 @@ class MxEmptyState extends StatelessWidget {
   final bool isCompact;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// A second, quieter action; drawn disabled when [onSecondaryAction] is
+  /// null.
+  final String? secondaryActionLabel;
+  final VoidCallback? onSecondaryAction;
 
   /// A product rule under the action, drawn as an MxNote (ruling S19).
   final String? footnote;
@@ -99,6 +110,15 @@ class MxEmptyState extends StatelessWidget {
               )) ...[
                 const SizedBox(height: AppSpacing.card),
                 MxButton(label: label, onPressed: onPressed, isBlock: true),
+              ],
+              if (secondaryActionLabel case final label?) ...[
+                const SizedBox(height: AppSpacing.control),
+                MxButton(
+                  label: label,
+                  tone: MxButtonTone.secondary,
+                  onPressed: onSecondaryAction,
+                  isBlock: true,
+                ),
               ],
               if (footnote case final rule?) ...[
                 const SizedBox(height: AppSpacing.card),
