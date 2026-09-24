@@ -24,6 +24,12 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_delete_dialog_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_move_sheet_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_tag_dialog_widget.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_flag_sheet_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
+import 'package:memox/core/error/outcome.dart';
 
 /// A deck's cards (spec §6.4): search, the filters with their counts, a
 /// sort, and the rows of a window that grows as the list nears its end. A
@@ -96,6 +102,42 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     }
   }
 
+  /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
+  /// write landed (IT-ORG-014).
+  Future<void> _flag(Set<String> cardIds) async {
+    final isFlagged = await showCardFlagSheet(context);
+    if (isFlagged == null || !mounted) return;
+    try {
+      final outcome = await ref
+          .read(cardActionsControllerProvider.notifier)
+          .setFlagged(cardIds: cardIds, isFlagged: isFlagged);
+      if (!mounted) return;
+      final l10n = context.l10n;
+      switch (outcome) {
+        case Ok():
+          _selection().clear();
+          showMxSnackbar(
+            context,
+            message: isFlagged
+                ? l10n.cardFlaggedToast(cardIds.length)
+                : l10n.cardUnflaggedToast(cardIds.length),
+          );
+        case Rejected(:final reason):
+          showMxSnackbar(context, message: l10n.cardRejection(reason));
+      }
+    } on Failure catch (failure) {
+      if (!mounted) return;
+      showMxSnackbar(context, message: context.l10n.failure(failure));
+    }
+  }
+
+  /// Each overlay shows its own snackbar; the selection goes once the write
+  /// landed. The section may be gone by then (the deck emptied), hence the
+  /// `mounted` check.
+  Future<void> _clearAfter(Future<bool> write) async {
+    if (await write && mounted) _selection().clear();
+  }
+
   /// The bulk bar's commands over [selected] (ruling P3-L7).
   List<CardBulkAction> _bulkActions(
     CardListRequestState request,
@@ -107,6 +149,38 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         icon: AppIcons.selectAll,
         label: l10n.cardSelectAll,
         onTap: () => unawaited(_selectAll(request.query)),
+      ),
+      (
+        icon: AppIcons.flag,
+        label: l10n.cardFlag,
+        onTap: () => unawaited(_flag(selected)),
+      ),
+      (
+        icon: AppIcons.tag,
+        label: l10n.cardTag,
+        onTap: () => unawaited(
+          _clearAfter(showCardTagDialog(context, cardIds: selected)),
+        ),
+      ),
+      (
+        icon: AppIcons.folder,
+        label: l10n.cardMove,
+        onTap: () => unawaited(
+          _clearAfter(
+            showCardMoveSheet(
+              context,
+              sourceDeckId: widget.deckId,
+              cardIds: selected,
+            ),
+          ),
+        ),
+      ),
+      (
+        icon: AppIcons.delete,
+        label: l10n.cardDelete,
+        onTap: () => unawaited(
+          _clearAfter(showDeleteCardsDialog(context, cardIds: selected)),
+        ),
       ),
     ];
   }
