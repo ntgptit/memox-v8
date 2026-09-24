@@ -286,15 +286,15 @@
   "@deckCreateSubTitle": {
     "description": "Title of the create sub-deck dialog."
   },
-  "deckUnsetTitle": "This deck is empty",
+  "deckUnsetTitle": "What goes in here?",
   "@deckUnsetTitle": {
     "description": "Title shown in a deck that holds nothing yet."
   },
-  "deckUnsetBody": "Add a sub-deck to start organising it.",
+  "deckUnsetBody": "Add cards to study them here, or nest sub-decks to organise further. A deck holds one or the other.",
   "@deckUnsetBody": {
     "description": "Body of the empty deck state."
   },
-  "deckUnsetDeepestBody": "This deck is at the deepest level, so it can't hold more decks.",
+  "deckUnsetDeepestBody": "This deck is at the deepest level, so it holds cards.",
   "@deckUnsetDeepestBody": {
     "description": "Empty deck body at the maximum depth."
   },
@@ -736,5 +736,297 @@
   "tagRejectionNotFound": "A card or tag no longer exists.",
   "@tagRejectionNotFound": {
     "description": "Tag refusal: a card or tag is gone."
+  },
+  "cardAddTitle": "New card",
+  "@cardAddTitle": {
+    "description": "Card editor title in create mode, and its breadcrumb segment."
+  },
+  "cardEditTitle": "Edit card",
+  "@cardEditTitle": {
+    "description": "Card editor title in edit mode."
+  },
+  "cardEditCrumb": "Edit",
+  "@cardEditCrumb": {
+    "description": "Breadcrumb segment of the card editor in edit mode."
+  },
+  "cardClose": "Close",
+  "@cardClose": {
+    "description": "Accessible name of the editor's close control."
+  },
+  "cardSave": "Save",
+  "@cardSave": {
+    "description": "Compact Save in the editor's app bar."
+  },
+  "cardSaveCard": "Save card",
+  "@cardSaveCard": {
+    "description": "Footer save button in create mode."
+  },
+  "cardSaveChanges": "Save changes",
+  "@cardSaveChanges": {
+    "description": "Footer save button in edit mode."
+  },
+  "cardRetrySave": "Retry save",
+  "@cardRetrySave": {
+    "description": "Footer save button after a failed save."
+  },
+  "cardRequiredLegend": "Required",
+  "@cardRequiredLegend": {
+    "description": "Legend and marker for required card fields."
+  },
+  "cardFieldFront": "Front · Term",
+  "@cardFieldFront": {
+    "description": "Label of the card's front field."
+  },
+  "cardFieldBack": "Back · Meaning",
+  "@cardFieldBack": {
+    "description": "Label of the card's back field."
+  },
+  "cardFrontHint": "The term you want to remember",
+  "@cardFrontHint": {
+    "description": "Hint in the front field."
+  },
+  "cardBackHint": "The meaning; separate several with commas",
+  "@cardBackHint": {
+    "description": "Hint in the back field."
+  },
+  "cardAddDetails": "Add details: example, hint, pronunciation",
+  "@cardAddDetails": {
+    "description": "Opens the optional fields in create mode."
+  },
+  "cardOptionalDetails": "Optional details",
+  "@cardOptionalDetails": {
+    "description": "Overline above the optional fields in edit mode."
+  },
+  "cardOptional": "optional",
+  "@cardOptional": {
+    "description": "Suffix after an optional field's label."
+  },
+  "cardFieldExample": "Example sentence",
+  "@cardFieldExample": {
+    "description": "Label of the example field."
+  },
+  "cardFieldHint": "Hint",
+  "@cardFieldHint": {
+    "description": "Label of the hint field."
+  },
+  "cardFieldPronunciation": "Pronunciation",
+  "@cardFieldPronunciation": {
+    "description": "Label of the pronunciation field."
+  },
+  "cardExampleHint": "A sentence using this term",
+  "@cardExampleHint": {
+    "description": "Hint in the example field."
+  },
+  "cardHintHint": "A clue that jogs memory without giving the answer",
+  "@cardHintHint": {
+    "description": "Hint in the hint field."
+  },
+  "cardPronunciationHint": "Romanisation or a note on how to say it",
+  "@cardPronunciationHint": {
+    "description": "Hint in the pronunciation field."
+  },
+  "cardFieldCount": "{count} / {limit}",
+  "@cardFieldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    },
+    "description": "A field's character count against its limit."
+  },
+  "cardTags": "Tags",
+  "@cardTags": {
+    "description": "Overline of the tag editor."
+  },
+  "cardTagsMeta": "optional · {count} / {limit}",
+  "@cardTagsMeta": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    },
+    "description": "After the Tags overline: optional, and tags used against the limit."
+  },
+  "cardAddTag": "Add tag",
+  "@cardAddTag": {
+    "description": "Opens the inline tag input."
+  },
+  "cardTagRemove": "Remove {tag}",
+  "@cardTagRemove": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Accessible name of a removable tag chip."
+  },
+  "cardTagLimit": "A card can carry 10 tags. Remove one to add another.",
+  "@cardTagLimit": {
+    "description": "Warning at the tag limit."
+  },
+  "cardFlagLabel": "Flag this card",
+  "@cardFlagLabel": {
+    "description": "Accessible name of the edit app bar's flag toggle when off."
+  },
+  "cardFrontBlank": "Add the term to remember.",
+  "@cardFrontBlank": {
+    "description": "Error under a touched, blank front."
+  },
+  "cardBackBlank": "Add a meaning so this card can be answered.",
+  "@cardBackBlank": {
+    "description": "Error under a touched, blank back."
+  },
+  "cardFrontTooLong": "The term can be at most 60 characters. Move the rest into the meaning or an example.",
+  "@cardFrontTooLong": {
+    "description": "Error under a front past 60 characters."
+  },
+  "cardBackTooLong": "The meaning can be at most 240 characters.",
+  "@cardBackTooLong": {
+    "description": "Error under a back past 240 characters."
+  },
+  "cardOptionalTooLong": "Keep this to 240 characters.",
+  "@cardOptionalTooLong": {
+    "description": "Error under an optional field past 240 characters."
+  },
+  "cardCaptionRequired": "Front and back are required to save.",
+  "@cardCaptionRequired": {
+    "description": "Editor footer caption while front or back is blank."
+  },
+  "cardCaptionFix": "Fix the marked field to enable save.",
+  "@cardCaptionFix": {
+    "description": "Editor footer caption while a field is invalid."
+  },
+  "cardCaptionKeepAdding": "You can keep adding cards after saving.",
+  "@cardCaptionKeepAdding": {
+    "description": "Create footer caption when the card is valid."
+  },
+  "cardCaptionSaving": "Saving to this device…",
+  "@cardCaptionSaving": {
+    "description": "Editor footer caption while saving."
+  },
+  "cardCaptionEdit": "Editing content never changes the schedule or history.",
+  "@cardCaptionEdit": {
+    "description": "Edit footer caption when the card is valid."
+  },
+  "cardCaptionDeckRejects": "This deck can't take cards now.",
+  "@cardCaptionDeckRejects": {
+    "description": "Create footer caption when the deck refuses cards."
+  },
+  "cardSaveFailedTitle": "Couldn't save card.",
+  "@cardSaveFailedTitle": {
+    "description": "Inline banner title after a failed save."
+  },
+  "cardSaveFailedBody": "Nothing was lost. Tap Save to try again.",
+  "@cardSaveFailedBody": {
+    "description": "Inline banner body after a failed save."
+  },
+  "cardDeckRejectsTitle": "This deck no longer accepts cards.",
+  "@cardDeckRejectsTitle": {
+    "description": "Warning banner when the deck now holds sub-decks."
+  },
+  "cardDeckRejectsBody": "It now holds sub-decks.",
+  "@cardDeckRejectsBody": {
+    "description": "Warning banner body when the deck refuses cards."
+  },
+  "cardGoneTitle": "This card is no longer here",
+  "@cardGoneTitle": {
+    "description": "Editor state when the card was deleted meanwhile."
+  },
+  "cardGoneBody": "It was deleted while you were editing. Your changes were not saved.",
+  "@cardGoneBody": {
+    "description": "Body of the gone card state."
+  },
+  "cardDeckGoneTitle": "This deck is no longer here",
+  "@cardDeckGoneTitle": {
+    "description": "Editor state when the deck was deleted meanwhile."
+  },
+  "cardDeckGoneBody": "It was deleted while you were adding cards. This card was not saved.",
+  "@cardDeckGoneBody": {
+    "description": "Body of the gone deck state."
+  },
+  "cardBackToDeck": "Back to deck",
+  "@cardBackToDeck": {
+    "description": "Action of the gone states."
+  },
+  "cardDiscardTitle": "Discard changes?",
+  "@cardDiscardTitle": {
+    "description": "Discard dialog title in edit mode."
+  },
+  "cardDiscardBody": "Leaving now keeps the card as it was saved.",
+  "@cardDiscardBody": {
+    "description": "Discard dialog body in edit mode."
+  },
+  "cardDiscardNewTitle": "Discard this card?",
+  "@cardDiscardNewTitle": {
+    "description": "Discard dialog title in create mode."
+  },
+  "cardDiscardNewBody": "What you typed is not saved.",
+  "@cardDiscardNewBody": {
+    "description": "Discard dialog body in create mode."
+  },
+  "cardKeepEditing": "Keep editing",
+  "@cardKeepEditing": {
+    "description": "Discard dialog: stay."
+  },
+  "cardDiscard": "Discard",
+  "@cardDiscard": {
+    "description": "Discard dialog: leave without saving."
+  },
+  "cardSummaryAnswers": "{count, plural, =1{1 answer} other{{count} answers}}",
+  "@cardSummaryAnswers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Edit summary: answers so far."
+  },
+  "cardSummaryLapses": "{count, plural, =1{1 lapse} other{{count} lapses}}",
+  "@cardSummaryLapses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Edit summary: lapses so far."
+  },
+  "cardSummaryDue": "due {date}",
+  "@cardSummaryDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Edit summary: the due date."
+  },
+  "cardLoadErrorEditTitle": "Couldn't load this card",
+  "@cardLoadErrorEditTitle": {
+    "description": "Error state title when the card to edit fails to load."
+  },
+  "cardAddedToast": "Card added",
+  "@cardAddedToast": {
+    "description": "Snackbar after a card is created."
+  },
+  "cardNewCard": "New card",
+  "@cardNewCard": {
+    "description": "Opens the card editor: the card list's FAB and its empty state action."
+  },
+  "deckNewCard": "New card",
+  "@deckNewCard": {
+    "description": "Adds a card to the open deck (unset state and FAB)."
+  },
+  "deckNewSubDeck": "New sub-deck",
+  "@deckNewSubDeck": {
+    "description": "Adds a sub-deck from the unset state."
+  },
+  "deckUnsetNote": "The first card or sub-deck decides what this deck holds. Once it is empty again, both options come back.",
+  "@deckUnsetNote": {
+    "description": "Note under the unset deck's buttons."
   }
 }

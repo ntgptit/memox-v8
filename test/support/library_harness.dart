@@ -7,8 +7,12 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
@@ -22,11 +26,18 @@ final DateTime libraryToday = DateTime(2026, 9, 24, 9);
 /// The real backend behind a screen: an in-memory database, a day moved by
 /// hand, and the deck repository for fixtures.
 final class LibraryEnv {
-  LibraryEnv(this.db, this.clock) : decks = DeckRepositoryImpl(db);
+  LibraryEnv(this.db, this.clock)
+    : decks = DeckRepositoryImpl(db),
+      cards = CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db),
+        TagRepositoryImpl(db),
+      );
 
   final AppDatabase db;
   final FakeDayClock clock;
   final DeckRepository decks;
+  final CardRepository cards;
 }
 
 /// A widget test over [LibraryEnv]. The widget tree is torn down before the
