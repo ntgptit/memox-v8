@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -84,8 +85,9 @@ void main() {
       deckScreen(deckId: korean.id, onOpenDeck: opened.add),
     );
 
-    // The level line and the Words row both read "1 new".
-    expect(find.text('1 new', findRichText: true), findsNWidgets(2));
+    // Rows carry no workload line on screen 01; Task 7's summary card
+    // brings the level's counts back.
+    expect(find.byType(DeckRowWidget), findsOneWidget);
     expect(find.byType(MxListSectionHeader), findsOneWidget);
     await tester.tap(find.text('Words'));
     expect(opened, [words.id]);

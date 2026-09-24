@@ -6,6 +6,11 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -62,18 +67,31 @@ void main() {
     expect(find.byType(MxDialog), findsOneWidget);
   });
 
-  libraryTest('the level line leads; each deck carries its own workload', (
+  libraryTest('first run: starter decks show disabled, the footnote below', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
+
+    final starter = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.libraryBrowseStarter),
+    );
+    expect(starter.onPressed, isNull);
+    expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
+  });
+
+  libraryTest('the due strip leads; each deck carries its due badge', (
     tester,
     env,
   ) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
 
-    // The level line and the Korean row say the same.
-    expect(_rich('1 overdue · 1 today · 1 new'), findsNWidgets(2));
-    expect(_rich(_en.workloadNoCards), findsOneWidget);
+    expect(find.text(_en.libraryDueTitle(2)), findsOneWidget);
+    expect(_rich('1 overdue · 1 today · 1 new'), findsOneWidget);
+    expect(find.widgetWithText(MxBadge, _en.deckDueBadge(2)), findsOneWidget);
     expect(
-      tester.getTopLeft(_rich('1 overdue · 1 today · 1 new').first).dy,
+      tester.getTopLeft(find.text(_en.libraryDueTitle(2))).dy,
       lessThan(tester.getTopLeft(find.text('Korean')).dy),
     );
   });
@@ -90,16 +108,18 @@ void main() {
   libraryTest('sort by name reorders the decks', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
-    await tester.tap(find.text(_en.deckSortTrigger(_en.deckSortManual)));
+    await tester.tap(find.text(_en.deckSortManual));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckSortName));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.commonDone));
     await tester.pumpAndSettle();
 
     expect(
       tester.getTopLeft(find.text('Kanji')).dy,
       lessThan(tester.getTopLeft(find.text('Korean')).dy),
     );
-    expect(find.text(_en.deckSortTrigger(_en.deckSortName)), findsOneWidget);
+    expect(find.text(_en.deckSortName), findsOneWidget);
   });
 
   libraryTest('the due filter hides idle decks and says so when none is left', (
@@ -108,12 +128,18 @@ void main() {
   ) async {
     await env.decks.root('Kanji');
     await pumpLibraryScreen(tester, env, deckScreen());
-    await tester.tap(find.text(_en.deckFilterTrigger(_en.deckFilterAll)));
+    await tester.tap(find.text(_en.deckSortManual));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.deckFilterDue));
+    await tester.tap(find.byType(MxToggle));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.commonDone));
     await tester.pumpAndSettle();
 
     expect(find.text('Kanji'), findsNothing);
+    expect(
+      find.text(_en.deckSortPillDueOnly(_en.deckSortManual)),
+      findsOneWidget,
+    );
     expect(find.text(_en.libraryNothingDueTitle), findsOneWidget);
     await tester.tap(find.text(_en.libraryShowAllDecks));
     await tester.pumpAndSettle();
@@ -143,7 +169,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(_rich('2 overdue · 1 new'), findsNWidgets(2));
+    expect(_rich('2 overdue · 1 new'), findsOneWidget);
   });
 
   libraryTest('loading shows skeleton rows', (tester, env) async {
@@ -234,7 +260,7 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
-  libraryTest('Vietnamese names the header in Vietnamese', (tester, env) async {
+  libraryTest('Vietnamese counts the decks in Vietnamese', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(
       tester,
@@ -243,6 +269,51 @@ void main() {
       locale: const Locale('vi'),
     );
 
-    expect(find.text(_vi.libraryDecksHeader.toUpperCase()), findsOneWidget);
+    expect(find.text(_vi.libraryDecksCount(2).toUpperCase()), findsOneWidget);
+  });
+
+  libraryTest(
+    'the root app bar offers starter decks, tags and trash, disabled',
+    (tester, env) async {
+      await pumpLibraryScreen(tester, env, deckScreen());
+
+      for (final label in [
+        _en.libraryStarterDecks,
+        _en.libraryTags,
+        _en.libraryTrash,
+      ]) {
+        final button = tester.widget<MxIconButton>(
+          find.ancestor(
+            of: find.byTooltip(label),
+            matching: find.byType(MxIconButton),
+          ),
+        );
+        expect(button.onPressed, isNull, reason: label);
+      }
+      expect(find.byTooltip(_en.libraryReorder), findsNothing);
+    },
+  );
+
+  libraryTest('the search field opens the search', (tester, env) async {
+    await _seed(env);
+    var searches = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(onSearch: () => searches++),
+    );
+
+    await tester.tap(find.text(_en.deckSearchHint));
+    expect(searches, 1);
+  });
+
+  libraryTest('the due strip is gone while the library holds no card', (
+    tester,
+    env,
+  ) async {
+    await env.decks.root('Kanji');
+    await pumpLibraryScreen(tester, env, deckScreen());
+
+    expect(find.byType(DeckDueStripWidget), findsNothing);
   });
 }

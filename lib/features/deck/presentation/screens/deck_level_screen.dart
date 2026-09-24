@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
@@ -25,6 +26,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -82,33 +84,33 @@ class _LibraryRoot extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
 
-  void _startReorder(WidgetRef ref) =>
-      ref.read(deckReorderModeProvider(null).notifier).start();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final isReordering = ref.watch(deckReorderModeProvider(null));
-    final canReorder = ref.watch(deckLevelCanReorderProvider(null));
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navLibrary,
         actions: isReordering
             ? const [_ReorderDone(parentId: null)]
+            // Starter decks, tags and trash have no screen yet (spec A6).
             : [
                 MxIconButton(
-                  icon: AppIcons.search,
-                  semanticLabel: l10n.libraryOpenSearch,
-                  onPressed: onSearch,
+                  icon: AppIcons.starterDecks,
+                  semanticLabel: l10n.libraryStarterDecks,
+                  onPressed: null,
                 ),
-                // Ruling P2-L2: the roots reorder from the app bar.
-                if (canReorder)
-                  MxIconButton(
-                    icon: AppIcons.reorder,
-                    semanticLabel: l10n.libraryReorder,
-                    onPressed: () => _startReorder(ref),
-                  ),
+                MxIconButton(
+                  icon: AppIcons.tag,
+                  semanticLabel: l10n.libraryTags,
+                  onPressed: null,
+                ),
+                MxIconButton(
+                  icon: AppIcons.delete,
+                  semanticLabel: l10n.libraryTrash,
+                  onPressed: null,
+                ),
               ],
       ),
       fab: isReordering
@@ -118,16 +120,38 @@ class _LibraryRoot extends ConsumerWidget {
               semanticLabel: l10n.libraryCreateDeck,
               onPressed: createDeck,
             ),
-      body: DeckLevelBodyWidget(
-        parentId: null,
-        onOpenDeck: onOpenDeck,
-        emptyState: MxEmptyState(
-          icon: AppIcons.library,
-          title: l10n.libraryEmptyTitle,
-          body: l10n.libraryEmptyBody,
-          actionLabel: l10n.libraryCreateDeck,
-          onAction: createDeck,
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.micro,
+              AppSpacing.gutter,
+              AppSpacing.control,
+            ),
+            child: MxSearchField.trigger(
+              hintText: l10n.deckSearchHint,
+              onTap: onSearch,
+            ),
+          ),
+          Expanded(
+            child: DeckLevelBodyWidget(
+              parentId: null,
+              onOpenDeck: onOpenDeck,
+              emptyState: MxEmptyState(
+                icon: AppIcons.library,
+                title: l10n.libraryEmptyTitle,
+                body: l10n.libraryEmptyBody,
+                actionLabel: l10n.libraryCreateDeck,
+                onAction: createDeck,
+                // Starter decks have no screen yet (spec A6).
+                secondaryActionLabel: l10n.libraryBrowseStarter,
+                footnote: l10n.libraryEmptyFootnote,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

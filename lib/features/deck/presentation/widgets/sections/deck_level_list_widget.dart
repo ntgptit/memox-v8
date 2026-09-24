@@ -8,9 +8,9 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -31,6 +31,13 @@ class DeckLevelListWidget extends ConsumerWidget {
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
+
+  bool get _hasCards =>
+      level.overdueCount +
+          level.dueTodayCount +
+          level.newCount +
+          level.scheduledCount >
+      0;
 
   void _showAll(WidgetRef ref) => ref
       .read(deckLevelQueryProvider(parentId).notifier)
@@ -55,18 +62,16 @@ class DeckLevelListWidget extends ConsumerWidget {
       clearance: MxScrollClearance.fabAboveNav,
       children: [
         const SizedBox(height: AppSpacing.gutter),
-        DeckWorkloadLineWidget(
-          overdueCount: level.overdueCount,
-          todayCount: level.dueTodayCount,
-          newCount: level.newCount,
-          cardCount:
-              level.overdueCount +
-              level.dueTodayCount +
-              level.newCount +
-              level.scheduledCount,
+        if (parentId == null && _hasCards) ...[
+          DeckDueStripWidget(level: level),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
+        DeckLevelHeaderWidget(
+          parentId: parentId,
+          label: filter == DeckLevelFilter.due
+              ? l10n.libraryDueDecksHeader
+              : l10n.libraryDecksCount(level.deckCount),
         ),
-        const SizedBox(height: AppSpacing.section),
-        DeckLevelHeaderWidget(parentId: parentId),
         if (tiles.isEmpty)
           MxEmptyState(
             icon: AppIcons.library,
