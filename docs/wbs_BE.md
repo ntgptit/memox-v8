@@ -132,6 +132,7 @@ Không có hạng mục backend nào đang làm sau gói BE-A1 + BE-A2.
 | BE-A7 (một phần) | Chưa tài liệu nào định nghĩa panel "Mastered x/y" của IT-ORG-010 và sort "progress" mà UC-DECK-006 nhắc tới | Chỉ hai phần đó; phần còn lại của BE-A7 làm được | Bổ sung định nghĩa vào BR/UC trước khi làm |
 | BE-A8 | Tên deck chưa có cột folded: fold trong Dart như giai đoạn 2, hay thêm cột (kéo theo migration và cần BE-D1) | Cách truy vấn và hiệu năng tìm kiếm | Quyết trong spec của BE-A8 |
 | BE-B5 | Cần một dependency thông báo cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5, kèm lý do và cách rollback |
+| BE-B5 | BR-SETTINGS-008 ghi `Reset to defaults` đưa toàn bộ giá trị của `app_settings` về mặc định; BE-A1 (spec D6) chỉ đưa về mặc định bốn giá trị người dùng đặt được ở V8.0, chưa đụng `reminder_enabled`, `reminder_minute_of_day` | `Reset to defaults` khi nhắc học đã có giao diện | Quyết trong spec của BE-B5; sửa câu chữ BR-SETTINGS-008 cần chủ dự án cho phép |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | Cả 22 UC | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
