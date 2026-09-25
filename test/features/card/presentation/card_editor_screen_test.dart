@@ -12,6 +12,7 @@ import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/presentation/providers/create_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -172,7 +173,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _create(deckId));
     expect(find.text(_en.cardExampleHint), findsNothing);
 
-    await tester.tap(find.text(_en.cardAddDetails));
+    await tester.tap(find.byType(CardAddDetailsWidget));
     await tester.pump();
     for (final hint in [
       _en.cardExampleHint,
@@ -393,7 +394,7 @@ void main() {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId), textScale: 2);
     await tester.scrollUntilVisible(
-      find.text(_en.cardAddDetails),
+      find.byType(CardAddDetailsWidget),
       200,
       scrollable: find
           .descendant(
@@ -402,7 +403,7 @@ void main() {
           )
           .first,
     );
-    await tester.tap(find.text(_en.cardAddDetails));
+    await tester.tap(find.byType(CardAddDetailsWidget));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

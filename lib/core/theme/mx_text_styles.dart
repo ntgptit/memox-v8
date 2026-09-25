@@ -136,6 +136,10 @@ final class MxTextStyles {
         color: _scheme.onSurface,
       );
 
+  /// A disclosure's label (kit card editor "Add details"): 12/600 primary.
+  TextStyle get disclosureLabel =>
+      _texts.labelSmall!.copyWith(color: _scheme.primary);
+
   /// The term's placeholder: 16/500, onSurfaceVariant.
   TextStyle get fieldTermHint =>
       _texts.bodyLarge!.copyWith(color: _scheme.onSurfaceVariant);

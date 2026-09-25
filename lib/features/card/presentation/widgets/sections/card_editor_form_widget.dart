@@ -15,6 +15,7 @@ import 'package:memox/features/card/presentation/controllers/card_actions_contro
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
@@ -386,11 +387,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       return [
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
-          child: MxButton(
-            label: l10n.cardAddDetails,
-            icon: AppIcons.details,
-            tone: MxButtonTone.outline,
-            isBlock: true,
+          child: CardAddDetailsWidget(
             onPressed: () => setState(() => _isDetailsOpen = true),
           ),
         ),

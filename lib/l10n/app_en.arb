@@ -706,9 +706,13 @@
   "@cardBackHint": {
     "description": "Hint in the back field."
   },
-  "cardAddDetails": "Add details: example, hint, pronunciation",
+  "cardAddDetails": "Add details",
   "@cardAddDetails": {
     "description": "Opens the optional fields in create mode."
+  },
+  "cardAddDetailsFields": "example · hint · pronunciation",
+  "@cardAddDetailsFields": {
+    "description": "The optional fields Add details opens, after its label."
   },
   "cardOptionalDetails": "Optional details",
   "@cardOptionalDetails": {
