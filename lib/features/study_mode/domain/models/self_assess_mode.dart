@@ -4,6 +4,7 @@ import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dar
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
 /// A forgotten card comes back after at least this many other turns
 /// (BR-STUDY-005).
@@ -36,7 +37,29 @@ final class SelfAssessModeHandler extends StudyModeHandler {
       Ok(action),
     SelfAssessAnswer() => const Rejected(StudyModeRejection.unsupportedAction),
     AdvanceAnswer() ||
-    GradedAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
+    GradedAnswer() ||
+    FillAnswer() ||
+    RecallAnswer() ||
+    GuessAnswer() ||
+    MatchAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
+  };
+
+  @override
+  Outcome<TurnVerdict, StudyModeRejection> judge(
+    StudyAnswer answer,
+    TurnContext context,
+    SrsScheduler scheduler,
+  ) => switch (answer) {
+    SelfAssessAnswer(:final action)
+        when scheduler.supportedActions.contains(action) =>
+      Ok(TurnVerdict(action: action)),
+    SelfAssessAnswer() => const Rejected(StudyModeRejection.unsupportedAction),
+    AdvanceAnswer() ||
+    GradedAnswer() ||
+    FillAnswer() ||
+    RecallAnswer() ||
+    GuessAnswer() ||
+    MatchAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
   };
 
   @override

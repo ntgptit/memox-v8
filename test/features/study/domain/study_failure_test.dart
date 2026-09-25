@@ -4,15 +4,12 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dart';
 
 void main() {
-  test('a mode refusal keeps its meaning in the session (spec §9)', () {
-    expect(
-      StudyRejection.ofModeRefusal(StudyModeRejection.answerDoesNotFitMode),
-      StudyRejection.answerDoesNotFitMode,
-    );
-    expect(
-      StudyRejection.ofModeRefusal(StudyModeRejection.unsupportedAction),
-      StudyRejection.unsupportedAction,
-    );
+  test('a mode refusal keeps its meaning, and its name, in the session '
+      '(spec §9; graded modes spec §7.8)', () {
+    for (final reason in StudyModeRejection.values) {
+      expect(StudyRejection.ofModeRefusal(reason).name, reason.name);
+    }
+    expect(StudyModeRejection.values, hasLength(8));
   });
 
   test('srs refusals a session can meet keep their meaning; the others are '
