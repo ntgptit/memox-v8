@@ -43,7 +43,8 @@ One recursive screen for the Library root (`/decks`) and any open deck
 One `MxBottomSheet`, "Sort & filter":
 
 - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date added
-  "Newest first" · Name "A → Z" · Most due cards. Progress waits for BE-A7 under Coming soon.
+  "Newest first" · Name "A → Z" · Most due cards. Progress waits under Coming soon
+  for a BR/UC definition (blocked in `wbs_BE.md`).
 - Toggle (`MxToggle`): "Only decks with due cards" / "Hides decks where nothing is
   waiting".
 - Button "Done".
@@ -80,7 +81,7 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 | Artifact | V8 | Wins |
 |---|---|---|
 | "Move to Trash", "Recoverable for 30 days", neutral confirm, Undo snackbar | "Delete deck?" naming the sub-deck and card counts, destructive confirm, no Undo | BR-DECK-022, BR-DECK-023 |
-| Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for BE-A7) |
+| Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for a BR/UC definition, blocked in `wbs_BE.md`) |
 | Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for BE-A8) |
 | No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
 | Summary "Study this deck" starts study entry | Hidden; named under Coming soon | Spec A4 (waits for FE-A6) |
@@ -101,8 +102,8 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 | Starter decks, Tags, Trash actions | under Coming soon | FE-B4, FE-B2, FE-B1 |
 | "Browse starter decks" | under Coming soon | FE-B4 |
 | Study this deck, Study options | under Coming soon | FE-A6, FE-A3 |
-| Sort by progress | under Coming soon | BE-A7 |
-| Mastery bar, donut | hidden | BE-A7 |
+| Sort by progress | under Coming soon | a BR/UC definition (blocked in `wbs_BE.md`) |
+| Mastery bar, donut | hidden | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Due strip tap | not interactive | FE-A8 |
 | "Open Trash" | under Coming soon (as Trash) | FE-B1 |
 | Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at level 10 | absent; the header says "· level 10" | a later phase (owner decision C-O6) |
