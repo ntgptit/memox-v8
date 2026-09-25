@@ -1,6 +1,6 @@
 # MemoX V8 — Study Home backend design (package 3)
 
-Status: draft 2026-09-25, for the owner's review · Path: architectural
+Status: approved 2026-09-25 · Path: architectural
 
 ## 1. Intent
 
