@@ -2,6 +2,7 @@ import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/search/data/datasources/search_dao.dart';
+import 'package:memox/features/search/domain/models/search_cursor_model.dart';
 import 'package:memox/features/search/domain/models/search_hit_model.dart';
 
 /// Every deck reached from a root, with its trail: the root first and the
@@ -29,6 +30,34 @@ List<SearchableDeck> searchableDecksOf(
         createdAt: row.createdAt,
         path: trail.sublist(0, trail.length - 1),
         contentType: DeckContentType.values.byName(row.contentType),
+      ),
+];
+
+/// The card rows whose deck the walk reached, each with its deck's trail.
+/// A hit names its tag only when neither face holds the term (Search spec
+/// §6.5, D7).
+List<SearchCardHit> cardHitsOf(
+  List<SearchCardRow> rows,
+  Map<String, List<DeckPathEntry>> trails,
+) => [
+  for (final row in rows)
+    if (trails[row.deckId] case final trail?)
+      SearchCardHit(
+        cardId: row.id,
+        deckId: row.deckId,
+        front: row.front,
+        back: row.back,
+        deckPath: trail,
+        matchedTag: row.frontTier == null && row.backTier == null
+            ? row.tagName
+            : null,
+        cursor: SearchCursor(
+          group: SearchGroup.card,
+          tier: row.tier,
+          sortText: row.frontFolded,
+          createdAt: row.createdAt,
+          id: row.id,
+        ),
       ),
 ];
 
