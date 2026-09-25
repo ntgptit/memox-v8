@@ -465,7 +465,7 @@ entry in the commit that added the file. The list is empty today.
 
 In `docs/wbs_FE.md`:
 - gate paragraph (lines 40-42): "gate là `dod_check.sh` (FE-D2); danh sách `targets_pending` của guard đã rỗng.";
-- line 151-152: "Gate: `dod_check.sh` ([`README.md` gốc](../README.md)).";
+- line 151-152: "Gate: `dod_check.sh` (`README.md` gốc).";
 - FE-D2 status: `xong`, evidence "Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`";
 - FE-C1 evidence gains "; khi quyết xong, `textContrastGuideline` vào `auditProductionScreen`".
 
