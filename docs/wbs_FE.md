@@ -101,7 +101,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
 | FE-C5 | Adaptive: chưa có window-size class, chưa có navigation rail cho tablet và màn hình ngang (dòng 63) | chưa bắt đầu | — | M | §9 dòng 63 | Quyết phạm vi adaptive khi thiết kế màn hình |
 | FE-C6 | BottomSheet không chừa chỗ cho bàn phím (dòng 64) | xong | — | S | UI-base debt, đợt 1: sheet đặt trên IME inset; §9 dòng 64 đã đóng | — |
-| FE-C7 | Chuỗi của gallery debug là literal tiếng Anh, chưa đưa vào ARB (dòng 19) | chưa bắt đầu | — | S | §9 dòng 19 | Ưu tiên thấp: chỉ có ở build debug |
+| FE-C7 | Chuỗi của gallery debug là literal tiếng Anh, chưa đưa vào ARB (dòng 19) | xong | — | S | Gallery l10n: 123 key `gallery…` en/vi; luật chuỗi literal của guard phủ `lib/app/`; §9 dòng 19 đã đóng | — |
 | FE-C8 | Hiệu năng: mỗi `MxSkeleton` chạy ticker riêng; `context.derivedColors` dựng lại ở mỗi lần đọc (dòng 66) | xong | — | S | UI-base debt, đợt 1: một pulse cho mỗi danh sách; `derivedColors` nhớ theo theme; §9 dòng 66 (phần contrast chờ FE-C1) | — |
 
 ### Hạ tầng và kiểm chứng

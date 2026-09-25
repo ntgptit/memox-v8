@@ -419,7 +419,7 @@ item names where it comes from.
 | 16 | EmptyState has no footnote slot until MxNote (phase 5); MxButton's loading spinner is a plain `CircularProgressIndicator` until MxSpinner (phase 6) | phase 2 plan R8 |
 | 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
 | 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run | phase 3 plan G3 |
-| 19 | The debug gallery's labels and demo copy are English literals, not ARB strings | phase 3 plan G1 |
+| 19 | The debug gallery's labels and demo copy are English literals, not ARB strings — closed by gallery l10n (FE-C7): `gallery…` keys in en and vi, and the literal-string rule covers `lib/app/` | phase 3 plan G1 |
 | 20 | FieldMessage warning text uses a derived `warningInk` (onWarning light, the amber dark), as the FieldMessage contract scopes it; this resolves row 1 for FieldMessage | phase 4 plan I1 |
 | 21 | SelectionCheckbox's check glyph is 14, below the 16 icon floor, as its contract states | phase 4 plan I2 |
 | 22 | Stepper invalid-ring radius is UNSPECIFIED and uses `AppRadius.md`, its buttons' radius | phase 4 plan I3 |
