@@ -237,7 +237,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (view == null) {
       return MxScreenScroll(
         children: [
-          for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
+          MxSkeletonList(
+            semanticLabel: context.l10n.commonLoading,
+            rows: _skeletonRows,
+          ),
         ],
       );
     }

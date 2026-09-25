@@ -37,6 +37,10 @@
     "description": "Generic cancel action."
   },
   "commonRetry": "Retry",
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "What a screen reader hears while a list or a value loads."
+  },
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },

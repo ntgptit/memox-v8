@@ -33,42 +33,74 @@ class MxSkeleton extends StatefulWidget {
   State<MxSkeleton> createState() => _MxSkeletonState();
 }
 
+/// The 0.45 ↔ 0.75 pulse driven by [controller].
+Animation<double> _pulseOf(AnimationController controller) =>
+    TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(
+          begin: MxSkeleton._lowOpacity,
+          end: MxSkeleton._highOpacity,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: MxSkeleton._highOpacity,
+          end: MxSkeleton._lowOpacity,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1,
+      ),
+    ]).animate(controller);
+
+/// Runs [controller] unless the reader asked for reduced motion.
+void _runUnlessStill(BuildContext context, AnimationController controller) {
+  if (MediaQuery.disableAnimationsOf(context)) {
+    controller.stop();
+    return;
+  }
+  if (!controller.isAnimating) controller.repeat();
+}
+
+/// One pulse shared by every skeleton below it (§9 row 66: a ticker per
+/// list, not per bar).
+class _SkeletonPulse extends InheritedWidget {
+  const _SkeletonPulse({required this.opacity, required super.child});
+
+  final Animation<double> opacity;
+
+  static Animation<double>? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_SkeletonPulse>()?.opacity;
+
+  @override
+  bool updateShouldNotify(_SkeletonPulse oldWidget) =>
+      opacity != oldWidget.opacity;
+}
+
 class _MxSkeletonState extends State<MxSkeleton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: AppDurations.skeletonPulse,
-  );
-  late final Animation<double> _opacity = TweenSequence<double>([
-    TweenSequenceItem(
-      tween: Tween(
-        begin: MxSkeleton._lowOpacity,
-        end: MxSkeleton._highOpacity,
-      ).chain(CurveTween(curve: Curves.easeInOut)),
-      weight: 1,
-    ),
-    TweenSequenceItem(
-      tween: Tween(
-        begin: MxSkeleton._highOpacity,
-        end: MxSkeleton._lowOpacity,
-      ).chain(CurveTween(curve: Curves.easeInOut)),
-      weight: 1,
-    ),
-  ]).animate(_pulse);
+  /// Only a skeleton with no shared pulse above it runs its own.
+  AnimationController? _own;
+  Animation<double>? _opacity;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _pulse.stop();
+    final shared = _SkeletonPulse.maybeOf(context);
+    if (shared != null) {
+      _opacity = shared;
       return;
     }
-    if (!_pulse.isAnimating) _pulse.repeat();
+    final own = _own ??= AnimationController(
+      vsync: this,
+      duration: AppDurations.skeletonPulse,
+    );
+    _opacity ??= _pulseOf(own);
+    _runUnlessStill(context, own);
   }
 
   @override
   void dispose() {
-    _pulse.dispose();
+    _own?.dispose();
     super.dispose();
   }
 
@@ -89,7 +121,7 @@ class _MxSkeletonState extends State<MxSkeleton>
     if (MediaQuery.disableAnimationsOf(context)) {
       return Opacity(opacity: MxSkeleton._restingOpacity, child: shape);
     }
-    return FadeTransition(opacity: _opacity, child: shape);
+    return FadeTransition(opacity: _opacity!, child: shape);
   }
 }
 
@@ -130,6 +162,64 @@ class MxSkeletonRow extends StatelessWidget {
           ),
         ),
       ],
+    ),
+  );
+}
+
+/// A loading list: [rows] skeleton rows on one pulse, heard once as
+/// [semanticLabel] (§9 row 61), since the bars themselves say nothing.
+class MxSkeletonList extends StatefulWidget {
+  const MxSkeletonList({
+    super.key,
+    required this.semanticLabel,
+    this.rows = _defaultRows,
+  });
+
+  /// What is loading, in the caller's copy ("Loading").
+  final String semanticLabel;
+  final int rows;
+
+  static const int _defaultRows = 4;
+
+  @override
+  State<MxSkeletonList> createState() => _MxSkeletonListState();
+}
+
+class _MxSkeletonListState extends State<MxSkeletonList>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: AppDurations.skeletonPulse,
+  );
+  late final Animation<double> _opacity = _pulseOf(_pulse);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _runUnlessStill(context, _pulse);
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    label: widget.semanticLabel,
+    child: ExcludeSemantics(
+      child: _SkeletonPulse(
+        opacity: _opacity,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < widget.rows; i++) const MxSkeletonRow(),
+          ],
+        ),
+      ),
     ),
   );
 }

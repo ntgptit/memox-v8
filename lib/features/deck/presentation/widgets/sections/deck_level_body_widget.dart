@@ -71,7 +71,10 @@ class DeckLevelBodyWidget extends ConsumerWidget {
           loading: () => MxScreenScroll(
             clearance: MxScrollClearance.fabAboveNav,
             children: [
-              for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
+              MxSkeletonList(
+                semanticLabel: context.l10n.commonLoading,
+                rows: _skeletonRows,
+              ),
             ],
           ),
           error: (_, _) => MxScreenScroll(
