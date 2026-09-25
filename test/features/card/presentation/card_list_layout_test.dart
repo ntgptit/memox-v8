@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -208,5 +209,30 @@ void main() {
 
     expect(find.byType(CardDeckSummaryWidget), findsNothing);
     expect(identical(tester.element(row), before), isTrue);
+  });
+
+  libraryTest('selecting hides the search field; it returns with its term', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await _openSearch(tester, deckId);
+    await tester.enterText(find.byType(EditableText), 'a');
+    await tester.pumpAndSettle();
+
+    await tester.longPress(find.text('annyeong'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxSearchField), findsNothing);
+
+    ProviderScope.containerOf(
+      tester.element(find.byType(CardListSectionWidget)),
+    ).read(cardSelectionProvider(deckId).notifier).clear();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxSearchField), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      'a',
+    );
   });
 }

@@ -11,7 +11,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 |---|---|---|
 | App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮`. Selecting: close, "{n} selected", "Select all {count}". |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
-| Search | `MxSearchField` | Revealed by the search action; closing it clears the term. |
+| Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck" waits under Coming soon (spec A4). Hidden while selecting. |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |

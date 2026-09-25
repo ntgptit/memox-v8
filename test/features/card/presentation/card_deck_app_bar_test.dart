@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
@@ -27,8 +29,8 @@ Widget _screen(String deckId) => deckScreen(
     onAddCard: () {},
     onOpenCard: (_) {},
   ),
-  cardAppBar: (view, actions) =>
-      CardDeckAppBarWidget(view: view, deckActions: actions),
+  cardAppBar: (view, back, actions) =>
+      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
   cardBreadcrumb: (id, child) =>
       CardDeckBreadcrumbWidget(deckId: id, child: child),
 );
@@ -180,5 +182,26 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('Select all stays while a larger window loads', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _deck(env, [for (var i = 0; i < 60; i++) 'card $i']);
+    await pumpLibraryScreen(tester, env, _screen(deckId));
+    await tester.longPress(find.byType(CardRowWidget).first);
+    await tester.pumpAndSettle();
+    final selectAll = find.widgetWithText(MxButton, _en.cardSelectAllCount(60));
+    expect(selectAll, findsOneWidget);
+
+    ProviderScope.containerOf(tester.element(find.byType(CardDeckAppBarWidget)))
+        .read(cardListRequestProvider(deckId).notifier)
+        .grow();
+    await tester.pump();
+
+    expect(selectAll, findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(selectAll, findsOneWidget);
   });
 }

@@ -127,8 +127,8 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onAddCard: addCard,
-    cardAppBar: (view, actions) =>
-        CardDeckAppBarWidget(view: view, deckActions: actions),
+    cardAppBar: (view, back, actions) =>
+        CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
     cardBreadcrumb: (id, child) =>
         CardDeckBreadcrumbWidget(deckId: id, child: child),
     cardContent: (view) => CardListSectionWidget(
