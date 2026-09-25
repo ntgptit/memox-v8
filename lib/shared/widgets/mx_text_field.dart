@@ -186,7 +186,10 @@ class MxTextField extends StatelessWidget {
     final ghost = context.derivedColors.ghostBorder;
     final hasError = errorText != null;
     final geometry = _geometry(variant);
+    // No floating label, so no label gap: Material 3 would otherwise add
+    // gapPadding to each side of the text, past the kit's padding.
     OutlineInputBorder edge(Color color) => OutlineInputBorder(
+      gapPadding: 0,
       borderRadius: BorderRadius.circular(geometry.radius),
       borderSide: BorderSide(color: color, width: AppStroke.hairline),
     );

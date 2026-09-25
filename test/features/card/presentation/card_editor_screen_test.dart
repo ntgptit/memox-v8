@@ -408,4 +408,17 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+
+  libraryTest('the back of a new card sits on its 76 floor', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+    await tester.enterText(_field(1), 'thank you');
+    await tester.pump();
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+  });
 }
