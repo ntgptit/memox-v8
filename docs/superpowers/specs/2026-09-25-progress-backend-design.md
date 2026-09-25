@@ -1,6 +1,6 @@
 # MemoX V8 — Progress backend design (package 4)
 
-Status: approved 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · amended while writing the plan (its Clarifications: D1, D6, D9, D11, §2, §5.3, §6, §10–§12) · Path: architectural
 
 ## 1. Intent
 
@@ -126,25 +126,26 @@ Success means:
   package's.
 - **Blocked, not this package.** The mastery display of the deck list (screen 01's
   mastery bars, donut and "Mastered", hidden and marked "waits for BE-A7") and the
-  "Mastered x/y" panel of IT-ORG-010, and the Library's "progress" sort that
-  UC-DECK-006 names. The card states they would count exist (BR-CARD-006…BR-CARD-008),
-  but no BR or UC says what the panel or the sort counts (D1).
+  deck list's "progress" sort that UC-DECK-006 names (under Coming soon). The card
+  states they would count exist (BR-CARD-006…BR-CARD-008), and the card list's
+  "mastered" panel of IT-ORG-010 is already built on BE-A9's counts, but no BR or UC
+  says what the deck list's display or sort counts (D1).
 
 ## 3. Decisions
 
 | # | Topic | Decision | Authority |
 |---|---|---|---|
-| D1 | Scope | UC-PROGRESS-001 and UC-PROGRESS-002. The mastery display of the deck list and IT-ORG-010, and the Library's "progress" sort, stay blocked; their blocked row leaves BE-A7 for the features that own them | Owner, 2026-09-25 |
+| D1 | Scope | UC-PROGRESS-001 and UC-PROGRESS-002. The deck list's mastery display and its "progress" sort stay blocked; their blocked row leaves BE-A7 for the deck list, which owns them (the card list's panel of IT-ORG-010 is already built) | Owner, 2026-09-25 |
 | D2 | Approach | Two read models: `WatchProgressUseCase` for `/progress` (the overview and the library level) and `WatchDeckProgressUseCase` for `/progress/:deckId` (a deck's level, or the deck is missing). Each emission runs its statements in one transaction | Owner, 2026-09-25 (approach A of three) |
 | D3 | Local days | A row's day is `(answered_at + offset) / 86400`, with `answered_at` in UTC seconds and the offset of the read. `ProgressDays` computes today, both ranges and `validUntil` in Dart, from `now` and its offset; SQL gets day numbers and never derives a midnight | BR-PROGRESS-011, BR-PROGRESS-013 |
 | D4 | Midnight | The use cases read again at each local midnight through `watchEachLocalDay`, as the Library and the Study tab do, and the snapshot carries `validUntil` (BR-PROGRESS-003). The documents put a one-shot timer in the UI controller over V7's providers; V8's lives in `DayClock` and behaves as they require: one per listener, cancelled with it, never looping on a boundary already past, and the offset read again at every read | Owner, 2026-09-25 |
 | D5 | Totals | One statement per level returns the rows and one total row, `UNION ALL` over the same set of card-days: a total is read, never added up | BR-PROGRESS-002 |
-| D6 | The overview | SQL folds the history into card-days, then into one row per active day with its Learning and Reviewing card-days. Dart takes Today, the last seven days, the streak and the last active day from those rows | UC-PROGRESS-001 step 2; Owner, 2026-09-25 |
+| D6 | The overview | SQL folds the whole history into the days with activity, and the last seven days into card-days with their Learning and Reviewing split. Dart takes the streak and the last active day from the first, Today and the bars from the second (plan Clarification 1) | UC-PROGRESS-001 step 2; Owner, 2026-09-25 |
 | D7 | What counts | A card and its deck out of the Trash. Never a row of mode `browse` (BR-PROGRESS-012; no such row is written today). Never a row whose day is after today. A hard delete leaves nothing to filter: the cascade took it | Owner, 2026-09-25 |
 | D8 | The change stream | Package 3's listen-first stream becomes a helper in `lib/core/database/` over a list of tables; Study Home and Progress share it. Progress listens to `review_log`, `card` and `deck` | Owner, 2026-09-25 |
-| D9 | Schema | No change. The plan measures the reads on a synthetic log of about 100,000 rows and records the numbers; an index on `answered_at` would be its own package, with a migration | Owner, 2026-09-25 |
+| D9 | Schema | No change. Measured by the plan on a synthetic log: the `/progress` snapshot reads in about 100 ms at 100,000 answers and 280 ms at 300,000 on a 4-core desktop container. An index on `answered_at` would be its own package, with a migration | Owner, 2026-09-25 |
 | D10 | Read only | Nothing on these paths writes; no session is opened, resumed or closed | BR-PROGRESS-007, BR-PROGRESS-009 |
-| D11 | Documents | Of the BR and UC files, only the `code:` of UC-PROGRESS-001 and UC-PROGRESS-002 changes. With them: the progress README (`code:`, and its stale note that the repository has no `lib/`), a new `features/progress/data.md`, `wbs_BE.md`, the FE-A1 blocked row of `wbs_FE.md`, and `docs/_generated/`, and the two cells of `shared/ui/screen-handoff/01-deck-list.md` that say the mastery display waits for BE-A7, which point to the blocked row instead | Owner, 2026-09-25 |
+| D11 | Documents | Of the BR and UC files, only the `code:` of UC-PROGRESS-001 and UC-PROGRESS-002 changes. With them: the progress README (`code:`, and its stale note that the repository has no `lib/`), a new `features/progress/data.md`, `wbs_BE.md`, the FE-A1 blocked row of `wbs_FE.md`, and `docs/_generated/`, and the three cells of `shared/ui/screen-handoff/01-deck-list.md` that wait on BE-A7 (the mastery display twice, the progress sort once), which point to the blocked row instead | Owner, 2026-09-25 |
 | D12 | Branch and PR | Branch `claude/be-progress` from `master`. When the gate is green and the final review is clean, the package is opened as a PR and squash-merged | Owner's standing choice |
 
 ## 4. Structure
@@ -169,8 +170,9 @@ lib/features/progress/
 │   └── usecases/watch_progress_use_case.dart          WatchProgressUseCase
 │       usecases/watch_deck_progress_use_case.dart     WatchDeckProgressUseCase
 ├── data/
-│   ├── datasources/progress_dao.dart                  activeDays, rootLevel,
-│   │                                                  childLevel, deckPath, changes
+│   ├── datasources/progress_dao.dart                  activeDays, weekActivity,
+│   │                                                  rootLevel, childLevel,
+│   │                                                  deckPath, changes
 │   ├── mappers/progress_mapper.dart                   rows → the read model
 │   └── repositories/progress_repository_impl.dart
 └── di/progress_repository_provider.dart               progressRepositoryProvider
@@ -238,7 +240,7 @@ final class DayActivity {
 final class CurrentStreak { final int days; final StreakState state; }
 enum StreakState { includesToday, heldFromYesterday, lost, never }
 
-/// A row of statement 1 (§6.2): one local day with activity.
+/// A row of statement 2 (§6.2): a day of the last seven with activity.
 final class ActiveDay { final int day; final int learning; final int reviewing; }
 
 enum ProgressRange { week, month }       // 7 and 30 days (BR-PROGRESS-003)
@@ -269,18 +271,20 @@ final class ProgressLevel {
 
 ### 5.3 The overview
 
-`progressOverviewOf(activeDays, days)` is pure. It takes the active-day rows (a day
-number with its Learning and Reviewing card-days, only days up to today) and:
+`progressOverviewOf(activeDays:, week:, days:)` is pure. It takes the day numbers
+with activity up to today, oldest first (`activeDays`, statement 1), and the last
+seven days' rows, each a day number with its Learning and Reviewing card-days
+(`week`, statement 2), and:
 
 - **Today:** today's row, or zeros.
 - **Last seven days:** the rows of `weekStart…today` in that order, a missing day as
   zeros, each with its date (BR-PROGRESS-015).
-- **The streak** (BR-PROGRESS-016): the anchor is today when today has a row, else
-  yesterday when yesterday has one. From the anchor it counts the days that follow
+- **The streak** (BR-PROGRESS-016): the anchor is today when today has activity,
+  else yesterday when yesterday has. From the anchor it counts the days that follow
   each other back in time, with no cap. The state is `includesToday` or
-  `heldFromYesterday` by the anchor; with no anchor it is `lost` when any row exists
-  and `never` when none does, and `days` is 0.
-- **The last active day:** the latest row's date, for the lost note.
+  `heldFromYesterday` by the anchor; with no anchor it is `lost` when any day has
+  activity and `never` when none does, and `days` is 0.
+- **The last active day:** the latest day with activity, for the lost note.
 
 ### 5.4 The order
 
@@ -295,7 +299,8 @@ and stays in the list. `ProgressLevel` sorts once per range when it is built;
 
 ### 6.1 The card-days
 
-Every statement starts from the same set, the card-days of live cards in its scope:
+Statements 2 to 4 (§6.2) start from the same set, the card-days of live cards in
+their scope; statement 1 takes only the distinct days of the same answers:
 
 ```sql
 SELECT c.id AS card_id, <tile> AS tile_id,
@@ -306,9 +311,12 @@ JOIN card c ON c.id = r.card_id
 JOIN deck k ON k.id = c.deck_id
 WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
   AND r.mode <> 'browse'
+  AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
 GROUP BY c.id, day
-HAVING day BETWEEN :month_start AND :today      -- statement 1: day <= :today
 ```
+
+The day condition sits in `WHERE`, so answers outside the range are never grouped;
+statement 2 takes the week instead of the month.
 
 `is_learning` makes the partition (BR-PROGRESS-005, BR-PROGRESS-014). A range's four
 numbers are `COUNT(DISTINCT card_id)`, `COUNT(DISTINCT day)`,
@@ -316,43 +324,47 @@ numbers are `COUNT(DISTINCT card_id)`, `COUNT(DISTINCT day)`,
 with `day >= :week_start` added for the week. SQLite accepts `DISTINCT` with
 `FILTER`; the plan pins the exact statements.
 
-### 6.2 The four statements
+### 6.2 The five statements
 
-1. **`activeDays(offset, today)`:** the whole history up to today, grouped by
-   `day`: one row per active day with its Learning and Reviewing
-   card-days, oldest first. No raw `review_log` row and no per-day read leaves SQLite
-   (UC-PROGRESS-001 step 2).
-2. **`rootLevel(offset, weekStart, monthStart, today)`:** every active root deck,
+1. **`activeDays(offset, today)`:** the distinct days with activity over the whole
+   history up to today, oldest first: the streak's days.
+2. **`weekActivity(offset, weekStart, today)`:** the card-days of the last seven
+   days, grouped by `day` with their Learning and Reviewing card-days. Neither
+   statement lets a raw `review_log` row or a per-day read leave SQLite
+   (UC-PROGRESS-001 step 2). Folding every card-day of the history instead cost
+   about twice as much (plan Clarification 1).
+3. **`rootLevel(offset, weekStart, monthStart, today)`:** every active root deck,
    with no activity too (`LEFT JOIN`), with its eight numbers, `<tile>` being
    `k.root_id`; then, `UNION ALL`, one total row over the same card-days (D5).
-3. **`childLevel(deckId, offset, weekStart, monthStart, today)`:** every active direct
+4. **`childLevel(deckId, offset, weekStart, monthStart, today)`:** every active direct
    child of `deckId`, its subtree walked from each child as `deckLevelOfChildren`
    walks it (`UNION`, cycle safe, no cap); the total row also takes the cards held
    by the deck itself.
-4. **`deckPath(deckId)`:** `deckAndAncestors`; no row means `ProgressDeckMissing`.
+5. **`deckPath(deckId)`:** `deckAndAncestors`; no row means `ProgressDeckMissing`.
 
 ### 6.3 One transaction
 
-- `watchProgress` runs statements 1 and 2 in one `transaction`, so Today and the
+- `watchProgress` runs statements 1, 2 and 3 in one `transaction`, so Today and the
   deck numbers see one state of the database, as they share one screen
   (UC-PROGRESS-001 step 4).
-- `watchDeckProgress` runs statement 4, then 3 when the deck is there, in one
+- `watchDeckProgress` runs statement 5, then 4 when the deck is there, in one
   `transaction`.
 
 ### 6.4 When it reads
 
 `tableChanges(db, tables)` fires once when listened to, then after every write to
-one of `tables`; a transaction fires once. It listens before it fires the first
-time (D8, package 3's D7). Progress passes `review_log`, `card` and `deck`: a new
+one of `tables`; a flat transaction fires once (a repository call nested in
+another transaction fires once per call; none is nested today). It listens before
+it fires the first time (D8, package 3's D7). Progress passes `review_log`, `card` and `deck`: a new
 answer, a moved card or deck, a deleted or trashed one and a renamed one
 (BR-PROGRESS-008). Each firing becomes one snapshot through `asyncMap`, one at a
 time and in order.
 
 ### 6.5 Mapping
 
-`progress_mapper.dart` turns an active-day row into an `ActiveDay`, a level row into
-a `ProgressDeckRow` with its `RangeProgress`, the total row into the level's
-`total`, and a `deckAndAncestors` row into a `ProgressPathSegment`.
+`progress_mapper.dart` turns a row of the last seven days into an `ActiveDay`, a
+level row into a `ProgressDeckRow` with its `RangeProgress`, the total row into the
+level's `total`, and a `deckAndAncestors` row into a `ProgressPathSegment`.
 
 ### 6.6 Errors
 
@@ -447,22 +459,22 @@ the shared helper.
   changes (D11).
 - **`docs/features/progress/README.md`:** `code:` names the feature's `domain`,
   `data` and `di`; the stale note that the repository has no `lib/` goes.
-- **`docs/features/progress/data.md`** (new): the card-day, the day of a row, the four
+- **`docs/features/progress/data.md`** (new): the card-day, the day of a row, the
   statements, when they read, and that nothing writes.
 - **`docs/wbs_BE.md`:** BE-A7 done; the blocked row moves from BE-A7 to the deck
-  list and the card list; the order moves on to BE-A8; the update log; the
-  traceability line.
+  list; the order moves on to BE-A8; the update log; the traceability line.
 - **`docs/wbs_FE.md`:** FE-A1's blocked row waits for the definition, not BE-A7.
-- **`docs/shared/ui/screen-handoff/01-deck-list.md`** (D11): the two cells
-  that say the mastery display waits for BE-A7 point to the blocked row.
+- **`docs/shared/ui/screen-handoff/01-deck-list.md`** (D11): the three cells that
+  wait on BE-A7 (the mastery display twice, the progress sort once) point to the
+  blocked row.
 - **`docs/_generated/`:** regenerated.
 
 ## 11. Out of scope
 
 - FE-A9: screen 22, its controllers and ARB strings, the routes, the breadcrumb, the
   A1 line, the empty and `never` layouts, and the retry.
-- The mastery display of the deck list, the panel of IT-ORG-010 and the "progress"
-  sort (D1).
+- The mastery display of the deck list and its "progress" sort (D1). The card
+  list's panel of IT-ORG-010 is already built on BE-A9's counts.
 - Every metric of BR-PROGRESS-010.
 - An index on `review_log.answered_at` (D9).
 - The Trash (BE-B1): the filters are in place; restore and purge come with it.
@@ -471,8 +483,10 @@ the shared helper.
 
 - **Load.** Each write to `review_log`, `card` or `deck` re-reads the snapshot while a
   Progress screen listens. Statement 1 scans the whole history, since the streak has
-  no cap; statements 2 and 3 filter 30 days, with no index to help. The plan
-  measures them (D9); FE-A9's providers dispose when their screen is gone.
+  no cap; the others filter by day, with no index to help. Measured (D9): about
+  100 ms per `/progress` snapshot at 100,000 answers and 280 ms at 300,000, on a
+  4-core desktop container; a phone is slower. FE-A9's providers dispose when their
+  screen is gone.
 - **The shared helper** changes package 3's stream; its tests prove it unchanged.
 - **Time zones.** A change of offset re-buckets past days (BR-PROGRESS-011). On a DST
   day, the day of the read's offset can differ by an hour from the calendar day
