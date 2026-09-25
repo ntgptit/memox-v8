@@ -1,6 +1,6 @@
 # MemoX V8 — Progress backend design (package 4)
 
-Status: draft for review 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · Path: architectural
 
 ## 1. Intent
 
@@ -144,7 +144,7 @@ Success means:
 | D8 | The change stream | Package 3's listen-first stream becomes a helper in `lib/core/database/` over a list of tables; Study Home and Progress share it. Progress listens to `review_log`, `card` and `deck` | Owner, 2026-09-25 |
 | D9 | Schema | No change. The plan measures the reads on a synthetic log of about 100,000 rows and records the numbers; an index on `answered_at` would be its own package, with a migration | Owner, 2026-09-25 |
 | D10 | Read only | Nothing on these paths writes; no session is opened, resumed or closed | BR-PROGRESS-007, BR-PROGRESS-009 |
-| D11 | Documents | Of the BR and UC files, only the `code:` of UC-PROGRESS-001 and UC-PROGRESS-002 changes. With them: the progress README (`code:`, and its stale note that the repository has no `lib/`), a new `features/progress/data.md`, `wbs_BE.md`, the FE-A1 blocked row of `wbs_FE.md`, and `docs/_generated/`. Proposed in this review: the two cells of `shared/ui/screen-handoff/01-deck-list.md` that say the mastery display waits for BE-A7 point to the blocked row instead | Owner, 2026-09-25 |
+| D11 | Documents | Of the BR and UC files, only the `code:` of UC-PROGRESS-001 and UC-PROGRESS-002 changes. With them: the progress README (`code:`, and its stale note that the repository has no `lib/`), a new `features/progress/data.md`, `wbs_BE.md`, the FE-A1 blocked row of `wbs_FE.md`, and `docs/_generated/`, and the two cells of `shared/ui/screen-handoff/01-deck-list.md` that say the mastery display waits for BE-A7, which point to the blocked row instead | Owner, 2026-09-25 |
 | D12 | Branch and PR | Branch `claude/be-progress` from `master`. When the gate is green and the final review is clean, the package is opened as a PR and squash-merged | Owner's standing choice |
 
 ## 4. Structure
@@ -453,7 +453,7 @@ the shared helper.
   list and the card list; the order moves on to BE-A8; the update log; the
   traceability line.
 - **`docs/wbs_FE.md`:** FE-A1's blocked row waits for the definition, not BE-A7.
-- **`docs/shared/ui/screen-handoff/01-deck-list.md`** (proposed, D11): the two cells
+- **`docs/shared/ui/screen-handoff/01-deck-list.md`** (D11): the two cells
   that say the mastery display waits for BE-A7 point to the blocked row.
 - **`docs/_generated/`:** regenerated.
 
