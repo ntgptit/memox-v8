@@ -4,8 +4,14 @@ import path from 'node:path';
 const STEP_LABEL = /^(.*) · (\d+)\/(\d+)$/;
 const SCREEN_NUMBER = /^\d{2}$/;
 
+/** The label the kit shows, with no stepper, on a screen drawn in one state. */
+const SINGLE_STATE = 'Single state';
+
 /** "Root · decks · 1/22" → { label: "Root · decks", index: 1, total: 22 }. */
 export function parseStepLabel(text) {
+  if (text.trim() === SINGLE_STATE) {
+    return { label: SINGLE_STATE, index: 1, total: 1 };
+  }
   const match = STEP_LABEL.exec(text.trim());
   if (!match) throw new Error(`Unrecognised state label: "${text}"`);
   return { label: match[1], index: Number(match[2]), total: Number(match[3]) };
