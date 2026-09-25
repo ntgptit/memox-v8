@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 import importlib.util
+import io
 import json
 import os
 import shutil
@@ -865,6 +867,98 @@ class ImpactMapMatchesTheDocsTest(unittest.TestCase):
             declared,
             {key: sorted(value) for key, value in impact["feature_dependencies"].items()},
         )
+
+
+def _golden_report(
+    root: Path, *, passed: int, failed: int = 0, skipped: int = 0
+) -> Path:
+    """A report in the shape `flutter test --file-reporter json:<file>` writes.
+
+    Every test file starts with a hidden "loading" test, the reporter's own
+    entry, and the run ends with a `done` event: neither is a golden test. A
+    failed golden reports `error`, as a failed `matchesGoldenFile` does.
+    """
+    events: list[dict] = [
+        {"protocolVersion": "0.1.1", "runnerVersion": None, "pid": 1, "type": "start", "time": 0},
+        {"suite": {"id": 0, "platform": "vm", "path": "test/x_golden_test.dart"}, "type": "suite", "time": 0},
+        {"test": {"id": 1, "name": "loading test/x_golden_test.dart", "suiteID": 0, "groupIDs": []},
+         "type": "testStart", "time": 1},
+        {"count": 1, "type": "allSuites", "time": 2},
+        {"testID": 1, "result": "success", "skipped": False, "hidden": True, "type": "testDone", "time": 3},
+    ]
+    outcomes = ["success"] * passed + ["error"] * failed + ["skipped"] * skipped
+    for test_id, outcome in enumerate(outcomes, start=10):
+        events.append(
+            {"test": {"id": test_id, "name": f"golden {test_id}", "suiteID": 0, "groupIDs": [2]},
+             "type": "testStart", "time": 4}
+        )
+        events.append({
+            "testID": test_id,
+            "result": "success" if outcome == "skipped" else outcome,
+            "skipped": outcome == "skipped",
+            "hidden": False,
+            "type": "testDone",
+            "time": 5,
+        })
+    events.append({"success": failed == 0, "type": "done", "time": 6})
+    report = root / "golden-report.jsonl"
+    report.write_text("".join(json.dumps(event) + "\n" for event in events), encoding="utf-8")
+    return report
+
+
+class GoldenCountTest(unittest.TestCase):
+    """`count_golden_tests.py` reads the report of the `goldens` CI job.
+
+    A golden run can pass while comparing fewer pictures than it should: a
+    golden file that lost its tag, or moved out of `test/`, is simply not
+    selected. The floor notices, and only tests that ran are counted.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.module = _load("count_golden_tests")
+
+    def setUp(self) -> None:
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name)
+
+    def _count(self, report: Path, floor: int) -> tuple[int, str]:
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = self.module.main(["count_golden_tests.py", str(report), str(floor)])
+        return code, out.getvalue()
+
+    def test_a_report_that_meets_the_floor_passes(self) -> None:
+        code, out = self._count(_golden_report(self.root, passed=3), floor=3)
+        self.assertEqual(0, code, out)
+        self.assertIn("golden count floor satisfied (3 >= 3)", out)
+
+    def test_a_failed_golden_fails_whatever_the_count(self) -> None:
+        code, out = self._count(_golden_report(self.root, passed=3, failed=1), floor=1)
+        self.assertEqual(1, code, out)
+        self.assertIn("1 golden test(s) did not pass", out)
+
+    def test_a_count_under_the_floor_fails(self) -> None:
+        code, out = self._count(_golden_report(self.root, passed=2), floor=3)
+        self.assertEqual(1, code, out)
+        self.assertIn("Expected at least 3 golden tests, but only 2 ran", out)
+
+    def test_skipped_tests_and_loading_entries_are_not_counted(self) -> None:
+        code, out = self._count(_golden_report(self.root, passed=2, skipped=5), floor=3)
+        self.assertEqual(1, code, out)
+        self.assertIn("Golden tests discovered: 2", out)
+
+    def test_a_report_with_no_test_fails(self) -> None:
+        code, out = self._count(_golden_report(self.root, passed=0), floor=60)
+        self.assertEqual(1, code, out)
+        self.assertIn("Golden tests discovered: 0", out)
+
+    def test_a_missing_report_fails_and_names_it(self) -> None:
+        missing = self.root / "golden-report.jsonl"
+        code, out = self._count(missing, floor=60)
+        self.assertEqual(1, code, out)
+        self.assertIn(f"cannot read the golden report {missing}", out)
 
 
 class WorkflowContractTest(unittest.TestCase):
