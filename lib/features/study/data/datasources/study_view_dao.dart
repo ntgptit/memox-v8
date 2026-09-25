@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/table_changes.dart';
 
 /// A session row with its deck's name and its root's scheduler code.
 typedef SessionViewRow = ({
@@ -166,25 +167,15 @@ final class StudyViewDao {
   }
 
   /// Fires once when listened to, then after every write to a table the
-  /// Study tab reads: decks, cards, schedules, sessions and queues; a
-  /// transaction fires once. It listens before it fires, so a write that
-  /// lands right after the first read is seen (Study Home spec D7).
-  Stream<void> homeChanges() => Stream.multi((listener) {
-    final updates = _db
-        .tableUpdates(
-          TableUpdateQuery.onAllTables([
-            _db.deck,
-            _db.card,
-            _db.cardSchedule,
-            _db.studySession,
-            _db.studyQueueItems,
-          ]),
-        )
-        .listen((_) => listener.add(null), onError: listener.addError);
-    listener
-      ..add(null)
-      ..onCancel = updates.cancel;
-  });
+  /// Study tab reads: decks, cards, schedules, sessions and queues
+  /// (`tableChanges`, Study Home spec D7).
+  Stream<void> homeChanges() => tableChanges(_db, [
+    _db.deck,
+    _db.card,
+    _db.cardSchedule,
+    _db.studySession,
+    _db.studyQueueItems,
+  ]);
 
   Future<CardRow?> cardRow(String cardId) => (_db.select(
     _db.card,
