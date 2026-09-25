@@ -5,21 +5,23 @@ import 'package:memox/core/error/failure.dart';
 import '../support/invariant_queries.dart';
 import '../support/test_database.dart';
 
-/// Rows that satisfy all 32 invariants: three trees (eight_box, sm2, empty),
-/// learned and new cards, three sessions (completed, open, invalidated) with
-/// queue rows in four modes, and review turns of all three kinds.
+/// Rows that satisfy every invariant in scope: three trees (eight_box, sm2,
+/// empty), learned and new cards, three sessions (completed, open,
+/// invalidated) with queue rows in five modes, a guess question with its five
+/// options, and review turns of all three kinds.
 const _seed = <String>[
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version, generation, first_answered_at, sibling_position, created_at, updated_at) VALUES ('A', 'A', NULL, 'A', 1, 'deck', 'eight_box', 1, 1, 100, 0, 0, 0)",
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) VALUES ('A1', 'A1', 'A', 'A', 2, 'card', 0, 0, 0), ('A2', 'A2', 'A', 'A', 2, 'deck', 1, 0, 0), ('A2a', 'A2a', 'A2', 'A', 3, 'card', 0, 0, 0), ('A3', 'A3', 'A', 'A', 2, 'unset', 2, 0, 0)",
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version, generation, study_config, sibling_position, created_at, updated_at) VALUES ('B', 'B', NULL, 'B', 1, 'deck', 'sm2', 1, 2, '{\"cardLimit\": 10}', 1, 0, 0)",
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) VALUES ('B1', 'B1', 'B', 'B', 2, 'card', 0, 0, 0)",
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version, generation, sibling_position, created_at, updated_at) VALUES ('C', 'C', NULL, 'C', 1, 'deck', 'eight_box', 1, 1, 2, 0, 0)",
-  "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('c1', 'A1', 'f', 'b', 0, 0), ('c2', 'A1', 'f', 'b', 0, 0), ('c3', 'A2a', 'f', 'b', 0, 0), ('c4', 'B1', 'f', 'b', 0, 0)",
+  "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('c1', 'A1', 'f', 'b', 0, 0), ('c2', 'A1', 'f', 'b', 0, 0), ('c3', 'A2a', 'f', 'b', 0, 0), ('c4', 'B1', 'f', 'b', 0, 0), ('c5', 'A1', 'f', 'b', 0, 0), ('c6', 'A1', 'f', 'b', 0, 0)",
   "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, learned_at, due_at, last_answered_at, answer_count, lapse_count, current_box) VALUES ('c1', 'eight_box', 1, 1, 100, 200, 121, 1, 0, 3)",
-  "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, current_box) VALUES ('c2', 'eight_box', 1, 1, 1), ('c3', 'eight_box', 1, 1, 1)",
+  "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, current_box) VALUES ('c2', 'eight_box', 1, 1, 1), ('c3', 'eight_box', 1, 1, 1), ('c5', 'eight_box', 1, 1, 1), ('c6', 'eight_box', 1, 1, 1)",
   "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, ease_factor, interval_days, repetitions) VALUES ('c4', 'sm2', 1, 2, 2.5, 0, 0)",
   "INSERT INTO study_session (id, deck_id, root_id, generation, session_kind, current_mode, status, end_reason, direction, started_at, ended_at) VALUES ('s1', 'A1', 'A', 1, 'learning', 'match', 'completed', NULL, NULL, 90, 150), ('s2', 'A', 'A', 1, 'reviewing', 'self_assess', 'in_progress', NULL, 'mixed', 110, NULL), ('s3', 'B', 'B', 2, 'reviewing', 'recall', 'invalidated', 'scheduler_reset', NULL, 280, 300)",
-  "INSERT INTO study_queue_items (session_id, mode, round, card_id, position, status, answers_in_session, remaining_ms, is_revealed, direction) VALUES ('s1', 'self_assess', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL), ('s1', 'self_assess', 1, 'c2', 1, 'completed', 1, NULL, 0, NULL), ('s1', 'match', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL), ('s1', 'match', 1, 'c2', 1, 'completed', 2, NULL, 0, NULL), ('s1', 'match', 2, 'c2', 0, 'completed', 1, NULL, 0, NULL), ('s1', 'recall', 1, 'c1', 0, 'completed', 1, 20000, 1, NULL), ('s1', 'fill', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL), ('s2', 'self_assess', 1, 'c1', 0, 'pending', 2, NULL, 0, 'korean_to_meaning')",
+  "INSERT INTO study_queue_items (session_id, mode, round, card_id, position, status, answers_in_session, remaining_ms, is_revealed, direction, hint_shown, meaning_slot) VALUES ('s1', 'self_assess', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL, 0, NULL), ('s1', 'self_assess', 1, 'c2', 1, 'completed', 1, NULL, 0, NULL, 0, NULL), ('s1', 'match', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL, 0, 1), ('s1', 'match', 1, 'c2', 1, 'completed', 2, NULL, 0, NULL, 0, 0), ('s1', 'match', 2, 'c2', 0, 'completed', 1, NULL, 0, NULL, 0, 0), ('s1', 'guess', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL, 0, NULL), ('s1', 'recall', 1, 'c1', 0, 'completed', 1, 20000, 1, NULL, 0, NULL), ('s1', 'fill', 1, 'c1', 0, 'completed', 1, NULL, 0, NULL, 1, NULL), ('s2', 'self_assess', 1, 'c1', 0, 'pending', 2, NULL, 0, 'korean_to_meaning', 0, NULL)",
+  "INSERT INTO study_guess_options (session_id, round, card_id, slot, option_card_id) VALUES ('s1', 1, 'c1', 0, 'c5'), ('s1', 1, 'c1', 1, 'c3'), ('s1', 1, 'c1', 2, 'c1'), ('s1', 1, 'c1', 3, 'c6'), ('s1', 1, 'c1', 4, 'c2')",
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, direction, \"action\", answered_at, previous_box, next_box) VALUES ('l1', 'c1', 's1', 'eight_box', 1, 'learning', 'self_assess', NULL, 'remembered', 100, 1, 2), ('l3', 'c1', 's2', 'eight_box', 1, 'scheduled', 'self_assess', 'korean_to_meaning', 'remembered', 120, 2, 3), ('l4', 'c1', 's2', 'eight_box', 1, 'relearning', 'self_assess', 'korean_to_meaning', 'forgotten', 121, 3, 3)",
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, comparison_version, used_hint, \"action\", answered_at) VALUES ('l2', 'c1', 's1', 'eight_box', 1, 'learning', 'fill', 1, 0, 'remembered', 101)",
   "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, outcome_reason, \"action\", answered_at) VALUES ('l5', 'c1', 's1', 'eight_box', 1, 'learning', 'recall', 'timeout', 'forgotten', 102)",
@@ -90,6 +92,12 @@ const _planted = <int, List<String>>{
   ],
   29: ["DELETE FROM card WHERE id = 'c3'"],
   30: ["UPDATE deck SET first_answered_at = NULL WHERE id = 'A'"],
+  39: [
+    "UPDATE study_queue_items SET meaning_slot = 1 WHERE session_id = 's1' AND mode = 'match' AND round = 1 AND card_id = 'c2'",
+  ],
+  40: [
+    "DELETE FROM study_guess_options WHERE session_id = 's1' AND option_card_id = 'c1'",
+  ],
   32: [
     "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, direction, \"action\", answered_at, previous_box, next_box) VALUES ('bad', 'c1', 's2', 'eight_box', 1, 'scheduled', 'self_assess', 'meaning_to_korean', 'remembered', 130, 3, 4)",
   ],
@@ -110,6 +118,9 @@ const _refused = <int, String>{
   27: "UPDATE deck SET study_config = '{}' WHERE id = 'A1'",
   28: "UPDATE card_schedule SET due_at = 500 WHERE card_id = 'c2'",
   31: "UPDATE study_session SET direction = 'mixed' WHERE id = 's1'",
+  38: "UPDATE study_queue_items SET hint_shown = 1 WHERE session_id = 's1' AND mode = 'match'",
+  39: "UPDATE study_queue_items SET meaning_slot = 0 WHERE session_id = 's2'",
+  40: "INSERT INTO study_guess_options (session_id, round, card_id, slot, option_card_id) VALUES ('s1', 1, 'c1', 5, 'c4')",
 };
 
 Future<List<String>> _violations(AppDatabase db, int number) async {
@@ -127,10 +138,10 @@ void main() {
   });
   tearDown(() => db.close());
 
-  test('schema.md states invariants 1 to 32', () {
+  test('schema.md states invariants 1 to 32 and 38 to 40', () {
     expect(
       invariantQueries.keys,
-      unorderedEquals([for (var n = 1; n <= 32; n++) n]),
+      unorderedEquals([for (var n = 1; n <= 32; n++) n, 38, 39, 40]),
     );
   });
 
