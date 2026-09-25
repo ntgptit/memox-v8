@@ -1,7 +1,6 @@
 # MemoX V8 — CI gate design (package 6)
 
-Status: design approved in three sections on 2026-09-25 · written spec awaiting review ·
-Path: architectural
+Status: approved 2026-09-25 · Path: architectural
 
 ## 1. Intent
 
