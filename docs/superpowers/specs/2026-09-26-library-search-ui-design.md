@@ -1,6 +1,6 @@
 # MemoX V8 — Library search UI (FE-A10)
 
-Status: approved design, spec for owner review (2026-09-26).
+Status: approved by the owner (2026-09-26).
 
 ## 1. Intent
 
