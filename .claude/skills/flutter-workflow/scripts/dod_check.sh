@@ -6,7 +6,7 @@
 # Usage: .claude/skills/flutter-workflow/scripts/dod_check.sh
 #        [--changed [--base <git-ref>]] [--fast] [--fix] [--force]
 #   --changed  build the same feature × layer × risk plan as PR CI from the
-#              diff against --base (default: origin/main), then run only the
+#              diff against --base (default: origin/master), then run only the
 #              selected host tests and Widgetbook surface. Unknown/high-risk
 #              paths promote themselves to the full non-golden host suite.
 #   --base     comparison ref for --changed; invalid without --changed
@@ -78,7 +78,7 @@ FIX=0
 FAST=0
 FORCE=0
 CHANGED=0
-BASE_REF="origin/main"
+BASE_REF="origin/master"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --fix) FIX=1 ;;
@@ -99,7 +99,7 @@ if [[ $FAST -eq 1 && $CHANGED -eq 1 ]]; then
   echo "--fast and --changed are mutually exclusive" >&2
   exit 2
 fi
-if [[ $CHANGED -eq 0 && "$BASE_REF" != "origin/main" ]]; then
+if [[ $CHANGED -eq 0 && "$BASE_REF" != "origin/master" ]]; then
   echo "--base is only valid with --changed" >&2
   exit 2
 fi
@@ -347,12 +347,15 @@ fi
 # that reports "skipped" is a gate nobody notices has gone.
 # The guard needs Python >= 3.12 (its pyproject) plus requirements-dev.txt,
 # installed globally. `python`/`python3` can be older (3.11 on the cloud
-# image), so the newest python3.1x on PATH wins; `GUARD_PY` overrides, and
-# $PY is the last resort.
+# image), and a `python3.13` on PATH can be an interpreter without those
+# requirements (the Windows Store alias), so the first candidate that is new
+# enough AND imports them wins; `GUARD_PY` overrides, and $PY is the last
+# resort, which then fails loudly below.
 GUARD_PY="${GUARD_PY:-}"
 if [[ -z "$GUARD_PY" ]]; then
-  for candidate in python3.13 python3.12; do
-    command -v "$candidate" >/dev/null 2>&1 && { GUARD_PY="$candidate"; break; }
+  for candidate in python3.14 python3.13 python3.12 python python3; do
+    command -v "$candidate" >/dev/null 2>&1 || continue
+    "$candidate" -c 'import sys, typer, pytest; sys.exit(sys.version_info < (3, 12))'       >/dev/null 2>&1 && { GUARD_PY="$candidate"; break; }
   done
 fi
 GUARD_PY="${GUARD_PY:-$PY}"
@@ -405,18 +408,11 @@ if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
     plan test "flutter test (--fast: Deck + app subset, no goldens)" \
       "TZ=UTC flutter test --exclude-tags golden test/app test/features/deck"
   else
-    # **`TZ=UTC`, and the full suite includes goldens.** `dart_test.yaml`
-    # excludes no tag by default, so a bare `flutter test` compares pixels
-    # too — which is why running `flutter test --tags golden` after this
-    # command is the same 295 tests a second time.
-    #
-    # Unpinned, those pixels were being compared in whatever zone the machine
-    # sits in, against PNGs that CLAUDE.md requires be generated under UTC.
-    # This machine is UTC+9 and passes today; that is luck, not agreement.
-    # AD-14's own record is four goldens failing by 2014 to 14268 pixels for
-    # exactly this reason. A gate that only agrees with the runner by accident
-    # is not a gate.
-    plan test "flutter test (full suite, goldens included, TZ=UTC)"       "TZ=UTC flutter test"
+    # **`TZ=UTC`, and never goldens here.** Goldens are generated and compared
+    # only in the Linux container (golden.Dockerfile, CLAUDE.md); a host run
+    # compares them against a different rasteriser and fails on pixels that
+    # are not defects.
+    plan test "flutter test (full suite, no goldens, TZ=UTC)"       "TZ=UTC flutter test --exclude-tags golden"
   fi
 fi
 

@@ -37,9 +37,8 @@
 - **Điều hướng:** bốn destination Thư viện · Học · Tiến độ · Cài đặt. Thư viện starter
   là child flow trong Thư viện; nhắc học nằm trong nhánh Cài đặt. Hiện cả bốn tab đều
   hiển thị placeholder (`lib/app/placeholder_screen.dart`).
-- **Gate:** từ màn hình feature đầu tiên, gate là `dod_check.sh` và danh sách
-  `targets_pending` của guard phải rỗng ([`README.md` gốc](../README.md)). Hiện còn 17
-  luật chờ: 15 chờ lớp `presentation`, 2 chờ lớp `visual-audit`.
+- **Gate:** gate là `dod_check.sh` (FE-D2); danh sách `targets_pending` của guard đã
+  rỗng ([`README.md` gốc](../README.md)).
 - **Quy trình:** mỗi nhóm hạng mục qua thiết kế của Impeccable, rồi brainstorm → spec
   → plan → thực thi → review của Superpowers. Một hạng mục ở đây là đơn vị lập kế
   hoạch, không phải một task của plan.
@@ -95,7 +94,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | bị chặn | — | M | §2 chốt "implement the handoff as written"; §9 | Chủ dự án quyết có sửa giá trị token của handoff không, rồi Impeccable làm |
+| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | bị chặn | — | M | §2 chốt "implement the handoff as written"; §9; khi quyết xong, `textContrastGuideline` vào `auditProductionScreen` | Chủ dự án quyết có sửa giá trị token của handoff không, rồi Impeccable làm |
 | FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | xong | — | M | Typography tiếng Việt: text một dòng có ellipsis dùng line-height 1.5 (`screenTitle`, `listRowTitle`, `rowSubtitle`, `tagLabel`); Hangul dùng font fallback của hệ điều hành; §9 dòng 5 đã đóng, dòng 102 ghi độ lệch | — |
 | FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | xong | — | S | UI-base debt, đợt 1: `MxSkeletonList`, tên cho spinner và donut, grabber có action đóng; §9 dòng 61, 65 đã đóng | — |
 | FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
@@ -109,7 +108,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng | Thêm job golden vào CI khi có BE-D2 |
-| FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | chưa bắt đầu | — | M | Còn 2 luật chờ lớp `visual-audit` (15 luật `presentation` đã hết chờ); chưa có thư mục `test/visual_audit/`; `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml` | Viết companion visual-audit cho các màn đã dựng (01, 02, 04, 07–10), rồi bật `dod_check.sh` |
+| FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
 | FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | bị chặn | — | M | [host-coverage-map.md](shared/testing/host-coverage-map.md); §9 dòng 18: máy phát triển không có emulator | Cần môi trường có emulator hoặc thiết bị |
 
 ## Đã xong và đã kiểm chứng
@@ -148,8 +147,7 @@ Tại `ddfa93f` không còn nhánh FE nào chưa merge trên remote. Nhánh `cla
   - chuỗi en/vi trong ARB;
   - các kịch bản IT `HOST-WIDGET` của UC. host-coverage-map có 71 kịch bản
     `HOST-WIDGET` và 8 kịch bản `DEVICE-E2E`.
-- **Gate:** trước màn hình feature đầu tiên là năm lệnh trong
-  [`README.md` gốc](../README.md); từ màn hình đó trở đi là `dod_check.sh` (FE-D2).
+- **Gate:** `dod_check.sh` ([`README.md` gốc](../README.md)).
 
 ## Bước tiếp theo
 

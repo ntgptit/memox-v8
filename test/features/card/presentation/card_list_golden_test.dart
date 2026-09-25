@@ -9,10 +9,6 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -50,22 +46,6 @@ Future<String> _seed(LibraryEnv env) async {
   return words.id;
 }
 
-/// The open deck as `app/` composes it (A14).
-Widget _screen(String deckId) => deckScreen(
-  deckId: deckId,
-  cardContent: (view) => CardListSectionWidget(
-    deckId: view.deck.id,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-  ),
-  cardAppBar: (view, back, actions) =>
-      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
-  cardBreadcrumb: (id, child) =>
-      CardDeckBreadcrumbWidget(deckId: id, child: child),
-  cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
-);
-
 /// Flags that fail the first way a real database can.
 final class _FailingFlags implements CardRepository {
   @override
@@ -91,7 +71,12 @@ void main() {
     libraryTest('card list, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {
-        await pumpLibraryGolden(tester, env, _screen(deckId), brightness);
+        await pumpLibraryGolden(
+          tester,
+          env,
+          cardDeckScreen(deckId),
+          brightness,
+        );
         await expectBoundaryGolden(tester, 'goldens/card_list_$theme.png');
       });
     });
@@ -99,7 +84,12 @@ void main() {
     libraryTest('card selection, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {
-        await pumpLibraryGolden(tester, env, _screen(deckId), brightness);
+        await pumpLibraryGolden(
+          tester,
+          env,
+          cardDeckScreen(deckId),
+          brightness,
+        );
         await tester.longPress(find.text('sarang'));
         await _settle(tester);
         await expectBoundaryGolden(tester, 'goldens/card_selection_$theme.png');
@@ -109,7 +99,12 @@ void main() {
     libraryTest('card search, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {
-        await pumpLibraryGolden(tester, env, _screen(deckId), brightness);
+        await pumpLibraryGolden(
+          tester,
+          env,
+          cardDeckScreen(deckId),
+          brightness,
+        );
         await tester.tap(find.byTooltip(_en.cardSearchOpen));
         await _settle(tester);
         await tester.enterText(find.byType(EditableText), 'zzz');
@@ -127,7 +122,7 @@ void main() {
         await pumpLibraryGolden(
           tester,
           env,
-          _screen(deckId),
+          cardDeckScreen(deckId),
           brightness,
           overrides: [
             setCardsFlaggedUseCaseProvider.overrideWithValue(
