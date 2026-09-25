@@ -250,4 +250,33 @@ void main() {
     expect(find.byType(MxSkeleton), findsWidgets);
     expect(find.byType(MxBreadcrumb), findsNothing);
   });
+
+  libraryTest('a card field names its input once for TalkBack', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final controller = TextEditingController(text: 'gamsa');
+    addTearDown(controller.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        CardFieldWidget(
+          label: _en.cardFieldFront,
+          hint: _en.cardFrontHint,
+          limit: 60,
+          controller: controller,
+          isRequired: true,
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.byType(EditableText)).label,
+      contains(_en.cardFieldFront),
+    );
+    expect(find.bySemanticsLabel(_en.cardFieldFront), findsOneWidget);
+    handle.dispose();
+  });
 }

@@ -16,6 +16,7 @@ class MxTextField extends StatelessWidget {
     super.key,
     this.controller,
     this.focusNode,
+    this.label,
     this.hintText,
     this.errorText,
     this.isMultiline = false,
@@ -29,6 +30,10 @@ class MxTextField extends StatelessWidget {
 
   final TextEditingController? controller;
   final FocusNode? focusNode;
+
+  /// The field's name for TalkBack, announced with its value. Never painted:
+  /// the caller shows its own label, and a hint disappears once typed.
+  final String? label;
   final String? hintText;
 
   /// Non-null turns the field to its error tone and shows this message below.
@@ -120,7 +125,10 @@ class MxTextField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        field,
+        if (label case final name?)
+          Semantics(label: name, child: field)
+        else
+          field,
         if (errorText case final message?) MxFieldMessage(message: message),
       ],
     );

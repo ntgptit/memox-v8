@@ -55,6 +55,7 @@ class CardFieldWidget extends StatelessWidget {
         MxTextField(
           controller: controller,
           focusNode: focusNode,
+          label: label,
           hintText: hint,
           errorText: errorText,
           isMultiline: isMultiline,
@@ -101,10 +102,9 @@ class _FieldHeader extends StatelessWidget {
               spacing: AppSpacing.micro,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(
-                  label.toUpperCase(),
-                  semanticsLabel: label,
-                  style: styles.overline,
+                // The input carries the name, so TalkBack reads it once.
+                ExcludeSemantics(
+                  child: Text(label.toUpperCase(), style: styles.overline),
                 ),
                 if (isRequired)
                   Text(l10n.cardRequiredLegend, style: styles.requiredMarker)

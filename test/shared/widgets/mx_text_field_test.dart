@@ -135,4 +135,26 @@ void main() {
       greaterThanOrEqualTo(52),
     );
   });
+
+  testWidgets('a filled field keeps its name for TalkBack', (tester) async {
+    final handle = tester.ensureSemantics();
+    final controller = TextEditingController(text: 'gamsa');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          label: 'Front',
+          hintText: 'The term',
+          controller: controller,
+        ),
+      ),
+    );
+
+    final node = tester.getSemantics(find.byType(EditableText));
+    expect(node.label, contains('Front'));
+    expect(node.value, 'gamsa');
+    handle.dispose();
+  });
 }
