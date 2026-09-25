@@ -124,6 +124,10 @@ abstract base class StudyModeHandler {
   /// with their meaning source (`guess`, spec §7.7).
   bool get asksWithOptions => false;
 
+  /// The time of one turn, for a mode that has a timer (`recall`,
+  /// BR-STUDY-031); null otherwise.
+  int? get turnTimeMs => null;
+
   /// What the round of [rows] needs before it is served: nothing but for
   /// `match` boards and `guess` questions (spec §7.7).
   RoundPreparation prepareRound(

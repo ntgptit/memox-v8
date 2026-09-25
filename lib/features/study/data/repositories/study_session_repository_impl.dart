@@ -16,6 +16,7 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
+import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
@@ -65,6 +66,43 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       }
     });
   }
+
+  @override
+  Future<Outcome<void, StudyRejection>> revealRecallAnswer({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.recall, now, (row) async {
+    if (row.isRevealed == 1) return const Ok(null);
+    await _queue.reveal(row, remainingMs: _timeLeft(row, remainingMs));
+    return const Ok(null);
+  });
+
+  @override
+  Future<Outcome<void, StudyRejection>> saveRecallTime({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.recall, now, (row) async {
+    if (row.isRevealed == 1) return const Ok(null);
+    await _queue.saveTimeLeft(row, remainingMs: _timeLeft(row, remainingMs));
+    return const Ok(null);
+  });
+
+  @override
+  Future<Outcome<void, StudyRejection>> showFillHint({
+    required String sessionId,
+    required String cardId,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.fill, now, (row) async {
+    if (!await _dao.hasHint(cardId)) {
+      return const Rejected(StudyRejection.noHint);
+    }
+    if (row.hintShown == 0) await _queue.showHint(row);
+    return const Ok(null);
+  });
 
   @override
   Future<Outcome<void, StudyRejection>> abandonSession({
@@ -142,6 +180,38 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
         reason: SessionEndReason.persistenceError,
         now: at,
       );
+    });
+  }
+
+  /// [write] on the row [sessionId] serves: the checks of a turn, for a write
+  /// that is not one (graded modes spec §8.3). The session is open at its
+  /// root's generation, in [mode], and serves [cardId].
+  Future<Outcome<void, StudyRejection>> _onServedRow(
+    String sessionId,
+    String cardId,
+    StudyMode mode,
+    DateTime? now,
+    Future<Outcome<void, StudyRejection>> Function(StudyQueueItem row) write,
+  ) {
+    final at = now ?? _now();
+    return _write(() async {
+      switch (await _live(await _dao.sessionRow(sessionId), at)) {
+        case Rejected(:final reason):
+          return Rejected(reason);
+        case Ok(value: (final session, _)):
+          if (session.currentMode != mode.code) {
+            return const Rejected(StudyRejection.answerDoesNotFitMode);
+          }
+          final row = await _queue.headRow(
+            session.id,
+            mode.code,
+            session.cursor,
+          );
+          if (row == null || row.cardId != cardId) {
+            return const Rejected(StudyRejection.notCurrentCard);
+          }
+          return write(row);
+      }
     });
   }
 
@@ -338,6 +408,11 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     }
   }
 }
+
+/// The time left of [row]'s turn after a save of [remainingMs]: it never
+/// grows (BR-STUDY-036).
+int _timeLeft(StudyQueueItem row, int remainingMs) =>
+    min(row.remainingMs ?? recallTurnMs, remainingMs);
 
 /// A write the turn cannot go without. A refusal there means study and the
 /// feature it calls disagree: a bug, which rolls the turn back (spec §7.3,

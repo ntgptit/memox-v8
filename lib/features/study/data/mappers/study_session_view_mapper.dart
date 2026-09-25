@@ -136,8 +136,11 @@ StudyItem _itemOf(ServedRow served) => StudyItem(
     final String code => QuestionDirection.fromCode(code),
     null => null,
   },
-  remainingMs: served.row.remainingMs,
+  remainingMs:
+      served.row.remainingMs ??
+      StudyMode.fromCode(served.row.mode).handler.turnTimeMs,
   isRevealed: served.row.isRevealed == 1,
+  isHintShown: served.row.hintShown == 1,
   guess: switch (served.options) {
     final List<OptionRecord> options => _questionOf(options),
     null => null,

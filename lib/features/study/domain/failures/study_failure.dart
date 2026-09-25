@@ -38,7 +38,8 @@ enum StudyRejection {
   /// The answer names a card the session is not serving.
   notCurrentCard,
 
-  /// The answer is of another mode's kind.
+  /// The answer, or the reveal, time or hint asked of the row, is of another
+  /// mode's kind.
   answerDoesNotFitMode,
 
   /// The action is not in the scheduler's `supportedActions` (BR-STUDY-009).
@@ -63,7 +64,10 @@ enum StudyRejection {
 
   /// `match`: the meaning is not a pending pair of the current board
   /// (BR-STUDY-049, BR-STUDY-062).
-  notOnBoard;
+  notOnBoard,
+
+  /// `fill`: the card has no hint to show (BR-STUDY-028).
+  noHint;
 
   /// A mode's refusal of an answer, as the session reports it.
   static StudyRejection ofModeRefusal(StudyModeRejection reason) =>

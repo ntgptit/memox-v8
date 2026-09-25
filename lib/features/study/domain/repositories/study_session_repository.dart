@@ -26,6 +26,39 @@ abstract interface class StudySessionRepository {
     DateTime? now,
   });
 
+  /// `recall`: the answer of the turn on [cardId] is shown before the time
+  /// runs out. It records nothing and moves nothing: the time stops at the
+  /// smaller of what is stored and [remainingMs], and the turn waits for the
+  /// person's self-assessment (BR-STUDY-065, BR-STUDY-036). A second reveal
+  /// changes nothing. It is refused as a turn would be: notFound,
+  /// sessionClosed, staleGeneration (the session is invalidated),
+  /// notCurrentCard, answerDoesNotFitMode (graded modes spec §8.3).
+  Future<Outcome<void, StudyRejection>> revealRecallAnswer({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  });
+
+  /// `recall`: the time left of the turn on [cardId], kept for Continue. It
+  /// never grows, and once the answer is revealed it stays where it stopped
+  /// (BR-STUDY-036). Refused as [revealRecallAnswer] is.
+  Future<Outcome<void, StudyRejection>> saveRecallTime({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  });
+
+  /// `fill`: the hint of the turn on [cardId] is shown, and the turn records
+  /// that it was, without its result changing (BR-STUDY-028). noHint when the
+  /// card has none; otherwise refused as [revealRecallAnswer] is.
+  Future<Outcome<void, StudyRejection>> showFillHint({
+    required String sessionId,
+    required String cardId,
+    DateTime? now,
+  });
+
   /// UC-STUDY-001 E3: an open session becomes `failed`/`persistence_error`
   /// (BR-STUDY-018), and the turns it recorded stay (BR-STUDY-019). A
   /// session that has ended, or is gone, is left as it is. Only the E3 path

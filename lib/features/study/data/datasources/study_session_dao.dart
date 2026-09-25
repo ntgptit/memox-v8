@@ -105,6 +105,19 @@ final class StudySessionDao {
     );
   }
 
+  /// Whether [cardId] has a hint; a blank one is stored as NULL
+  /// (BR-CARD-003).
+  Future<bool> hasHint(String cardId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT hint IS NOT NULL AS has_hint FROM card WHERE id = ?',
+          variables: [Variable<String>(cardId)],
+          readsFrom: {_db.card},
+        )
+        .getSingleOrNull();
+    return row?.read<bool>('has_hint') ?? false;
+  }
+
   /// The distinct meanings (`back_folded`) of [sessionCardIds] and of the
   /// learned, active cards of [rootId]'s tree: the distractor source of
   /// `guess` (BR-STUDY-038; spec D5).

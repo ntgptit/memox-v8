@@ -17,6 +17,9 @@ final class RecallModeHandler extends GradedModeHandler {
   const RecallModeHandler();
 
   @override
+  int get turnTimeMs => recallTurnMs;
+
+  @override
   Outcome<TurnVerdict, StudyModeRejection> judge(
     StudyAnswer answer,
     TurnContext context,

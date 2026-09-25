@@ -81,6 +81,7 @@ final class StudyItem {
     required this.direction,
     required this.remainingMs,
     required this.isRevealed,
+    this.isHintShown = false,
     this.guess,
   });
 
@@ -99,9 +100,13 @@ final class StudyItem {
   /// (BR-MODE-015); null elsewhere.
   final QuestionDirection? direction;
 
-  /// `recall` only: the time left of a turn in progress (BR-STUDY-036).
+  /// `recall` only: the time left of the turn, the full turn until the first
+  /// save (BR-STUDY-031, BR-STUDY-036).
   final int? remainingMs;
   final bool isRevealed;
+
+  /// `fill`: the hint of this turn has been shown (BR-STUDY-028).
+  final bool isHintShown;
 
   /// `guess`: the question on this card; null in every other mode.
   final GuessQuestion? guess;

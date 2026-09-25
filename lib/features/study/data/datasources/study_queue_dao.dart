@@ -126,6 +126,25 @@ final class StudyQueueDao {
     ),
   );
 
+  /// `recall`: the answer of [row]'s turn is shown, and its time stops at
+  /// [remainingMs] (BR-STUDY-065, BR-STUDY-036).
+  Future<void> reveal(StudyQueueItem row, {required int remainingMs}) =>
+      _update(
+        row,
+        StudyQueueItemsCompanion(
+          isRevealed: const Value(1),
+          remainingMs: Value(remainingMs),
+        ),
+      );
+
+  /// `recall`: the time left of [row]'s turn (BR-STUDY-036).
+  Future<void> saveTimeLeft(StudyQueueItem row, {required int remainingMs}) =>
+      _update(row, StudyQueueItemsCompanion(remainingMs: Value(remainingMs)));
+
+  /// `fill`: the hint of [row]'s turn is shown (BR-STUDY-028).
+  Future<void> showHint(StudyQueueItem row) =>
+      _update(row, const StudyQueueItemsCompanion(hintShown: Value(1)));
+
   /// Enrolls [cardId] in [round] of [mode] once: a second enrollment changes
   /// nothing (BR-STUDY-060, BR-STUDY-062).
   Future<void> enroll(
