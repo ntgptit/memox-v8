@@ -1,11 +1,11 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 
-/// The one implementation is `StudySessionRepositoryImpl` (data layer). The
-/// contract exists for ADR-010's reason: domain stays framework-free and tests
-/// substitute a fake.
+/// The writes of a session; its screen reads through
+/// `StudySessionViewRepository`. The one implementation is
+/// `StudySessionRepositoryImpl` (data layer). The contract exists for
+/// ADR-010's reason: domain stays framework-free and tests substitute a fake.
 abstract interface class StudySessionRepository {
   /// UC-STUDY-001 steps 6–9: [answer] on [cardId], the card the session
   /// serves in its current mode and round, or any pending card of a `match`
@@ -56,9 +56,4 @@ abstract interface class StudySessionRepository {
   /// local midnight becomes `abandoned`/`interrupted` (BR-STUDY-072). The app
   /// calls it when it starts; no read does (BR-STUDY-075).
   Future<void> abandonStaleSessions({DateTime? now});
-
-  /// UC-STUDY-001 steps 6–13 (spec §8.2): the session screen, again on every
-  /// write it can see; null once the session is gone (A5). It writes nothing
-  /// (BR-STUDY-075).
-  Stream<StudySessionView?> watchSession(String sessionId);
 }
