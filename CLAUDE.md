@@ -9,7 +9,7 @@ Each layer answers one question; none takes over another's.
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
 | Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, this file |
-| Vendored skills | What does good practice look like here? | reference knowledge and narrow commands (see [Vendored skills](#vendored-skills)) |
+| ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
   sequences or gates work, and no other layer repeats its methodology.
@@ -18,8 +18,8 @@ Each layer answers one question; none takes over another's.
   Impeccable checks the work against the kit and against the quality floor.
 - **Repo rules hold project invariants only**, such as the architecture,
   stack, data rules and quality bars. They never restate a workflow.
-- **Vendored skills are read on demand** by whoever does the task. They are
-  never routed to as agents, and they never override a layer above.
+- **ECC skills are read on demand** by whoever does the task. They are never
+  routed to as agents, and they never override a layer above.
 
 ### A screen's workflow
 
@@ -55,26 +55,26 @@ work goes through a [session handoff](#session-handoff).
 
 ### Session handoff
 
-`/handoff` writes a session handoff: the live thread of one piece of
-unfinished work, for a fresh agent to pick up. It is unrelated to the design
-and screen handoffs under `docs/shared/ui/`.
+A session handoff is a short file that carries the live thread of one piece
+of unfinished work to a fresh agent. It is unrelated to the design and screen
+handoffs under `docs/shared/ui/`. Write one when the owner asks for a handoff.
 
 - **When:** only when the work moves to another harness (Claude ↔ Codex),
   another machine or cloud container, another person, or a side task forked to
   a second agent. When the work stays in the same harness and checkout, use
   `/compact`.
-- **Where:** `.claude/handoff/<yyyy-mm-dd>-<topic>.md` on the working branch,
-  in place of the OS temp directory the skill names. Commit and push it, then
-  give the next session the branch and the path; a new cloud session gets the
-  branch as its `source_revision`. One file per piece of work: a later handoff
-  replaces the earlier one.
-- **What:** the state, the open decisions and the next step. Plans, specs,
-  ADRs, PRs and commits appear as paths or URLs. The suggested-skills section
-  names the Superpowers skill for the current phase and the `flutter-*` skills
-  the task touches. Label every claim this session did not verify as an
-  assumption, because the next agent takes the file as fact.
+- **Where:** `.claude/handoff/<yyyy-mm-dd>-<topic>.md` on the working branch.
+  Commit and push it, then give the next session the branch and the path; a
+  new cloud session gets the branch as its `source_revision`. One file per
+  piece of work: a later handoff replaces the earlier one.
+- **What:** the state, the open decisions, the next step, and the skills the
+  next agent should load (the Superpowers skill for the current phase, the
+  `flutter-*` skills the task touches). Plans, specs, ADRs, PRs and commits
+  appear as paths or URLs, never copied. Label every claim this session did
+  not verify as an assumption, because the next agent takes the file as fact.
+  Leave out secrets and personal data.
 - **Lifetime:** delete the file when completing the branch, before the merge,
-  so `main` never carries a handoff.
+  so `master` never carries a handoff.
 
 ### Hooks
 
@@ -122,21 +122,10 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   kit.
 - **After building a screen,** update its row in the screen handoff index.
 
-## Vendored skills
+## Vendored ECC skills
 
-Third-party skills sit in `.claude/skills/`, copied unchanged from a pinned
-commit.
-
-- **They are reference material and narrow commands, not process.** When one
-  conflicts with the rest of this file, this file wins: Superpowers and
-  Impeccable own the workflows. The same holds for the repo's own skills
-  (`flutter-*`), the ADRs (ADR-010, ADR-011) and the guard.
-- **To update:** copy the new versions from a pinned upstream commit, review
-  the diff, and update the commit below.
-
-### ECC
-
-19 skills from [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) at commit
+`.claude/skills/` holds 19 skills copied, unchanged, from
+[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) at commit
 `bf70150eb2df8070024e5bdf08e4aa08959e2735`:
 
 | Area | Skills |
@@ -146,7 +135,11 @@ commit.
 | Security | `security-review` |
 | Mobile | `android-clean-architecture`, `compose-multiplatform-patterns`, `kotlin-coroutines-flows`, `swiftui-patterns`, `swift-concurrency-6-2`, `swift-actor-persistence`, `swift-protocol-di-testing`, `react-native-patterns`, `foundation-models-on-device`, `liquid-glass-design` |
 
-- **The stack is V8's.** V8 uses Riverpod and Drift, not BLoC, Dio or Freezed.
+- **They are reference material, not process.** When one conflicts with the
+  rest of this file, this file wins: Superpowers and Impeccable own the
+  workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
+  (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
+  not BLoC, Dio or Freezed.
 - **Java/Spring skills wait for a backend.** V8.0 is local-only (ADR-001), so
   it has no backend to use them on yet. They apply once a server-side
   sub-project starts, under that sub-project's ADRs.
@@ -155,39 +148,8 @@ commit.
   reads the relevant skill instead.
 - **Not vendored:** `ios-icon-gen` ships executable scripts, and `security-scan`
   runs the npm package `ecc-agentshield`. Both run third-party code.
-
-### Matt Pocock skills
-
-5 skills from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)
-at commit `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`:
-
-| Skill | Invoked by | Use |
-|---|---|---|
-| `handoff` | user (`/handoff`) | a [session handoff](#session-handoff) |
-| `wait-what` | user (`/wait-what`) | re-pitch the last message, which did not land |
-| `resolving-merge-conflicts` | model | resolve a merge already in progress, hunk by hunk, by each side's intent |
-| `codebase-design` | model | deep-module vocabulary: module, interface, seam, adapter, depth |
-| `writing-for-agents` | model | how agent-facing text reads: skills, `CLAUDE.md`, `AGENTS.md` |
-
-- **Repo paths win.** Where a skill names `CONTEXT.md`, read
-  `docs/glossary.md`; where it names `docs/adr/`, read `docs/shared/decisions/`.
-- **`codebase-design` supplies words, not structure.** Whether an interface
-  or a layer is created stays with `flutter-architecture` and
-  [No speculative structure](#no-speculative-structure).
-- **`resolving-merge-conflicts` finishes what is in progress.** Its checks
-  step is the repo's gate (`.claude/skills/flutter-workflow/scripts/dod_check.sh`).
-- **`writing-skills` owns the process** of creating or changing a skill;
-  `writing-for-agents` is the reference for its wording.
-- **Not vendored:** 20 skills. `tdd`, `diagnosing-bugs`, `implement`,
-  `to-spec`, `to-tickets`, `wayfinder`, `triage`, `grill-with-docs`,
-  `grill-me`, `grilling` and `code-review` repeat Superpowers' process, and
-  `code-review` also shadows the built-in `/code-review`.
-  `setup-matt-pocock-skills`, `domain-modeling` and
-  `improve-codebase-architecture` assume a `docs/agents/` + `CONTEXT.md` +
-  `docs/adr/` layout this repo does not use. `ask-matt` routes to skills that
-  are not here, and `prototype`, `research`, `wizard`, `teach` and
-  `to-questionnaire` have no current use. The unreleased `claude-handoff`
-  needs a local `claude --bg`.
+- **To update:** copy the new versions from a pinned ECC commit, review the
+  diff, and update the commit above.
 
 ## No speculative structure
 
