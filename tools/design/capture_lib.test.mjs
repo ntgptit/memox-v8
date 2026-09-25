@@ -24,6 +24,14 @@ test('parseStepLabel keeps the separators inside the label', () => {
   });
 });
 
+test('parseStepLabel reads a screen with one state as 1/1', () => {
+  assert.deepEqual(parseStepLabel(' Single state '), {
+    label: 'Single state',
+    index: 1,
+    total: 1,
+  });
+});
+
 test('parseStepLabel rejects a label without a position', () => {
   assert.throws(() => parseStepLabel('Root · decks'), /Unrecognised state label/);
 });
@@ -93,7 +101,7 @@ test('missingStates lists the wanted labels never seen', () => {
   assert.deepEqual(missingStates(screen, new Set(['Empty'])), ['b ("Error")']);
 });
 
-test('the committed manifest lists the V8 states of 01, 02, 04 and 07', () => {
+test('the committed manifest lists the V8 states of the handed-off screens', () => {
   const file = new URL('./screen_states.json', import.meta.url);
   const screens = validateManifest(JSON.parse(readFileSync(file, 'utf8')));
   assert.deepEqual(
@@ -103,6 +111,14 @@ test('the committed manifest lists the V8 states of 01, 02, 04 and 07', () => {
       ['02', 9],
       ['04', 5],
       ['07', 13],
+      ['13', 7],
+      ['14', 9],
+      ['16', 1],
+      ['17', 1],
+      ['18', 1],
+      ['19', 3],
+      ['20', 3],
+      ['21', 9],
     ],
   );
 });
