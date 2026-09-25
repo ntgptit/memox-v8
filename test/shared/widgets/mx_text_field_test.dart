@@ -31,7 +31,9 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
-  testWidgets('detail starts at 40 and grows with the text', (tester) async {
+  testWidgets('detail starts at the 48 touch minimum and grows with the text', (
+    tester,
+  ) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
     await pumpMx(
@@ -44,7 +46,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 40);
+    expect(tester.getSize(find.byType(TextField)).height, 48);
 
     controller.text = 'one\ntwo\nthree\nfour';
     await tester.pump();
@@ -164,7 +166,7 @@ void main() {
 
   for (final (variant, floor) in [
     (MxTextFieldVariant.form, 52.0),
-    (MxTextFieldVariant.detail, 40.0),
+    (MxTextFieldVariant.detail, 48.0),
     (MxTextFieldVariant.meaning, 76.0),
     (MxTextFieldVariant.term, 66.0),
   ]) {
