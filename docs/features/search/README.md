@@ -1,13 +1,11 @@
 ---
 feature: search
-code: []
+code: [lib/features/search/domain, lib/features/search/data, lib/features/search/di]
 depends_on: [card, deck, tags]
 ---
 ## Phạm vi
 
 Tìm kiếm toàn thư viện (Global Library Search): tên deck, hai mặt card và tên tag. Thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)).
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

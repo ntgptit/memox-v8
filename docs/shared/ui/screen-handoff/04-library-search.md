@@ -2,7 +2,8 @@
 
 # 04 · Library search
 
-`/decks/search`. UC-SEARCH-001, decks only until BE-A8.
+`/decks/search`. UC-SEARCH-001, decks only until FE-A10 moves the screen to
+`SearchLibraryUseCase` (the backend, BE-A8, is done).
 
 ## Layout
 
@@ -29,12 +30,12 @@
 
 | Element | Shown as | Waits for |
 |---|---|---|
-| Cards group, tag names on card rows | absent | BE-A8 |
-| "Load more results" | absent | BE-A8 (BR-SEARCH-007) |
-| Hint rows "a card term or meaning", "a tag name" | absent | BE-A8 |
-| Footer "Decks first, then cards · case-insensitive, accents matter" | absent | BE-A8 |
+| Cards group, tag names on card rows | absent | FE-A10 |
+| "Load more results" | absent | FE-A10 (BR-SEARCH-007) |
+| Hint rows "a card term or meaning", "a tag name" | absent | FE-A10 |
+| Footer "Decks first, then cards · case-insensitive, accents matter" | absent | FE-A10 |
 
-A search hint must not promise a match the backend cannot make, so these are absent
+A search hint must not promise a match the screen cannot make, so these are absent
 rather than disabled.
 
 ## Deviations

@@ -82,7 +82,7 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 |---|---|---|
 | "Move to Trash", "Recoverable for 30 days", neutral confirm, Undo snackbar | "Delete deck?" naming the sub-deck and card counts, destructive confirm, no Undo | BR-DECK-022, BR-DECK-023 |
 | Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for a BR/UC definition, blocked in `wbs_BE.md`) |
-| Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for BE-A8) |
+| Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for FE-A10) |
 | No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
 | Summary "Study this deck" starts study entry | Hidden; named under Coming soon | Spec A4 (waits for FE-A6) |
 | Layers and copy glyphs in the row's meta | Text only: "4 sub-decks · 1,248 cards" | Guard: no `Icon(color:)` in feature code |
