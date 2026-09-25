@@ -1,6 +1,6 @@
 # MemoX V8 — Library search backend design (package 5)
 
-Status: approved 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · amended while writing the plan (its Clarifications: D5, D11, §4, §5.1, §5.3, §6.1, §9, §12) · Path: architectural
 
 ## 1. Intent
 
@@ -93,13 +93,13 @@ Success means:
 | D2 | Approach | Deck names are folded in Dart from the snapshot's one read of the deck tree; cards are matched by one SQL statement; the extent a watch shows is bounded by a keyset cursor | Owner, 2026-09-25 (approach A of three) |
 | D3 | Deck names | No `deck.name_folded` and no migration. The snapshot reads every active deck anyway, for the paths (BR-SEARCH-009); matching folds each name there with `foldText`. The WBS's blocked row on the folded deck name closes on this | Owner, 2026-09-25 |
 | D4 | Tiers | Exact, prefix, contains. SQL tests `folded = :term`, `instr(folded, :term) = 1` and `instr(folded, :term) > 0`: never `LIKE`, so `%` and `_` are plain characters, and never `lower()` or `NOCASE`. A card's tier is the best of its front, its back and its tags | BR-SEARCH-002, BR-SEARCH-004 |
-| D5 | Sort text | A deck sorts on its folded name, a card on `front_folded`, its face that names it. Each group's order is computed on one side only, decks in Dart and cards in SQL, so a cursor is never compared across the two collations | BR-SEARCH-007; Owner, 2026-09-25 |
+| D5 | Sort text | A deck sorts on its folded name, a card on `front_folded`, its face that names it. Each group's order is computed on one side only, decks in Dart and cards in SQL, so a cursor is never compared across the two collations. Dart compares the texts by code point, the order SQLite's BINARY collation gives UTF-8, where `String.compareTo` would compare UTF-16 code units, so both groups order texts alike (plan Clarification 2) | BR-SEARCH-007; Owner, 2026-09-25 |
 | D6 | Pages | Keyset, 50 rows a page. A watch shows every row whose key is at or before `through`, the first page when `through` is null. Each emission looks at the next page and carries its last key as `nextThrough`, null when nothing follows. "Load more" watches again with `through = nextThrough` | BR-SEARCH-005, BR-SEARCH-007; Owner, 2026-09-25 |
 | D7 | One result per card | Correlated subqueries over the card's own `card_tags ⋈ tags` give its best tag tier and the name of its best matching tag. A hit names that tag only when neither face matches | BR-SEARCH-006, BR-SEARCH-009; UC-SEARCH-001 step 5 |
 | D8 | What counts | A deck out of the Trash; a card out of the Trash in a deck out of the Trash. The search DAO holds the predicate once and both reads use it | BR-SEARCH-001 |
 | D9 | When it reads | Once when watched, then after every write to `deck`, `card`, `card_tags` or `tags` (`tableChanges`); each emission in one transaction | BR-SEARCH-008 |
 | D10 | A blank query | The use case folds the term; a blank one is `LibrarySearchIdle`, with no statement | BR-SEARCH-003 |
-| D11 | Schema | No change. The plan measures the card statement with `EXPLAIN QUERY PLAN` and timings on a synthetic library of about 10,000 and 50,000 cards, and records the numbers here | BR-SEARCH-009 |
+| D11 | Schema | No change. Measured by the plan on a synthetic library of 300 decks and 200 tags, two tags on each card, in a 4-core desktop container: the card statement reads in 23–41 ms at 10,000 cards and 124–207 ms at 50,000, the deck tree in 1–2 ms, and one emission in 25–98 ms and 131–506 ms. `EXPLAIN QUERY PLAN`: one pass over the cards through `idx_card_deck_created`, each card's tags by the primary keys of `card_tags` and `tags`, and a temporary B-tree for the order. The tags' subquery is about two-thirds of the statement at 50,000 cards, where the faces alone read in 42 ms (plan Clarification 1). An index or FTS would be its own package, with a migration | BR-SEARCH-009 |
 | D12 | Import map | `'search': {'deck'}`: only `deck/domain/models/` (`DeckTreeNode`, `DeckPathEntry`, `DeckContentType`, `candidatesInTreeOrder`) | ADR-011 D2 |
 | D13 | Documents | Of the BR and UC files, only the `code:` of UC-SEARCH-001 changes. With it: the search README (`code:`, and its stale note that the repository has no `lib/`), a new `features/search/data.md`, `wbs_BE.md`, the lines of `wbs_FE.md`, `04-library-search.md` and `01-deck-list.md` that wait for BE-A8, and `docs/_generated/` | Owner, 2026-09-25 |
 | D14 | Branch and PR | Branch `claude/be-search` from `master`. When the gate is green and the final review is clean, the package is opened as a PR and squash-merged | Owner's standing choice |
@@ -109,8 +109,10 @@ Success means:
 ```
 lib/features/search/
 ├── domain/
-│   ├── models/search_hit_model.dart           SearchTier, SearchGroup, SearchCursor,
-│   │                                          SearchDeckHit, SearchCardHit
+│   ├── models/search_cursor_model.dart        SearchTier, searchTierOf, SearchGroup,
+│   │                                          SearchCursor
+│   ├── models/search_hit_model.dart           SearchableDeck, SearchDeckHit,
+│   │                                          SearchCardHit, deckHitsOf
 │   ├── models/library_search_model.dart       LibrarySearch, LibrarySearchIdle,
 │   │                                          LibrarySearchResults, searchPageSize
 │   ├── repositories/search_repository.dart    watchSearch
@@ -123,8 +125,8 @@ lib/features/search/
 ```
 
 `allowedFeatureImports` gains `'search': {'deck'}` (D12). The use case's provider
-belongs to FE-A10's `presentation/providers/`, as for every use case so far. The plan
-settles the exact file split of the models and the tests.
+belongs to FE-A10's `presentation/providers/`, as for every use case so far. The
+models are split in three files, as above (plan Clarification 3).
 
 ## 5. The read model
 
@@ -148,7 +150,8 @@ final class SearchDeckHit {
   final String name;
   final List<DeckPathEntry> path;   // the ancestors, root first, not the deck
   final DeckContentType contentType;
-  final SearchTier tier;
+  final SearchCursor cursor;        // its place in the order (§5.3)
+  SearchTier get tier => cursor.tier;
 }
 
 final class SearchCardHit {
@@ -158,7 +161,8 @@ final class SearchCardHit {
   final String back;
   final List<DeckPathEntry> deckPath;  // root first, the card's deck last
   final String? matchedTag;            // only when neither face matches (D7)
-  final SearchTier tier;
+  final SearchCursor cursor;
+  SearchTier get tier => cursor.tier;
 }
 
 sealed class LibrarySearch {}
@@ -173,8 +177,9 @@ final class LibrarySearchResults extends LibrarySearch {
 const searchPageSize = 50;
 ```
 
-The hits carry their cursor where the repository needs it; the plan settles whether
-it is a field or computed.
+Each hit carries its cursor as a field, and `tier` reads it (plan Clarification 3).
+`searchTierOf(folded, term)` gives a field's tier, and `deckHitsOf(decks, term)`
+matches and orders the decks in Dart.
 
 ### 5.2 Matching
 
@@ -187,9 +192,10 @@ its tier is the best of the three (D4, D7).
 ### 5.3 The order
 
 Decks, then cards (BR-SEARCH-005). Within a group, by the key `(tier, sort text,
-created_at, id)`: tier in the order of `SearchTier`, then the sort text ascending
-(D5), then `created_at`, then `id`. The key is unique, so the order is total, and two
-reads of the same data give the same order (BR-SEARCH-004, BR-SEARCH-007).
+created_at, id)`: tier in the order of `SearchTier`, then the sort text ascending by
+code point (D5), then `created_at`, then `id`. The key is unique, so the order is
+total, and two reads of the same data give the same order (BR-SEARCH-004,
+BR-SEARCH-007).
 
 ### 5.4 Pages
 
@@ -215,6 +221,10 @@ reads of the same data give the same order (BR-SEARCH-004, BR-SEARCH-007).
   (BR-SEARCH-009);
 - the deck hits: each name folded with `foldText`, matched and tiered (§5.2), in the
   order of §5.3.
+
+A deck that the walk from the roots does not reach, one under a deck in the Trash, has
+no path, so neither it nor its cards are hits. BE-B1 puts whole subtrees in the Trash;
+this only guards against a partial one (plan Clarification 4).
 
 ### 6.2 The card statement
 
@@ -341,7 +351,8 @@ Data (a test database):
 - `công nghệ` finds `CÔNG NGHỆ`; `cong` does not find `công`; spaces around the term
   do not matter (BR-SEARCH-002);
 - a blank term sends no statement to the database, counted by a query interceptor
-  (BR-SEARCH-003);
+  that counts SELECTs: the path only reads, and every emission starts with one
+  (BR-SEARCH-003; plan Clarification 5);
 - exact, then prefix, then contains, in both groups; a card's tier is the best of its
   fields (BR-SEARCH-004);
 - decks first; the first page fills with decks first and turns to cards only after the
@@ -389,8 +400,9 @@ Data (a test database):
 
 - **Load.** Each write to `deck`, `card`, `card_tags` or `tags` re-reads the snapshot
   while the search screen listens, and the card statement scans every active card with
-  `instr`. The plan measures it (D11); an index or FTS would be its own package, with
-  a migration.
+  `instr`. Measured (D11): one emission takes 25–98 ms at 10,000 cards and 131–506 ms
+  at 50,000 in a desktop container, more on a phone. An index or FTS would be its own
+  package, with a migration.
 - **Two collations.** Dart orders the decks and SQLite the cards; D5 keeps each
   group's order and its cursor on one side.
 - **The old deck search** keeps serving screen 04 until FE-A10 moves it (D1).
