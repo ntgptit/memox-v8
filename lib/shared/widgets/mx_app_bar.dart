@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 
 /// Content bar (a back control and a deck/card name) or screen bar (a screen
 /// name). Both are 56 tall.
@@ -35,13 +36,17 @@ class MxAppBar extends StatelessWidget {
   /// Usually an MxIconButton (back, or close in selection mode).
   final Widget? leading;
 
-  /// MxIconButtons or compact MxButtons; never dropped for the title.
+  /// MxIconButtons or compact MxButtons; never dropped for the title. A
+  /// trailing MxButton ends on the gutter, as the kit's text actions do; an
+  /// icon's 48 touch area already insets its glyph.
   final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
     final isContent = density == MxAppBarDensity.content;
     final styles = context.textStyles;
+    final side = isContent ? AppSpacing.control : AppSpacing.gutter;
+    final endsOnText = actions.lastOrNull is MxButton;
     return ColoredBox(
       color: context.colors.surface,
       child: SafeArea(
@@ -49,8 +54,9 @@ class MxAppBar extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.appBar),
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isContent ? AppSpacing.control : AppSpacing.gutter,
+            padding: EdgeInsetsDirectional.only(
+              start: side,
+              end: endsOnText ? AppSpacing.gutter : side,
             ),
             child: Row(
               spacing: AppSpacing.micro,

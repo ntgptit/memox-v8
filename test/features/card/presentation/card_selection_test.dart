@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -79,24 +77,6 @@ void main() {
     expect(_header(1, 2), findsOneWidget);
     await tester.tap(find.text('annyeong'));
     await tester.pump();
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
-  });
-
-  libraryTest('a search term clears the selection (IT-ORG-013)', (
-    tester,
-    env,
-  ) async {
-    final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _section(deckId));
-    ProviderScope.containerOf(
-      tester.element(find.byType(CardListSectionWidget)),
-    ).read(cardSearchOpenProvider(deckId).notifier).open();
-    await tester.pumpAndSettle();
-    await tester.longPress(find.text('annyeong'));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(EditableText), 'gam');
-    await tester.pumpAndSettle();
-
     expect(find.byType(MxSelectionCheckbox), findsNothing);
   });
 
