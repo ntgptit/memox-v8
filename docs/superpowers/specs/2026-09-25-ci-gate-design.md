@@ -1,6 +1,6 @@
 # MemoX V8 — CI gate design (package 6)
 
-Status: approved 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · amended while writing the plan (its Clarifications: D6, D7, §4, §5.2, §5.3, §6, §7) · Path: architectural
 
 ## 1. Intent
 
@@ -88,8 +88,8 @@ Success means:
 | D3 | Merge policy | CI green is required before a pull request is merged. The executor waits for `CI gate` before squash-merging. The owner may make `CI gate` a required check in a ruleset and require branches to be up to date (§8) | Owner, 2026-09-25 |
 | D4 | Triggers | `pull_request` (opened, synchronize, reopened) and `workflow_dispatch`. No path filter, which would leave a required check pending forever. No `push` to `master`: a pull request verified its head, and "up to date" (§8) makes that head the merged tree. One concurrency group per pull request, cancelling the run in progress. `permissions: contents: read` | Owner, 2026-09-25 (design section 1) |
 | D5 | Job `gate` | `ubuntu-latest`, 30 minutes: checkout; `actions/setup-python` 3.13 with the guard's `requirements-dev.txt`; `subosito/flutter-action@v2` with `flutter-version-file: .fvmrc` and `cache: true`; `flutter pub get`; `flutter gen-l10n`; `dart run build_runner build --delete-conflicting-outputs`; `check_generated.py` without `--skip-rebuild`; `dod_check.sh` | Design section 1 |
-| D6 | Job `goldens` | In parallel, 20 minutes, with the same setup and no Python dependencies. `prepare_test_fonts.sh`; `TZ=UTC flutter test --tags golden --reporter json` into a report; `count_golden_tests.py` on that report with a floor of 60 (87 today). On failure it uploads the `failures/` images. The workflow never contains `--update-goldens` | Design section 1 |
-| D7 | Job `CI gate` | `if: always()`, `needs` every other job. Green only when all of them succeeded; otherwise red, naming each job's result. The one check to require | Design section 1 |
+| D6 | Job `goldens` | In parallel, 20 minutes, with the same setup and no Python dependencies. `prepare_test_fonts.sh`; `TZ=UTC flutter test --tags golden --file-reporter json:golden-report.jsonl`, whose console names a failed golden while the JSON report goes to the file; `count_golden_tests.py` on that report with a floor of 60 (87 today). On failure it uploads the `failures/` images. The workflow never contains `--update-goldens` | Design section 1 |
+| D7 | Job `CI gate` | `if: always()`, `needs` every other job. It judges `toJSON(needs)`, so it covers every job it waits for: green only when all of them succeeded; otherwise red, naming each job's result. The one check to require | Design section 1 |
 | D8 | V7 tooling | Delete `select_test_shard.py`, `check_ci_gate.py`, their tests (`FileShardSelectionTest`, `AggregateGateTest`) and `PlanOutputsAreWiredIntoTheWorkflowTest`. Keep `build_verification_plan.py`, `check_generated.py`, `check_prompt_contract.py`, `prepare_test_fonts.sh`, `count_golden_tests.py` | Design section 2 |
 | D9 | Workflow contract | The test that waited for `ci.yml` is replaced by V8's contract (§5.2), read from the workflow as text, as the old tests did | Design section 2 |
 | D10 | Golden count | `count_golden_tests.py` gets its first tests (§5.3) | Design section 2 |
@@ -132,7 +132,7 @@ jobs:
     steps:
       - checkout; flutter-action (.fvmrc, cache); pub get; gen-l10n; build_runner
       - bash .claude/skills/flutter-workflow/scripts/prepare_test_fonts.sh
-      - TZ=UTC flutter test --tags golden --reporter json > golden-report.jsonl
+      - TZ=UTC flutter test --tags golden --file-reporter json:golden-report.jsonl
       - python3 .claude/skills/flutter-workflow/scripts/count_golden_tests.py golden-report.jsonl 60
       - on failure: upload test/**/failures/**
   ci-gate:
@@ -141,13 +141,15 @@ jobs:
     needs: [gate, goldens]
     runs-on: ubuntu-latest
     steps:
-      - fail unless needs.gate.result and needs.goldens.result are both "success"
+      - print each result in toJSON(needs); fail unless all are "success"
 ```
 
 `dod_check.sh` runs in a fresh checkout, so its pass stamp never applies. It finds the
 guard's interpreter by importing `typer` and `pytest`, which step 2 installs. The golden
-step writes the JSON report whether or not tests fail, and `count_golden_tests.py`
-decides the job's result: a failed test, fewer than the floor, or no report fails it.
+step keeps the console reporter, which names a failed golden, and writes the JSON report
+to the file beside it. A failed golden fails the job at that step. After a passing run,
+`count_golden_tests.py` fails it below the floor or without a report, and it still fails
+a report that holds a failed test.
 
 ## 5. The CI tooling
 
@@ -170,12 +172,18 @@ replace did: the CI tooling tests run in `dod_check.sh`, which installs nothing.
 1. The `gate` job runs `dod_check.sh` without `--fast` or `--changed`, and
    `check_generated.py` without `--skip-rebuild`.
 2. The `goldens` job runs `flutter test --tags golden` and `count_golden_tests.py`, and
-   the workflow never contains `--update-goldens`.
+   the workflow never contains `--update-goldens`. The count reads the file the golden
+   run writes, with a floor above 0.
 3. The `CI gate` job has `if: always()`, and its `needs` names every other job of the
    workflow. This is the failure V7's wiring test caught: a job that the required check
-   does not cover can fail without blocking a merge.
+   does not cover can fail without blocking a merge. Its step judges `toJSON(needs)`, and
+   a test runs that step's own script on sample results: a job that failed, was
+   cancelled or was skipped turns it red.
 4. The triggers are `pull_request` and `workflow_dispatch`, with no path filter.
 5. Every job that installs Flutter reads `.fvmrc`.
+
+A missing workflow fails these tests: unlike the tests they replace, they do not skip
+until `ci.yml` exists.
 
 ### 5.3 The golden count
 
@@ -185,7 +193,11 @@ reporter's format:
 - a report that meets the floor, with every test passing, passes;
 - a failed test fails, whatever the count;
 - a count under the floor fails;
-- a report with no test fails.
+- a report with no test fails;
+- a report that cannot be read fails, naming its path.
+
+`flutter test --tags golden` fails a run that selects no test at all (exit 79), so the
+floor is there for a partial collapse, such as a golden file that lost its tag.
 
 ## 6. Documents
 
@@ -203,7 +215,10 @@ reporter's format:
   and the `memox-v8` ruleset. It also drops the claim that CI switches the guard to a
   stricter profile.
 - **`code-verification-guard-v2/AGENTS.md`**: its one line on the MemoX CI says pull
-  requests, not "every push".
+  requests, not "every push", and its default check names the `memox-v8` ruleset that
+  CI runs.
+- **`.claude/skills/flutter-testing/scripts/golden.Dockerfile`**: its header names the
+  `goldens` job instead of saying the repository has no golden CI job.
 - **`docs/wbs_BE.md`**:
   - BE-D2 is done.
   - BE-D5 is added: trim the planner's CI-only surface.
@@ -217,17 +232,21 @@ reporter's format:
 **Before the pull request**, in a scratch copy, each task test first:
 
 - the contract tests (§5.2) and the golden count tests (§5.3), each seen failing before
-  the change that passes it;
+  the change that passes it; a test of a rule the script already has is seen failing
+  against the script with that rule removed;
 - `ci.yml` parses as YAML (PyYAML, which the guard installs), and `actionlint` if it can
   be installed; otherwise the plan says it did not run;
 - `CI=true bash .claude/skills/flutter-workflow/scripts/dod_check.sh`: the full gate
   with the environment variable every CI runner sets;
-- the `goldens` job's commands, as the workflow writes them, with the floor.
+- the `goldens` job's commands, as the workflow writes them, with the floor, but without
+  `prepare_test_fonts.sh`, which rewrites the SDK's artifacts (a scratch run tries it on
+  a copy of the SDK).
 
 **On GitHub**, the package's pull request is the first run of the workflow, since a
 `pull_request` event runs the workflow of the pull request's own branch.
 
-- The plan records how long each job takes.
+- The plan records the scratch run's times; the pull request records the first run's,
+  job by job.
 - **The red path:** a probe commit on the package branch breaks one host test and one
   golden. The run must show `gate`, `goldens` and `CI gate` red, each naming its cause.
   A revert commit then brings them back to green.
