@@ -341,4 +341,17 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  testWidgets('a form field at 2x still sits on its 52 floor', (tester) async {
+    await pumpMx(
+      tester,
+      const MediaQuery(
+        data: MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: SizedBox(width: 300, child: MxTextField(hintText: 'Deck name')),
+      ),
+    );
+
+    // 21 of text at 2x is 42: it fits the floor, so the box stays 52.
+    expect(tester.getSize(find.byType(TextField)).height, 52);
+  });
 }
