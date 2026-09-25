@@ -76,6 +76,96 @@
         { "id": "delCard", "label": "Card → Trash" },
         { "id": "delDeck", "label": "Deck → Trash" }
       ]
+    },
+    {
+      "num": "13",
+      "dir": "13-study-home",
+      "title": "Study home",
+      "states": [
+        { "id": "loaded", "label": "Resume + workload" },
+        { "id": "noResume", "label": "Workload" },
+        { "id": "zero", "label": "Zero workload" },
+        { "id": "noDecks", "label": "No decks" },
+        { "id": "noCards", "label": "No cards" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" }
+      ]
+    },
+    {
+      "num": "14",
+      "dir": "14-study-entry",
+      "title": "Study entry",
+      "states": [
+        { "id": "sm2", "label": "SM-2 · direction" },
+        { "id": "eightBox", "label": "Eight boxes · modes" },
+        { "id": "onlyNew", "label": "Only new" },
+        { "id": "nothing", "label": "Nothing to do" },
+        { "id": "resume", "label": "Session today" },
+        { "id": "starting", "label": "Starting" },
+        { "id": "refused", "label": "No longer due" },
+        { "id": "startFailed", "label": "Start failed" },
+        { "id": "loading", "label": "Loading" }
+      ]
+    },
+    {
+      "num": "16",
+      "dir": "16-study-browse",
+      "title": "Study · Browse",
+      "states": [
+        { "id": "default", "label": "Single state" }
+      ]
+    },
+    {
+      "num": "17",
+      "dir": "17-study-match",
+      "title": "Study · Match",
+      "states": [
+        { "id": "default", "label": "Single state" }
+      ]
+    },
+    {
+      "num": "18",
+      "dir": "18-study-guess",
+      "title": "Study · Guess",
+      "states": [
+        { "id": "default", "label": "Single state" }
+      ]
+    },
+    {
+      "num": "19",
+      "dir": "19-study-recall",
+      "title": "Study · Recall",
+      "states": [
+        { "id": "countingDown", "label": "Counting down" },
+        { "id": "revealed", "label": "Revealed · self-check" },
+        { "id": "timedOut", "label": "Timed out" }
+      ]
+    },
+    {
+      "num": "20",
+      "dir": "20-study-fill",
+      "title": "Study · Fill",
+      "states": [
+        { "id": "input", "label": "Typing" },
+        { "id": "hint", "label": "Hint shown" },
+        { "id": "wrong", "label": "Wrong" }
+      ]
+    },
+    {
+      "num": "21",
+      "dir": "21-session-summary",
+      "title": "Session summary",
+      "states": [
+        { "id": "loaded", "label": "Review finished" },
+        { "id": "learning", "label": "Learning finished" },
+        { "id": "large", "label": "200 cards" },
+        { "id": "leftEarly", "label": "Left early" },
+        { "id": "interrupted", "label": "Interrupted" },
+        { "id": "reset", "label": "Ended by reset" },
+        { "id": "schedulerChanged", "label": "Algorithm changed" },
+        { "id": "saveError", "label": "Save error" },
+        { "id": "loading", "label": "Loading" }
+      ]
     }
   ]
 }

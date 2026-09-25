@@ -11,8 +11,9 @@ The screens of the V3 handoff. The generated handoff next to this folder
 - **Authority:** the official screen handoff. Where a screen contradicts a BR or a UC,
   the BR/UC wins and the screen's file records the deviation
   ([spec](../../../superpowers/specs/2026-09-24-library-artifact-alignment-design.md), A1).
-- **Detail files:** written when a screen is built. A screen without one is specified
-  by the artifact alone until then.
+- **Detail files:** written when a screen is built, or before it when its design is
+  settled first (13–21, FE-A5). A screen without one is specified by the artifact alone
+  until then.
 - **Images:** `img/<screen>/<state>-{light,dark}.png`, 390 px, only the states V8
   supports, captured with `node tools/design/capture_screens.mjs --html <artifact.html>`
   (states listed in `tools/design/screen_states.json`).
@@ -41,15 +42,16 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
 | 11 | Card import | 16 | FE-B3 | out of V8 | — |
 | 12 | Card export | 9 | FE-B3 | out of V8 | — |
-| 13 | Study home | 7 | FE-A8 | not built | — |
-| 14 | Study entry | 9 | FE-A6, FE-A7 | not built | — |
+| 13 | Study home | 7 | FE-A8 | not built | [13-study-home.md](13-study-home.md) |
+| 14 | Study entry | 9 | FE-A6, FE-A7 | not built | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | not built | — |
-| 16 | Study · Browse | 1 | FE-A6 | not built | — |
-| 17 | Study · Match | 1 | FE-A6 | not built | — |
-| 18 | Study · Guess | 1 | FE-A6 | not built | — |
-| 19 | Study · Recall | 3 | FE-A6 | not built | — |
-| 20 | Study · Fill | 3 | FE-A6 | not built | — |
-| 21 | Session summary | 10 | FE-A6 | not built | — |
+| 16 | Study · Browse | 1 | FE-A6 | not built | [16-study-browse.md](16-study-browse.md) |
+| 16a | Study · Self-check (`self_assess`; not in the kit) | — | FE-A6 | not built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
+| 17 | Study · Match | 1 | FE-A6 | not built | [17-study-match.md](17-study-match.md) |
+| 18 | Study · Guess | 1 | FE-A6 | not built | [18-study-guess.md](18-study-guess.md) |
+| 19 | Study · Recall | 3 | FE-A6 | not built | [19-study-recall.md](19-study-recall.md) |
+| 20 | Study · Fill | 3 | FE-A6 | not built | [20-study-fill.md](20-study-fill.md) |
+| 21 | Session summary | 10 | FE-A6 | not built | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 8 | FE-A9 | not built | — |
 | 23 | Settings | 8 | FE-A3 | not built | — |
 | 24 | Daily reminder | 9 | FE-B5 | out of V8 | — |
