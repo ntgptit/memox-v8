@@ -134,6 +134,19 @@ Avoid speculative abstractions.
 - Do not create pass-through layers or single-implementation interfaces
   without a concrete architectural reason.
 
+## Asking the owner
+
+Every question to the owner goes through the `AskUserQuestion` popup, never as
+plain chat text. This covers:
+
+- clarifying questions and choices between options;
+- approvals of a design, spec, plan or deviation;
+- requests to act: starting a phase, running a command with side effects,
+  installing a tool, opening or merging a PR.
+
+End a presented design, spec or plan with the popup (approve / request
+changes), not with a question in prose.
+
 ## Language
 
 Always reply to the user in Vietnamese. Code, identifiers, commit messages and
