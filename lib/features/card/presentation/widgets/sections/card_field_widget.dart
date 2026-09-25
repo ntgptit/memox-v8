@@ -17,7 +17,7 @@ class CardFieldWidget extends StatelessWidget {
     required this.controller,
     this.icon,
     this.isRequired = false,
-    this.isMultiline = false,
+    this.variant = MxTextFieldVariant.form,
     this.focusNode,
     this.errorText,
     this.onChanged,
@@ -33,7 +33,9 @@ class CardFieldWidget extends StatelessWidget {
   /// The optional fields' glyph (kit `OptionalField`).
   final IconData? icon;
   final bool isRequired;
-  final bool isMultiline;
+
+  /// The box the kit draws for this field: term, meaning or detail.
+  final MxTextFieldVariant variant;
   final FocusNode? focusNode;
   final String? errorText;
   final ValueChanged<String>? onChanged;
@@ -58,10 +60,14 @@ class CardFieldWidget extends StatelessWidget {
           label: label,
           hintText: hint,
           errorText: errorText,
-          isMultiline: isMultiline,
-          textInputAction: isMultiline
-              ? TextInputAction.newline
-              : TextInputAction.next,
+          variant: variant,
+          // The term and a form field move on; a meaning or detail breaks
+          // the line.
+          textInputAction: switch (variant) {
+            MxTextFieldVariant.term ||
+            MxTextFieldVariant.form => TextInputAction.next,
+            _ => TextInputAction.newline,
+          },
           onChanged: onChanged,
         ),
       ],

@@ -30,14 +30,17 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
-  testWidgets('multiline starts at 40 and grows with the text', (tester) async {
+  testWidgets('detail starts at 40 and grows with the text', (tester) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
     await pumpMx(
       tester,
       SizedBox(
         width: 300,
-        child: MxTextField(controller: controller, isMultiline: true),
+        child: MxTextField(
+          controller: controller,
+          variant: MxTextFieldVariant.detail,
+        ),
       ),
     );
     expect(tester.getSize(find.byType(TextField)).height, 40);
@@ -156,5 +159,112 @@ void main() {
     expect(node.label, contains('Front'));
     expect(node.value, 'gamsa');
     handle.dispose();
+  });
+
+  for (final (variant, floor) in [
+    (MxTextFieldVariant.form, 52.0),
+    (MxTextFieldVariant.detail, 40.0),
+    (MxTextFieldVariant.meaning, 76.0),
+    (MxTextFieldVariant.term, 66.0),
+  ]) {
+    testWidgets('${variant.name}: its kit floor', (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 300,
+          child: MxTextField(hintText: 'x', variant: variant),
+        ),
+      );
+
+      expect(tester.getSize(find.byType(TextField)).height, floor);
+    });
+  }
+
+  testWidgets('the editor variants rest on the lowest fill', (tester) async {
+    for (final variant in [
+      MxTextFieldVariant.detail,
+      MxTextFieldVariant.meaning,
+      MxTextFieldVariant.term,
+    ]) {
+      await pumpMx(
+        tester,
+        SizedBox(width: 300, child: MxTextField(variant: variant)),
+      );
+      expect(
+        WidgetStateProperty.resolveAs(
+          _decoration(tester).fillColor!,
+          <WidgetState>{},
+        ),
+        scheme.surfaceContainerLowest,
+        reason: variant.name,
+      );
+    }
+  });
+
+  testWidgets('term: wraps, and a long term steps down to 18', (tester) async {
+    final controller = TextEditingController(text: 'a' * 60);
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: controller,
+          variant: MxTextFieldVariant.term,
+        ),
+      ),
+    );
+
+    EditableText text() =>
+        tester.widget<EditableText>(find.byType(EditableText));
+    expect(text().maxLines, isNull);
+    expect(text().style.fontSize, 18);
+    expect(tester.getSize(find.byType(TextField)).height, greaterThan(66));
+
+    controller.text = 'gamsa';
+    await tester.pump();
+    expect(text().style.fontSize, 24);
+  });
+
+  testWidgets('term: Enter moves on and adds no newline', (tester) async {
+    final controller = TextEditingController(text: 'gamsa');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: controller,
+          variant: MxTextFieldVariant.term,
+          textInputAction: TextInputAction.next,
+        ),
+      ),
+    );
+    await tester.showKeyboard(find.byType(EditableText));
+    await tester.testTextInput.receiveAction(TextInputAction.next);
+    await tester.pump();
+
+    expect(controller.text, 'gamsa');
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).keyboardType,
+      TextInputType.text,
+    );
+  });
+
+  testWidgets('a message sits below any variant and pushes on', (tester) async {
+    for (final variant in MxTextFieldVariant.values) {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 300,
+          child: MxTextField(variant: variant, errorText: 'Required'),
+        ),
+      );
+      expect(
+        tester.getTopLeft(find.byType(MxFieldMessage)).dy,
+        greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+        reason: variant.name,
+      );
+    }
   });
 }

@@ -27,6 +27,10 @@ final class MxTextStyles {
   static const double _bannerHeight = 1.55;
   static const double _snackbarHeight = 1.4;
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
+  static const double _termTracking = -0.4;
+  static const double _termHeight = 1.25;
+  static const double _termLongSize = 18;
+  static const double _fieldBodyHeight = 1.45;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -111,6 +115,40 @@ final class MxTextStyles {
   /// TextField placeholder: 14, onSurfaceVariant.
   TextStyle get inputHint =>
       _texts.bodyMedium!.copyWith(color: _scheme.onSurfaceVariant);
+
+  /// Card editor term (kit 08/09 Front): 24/700 at 1.25, -0.4 tracking.
+  TextStyle get fieldTerm => _texts.headlineSmall!.copyWith(
+    height: _termHeight,
+    letterSpacing: _termTracking,
+    color: _scheme.onSurface,
+  );
+
+  /// A term past 30 characters: 18/700, so it still fits the box (kit).
+  TextStyle get fieldTermLong =>
+      AppTypography.withWeight(
+        _texts.bodyLarge!.copyWith(fontSize: _termLongSize),
+        FontWeight.w700,
+      ).copyWith(
+        height: _termHeight,
+        letterSpacing: _termTracking,
+        color: _scheme.onSurface,
+      );
+
+  /// The term's placeholder: 16/500, onSurfaceVariant.
+  TextStyle get fieldTermHint =>
+      _texts.bodyLarge!.copyWith(color: _scheme.onSurfaceVariant);
+
+  /// Card editor meaning (kit Back): 16/500 at 1.45.
+  TextStyle get fieldMeaning => _texts.bodyLarge!.copyWith(
+    height: _fieldBodyHeight,
+    color: _scheme.onSurface,
+  );
+
+  /// An optional detail's value (kit OptionalField): 14/400 at 1.45.
+  TextStyle get fieldDetail => _texts.bodyMedium!.copyWith(
+    height: _fieldBodyHeight,
+    color: _scheme.onSurface,
+  );
 
   /// SearchField value: 16/400.
   TextStyle get searchValue => AppTypography.withWeight(

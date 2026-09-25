@@ -28,6 +28,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
@@ -353,6 +354,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller: _front,
       focusNode: _frontFocus,
       isRequired: true,
+      variant: MxTextFieldVariant.term,
       errorText: errors[_Field.front],
       onChanged: (_) => _touch(_Field.front),
     ),
@@ -362,7 +364,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
-      isMultiline: true,
+      variant: MxTextFieldVariant.meaning,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
     ),
@@ -438,7 +440,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           icon: icon,
           limit: CardDraft.maxOptionalLength,
           controller: controller,
-          isMultiline: true,
+          variant: MxTextFieldVariant.detail,
           errorText: errors[field],
           onChanged: (_) => _touch(field),
         ),

@@ -62,7 +62,15 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
       ),
       const MxTextField(hintText: 'Deck name'),
       const MxTextField(hintText: 'Deck name', errorText: 'Name is required'),
-      const MxTextField(hintText: 'Back of the card', isMultiline: true),
+      const MxTextField(
+        hintText: 'An example sentence',
+        variant: MxTextFieldVariant.detail,
+      ),
+      const MxTextField(
+        hintText: 'The meaning',
+        variant: MxTextFieldVariant.meaning,
+      ),
+      const MxTextField(hintText: 'The term', variant: MxTextFieldVariant.term),
       const MxFieldMessage(
         message: 'Ten tags at most on one card',
         tone: MxFieldMessageTone.warning,
