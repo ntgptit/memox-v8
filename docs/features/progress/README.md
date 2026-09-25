@@ -1,13 +1,11 @@
 ---
 feature: progress
-code: []
+code: [lib/features/progress/domain, lib/features/progress/data, lib/features/progress/di]
 depends_on: [deck, srs, study]
 ---
 ## Phạm vi
 
 Tiến độ theo deck và Progress overview (V8.0): đọc lại lịch sử học, không ghi gì.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 

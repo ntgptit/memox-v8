@@ -38,10 +38,6 @@
 
 - L56: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/progress/README.md](../features/progress/README.md)
-
-- L10: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
 ## [features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md](../features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md)
 
 - L86: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.

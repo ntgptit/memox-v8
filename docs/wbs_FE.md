@@ -135,7 +135,7 @@ Tại `ddfa93f` không còn nhánh FE nào chưa merge trên remote. Nhánh `cla
 | FE-A5, FE-A6 | Kit V3 không có màn phiên `self_assess` | Phiên ôn của deck `sm2` | Impeccable `shape` ở FE-A5, chủ dự án duyệt |
 | FE-A2…FE-A10 | Screen handoff đã có ([index](shared/ui/screen-handoff/00-index.md)); file chi tiết của mỗi màn viết khi làm màn đó | Mọi màn hình feature | Viết file chi tiết của màn trước khi lập plan |
 | FE-A1…FE-A10 | Mỗi màn hình cần use case của hạng mục BE tương ứng | Thứ tự làm | Theo [`wbs_BE.md`](wbs_BE.md) |
-| FE-A1 (một phần) | Panel "Mastered x/y" trên danh sách deck chưa được định nghĩa | Chỉ phần panel đó | Chờ định nghĩa ở BE-A7 |
+| FE-A1 (một phần) | Panel "Mastered x/y" trên danh sách deck chưa được định nghĩa | Chỉ phần panel đó | Chờ BR/UC của deck định nghĩa nó (điểm chặn "Mastery của danh sách deck" trong [`wbs_BE.md`](wbs_BE.md)) |
 | FE-C1 | Quyết định "implement the handoff as written" (spec UI base §2) giữ nguyên các token dưới ngưỡng contrast | Accessibility của toàn app | Chủ dự án quyết có sửa giá trị handoff không |
 | FE-B3 | Chọn file và chia sẻ file cần plugin nền tảng | Import/export | Quyết trong spec, kèm lý do và cách rollback |
 | FE-D3 | Không có emulator hoặc thiết bị | 8 kịch bản `DEVICE-E2E` | Môi trường chạy |
