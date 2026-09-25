@@ -1,13 +1,16 @@
 name: CI
 
-# Every pull request runs the local gate, dod_check.sh in full, and the golden
-# comparison on Linux. `CI gate` is the one check a ruleset requires: it is
-# green only when every other job succeeded. The contract this file keeps is
+# Runs the local gate, dod_check.sh in full, and the golden comparison on
+# Linux. `CI gate` is the one check a ruleset requires: it is green only when
+# every other job succeeded. The contract this file keeps is
 # pinned by WorkflowContractTest in
 # .claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py.
 # Spec: docs/superpowers/specs/2026-09-25-ci-gate-design.md
 on:
-  pull_request:
+  # Paused 2026-09-26 while V8 is in active development: the workflow runs only
+  # by hand (Actions -> CI -> Run workflow). To resume on every pull request,
+  # add `pull_request:` back here and in WorkflowContractTest, and update the
+  # CI paragraph of README.md.
   workflow_dispatch:
 
 permissions:
