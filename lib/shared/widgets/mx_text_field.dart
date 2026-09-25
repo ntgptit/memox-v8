@@ -175,10 +175,19 @@ class MxTextField extends StatelessWidget {
     final geometry = _geometry(variant);
     double lineOf(TextStyle style) => style.fontSize! * style.height!;
     if (width == null) {
-      final line = math.max(lineOf(valueStyle), lineOf(hintStyle));
-      return (geometry.floor - line) / 2;
+      final scaler = MediaQuery.textScalerOf(context);
+      final line = math.max(
+        scaler.scale(lineOf(valueStyle)),
+        scaler.scale(lineOf(hintStyle)),
+      );
+      // Scaled text that outgrows the floor sets the height itself.
+      return math.max(0, (geometry.floor - line) / 2);
     }
     final inner = width - 2 * geometry.horizontal;
+    // ponytail: two TextPainter layouts per rebuild, and the controller
+    // rebuilds on every keystroke and caret move. Cheap at the card fields'
+    // 240-character cap; cache on (text, width, scale) if a longer-form
+    // variant ever arrives.
     double measure(String text, TextStyle style) {
       final painter = TextPainter(
         text: TextSpan(text: text, style: style),
