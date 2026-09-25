@@ -52,7 +52,27 @@ class MxTextField extends StatelessWidget {
     this.textInputAction,
     this.leading,
     this.trailing,
-  });
+  }) : assert(
+         variant == MxTextFieldVariant.form ||
+             (leading == null && trailing == null),
+         'Only a form field takes leading and trailing slots: an editor box '
+         'measures its text across its whole width',
+       );
+
+  /// [field] on [controller]: an editor box that must follow typing owns
+  /// one when its caller does not. The outer field keeps the key.
+  MxTextField._on(MxTextField field, TextEditingController this.controller)
+    : focusNode = field.focusNode,
+      label = field.label,
+      hintText = field.hintText,
+      errorText = field.errorText,
+      variant = field.variant,
+      isEnabled = field.isEnabled,
+      onChanged = field.onChanged,
+      onSubmitted = field.onSubmitted,
+      textInputAction = field.textInputAction,
+      leading = field.leading,
+      trailing = field.trailing;
 
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -135,7 +155,7 @@ class MxTextField extends StatelessWidget {
     Widget sized() => LayoutBuilder(
       builder: (context, constraints) => _field(context, constraints.maxWidth),
     );
-    if (controller == null) return sized();
+    if (controller == null) return _OwnController(field: this);
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) => sized(),
@@ -276,4 +296,28 @@ class MxTextField extends StatelessWidget {
     if (isEnabled) return column;
     return Opacity(opacity: AppOpacity.disabled, child: column);
   }
+}
+
+/// Owns the controller an editor box listens to when its caller passed none.
+class _OwnController extends StatefulWidget {
+  const _OwnController({required this.field});
+
+  final MxTextField field;
+
+  @override
+  State<_OwnController> createState() => _OwnControllerState();
+}
+
+class _OwnControllerState extends State<_OwnController> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      MxTextField._on(widget.field, _controller);
 }

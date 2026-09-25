@@ -312,4 +312,33 @@ void main() {
     final text = tester.getSize(find.byType(EditableText)).height;
     expect(tester.getSize(find.byType(TextField)).height, text + 24);
   });
+
+  testWidgets('an editor box follows typing without a caller controller', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxTextField(variant: MxTextFieldVariant.term),
+      ),
+    );
+    await tester.enterText(find.byType(EditableText), 'a' * 40);
+    await tester.pump();
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).style.fontSize,
+      18,
+    );
+  });
+
+  test('only a form field takes leading and trailing slots', () {
+    expect(
+      () => MxTextField(
+        variant: MxTextFieldVariant.meaning,
+        leading: const SizedBox(),
+      ),
+      throwsAssertionError,
+    );
+  });
 }
