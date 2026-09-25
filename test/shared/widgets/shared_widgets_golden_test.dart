@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -160,6 +161,8 @@ void main() {
           MxAppBar(title: long),
           MxListRow(title: long, subtitle: long),
           SizedBox(width: 160, child: MxTagChip(label: long)),
+          // A card row's back (screen 07): 1.45 holds the marks, measured.
+          _RowDescription('$long · $long'),
         ],
       ),
     );
@@ -331,4 +334,18 @@ void main() {
       ),
     );
   });
+}
+
+class _RowDescription extends StatelessWidget {
+  const _RowDescription(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    text,
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: context.textStyles.rowDescription,
+  );
 }

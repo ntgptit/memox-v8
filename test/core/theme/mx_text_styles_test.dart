@@ -251,7 +251,7 @@ void main() {
     );
   });
 
-  test('pills: badge 12/700 tabular and tag 12/600, line-height 1, 0.1', () {
+  test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {
     final badge = styles.badgeLabel(scheme.primary);
     expectStyle(
       badge,
