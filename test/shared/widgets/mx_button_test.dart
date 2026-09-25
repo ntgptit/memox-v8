@@ -221,4 +221,15 @@ void main() {
       );
     }
   });
+
+  testWidgets('a loading button keeps its name for TalkBack', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxButton(label: 'Save', isLoading: true, onPressed: () {}),
+    );
+
+    expect(find.bySemanticsLabel('Save'), findsOneWidget);
+    handle.dispose();
+  });
 }

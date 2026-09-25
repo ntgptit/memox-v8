@@ -77,4 +77,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     expect(_turns(tester), closeTo(0.25, 0.01));
   });
+
+  testWidgets('a named spinner is heard; a bare one is not', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, const MxSpinner(semanticLabel: 'Loading'));
+    expect(find.bySemanticsLabel('Loading'), findsOneWidget);
+
+    await pumpMx(tester, const MxSpinner());
+    expect(find.bySemanticsLabel('Loading'), findsNothing);
+    handle.dispose();
+  });
 }
