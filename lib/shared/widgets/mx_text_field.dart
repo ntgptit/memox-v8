@@ -13,7 +13,8 @@ enum MxTextFieldVariant {
   /// A form or dialog entry: one line, 52 tall, on the muted fill.
   form,
 
-  /// An optional card detail (kit OptionalField): grows from 40.
+  /// An optional card detail (kit OptionalField): grows from the 48 touch
+  /// minimum, not the kit's 40.
   detail,
 
   /// A card's meaning (kit Back): 16/500, grows from 76.
@@ -93,7 +94,6 @@ class MxTextField extends StatelessWidget {
   final Widget? leading;
   final Widget? trailing;
 
-  static const double _detailFloor = 40;
   static const double _meaningFloor = 76;
   static const double _termFloor = 66;
 
@@ -110,7 +110,7 @@ class MxTextField extends StatelessWidget {
       isMultiline: false,
     ),
     MxTextFieldVariant.detail => (
-      floor: _detailFloor,
+      floor: AppSize.touchTarget,
       horizontal: AppSpacing.grouped,
       vertical: AppSpacing.control,
       radius: AppRadius.md,

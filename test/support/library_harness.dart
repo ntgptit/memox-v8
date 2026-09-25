@@ -8,6 +8,10 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
@@ -192,6 +196,22 @@ DeckLevelScreen deckScreen({
       ),
   cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
+);
+
+/// Screen 07: the open deck as `app/` composes it (A14).
+DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
+  deckId: deckId,
+  cardContent: (view) => CardListSectionWidget(
+    deckId: view.deck.id,
+    algorithm: 'Eight boxes',
+    onAddCard: () {},
+    onOpenCard: (_) {},
+  ),
+  cardAppBar: (view, back, actions) =>
+      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
+  cardBreadcrumb: (id, child) =>
+      CardDeckBreadcrumbWidget(deckId: id, child: child),
+  cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
 );
 
 /// Screen 02 for [deckId], with its breadcrumb callback.

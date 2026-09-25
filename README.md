@@ -31,23 +31,20 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-Verification gate, until the first `presentation/` file exists (ADR-011):
+Verification gate (ADR-011):
 
 ```bash
-flutter analyze
-flutter test
-python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
-python3 -m unittest discover -s .claude/skills/flutter-workflow/scripts/tests -p 'test_*.py'
-python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
+bash .claude/skills/flutter-workflow/scripts/dod_check.sh
 ```
 
-Every command must exit 0. A guard rule whose layer does not exist yet is
-listed with `targets_pending: <layer>` in
+It runs format, analyze, generated-code freshness, the architecture and docs
+checks, the guard and its self-tests, and the host test suite. Goldens are
+not part of it: they are compared in the Linux container
+(`.claude/skills/flutter-testing/scripts/golden.Dockerfile`).
+
+A guard rule whose layer does not exist yet is listed with
+`targets_pending: <layer>` in
 `code-verification-guard-v2/registries/projects/memox-v8/config/overrides.yaml`.
 Once the rule has a target file, the guard reports
-`guard.config.stale_targets_pending` and the gate fails: delete the rule's entry
-in the commit that added the file.
-
-From the first screen on, the gate is
-`.claude/skills/flutter-workflow/scripts/dod_check.sh`, and the
-`targets_pending` list must be empty.
+`guard.config.stale_targets_pending` and the gate fails: delete the rule's
+entry in the commit that added the file. The list is empty today.
