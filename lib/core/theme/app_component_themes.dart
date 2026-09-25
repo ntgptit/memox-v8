@@ -76,7 +76,15 @@ abstract final class AppComponentThemes {
     );
     Color? dimmed(Color? color) =>
         color?.withValues(alpha: color.a * AppOpacity.disabled);
+    final dimmedEdge = edge == BorderSide.none
+        ? edge
+        : edge.copyWith(color: dimmed(edge.color));
     return style.copyWith(
+      side: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled)
+            ? dimmedEdge
+            : style.side?.resolve(states),
+      ),
       backgroundColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.disabled) ? dimmed(fill) : fill,
       ),

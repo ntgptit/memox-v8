@@ -231,7 +231,7 @@ class MxTextField extends StatelessWidget {
     final textStyle = _valueStyle(context);
     final hintStyle = variant == MxTextFieldVariant.term
         ? context.textStyles.fieldTermHint
-        : fields.hintStyle!;
+        : context.fieldHint;
     final isForm = variant == MxTextFieldVariant.form;
     final field = TextField(
       controller: controller,

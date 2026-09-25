@@ -60,7 +60,7 @@ class MxBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final sheets = Theme.of(context).bottomSheetTheme;
-    final shape = sheets.shape! as RoundedRectangleBorder;
+    final shape = context.sheetShape;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * _maxHeightShare,

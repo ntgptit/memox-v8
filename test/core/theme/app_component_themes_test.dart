@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 // Spec UI base §4.6: the Material component themes carry the V3 defaults, so
 // a raw Material widget — or one the framework builds — looks like MemoX.
@@ -212,6 +214,33 @@ void main() {
         );
       });
 
+      testWidgets('disabled buttons dim whole: ink, fill and edge', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FilledButton(onPressed: null, child: Text('Filled')),
+              OutlinedButton(onPressed: null, child: Text('Outlined')),
+            ],
+          ),
+        );
+        Material paintOf(String label) => tester.widget<Material>(
+          find
+              .ancestor(of: find.text(label), matching: find.byType(Material))
+              .first,
+        );
+        expect(
+          paintOf('Filled').color!.a,
+          closeTo(scheme.primary.a * 0.38, 0.01),
+        );
+        final edge =
+            (paintOf('Outlined').shape! as RoundedRectangleBorder).side;
+        expect(edge.color.a, closeTo(scheme.outlineVariant.a * 0.38, 0.01));
+      });
+
       testWidgets('a raw TextField takes the V3 field', (tester) async {
         await pump(
           tester,
@@ -232,4 +261,37 @@ void main() {
       });
     });
   }
+
+  testWidgets('an Mx field outside the MemoX theme names the fix', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        home: const Scaffold(body: MxTextField(hintText: 'x')),
+      ),
+    );
+
+    expect(
+      tester.takeException(),
+      isA<StateError>().having(
+        (error) => error.message,
+        'message',
+        contains('buildLightTheme'),
+      ),
+    );
+  });
+
+  testWidgets('an Mx dialog outside the MemoX theme names the fix', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        home: const Scaffold(body: MxDialog(title: 'Title')),
+      ),
+    );
+
+    expect(tester.takeException(), isA<StateError>());
+  });
 }

@@ -19,7 +19,7 @@ Future<T?> showMxDialog<T>(
   context: context,
   barrierDismissible: true,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  barrierColor: DialogTheme.of(context).barrierColor!,
+  barrierColor: context.dialogBarrier,
   transitionDuration: MediaQuery.disableAnimationsOf(context)
       ? Duration.zero
       : AppDurations.standard,
@@ -67,7 +67,7 @@ class MxDialog extends StatelessWidget {
     final styles = context.textStyles;
     // The surface and radius are the theme's dialog (spec §4.6).
     final dialogs = DialogTheme.of(context);
-    final shape = dialogs.shape! as RoundedRectangleBorder;
+    final shape = context.dialogShape;
     final hasText = title != null || body != null || content != null;
     return Semantics(
       scopesRoute: true,
