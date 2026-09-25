@@ -3,7 +3,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 
 const double _verticalPadding = 10;
 
@@ -98,7 +98,7 @@ class MxSnackbarContent extends StatelessWidget {
               onPressed: onPressed,
               // Ruling O9: 32 painted inside the 48 target; the radius is
               // UNSPECIFIED and uses 8.
-              style: mxButtonStyle(
+              style: appButtonStyle(
                 fill: null,
                 ink: colors.inversePrimary,
                 edge: BorderSide.none,

@@ -7,7 +7,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
@@ -116,7 +116,7 @@ class _StepButton extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style:
-            mxButtonStyle(
+            appButtonStyle(
               fill: colors.surfaceContainer,
               ink: colors.onSurface,
               edge: BorderSide.none,

@@ -24,5 +24,9 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     extensions: [semantic],
     // Spec §4.6: the V3 defaults of the Material components.
     inputDecorationTheme: AppComponentThemes.fields(scheme, semantic, texts),
+    filledButtonTheme: AppComponentThemes.filledButtons(scheme, texts),
+    outlinedButtonTheme: AppComponentThemes.outlinedButtons(scheme, texts),
+    textButtonTheme: AppComponentThemes.textButtons(scheme, texts),
+    iconButtonTheme: AppComponentThemes.iconButtons(scheme),
   );
 }

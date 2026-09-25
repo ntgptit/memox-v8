@@ -54,6 +54,62 @@ void main() {
         expect(fields.hintStyle!.fontSize, 14);
       });
 
+      testWidgets('raw buttons take the V3 shape, height and tones', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FilledButton(onPressed: () {}, child: const Text('Filled')),
+              OutlinedButton(onPressed: () {}, child: const Text('Outlined')),
+              TextButton(onPressed: () {}, child: const Text('Text')),
+            ],
+          ),
+        );
+        for (final label in ['Filled', 'Outlined', 'Text']) {
+          final box = find.ancestor(
+            of: find.text(label),
+            matching: find.byType(Material),
+          );
+          final material = tester.widget<Material>(box.first);
+          expect(tester.getSize(box.first).height, 48, reason: label);
+          expect(
+            (material.shape! as RoundedRectangleBorder).borderRadius,
+            BorderRadius.circular(12),
+            reason: label,
+          );
+        }
+        Material paintOf(String label) => tester.widget<Material>(
+          find
+              .ancestor(of: find.text(label), matching: find.byType(Material))
+              .first,
+        );
+        expect(paintOf('Filled').color, scheme.primary);
+        expect(paintOf('Text').color, anyOf(isNull, Colors.transparent));
+        expect(
+          (paintOf('Outlined').shape! as RoundedRectangleBorder).side.color,
+          scheme.outlineVariant,
+        );
+      });
+
+      testWidgets('a raw IconButton is the 36 round V3 icon button', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          IconButton(onPressed: () {}, icon: const Icon(Icons.close)),
+        );
+        final ink = find.descendant(
+          of: find.byType(IconButton),
+          matching: find.byType(Material),
+        );
+        expect(tester.getSize(ink.first), const Size.square(36));
+        expect(tester.widget<Material>(ink.first).shape, isA<CircleBorder>());
+        expect(tester.getSize(find.byType(IconButton)), const Size.square(48));
+      });
+
       testWidgets('a raw TextField takes the V3 field', (tester) async {
         await pump(
           tester,
