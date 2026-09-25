@@ -1,7 +1,7 @@
 # MemoX V8 — Trash backend design (package 7)
 
-Status: design approved section by section in conversation, 2026-09-25; this written
-spec awaits the owner's review · Path: architectural
+Status: approved 2026-09-25 (design section by section in conversation, then this
+written spec) · Path: architectural
 
 ## 1. Intent
 
