@@ -61,9 +61,13 @@ class MxBottomSheet extends StatelessWidget {
     final colors = context.colors;
     final sheets = Theme.of(context).bottomSheetTheme;
     final shape = context.sheetShape;
-    return ConstrainedBox(
+    // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
+    // the IME inset and caps itself within what is left.
+    final inset = MediaQuery.viewInsetsOf(context).bottom;
+    final sheet = ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * _maxHeightShare,
+        maxHeight:
+            (MediaQuery.sizeOf(context).height - inset) * _maxHeightShare,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -81,20 +85,31 @@ class MxBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (hasGrabber)
-                  Padding(
+                  // Material's drag-handle semantics: a screen reader can
+                  // dismiss by the grabber (§9 row 65).
+                  Semantics(
                     key: const ValueKey('mx-sheet-grabber'),
-                    padding: const EdgeInsets.only(
-                      top: AppSpacing.control,
-                      bottom: AppSpacing.micro,
-                    ),
-                    child: Center(
-                      child: SizedBox(
-                        width: _grabberWidth,
-                        height: _grabberHeight,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.outlineVariant,
-                            borderRadius: BorderRadius.circular(AppRadius.full),
+                    container: true,
+                    button: true,
+                    label: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    onTap: () => Navigator.of(context).maybePop(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: AppSpacing.control,
+                        bottom: AppSpacing.micro,
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: _grabberWidth,
+                          height: _grabberHeight,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: colors.outlineVariant,
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -108,6 +123,10 @@ class MxBottomSheet extends StatelessWidget {
           ),
         ),
       ),
+    );
+    return Padding(
+      padding: EdgeInsets.only(bottom: inset),
+      child: sheet,
     );
   }
 }
