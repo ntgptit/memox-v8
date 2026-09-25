@@ -1,6 +1,6 @@
 # MemoX V8 — Study Home backend design (package 3)
 
-Status: approved 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · amended while writing the plan (its Clarifications: D7, §4, §6.3, §9, §11) · Path: architectural
 
 ## 1. Intent
 
@@ -103,7 +103,7 @@ Success means:
 | D4 | `nextDueAt` | The earliest `due_at` after now of a learned card, card and deck not in the Trash, across the library; null when none. The zero state names the day with it | Owner, 2026-09-25 |
 | D5 | The counts | `deckLevelOfRoots` itself, so the Study tab and the Library root level cannot disagree | Owner, 2026-09-25 |
 | D6 | The Resume conditions | One SQL fragment serves the Study tab and the Study Entry. Two open sessions started at the same instant fall to the higher `id`, so the pick is stable | Owner, 2026-09-25 |
-| D7 | The stream | Subscribe to the table changes first, then read: a write that lands right after the first read is not lost. A transaction that writes fires one read | Owner, 2026-09-25 |
+| D7 | The stream | Subscribe to the table changes first, then read: a write that lands right after the first read is not lost. A transaction that writes fires one read. The prototype could not make the other order (read, then listen) lose such a write; this order is kept because it holds by construction, not by timing | Owner, 2026-09-25 |
 | D8 | Read only | Nothing on this path writes. Closing a session of an earlier day stays with `abandonStaleSessions` (BR-STUDY-072) | BR-STUDY-075 |
 | D9 | Documents | Of the BR and UC files, only UC-STUDY-002's `code:` changes. `features/study/data.md`, `wbs_BE.md` and `docs/_generated/` change with it | Owner, 2026-09-25 |
 | D10 | Branch and PR | Branch `claude/be-study-home` from `master`. When the gate is green and the final review is clean, the package is opened as a PR and squash-merged | Owner's standing choice |
@@ -129,6 +129,7 @@ lib/features/study/
 test/features/study/domain/study_home_test.dart
 test/features/study/domain/watch_study_home_use_case_test.dart
 test/features/study/data/watch_study_home_test.dart
+test/features/study/data/watch_study_home_stream_test.dart
 ```
 
 The use case's provider belongs to FE-A8's `presentation/providers/`, as for every
@@ -264,7 +265,9 @@ cannot leave its Resume card beside counts that already include its turns.
 - `StudyViewDao.homeChanges()` fires once when listened to, then after every write
   to `deck`, `card`, `card_schedule`, `study_session` or `study_queue_items`. It
   listens to `tableUpdates` before it fires the first time (`Stream.multi`), so a
-  write queued behind the first read is seen (D7).
+  write queued behind the first read is seen (D7). In the prototype the card
+  list's order, read then listen, did not lose such a write either; this order
+  does not rely on that.
 - `watchHome` maps each firing to one snapshot with `asyncMap`, which reads one at a
   time and in order.
 
@@ -321,8 +324,9 @@ Every test names the rule or the use case it pins.
   be studied (BR-STUDY-076);
 - the hero's totals and the decks with work (UC-STUDY-002).
 
-`test/features/study/data/watch_study_home_test.dart` (UC-STUDY-002, a test
-database):
+`test/features/study/data/watch_study_home_test.dart` and
+`watch_study_home_stream_test.dart` (UC-STUDY-002, a test database; two files
+to stay under the guard's size warning):
 
 - the Resume card names the session's deck, its kind and its mode, and for a
   session opened on a sub-deck the sub-deck (BR-STUDY-075, BR-SRS-015,
@@ -342,7 +346,13 @@ database):
 - the stream emits again when a session ends or is abandoned, and when a turn is
   answered (UC-STUDY-002 step 5);
 - a write made while the first read runs is not lost (D7);
-- a failed read emits a database `Failure` (E1).
+- a failed read emits a database `Failure` (E1);
+- the plan's Review Focus: a session whose cards left in its round were deleted
+  is still offered, with no progress; a newer session from before a reset
+  leaves an older valid one offered; a write of several rows in one
+  transaction reads the tab again once; a library whose every card is in the
+  Trash is the no-card state; a deck renamed while the tab is open takes its
+  new place.
 
 `test/features/study/domain/watch_study_home_use_case_test.dart`:
 
@@ -371,8 +381,8 @@ shared fragment.
   person enters the study flow.
 - The Study Entry's reads, apart from the shared Resume fragment.
 - The card list's read-then-subscribe order in `CardRepositoryImpl._watchCardList`.
-  If the prototype shows that it can lose a write, the owner is told, and it stays
-  out of this package.
+  The prototype could not make it lose a write (plan Clarification 1), so it
+  stays as it is.
 - The Trash (BE-B1).
 
 ## 12. Risks and rollback
