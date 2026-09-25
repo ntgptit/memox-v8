@@ -15,6 +15,7 @@ import 'package:memox/features/card/presentation/controllers/card_actions_contro
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
@@ -28,6 +29,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
@@ -353,6 +355,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller: _front,
       focusNode: _frontFocus,
       isRequired: true,
+      variant: MxTextFieldVariant.term,
       errorText: errors[_Field.front],
       onChanged: (_) => _touch(_Field.front),
     ),
@@ -362,7 +365,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
-      isMultiline: true,
+      variant: MxTextFieldVariant.meaning,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
     ),
@@ -384,11 +387,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       return [
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
-          child: MxButton(
-            label: l10n.cardAddDetails,
-            icon: AppIcons.details,
-            tone: MxButtonTone.outline,
-            isBlock: true,
+          child: CardAddDetailsWidget(
             onPressed: () => setState(() => _isDetailsOpen = true),
           ),
         ),
@@ -438,7 +437,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           icon: icon,
           limit: CardDraft.maxOptionalLength,
           controller: controller,
-          isMultiline: true,
+          variant: MxTextFieldVariant.detail,
           errorText: errors[field],
           onChanged: (_) => _touch(field),
         ),

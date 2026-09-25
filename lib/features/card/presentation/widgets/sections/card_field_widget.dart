@@ -17,7 +17,7 @@ class CardFieldWidget extends StatelessWidget {
     required this.controller,
     this.icon,
     this.isRequired = false,
-    this.isMultiline = false,
+    this.variant = MxTextFieldVariant.form,
     this.focusNode,
     this.errorText,
     this.onChanged,
@@ -33,7 +33,9 @@ class CardFieldWidget extends StatelessWidget {
   /// The optional fields' glyph (kit `OptionalField`).
   final IconData? icon;
   final bool isRequired;
-  final bool isMultiline;
+
+  /// The box the kit draws for this field: term, meaning or detail.
+  final MxTextFieldVariant variant;
   final FocusNode? focusNode;
   final String? errorText;
   final ValueChanged<String>? onChanged;
@@ -55,12 +57,17 @@ class CardFieldWidget extends StatelessWidget {
         MxTextField(
           controller: controller,
           focusNode: focusNode,
+          label: label,
           hintText: hint,
           errorText: errorText,
-          isMultiline: isMultiline,
-          textInputAction: isMultiline
-              ? TextInputAction.newline
-              : TextInputAction.next,
+          variant: variant,
+          // The term and a form field move on; a meaning or detail breaks
+          // the line.
+          textInputAction: switch (variant) {
+            MxTextFieldVariant.term ||
+            MxTextFieldVariant.form => TextInputAction.next,
+            _ => TextInputAction.newline,
+          },
           onChanged: onChanged,
         ),
       ],
@@ -101,10 +108,9 @@ class _FieldHeader extends StatelessWidget {
               spacing: AppSpacing.micro,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(
-                  label.toUpperCase(),
-                  semanticsLabel: label,
-                  style: styles.overline,
+                // The input carries the name, so TalkBack reads it once.
+                ExcludeSemantics(
+                  child: Text(label.toUpperCase(), style: styles.overline),
                 ),
                 if (isRequired)
                   Text(l10n.cardRequiredLegend, style: styles.requiredMarker)

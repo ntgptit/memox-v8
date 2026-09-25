@@ -50,7 +50,7 @@ final _roles =
         12,
         FontWeight.w600,
         1.4,
-        1.2,
+        0,
       ),
     };
 

@@ -130,6 +130,7 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
         children: [
           MxTextField(
             controller: _name,
+            label: l10n.deckNameHint,
             hintText: l10n.deckNameHint,
             errorText: switch (_rejection) {
               null => null,

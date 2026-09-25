@@ -362,4 +362,46 @@ void main() {
     expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
     expect(styles.rowTitleMatch.color, AppColorSchemes.light.primary);
   });
+
+  test('card editor field roles (kit 08/09)', () {
+    expectStyle(
+      styles.fieldTerm,
+      size: 24,
+      weight: FontWeight.w700,
+      tracking: -0.4,
+    );
+    expect(styles.fieldTerm.height, 1.25);
+    expectStyle(
+      styles.fieldTermLong,
+      size: 18,
+      weight: FontWeight.w700,
+      tracking: -0.4,
+    );
+    expectStyle(
+      styles.fieldTermHint,
+      size: 16,
+      weight: FontWeight.w500,
+      color: scheme.onSurfaceVariant,
+    );
+    expectStyle(styles.fieldMeaning, size: 16, weight: FontWeight.w500);
+    expect(styles.fieldMeaning.height, 1.45);
+    expectStyle(styles.fieldDetail, size: 14, weight: FontWeight.w400);
+    expect(styles.fieldDetail.height, 1.45);
+  });
+
+  test('sentences at caption size carry no tracking (kit components)', () {
+    for (final style in [
+      styles.fieldMessage(scheme.error),
+      styles.footerCaption,
+      styles.rowDescription,
+      styles.noteText,
+      styles.bannerMessage(isLead: false),
+      styles.counter,
+    ]) {
+      expect(style.letterSpacing, 0);
+    }
+    expect(styles.studyBadge(scheme.primary).letterSpacing, 1.2);
+    expect(styles.fieldCount(isOver: false).letterSpacing, 0.2);
+    expect(styles.fieldCount(isOver: true).letterSpacing, 0.2);
+  });
 }

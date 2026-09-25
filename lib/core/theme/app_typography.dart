@@ -9,7 +9,6 @@ abstract final class AppTypography {
   static const String fontFamily = 'PlusJakartaSans';
 
   static const double _tightTracking = -0.64;
-  static const double _captionTracking = 1.2;
 
   /// Re-weights [style] and moves the variable font's `wght` axis with it.
   /// On a variable font, fontWeight alone reports one weight and paints the
@@ -78,13 +77,10 @@ abstract final class AppTypography {
     bodyLarge: _role(size: 16, weight: FontWeight.w500, height: 1.5),
     // body: default running text.
     bodyMedium: _role(size: 14, weight: FontWeight.w400, height: 1.5),
-    // caption: overlines, metadata, chips, counts. 12 is a hard floor.
-    labelSmall: _role(
-      size: 12,
-      weight: FontWeight.w600,
-      height: 1.4,
-      tracking: _captionTracking,
-    ),
+    // caption: metadata, counts, chips. 12 is a hard floor. Tracking belongs
+    // to the roles that want it (overline 0.6, field count 0.2, the study
+    // mode badge 1.2): the kit's 12px sentences carry none.
+    labelSmall: _role(size: 12, weight: FontWeight.w600, height: 1.4),
   );
 
   static TextStyle _role({

@@ -151,6 +151,7 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
             MxTextField(
               controller: _input,
               focusNode: _focus,
+              label: l10n.cardTagHint,
               hintText: l10n.cardTagHint,
               errorText: _error,
               textInputAction: TextInputAction.done,
