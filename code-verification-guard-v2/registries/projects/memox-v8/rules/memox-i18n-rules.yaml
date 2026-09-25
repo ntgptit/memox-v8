@@ -1,8 +1,7 @@
-# MemoX V7 guard rules — domain: i18n
+# MemoX V8 guard rules — domain: i18n
 #
-# CLAUDE.md "UI discipline": no user-visible string outside the ARB files.
-# Scoped to product UI only — lib/app/** currently holds two documented
-# placeholder strings that M2.4 removes when ARB lands.
+# No user-visible string outside the ARB files: product UI, the app shell and
+# the debug gallery (`ui_copy_surfaces`).
 version: 1
 metadata:
   id: memox-v8-i18n
@@ -19,7 +18,7 @@ rules:
       ARB files via `AppLocalizations`. A literal here cannot be translated and
       cannot be reviewed by anyone but the person who wrote it.
     scopes:
-      - ui_surfaces
+      - ui_copy_surfaces
     patterns:
       - "\\bText\\s*\\(\\s*'[^']*[A-Za-z]{2,}[^']*'"
       - '\bText\s*\(\s*"[^"]*[A-Za-z]{2,}[^"]*"'

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -15,26 +16,28 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 class GalleryStatusSection extends StatelessWidget {
   const GalleryStatusSection({super.key});
 
-  static String _overdue(int count) => '$count overdue';
-  static String _today(int count) => '$count today';
-  static String _fresh(int count) => '$count new';
-
   @override
-  Widget build(BuildContext context) => const GallerySection(
-    title: 'E · Status & metadata',
+  Widget build(BuildContext context) => GallerySection(
+    title: context.l10n.galleryEStatusMetadata,
     children: [
       Wrap(
         spacing: AppSpacing.control,
         runSpacing: AppSpacing.control,
         children: [
-          MxBadge(label: '23 due'),
-          MxBadge(label: '4 mastered', tone: MxBadgeTone.mastery),
-          MxBadge(label: '2 late', tone: MxBadgeTone.warning),
-          MxBadge(label: '1 failed', tone: MxBadgeTone.danger),
-          MxBadge(label: '128 cards', tone: MxBadgeTone.neutral),
-          MxBadge(label: '23 due', isSolid: true),
+          MxBadge(label: context.l10n.gallery23Due),
           MxBadge(
-            label: '12 ready',
+            label: context.l10n.gallery4Mastered,
+            tone: MxBadgeTone.mastery,
+          ),
+          MxBadge(label: context.l10n.gallery2Late, tone: MxBadgeTone.warning),
+          MxBadge(label: context.l10n.gallery1Failed, tone: MxBadgeTone.danger),
+          MxBadge(
+            label: context.l10n.gallery128Cards,
+            tone: MxBadgeTone.neutral,
+          ),
+          MxBadge(label: context.l10n.gallery23Due, isSolid: true),
+          MxBadge(
+            label: context.l10n.gallery12Ready,
             tone: MxBadgeTone.mastery,
             icon: AppIcons.check,
           ),
@@ -45,15 +48,15 @@ class GalleryStatusSection extends StatelessWidget {
         children: [
           Expanded(
             child: MxOutcomeTile(
-              label: 'Kept',
-              body: 'Decks, cards and history',
+              label: context.l10n.galleryKept,
+              body: context.l10n.galleryDecksCardsAndHistory,
               tone: MxOutcomeTone.kept,
             ),
           ),
           Expanded(
             child: MxOutcomeTile(
-              label: 'Lost',
-              body: 'Schedules and due dates',
+              label: context.l10n.galleryLost,
+              body: context.l10n.gallerySchedulesAndDueDates,
               tone: MxOutcomeTone.lost,
             ),
           ),
@@ -64,13 +67,25 @@ class GalleryStatusSection extends StatelessWidget {
         runSpacing: AppSpacing.control,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          MxStatusBadge(status: MxCardStatus.newCard, label: 'New'),
-          MxStatusBadge(status: MxCardStatus.learning, label: 'Learning'),
-          MxStatusBadge(status: MxCardStatus.reviewing, label: 'Reviewing'),
-          MxStatusBadge(status: MxCardStatus.mastered, label: 'Mastered'),
+          MxStatusBadge(
+            status: MxCardStatus.newCard,
+            label: context.l10n.galleryNew,
+          ),
           MxStatusBadge(
             status: MxCardStatus.learning,
-            label: 'Learning',
+            label: context.l10n.galleryLearning,
+          ),
+          MxStatusBadge(
+            status: MxCardStatus.reviewing,
+            label: context.l10n.galleryReviewing,
+          ),
+          MxStatusBadge(
+            status: MxCardStatus.mastered,
+            label: context.l10n.galleryMastered,
+          ),
+          MxStatusBadge(
+            status: MxCardStatus.learning,
+            label: context.l10n.galleryLearning,
             isDot: true,
           ),
         ],
@@ -80,32 +95,32 @@ class GalleryStatusSection extends StatelessWidget {
         runSpacing: AppSpacing.control,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          MxTagChip(label: 'verbs'),
-          MxTagChip(label: 'N5', isDense: true),
-          MxTagChip(label: 'a tag long enough to reach the maximum'),
+          MxTagChip(label: context.l10n.galleryVerbs),
+          MxTagChip(label: context.l10n.galleryN5, isDense: true),
+          MxTagChip(label: context.l10n.galleryATagLongEnoughTo),
         ],
       ),
-      MxNote(text: 'Deleted decks stay recoverable for 30 days.'),
+      MxNote(text: context.l10n.galleryDeletedDecksStayRecoverableFor),
       MxWorkloadBreakdownLine(
         overdueCount: 3,
         todayCount: 12,
         newCount: 5,
-        overdueLabel: _overdue,
-        todayLabel: _today,
-        newLabel: _fresh,
-        fallback: 'Nothing due',
-        suffix: 'across 4 decks',
+        overdueLabel: context.l10n.galleryOverdue,
+        todayLabel: context.l10n.galleryToday,
+        newLabel: context.l10n.galleryNewCount,
+        fallback: context.l10n.galleryNothingDue,
+        suffix: context.l10n.galleryAcross4Decks,
       ),
       MxWorkloadBreakdownLine(
         overdueCount: 0,
         todayCount: 0,
         newCount: 0,
-        overdueLabel: _overdue,
-        todayLabel: _today,
-        newLabel: _fresh,
-        fallback: '42 cards · nothing due',
+        overdueLabel: context.l10n.galleryOverdue,
+        todayLabel: context.l10n.galleryToday,
+        newLabel: context.l10n.galleryNewCount,
+        fallback: context.l10n.gallery42CardsNothingDue,
       ),
-      Row(
+      const Row(
         spacing: AppSpacing.gutter,
         children: [
           MxMasteryDonut(fraction: 0),

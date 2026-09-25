@@ -14,7 +14,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 
 import '../support/library_harness.dart';
 
-Future<void> _pumpGallery(WidgetTester tester) async {
+Future<void> _pumpGallery(WidgetTester tester, {Locale? locale}) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -23,6 +23,7 @@ Future<void> _pumpGallery(WidgetTester tester) async {
       theme: buildLightTheme(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: locale,
       home: const GalleryScreen(),
     ),
   );
@@ -150,5 +151,16 @@ void main() {
     await tester.tap(find.text('Snackbar'));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(SnackBar), findsOneWidget);
+  });
+
+  testWidgets('the gallery reads in Vietnamese and holds (FE-C7)', (
+    tester,
+  ) async {
+    await _pumpGallery(tester, locale: const Locale('vi'));
+    expect(find.text('B · Hành động'), findsOneWidget);
+    expect(find.text('B · Actions'), findsNothing);
+
+    await _scrollThrough(tester);
+    expect(tester.takeException(), isNull);
   });
 }

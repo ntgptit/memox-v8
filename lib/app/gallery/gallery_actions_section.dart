@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -13,7 +14,7 @@ class GalleryActionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'B · Actions',
+    title: context.l10n.galleryBActions,
     children: [
       Wrap(
         spacing: AppSpacing.control,
@@ -29,30 +30,42 @@ class GalleryActionsSection extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           MxButton(
-            label: 'Small',
+            label: context.l10n.gallerySmall,
             size: MxButtonSize.small,
             icon: AppIcons.add,
             onPressed: () {},
           ),
           MxButton(
-            label: 'Compact',
+            label: context.l10n.galleryCompact,
             size: MxButtonSize.compact,
             onPressed: () {},
           ),
-          MxButton(label: 'Chip', size: MxButtonSize.chip, onPressed: () {}),
-          MxButton(label: 'Reveal', size: MxButtonSize.study, onPressed: () {}),
+          MxButton(
+            label: context.l10n.galleryChip,
+            size: MxButtonSize.chip,
+            onPressed: () {},
+          ),
+          MxButton(
+            label: context.l10n.galleryReveal,
+            size: MxButtonSize.study,
+            onPressed: () {},
+          ),
         ],
       ),
       Wrap(
         spacing: AppSpacing.control,
         runSpacing: AppSpacing.control,
         children: [
-          const MxButton(label: 'Disabled', onPressed: null),
-          MxButton(label: 'Saving', isLoading: true, onPressed: () {}),
+          MxButton(label: context.l10n.galleryDisabled, onPressed: null),
+          MxButton(
+            label: context.l10n.gallerySaving,
+            isLoading: true,
+            onPressed: () {},
+          ),
         ],
       ),
       MxButton(
-        label: 'A block action whose label is long enough to wrap',
+        label: context.l10n.galleryABlockActionWhoseLabel,
         icon: AppIcons.play,
         isBlock: true,
         onPressed: () {},
@@ -61,22 +74,22 @@ class GalleryActionsSection extends StatelessWidget {
         children: [
           MxIconButton(
             icon: AppIcons.back,
-            semanticLabel: 'Back',
+            semanticLabel: context.l10n.commonBack,
             onPressed: () {},
           ),
           MxIconButton(
             icon: AppIcons.search,
-            semanticLabel: 'Search',
+            semanticLabel: context.l10n.gallerySearch,
             onPressed: () {},
           ),
           MxIconButton(
             icon: AppIcons.more,
-            semanticLabel: 'More',
+            semanticLabel: context.l10n.galleryMore,
             onPressed: () {},
           ),
-          const MxIconButton(
+          MxIconButton(
             icon: AppIcons.close,
-            semanticLabel: 'Close',
+            semanticLabel: context.l10n.galleryClose,
             onPressed: null,
           ),
         ],
@@ -86,30 +99,30 @@ class GalleryActionsSection extends StatelessWidget {
         runSpacing: AppSpacing.control,
         children: [
           MxFilterChip(
-            label: 'All',
+            label: context.l10n.galleryAll,
             count: 128,
             isSelected: true,
             onSelected: (_) {},
           ),
           MxFilterChip(
-            label: 'Cards',
+            label: context.l10n.galleryCards,
             count: 96,
             isSelected: false,
             onSelected: (_) {},
           ),
           MxFilterChip(
-            label: 'Decks',
+            label: context.l10n.galleryDecks,
             icon: AppIcons.filter,
             isSelected: false,
             onSelected: (_) {},
           ),
           MxChipTrigger(
-            label: 'Sort: Due',
+            label: context.l10n.gallerySortDue,
             icon: AppIcons.sort,
             onPressed: () {},
           ),
           MxChipTrigger(
-            label: 'Filters',
+            label: context.l10n.galleryFilters,
             icon: AppIcons.filters,
             onPressed: () {},
           ),
