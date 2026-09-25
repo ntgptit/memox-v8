@@ -19,25 +19,43 @@ typedef LevelRow = ({
   CountsRow month,
 });
 
-/// The answers that count, `r`, with their card `c` and its deck `k`: live
-/// cards only, never a `browse` row (BR-PROGRESS-012), on a local day, at the
-/// read's offset `?1`, that meets [days] (Progress spec §6.1).
-String _answers(String days) =>
+/// The answers that count, `r`, with their card `c` and its deck `k`, and
+/// [join] when a scope narrows them: live cards only, never a `browse` row
+/// (BR-PROGRESS-012), on a local day, at the read's offset `?1`, that meets
+/// [days] (Progress spec §6.1).
+String _answers(String days, {String join = ''}) =>
     ' FROM review_log r'
     ' JOIN card c ON c.id = r.card_id'
-    ' JOIN deck k ON k.id = c.deck_id'
+    ' JOIN deck k ON k.id = c.deck_id$join'
     ' WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL'
     " AND r.mode <> 'browse' AND (r.answered_at + ?1) / 86400 $days";
 
 /// The card-days of [_answers]: one row per card and local day, with the
 /// `tile_id` a level groups by. A card-day with a `learning` answer is
 /// Learning (BR-PROGRESS-005).
-String _cardDays({required String tile, required String days}) =>
+String _cardDays({
+  required String tile,
+  required String days,
+  String join = '',
+}) =>
     'SELECT c.id AS card_id, $tile AS tile_id,'
     ' (r.answered_at + ?1) / 86400 AS day,'
     " MAX(r.kind = 'learning') AS is_learning"
-    '${_answers(days)}'
+    '${_answers(days, join: join)}'
     ' GROUP BY c.id, day';
+
+/// The decks of `?5`'s level, `tile_id` each direct child walked down its
+/// subtree as `deckLevelOfChildren` walks it (`UNION`, cycle safe, no cap),
+/// and `?5` itself with no tile: its own cards count in the total only
+/// (BR-PROGRESS-004).
+const _childScope =
+    'tree(tile_id, deck_id) AS ('
+    ' SELECT id, id FROM deck WHERE parent_id = ?5 AND delete_batch_id IS NULL'
+    ' UNION'
+    ' SELECT tree.tile_id, d.id FROM deck d JOIN tree ON d.parent_id = tree.deck_id'
+    ' WHERE d.delete_batch_id IS NULL),'
+    ' scope(tile_id, deck_id) AS ('
+    ' SELECT tile_id, deck_id FROM tree UNION ALL SELECT NULL, ?5),';
 
 /// The four numbers of the week (days from `?2`) and of the month, over the
 /// card-days in scope (BR-PROGRESS-001, BR-PROGRESS-002).
@@ -115,6 +133,26 @@ final class ProgressDao {
     decks: 'd.parent_id IS NULL',
   );
 
+  /// Every active direct child of [deckId] with the numbers of its subtree,
+  /// and the total of [deckId]'s whole subtree from the same statement
+  /// (BR-PROGRESS-002, BR-PROGRESS-004).
+  Future<List<LevelRow>> childLevel(String deckId, ProgressDays days) => _level(
+    days,
+    scope: _childScope,
+    cardDays: _cardDays(
+      tile: 's.tile_id',
+      days: 'BETWEEN ?3 AND ?4',
+      join: ' JOIN scope s ON s.deck_id = k.id',
+    ),
+    decks: 'd.parent_id = ?5',
+    extra: [Variable<String>(deckId)],
+  );
+
+  /// [deckId] and every deck above it, root first; none when [deckId] is not
+  /// an active deck (UC-PROGRESS-002 E2).
+  Future<List<Deck>> deckPath(String deckId) =>
+      _db.deckAndAncestors(deckId).get();
+
   /// Fires once when listened to, then after every write to the history,
   /// the cards or the decks (BR-PROGRESS-008).
   Stream<void> changes() =>
@@ -122,15 +160,17 @@ final class ProgressDao {
 
   /// The decks that match [decks], each with the card-days whose `tile_id`
   /// is its id, then one total row over every card-day of [cardDays]
-  /// (Progress spec D5).
+  /// (Progress spec D5). [scope] defines the tables [cardDays] joins.
   Future<List<LevelRow>> _level(
     ProgressDays days, {
     required String cardDays,
     required String decks,
+    String scope = '',
+    List<Variable<Object>> extra = const [],
   }) async {
     final rows = await _db
         .customSelect(
-          'WITH card_days AS ($cardDays),'
+          'WITH RECURSIVE $scope card_days AS ($cardDays),'
           ' tiles AS (SELECT tile_id,$_numbers FROM card_days GROUP BY tile_id)'
           ' SELECT d.id AS deck_id, d.name AS name, tiles.*'
           ' FROM deck d LEFT JOIN tiles ON tiles.tile_id = d.id'
@@ -142,6 +182,7 @@ final class ProgressDao {
             Variable<int>(days.weekStart),
             Variable<int>(days.monthStart),
             Variable<int>(days.today),
+            ...extra,
           ],
           readsFrom: {_db.reviewLog, _db.card, _db.deck},
         )

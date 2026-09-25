@@ -11,4 +11,14 @@ abstract interface class ProgressRepository {
   /// local days of [days]; again after every write to the history, the cards
   /// or the decks. It writes nothing (BR-PROGRESS-009).
   Stream<Progress> watchProgress(ProgressDays days);
+
+  /// `/progress/:deckId`: [deckId]'s path and every direct child with the
+  /// numbers of its subtree, for both ranges, as one snapshot on the local
+  /// days of [days]; [ProgressDeckMissing] while [deckId] is not an active
+  /// deck. Again after every write it can see; it writes nothing
+  /// (BR-PROGRESS-007).
+  Stream<DeckProgress> watchDeckProgress({
+    required String deckId,
+    required ProgressDays days,
+  });
 }

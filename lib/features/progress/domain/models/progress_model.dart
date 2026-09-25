@@ -18,3 +18,41 @@ final class Progress {
   /// (BR-PROGRESS-003).
   final DateTime validUntil;
 }
+
+/// `/progress/:deckId` (UC-PROGRESS-002 at a deck's level).
+sealed class DeckProgress {
+  const DeckProgress();
+}
+
+/// A deck's level: its path, and a row per direct child with the numbers of
+/// its subtree. A deck that holds cards has no row (UC-PROGRESS-002 A1); its
+/// total still counts them.
+final class DeckProgressLevel extends DeckProgress {
+  const DeckProgressLevel({
+    required this.path,
+    required this.level,
+    required this.validUntil,
+  });
+
+  /// The root first, the deck last.
+  final List<ProgressPathSegment> path;
+
+  final ProgressLevel level;
+
+  /// The next local midnight (BR-PROGRESS-003).
+  final DateTime validUntil;
+}
+
+/// The deck of a link is gone or in the Trash. Not an error: reading again
+/// would find the same (UC-PROGRESS-002 E2).
+final class ProgressDeckMissing extends DeckProgress {
+  const ProgressDeckMissing();
+}
+
+/// A deck on the path from the root to the deck of a level.
+final class ProgressPathSegment {
+  const ProgressPathSegment({required this.deckId, required this.name});
+
+  final String deckId;
+  final String name;
+}

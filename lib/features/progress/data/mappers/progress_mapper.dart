@@ -1,5 +1,7 @@
+import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/progress/data/datasources/progress_dao.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
+import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 
 /// The last seven days' split from their rows (Progress spec §6.5).
@@ -23,6 +25,12 @@ ProgressLevel levelOf(List<LevelRow> rows) => ProgressLevel(
         ),
   ],
 );
+
+/// The breadcrumb of a deck level, root first (UC-PROGRESS-002 step 2).
+List<ProgressPathSegment> pathOf(List<Deck> decks) => [
+  for (final deck in decks)
+    ProgressPathSegment(deckId: deck.id, name: deck.name),
+];
 
 RangeProgress _rangeOf(LevelRow row) =>
     RangeProgress(week: _numbersOf(row.week), month: _numbersOf(row.month));

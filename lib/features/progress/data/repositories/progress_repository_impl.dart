@@ -22,6 +22,27 @@ final class ProgressRepositoryImpl implements ProgressRepository {
       .asyncMap((_) => _db.transaction(() => _progressOf(days)))
       .mapDatabaseErrors();
 
+  @override
+  Stream<DeckProgress> watchDeckProgress({
+    required String deckId,
+    required ProgressDays days,
+  }) => _progress
+      .changes()
+      .asyncMap((_) => _db.transaction(() => _deckProgressOf(deckId, days)))
+      .mapDatabaseErrors();
+
+  /// The deck's path, then its level when the deck is there, in the
+  /// caller's transaction (Progress spec §6.3).
+  Future<DeckProgress> _deckProgressOf(String deckId, ProgressDays days) async {
+    final path = await _progress.deckPath(deckId);
+    if (path.isEmpty) return const ProgressDeckMissing();
+    return DeckProgressLevel(
+      path: pathOf(path),
+      level: levelOf(await _progress.childLevel(deckId, days)),
+      validUntil: days.validUntil,
+    );
+  }
+
   /// The history's days, the last seven with their split and the root
   /// level, read in the caller's transaction, so Today, the streak and the
   /// deck numbers see one state of the database (UC-PROGRESS-001 step 4).
