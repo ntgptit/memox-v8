@@ -87,8 +87,8 @@ one, nobody notices until reviews arrive.
 
 ## 19 · CI/CD
 
-Every pull request runs `.github/workflows/ci.yml` on `ubuntu-latest`
-(details in `references/ci.md`). The gates, in the order V8 runs them:
+`.github/workflows/ci.yml` runs on `ubuntu-latest`, by hand while its
+`pull_request` trigger is paused (details in `references/ci.md`). The gates, in the order V8 runs them:
 
 1. `flutter gen-l10n` and
    `dart run build_runner build --delete-conflicting-outputs` — **codegen

@@ -1089,13 +1089,15 @@ class WorkflowContractTest(unittest.TestCase):
                 for job, result in results.items():
                     self.assertIn(f"{job}: {result}", run.stdout)
 
-    def test_every_pull_request_runs_the_workflow_whatever_it_changes(self) -> None:
-        """A path filter would leave a required check waiting forever on a pull
-        request that touches none of its paths."""
+    def test_the_workflow_runs_by_hand_while_paused_and_has_no_path_filter(self) -> None:
+        """CI is paused (owner, 2026-09-26): only `workflow_dispatch` triggers it.
+        Resuming adds `pull_request` back to this set. A path filter would leave
+        a required check waiting forever on a pull request that touches none of
+        its paths."""
         workflow, _ = self._workflow()
         on = _top_level_block(workflow, "on")
         self.assertEqual(
-            {"pull_request", "workflow_dispatch"},
+            {"workflow_dispatch"},
             set(re.findall(r"(?m)^  ([A-Za-z_]+):", on)),
         )
         for path_filter in ("paths:", "paths-ignore:"):
