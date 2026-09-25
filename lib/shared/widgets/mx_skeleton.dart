@@ -166,26 +166,18 @@ class MxSkeletonRow extends StatelessWidget {
   );
 }
 
-/// A loading list: [rows] skeleton rows on one pulse, heard once as
-/// [semanticLabel] (§9 row 61), since the bars themselves say nothing.
-class MxSkeletonList extends StatefulWidget {
-  const MxSkeletonList({
-    super.key,
-    required this.semanticLabel,
-    this.rows = _defaultRows,
-  });
+/// One pulse for every skeleton in [child] (§9 row 66: a ticker per group,
+/// not per bar). Still under reduced motion.
+class MxSkeletonPulse extends StatefulWidget {
+  const MxSkeletonPulse({super.key, required this.child});
 
-  /// What is loading, in the caller's copy ("Loading").
-  final String semanticLabel;
-  final int rows;
-
-  static const int _defaultRows = 4;
+  final Widget child;
 
   @override
-  State<MxSkeletonList> createState() => _MxSkeletonListState();
+  State<MxSkeletonPulse> createState() => _MxSkeletonPulseState();
 }
 
-class _MxSkeletonListState extends State<MxSkeletonList>
+class _MxSkeletonPulseState extends State<MxSkeletonPulse>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     vsync: this,
@@ -206,20 +198,39 @@ class _MxSkeletonListState extends State<MxSkeletonList>
   }
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    container: true,
-    label: widget.semanticLabel,
-    child: ExcludeSemantics(
-      child: _SkeletonPulse(
-        opacity: _opacity,
+  Widget build(BuildContext context) =>
+      _SkeletonPulse(opacity: _opacity, child: widget.child);
+}
+
+/// A loading list: [rows] skeleton rows on one pulse. It is heard once as
+/// [semanticLabel] (§9 row 61), since the bars say nothing; with none it is
+/// silent, for a screen whose visible header already names the wait.
+class MxSkeletonList extends StatelessWidget {
+  const MxSkeletonList({
+    super.key,
+    this.semanticLabel,
+    this.rows = _defaultRows,
+  });
+
+  /// What is loading, in the caller's copy ("Loading").
+  final String? semanticLabel;
+  final int rows;
+
+  static const int _defaultRows = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    final list = ExcludeSemantics(
+      child: MxSkeletonPulse(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < widget.rows; i++) const MxSkeletonRow(),
-          ],
+          children: [for (var i = 0; i < rows; i++) const MxSkeletonRow()],
         ),
       ),
-    ),
-  );
+    );
+    final label = semanticLabel;
+    if (label == null) return list;
+    return Semantics(container: true, label: label, child: list);
+  }
 }

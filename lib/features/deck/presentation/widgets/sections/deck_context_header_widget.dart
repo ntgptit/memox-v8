@@ -84,20 +84,22 @@ class _LoadingHeader extends StatelessWidget {
     container: true,
     label: context.l10n.commonLoading,
     child: const ExcludeSemantics(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          AppSpacing.control,
-          AppSpacing.gutter,
-          AppSpacing.control,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.grouped,
-          children: [
-            MxSkeleton(width: _pathWidth),
-            MxSkeleton(width: _nameWidth),
-          ],
+      child: MxSkeletonPulse(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.control,
+            AppSpacing.gutter,
+            AppSpacing.control,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppSpacing.grouped,
+            children: [
+              MxSkeleton(width: _pathWidth),
+              MxSkeleton(width: _nameWidth),
+            ],
+          ),
         ),
       ),
     ),

@@ -142,4 +142,19 @@ void main() {
 
     expect(tester.binding.transientCallbackCount, 0);
   });
+
+  testWidgets('loose skeletons under one MxSkeletonPulse share a ticker', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxSkeletonPulse(
+        child: Column(
+          children: [MxSkeleton(width: 80), MxSkeleton(width: 120)],
+        ),
+      ),
+    );
+
+    expect(tester.binding.transientCallbackCount, 1);
+  });
 }

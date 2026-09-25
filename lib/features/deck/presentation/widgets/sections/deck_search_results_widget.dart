@@ -91,10 +91,8 @@ class DeckSearchResultsWidget extends ConsumerWidget {
         children: [
           const SizedBox(height: AppSpacing.control),
           MxListSectionHeader(label: l10n.searchSearching(trimmed)),
-          MxSkeletonList(
-            semanticLabel: context.l10n.commonLoading,
-            rows: _skeletonRows,
-          ),
+          // The header above already says what is searched for.
+          const MxSkeletonList(rows: _skeletonRows),
         ],
       ),
     };
