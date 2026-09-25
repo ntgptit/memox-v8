@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -13,25 +14,24 @@ class GalleryStatesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'G · Loading, empty & error',
+    title: context.l10n.galleryGLoadingEmptyError,
     children: [
       MxEmptyState(
         icon: AppIcons.inbox,
-        title: 'No decks yet',
-        body: 'Create a deck or add a starter deck to begin.',
-        actionLabel: 'Create deck',
+        title: context.l10n.galleryNoDecksYet,
+        body: context.l10n.galleryCreateADeckOrAdd,
+        actionLabel: context.l10n.galleryCreateDeck,
         onAction: () {},
       ),
       for (final tone in MxEmptyStateTone.values.skip(1))
         MxEmptyState(
           icon: AppIcons.search,
           title: tone.name,
-          body: 'Compact, ${tone.name} tone.',
+          body: context.l10n.galleryCompactTone(tone.name),
           tone: tone,
           isCompact: true,
         ),
-      const MxSkeletonRow(),
-      const MxSkeletonRow(),
+      MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 2),
       const Row(
         spacing: AppSpacing.gutter,
         children: [
@@ -42,14 +42,14 @@ class GalleryStatesSection extends StatelessWidget {
         ],
       ),
       MxErrorState(
-        title: 'Could not load decks',
-        body: 'Nothing was lost. Try again in a moment.',
-        retryLabel: 'Retry',
+        title: context.l10n.galleryCouldNotLoadDecks,
+        body: context.l10n.galleryLoadErrorBody,
+        retryLabel: context.l10n.commonRetry,
         onRetry: () {},
       ),
-      const MxErrorState(
-        title: 'Deck not found',
-        body: 'It may have been deleted on this device.',
+      MxErrorState(
+        title: context.l10n.galleryDeckNotFound,
+        body: context.l10n.galleryItMayHaveBeenDeleted,
         icon: AppIcons.alert,
       ),
     ],

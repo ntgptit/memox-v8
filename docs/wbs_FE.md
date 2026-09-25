@@ -97,12 +97,12 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 |---|---|---|---|---|---|---|
 | FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | bị chặn | — | M | §2 chốt "implement the handoff as written"; §9 | Chủ dự án quyết có sửa giá trị token của handoff không, rồi Impeccable làm |
 | FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | chưa bắt đầu | — | M | §9 dòng 5; critique 2026-09-21, P2 | Impeccable (typeset) |
-| FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | chưa bắt đầu | — | S | §9 dòng 61, 65 | Sửa trước khi màn hình feature đầu tiên dùng các widget này |
-| FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | chưa bắt đầu | — | S | §9 dòng 62 | — |
+| FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | xong | — | S | UI-base debt, đợt 1: `MxSkeletonList`, tên cho spinner và donut, grabber có action đóng; §9 dòng 61, 65 đã đóng | — |
+| FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
 | FE-C5 | Adaptive: chưa có window-size class, chưa có navigation rail cho tablet và màn hình ngang (dòng 63) | chưa bắt đầu | — | M | §9 dòng 63 | Quyết phạm vi adaptive khi thiết kế màn hình |
-| FE-C6 | BottomSheet không chừa chỗ cho bàn phím (dòng 64) | chưa bắt đầu | — | S | §9 dòng 64: chưa sheet nào có ô nhập | Sửa trước khi một sheet có ô nhập đầu tiên |
-| FE-C7 | Chuỗi của gallery debug là literal tiếng Anh, chưa đưa vào ARB (dòng 19) | chưa bắt đầu | — | S | §9 dòng 19 | Ưu tiên thấp: chỉ có ở build debug |
-| FE-C8 | Hiệu năng: mỗi `MxSkeleton` chạy ticker riêng; `context.derivedColors` dựng lại ở mỗi lần đọc (dòng 66) | chưa bắt đầu | — | S | §9 dòng 66 | — |
+| FE-C6 | BottomSheet không chừa chỗ cho bàn phím (dòng 64) | xong | — | S | UI-base debt, đợt 1: sheet đặt trên IME inset; §9 dòng 64 đã đóng | — |
+| FE-C7 | Chuỗi của gallery debug là literal tiếng Anh, chưa đưa vào ARB (dòng 19) | xong | — | S | Gallery l10n: 125 key `gallery…` en/vi; luật chuỗi literal của guard phủ `lib/app/`; §9 dòng 19 đã đóng | — |
+| FE-C8 | Hiệu năng: mỗi `MxSkeleton` chạy ticker riêng; `context.derivedColors` dựng lại ở mỗi lần đọc (dòng 66) | xong | — | S | UI-base debt, đợt 1: một pulse cho mỗi danh sách; `derivedColors` nhớ theo theme; §9 dòng 66 (phần contrast chờ FE-C1) | — |
 
 ### Hạ tầng và kiểm chứng
 

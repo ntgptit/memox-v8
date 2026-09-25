@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-
-const _topRadius = BorderRadius.vertical(top: Radius.circular(AppRadius.xl));
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
 /// over a 45% scrim, sliding up over 260ms. It opens instantly under reduced
@@ -15,16 +12,12 @@ Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
 }) {
-  final colors = context.colors;
+  // The surface, radius and scrim are the theme's sheet (spec §4.6).
   return showModalBottomSheet<T>(
     context: context,
     builder: builder,
     isScrollControlled: true,
     useSafeArea: true,
-    backgroundColor: colors.surfaceContainerHigh,
-    elevation: 0,
-    shape: const RoundedRectangleBorder(borderRadius: _topRadius),
-    barrierColor: colors.scrim.withValues(alpha: AppEffects.scrimOpacity),
     sheetAnimationStyle: AnimationStyle(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
@@ -66,18 +59,24 @@ class MxBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return ConstrainedBox(
+    final sheets = Theme.of(context).bottomSheetTheme;
+    final shape = context.sheetShape;
+    // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
+    // the IME inset and caps itself within what is left.
+    final inset = MediaQuery.viewInsetsOf(context).bottom;
+    final sheet = ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * _maxHeightShare,
+        maxHeight:
+            (MediaQuery.sizeOf(context).height - inset) * _maxHeightShare,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: _topRadius,
+          borderRadius: shape.borderRadius,
           boxShadow: AppShadows.chrome(colors),
         ),
         child: Material(
-          color: colors.surfaceContainerHigh,
-          shape: const RoundedRectangleBorder(borderRadius: _topRadius),
+          color: sheets.backgroundColor,
+          shape: shape,
           clipBehavior: Clip.antiAlias,
           child: SafeArea(
             top: false,
@@ -86,20 +85,31 @@ class MxBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (hasGrabber)
-                  Padding(
+                  // Material's drag-handle semantics: a screen reader can
+                  // dismiss by the grabber (§9 row 65).
+                  Semantics(
                     key: const ValueKey('mx-sheet-grabber'),
-                    padding: const EdgeInsets.only(
-                      top: AppSpacing.control,
-                      bottom: AppSpacing.micro,
-                    ),
-                    child: Center(
-                      child: SizedBox(
-                        width: _grabberWidth,
-                        height: _grabberHeight,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.outlineVariant,
-                            borderRadius: BorderRadius.circular(AppRadius.full),
+                    container: true,
+                    button: true,
+                    label: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    onTap: () => Navigator.of(context).maybePop(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: AppSpacing.control,
+                        bottom: AppSpacing.micro,
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: _grabberWidth,
+                          height: _grabberHeight,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: colors.outlineVariant,
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -113,6 +123,10 @@ class MxBottomSheet extends StatelessWidget {
           ),
         ),
       ),
+    );
+    return Padding(
+      padding: EdgeInsets.only(bottom: inset),
+      child: sheet,
     );
   }
 }

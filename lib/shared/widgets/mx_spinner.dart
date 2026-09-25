@@ -18,6 +18,7 @@ class MxSpinner extends StatefulWidget {
     super.key,
     this.size = MxSpinnerSize.inline,
     this.isOnFill = false,
+    this.semanticLabel,
   });
 
   final MxSpinnerSize size;
@@ -25,6 +26,10 @@ class MxSpinner extends StatefulWidget {
   /// Inside a filled (primary or destructive) button: onPrimary, not primary
   /// (ruling O2).
   final bool isOnFill;
+
+  /// What is in flight, for a screen reader (§9 row 61). Null keeps the
+  /// spinner silent, as inside a button that already names its work.
+  final String? semanticLabel;
 
   @override
   State<MxSpinner> createState() => _MxSpinnerState();
@@ -52,7 +57,7 @@ class _MxSpinnerState extends State<MxSpinner>
       MxSpinnerSize.standard => AppIconSize.standard,
       MxSpinnerSize.large => AppIconSize.large,
     };
-    return SizedBox.square(
+    final ring = SizedBox.square(
       dimension: dimension,
       child: RotationTransition(
         turns: _turns,
@@ -63,6 +68,9 @@ class _MxSpinnerState extends State<MxSpinner>
         ),
       ),
     );
+    final label = widget.semanticLabel;
+    if (label == null) return ExcludeSemantics(child: ring);
+    return Semantics(label: label, child: ring);
   }
 }
 

@@ -40,6 +40,10 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "What a screen reader hears while a list or a value loads."
+  },
   "libraryCreateDeck": "Create deck",
   "@libraryCreateDeck": {
     "description": "Action and FAB label: create a new top-level deck."
@@ -1884,5 +1888,535 @@
   "cardSearchEmptyHint": "Try a different term, or clear the search.",
   "@cardSearchEmptyHint": {
     "description": "Under the no-match title while a filter is on: clearing the search keeps the filter, so no count (screen 07)."
+  },
+  "galleryBActions": "B · Actions",
+  "@galleryBActions": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySmall": "Small",
+  "@gallerySmall": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCompact": "Compact",
+  "@galleryCompact": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryChip": "Chip",
+  "@galleryChip": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryReveal": "Reveal",
+  "@galleryReveal": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDisabled": "Disabled",
+  "@galleryDisabled": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySaving": "Saving",
+  "@gallerySaving": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryABlockActionWhoseLabel": "A block action whose label is long enough to wrap",
+  "@galleryABlockActionWhoseLabel": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySearch": "Search",
+  "@gallerySearch": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMore": "More",
+  "@galleryMore": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryClose": "Close",
+  "@galleryClose": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryAll": "All",
+  "@galleryAll": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCards": "Cards",
+  "@galleryCards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDecks": "Decks",
+  "@galleryDecks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySortDue": "Sort: Due",
+  "@gallerySortDue": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryFilters": "Filters",
+  "@galleryFilters": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryAChromeNavigation": "A · Chrome & navigation",
+  "@galleryAChromeNavigation": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryJapaneseN5VerbsOfMotion": "Japanese N5 · Verbs of motion and a very long deck name",
+  "@galleryJapaneseN5VerbsOfMotion": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryReview": "Review",
+  "@galleryReview": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryRecall": "Recall",
+  "@galleryRecall": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNewDeck": "New deck",
+  "@galleryNewDeck": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCInputsSelection": "C · Inputs & selection",
+  "@galleryCInputsSelection": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySearchDecksAndCards": "Search decks and cards",
+  "@gallerySearchDecksAndCards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryClearSearch": "Clear search",
+  "@galleryClearSearch": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySearchDecks": "Search decks",
+  "@gallerySearchDecks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeckName": "Deck name",
+  "@galleryDeckName": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNameIsRequired": "Name is required",
+  "@galleryNameIsRequired": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryAnExampleSentence": "An example sentence",
+  "@galleryAnExampleSentence": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryTheMeaning": "The meaning",
+  "@galleryTheMeaning": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryTheTerm": "The term",
+  "@galleryTheTerm": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryTenTagsAtMostOn": "Ten tags at most on one card",
+  "@galleryTenTagsAtMostOn": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDailyReminder": "Daily reminder",
+  "@galleryDailyReminder": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryEightBox": "Eight box",
+  "@galleryEightBox": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCardsClimbEightBoxesEach": "Cards climb eight boxes, each a longer interval.",
+  "@galleryCardsClimbEightBoxesEach": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySm2": "SM-2",
+  "@gallerySm2": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryIntervalsFromFourAnswersAnd": "Intervals from four answers and an ease factor.",
+  "@galleryIntervalsFromFourAnswersAnd": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLight": "Light",
+  "@galleryLight": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDark": "Dark",
+  "@galleryDark": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySystem": "System",
+  "@gallerySystem": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryFewerCards": "Fewer cards",
+  "@galleryFewerCards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMoreCards": "More cards",
+  "@galleryMoreCards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryHLayout": "H · Layout",
+  "@galleryHLayout": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery12CardsSelected": "12 cards selected",
+  "@gallery12CardsSelected": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMove": "Move",
+  "@galleryMove": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryFOverlaysFeedback": "F · Overlays & feedback",
+  "@galleryFOverlaysFeedback": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMoveToTrash": "Move to Trash",
+  "@galleryMoveToTrash": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryTenTagsAtMost": "Ten tags at most",
+  "@galleryTenTagsAtMost": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryRemoveATagBeforeAdding": "Remove a tag before adding another one.",
+  "@galleryRemoveATagBeforeAdding": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryTheExportCouldNotBe": "The export could not be written.",
+  "@galleryTheExportCouldNotBe": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDialog": "Dialog",
+  "@galleryDialog": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySheet": "Sheet",
+  "@gallerySheet": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeckPicker": "Deck picker",
+  "@galleryDeckPicker": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySnackbar": "Snackbar",
+  "@gallerySnackbar": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMovedToTrash": "Moved to Trash",
+  "@galleryMovedToTrash": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryUndo": "Undo",
+  "@galleryUndo": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeleteThisDeck": "Delete this deck?",
+  "@galleryDeleteThisDeck": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryIts42CardsMoveTo": "Its 42 cards move to Trash, where they stay for 30 days.",
+  "@galleryIts42CardsMoveTo": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryRename": "Rename",
+  "@galleryRename": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDelete": "Delete",
+  "@galleryDelete": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryRecoverableFor30Days": "Recoverable for 30 days",
+  "@galleryRecoverableFor30Days": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMoveToDeck": "Move to deck",
+  "@galleryMoveToDeck": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCardsKeepTheirProgressDecks": "Cards keep their progress. Decks that hold other decks are not offered.",
+  "@galleryCardsKeepTheirProgressDecks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryGrammar": "Grammar",
+  "@galleryGrammar": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryHoldsOtherDecks": "Holds other decks",
+  "@galleryHoldsOtherDecks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNowhereToMove": "Nowhere to move",
+  "@galleryNowhereToMove": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryGallery": "Gallery",
+  "@galleryGallery": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLightTheme": "Light theme",
+  "@galleryLightTheme": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDarkTheme": "Dark theme",
+  "@galleryDarkTheme": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNormalText": "Normal text",
+  "@galleryNormalText": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLargeText": "Large text",
+  "@galleryLargeText": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryGLoadingEmptyError": "G · Loading, empty & error",
+  "@galleryGLoadingEmptyError": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNoDecksYet": "No decks yet",
+  "@galleryNoDecksYet": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCreateADeckOrAdd": "Create a deck or add a starter deck to begin.",
+  "@galleryCreateADeckOrAdd": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCreateDeck": "Create deck",
+  "@galleryCreateDeck": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCouldNotLoadDecks": "Could not load decks",
+  "@galleryCouldNotLoadDecks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeckNotFound": "Deck not found",
+  "@galleryDeckNotFound": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryItMayHaveBeenDeleted": "It may have been deleted on this device.",
+  "@galleryItMayHaveBeenDeleted": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryEStatusMetadata": "E · Status & metadata",
+  "@galleryEStatusMetadata": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery23Due": "23 due",
+  "@gallery23Due": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery4Mastered": "4 mastered",
+  "@gallery4Mastered": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery2Late": "2 late",
+  "@gallery2Late": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery1Failed": "1 failed",
+  "@gallery1Failed": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery128Cards": "128 cards",
+  "@gallery128Cards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery12Ready": "12 ready",
+  "@gallery12Ready": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryKept": "Kept",
+  "@galleryKept": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDecksCardsAndHistory": "Decks, cards and history",
+  "@galleryDecksCardsAndHistory": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLost": "Lost",
+  "@galleryLost": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySchedulesAndDueDates": "Schedules and due dates",
+  "@gallerySchedulesAndDueDates": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNew": "New",
+  "@galleryNew": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLearning": "Learning",
+  "@galleryLearning": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryReviewing": "Reviewing",
+  "@galleryReviewing": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryMastered": "Mastered",
+  "@galleryMastered": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryVerbs": "verbs",
+  "@galleryVerbs": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryATagLongEnoughTo": "a tag long enough to reach the maximum",
+  "@galleryATagLongEnoughTo": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeletedDecksStayRecoverableFor": "Deleted decks stay recoverable for 30 days.",
+  "@galleryDeletedDecksStayRecoverableFor": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNothingDue": "Nothing due",
+  "@galleryNothingDue": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryAcross4Decks": "across 4 decks",
+  "@galleryAcross4Decks": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery42CardsNothingDue": "42 cards · nothing due",
+  "@gallery42CardsNothingDue": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDSurfacesRowsContent": "D · Surfaces, rows & content",
+  "@galleryDSurfacesRowsContent": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryHeroCard": "Hero card",
+  "@galleryHeroCard": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryWarningCard": "Warning card",
+  "@galleryWarningCard": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySelectedCard": "Selected card",
+  "@gallerySelectedCard": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryKanjiN5": "Kanji N5",
+  "@galleryKanjiN5": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery42Cards12Due": "42 cards · 12 due",
+  "@gallery42Cards12Due": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryADeckNameLongEnough": "A deck name long enough to be cut with an ellipsis",
+  "@galleryADeckNameLongEnough": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNestedThreeLevelsDeep": "Nested three levels deep",
+  "@galleryNestedThreeLevelsDeep": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeckActions": "Deck actions",
+  "@galleryDeckActions": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryImporting": "Importing",
+  "@galleryImporting": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallery120Of300Cards": "120 of 300 cards",
+  "@gallery120Of300Cards": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCannotHoldAnotherDeck": "Cannot hold another deck",
+  "@galleryCannotHoldAnotherDeck": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryReminders": "Reminders",
+  "@galleryReminders": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryChangesApplyToFutureSessions": "Changes apply to future sessions.",
+  "@galleryChangesApplyToFutureSessions": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryOneNudgeAtTheTime": "One nudge at the time you choose",
+  "@galleryOneNudgeAtTheTime": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCardsPerSession": "Cards per session",
+  "@galleryCardsPerSession": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLanguage": "Language",
+  "@galleryLanguage": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryUnavailableWhileNotificationsAreOff": "Unavailable while notifications are off",
+  "@galleryUnavailableWhileNotificationsAreOff": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryChangeTheDeckName": "Change the deck name",
+  "@galleryChangeTheDeckName": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLevel": "Level {level}",
+  "@galleryLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryDeckNumber": "Deck {number}",
+  "@galleryDeckNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryCompactTone": "Compact, {tone} tone.",
+  "@galleryCompactTone": {
+    "placeholders": {
+      "tone": {
+        "type": "String"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryOverdue": "{count} overdue",
+  "@galleryOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryToday": "{count} today",
+  "@galleryToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryNewCount": "{count} new",
+  "@galleryNewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryLoadErrorBody": "Nothing was lost. Try again in a moment.",
+  "@galleryLoadErrorBody": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryN5": "N5",
+  "@galleryN5": {
+    "description": "Debug gallery: sample copy in the component showcase."
   }
 }

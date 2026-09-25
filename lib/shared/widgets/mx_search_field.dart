@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
@@ -103,11 +101,6 @@ class _MxSearchFieldState extends State<MxSearchField> {
     final styles = context.textStyles;
     final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
-    OutlineInputBorder edge(Color color) => OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      borderSide: BorderSide(color: color, width: AppStroke.hairline),
-    );
-    final resting = edge(context.derivedColors.ghostBorder);
     // As in MxTextField: padding centres the line in the 52 floor, so the
     // decorator paints the full box and scaled text still grows it.
     final valueStyle = styles.searchValue;
@@ -125,11 +118,11 @@ class _MxSearchFieldState extends State<MxSearchField> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: styles.searchHint,
-        filled: true,
+        // The edges are the theme's field (spec §4.6); the search keeps its
+        // own fill.
         fillColor: isFocused
             ? colors.surfaceContainerLowest
             : colors.surfaceContainer,
-        isDense: true,
         contentPadding: EdgeInsets.symmetric(
           vertical: (AppSize.input - lineHeight) / 2,
         ),
@@ -161,9 +154,6 @@ class _MxSearchFieldState extends State<MxSearchField> {
               )
             : const SizedBox(width: AppSpacing.grouped),
         suffixIconConstraints: const BoxConstraints(),
-        border: resting,
-        enabledBorder: resting,
-        focusedBorder: edge(colors.primary),
       ),
     );
     final onTap = widget.onTap;

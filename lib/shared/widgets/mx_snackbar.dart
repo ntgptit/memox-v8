@@ -3,7 +3,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 
 const double _verticalPadding = 10;
 
@@ -33,20 +33,11 @@ SnackBar buildMxSnackBar(
   VoidCallback? onAction,
 }) {
   final messenger = ScaffoldMessenger.of(context);
+  // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
-    backgroundColor: context.colors.inverseSurface,
-    behavior: SnackBarBehavior.floating,
-    margin: const EdgeInsetsDirectional.only(
-      start: AppSpacing.gutter,
-      end: AppSpacing.gutter,
-      bottom: AppSpacing.gutter,
-    ),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
     // so the action's 48 target sits inside the 48 toast.
     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
     content: MxSnackbarContent(
       message: message,
       actionLabel: actionLabel,
@@ -98,7 +89,7 @@ class MxSnackbarContent extends StatelessWidget {
               onPressed: onPressed,
               // Ruling O9: 32 painted inside the 48 target; the radius is
               // UNSPECIFIED and uses 8.
-              style: mxButtonStyle(
+              style: appButtonStyle(
                 fill: null,
                 ink: colors.inversePrimary,
                 edge: BorderSide.none,

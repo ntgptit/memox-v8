@@ -5,7 +5,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 
 /// A ghost chip that opens a menu (sort, filters). No fill and no border,
 /// which sets it apart from MxFilterChip; it never reads as selected. The
@@ -29,7 +29,7 @@ class MxChipTrigger extends StatelessWidget {
     final colors = context.colors;
     return TextButton(
       onPressed: onPressed,
-      style: mxButtonStyle(
+      style: appButtonStyle(
         fill: null,
         ink: colors.onSurfaceVariant,
         edge: BorderSide.none,

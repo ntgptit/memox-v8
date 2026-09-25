@@ -117,7 +117,8 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (value.isLoading) const MxSkeletonRow(),
+          if (value.isLoading)
+            MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 1),
           if (summary != null && summary.hasProgressToLose) ...[
             _Consequences(summary: summary, cycle: view.deck.generation!),
             const SizedBox(height: AppSpacing.grouped),

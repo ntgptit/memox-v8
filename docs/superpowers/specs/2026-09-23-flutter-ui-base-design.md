@@ -78,7 +78,8 @@ lib/
 │   ├── mastery_ramp.dart            MasteryRamp utility
 │   ├── mx_text_styles.dart          component type treatments (phase 2)
 │   ├── app_decorations.dart         raised card surface (phase 2)
-│   ├── app_component_themes.dart    Material component themes (grows per phase)
+│   ├── app_button_style.dart        appButtonStyle(): the button ButtonStyle the theme and Mx controls share
+│   ├── app_component_themes.dart    Material component themes (§4.6)
 │   ├── app_theme.dart               buildLightTheme() / buildDarkTheme()
 │   └── theme_context.dart           context.colors / texts / semanticColors
 ├── l10n/
@@ -192,6 +193,21 @@ variant: filled/outlined buttons, `InputDecorationTheme`,
 dialog, bottom sheet, snackbar, switch, navigation bar, chip, progress indicator.
 A variant richer than the Material theme can express stays in the `Mx*` widget,
 which still reads `ColorScheme`, `TextTheme` and the tokens.
+
+Built 2026-09-25 (the phases shipped without them). The inspection per
+category:
+
+| Category | Central theme | Why |
+|---|---|---|
+| Text/input fields | `InputDecorationTheme` | Every field shares the fill that lightens on focus, the ghost/primary/error edges at radius 12 with no label gap, the 14 hint and 12 side padding. `MxTextField`'s editor variants override only the radius, the fill and the padding; `MxSearchField` only its fill and icons. |
+| Buttons | `FilledButtonTheme`, `OutlinedButtonTheme`, `TextButtonTheme` | Framework-built buttons (dialog actions, pickers) get the regular V3 size in the primary, outline and text tones, dimmed when disabled. `MxButton` keeps its tone × size matrix through the same `appButtonStyle`. |
+| Icon buttons | `IconButtonTheme` | The IconButton contract. `MxIconButton` passes the theme's style with its one ink and keeps its whole-control 0.38 dim. |
+| Dialogs | `DialogThemeData` | The high container at radius 20, flat, over the 45% scrim, with the compact title and dialog body. `MxDialog` keeps its widths and entrance. |
+| Bottom sheets | `BottomSheetThemeData` | The high container, top radius 20, flat, over the 45% scrim. `MxBottomSheet` keeps its height cap, grabber and shadow. |
+| Snackbar | `SnackBarThemeData` | The floating inverse toast at radius 12, a gutter in. `MxSnackbar` keeps its content layout. |
+| Switch, navigation bar, chip, progress | not configured | `MxToggle`, `MxBottomNav`, `MxFilterChip` and `MxSpinner` draw the kit's own controls. No Material switch, navigation bar, chip or progress indicator appears in the app or the framework screens it opens, and M3's `ColorScheme`-derived defaults hold should one appear. |
+
+The refactor changed no golden.
 
 ## 5. Component conventions
 
@@ -403,7 +419,7 @@ item names where it comes from.
 | 16 | EmptyState has no footnote slot until MxNote (phase 5); MxButton's loading spinner is a plain `CircularProgressIndicator` until MxSpinner (phase 6) | phase 2 plan R8 |
 | 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
 | 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run | phase 3 plan G3 |
-| 19 | The debug gallery's labels and demo copy are English literals, not ARB strings | phase 3 plan G1 |
+| 19 | The debug gallery's labels and demo copy are English literals, not ARB strings — closed by gallery l10n (FE-C7): `gallery…` keys in en and vi, and the literal-string rule covers `lib/app/` | phase 3 plan G1 |
 | 20 | FieldMessage warning text uses a derived `warningInk` (onWarning light, the amber dark), as the FieldMessage contract scopes it; this resolves row 1 for FieldMessage | phase 4 plan I1 |
 | 21 | SelectionCheckbox's check glyph is 14, below the 16 icon floor, as its contract states | phase 4 plan I2 |
 | 22 | Stepper invalid-ring radius is UNSPECIFIED and uses `AppRadius.md`, its buttons' radius | phase 4 plan I3 |
@@ -445,12 +461,12 @@ item names where it comes from.
 | 58 | P1 non-text contrast: the InlineBanner warning glyph is `warning` at 1.87:1 on its amber ground in light, under the 3:1 a meaningful icon needs | phase 6 audit |
 | 59 | P2 non-text contrast: the BottomSheet grabber is `outlineVariant` at 1.30:1 (light) and 1.05:1 (dark) on `surfaceContainerHigh`, and an outline Button's edge on a dialog or sheet surface is 1.05:1 in dark; extends row 4 | phase 6 audit |
 | 60 | P2 contrast: the WorkloadBreakdownLine "new" term is `statusNew` at 2.81:1 on surface (light), 12/600; extends row 3 | phase 6 audit |
-| 61 | P2 accessibility: MxSpinner and MxSkeleton expose no semantics, so a screen reader hears nothing while content loads; MxMasteryDonut announces only its percentage, with no subject, and takes no label | phase 6 audit |
-| 62 | P2 platform: `android/app/src/main/AndroidManifest.xml` does not set `android:enableOnBackInvokedCallback`, so Android 14+ shows no predictive Back preview (Back itself works) | phase 6 audit |
+| 61 | P2 accessibility: MxSpinner and MxSkeleton expose no semantics, so a screen reader hears nothing while content loads; MxMasteryDonut announces only its percentage, with no subject, and takes no label — closed by UI-base debt FE-C3: `MxSkeletonList` is heard once as "Loading", `MxSpinner` and `MxMasteryDonut` take a name | phase 6 audit |
+| 62 | P2 platform: `android/app/src/main/AndroidManifest.xml` does not set `android:enableOnBackInvokedCallback`, so Android 14+ shows no predictive Back preview (Back itself works) — closed by UI-base debt FE-C4 | phase 6 audit |
 | 63 | P2 adaptivity: there is no window-size class; MxBottomNav is used at every width with no navigation rail, and lists and cards stretch edge to edge on tablets and in landscape | phase 6 audit |
-| 64 | P2 keyboard: MxBottomSheet does not pad for the IME inset, so a text field placed in a sheet would sit under the keyboard; no sheet holds a field yet | phase 6 audit |
-| 65 | P3 platform: MxToggle, MxSegmentedTray, MxSpinner and the sheet grabber are handoff-drawn stand-ins for Material's Switch, SegmentedButton, progress indicator and drag handle; they carry the right semantics, but the grabber offers no drag-handle action to a screen reader | phase 6 audit |
-| 66 | P3 polish and performance: at its low pulse the light skeleton is 1.07:1 on surface, and the light banner borders are 1.11:1 on their ground; each MxSkeleton runs its own ticker, and `context.derivedColors` is rebuilt on every read | phase 6 audit |
+| 64 | P2 keyboard: MxBottomSheet does not pad for the IME inset, so a text field placed in a sheet would sit under the keyboard; no sheet holds a field yet — closed by UI-base debt FE-C6: the sheet sits on the IME inset | phase 6 audit |
+| 65 | P3 platform: MxToggle, MxSegmentedTray, MxSpinner and the sheet grabber are handoff-drawn stand-ins for Material's Switch, SegmentedButton, progress indicator and drag handle; they carry the right semantics, but the grabber offers no drag-handle action to a screen reader — the grabber clause closed by UI-base debt FE-C3: Material's drag-handle semantics | phase 6 audit |
+| 66 | P3 polish and performance: at its low pulse the light skeleton is 1.07:1 on surface, and the light banner borders are 1.11:1 on their ground; each MxSkeleton runs its own ticker, and `context.derivedColors` is rebuilt on every read — the ticker and derived-colour clauses closed by UI-base debt FE-C8 (one pulse per `MxSkeletonList`; derived colours memoised per theme); the contrast clauses stay with FE-C1 | phase 6 audit |
 | 67 | Status text reads in derived status inks (`statusNewInk`…`statusMasteredInk`): the status colour mixed toward `onSurface` (light 0.40/0.50/0.25/0.25, dark 0.40/0/0.10/0), at least 4.5:1 on surface, surfaceContainerLowest, surfaceContainer and each 12% tint. This resolves row 57's StatusBadge half and row 60; row 57's MasteryDonut label and row 3's remaining status texts stay open | library phase 1 L6 |
 | 68 | A database `Failure` shows ARB copy from `lib/l10n/failure_message.dart`, never `Failure.message`, which stays English for logs | library phase 1 L2 |
 | 69 | The Library root's deck rows open nothing until phase 2 adds the recursive deck screen | library phase 1 L1 |

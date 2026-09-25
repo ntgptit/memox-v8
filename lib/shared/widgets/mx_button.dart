@@ -6,7 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// Colour role of a button: the contract's four shipped tones.
@@ -66,7 +66,7 @@ class MxButton extends StatelessWidget {
     final geometry = _geometryFor(size, hasIcon: icon != null);
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
-      style: mxButtonStyle(
+      style: appButtonStyle(
         fill: paint.fill,
         ink: paint.ink,
         edge: paint.edge,

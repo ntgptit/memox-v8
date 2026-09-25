@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
@@ -89,5 +91,30 @@ void main() {
         }
       }
     }
+  });
+
+  testWidgets('derived colours resolve once per theme', (tester) async {
+    late MxDerivedColors first;
+    late MxDerivedColors second;
+    Widget probe(ThemeData theme) => MaterialApp(
+      theme: theme,
+      home: Builder(
+        builder: (context) {
+          first = context.derivedColors;
+          second = context.derivedColors;
+          return const SizedBox();
+        },
+      ),
+    );
+
+    await tester.pumpWidget(probe(buildLightTheme()));
+    expect(identical(first, second), isTrue);
+    final light = first;
+
+    await tester.pumpWidget(probe(buildDarkTheme()));
+    // MaterialApp animates the switch; the settled frame reads dark.
+    await tester.pumpAndSettle();
+    expect(identical(first, light), isFalse);
+    expect(first.ghostBorder, isNot(light.ghostBorder));
   });
 }

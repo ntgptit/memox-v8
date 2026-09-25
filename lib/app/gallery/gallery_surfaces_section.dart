@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -34,22 +35,22 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'D · Surfaces, rows & content',
+    title: context.l10n.galleryDSurfacesRowsContent,
     children: [
-      const MxCard(
+      MxCard(
         isHero: true,
         child: MxListSectionHeader(
-          label: 'Hero card',
-          trailing: MxBadge(label: '23 due', isSolid: true),
+          label: context.l10n.galleryHeroCard,
+          trailing: MxBadge(label: context.l10n.gallery23Due, isSolid: true),
         ),
       ),
-      const MxCard(
+      MxCard(
         isWarning: true,
-        child: MxListSectionHeader(label: 'Warning card'),
+        child: MxListSectionHeader(label: context.l10n.galleryWarningCard),
       ),
-      const MxCard(
+      MxCard(
         isSelected: true,
-        child: MxListSectionHeader(label: 'Selected card'),
+        child: MxListSectionHeader(label: context.l10n.gallerySelectedCard),
       ),
       Row(
         spacing: AppSpacing.grouped,
@@ -77,9 +78,9 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         ],
       ),
       MxListSectionHeader(
-        label: 'Decks',
+        label: context.l10n.galleryDecks,
         trailing: MxChipTrigger(
-          label: 'Sort: Due',
+          label: context.l10n.gallerySortDue,
           icon: AppIcons.sort,
           onPressed: () {},
         ),
@@ -89,33 +90,33 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         child: Column(
           children: [
             MxListRow(
-              title: 'Kanji N5',
-              subtitle: '42 cards · 12 due',
+              title: context.l10n.galleryKanjiN5,
+              subtitle: context.l10n.gallery42Cards12Due,
               leading: const MxIconTile(icon: AppIcons.library),
               hasChevron: true,
               onTap: () {},
             ),
             MxListRow(
-              title: 'A deck name long enough to be cut with an ellipsis',
-              subtitle: 'Nested three levels deep',
+              title: context.l10n.galleryADeckNameLongEnough,
+              subtitle: context.l10n.galleryNestedThreeLevelsDeep,
               leading: const MxIconTile(icon: AppIcons.folder),
               trailing: MxIconButton(
                 icon: AppIcons.more,
-                semanticLabel: 'Deck actions',
+                semanticLabel: context.l10n.galleryDeckActions,
                 onPressed: () {},
               ),
               onTap: () {},
             ),
             MxListRow(
-              title: 'Importing',
-              subtitle: '120 of 300 cards',
+              title: context.l10n.galleryImporting,
+              subtitle: context.l10n.gallery120Of300Cards,
               leading: const MxIconTile(icon: AppIcons.library),
               isBusy: true,
               onTap: () {},
             ),
             MxListRow(
-              title: 'Grammar',
-              subtitle: 'Cannot hold another deck',
+              title: context.l10n.galleryGrammar,
+              subtitle: context.l10n.galleryCannotHoldAnotherDeck,
               leading: const MxIconTile(icon: AppIcons.folder),
               isEnabled: false,
               onTap: () {},
@@ -125,26 +126,26 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         ),
       ),
       MxSection(
-        title: 'Reminders',
-        note: 'Changes apply to future sessions.',
+        title: context.l10n.galleryReminders,
+        note: context.l10n.galleryChangesApplyToFutureSessions,
         children: [
           MxSettingsRow(
-            label: 'Daily reminder',
-            subtitle: 'One nudge at the time you choose',
+            label: context.l10n.galleryDailyReminder,
+            subtitle: context.l10n.galleryOneNudgeAtTheTime,
             icon: AppIcons.reminder,
             trailing: MxToggle(
               isOn: _isReminderOn,
               onChanged: (value) => setState(() => _isReminderOn = value),
-              semanticLabel: 'Daily reminder',
+              semanticLabel: context.l10n.galleryDailyReminder,
             ),
           ),
           MxSettingsRow(
-            label: 'Cards per session',
+            label: context.l10n.galleryCardsPerSession,
             icon: AppIcons.library,
             wideControl: MxStepper(
               value: _cards,
-              decrementLabel: 'Fewer cards',
-              incrementLabel: 'More cards',
+              decrementLabel: context.l10n.galleryFewerCards,
+              incrementLabel: context.l10n.galleryMoreCards,
               onDecrement: _cards > _minCards
                   ? () => setState(() => _cards--)
                   : null,
@@ -154,12 +155,12 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             ),
           ),
           MxSettingsRow(
-            label: 'Language',
+            label: context.l10n.galleryLanguage,
             icon: AppIcons.settings,
             onTap: () {},
           ),
-          const MxSettingsRow(
-            label: 'Unavailable while notifications are off',
+          MxSettingsRow(
+            label: context.l10n.galleryUnavailableWhileNotificationsAreOff,
             icon: AppIcons.reminder,
             isEnabled: false,
           ),
@@ -170,20 +171,20 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           children: [
             MxActionSheetCommandRow(
               icon: AppIcons.edit,
-              label: 'Rename',
-              subtitle: 'Change the deck name',
+              label: context.l10n.galleryRename,
+              subtitle: context.l10n.galleryChangeTheDeckName,
               onTap: () {},
             ),
             MxActionSheetCommandRow(
               icon: AppIcons.folder,
-              label: 'Move',
+              label: context.l10n.galleryMove,
               hasChevron: true,
               onTap: () {},
             ),
             MxActionSheetCommandRow(
               icon: AppIcons.delete,
-              label: 'Delete',
-              subtitle: 'Recoverable for 30 days',
+              label: context.l10n.galleryDelete,
+              subtitle: context.l10n.galleryRecoverableFor30Days,
               isDestructive: true,
               onTap: () {},
             ),

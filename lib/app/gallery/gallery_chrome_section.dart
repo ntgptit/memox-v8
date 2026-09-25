@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -15,75 +16,78 @@ class GalleryChromeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'A · Chrome & navigation',
+    title: context.l10n.galleryAChromeNavigation,
     children: [
-      const MxAppBar(title: 'Library'),
+      MxAppBar(title: context.l10n.navLibrary),
       MxAppBar(
-        title: 'Japanese N5 · Verbs of motion and a very long deck name',
+        title: context.l10n.galleryJapaneseN5VerbsOfMotion,
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
-          semanticLabel: 'Back',
+          semanticLabel: context.l10n.commonBack,
           onPressed: () {},
         ),
         actions: [
           MxIconButton(
             icon: AppIcons.search,
-            semanticLabel: 'Search',
+            semanticLabel: context.l10n.gallerySearch,
             onPressed: () {},
           ),
           MxIconButton(
             icon: AppIcons.more,
-            semanticLabel: 'More',
+            semanticLabel: context.l10n.galleryMore,
             onPressed: () {},
           ),
         ],
       ),
       MxStudyTopBar(
-        modeLabel: 'Review',
+        modeLabel: context.l10n.galleryReview,
         current: 3,
         total: 10,
         counterLabel: '3 / 10',
-        closeLabel: 'Close',
+        closeLabel: context.l10n.galleryClose,
         onClose: () {},
       ),
       MxStudyTopBar(
-        modeLabel: 'Recall',
+        modeLabel: context.l10n.galleryRecall,
         current: 10,
         total: 10,
         counterLabel: '10 / 10',
-        closeLabel: 'Close',
+        closeLabel: context.l10n.galleryClose,
         onClose: () {},
         accent: context.semanticColors.mastery,
       ),
       MxBreadcrumb(
         segments: [
           for (var level = 1; level < 10; level++)
-            MxBreadcrumbSegment(label: 'Level $level', onTap: () {}),
-          const MxBreadcrumbSegment(label: 'Level 10'),
+            MxBreadcrumbSegment(
+              label: context.l10n.galleryLevel(level),
+              onTap: () {},
+            ),
+          MxBreadcrumbSegment(label: context.l10n.galleryLevel(10)),
         ],
       ),
       MxBottomNav(
-        destinations: const [
+        destinations: [
           MxNavDestination(
             icon: AppIcons.library,
             selectedIcon: AppIcons.librarySelected,
-            label: 'Library',
+            label: context.l10n.navLibrary,
           ),
           MxNavDestination(
             icon: AppIcons.study,
             selectedIcon: AppIcons.studySelected,
-            label: 'Study',
+            label: context.l10n.navStudy,
           ),
           MxNavDestination(
             icon: AppIcons.progress,
             selectedIcon: AppIcons.progressSelected,
-            label: 'Progress',
+            label: context.l10n.navProgress,
           ),
           MxNavDestination(
             icon: AppIcons.settings,
             selectedIcon: AppIcons.settingsSelected,
-            label: 'Settings',
+            label: context.l10n.navSettings,
           ),
         ],
         selectedIndex: 0,
@@ -93,7 +97,7 @@ class GalleryChromeSection extends StatelessWidget {
         alignment: AlignmentDirectional.centerEnd,
         child: MxFab(
           icon: AppIcons.add,
-          semanticLabel: 'New deck',
+          semanticLabel: context.l10n.galleryNewDeck,
           onPressed: () {},
         ),
       ),

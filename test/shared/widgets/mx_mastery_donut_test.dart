@@ -78,4 +78,20 @@ void main() {
     expect(() => MxMasteryDonut(fraction: -0.1), throwsAssertionError);
     expect(() => MxMasteryDonut(fraction: double.nan), throwsAssertionError);
   });
+
+  testWidgets('a named donut reads its subject with the percentage', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxMasteryDonut(fraction: 0.25, semanticLabel: 'Mastered'),
+    );
+
+    final node = tester.getSemantics(find.byType(MxMasteryDonut));
+    expect(node.label, 'Mastered');
+    expect(node.value, '25%');
+    expect(find.bySemanticsLabel('25%'), findsNothing);
+    handle.dispose();
+  });
 }

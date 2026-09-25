@@ -47,7 +47,9 @@ class DeckAlgorithmOptionsWidget extends StatelessWidget {
               description: _description(l10n, type),
               isSelected: type == current,
               onSelected: isChoosable ? () => onSelected(type) : null,
-              trailing: type == switchingTo ? const MxSpinner() : null,
+              trailing: type == switchingTo
+                  ? MxSpinner(semanticLabel: context.l10n.commonLoading)
+                  : null,
               hasDivider: index < types.length - 1,
             ),
         ],

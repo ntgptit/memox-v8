@@ -106,7 +106,10 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
       _ => MxBottomSheet(
         child: Column(
           children: [
-            for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow(),
+            MxSkeletonList(
+              semanticLabel: context.l10n.commonLoading,
+              rows: _skeletonRows,
+            ),
           ],
         ),
       ),
