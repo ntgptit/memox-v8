@@ -43,7 +43,8 @@ One recursive screen for the Library root (`/decks`) and any open deck
 One `MxBottomSheet`, "Sort & filter":
 
 - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date added
-  "Newest first" · Name "A → Z" · Most due cards. Progress waits for BE-A7 under Coming soon.
+  "Newest first" · Name "A → Z" · Most due cards. Progress waits under Coming soon
+  for a BR/UC definition (blocked in `wbs_BE.md`).
 - Toggle (`MxToggle`): "Only decks with due cards" / "Hides decks where nothing is
   waiting".
 - Button "Done".
