@@ -7,6 +7,8 @@ import 'package:memox/features/study/data/mappers/study_session_view_mapper.dart
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_view_repository.dart';
+import 'package:memox/features/study_mode/domain/models/match_mode.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 /// Reads the session screen (UC-STUDY-001 steps 6–13): one Drift `watch()` on
 /// the session row, and the rest of the screen read in the same emission.
@@ -50,8 +52,9 @@ final class StudySessionViewRepositoryImpl
     );
   }
 
-  /// The row [session] serves, with its card and the counts of its round;
-  /// null while nothing is left to serve (spec D12).
+  /// The row [session] serves, with its card and the counts of its round,
+  /// and in `guess` its options, in `match` its board; null while nothing is
+  /// left to serve (spec D12).
   Future<ServedRow?> _servedOf(StudySession session) async {
     final head = await _queue.headRow(
       session.id,
@@ -61,10 +64,24 @@ final class StudySessionViewRepositoryImpl
     if (head == null) return null;
     final card = await _views.cardRow(head.cardId);
     if (card == null) return null;
+    final handler = StudyMode.fromCode(head.mode).handler;
+    final board = matchBoardOf(head.position) * matchBoardSize;
     return (
       row: head,
       card: card,
       round: await _views.roundCounts(session.id, head.mode, head.round),
+      options: handler.asksWithOptions
+          ? await _views.guessOptions(session.id, head.round, head.cardId)
+          : null,
+      board: handler.servesInOrder
+          ? null
+          : await _views.boardPairs(
+              session.id,
+              head.mode,
+              head.round,
+              from: board,
+              to: board + matchBoardSize - 1,
+            ),
     );
   }
 }

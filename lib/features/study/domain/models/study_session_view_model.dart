@@ -3,8 +3,9 @@ import 'package:memox/features/study_mode/domain/models/question_direction_model
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The session screen (UC-STUDY-001 steps 6–13; spec §8.2). Package 2b adds
-/// the `match` board, the `guess` options and the `recall` timer.
+/// The session screen (UC-STUDY-001 steps 6–13; spec §8.2), with the
+/// `match` board and the `guess` options of package 2b (graded modes spec
+/// §9).
 final class StudySessionView {
   const StudySessionView({
     required this.sessionId,
@@ -19,6 +20,7 @@ final class StudySessionView {
     required this.currentItem,
     required this.progress,
     required this.summary,
+    this.board,
   });
 
   final String sessionId;
@@ -50,6 +52,10 @@ final class StudySessionView {
   /// Once the session has ended (spec D11).
   final SessionSummary? summary;
 
+  /// `match`: the board of [currentItem], whose first pending pair it is;
+  /// null in every other mode (BR-STUDY-049).
+  final MatchBoard? board;
+
   int get currentStageIndex => stages.indexOf(currentMode);
 
   /// The round the session serves in its current stage.
@@ -75,6 +81,7 @@ final class StudyItem {
     required this.direction,
     required this.remainingMs,
     required this.isRevealed,
+    this.guess,
   });
 
   final String cardId;
@@ -95,6 +102,54 @@ final class StudyItem {
   /// `recall` only: the time left of a turn in progress (BR-STUDY-036).
   final int? remainingMs;
   final bool isRevealed;
+
+  /// `guess`: the question on this card; null in every other mode.
+  final GuessQuestion? guess;
+}
+
+/// A `guess` question (BR-STUDY-037, BR-STUDY-043).
+final class GuessQuestion {
+  const GuessQuestion(this.options);
+
+  /// The five options in the order shown; empty while the question is
+  /// blocked.
+  final List<GuessOption> options;
+
+  /// Fewer than five options could be built or kept: the question is not
+  /// shown and takes no answer (BR-STUDY-040).
+  bool get isBlocked => options.isEmpty;
+}
+
+/// An option of a `guess` question: a card and its meaning. The answer names
+/// the card (BR-STUDY-041).
+final class GuessOption {
+  const GuessOption({required this.cardId, required this.meaning});
+
+  final String cardId;
+  final String meaning;
+}
+
+/// The `match` board a session serves (BR-STUDY-049): its terms in position
+/// order and its meanings in their stored order.
+final class MatchBoard {
+  const MatchBoard({required this.terms, required this.meanings});
+
+  final List<MatchTile> terms;
+  final List<MatchTile> meanings;
+}
+
+/// A tile of a board: one side of a card, and whether its pair is matched in
+/// this round, so it stays marked in place (IT-MODE-003).
+final class MatchTile {
+  const MatchTile({
+    required this.cardId,
+    required this.text,
+    required this.isMatched,
+  });
+
+  final String cardId;
+  final String text;
+  final bool isMatched;
 }
 
 /// The rows of a round, done and in all.

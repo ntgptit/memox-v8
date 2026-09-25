@@ -3,12 +3,15 @@ import 'dart:math';
 import 'package:drift/drift.dart' show QueryRow, Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import 'invariant_queries.dart';
@@ -143,3 +146,62 @@ Future<List<String>> turnKindsOf(AppDatabase db, String cardId) async => [
           .get())
     row.read<String>('kind'),
 ];
+
+/// The options of [cardId]'s question in [round] of `guess`, in the order
+/// shown (graded modes spec §6.2).
+Future<List<String>> optionsOf(
+  AppDatabase db,
+  String sessionId,
+  String cardId, {
+  int round = 1,
+}) async => [
+  for (final row
+      in await db
+          .customSelect(
+            'SELECT option_card_id FROM study_guess_options'
+            ' WHERE session_id = ? AND round = ? AND card_id = ? ORDER BY slot',
+            variables: [Variable(sessionId), Variable(round), Variable(cardId)],
+          )
+          .get())
+    row.read<String>('option_card_id'),
+];
+
+/// The meaning slot of each card of [round] of `match`, in position order
+/// (graded modes spec §6.1).
+Future<Map<String, int?>> meaningSlotsOf(
+  AppDatabase db,
+  String sessionId, {
+  int round = 1,
+}) async => {
+  for (final row
+      in await db
+          .customSelect(
+            'SELECT card_id, meaning_slot FROM study_queue_items'
+            " WHERE session_id = ? AND mode = 'match' AND round = ?"
+            ' ORDER BY position',
+            variables: [Variable(sessionId), Variable(round)],
+          )
+          .get())
+    row.read<String>('card_id'): row.read<int?>('meaning_slot'),
+};
+
+/// Answers the card [sessionId] serves in its current mode, or [cardId],
+/// right or wrong as [right] says. A refusal fails the test.
+Future<void> answerServed(
+  AppDatabase db,
+  StudySessionRepositoryImpl sessions,
+  String sessionId, {
+  required bool right,
+  String? cardId,
+}) async {
+  final mode = (await sessionOf(db, sessionId)).read<String>('current_mode');
+  final card = cardId ?? await servedCard(db, sessionId);
+  final outcome = await sessions.answerTurn(
+    sessionId: sessionId,
+    cardId: card!,
+    answer: mode == 'browse'
+        ? const AdvanceAnswer()
+        : GradedAnswer(isCorrect: right),
+  );
+  expect(outcome, isA<Ok<void, StudyRejection>>(), reason: 'answer on $card');
+}

@@ -11,7 +11,7 @@ import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dar
 
 /// Each question shows one answer and four distractors, five distinct
 /// meanings in all (BR-STUDY-037, BR-STUDY-039).
-const _optionCount = 5;
+const guessOptionCount = 5;
 
 /// `guess`: pick the meaning among five. The stage runs when its distractor
 /// source (the session's cards and the learned, active cards of the root's
@@ -28,7 +28,7 @@ final class GuessModeHandler extends GradedModeHandler {
     List<StudyCardFacts> cards, {
     required int distinctMeaningCount,
   }) {
-    if (distinctMeaningCount < _optionCount) {
+    if (distinctMeaningCount < guessOptionCount) {
       return const StageSkipped(ModeUnavailableReason.tooFewMeanings);
     }
     return super.eligibility(cards, distinctMeaningCount: distinctMeaningCount);
@@ -44,7 +44,7 @@ final class GuessModeHandler extends GradedModeHandler {
       return const Rejected(StudyModeRejection.answerDoesNotFitMode);
     }
     final options = context.guessOptionIds;
-    if (options == null || options.length != _optionCount) {
+    if (options == null || options.length != guessOptionCount) {
       return const Rejected(StudyModeRejection.questionBlocked);
     }
     if (!options.contains(answer.chosenCardId)) {
@@ -66,7 +66,7 @@ final class GuessModeHandler extends GradedModeHandler {
     return RoundPreparation(
       questions: {
         for (final row in byPosition)
-          if (row.isPending && row.optionCount != _optionCount)
+          if (row.isPending && row.optionCount != guessOptionCount)
             row.cardId: guessOptionsFor(
               (cardId: row.cardId, meaningFolded: row.meaningFolded),
               meaningSource,
@@ -97,13 +97,13 @@ List<String>? guessOptionsFor(
     if (card.meaningFolded == asked.meaningFolded) continue;
     (cardsByMeaning[card.meaningFolded] ??= []).add(card.cardId);
   }
-  if (cardsByMeaning.length < _optionCount - 1) return null;
+  if (cardsByMeaning.length < guessOptionCount - 1) return null;
   final meanings = cardsByMeaning.keys.toList()
     ..sort()
     ..shuffle(random);
   final options = [
     asked.cardId,
-    for (final meaning in meanings.take(_optionCount - 1))
+    for (final meaning in meanings.take(guessOptionCount - 1))
       _oneOf(cardsByMeaning[meaning]!..sort(), random),
   ];
   return options..shuffle(random);

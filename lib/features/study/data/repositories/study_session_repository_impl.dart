@@ -10,9 +10,9 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
+import 'package:memox/features/study/data/datasources/study_round_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/domain/models/queue_plan_model.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
@@ -35,18 +35,18 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     Random? random,
   }) : _dao = StudySessionDao(_db),
        _queue = StudyQueueDao(_db),
-       _now = now ?? DateTime.now,
-       _random = random ?? Random();
+       _rounds = StudyRoundDataSource(_db, random ?? Random()),
+       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final ScheduleRepository _schedules;
   final CardRepository _cards;
   final StudySessionDao _dao;
   final StudyQueueDao _queue;
-  final DateTime Function() _now;
 
-  /// Every shuffle of a later round (BR-STUDY-061).
-  final Random _random;
+  /// Builds later rounds and prepares every round the session moves to.
+  final StudyRoundDataSource _rounds;
+  final DateTime Function() _now;
 
   @override
   Future<Outcome<void, StudyRejection>> answerTurn({
@@ -116,6 +116,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
             SchedulerType.fromCode(root.schedulerType!),
             at,
           );
+          await _prepareServed(sessionId);
           return const Ok(null);
       }
     });
@@ -296,7 +297,11 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       final round = await _queue.lowestPendingRound(session.id, mode.code);
       if (round == null) continue;
       if (await _queue.isUnbuilt(session.id, mode.code, round)) {
-        await _build(session.id, mode, round);
+        await _rounds.build(session.id, session.rootId, mode, round);
+      } else if (mode != current) {
+        // Round 1 of a later stage, built when the session opened, is
+        // prepared when the stage starts (graded modes spec D8).
+        await _rounds.prepare(session.id, session.rootId, mode, round);
       }
       if (mode != current) await _dao.setCurrentMode(session.id, mode.code);
       return;
@@ -304,15 +309,22 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     await _dao.endSession(session.id, status: SessionStatus.completed, now: at);
   }
 
-  /// Shuffles [round], unlike the round before it (BR-STUDY-061).
-  Future<void> _build(String sessionId, StudyMode mode, int round) async {
-    final previous = await _queue.cardsOf(sessionId, mode.code, round - 1);
-    final cards = await _queue.cardsOf(sessionId, mode.code, round);
-    await _queue.build(
+  /// Continue fills in what the round the session serves lacks: the
+  /// questions and slots of a session from before v2, or a question that
+  /// lost an option to a deleted card (graded modes spec §6.5, §8.2).
+  Future<void> _prepareServed(String sessionId) async {
+    final session = await _dao.sessionRow(sessionId);
+    if (session?.status != SessionStatus.inProgress.code) return;
+    final round = await _queue.lowestPendingRound(
       sessionId,
-      mode.code,
+      session!.currentMode,
+    );
+    if (round == null) return;
+    await _rounds.prepare(
+      sessionId,
+      session.rootId,
+      StudyMode.fromCode(session.currentMode),
       round,
-      shuffledUnlike(cards, previous, _random),
     );
   }
 

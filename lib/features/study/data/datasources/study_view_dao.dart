@@ -14,6 +14,19 @@ typedef RoundCounts = ({int completed, int total});
 /// The counts a session's summary shows (spec D11).
 typedef SummaryCounts = ({int cardCount, int learnedCount, int wrongCount});
 
+/// An option of a `guess` question: the option card and its meaning.
+typedef OptionRecord = ({String cardId, String back});
+
+/// A pair of a `match` board: its card's two sides, whether it is matched in
+/// the round, and its meaning slot.
+typedef BoardPairRecord = ({
+  String cardId,
+  String front,
+  String back,
+  bool isCompleted,
+  int? meaningSlot,
+});
+
 /// The reads of the study screens (spec §8). They write nothing
 /// (BR-STUDY-075), return Drift rows and records, never domain values.
 final class StudyViewDao {
@@ -34,6 +47,7 @@ final class StudyViewDao {
         readsFrom: {
           _db.studySession,
           _db.studyQueueItems,
+          _db.studyGuessOptions,
           _db.deck,
           _db.card,
           _db.cardSchedule,
@@ -133,6 +147,73 @@ final class StudyViewDao {
       completed: row.read<int>('completed'),
       total: row.read<int>('total'),
     );
+  }
+
+  /// The options of [cardId]'s question in [round] of `guess`, in the order
+  /// shown (graded modes spec §9).
+  Future<List<OptionRecord>> guessOptions(
+    String sessionId,
+    int round,
+    String cardId,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT o.option_card_id, c.back FROM study_guess_options o'
+          ' JOIN card c ON c.id = o.option_card_id'
+          ' WHERE o.session_id = ? AND o.round = ? AND o.card_id = ?'
+          ' ORDER BY o.slot',
+          variables: [
+            Variable<String>(sessionId),
+            Variable<int>(round),
+            Variable<String>(cardId),
+          ],
+          readsFrom: {_db.studyGuessOptions, _db.card},
+        )
+        .get();
+    return [
+      for (final row in rows)
+        (
+          cardId: row.read<String>('option_card_id'),
+          back: row.read<String>('back'),
+        ),
+    ];
+  }
+
+  /// The pairs of [round] of [mode] at positions [from] to [to], a board, in
+  /// position order (graded modes spec §9).
+  Future<List<BoardPairRecord>> boardPairs(
+    String sessionId,
+    String mode,
+    int round, {
+    required int from,
+    required int to,
+  }) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT q.card_id, q.status, q.meaning_slot, c.front, c.back'
+          ' FROM study_queue_items q JOIN card c ON c.id = q.card_id'
+          ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
+          ' AND q.position BETWEEN ? AND ? ORDER BY q.position',
+          variables: [
+            Variable<String>(sessionId),
+            Variable<String>(mode),
+            Variable<int>(round),
+            Variable<int>(from),
+            Variable<int>(to),
+          ],
+          readsFrom: {_db.studyQueueItems, _db.card},
+        )
+        .get();
+    return [
+      for (final row in rows)
+        (
+          cardId: row.read<String>('card_id'),
+          front: row.read<String>('front'),
+          back: row.read<String>('back'),
+          isCompleted: row.read<String>('status') == 'completed',
+          meaningSlot: row.read<int?>('meaning_slot'),
+        ),
+    ];
   }
 
   /// The distinct cards of [sessionId]'s queue, those of them now learned,
