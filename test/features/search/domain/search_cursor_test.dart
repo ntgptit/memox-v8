@@ -21,7 +21,7 @@ SearchCursor _cursor({
 void main() {
   test('a folded text holds a folded term exactly, as a prefix, inside it, '
       'or not at all; accents count (BR-SEARCH-002, BR-SEARCH-004)', () {
-    expect(searchTierOf('học', 'học'), SearchTier.prefix);
+    expect(searchTierOf('học', 'học'), SearchTier.exact);
     expect(searchTierOf('học qua phim', 'học'), SearchTier.prefix);
     expect(searchTierOf('từ vựng học thuật', 'học'), SearchTier.contains);
     expect(searchTierOf('hoc qua phim', 'học'), isNull);

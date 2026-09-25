@@ -45,7 +45,7 @@ void main() {
         spacing: 16,
         children: [
           MxErrorState(
-            title: 'Could not load cards',
+            title: 'Could not load decks',
             body: 'Nothing was lost. Try again in a moment.',
             retryLabel: 'Retry',
             onRetry: () {},
