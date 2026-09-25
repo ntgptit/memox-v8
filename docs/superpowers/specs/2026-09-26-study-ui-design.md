@@ -1,0 +1,59 @@
+# MemoX V8 — Study UI (FE-A6, FE-A7)
+
+Status: draft for owner review (2026-09-26).
+
+## 1. Intent
+
+Build the study flow on the finished backend (BE-A3, BE-A4, BE-A5, BE-A10). A learner
+opens a deck's Study entry, starts a learning or review session, answers it through
+the six modes, and lands on the session summary. It is specified by the screen
+handoff 14, 16, 16a, 17–21 (`docs/shared/ui/screen-handoff/`), UC-STUDY-001 and
+UC-STUDY-003, and the study and study-mode rules. Screen 13 (Study home, FE-A8) is
+not part of it.
+
+## 2. Decisions
+
+| # | Decision | Why |
+|---|---|---|
+| D1 | Study entry is a Library child route, `/decks/deck/:deckId/study`, like the algorithm screen; the tab bar stays. | It belongs to one deck and returns there with Back. |
+| D2 | A session is one full-screen route, `/study/session/:sessionId`, on the root navigator, with no tab bar. The summary is the same route once the session has ended, not a second route. | `WatchStudySessionUseCase` already carries the summary; one route means one Back story and no hand-off race when the last turn commits. |
+| D3 | `StudySessionScreen` watches the session and picks its body with an exhaustive `switch` over `StudyMode`, plus the summary once `summary != null`. There is no mode registry. | Six fixed modes (BR-MODE-002); an exhaustive switch makes a seventh a compile error, not a runtime miss. |
+| D4 | One `@riverpod` session controller owns the commands: answer, recall reveal, recall time save, fill hint and abandon. It holds a single in-flight flag, so a second tap while a write runs is dropped (BR-STUDY-004). Mode widgets never call use cases. | One write path per session; widgets stay presentational (no business logic in UI). |
+| D5 | **Feedback hold.** The screen keeps the item that was answered, with its `TurnResult`, on screen until that mode's continue condition is met (an auto-advance delay, or a Continue tap). Only then does it show the stream's current item. The stream is never shown mid-feedback. | BR-STUDY-063 (result after commit) and BR-STUDY-064 (the unit stays on screen). The stream moves on at commit, so without the hold the outcome would be lost. |
+| D6 | Write failures: a `DatabaseLockedFailure` shows an inline error on the same turn with the answer kept, to retry (UC-STUDY-001 E2). Any other failure has already failed the session, and the summary's "Save error" state opens (E3; the summary is where the error shows and the way back to the deck). | Mirrors `AnswerStudyTurnUseCase`: it rethrows a lock and fails the session on any other failure. |
+| D7 | Ended sessions: `staleGeneration` pops back to the deck list with a snackbar and no summary (UC-STUDY-001 E4, ruling in handoff 21). A session whose deck was deleted (`notFound`) pops to the list (A5). Every other end reason shows the summary state of handoff 21. | UC over kit. |
+| D8 | Exit: the ✕ and system Back abandon the session at once, with no confirm (handoff 16), then pop to the entry. The entry then offers Continue for today's session (BR-STUDY-072). | Kit and BR-STUDY-014. Answered turns are kept. |
+| D9 | App start runs `AbandonStaleSessionsUseCase` once, before the first frame that can show a resumable session. | BR-STUDY-072: a session from an earlier day is `interrupted`, never resumed. |
+| D10 | Entry points: a real `DeckAction.study` in the deck action sheet, and the card list summary's "Study this deck". Both leave the Coming soon sheet; Study options stays there (spec A4). Study home (A8) adds its own entry later. | Handoff 07 and 14. |
+| D11 | Two backend additions, each with its own tests, in the phase that needs it. `SessionSummary` gains `answeredCardCount` and `turnCount` (P1, handoff 21). A read-only `PreviewSelfAssessIntervalsUseCase` returns the four next intervals for a scheduled `self_assess` turn and null on a relearning turn, computed by the same `Sm2Scheduler.next` the write uses (P2, handoff 16a). | The kit's summary numbers; the owner-confirmed 16a brief. |
+| D12 | Recall's clock is a widget ticker. `SaveRecallTimeUseCase` runs on `AppLifecycleState.paused` and on dispose, never per tick. At zero, the ticker answers `RecallAnswer(timedOut)`. | BR-STUDY-031, BR-STUDY-036. |
+| D13 | Layout follows the Library pattern: `lib/features/study/presentation/{providers,controllers,screens,widgets/{sections,items,overlays}}`; use-case providers one per file; `app/` composes and routes (spec A14). | ADR-010 and the Library screens. |
+
+## 3. Screens by phase
+
+| Phase | Scope | Makes usable |
+|---|---|---|
+| P1 | Routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a; entry points (D10); stale-session sweep (D9). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
+| P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003). | `sm2` decks: learning (browse → self_assess) and review. |
+| P3 | Guess 18, Match 17. | Those stages. |
+| P4 | Recall 19 (D12), Fill 20. | `eight_box` decks end to end. |
+| P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong. | The IT set is closed. |
+
+**Unbuilt stages are never offered.** A learning session runs its algorithm's whole stage
+sequence (BR-MODE-004), so the entry offers Learn only when every stage of that
+sequence is built, and offers a review mode only when that mode is built. The
+presentation layer keeps one constant set of built modes, which grows each phase. What
+it excludes shows as not available with the reason "Coming soon". So P1 starts no
+session from the UI: its screens are exercised by tests that open sessions through the
+harness. P2 makes `sm2` usable, and P4 makes `eight_box` usable. The set is deleted in
+P4, once every mode is built.
+
+## 4. Verification
+
+- Each phase: TDD for controllers and use cases; widget tests for its HOST-WIDGET scenarios; visual-audit companions for new screens (the coverage test requires them); goldens light and dark, generated in the Linux container.
+- `dod_check.sh` green; the final opus review per phase; one PR per phase after the owner's approval.
+
+## 5. Out of scope
+
+Study home (FE-A8), Study options (FE-A3), streaks, audio, editing a card mid-session,
+and tablet layouts.
