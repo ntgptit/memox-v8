@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 
-/// The ButtonStyle every text-labelled Mx control shares. It has one fill and
+/// The ButtonStyle every text-labelled control shares: the Mx widgets and the
+/// theme's Material buttons (spec §4.6). It has one fill and
 /// one ink for every state; dimming a disabled control is the caller's 0.38
 /// Opacity. It also sets the 0.12 pressed overlay, the focus ring on the
 /// control's edge (ruling R5), and a painted [height] inside a 48 touch area.
-ButtonStyle mxButtonStyle({
+ButtonStyle appButtonStyle({
   required Color? fill,
   required Color ink,
   required BorderSide edge,

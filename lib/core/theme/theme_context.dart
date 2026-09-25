@@ -25,4 +25,30 @@ extension ThemeContext on BuildContext {
       MxDerivedColors.resolve(colors, semanticColors);
 
   MxTextStyles get textStyles => MxTextStyles(texts, colors);
+
+  /// The TextField hint the theme's fields carry (spec §4.6).
+  TextStyle get fieldHint =>
+      _themed(Theme.of(this).inputDecorationTheme.hintStyle, 'field hint');
+
+  /// The dialog surface's shape the theme carries (spec §4.6).
+  RoundedRectangleBorder get dialogShape =>
+      _themed(DialogTheme.of(this).shape, 'dialog shape');
+
+  /// The scrim behind a dialog (spec §4.6).
+  Color get dialogBarrier =>
+      _themed(DialogTheme.of(this).barrierColor, 'dialog scrim');
+
+  /// The bottom sheet's shape the theme carries (spec §4.6).
+  RoundedRectangleBorder get sheetShape =>
+      _themed(Theme.of(this).bottomSheetTheme.shape, 'sheet shape');
+
+  /// [value] as the MemoX theme sets it; a theme built elsewhere lacks the
+  /// component themes, and says how to fix that.
+  T _themed<T>(Object? value, String what) {
+    if (value is T) return value;
+    throw StateError(
+      'The MemoX $what is missing from the ThemeData in scope. Build it with '
+      'buildLightTheme() or buildDarkTheme() from core/theme/app_theme.dart.',
+    );
+  }
 }

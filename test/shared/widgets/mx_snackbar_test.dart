@@ -11,21 +11,28 @@ void main() {
 
   testWidgets('a floating inverse toast: radius 12, 16 sides', (tester) async {
     late SnackBar bar;
+    late SnackBarThemeData theme;
     await pumpMx(
       tester,
       Builder(
         builder: (context) {
           bar = buildMxSnackBar(context, message: 'Saved');
+          theme = Theme.of(context).snackBarTheme;
           return const SizedBox();
         },
       ),
     );
 
-    expect(bar.backgroundColor, scheme.inverseSurface);
-    expect(bar.behavior, SnackBarBehavior.floating);
+    // The toast's surface comes from the theme (spec §4.6).
+    expect(bar.backgroundColor ?? theme.backgroundColor, scheme.inverseSurface);
+    expect(bar.behavior ?? theme.behavior, SnackBarBehavior.floating);
     expect(
-      (bar.shape! as RoundedRectangleBorder).borderRadius,
+      ((bar.shape ?? theme.shape)! as RoundedRectangleBorder).borderRadius,
       BorderRadius.circular(12),
+    );
+    expect(
+      bar.margin ?? theme.insetPadding,
+      const EdgeInsets.fromLTRB(16, 0, 16, 16),
     );
     // The message carries the 10 vertical padding itself.
     expect(bar.padding, const EdgeInsets.symmetric(horizontal: 16));

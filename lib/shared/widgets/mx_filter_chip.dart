@@ -6,7 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button_style.dart';
+import 'package:memox/core/theme/app_button_style.dart';
 
 /// A selectable filter (All · Cards · Decks). Its selection is exposed as
 /// state, not only as a look, so screen readers announce it. It never shrinks
@@ -47,7 +47,7 @@ class MxFilterChip extends StatelessWidget {
         selected: isSelected,
         child: TextButton(
           onPressed: select == null ? null : () => select(!isSelected),
-          style: mxButtonStyle(
+          style: appButtonStyle(
             fill: isSelected ? colors.primary : colors.surfaceContainerLowest,
             ink: ink,
             edge: isSelected

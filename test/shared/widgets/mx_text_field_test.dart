@@ -8,8 +8,9 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
+/// The decoration the field paints: its own, with the theme's defaults.
 InputDecoration _decoration(WidgetTester tester) =>
-    tester.widget<TextField>(find.byType(TextField)).decoration!;
+    tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
 
 Color _edge(InputBorder? border) =>
     (border! as OutlineInputBorder).borderSide.color;
