@@ -1,12 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/srs/domain/models/eight_box_scheduler.dart';
-import 'package:memox/features/srs/domain/models/review_action_model.dart';
-import 'package:memox/features/srs/domain/models/sm2_scheduler.dart';
-import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
-import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 List<StudyCardFacts> _cards(int count, {Set<int> withExample = const {}}) => [
@@ -25,19 +19,6 @@ Matcher _runsOn(List<String> cardIds) =>
 
 Matcher _skippedFor(ModeUnavailableReason reason) =>
     isA<StageSkipped>().having((skipped) => skipped.reason, 'reason', reason);
-
-Matcher _refusedWith(StudyModeRejection reason) =>
-    isA<Rejected<Object?, StudyModeRejection>>().having(
-      (rejected) => rejected.reason,
-      'reason',
-      reason,
-    );
-
-Matcher _gives(Object? action) => isA<Ok<Object?, StudyModeRejection>>().having(
-  (ok) => ok.value,
-  'action',
-  action,
-);
 
 void main() {
   group('data conditions', () {
@@ -85,89 +66,6 @@ void main() {
       expect(
         _eligibility(StudyMode.guess, _cards(1), meanings: 5),
         _runsOn(['c0']),
-      );
-    });
-  });
-
-  group('answers and actions', () {
-    test('browse moves on without an action and refuses a grade '
-        '(BR-MODE-005)', () {
-      final browse = StudyMode.browse.handler;
-
-      expect(
-        browse.actionOf(const AdvanceAnswer(), eightBoxScheduler),
-        _gives(null),
-      );
-      expect(
-        browse.actionOf(const GradedAnswer(isCorrect: true), eightBoxScheduler),
-        _refusedWith(StudyModeRejection.answerDoesNotFitMode),
-      );
-    });
-
-    test('self_assess records the action the person pressed, from the '
-        'scheduler\'s actions only (BR-MODE-011, BR-STUDY-009)', () {
-      final selfAssess = StudyMode.selfAssess.handler;
-
-      expect(
-        selfAssess.actionOf(
-          const SelfAssessAnswer(Sm2Action.hard),
-          sm2Scheduler,
-        ),
-        _gives(Sm2Action.hard),
-      );
-      expect(
-        selfAssess.actionOf(
-          const SelfAssessAnswer(EightBoxAction.remembered),
-          sm2Scheduler,
-        ),
-        _refusedWith(StudyModeRejection.unsupportedAction),
-      );
-      expect(
-        selfAssess.actionOf(const AdvanceAnswer(), sm2Scheduler),
-        _refusedWith(StudyModeRejection.answerDoesNotFitMode),
-      );
-    });
-
-    test('a graded mode maps wrong to forgotten and right to remembered '
-        '(BR-MODE-012)', () {
-      for (final mode in [
-        StudyMode.match,
-        StudyMode.guess,
-        StudyMode.recall,
-        StudyMode.fill,
-      ]) {
-        final handler = mode.handler;
-        expect(
-          handler.actionOf(
-            const GradedAnswer(isCorrect: false),
-            eightBoxScheduler,
-          ),
-          _gives(EightBoxAction.forgotten),
-        );
-        expect(
-          handler.actionOf(
-            const GradedAnswer(isCorrect: true),
-            eightBoxScheduler,
-          ),
-          _gives(EightBoxAction.remembered),
-        );
-        expect(
-          handler.actionOf(
-            const SelfAssessAnswer(EightBoxAction.remembered),
-            eightBoxScheduler,
-          ),
-          _refusedWith(StudyModeRejection.answerDoesNotFitMode),
-        );
-      }
-    });
-
-    test('a graded verdict has no action under sm2 (BR-MODE-007)', () {
-      expect(
-        StudyMode.recall.handler.actionOf(
-          const GradedAnswer(isCorrect: true),
-          sm2Scheduler,
-        ),
-        _refusedWith(StudyModeRejection.unsupportedAction),
       );
     });
   });

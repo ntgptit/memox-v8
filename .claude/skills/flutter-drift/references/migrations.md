@@ -16,6 +16,7 @@ ls drift_schemas/                     # drift_schema_v1.json, drift_schema_v2.js
 # 4. Regenerate code and the schema snapshot for the new version.
 dart run build_runner build --delete-conflicting-outputs
 dart run drift_dev schema dump lib/core/database/app_database.dart drift_schemas/
+dart run drift_dev schema steps drift_schemas/ lib/core/database/schema_versions.dart
 dart run drift_dev schema generate drift_schemas/ test/drift/generated/
 
 # 5. Write the onUpgrade step.
@@ -24,12 +25,14 @@ dart run drift_dev schema generate drift_schemas/ test/drift/generated/
 flutter test test/database/
 ```
 
-`dart run drift_dev make-migrations` automates steps 4–6 (snapshot, step file,
-test scaffold) and is the path Drift now recommends for new schema work. This
-repo's v1 → v2 step is hand-written and predates that; **do not retrofit it** —
-rewriting a released migration is the one thing this document forbids outright.
-If you adopt `make-migrations`, do it for the *next* version only, in its own
-task, and keep the existing step untouched.
+`schema steps` writes the versioned schemas that `stepByStep` hands each step,
+so a step works on the tables of its own version and never on today's.
+`dart run drift_dev make-migrations` automates steps 4–6 too, but it keeps its
+snapshots in `drift_schemas/<database>/`, and `test/database/schema_test.dart`
+reads the flat `drift_schemas/drift_schema_vN.json`; this repo does not use it.
+The first step, v1 → v2, adds the graded-mode columns and table; like every step
+after it, **it never changes once released** — rewriting a released migration is
+the one thing this document forbids outright.
 
 Everything in step 4's output is committed: the snapshot JSON, the generated
 verifier under `test/drift/generated/`, and the migration test. The snapshot is
@@ -56,8 +59,8 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
 ## Changing a column safely
 
 Adding a nullable or defaulted column is the cheap case, and it is why the v1 → v2
-step here is four `addColumn` calls and two `createTable` calls with no row
-rewrite: a v1 card upgrades without a value being invented for it.
+step here is two `addColumn` calls, one `createTable` and one `createIndex`, with
+no row rewrite: a v1 queue row upgrades without a value being invented for it.
 
 The expensive cases, and what each one needs *before* the constraint lands:
 

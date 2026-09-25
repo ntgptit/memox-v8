@@ -12,3 +12,35 @@ Bảng, cột, index và invariant nằm ở `shared/data/schema.md`. File này 
 | in_progress | failed | lỗi không thể tiếp tục (BR-STUDY-018) |
 
 Trạng thái kết thúc là terminal — không có đường quay lại `in_progress`.
+
+## Dựng round
+
+Một round có được thứ nó cần khi bắt đầu được phục vụ: lúc mở phiên ôn tập, khi phiên
+học mới sang một stage, khi dựng một round mới, và khi Tiếp tục.
+
+- `match`: mỗi bàn (các vị trí `5k … 5k+4` của round) có chỗ riêng cho nghĩa của từng
+  cặp. Chỗ được xáo theo bàn, và không trùng thứ tự term khi bàn có từ hai cặp
+  (BR-STUDY-049).
+- `guess`: mỗi dòng `pending` có một câu năm lựa chọn. Nguồn là thẻ trong hàng đợi của
+  phiên và thẻ đã học, còn hoạt động, của cây; mỗi nghĩa (`back_folded`) góp tối đa một
+  thẻ (BR-STUDY-037, BR-STUDY-038, BR-STUDY-039). Câu không dựng đủ năm lựa chọn thì bị
+  chặn (BR-STUDY-040).
+- Dựng chỉ bổ sung phần còn thiếu: bàn đã có chỗ và câu đã đủ năm lựa chọn giữ nguyên,
+  nên Tiếp tục không đổi thứ tự (BR-STUDY-043). Tiếp tục dựng lại câu đã mất một lựa
+  chọn vì card của lựa chọn đó bị xoá hẳn.
+
+## Ghi không phải lượt
+
+Ba lệnh ghi trạng thái của lượt đang dở mà không phải một lượt: không ghi
+`review_log`, không tiến `cursor`. Chúng bị từ chối ở đúng những chỗ một lượt bị từ
+chối: phiên đã đóng, root đã reset sau khi phiên mở, thẻ không phải thẻ đang phục vụ,
+hoặc phiên đang ở mode khác.
+
+| Lệnh | Mode | Ghi |
+|---|---|---|
+| Lật đáp án | `recall` | `is_revealed = 1`; đồng hồ dừng ở thời gian còn lại. Lật lần hai không đổi gì (BR-STUDY-065, BR-STUDY-036) |
+| Lưu thời gian | `recall` | `remaining_ms`, chỉ giảm; đã lật thì không đổi nữa (BR-STUDY-036) |
+| Hiện gợi ý | `fill` | `hint_shown = 1`; lượt sau đó ghi `used_hint = 1` mà kết quả không đổi. Thẻ không có gợi ý thì bị từ chối (BR-STUDY-028) |
+
+Một lượt mới ở round sau là một dòng mới, nên bắt đầu lại đủ 20 giây, đáp án ẩn và
+gợi ý chưa hiện (BR-STUDY-036).

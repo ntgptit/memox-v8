@@ -122,6 +122,68 @@ void main() {
     expect(log.read<DateTime>('next_due_at'), DateTime(2026, 9, 27));
   });
 
+  test('a turn keeps what its mode adds: the reason of a recall timeout, the '
+      'comparison version and the hint of a fill (BR-STUDY-027, BR-STUDY-028, '
+      'BR-STUDY-034)', () async {
+    final (_, cardId, _) = await insertStudyTree(db, 'r');
+
+    await repo.recordTurn(
+      ReviewTurn(
+        cardId: cardId,
+        sessionId: 'r-session',
+        generation: 1,
+        kind: ReviewKind.learning,
+        modeCode: 'recall',
+        action: EightBoxAction.forgotten,
+        answeredAt: now,
+        outcomeReasonCode: 'timeout',
+      ),
+    );
+    await repo.recordTurn(
+      ReviewTurn(
+        cardId: cardId,
+        sessionId: 'r-session',
+        generation: 1,
+        kind: ReviewKind.relearning,
+        modeCode: 'fill',
+        action: EightBoxAction.remembered,
+        answeredAt: now.add(const Duration(minutes: 1)),
+        comparisonVersion: 1,
+        usedHint: true,
+      ),
+    );
+
+    final [timeout, fill] = await _logs(db);
+    expect(timeout.read<String>('outcome_reason'), 'timeout');
+    expect(timeout.data['comparison_version'], isNull);
+    expect(timeout.data['used_hint'], isNull);
+    expect(fill.data['outcome_reason'], isNull);
+    expect(fill.read<int>('comparison_version'), 1);
+    expect(fill.read<bool>('used_hint'), isTrue);
+  });
+
+  test("a mode's column on another mode is a bug the schema refuses, and the "
+      'turn writes nothing (invariants 22, 23)', () async {
+    final (_, cardId, _) = await insertStudyTree(db, 'r');
+
+    await expectLater(
+      repo.recordTurn(
+        ReviewTurn(
+          cardId: cardId,
+          sessionId: 'r-session',
+          generation: 1,
+          kind: ReviewKind.learning,
+          modeCode: 'recall',
+          action: EightBoxAction.remembered,
+          answeredAt: now,
+          comparisonVersion: 1,
+        ),
+      ),
+      throwsA(isA<ConstraintFailure>()),
+    );
+    expect(await _logs(db), isEmpty);
+  });
+
   test('a turn keeps the direction it is given (BR-MODE-016)', () async {
     final (_, cardId, _) = await insertStudyTree(db, 'r', scheduler: 'sm2');
 

@@ -14,7 +14,6 @@ import 'package:memox/features/study/data/repositories/study_session_repository_
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
-import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
@@ -221,11 +220,7 @@ void main() {
     );
     final id = (opened as Ok<String, StudyRejection>).value;
     for (var turn = 0; turn < 2; turn++) {
-      await sessions.answerTurn(
-        sessionId: id,
-        cardId: (await servedCard(db, id))!,
-        answer: const GradedAnswer(isCorrect: true),
-      );
+      await answerServed(db, sessions, id, right: true);
     }
 
     final entry = await entryOf(leaf.id);

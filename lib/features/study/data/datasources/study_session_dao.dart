@@ -105,6 +105,24 @@ final class StudySessionDao {
     );
   }
 
+  /// The card [id]: a turn is judged on its folded fields (graded modes spec
+  /// §7.2). A queue row keeps its card, so the card is there.
+  Future<CardRow> cardRow(String id) =>
+      (_db.select(_db.card)..where((card) => card.id.equals(id))).getSingle();
+
+  /// Whether [cardId] has a hint; a blank one is stored as NULL
+  /// (BR-CARD-003).
+  Future<bool> hasHint(String cardId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT hint IS NOT NULL AS has_hint FROM card WHERE id = ?',
+          variables: [Variable<String>(cardId)],
+          readsFrom: {_db.card},
+        )
+        .getSingleOrNull();
+    return row?.read<bool>('has_hint') ?? false;
+  }
+
   /// The distinct meanings (`back_folded`) of [sessionCardIds] and of the
   /// learned, active cards of [rootId]'s tree: the distractor source of
   /// `guess` (BR-STUDY-038; spec D5).

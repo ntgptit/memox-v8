@@ -1,15 +1,15 @@
 import 'dart:io';
 
-/// Invariant queries 1-32 of `docs/shared/data/schema.md` ("Bất biến"), read
+/// The invariant queries of `docs/shared/data/schema.md` ("Bất biến"), read
 /// from the document itself: the tests run exactly what the data model states,
 /// and there is no copy to keep in step. Each query must return no row.
-/// Invariants 33-37 need `delete_batches`, which does not exist yet
-/// (foundation plan, Clarification 2).
 final Map<int, String> invariantQueries = parseInvariantQueries(
   File('docs/shared/data/schema.md').readAsStringSync(),
 );
 
-const _lastInvariantInScope = 32;
+/// Invariants 33-37 need `delete_batches`, which does not exist yet
+/// (foundation plan, Clarification 2; the Trash, BE-B1).
+const _waitingForDeleteBatches = {33, 34, 35, 36, 37};
 
 /// The queries of the "Bất biến" section of [markdown]: in its ```sql blocks,
 /// each `-- N. <title>` line starts query N, and the `--` lines under it are
@@ -38,7 +38,7 @@ Map<int, String> parseInvariantQueries(String markdown) {
   final queries = <int, String>{};
   for (var i = 0; i < headers.length; i++) {
     final number = int.parse(headers[i].group(1)!);
-    if (number > _lastInvariantInScope) continue;
+    if (_waitingForDeleteBatches.contains(number)) continue;
     final end = i + 1 < headers.length ? headers[i + 1].start : sql.length;
     // The header line is the title; `--` lines under it are its notes.
     final lines = sql.substring(headers[i].end, end).split('\n').skip(1);
@@ -87,4 +87,7 @@ const invariantSummaries = <int, String>{
   30: "a tree with a learned card has its scheduler locked (BR-SRS-003, BR-STUDY-053)",
   31: "a question direction appears only where it is allowed (BR-MODE-013, BR-MODE-015)",
   32: "a turn carries the direction of its queue row (BR-MODE-016)",
+  38: "hint_shown appears only on fill (BR-STUDY-028)",
+  39: "a meaning slot appears only on match, once per board (BR-STUDY-049)",
+  40: "a guess question keeps its one right option (BR-STUDY-037)",
 };

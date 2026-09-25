@@ -10,6 +10,7 @@ import 'package:memox/features/settings/domain/repositories/settings_repository.
 import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
+import 'package:memox/features/study/data/datasources/study_round_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
 import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
@@ -27,16 +28,23 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 /// which the settings reads it makes join: the rules read the rows as they
 /// are at the moment of writing, and a refusal writes nothing.
 final class StudyEntryRepositoryImpl implements StudyEntryRepository {
-  StudyEntryRepositoryImpl(
-    this._db,
-    this._settings, {
+  factory StudyEntryRepositoryImpl(
+    AppDatabase db,
+    SettingsRepository settings, {
     DateTime Function()? now,
     Random? random,
-  }) : _dao = StudySessionDao(_db),
-       _queue = StudyQueueDao(_db),
-       _views = StudyViewDao(_db),
-       _now = now ?? DateTime.now,
-       _random = random ?? Random();
+  }) => StudyEntryRepositoryImpl._(
+    db,
+    settings,
+    now ?? DateTime.now,
+    random ?? Random(),
+  );
+
+  StudyEntryRepositoryImpl._(this._db, this._settings, this._now, this._random)
+    : _dao = StudySessionDao(_db),
+      _queue = StudyQueueDao(_db),
+      _views = StudyViewDao(_db),
+      _rounds = StudyRoundDataSource(_db, _random);
 
   final AppDatabase _db;
   final SettingsRepository _settings;
@@ -47,6 +55,9 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
 
   /// Every shuffle and draw of a session (BR-STUDY-022, BR-STUDY-057).
   final Random _random;
+
+  /// Prepares the round a new session starts in (graded modes spec §8.2).
+  final StudyRoundDataSource _rounds;
 
   @override
   Future<Outcome<String, StudyRejection>> openLearningSession({
@@ -216,6 +227,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
             .toList(),
       );
     }
+    await _rounds.prepare(id, root.id, queues.first.mode, 1);
     return id;
   }
 

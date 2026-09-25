@@ -71,7 +71,8 @@ final class StudyQueueDao {
   }
 
   /// [cardId]'s pending row in the lowest pending round of [mode], once that
-  /// round is built: a `match` board serves any of its rows.
+  /// round is built: a `match` board serves any of its rows, and the caller
+  /// checks the row is on the current board.
   Future<StudyQueueItem?> boardRow(
     String sessionId,
     String mode,
@@ -125,6 +126,94 @@ final class StudyQueueDao {
           : Value(availableAt),
     ),
   );
+
+  /// `recall`: the answer of [row]'s turn is shown, and its time stops at
+  /// [remainingMs] (BR-STUDY-065, BR-STUDY-036).
+  Future<void> reveal(StudyQueueItem row, {required int remainingMs}) =>
+      _update(
+        row,
+        StudyQueueItemsCompanion(
+          isRevealed: const Value(1),
+          remainingMs: Value(remainingMs),
+        ),
+      );
+
+  /// `recall`: the time left of [row]'s turn (BR-STUDY-036).
+  Future<void> saveTimeLeft(StudyQueueItem row, {required int remainingMs}) =>
+      _update(row, StudyQueueItemsCompanion(remainingMs: Value(remainingMs)));
+
+  /// `fill`: the hint of [row]'s turn is shown (BR-STUDY-028).
+  Future<void> showHint(StudyQueueItem row) =>
+      _update(row, const StudyQueueItemsCompanion(hintShown: Value(1)));
+
+  /// `guess`: the options stored for [row], in the order shown
+  /// (BR-STUDY-041).
+  Future<List<String>> optionIds(StudyQueueItem row) async {
+    final options =
+        await (_db.select(_db.studyGuessOptions)
+              ..where(
+                (o) =>
+                    o.sessionId.equals(row.sessionId) &
+                    o.mode.equals(row.mode) &
+                    o.round.equals(row.round) &
+                    o.cardId.equals(row.cardId),
+              )
+              ..orderBy([(o) => OrderingTerm(expression: o.slot)]))
+            .get();
+    return [for (final option in options) option.optionCardId];
+  }
+
+  /// `match`: the pending pairs of [row]'s round between the positions
+  /// [from] and [to], card id to `back_folded` (graded modes spec §7.6).
+  Future<Map<String, String>> pendingMeanings(
+    StudyQueueItem row, {
+    required int from,
+    required int to,
+  }) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT q.card_id, c.back_folded FROM study_queue_items q'
+          ' JOIN card c ON c.id = q.card_id'
+          ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
+          ' AND q.status = ? AND q.position BETWEEN ? AND ?',
+          variables: [
+            Variable<String>(row.sessionId),
+            Variable<String>(row.mode),
+            Variable<int>(row.round),
+            const Variable<String>(_pending),
+            Variable<int>(from),
+            Variable<int>(to),
+          ],
+          readsFrom: {_db.studyQueueItems, _db.card},
+        )
+        .get();
+    return {
+      for (final pair in rows)
+        pair.read<String>('card_id'): pair.read<String>('back_folded'),
+    };
+  }
+
+  /// `match`: [row] and [otherCardId]'s row of the same round swap their
+  /// meaning slots (graded modes spec §7.6).
+  Future<void> swapMeaningSlots(StudyQueueItem row, String otherCardId) async {
+    final other =
+        await (_db.select(_db.studyQueueItems)..where(
+              (q) =>
+                  q.sessionId.equals(row.sessionId) &
+                  q.mode.equals(row.mode) &
+                  q.round.equals(row.round) &
+                  q.cardId.equals(otherCardId),
+            ))
+            .getSingle();
+    await _update(
+      row,
+      StudyQueueItemsCompanion(meaningSlot: Value(other.meaningSlot)),
+    );
+    await _update(
+      other,
+      StudyQueueItemsCompanion(meaningSlot: Value(row.meaningSlot)),
+    );
+  }
 
   /// Enrolls [cardId] in [round] of [mode] once: a second enrollment changes
   /// nothing (BR-STUDY-060, BR-STUDY-062).

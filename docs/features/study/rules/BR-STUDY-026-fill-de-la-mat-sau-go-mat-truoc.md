@@ -14,7 +14,7 @@ superseded_by:
 
 ## Lý do
 
-**BR-STUDY-026 dùng lại `back_folded`, và điều đáng kiểm là nó fold những gì.** Cột đó
+**BR-STUDY-026 dùng lại `front_folded`, và điều đáng kiểm là nó fold những gì.** Cột đó
 trim và hạ hoa Unicode-aware nhưng **không bỏ dấu** — chỉ fold hoa/thường, nên
 `công` vẫn không khớp `cong`. Nếu nó fold cả dấu thì `fill`
 sẽ chấm "ma" bằng "mà" là đúng, và một app học từ vựng tiếng Việt hỏng ở đúng chỗ

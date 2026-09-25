@@ -28,6 +28,9 @@ tra ngược được từ cột về luật nếu không có bảng này. Ngư�
 | `study_queue_items.available_at` | BR-STUDY-005 |
 | `study_queue_items.answers_in_session` | BR-SRS-016 (lượt đầu), BR-STUDY-073 (trần 3) |
 | `study_queue_items.remaining_ms` · `is_revealed` | BR-STUDY-036 |
+| `study_queue_items.hint_shown` | BR-STUDY-028 |
+| `study_queue_items.meaning_slot` | BR-STUDY-049 |
+| `study_guess_options` | BR-STUDY-037, BR-STUDY-043 |
 | `study_session.direction` | BR-MODE-013 (điều kiện), BR-MODE-015 (`mixed`), BR-MODE-017 (khoá) |
 | `study_queue_items.direction` | BR-MODE-015 — gán một lần, sống qua comeback và restart |
 | `review_log.direction` | BR-MODE-016 — chép từ dòng hàng đợi, không suy luận |
@@ -67,6 +70,7 @@ deck_templates (sub-project sau — Starter decks; asset JSON)
        │
        └──► study_session ──┬──► review_log
                              └──► study_queue_items  (một hàng đợi mỗi stage, BR-STUDY-022)
+                                    └──► study_guess_options  (năm lựa chọn của một câu guess)
 ```
 
 ---
@@ -392,7 +396,7 @@ gộp chúng làm lịch sử nói rằng người dùng bỏ cuộc trong khi h
 session `in_progress`. Mở phiên mới, ở bất kỳ deck nào, đóng phiên đang mở trước trong
 cùng transaction: `abandoned`/`user_exit` nếu nó bắt đầu trong ngày học hiện tại,
 `abandoned`/`interrupted` nếu nó bắt đầu từ ngày học trước (BR-STUDY-072). Code và test
-giữ luật này; một unique index sẽ cần migration, và migration chờ BE-D1.
+giữ luật này; một unique index sẽ cần một migration riêng, và chưa có.
 
 **Phiên của một cây:** Reset và đổi scheduler của một root đóng mọi session `in_progress`
 của cây đó (BR-STUDY-015, BR-STUDY-016): session mở trên chính root đó (`root_id`), và
@@ -420,6 +424,8 @@ Hàng đợi của một phiên (BR-STUDY-021). Một dòng cho mỗi thẻ đư
 | `remaining_ms` | INTEGER NULL | chỉ `recall`: thời gian còn lại của lượt đang dở (BR-STUDY-036). NULL ở mọi stage khác |
 | `is_revealed` | INTEGER NOT NULL DEFAULT 0 | chỉ `recall`: đáp án đã lật chưa, để Resume không che lại (BR-STUDY-036) |
 | `direction` | TEXT NULL | `korean_to_meaning` \| `meaning_to_korean` — chiều thật của **thẻ này**, gán một lần lúc dựng round (BR-MODE-015). NULL ở mọi stage ngoài `self_assess` của một phiên đủ điều kiện (BR-MODE-013) |
+| `hint_shown` | INTEGER NOT NULL DEFAULT 0 | từ v2, chỉ `fill`: gợi ý của lượt đang dở đã hiện (BR-STUDY-028). `used_hint` của lượt đọc từ cột này, nên vẫn đúng khi app bị thu hồi rồi Tiếp tục. `0` ở mọi stage khác (invariant 38) |
+| `meaning_slot` | INTEGER NULL | từ v2, chỉ `match`: chỗ `0…4` của nghĩa thẻ này trên bàn của nó (BR-STUDY-049). Một bàn là các vị trí `5k … 5k+4` của round. Gán khi round được chuẩn bị, xáo theo từng bàn, không trùng thứ tự term khi bàn có từ hai cặp. NULL ở mọi stage khác (invariant 39) |
 
 PK là `(session_id, mode, round, card_id)` — một thẻ xuất hiện đúng một lần **trong
 mỗi round của mỗi stage**, và mọi round có thứ tự độc lập (BR-STUDY-022, BR-STUDY-061).
@@ -456,6 +462,28 @@ phải một nơi chỉ sống trong bộ nhớ của một màn hình.
 Cái được kèm theo: phiên sống sót qua việc app bị hệ điều hành thu hồi (BR-STUDY-072),
 và hàng đợi của phiên đã đóng trở thành dữ liệu thật — "phiên đó gồm những thẻ
 nào, bỏ dở bao nhiêu" — thứ nếu không lưu thì không tồn tại ở bất kỳ đâu.
+
+## `study_guess_options`
+
+**Phạm vi:** V8.0, từ schema v2.
+
+Năm lựa chọn của một câu `guess`, theo thứ tự hiển thị (BR-STUDY-037, BR-STUDY-043).
+Câu được dựng khi round của nó bắt đầu được phục vụ, và không dựng lại khi Tiếp tục.
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `session_id` | TEXT NOT NULL | cùng `mode`, `round`, `card_id`: dòng hàng đợi của câu hỏi → `study_queue_items` ON DELETE CASCADE |
+| `mode` | TEXT NOT NULL DEFAULT 'guess' | luôn `guess`; có mặt vì khoá ngoại ghép cần nó |
+| `round` | INTEGER NOT NULL | round của câu hỏi |
+| `card_id` | TEXT NOT NULL | thẻ đang hỏi |
+| `slot` | INTEGER NOT NULL | vị trí hiển thị `0…4` |
+| `option_card_id` | TEXT NOT NULL | → `card(id)` ON DELETE CASCADE. Đúng một lựa chọn là chính thẻ đang hỏi (invariant 40) |
+
+PK là `(session_id, mode, round, card_id, slot)`, và một card xuất hiện tối đa một lần
+trong một câu. Index `idx_study_guess_options_option` phục vụ cascade khi xoá card.
+
+**Câu có ít hơn năm dòng là câu bị chặn** (BR-STUDY-040): nó không dựng được, hoặc mất
+một lựa chọn vì card bị xoá. Câu bị chặn không hiện và không nhận lượt.
 
 ## `app_settings`
 
@@ -784,6 +812,31 @@ WHERE EXISTS (SELECT 1 FROM study_queue_items q
   AND NOT EXISTS (SELECT 1 FROM study_queue_items q
                   WHERE q.session_id = a.session_id AND q.card_id = a.card_id
                     AND q.mode = a.mode AND q.direction IS a.direction);
+
+-- 38. `hint_shown` nằm ngoài `fill` (BR-STUDY-028)
+--     CHECK của cột đã chặn; query giữ luật đọc được ở đây.
+SELECT session_id FROM study_queue_items
+WHERE hint_shown NOT IN (0, 1) OR (mode <> 'fill' AND hint_shown <> 0);
+
+-- 39. `meaning_slot` nằm ngoài `match`, vượt 0–4, hoặc hai cặp của một bàn chung
+--     một chỗ (BR-STUDY-049)
+--     Bàn là các vị trí `5k … 5k+4` của round. Vế đầu CHECK đã chặn; vế sau thì
+--     không, vì CHECK không nhìn được dòng khác.
+SELECT session_id FROM study_queue_items
+WHERE meaning_slot IS NOT NULL AND (mode <> 'match' OR meaning_slot NOT BETWEEN 0 AND 4)
+UNION ALL
+SELECT session_id FROM study_queue_items
+WHERE mode = 'match' AND meaning_slot IS NOT NULL AND position >= 0
+GROUP BY session_id, round, position / 5, meaning_slot
+HAVING COUNT(*) > 1;
+
+-- 40. Câu `guess` quá năm lựa chọn, hoặc không có đúng một đáp án đúng (BR-STUDY-037)
+--     Hai lựa chọn cùng `back_folded` (BR-STUDY-039) không phải bất biến: sửa một
+--     card sau khi câu đã dựng có thể làm điều đó đúng một cách hợp lệ. Bộ dựng
+--     câu hỏi giữ luật ấy lúc dựng.
+SELECT session_id FROM study_guess_options
+GROUP BY session_id, round, card_id
+HAVING COUNT(*) > 5 OR SUM(option_card_id = card_id) <> 1;
 
 -- Bất biến 33-37: Phạm vi sub-project sau — Trash. Giữ số và nghĩa, có hiệu
 -- lực từ khi delete_batches triển khai.

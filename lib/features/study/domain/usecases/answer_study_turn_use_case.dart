@@ -1,6 +1,7 @@
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 
@@ -14,7 +15,7 @@ final class AnswerStudyTurnUseCase {
 
   final StudySessionRepository _sessions;
 
-  Future<Outcome<void, StudyRejection>> call({
+  Future<Outcome<TurnResult, StudyRejection>> call({
     required String sessionId,
     required String cardId,
     required StudyAnswer answer,

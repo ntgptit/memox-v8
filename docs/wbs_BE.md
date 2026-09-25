@@ -62,16 +62,17 @@ Quy ước:
 | BE-A1 | Settings, 8 use case (UC-SETTINGS-001): dòng `app_settings` có từ lần mở database đầu tiên, đọc qua một stream, mỗi lần lưu là một transaction, reset về mặc định; tuỳ chọn học riêng của root deck: lưu, dùng lại mặc định, đọc giá trị hiệu lực (BR-SETTINGS-001…BR-SETTINGS-008, BR-STUDY-003, BR-STUDY-056) | xong | BE-02 | S | [spec](superpowers/specs/2026-09-24-settings-reset-backend-design.md) và [plan](superpowers/plans/2026-09-24-settings-reset-backend.md) gói BE-A1 + BE-A2; test trong `test/features/settings/` | — |
 | BE-A2 | Reset learning progress, 2 use case (UC-SRS-001): reset giữ hoặc đổi scheduler, bản tóm tắt cho bước xác nhận (BR-SRS-020…BR-SRS-030, BR-STUDY-015) | xong | BE-02 | S | Spec và plan gói BE-A1 + BE-A2; test trong `test/features/srs/` | — |
 | BE-A3 | Study-mode, domain thuần: sáu mode, chuỗi stage theo scheduler, một điểm dispatch, điều kiện dữ liệu của từng mode, câu trả lời và action, bước của dòng hàng đợi (BR-MODE-001…BR-MODE-019; BR-STUDY-037, BR-STUDY-040, BR-STUDY-045) | xong | BE-02 | M | [spec](superpowers/specs/2026-09-24-study-session-backend-design.md) và [plan](superpowers/plans/2026-09-24-study-session-backend.md) gói 2a; test trong `test/features/study_mode/` | — |
-| BE-A4 | Phiên học và hàng đợi, 8 use case (UC-STUDY-001): mở phiên `learning`/`reviewing` cho một cây deck, dựng round 1 của mọi stage; ghi lượt qua `recordTurn`, hoàn tất chuỗi học mới qua `completeLearning`; round, stage, thẻ quay lại và trần của `self_assess`; kết thúc, bỏ dở, tiếp tục, đóng phiên của ngày trước, `failed` khi lỗi ghi; read model của Study Entry và của màn phiên | xong | BE-A1, BE-A3 | XL | Spec và plan gói 2a; test trong `test/features/study/` và `test/features/srs/` | Cơ chế bốn mode chấm điểm ở BE-A10 |
+| BE-A4 | Phiên học và hàng đợi, 8 use case (UC-STUDY-001): mở phiên `learning`/`reviewing` cho một cây deck, dựng round 1 của mọi stage; ghi lượt qua `recordTurn`, hoàn tất chuỗi học mới qua `completeLearning`; round, stage, thẻ quay lại và trần của `self_assess`; kết thúc, bỏ dở, tiếp tục, đóng phiên của ngày trước, `failed` khi lỗi ghi; read model của Study Entry và của màn phiên | xong | BE-A1, BE-A3 | XL | Spec và plan gói 2a; test trong `test/features/study/` và `test/features/srs/` | — |
 | BE-A5 | Chọn chiều hỏi cho phiên self-assess của deck `sm2`, phần backend (UC-STUDY-003; BR-MODE-013…BR-MODE-019): phiên ôn `sm2` cần chiều hỏi, chiều của từng thẻ lưu trên dòng hàng đợi và chép sang `review_log` | xong | BE-A3, BE-A4 | S | Spec và plan gói 2a; test trong `test/features/study/` | — |
 | BE-C3 | Lọc Trash trên luồng học: `SrsDao.rootOfCard`, dùng trong `recordTurn`, `completeLearning` và `initializeCard` | xong | — | S | Spec và plan gói 2a; test trong `test/features/srs/data/record_turn_test.dart` | — |
+| BE-A10 | Cơ chế bốn mode chấm điểm (phần còn lại của UC-STUDY-001), 3 use case mới: so khớp, phiên bản chính sách và gợi ý của `fill`; đồng hồ, lật đáp án và hết giờ của `recall`; dựng câu hỏi `guess`, chỉ nhận lựa chọn đầu; bàn `match` và việc quy lượt; mỗi lượt trả về đúng hay sai (BR-STUDY-026…BR-STUDY-043, BR-STUDY-049, BR-STUDY-062, BR-STUDY-065, BR-STUDY-066, BR-STUDY-070) | xong | BE-A4, BE-D1 | L | [spec](superpowers/specs/2026-09-24-graded-modes-backend-design.md) và [plan](superpowers/plans/2026-09-24-graded-modes-backend.md) gói 2b; test trong `test/features/study/` và `test/features/study_mode/` | — |
+| BE-D1 | Khung test migration Drift: snapshot schema theo từng version, bước nâng cấp sinh từ snapshot (`stepByStep`) và test nâng cấp; migration đầu tiên v1 → v2 của gói 2b | xong | — | S | Spec gói 2b §5, §6; `drift_schemas/`, `test/drift/migration_test.dart` | Mỗi migration sau thêm snapshot và bước của nó ([skill flutter-drift](../.claude/skills/flutter-drift/references/migrations.md)) |
 | BE-A9 | Read của danh sách card cho screen handoff: mỗi card mang tag (một statement theo trang) và nhãn hạn (`CardDue`); view đếm 4 trạng thái hiển thị của cả deck; stream phát lại khi tag của card đổi | xong | BE-04, BE-05 | S | [spec căn Thư viện](superpowers/specs/2026-09-24-library-artifact-alignment-design.md) §5, phase B; test trong `test/features/card/` | Phase E đọc các trường này |
 
 ### V8.0 — còn lại
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-A10 | Cơ chế bốn mode chấm điểm (phần còn lại của UC-STUDY-001): so khớp, phiên bản chính sách và gợi ý của `fill`; đồng hồ, lật đáp án và hết giờ của `recall`; dựng câu hỏi `guess`, chỉ nhận lựa chọn đầu; bàn `match` và việc quy lượt (BR-STUDY-026…BR-STUDY-043, BR-STUDY-049, BR-STUDY-062, BR-STUDY-065, BR-STUDY-066, BR-STUDY-070) | chưa bắt đầu | BE-A4 | L | Gói 2a để các mode này nhận một kết luận đúng/sai (spec gói 2a §14) | Gói 2b, ngay sau gói 2a |
 | BE-A6 | Study Home: read model cho tab Study (việc cần học trên toàn thư viện, phiên đang dở) (UC-STUDY-002) | chưa bắt đầu | BE-A4 | M | UC chưa có code | Sau BE-A4 |
 | BE-A7 | Progress: tiến độ theo deck và tổng quan, chỉ đọc (UC-PROGRESS-001, UC-PROGRESS-002; BR-PROGRESS-001…BR-PROGRESS-018) | chưa bắt đầu | BE-A4 | L | [README progress](features/progress/README.md): chỉ đọc lịch sử học, không ghi gì | Cần dữ liệu `review_log` thật do BE-A4 ghi. Panel "Mastered x/y" và sort "progress" chờ tài liệu (xem Điểm chặn) |
 | BE-A8 | Tìm kiếm toàn thư viện: tên deck, hai mặt card, tên tag (UC-SEARCH-001; BR-SEARCH-001…BR-SEARCH-009) | chưa bắt đầu | BE-03, BE-04, BE-05 | M | ADR-009, quyết định 2; UC chưa có code | Làm được ngay, song song với nhóm study |
@@ -80,7 +81,7 @@ Quy ước:
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-B1 | Trash: xoá mềm theo batch, khôi phục, purge (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012) | chưa bắt đầu | BE-02, BE-D1 | L | Cột `delete_batch_id` đã có trên `deck` và `card` nhưng chưa có FK; chưa có bảng `delete_batches`; mọi query và lệnh ghi đã lọc `delete_batch_id IS NULL` | Mang migration đầu tiên (v1 → v2). Đổi xoá cứng của BR-DECK-022 và BR-DECK-023 thành tombstone; bất biến 33–37 của `schema.md` bắt đầu có hiệu lực |
+| BE-B1 | Trash: xoá mềm theo batch, khôi phục, purge (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012) | chưa bắt đầu | BE-02, BE-D1 | L | Cột `delete_batch_id` đã có trên `deck` và `card` nhưng chưa có FK; chưa có bảng `delete_batches`; mọi query và lệnh ghi đã lọc `delete_batch_id IS NULL` | Mang migration v2 → v3 (v1 → v2 thuộc gói 2b). Đổi xoá cứng của BR-DECK-022 và BR-DECK-023 thành tombstone; bất biến 33–37 của `schema.md` bắt đầu có hiệu lực |
 | BE-B2 | Tag Management: danh mục tag, đổi tên có gộp, xoá, lọc card theo tag (UC-TAG-001; BR-TAG-003…BR-TAG-011) | chưa bắt đầu | BE-05 | M | Hàm predicate của card list đã chừa chỗ cho BR-TAG-004 (spec backend deck/card §8) | Gồm cả BE-C4 |
 | BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | chưa bắt đầu | BE-04, BE-05 | M–L | Nice-to-have N1 trong [`docs/README.md`](README.md): import CSV/TSV/XLSX, export nội dung | Tuân thủ BR-CORE-001, BR-CORE-002, BR-CORE-004 |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | chưa bắt đầu | BE-03, BE-04 | M | Cột `source_template_id` và `source_template_version` đã có trong `deck` | — |
@@ -98,7 +99,6 @@ Quy ước:
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D1 | Khung test migration Drift: snapshot schema theo từng version và test nâng cấp | chưa bắt đầu | — | S | Có `drift_schemas/drift_schema_v1.json` nhưng chưa có test migration nào | Làm trước migration đầu tiên (BE-B1, hoặc BE-A8 nếu thêm cột) |
 | BE-D2 | CI chạy gate trên Linux: analyze, test, kiểm kiến trúc, unittest, guard, docs check | chưa bắt đầu | — | M | Workflow duy nhất là `build-apk.yml`, chạy tay; [spec UI base](superpowers/specs/2026-09-23-flutter-ui-base-design.md) §10 để Linux CI ngoài phạm vi | Phối hợp với FE-D1 vì goldens phải sinh lại trên Linux |
 | BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Sửa trong commit của hạng mục chạm tới phần đó (tài liệu và code cùng commit, [`docs/README.md`](README.md)) |
 | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở mọi UC | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
@@ -123,12 +123,16 @@ Quy ước:
   [spec](superpowers/specs/2026-09-24-study-session-backend-design.md),
   [plan](superpowers/plans/2026-09-24-study-session-backend.md)): gate năm lệnh xanh sau
   mỗi task, final review toàn nhánh trước khi mở PR.
+- **BE-D1 và BE-A10** (gói 2b,
+  [spec](superpowers/specs/2026-09-24-graded-modes-backend-design.md),
+  [plan](superpowers/plans/2026-09-24-graded-modes-backend.md)): gate năm lệnh xanh sau
+  mỗi task, final review toàn nhánh trước khi mở PR.
 - **Traceability:** có test chứa ID cho 12/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001, UC-STUDY-003).
   10 UC còn lại chưa có code.
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 2a (BE-A3, BE-A4, BE-A5, BE-C3).
+Không có hạng mục backend nào đang làm sau gói 2b (BE-D1, BE-A10).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -149,7 +153,7 @@ Không có hạng mục backend nào đang làm sau gói 2a (BE-A3, BE-A4, BE-A5
   kịch bản, trong đó 93 mang profile `HOST-FLOW`. Đây là phần backend chứng minh bằng
   store và SQLite in-memory thật. Mỗi hạng mục đóng các kịch bản `HOST-FLOW` truy vết
   về UC của nó.
-  - Test hiện có nhắc tới 52 ID: IT-CONT (12), IT-DISC (4), IT-LEARN (10), IT-MODE (3), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
+  - Test hiện có nhắc tới 62 ID: IT-CONT (12), IT-DISC (4), IT-LEARN (10), IT-MODE (12), IT-ORG (4), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
 - **Chưa chạy:** kịch bản `DEVICE-E2E` (cần emulator hoặc thiết bị) và goldens trên
@@ -157,10 +161,8 @@ Không có hạng mục backend nào đang làm sau gói 2a (BE-A3, BE-A4, BE-A5
 
 ## Bước tiếp theo
 
-1. Gói 2b: BE-A10.
-2. Gói 3: BE-A6. Rồi BE-A7, rồi BE-A8. BE-D1 phải xong trước migration đầu tiên; BE-D2
-   càng sớm càng tốt.
-3. Sau V8.0: BE-B1 trước (đổi hành vi xoá và mang migration đầu tiên), rồi BE-B2…BE-B5
+1. Gói 3: BE-A6. Rồi BE-A7, rồi BE-A8. BE-D2 càng sớm càng tốt.
+2. Sau V8.0: BE-B1 trước (đổi hành vi xoá và mang migration v2 → v3), rồi BE-B2…BE-B5
    theo ưu tiên sản phẩm.
 
 ## Ngữ cảnh cập nhật
@@ -171,6 +173,8 @@ Không có hạng mục backend nào đang làm sau gói 2a (BE-A3, BE-A4, BE-A5
   commit cuối của gói BE-A1 + BE-A2.
 - **Cập nhật ngày 2026-09-24:** BE-A3, BE-A4, BE-A5 và BE-C3 xong trong gói 2a; thêm
   BE-A10 cho cơ chế bốn mode chấm điểm (gói 2b).
+- **Cập nhật ngày 2026-09-25:** BE-D1 và BE-A10 xong trong gói 2b. Migration đầu tiên
+  (v1 → v2) thuộc gói này, nên BE-B1 mang migration v2 → v3.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

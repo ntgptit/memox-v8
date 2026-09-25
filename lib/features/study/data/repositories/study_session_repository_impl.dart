@@ -10,22 +10,24 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
+import 'package:memox/features/study/data/datasources/study_round_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
-import 'package:memox/features/study/data/datasources/study_view_dao.dart';
-import 'package:memox/features/study/data/mappers/study_session_view_mapper.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/domain/models/queue_plan_model.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
-import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
+import 'package:memox/features/study_mode/domain/models/match_mode.dart';
+import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
 /// Runs a session: its turns, its rounds and stages, and how it ends
-/// (UC-STUDY-001 steps 6–13, A1–A5). Every write is one transaction, which
+/// (UC-STUDY-001 steps 6–13, A1–A5); its screen reads through
+/// `StudySessionViewRepositoryImpl`. Every write is one transaction, which
 /// the srs and card writes it calls join: the rules read the rows as they
 /// are at the moment of writing, and a refusal writes nothing.
 final class StudySessionRepositoryImpl implements StudySessionRepository {
@@ -37,23 +39,21 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     Random? random,
   }) : _dao = StudySessionDao(_db),
        _queue = StudyQueueDao(_db),
-       _views = StudyViewDao(_db),
-       _now = now ?? DateTime.now,
-       _random = random ?? Random();
+       _rounds = StudyRoundDataSource(_db, random ?? Random()),
+       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final ScheduleRepository _schedules;
   final CardRepository _cards;
   final StudySessionDao _dao;
   final StudyQueueDao _queue;
-  final StudyViewDao _views;
+
+  /// Builds later rounds and prepares every round the session moves to.
+  final StudyRoundDataSource _rounds;
   final DateTime Function() _now;
 
-  /// Every shuffle of a later round (BR-STUDY-061).
-  final Random _random;
-
   @override
-  Future<Outcome<void, StudyRejection>> answerTurn({
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
     required String cardId,
     required StudyAnswer answer,
@@ -69,6 +69,43 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       }
     });
   }
+
+  @override
+  Future<Outcome<void, StudyRejection>> revealRecallAnswer({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.recall, now, (row) async {
+    if (row.isRevealed == 1) return const Ok(null);
+    await _queue.reveal(row, remainingMs: _timeLeft(row, remainingMs));
+    return const Ok(null);
+  });
+
+  @override
+  Future<Outcome<void, StudyRejection>> saveRecallTime({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.recall, now, (row) async {
+    if (row.isRevealed == 1) return const Ok(null);
+    await _queue.saveTimeLeft(row, remainingMs: _timeLeft(row, remainingMs));
+    return const Ok(null);
+  });
+
+  @override
+  Future<Outcome<void, StudyRejection>> showFillHint({
+    required String sessionId,
+    required String cardId,
+    DateTime? now,
+  }) => _onServedRow(sessionId, cardId, StudyMode.fill, now, (row) async {
+    if (!await _dao.hasHint(cardId)) {
+      return const Rejected(StudyRejection.noHint);
+    }
+    if (row.hintShown == 0) await _queue.showHint(row);
+    return const Ok(null);
+  });
 
   @override
   Future<Outcome<void, StudyRejection>> abandonSession({
@@ -120,6 +157,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
             SchedulerType.fromCode(root.schedulerType!),
             at,
           );
+          await _prepareServed(sessionId);
           return const Ok(null);
       }
     });
@@ -148,53 +186,36 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     });
   }
 
-  @override
-  Stream<StudySessionView?> watchSession(String sessionId) => _views
-      .watchSessionRow(sessionId)
-      .asyncMap((row) async => row == null ? null : _viewOf(row))
-      .mapDatabaseErrors();
-
-  /// The rest of [row]'s screen, read in the same emission (spec §8.2): an
-  /// open session shows the card it serves, an ended one its summary,
-  /// whatever rows it left.
-  Future<StudySessionView> _viewOf(SessionViewRow row) async {
-    final session = row.session;
-    final modes = await _views.modesOf(session.id);
-    if (session.status == SessionStatus.inProgress.code) {
-      return studySessionViewOf(
-        row,
-        modes: modes,
-        served: await _servedOf(session),
-        counts: null,
-      );
-    }
-    return studySessionViewOf(
-      row,
-      modes: modes,
-      served: null,
-      counts: await _views.summaryCounts(
-        session.id,
-        lapseActions: lapseActionsOf(SchedulerType.fromCode(row.schedulerType)),
-      ),
-    );
-  }
-
-  /// The row [session] serves, with its card and the counts of its round;
-  /// null while nothing is left to serve (spec D12).
-  Future<ServedRow?> _servedOf(StudySession session) async {
-    final head = await _queue.headRow(
-      session.id,
-      session.currentMode,
-      session.cursor,
-    );
-    if (head == null) return null;
-    final card = await _views.cardRow(head.cardId);
-    if (card == null) return null;
-    return (
-      row: head,
-      card: card,
-      round: await _views.roundCounts(session.id, head.mode, head.round),
-    );
+  /// [write] on the row [sessionId] serves: the checks of a turn, for a write
+  /// that is not one (graded modes spec §8.3). The session is open at its
+  /// root's generation, in [mode], and serves [cardId].
+  Future<Outcome<void, StudyRejection>> _onServedRow(
+    String sessionId,
+    String cardId,
+    StudyMode mode,
+    DateTime? now,
+    Future<Outcome<void, StudyRejection>> Function(StudyQueueItem row) write,
+  ) {
+    final at = now ?? _now();
+    return _write(() async {
+      switch (await _live(await _dao.sessionRow(sessionId), at)) {
+        case Rejected(:final reason):
+          return Rejected(reason);
+        case Ok(value: (final session, _)):
+          if (session.currentMode != mode.code) {
+            return const Rejected(StudyRejection.answerDoesNotFitMode);
+          }
+          final row = await _queue.headRow(
+            session.id,
+            mode.code,
+            session.cursor,
+          );
+          if (row == null || row.cardId != cardId) {
+            return const Rejected(StudyRejection.notCurrentCard);
+          }
+          return write(row);
+      }
+    });
   }
 
   /// [session] and its root while the session is open and its generation
@@ -220,8 +241,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     return const Rejected(StudyRejection.staleGeneration);
   }
 
-  /// [answer] on [cardId] in an open [session] (spec §7.3 steps 2–8).
-  Future<Outcome<void, StudyRejection>> _answer(
+  /// [answer] on [cardId] in an open [session] (spec §7.3 steps 2–8; graded
+  /// modes spec §8.1).
+  Future<Outcome<TurnResult, StudyRejection>> _answer(
     StudySession session,
     Deck root,
     String cardId,
@@ -229,22 +251,23 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     DateTime at,
   ) async {
     final mode = StudyMode.fromCode(session.currentMode);
-    final row = mode.handler.servesInOrder
-        ? await _queue.headRow(session.id, mode.code, session.cursor)
-        : await _queue.boardRow(session.id, mode.code, cardId);
-    if (row == null || row.cardId != cardId) {
-      return const Rejected(StudyRejection.notCurrentCard);
-    }
+    final row = await _servedRow(session, mode, cardId);
+    if (row == null) return const Rejected(StudyRejection.notCurrentCard);
 
     final type = SchedulerType.fromCode(root.schedulerType!);
     final scheduler = schedulerFor(type);
-    final Object? action;
-    switch (mode.handler.actionOf(answer, scheduler)) {
+    final TurnVerdict verdict;
+    switch (mode.handler.judge(
+      answer,
+      await _contextOf(mode, row),
+      scheduler,
+    )) {
       case Rejected(:final reason):
         return Rejected(StudyRejection.ofModeRefusal(reason));
       case Ok(:final value):
-        action = value;
+        verdict = value;
     }
+    final action = verdict.action;
     final kind = SessionKind.values.byName(session.sessionKind);
     if (action != null) {
       final recorded = await _schedules.recordTurn(
@@ -261,6 +284,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
           action: action,
           directionCode: row.direction,
           answeredAt: at,
+          outcomeReasonCode: verdict.outcomeReason?.code,
+          comparisonVersion: verdict.comparisonVersion,
+          usedHint: verdict.usedHint,
         ),
       );
       if (recorded case Rejected(:final reason)) {
@@ -280,6 +306,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       cursor: cursor,
       at: at,
     );
+    if (verdict.takesMeaningSlotOf case final other?) {
+      await _queue.swapMeaningSlots(row, other);
+    }
     await _dao.setCursor(session.id, cursor);
     // A card finishes learning with the last stage it takes part in; a
     // card at the cap stays new (BR-STUDY-053, UC-STUDY-001 A2b).
@@ -296,7 +325,54 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       );
     }
     await _progress(session, type, at);
-    return const Ok(null);
+    return Ok(TurnResult(isCorrect: verdict.isCorrect));
+  }
+
+  /// [cardId]'s row that [session] serves in [mode]: the head row, or in a
+  /// mode that does not serve in order, the card's pending pair on the board
+  /// of the head row (graded modes spec §7.6). Null when the card is not
+  /// served.
+  Future<StudyQueueItem?> _servedRow(
+    StudySession session,
+    StudyMode mode,
+    String cardId,
+  ) async {
+    final head = await _queue.headRow(session.id, mode.code, session.cursor);
+    if (head == null || mode.handler.servesInOrder) {
+      return head?.cardId == cardId ? head : null;
+    }
+    final row = await _queue.boardRow(session.id, mode.code, cardId);
+    if (row == null) return null;
+    return matchBoardOf(row.position) == matchBoardOf(head.position)
+        ? row
+        : null;
+  }
+
+  /// What [mode] judges the turn on [row] by: the card's folded fields, the
+  /// row's flags, and the stored options or the pending pairs of the board
+  /// (graded modes spec §7.2, §8.1 step 3).
+  Future<TurnContext> _contextOf(StudyMode mode, StudyQueueItem row) async {
+    final card = await _dao.cardRow(row.cardId);
+    final board = matchBoardOf(row.position) * matchBoardSize;
+    return TurnContext(
+      card: TurnCard(
+        cardId: card.id,
+        frontFolded: card.frontFolded,
+        backFolded: card.backFolded,
+      ),
+      isRevealed: row.isRevealed == 1,
+      isHintShown: row.hintShown == 1,
+      guessOptionIds: mode.handler.asksWithOptions
+          ? await _queue.optionIds(row)
+          : null,
+      boardMeanings: mode.handler.servesInOrder
+          ? const {}
+          : await _queue.pendingMeanings(
+              row,
+              from: board,
+              to: board + matchBoardSize - 1,
+            ),
+    );
   }
 
   /// What [step] does to [row] (spec §5.5).
@@ -349,7 +425,11 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       final round = await _queue.lowestPendingRound(session.id, mode.code);
       if (round == null) continue;
       if (await _queue.isUnbuilt(session.id, mode.code, round)) {
-        await _build(session.id, mode, round);
+        await _rounds.build(session.id, session.rootId, mode, round);
+      } else if (mode != current) {
+        // Round 1 of a later stage, built when the session opened, is
+        // prepared when the stage starts (graded modes spec D8).
+        await _rounds.prepare(session.id, session.rootId, mode, round);
       }
       if (mode != current) await _dao.setCurrentMode(session.id, mode.code);
       return;
@@ -357,15 +437,22 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     await _dao.endSession(session.id, status: SessionStatus.completed, now: at);
   }
 
-  /// Shuffles [round], unlike the round before it (BR-STUDY-061).
-  Future<void> _build(String sessionId, StudyMode mode, int round) async {
-    final previous = await _queue.cardsOf(sessionId, mode.code, round - 1);
-    final cards = await _queue.cardsOf(sessionId, mode.code, round);
-    await _queue.build(
+  /// Continue fills in what the round the session serves lacks: the
+  /// questions and slots of a session from before v2, or a question that
+  /// lost an option to a deleted card (graded modes spec §6.5, §8.2).
+  Future<void> _prepareServed(String sessionId) async {
+    final session = await _dao.sessionRow(sessionId);
+    if (session?.status != SessionStatus.inProgress.code) return;
+    final round = await _queue.lowestPendingRound(
       sessionId,
-      mode.code,
+      session!.currentMode,
+    );
+    if (round == null) return;
+    await _rounds.prepare(
+      sessionId,
+      session.rootId,
+      StudyMode.fromCode(session.currentMode),
       round,
-      shuffledUnlike(cards, previous, _random),
     );
   }
 
@@ -379,6 +466,11 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     }
   }
 }
+
+/// The time left of [row]'s turn after a save of [remainingMs]: it never
+/// grows (BR-STUDY-036).
+int _timeLeft(StudyQueueItem row, int remainingMs) =>
+    min(row.remainingMs ?? recallTurnMs, remainingMs);
 
 /// A write the turn cannot go without. A refusal there means study and the
 /// feature it calls disagree: a bug, which rolls the turn back (spec §7.3,

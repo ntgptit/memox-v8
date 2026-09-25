@@ -4,12 +4,20 @@ import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
+import 'package:memox/features/study_mode/domain/models/guess_mode.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The row a session serves, with its card and the counts of its round.
-typedef ServedRow = ({StudyQueueItem row, CardRow card, RoundCounts round});
+/// The row a session serves, with its card and the counts of its round;
+/// its question's options in `guess`, and its board in `match`.
+typedef ServedRow = ({
+  StudyQueueItem row,
+  CardRow card,
+  RoundCounts round,
+  List<OptionRecord>? options,
+  List<BoardPairRecord>? board,
+});
 
 /// The stored `review_log.action` codes of [type]'s lapses (BR-SRS-018).
 List<String> lapseActionsOf(SchedulerType type) {
@@ -68,8 +76,52 @@ StudySessionView studySessionViewOf(
             },
             wrongTurnCount: counts.wrongCount,
           ),
+    board: switch (served?.board) {
+      final List<BoardPairRecord> pairs => _boardOf(pairs),
+      null => null,
+    },
   );
 }
+
+/// The terms in position order, the meanings by their slot (graded modes
+/// spec §9).
+MatchBoard _boardOf(List<BoardPairRecord> pairs) {
+  final bySlot = [...pairs]
+    ..sort(
+      (a, b) => (a.meaningSlot ?? pairs.length).compareTo(
+        b.meaningSlot ?? pairs.length,
+      ),
+    );
+  return MatchBoard(
+    terms: [
+      for (final pair in pairs)
+        MatchTile(
+          cardId: pair.cardId,
+          text: pair.front,
+          isMatched: pair.isCompleted,
+        ),
+    ],
+    meanings: [
+      for (final pair in bySlot)
+        MatchTile(
+          cardId: pair.cardId,
+          text: pair.back,
+          isMatched: pair.isCompleted,
+        ),
+    ],
+  );
+}
+
+/// The question of a `guess` row, blocked unless all five options are
+/// stored (BR-STUDY-040).
+GuessQuestion _questionOf(List<OptionRecord> options) => GuessQuestion(
+  options.length != guessOptionCount
+      ? const []
+      : [
+          for (final option in options)
+            GuessOption(cardId: option.cardId, meaning: option.back),
+        ],
+);
 
 StudyItem _itemOf(ServedRow served) => StudyItem(
   cardId: served.card.id,
@@ -84,6 +136,13 @@ StudyItem _itemOf(ServedRow served) => StudyItem(
     final String code => QuestionDirection.fromCode(code),
     null => null,
   },
-  remainingMs: served.row.remainingMs,
+  remainingMs:
+      served.row.remainingMs ??
+      StudyMode.fromCode(served.row.mode).handler.turnTimeMs,
   isRevealed: served.row.isRevealed == 1,
+  isHintShown: served.row.hintShown == 1,
+  guess: switch (served.options) {
+    final List<OptionRecord> options => _questionOf(options),
+    null => null,
+  },
 );

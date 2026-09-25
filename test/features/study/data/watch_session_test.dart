@@ -14,6 +14,7 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
+import 'package:memox/features/study/data/repositories/study_session_view_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -36,12 +37,14 @@ void main() {
   late DeckRepositoryImpl decks;
   late StudyEntryRepositoryImpl entries;
   late StudySessionRepositoryImpl sessions;
+  late StudySessionViewRepositoryImpl views;
   final now = DateTime(2026, 9, 24, 9);
   setUp(() {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: () => now);
     entries = studyEntryRepository(db, () => now);
     sessions = studySessionRepository(db, () => now);
+    views = StudySessionViewRepositoryImpl(db);
   });
   tearDown(() async {
     await expectStudyInvariants(db);
@@ -49,7 +52,7 @@ void main() {
   });
 
   Future<StudySessionView> viewOf(String sessionId) async =>
-      (await sessions.watchSession(sessionId).first)!;
+      (await views.watchSession(sessionId).first)!;
 
   Future<(DeckEntity, DeckEntity)> tree([
     SchedulerType type = SchedulerType.eightBox,
@@ -137,7 +140,7 @@ void main() {
     final first = (await viewOf(id)).currentItem!.cardId;
 
     final next = expectLater(
-      sessions.watchSession(id),
+      views.watchSession(id),
       emitsThrough(
         isA<StudySessionView>()
             .having((view) => view.progress?.completed, 'completed', 1)
@@ -224,9 +227,9 @@ void main() {
       mode: StudyMode.recall,
     );
     final id = (opened as Ok<String, StudyRejection>).value;
-    await answer(id, const GradedAnswer(isCorrect: false));
-    await answer(id, const GradedAnswer(isCorrect: true));
-    await answer(id, const GradedAnswer(isCorrect: true));
+    await answerServed(db, sessions, id, right: false);
+    await answerServed(db, sessions, id, right: true);
+    await answerServed(db, sessions, id, right: true);
 
     final summary = (await viewOf(id)).summary!;
 
@@ -262,7 +265,7 @@ void main() {
     final (_, leaf) = await tree();
     await insertCard(db, id: 'c1', deckId: leaf.id);
     final id = await learning(leaf);
-    final watch = WatchStudySessionUseCase(sessions)(sessionId: id);
+    final watch = WatchStudySessionUseCase(views)(sessionId: id);
 
     final gone = expectLater(
       watch,
@@ -293,7 +296,7 @@ void main() {
     await db.customStatement('ALTER TABLE card RENAME TO card_unreadable');
 
     await expectLater(
-      sessions.watchSession(id),
+      views.watchSession(id),
       emitsError(isA<UnknownDatabaseFailure>()),
     );
 

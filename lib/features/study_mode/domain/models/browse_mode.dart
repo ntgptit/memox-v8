@@ -4,6 +4,7 @@ import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dar
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
 /// `browse`: both sides at once, to get acquainted. No grade, no action, no
 /// `review_log` row and no schedule change; the card leaves the queue once
@@ -18,13 +19,17 @@ final class BrowseModeHandler extends StudyModeHandler {
   bool get usesRounds => false;
 
   @override
-  Outcome<Object?, StudyModeRejection> actionOf(
+  Outcome<TurnVerdict, StudyModeRejection> judge(
     StudyAnswer answer,
+    TurnContext context,
     SrsScheduler scheduler,
   ) => switch (answer) {
-    AdvanceAnswer() => const Ok(null),
+    AdvanceAnswer() => const Ok(TurnVerdict(action: null)),
     SelfAssessAnswer() ||
-    GradedAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
+    FillAnswer() ||
+    RecallAnswer() ||
+    GuessAnswer() ||
+    MatchAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
   };
 
   @override
