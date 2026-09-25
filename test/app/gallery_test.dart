@@ -157,10 +157,23 @@ void main() {
     tester,
   ) async {
     await _pumpGallery(tester, locale: const Locale('vi'));
-    expect(find.text('B · Hành động'), findsOneWidget);
-    expect(find.text('B · Actions'), findsNothing);
-
-    await _scrollThrough(tester);
+    for (final (english, vietnamese) in [
+      ('B · Actions', 'B · Hành động'),
+      ('C · Inputs & selection', 'C · Nhập liệu và lựa chọn'),
+      ('D · Surfaces, rows & content', 'D · Bề mặt, hàng và nội dung'),
+      ('E · Status & metadata', 'E · Trạng thái và siêu dữ liệu'),
+      ('F · Overlays & feedback', 'F · Lớp phủ và phản hồi'),
+      ('A · Chrome & navigation', 'A · Khung và điều hướng'),
+      ('G · Loading, empty & error', 'G · Đang tải, trống và lỗi'),
+      ('H · Layout', 'H · Bố cục'),
+    ]) {
+      await tester.scrollUntilVisible(
+        find.text(vietnamese),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(english), findsNothing, reason: english);
+    }
     expect(tester.takeException(), isNull);
   });
 }
