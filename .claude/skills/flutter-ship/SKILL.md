@@ -87,27 +87,33 @@ one, nobody notices until reviews arrive.
 
 ## 19 · CI/CD
 
-The pipeline gates, in order (details in `references/ci.md`):
+Every pull request runs `.github/workflows/ci.yml` on `ubuntu-latest`
+(details in `references/ci.md`). The gates, in the order V8 runs them:
 
-1. `dart run build_runner build --delete-conflicting-outputs`, then fail if
-   the tree is dirty — **codegen first**: generated code is not committed, so
-   analyze and test cannot even run before this step (the real ci.yml orders
-   it this way).
-2. `dart format --output=none --set-exit-if-changed .`
-3. `flutter analyze` (the live workflow passes `--no-fatal-infos`).
-4. `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7` —
-   **separate step**. This is the project's main guard and owns the checks
+1. `flutter gen-l10n` and
+   `dart run build_runner build --delete-conflicting-outputs` — **codegen
+   first**: generated code is not committed, so nothing else can run before
+   it. `check_generated.py` then rebuilds it from scratch and compares it byte
+   for byte.
+2. `dod_check.sh`, in full: the gate a contributor runs before a commit. It
+   runs side by side `dart format`, `flutter analyze --no-fatal-infos`,
+   generated-code freshness, the architecture boundaries, the docs check, the
+   Flutter version against `.fvmrc`, the CI tooling tests, the guard's
+   self-tests, `TZ=UTC flutter test --exclude-tags golden`, and
+   `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8`
+   — **a check of its own**: the project's main guard owns what
    `flutter analyze` cannot express, including the Riverpod rules that
-   `riverpod_lint` used to cover (descoped — see `docs/wbs.md`). (No explicit `--profile` flag —
-   but the guard resolves the `ci` profile from the CI environment, and that
-   profile sets `warning_as_error: true`: a run that "passes with warnings"
-   locally exits 1 on CI. Fix warnings, do not merge past them.)
-5. `.claude/skills/flutter-architecture/scripts/check_architecture.sh`
-6. `flutter test` — per-PR ci.yml runs the golden-excluded subset; the full
-   suite including goldens runs in `ci-full.yml`.
-7. Build Android; build iOS if the runner supports it; build web if in scope.
+   `riverpod_lint` used to cover.
+3. Beside the gate, the goldens: `TZ=UTC flutter test --tags golden` against
+   the committed Linux renders, then `count_golden_tests.py` with a floor of 60.
+4. `CI gate`: green only when every other job succeeded.
 
-Nothing merges on a red pipeline.
+The guard's `local` and `ci` profiles are identical, and nothing picks a
+profile from the environment: a warning fails the local run exactly as it fails
+CI. Fix warnings; do not merge past them.
+
+Nothing merges on a red pipeline: `CI gate` must be green before a pull request
+is merged. Release builds run by hand (`.github/workflows/build-apk.yml`).
 
 **PR quality gate**: small single-purpose scope, a description, a link to the
 WBS item, screenshots or video for UI changes, test results, no unexplained new

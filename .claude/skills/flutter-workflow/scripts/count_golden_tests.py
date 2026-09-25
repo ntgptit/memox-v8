@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Count the golden tests that actually ran, and fail below a floor.
 
-`flutter test --tags golden` exits 0 when it runs *zero* tests — a broken tag,
-a renamed `test/` path, or a deleted suite all leave the job green with no
-coverage. The compact reporter's animated output cannot be counted reliably, so
-this reads the machine-readable JSON reporter instead and counts test-completion
+`flutter test --tags golden` fails a run that selects no test at all (exit 79,
+"No tests ran"), but it passes a partial collapse: a golden file that lost its
+tag, a renamed `test/` path or a deleted suite leaves the job green with fewer
+pictures compared. The console reporters' output cannot be counted reliably, so
+this reads the machine-readable JSON report instead and counts test-completion
 events, which are unambiguous.
 
 The floor is a tripwire, not a target: it sits well below the current golden
@@ -15,8 +16,9 @@ Usage:
     count_golden_tests.py <json-report-file> <floor>
 
 The report file is the newline-delimited JSON that
-`flutter test --reporter json` writes. Exit 0 when the count meets the floor and
-every test that ran passed; exit 1 otherwise.
+`flutter test --file-reporter json:<file>` (or `--reporter json`) writes. Exit 0
+when the count meets the floor and every test that ran passed; exit 1 otherwise,
+including when the report cannot be read.
 """
 
 from __future__ import annotations
@@ -49,7 +51,13 @@ def _load_events(path: str) -> list[dict]:
 
 def count_and_check(path: str, floor: int) -> int:
     """Print the discovered count and return a process exit code."""
-    events = _load_events(path)
+    try:
+        events = _load_events(path)
+    except OSError as error:
+        # The report is missing when the test run never wrote it: the job
+        # passed it the wrong path, or the run died before its first event.
+        print(f"::error::cannot read the golden report {path}: {error.strerror}")
+        return 1
 
     # `testDone` is emitted once per test as it finishes. `hidden` marks the
     # synthetic "loading <suite>" entries the reporter creates per file, which

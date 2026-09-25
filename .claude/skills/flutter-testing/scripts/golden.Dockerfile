@@ -1,7 +1,8 @@
 # The Linux renderer that writes this repo's goldens (spec §8.2, owner decision
 # 2026-09-25), for regenerating them from a Windows or macOS checkout. The
-# history below is inherited; the repo has no golden CI job yet, so this image
-# is the baseline itself.
+# history below is inherited. The `goldens` job of `.github/workflows/ci.yml`
+# compares the pictures on `ubuntu-latest`, as described below; this image is
+# where they are written.
 #
 # **Why this file exists.** Goldens have exactly one authoring platform and
 # since M100.24 it is Linux (`dart_test.yaml` carries the reasoning). A Windows

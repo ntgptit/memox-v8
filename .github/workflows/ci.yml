@@ -1,0 +1,111 @@
+name: CI
+
+# Every pull request runs the local gate, dod_check.sh in full, and the golden
+# comparison on Linux. `CI gate` is the one check a ruleset requires: it is
+# green only when every other job succeeded. The contract this file keeps is
+# pinned by WorkflowContractTest in
+# .claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py.
+# Spec: docs/superpowers/specs/2026-09-25-ci-gate-design.md
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      # The guard and its self-tests need Python 3.12 or newer with these
+      # packages; dod_check.sh takes the first interpreter that imports them.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: guard dependencies
+        run: python3 -m pip install -r code-verification-guard-v2/requirements-dev.txt
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: pub get
+        run: flutter pub get
+
+      # Generated code is not committed (.gitignore: *.g.dart, lib/l10n/generated/).
+      - name: generate
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+
+      # The half of the generated-code check that dod_check.sh leaves to CI:
+      # a build from nothing reproduces every generated file byte for byte.
+      - name: generated code rebuilds from scratch
+        run: python3 .claude/skills/flutter-workflow/scripts/check_generated.py
+
+      - name: gate
+        run: bash .claude/skills/flutter-workflow/scripts/dod_check.sh
+
+  goldens:
+    name: goldens
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: pub get
+        run: flutter pub get
+
+      - name: generate
+        run: |
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+
+      # golden.Dockerfile, where the pictures are written, bakes in the same step.
+      - name: test fonts
+        run: bash .claude/skills/flutter-workflow/scripts/prepare_test_fonts.sh
+
+      # Compares against the committed pictures and never rewrites them. The
+      # console names a failed golden; the JSON report feeds the count below.
+      - name: golden tests
+        run: TZ=UTC flutter test --tags golden --file-reporter json:golden-report.jsonl
+
+      # A run that passes can still have compared too few pictures.
+      - name: golden count
+        run: python3 .claude/skills/flutter-workflow/scripts/count_golden_tests.py golden-report.jsonl 60
+
+      - name: upload golden failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures
+          path: test/**/failures/**
+
+  ci-gate:
+    name: CI gate
+    if: always()
+    needs: [gate, goldens]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: every job succeeded
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS" | jq -e 'all(.[]; .result == "success")' > /dev/null
