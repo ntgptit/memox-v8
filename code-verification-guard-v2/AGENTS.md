@@ -36,7 +36,7 @@ Read only when the task touches that area:
 For MemoX ruleset verification, run from the MemoX repository root:
 
 ```bash
-python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7
+python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8
 ```
 
 Expected success:
@@ -53,7 +53,7 @@ python -m pytest -q
 python -m compileall -q code_verification_guard
 ```
 
-The MemoX CI (`.github/workflows/ci.yml`) runs the default check on every push and pull request, against this vendored copy — never against an external remote.
+The MemoX CI (`.github/workflows/ci.yml`) runs the default check and this directory's pytest suite on every pull request, through `.claude/skills/flutter-workflow/scripts/dod_check.sh`, against this vendored copy — never against an external remote.
 
 ## Completion Report
 

@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -43,16 +44,12 @@ def _find_bash() -> str | None:
 
 _BASH = _find_bash()
 
-# The Flutter app and its CI workflow do not exist until Phase 2.3; `dod_check.sh`
-# exits early on the same condition. Tests that assert facts about that tree
-# wait for it, and run again unchanged the day it is created.
+# The Flutter app does not exist until Phase 2.3; `dod_check.sh` exits early on
+# the same condition. Tests that assert facts about that tree wait for it, and
+# run again unchanged the day it is created.
 _APP_TREE = (REPO_ROOT / "pubspec.yaml").is_file()
-_CI_WORKFLOW = REPO_ROOT / ".github/workflows/ci.yml"
 requires_app_tree = unittest.skipUnless(
     _APP_TREE, "Flutter app not created yet (no pubspec.yaml at the repo root)"
-)
-requires_ci_workflow = unittest.skipUnless(
-    _CI_WORKFLOW.is_file(), "CI workflow not created yet (.github/workflows/ci.yml)"
 )
 
 
@@ -961,17 +958,160 @@ class GoldenCountTest(unittest.TestCase):
         self.assertIn(f"cannot read the golden report {missing}", out)
 
 
+_CI_WORKFLOW = REPO_ROOT / ".github/workflows/ci.yml"
+
+
+def _top_level_block(workflow: str, key: str) -> str:
+    """The lines under a top-level `key:` of the workflow, up to the next key."""
+    lines = workflow.splitlines()
+    block: list[str] = []
+    for line in lines[lines.index(f"{key}:") + 1:]:
+        if line and not line.startswith(" "):
+            break
+        block.append(line)
+    return "\n".join(block)
+
+
+def _workflow_jobs(workflow: str) -> dict[str, str]:
+    """Each job of the workflow by its key, as the text of its block."""
+    jobs: dict[str, list[str]] = {}
+    current: list[str] = []
+    for line in _top_level_block(workflow, "jobs").splitlines():
+        key = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
+        if key:
+            current = jobs.setdefault(key.group(1), [])
+            continue
+        current.append(line)
+    return {key: "\n".join(lines) for key, lines in jobs.items()}
+
+
+def _run_script(job: str) -> str:
+    """The script of the job's `run: |` step, without its indentation."""
+    lines = job.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip() == "run: |")
+    indent = len(lines[start]) - len(lines[start].lstrip()) + 2
+    script: list[str] = []
+    for line in lines[start + 1:]:
+        if line.strip() and len(line) - len(line.lstrip()) < indent:
+            break
+        script.append(line[indent:])
+    return "\n".join(script)
+
+
 class WorkflowContractTest(unittest.TestCase):
-    @requires_ci_workflow
-    def test_ci_consumes_the_sealed_dynamic_plan(self) -> None:
-        workflow = _CI_WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("build_verification_plan.py", workflow)
-        self.assertIn("--diff-filter=ACMRTD", workflow)
-        self.assertIn("matrix: ${{ fromJSON(needs.classify.outputs.shard_matrix) }}", workflow)
-        self.assertIn("--test-files-json \"$TEST_FILES_JSON\"", workflow)
-        self.assertIn("--needs-widgetbook", workflow)
-        self.assertIn("pub get (widgetbook catalog for root analyze)", workflow)
-        self.assertNotIn("classify_ci_changes.py", workflow)
+    """What `.github/workflows/ci.yml` must keep doing, and what `dod_check.sh`
+    must never skip.
+
+    The workflow is read as text, without PyYAML: `dod_check.sh` runs these
+    tests with no Python dependency installed. Comment lines are dropped
+    first, so a comment may name what the workflow must not do.
+    """
+
+    def _workflow(self) -> tuple[str, dict[str, str]]:
+        if not _CI_WORKFLOW.is_file():
+            self.fail(".github/workflows/ci.yml is missing: no pull request is verified")
+        workflow = "\n".join(
+            line
+            for line in _CI_WORKFLOW.read_text(encoding="utf-8").splitlines()
+            if not line.lstrip().startswith("#")
+        )
+        return workflow, _workflow_jobs(workflow)
+
+    def test_the_gate_job_runs_the_whole_local_gate(self) -> None:
+        """The gate a contributor runs, in full, and generated code rebuilt
+        from nothing: CI must not trust a narrower selection than that."""
+        _, jobs = self._workflow()
+        gate = jobs["gate"]
+        self.assertIn("bash .claude/skills/flutter-workflow/scripts/dod_check.sh", gate)
+        self.assertIn(".claude/skills/flutter-workflow/scripts/check_generated.py", gate)
+        for narrowing in ("--fast", "--changed", "--skip-rebuild"):
+            with self.subTest(flag=narrowing):
+                self.assertNotIn(narrowing, gate)
+
+    def test_the_goldens_job_compares_the_pictures_and_counts_them(self) -> None:
+        workflow, jobs = self._workflow()
+        goldens = jobs["goldens"]
+        self.assertIn("flutter test --tags golden", goldens)
+        self.assertNotIn("--update-goldens", workflow)
+        written = re.search(r"--file-reporter json:(\S+)", goldens)
+        counted = re.search(r"count_golden_tests\.py (\S+) (\d+)", goldens)
+        self.assertIsNotNone(written, "the golden run writes no JSON report")
+        self.assertIsNotNone(counted, "nothing counts the golden tests that ran")
+        self.assertEqual(
+            written.group(1), counted.group(1),
+            "the count reads another file than the one the golden run writes",
+        )
+        self.assertGreater(int(counted.group(2)), 0, "a floor of 0 lets a run of no test pass")
+
+    def test_ci_gate_judges_every_other_job_whatever_happened_to_it(self) -> None:
+        """A job that the required check does not cover can fail without
+        blocking a merge: the failure V7's wiring test caught."""
+        _, jobs = self._workflow()
+        named = [
+            key for key, block in jobs.items()
+            if re.search(r"(?m)^    name: CI gate\s*$", block)
+        ]
+        self.assertEqual(1, len(named), "exactly one job must be named CI gate")
+        gate = jobs[named[0]]
+        self.assertRegex(gate, r"(?m)^    if: always\(\)\s*$")
+        needs = re.search(r"(?m)^    needs: \[([^\]]*)\]\s*$", gate)
+        self.assertIsNotNone(needs, "CI gate declares no one-line needs: [...] list")
+        self.assertEqual(
+            set(jobs) - {named[0]},
+            {name.strip() for name in needs.group(1).split(",")},
+        )
+        self.assertIn("toJSON(needs)", gate, "CI gate does not judge every job it waits for")
+
+    @unittest.skipUnless(_BASH and shutil.which("jq"), "needs bash and jq, as the runner has")
+    def test_ci_gate_is_green_only_when_every_job_succeeded(self) -> None:
+        """Runs the gate's own script on the results GitHub hands it: a job
+        that failed, was cancelled or was skipped must turn it red."""
+        _, jobs = self._workflow()
+        gate = next(
+            block for block in jobs.values()
+            if re.search(r"(?m)^    name: CI gate\s*$", block)
+        )
+        cases = {
+            "success": {"gate": "success", "goldens": "success"},
+            "failure": {"gate": "failure", "goldens": "success"},
+            "cancelled": {"gate": "success", "goldens": "cancelled"},
+            "skipped": {"gate": "skipped", "goldens": "success"},
+        }
+        for case, results in cases.items():
+            needs = {job: {"result": result, "outputs": {}} for job, result in results.items()}
+            run = subprocess.run(
+                [_BASH, "-eo", "pipefail", "-c", _run_script(gate)],
+                env={**os.environ, "NEEDS": json.dumps(needs)},
+                capture_output=True, text=True,
+            )
+            with self.subTest(case=case):
+                self.assertEqual(case == "success", run.returncode == 0, run.stdout + run.stderr)
+                for job, result in results.items():
+                    self.assertIn(f"{job}: {result}", run.stdout)
+
+    def test_every_pull_request_runs_the_workflow_whatever_it_changes(self) -> None:
+        """A path filter would leave a required check waiting forever on a pull
+        request that touches none of its paths."""
+        workflow, _ = self._workflow()
+        on = _top_level_block(workflow, "on")
+        self.assertEqual(
+            {"pull_request", "workflow_dispatch"},
+            set(re.findall(r"(?m)^  ([A-Za-z_]+):", on)),
+        )
+        for path_filter in ("paths:", "paths-ignore:"):
+            with self.subTest(filter=path_filter):
+                self.assertNotIn(path_filter, on)
+
+    def test_every_flutter_install_reads_the_pinned_version(self) -> None:
+        _, jobs = self._workflow()
+        installs = {
+            key: block for key, block in jobs.items() if "subosito/flutter-action" in block
+        }
+        self.assertTrue(installs, "no job installs Flutter")
+        for key, block in installs.items():
+            with self.subTest(job=key):
+                self.assertIn("flutter-version-file: .fvmrc", block)
+                self.assertNotIn("flutter-version:", block)
 
     def test_local_gate_fails_closed_when_required_tools_are_missing(self) -> None:
         script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
@@ -1065,74 +1205,6 @@ class PromptContractTest(unittest.TestCase):
         path.write_text(text, encoding="utf-8")
         messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
         self.assertTrue(any("header fields" in message for message in messages))
-
-
-@requires_app_tree
-@requires_ci_workflow
-class PlanOutputsAreWiredIntoTheWorkflowTest(unittest.TestCase):
-    """Every `needs_*` the plan emits must reach the jobs that read it.
-
-    **This test exists because the wire was cut and nothing noticed.** The
-    golden gate shipped with `needs_goldens` written to `$GITHUB_OUTPUT` and
-    *not* declared in the `classify` job's `outputs:` map, so
-    `needs.classify.outputs.needs_goldens` resolved to the empty string, the
-    Windows job was skipped on a change that required it, and the only reason
-    it surfaced was that `check_ci_gate.py` refused to parse `''` as a boolean.
-    Had the gate been more forgiving, the job would have been silently dead —
-    which is the exact failure it was added to prevent, one layer up.
-
-    Parsed as text rather than with PyYAML on purpose: the job that runs these
-    tests installs no Python dependencies, and a guard that cannot run is worse
-    than one that is slightly blunt.
-    """
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.module = _load("build_verification_plan")
-        cls.workflow = _CI_WORKFLOW.read_text(encoding="utf-8")
-
-    def _emitted_needs_keys(self) -> set[str]:
-        plan = self.module.build_plan(
-            ("lib/features/deck/presentation/screens/deck_list_screen.dart",),
-            root=REPO_ROOT,
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            output = Path(directory) / "github_output"
-            output.touch()
-            self.module.write_github_output(output, plan)
-            lines = output.read_text(encoding="utf-8").splitlines()
-        return {
-            line.split("=", 1)[0]
-            for line in lines
-            if line.startswith("needs_")
-        }
-
-    def _classify_outputs_block(self) -> str:
-        start = self.workflow.index("    outputs:")
-        end = self.workflow.index("    steps:", start)
-        return self.workflow[start:end]
-
-    def test_every_needs_flag_is_declared_as_a_classify_output(self) -> None:
-        declared = self._classify_outputs_block()
-        for key in sorted(self._emitted_needs_keys()):
-            with self.subTest(key=key):
-                self.assertIn(
-                    f"{key}: ${{{{ steps.changes.outputs.{key} }}}}",
-                    declared,
-                    f"{key} is written to $GITHUB_OUTPUT but never exposed to "
-                    f"downstream jobs, so any `if:` reading it is always false",
-                )
-
-    def test_every_needs_flag_is_handed_to_the_gate(self) -> None:
-        for key in sorted(self._emitted_needs_keys()):
-            flag = "--" + key.replace("_", "-")
-            with self.subTest(key=key):
-                self.assertIn(
-                    f"{flag} '${{{{ needs.classify.outputs.{key} }}}}'",
-                    self.workflow,
-                    f"{flag} is not passed to check_ci_gate.py, so a job "
-                    f"selected by {key} is never checked for having run",
-                )
 
 
 if __name__ == "__main__":

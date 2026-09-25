@@ -39,8 +39,8 @@ bash .claude/skills/flutter-workflow/scripts/dod_check.sh
 
 It runs format, analyze, generated-code freshness, the architecture and docs
 checks, the guard and its self-tests, and the host test suite. Goldens are
-not part of it: they are compared in the Linux container
-(`.claude/skills/flutter-testing/scripts/golden.Dockerfile`).
+not part of it: CI compares them, and they are regenerated only in the Linux
+container (`.claude/skills/flutter-testing/scripts/golden.Dockerfile`).
 
 A guard rule whose layer does not exist yet is listed with
 `targets_pending: <layer>` in
@@ -48,3 +48,17 @@ A guard rule whose layer does not exist yet is listed with
 Once the rule has a target file, the guard reports
 `guard.config.stale_targets_pending` and the gate fails: delete the rule's
 entry in the commit that added the file. The list is empty today.
+
+CI (`.github/workflows/ci.yml`) runs on every pull request, on Linux:
+
+- `gate` rebuilds the generated code from scratch (`check_generated.py`),
+  then runs the same gate, `dod_check.sh`, in full;
+- `goldens` runs `TZ=UTC flutter test --tags golden` against the committed
+  pictures and fails if fewer than 60 ran (`count_golden_tests.py`);
+- `CI gate` is green only when every other job succeeded. It is the one check
+  to require: a pull request is merged only once it is green.
+
+To make that a rule on GitHub, in the repository settings: Settings → Rules →
+Rulesets → New ruleset → New branch ruleset. Target the default branch
+(`master`) with enforcement Active; under "Require status checks to pass", add
+`CI gate` and turn on "Require branches to be up to date before merging".
