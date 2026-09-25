@@ -28,6 +28,8 @@ final class MxTextStyles {
   static const double _snackbarHeight = 1.4;
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
   static const double _termTracking = -0.4;
+  static const double _badgeTracking = 1.2;
+  static const double _countTracking = 0.2;
   static const double _termHeight = 1.25;
   static const double _termLongSize = 18;
   static const double _fieldBodyHeight = 1.45;
@@ -85,7 +87,7 @@ final class MxTextStyles {
   TextStyle studyBadge(Color accent) => AppTypography.withWeight(
     _texts.labelSmall!,
     FontWeight.w700,
-  ).copyWith(color: accent);
+  ).copyWith(letterSpacing: _badgeTracking, color: accent);
 
   /// StudyTopBar n / total counter: 12/600, tabular numerals.
   TextStyle get counter => _texts.labelSmall!.copyWith(
@@ -216,9 +218,12 @@ final class MxTextStyles {
   /// A card field's "Required" marker: the overline in primary (kit 08).
   TextStyle get requiredMarker => overline.copyWith(color: _scheme.primary);
 
-  /// A card field's count: the counter, in error past the limit.
-  TextStyle fieldCount({required bool isOver}) =>
-      isOver ? counter.copyWith(color: _scheme.error) : counter;
+  /// A card field's count (kit FieldHeader): the counter at 0.2 tracking, in
+  /// error past the limit.
+  TextStyle fieldCount({required bool isOver}) => counter.copyWith(
+    letterSpacing: _countTracking,
+    color: isOver ? _scheme.error : null,
+  );
 
   /// A removable tag's label: the tag label in primary, on its tint.
   TextStyle get removableTagLabel => tagLabel.copyWith(color: _scheme.primary);
