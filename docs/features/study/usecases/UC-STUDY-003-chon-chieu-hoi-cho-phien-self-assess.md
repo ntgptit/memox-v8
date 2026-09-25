@@ -18,7 +18,8 @@ nhất một thẻ đến hạn (BR-STUDY-054), và mode ôn duy nhất thuật 
 **Main flow:**
 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọn
    mode (BR-STUDY-055) và mở sheet chọn **chiều hỏi**.
-2. Hệ thống hiển thị ba lựa chọn — `Korean first` (gắn nhãn Recommended),
+2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn không
+   gọi tên một ngôn ngữ vì thẻ không phụ thuộc ngôn ngữ, BR-CARD-002),
    `Meaning first`, `Mixed` — mỗi lựa chọn kèm một dòng mô tả bằng lời của bài
    tập, và một dòng nói lựa chọn không đổi được sau khi phiên bắt đầu (BR-MODE-017).
 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị
@@ -60,7 +61,7 @@ nhất một thẻ đến hạn (BR-STUDY-054), và mode ôn duy nhất thuật 
 
 ## UI
 
-**UI states:** initial (ba lựa chọn, Korean first đã chọn sẵn) · submitting
+**UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting
 (Start hiện spinner, ba lựa chọn khoá) · failure (dòng lỗi, lựa chọn giữ nguyên,
 Start dùng lại được). Không có state `loading` khi mở sheet — điều kiện khả dụng
 đã được đọc trước khi sheet mở; không có state `empty`, vì ba lựa chọn là hằng
