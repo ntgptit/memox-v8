@@ -405,7 +405,7 @@ item names where it comes from.
 | 2 | Snackbar action in dark, `inversePrimary` `#5265F5` on `#34395D`, is 2.40:1 | critique P0 |
 | 3 | `statusLearning` text about 2.15:1 and `statusNew` about 2.96:1 | critique P0 |
 | 4 | Non-text edges under 3:1: input border 1.24, toggle off 1.25, progress track 1.18 | critique P0 |
-| 5 | Line-heights 1.0–1.2 may clip stacked Vietnamese diacritics | critique P2 |
+| 5 | Line-heights 1.0–1.2 may clip stacked Vietnamese diacritics — closed by FE-C2: an ellipsized line clips at its box, and stacked capitals (Ẳ, Ổ, Ỗ) need a 1.5 box (at 1.35–1.4, Ổ reads as Ố). `screenTitle`, `listRowTitle`, `rowSubtitle` and `tagLabel` sit at 1.5; see row 102. Hangul and other scripts the family lacks fall back to the platform font; none is bundled | critique P2 |
 | 6 | AppBar title 16/700 in `app-bar.md` vs 20/700 in `02-theme-binding.md`: the widget spec (16/700) is implemented | critique P1, §5 rule |
 | 7 | ListRow title 14/600 vs foundations 16/500: the widget spec is implemented | critique P1, §5 rule |
 | 8 | MasteryDonut label under the 12px floor: the widget spec is implemented | critique P1, §5 rule |
@@ -504,6 +504,7 @@ item names where it comes from.
 | 99 | The caption role carries no tracking. The foundations table's 1.2px appears only on the kit's documentation chrome; the kit's components track only the overline (0.6), the field count (0.2) and the study mode badge (1.2) | card editor fields (audit 2026-09-25) |
 | 100 | Field placeholders are full `onSurfaceVariant`, not the kit's 0.6 opacity, for text contrast (WCAG 1.4.3); every field centres its first line, so a filled meaning does not top-align as the kit draws it | card editor fields (audit 2026-09-25) |
 | 101 | "Add details" is 48 tall (the touch minimum), not the kit's 42, with a solid `outlineVariant` edge instead of dashed: there is no dashed-border token (row 81); its field list is 12/600, not 12/500 | card editor fields (audit 2026-09-25) |
+| 102 | Single-line user text sits at line-height 1.5, not the kit's values (screen title 1.2, list row title 1.35, row sub-line and tag 1.4), so an ellipsized name keeps its stacked marks. A ListRow with a sub-line is about 4 px taller, and the screen title grows the app bar sooner under text scaling. The editor term (1.25) wraps instead of clipping and keeps the kit's value; a card row's back (`rowDescription`, 1.45) was measured holding the marks and keeps its value, pinned by the same golden | FE-C2 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

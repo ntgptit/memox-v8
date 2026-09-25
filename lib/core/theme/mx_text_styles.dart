@@ -14,10 +14,15 @@ final class MxTextStyles {
   static const double _labelTracking = 0.1;
   static const double _titleTracking = -0.3;
   static const double _screenTitleTracking = -0.5;
+
+  /// Line box for a single line that ellipsizes user content. An ellipsized
+  /// line clips at its box, and stacked Vietnamese marks (Ẳ, Ổ, Ỗ) rise above
+  /// the font's ascent: below 1.5 the box cuts them, and Ổ reads as Ố
+  /// (measured in the golden container; FE-C2).
+  static const double _singleLineHeight = 1.5;
   static const double _emptyBodyHeight = 1.55;
   static const double _rowTitleTracking = -0.1;
   static const double _rowDescriptionHeight = 1.45;
-  static const double _listRowTitleHeight = 1.35;
   static const double _overlineTracking = 0.6;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
@@ -50,8 +55,10 @@ final class MxTextStyles {
     FontWeight.w700,
   ).copyWith(letterSpacing: _titleTracking, color: _scheme.onSurface);
 
-  /// App-bar screen title: 24/700, -0.5.
+  /// App-bar screen title: 24/700, -0.5, at the single-line height rather
+  /// than the headline's 1.2.
   TextStyle get screenTitle => _texts.headlineSmall!.copyWith(
+    height: _singleLineHeight,
     letterSpacing: _screenTitleTracking,
     color: _scheme.onSurface,
   );
@@ -186,13 +193,14 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
-  /// ListRow title: the row title at line-height 1.35, so every row in a list
-  /// is one height.
-  TextStyle get listRowTitle => rowTitle.copyWith(height: _listRowTitleHeight);
+  /// ListRow title: the row title at the single-line height, so every row in
+  /// a list is one height.
+  TextStyle get listRowTitle => rowTitle.copyWith(height: _singleLineHeight);
 
   /// ListRow and ActionSheetCommandRow sub-line: the caption role in
-  /// onSurfaceVariant (S5).
-  TextStyle get rowSubtitle => footerCaption;
+  /// onSurfaceVariant (S5), at the single-line height.
+  TextStyle get rowSubtitle =>
+      footerCaption.copyWith(height: _singleLineHeight);
 
   /// SettingsRow label: 16/600, -0.1.
   TextStyle get settingsLabel => AppTypography.withWeight(
@@ -237,10 +245,10 @@ final class MxTextStyles {
   TextStyle badgeLabel(Color ink) =>
       chipCount(ink).copyWith(height: _pillHeight);
 
-  /// TagChip label: 12/600, 0.1 tracking (S4). It keeps the caption's 1.4
-  /// line-height, not the contract's 1: an ellipsized tag clips to its text
-  /// box, and a 12px box cuts the descenders.
+  /// TagChip label: 12/600, 0.1 tracking (S4), at the single-line height, not
+  /// the contract's 1: an ellipsized tag clips to its text box.
   TextStyle get tagLabel => _texts.labelSmall!.copyWith(
+    height: _singleLineHeight,
     letterSpacing: _labelTracking,
     color: _scheme.onSurfaceVariant,
   );
