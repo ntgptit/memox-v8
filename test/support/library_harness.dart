@@ -169,7 +169,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String?>? onOpenAncestor,
   ValueChanged<String>? onAddCard,
   Widget Function(DeckView view)? cardContent,
-  Widget Function(DeckView view, Widget deckActions)? cardAppBar,
+  Widget Function(DeckView view, Widget back, Widget deckActions)? cardAppBar,
   Widget Function(String deckId, Widget breadcrumb)? cardBreadcrumb,
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
@@ -184,9 +184,10 @@ DeckLevelScreen deckScreen({
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
-      (view, actions) => MxAppBar(
+      (view, back, actions) => MxAppBar(
         title: view.deck.name,
         density: MxAppBarDensity.content,
+        leading: back,
         actions: [actions],
       ),
   cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,

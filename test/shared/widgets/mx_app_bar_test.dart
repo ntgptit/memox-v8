@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -141,5 +142,27 @@ void main() {
       throwsAssertionError,
     );
     expect(MxAppBar.new, throwsAssertionError);
+  });
+
+  testWidgets('a text action ends on the gutter, in either density', (
+    tester,
+  ) async {
+    for (final density in MxAppBarDensity.values) {
+      await pumpMx(
+        tester,
+        MxAppBar(
+          title: 'Words',
+          density: density,
+          actions: [MxButton(label: 'Done', onPressed: () {})],
+        ),
+      );
+
+      expect(
+        tester.getTopRight(find.byType(MxAppBar)).dx -
+            tester.getTopRight(find.byType(MxButton)).dx,
+        16,
+        reason: density.name,
+      );
+    }
   });
 }

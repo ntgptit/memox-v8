@@ -59,8 +59,8 @@ Widget _screen(String deckId) => deckScreen(
     onAddCard: () {},
     onOpenCard: (_) {},
   ),
-  cardAppBar: (view, actions) =>
-      CardDeckAppBarWidget(view: view, deckActions: actions),
+  cardAppBar: (view, back, actions) =>
+      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
   cardBreadcrumb: (id, child) =>
       CardDeckBreadcrumbWidget(deckId: id, child: child),
   cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),

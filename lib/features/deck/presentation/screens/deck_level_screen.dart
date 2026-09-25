@@ -4,33 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
-import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
-import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_coming_soon_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_name_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_gone_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_library_root_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_unset_state_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_actions_flow_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_done_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
-import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// One level of the deck tree (spec §6.1): the Library root when [deckId] is
@@ -65,10 +59,11 @@ class DeckLevelScreen extends StatelessWidget {
   /// section; `deck` never imports `card` (spec D8).
   final Widget Function(DeckView view) cardContent;
 
-  /// A deck of cards' app bar, given the deck's actions button: the card
-  /// feature's, which turns into the selection header while cards are
-  /// selected (A14).
-  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+  /// A deck of cards' app bar, given the deck screen's Back and the deck's
+  /// actions button: the card feature's, which turns into the selection
+  /// header while cards are selected (A14).
+  final Widget Function(DeckView view, Widget back, Widget deckActions)
+  cardAppBar;
 
   /// A deck of cards' breadcrumb, given the deck's: the card feature hides
   /// it while cards are selected.
@@ -83,7 +78,7 @@ class DeckLevelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (deckId) {
-    null => _LibraryRoot(
+    null => DeckLibraryRootWidget(
       onOpenDeck: onOpenDeck,
       onSearch: onSearch,
       onOpenAlgorithm: onOpenAlgorithm,
@@ -100,98 +95,6 @@ class DeckLevelScreen extends StatelessWidget {
       cardFab: cardFab,
     ),
   };
-}
-
-/// The roots with today's work first (UC-DECK-003).
-class _LibraryRoot extends ConsumerWidget {
-  const _LibraryRoot({
-    required this.onOpenDeck,
-    required this.onSearch,
-    required this.onOpenAlgorithm,
-  });
-
-  final ValueChanged<String> onOpenDeck;
-  final VoidCallback onSearch;
-  final ValueChanged<String> onOpenAlgorithm;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final isReordering = ref.watch(deckReorderModeProvider(null));
-    final query = ref.watch(deckLevelQueryProvider(null));
-    // Kit 01: no FAB while the Library loads, fails or is empty; the body
-    // then offers its own action.
-    final hasDecks =
-        (ref
-                .watch(
-                  deckLevelProvider(
-                    parentId: null,
-                    sort: query.sort,
-                    filter: query.filter,
-                  ),
-                )
-                .value
-                ?.deckCount ??
-            0) >
-        0;
-    void createDeck() => unawaited(showCreateRootDeckDialog(context));
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.navLibrary,
-        actions: isReordering
-            ? const [_ReorderDone(parentId: null)]
-            // Features that wait are named in one place (spec A4, amended).
-            : [
-                MxIconButton(
-                  icon: AppIcons.upcoming,
-                  semanticLabel: l10n.libraryComingSoon,
-                  onPressed: () => unawaited(showDeckComingSoonSheet(context)),
-                ),
-              ],
-      ),
-      fab: isReordering || !hasDecks
-          ? null
-          : MxFab(
-              icon: AppIcons.add,
-              semanticLabel: l10n.libraryCreateDeck,
-              onPressed: createDeck,
-            ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.micro,
-              AppSpacing.gutter,
-              AppSpacing.control,
-            ),
-            child: MxSearchField.trigger(
-              hintText: l10n.deckSearchHint,
-              onTap: onSearch,
-            ),
-          ),
-          Expanded(
-            child: DeckLevelBodyWidget(
-              parentId: null,
-              onOpenDeck: onOpenDeck,
-              onOpenAlgorithm: onOpenAlgorithm,
-              schedulerType: null,
-              hasDeepestSubDecks: false,
-              emptyState: MxEmptyState(
-                icon: AppIcons.library,
-                title: l10n.libraryEmptyTitle,
-                body: l10n.libraryEmptyBody,
-                actionLabel: l10n.libraryCreateDeck,
-                onAction: createDeck,
-                footnote: l10n.libraryEmptyFootnote,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 /// An open deck while its stream loads, fails or is gone.
@@ -213,7 +116,8 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(DeckView view) cardContent;
-  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+  final Widget Function(DeckView view, Widget back, Widget deckActions)
+  cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -290,7 +194,8 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
   final Widget Function(DeckView view) cardContent;
-  final Widget Function(DeckView view, Widget deckActions) cardAppBar;
+  final Widget Function(DeckView view, Widget back, Widget deckActions)
+  cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
   final Widget Function(String deckId) cardFab;
@@ -337,13 +242,13 @@ class _OpenDeckContent extends ConsumerWidget {
     final isCardDeck = deck.contentType == DeckContentType.card;
     return MxAppShell(
       appBar: isCardDeck
-          ? cardAppBar(view, deckActions)
+          ? cardAppBar(view, const _BackButton(), deckActions)
           : MxAppBar(
               title: deck.name,
               density: MxAppBarDensity.content,
               leading: const _BackButton(),
               actions: isReordering
-                  ? [_ReorderDone(parentId: deck.id)]
+                  ? [DeckReorderDoneWidget(parentId: deck.id)]
                   : [deckActions],
             ),
       // Ruling P4a-L9: a sub-deck where one fits, a card on a deck of cards.
@@ -392,22 +297,5 @@ class _BackButton extends StatelessWidget {
     icon: AppIcons.back,
     semanticLabel: context.l10n.commonBack,
     onPressed: () => unawaited(Navigator.of(context).maybePop()),
-  );
-}
-
-/// Ends reorder mode for its level (ruling P2-L3).
-class _ReorderDone extends ConsumerWidget {
-  const _ReorderDone({required this.parentId});
-
-  final String? parentId;
-
-  void _finish(WidgetRef ref) =>
-      ref.read(deckReorderModeProvider(parentId).notifier).finish();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) => MxButton(
-    label: context.l10n.libraryReorderDone,
-    size: MxButtonSize.compact,
-    onPressed: () => _finish(ref),
   );
 }
