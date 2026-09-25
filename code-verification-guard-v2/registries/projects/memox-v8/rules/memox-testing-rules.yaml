@@ -73,38 +73,13 @@ rules:
   # Split across two enforcers on purpose.
   #
   # The guard reads one file at a time, so it owns what a single companion file
-  # must not contain. The other half — "for every screen in lib, a companion
-  # exists, names that screen, and calls the strict helper" — is a question about
-  # two trees at once and lives in
-  # `test/visual_audit/screens/screen_audit_coverage_test.dart`, which self-tests
-  # each of its failure modes against a temporary tree.
+  # must not contain: a skip. The other half — "for every screen in lib, a
+  # companion exists and runs `auditProductionScreen` on that screen" — is a
+  # question about two trees at once and lives in
+  # `test/visual_audit/screens/screen_audit_coverage_test.dart`.
   #
-  # Expressing existence here would mean a rule asserting that a set of files is
-  # empty, which this guard cannot tell apart from a scope that has silently
-  # stopped matching: it reports `rule_without_targets` forever, and silencing
-  # that diagnostic is how three dead rules survived in this repository.
-  #
-  # Both rules below are POSITIVE matches. A negative-lookahead over a whole file
-  # was tried first and fired on everything, because `.` does not cross newlines
-  # — a rule that always fires is as useless as one that never does.
-  - id: memox.visual.production_screen_audit_not_exploratory
-    type: regex
-    severity: error
-    enabled: true
-    message: >-
-      MX-VIS-001 — a production screen companion must call
-      `memoxProductionScreenAuditTest`, never `memoxAuditTest`. The exploratory
-      helper permits PASS_WITH_UNRESOLVED: it passes a screen with unread nodes
-      and says nothing about the difference.
-    include:
-      - test/visual_audit/screens/**/*_visual_audit_test.dart
-    patterns:
-      - 'memoxAuditTest\s*\('
-    tags:
-      - memox
-      - visual
-      - screens
-
+  # The rule below is a POSITIVE match. A negative-lookahead over a whole file
+  # fires on everything, because `.` does not cross newlines.
   - id: memox.visual.production_screen_audit_not_skipped
     type: regex
     severity: error

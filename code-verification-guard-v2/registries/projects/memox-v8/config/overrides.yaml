@@ -16,17 +16,12 @@ overrides:
   severity: {}
   rule_options:
     # Phased gate (ADR-011, spec 2026-09-23-v8-folder-architecture-design.md
-    # section 8). Each rule below has no target files yet because the layer
-    # it checks has not been built. `targets_pending` names that layer: the
-    # guard reports the rule at info level while it waits, and as a
-    # stale_targets_pending WARNING once it has targets. When that warning
-    # appears, delete the rule's entry here in the same commit that added the
-    # layer. The list must be empty before the full dod_check.sh gate applies.
-    # -- `visual-audit`: waits for the first test/visual_audit/ companion (UI sub-project)
-    memox.visual.production_screen_audit_not_exploratory:
-      targets_pending: visual-audit
-    memox.visual.production_screen_audit_not_skipped:
-      targets_pending: visual-audit
+    # section 8). A rule whose layer has not been built yet is listed here
+    # with `targets_pending: <layer>`: the guard reports it at info level
+    # while it waits, and as a stale_targets_pending WARNING once it has
+    # targets. When that warning appears, delete the entry in the same commit
+    # that added the layer. No rule waits today (FE-D2): dod_check.sh is the
+    # gate.
     # Generated code is not hand-written; length limits on it are noise.
     common.max_file_lines:
       include:
