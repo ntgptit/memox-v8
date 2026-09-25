@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -39,40 +40,49 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'C · Inputs & selection',
+    title: context.l10n.galleryCInputsSelection,
     children: [
       MxSearchField(
         controller: _search,
-        hintText: 'Search decks and cards',
-        clearLabel: 'Clear search',
+        hintText: context.l10n.gallerySearchDecksAndCards,
+        clearLabel: context.l10n.galleryClearSearch,
       ),
-      MxSearchField.trigger(hintText: 'Search decks', onTap: () {}),
+      MxSearchField.trigger(
+        hintText: context.l10n.gallerySearchDecks,
+        onTap: () {},
+      ),
       MxAppBar(
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
-          semanticLabel: 'Back',
+          semanticLabel: context.l10n.commonBack,
           onPressed: () {},
         ),
         titleWidget: MxSearchField(
           controller: _search,
-          hintText: 'Search decks',
-          clearLabel: 'Clear search',
+          hintText: context.l10n.gallerySearchDecks,
+          clearLabel: context.l10n.galleryClearSearch,
         ),
       ),
-      const MxTextField(hintText: 'Deck name'),
-      const MxTextField(hintText: 'Deck name', errorText: 'Name is required'),
-      const MxTextField(
-        hintText: 'An example sentence',
+      MxTextField(hintText: context.l10n.galleryDeckName),
+      MxTextField(
+        hintText: context.l10n.galleryDeckName,
+        errorText: context.l10n.galleryNameIsRequired,
+      ),
+      MxTextField(
+        hintText: context.l10n.galleryAnExampleSentence,
         variant: MxTextFieldVariant.detail,
       ),
-      const MxTextField(
-        hintText: 'The meaning',
+      MxTextField(
+        hintText: context.l10n.galleryTheMeaning,
         variant: MxTextFieldVariant.meaning,
       ),
-      const MxTextField(hintText: 'The term', variant: MxTextFieldVariant.term),
-      const MxFieldMessage(
-        message: 'Ten tags at most on one card',
+      MxTextField(
+        hintText: context.l10n.galleryTheTerm,
+        variant: MxTextFieldVariant.term,
+      ),
+      MxFieldMessage(
+        message: context.l10n.galleryTenTagsAtMostOn,
         tone: MxFieldMessageTone.warning,
       ),
       Row(
@@ -80,7 +90,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
           MxToggle(
             isOn: _isReminderOn,
             onChanged: (value) => setState(() => _isReminderOn = value),
-            semanticLabel: 'Daily reminder',
+            semanticLabel: context.l10n.galleryDailyReminder,
           ),
           const MxSelectionCheckbox(isChecked: false),
           const MxSelectionCheckbox(isChecked: true),
@@ -89,14 +99,14 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
       Column(
         children: [
           MxOptionRow(
-            title: 'Eight box',
-            description: 'Cards climb eight boxes, each a longer interval.',
+            title: context.l10n.galleryEightBox,
+            description: context.l10n.galleryCardsClimbEightBoxesEach,
             isSelected: _scheduler == 0,
             onSelected: () => setState(() => _scheduler = 0),
           ),
           MxOptionRow(
-            title: 'SM-2',
-            description: 'Intervals from four answers and an ease factor.',
+            title: context.l10n.gallerySm2,
+            description: context.l10n.galleryIntervalsFromFourAnswersAnd,
             isSelected: _scheduler == 1,
             onSelected: () => setState(() => _scheduler = 1),
             hasDivider: false,
@@ -104,18 +114,18 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         ],
       ),
       MxSegmentedTray(
-        segments: const [
-          MxSegment(value: 0, label: 'Light'),
-          MxSegment(value: 1, label: 'Dark'),
-          MxSegment(value: 2, label: 'System'),
+        segments: [
+          MxSegment(value: 0, label: context.l10n.galleryLight),
+          MxSegment(value: 1, label: context.l10n.galleryDark),
+          MxSegment(value: 2, label: context.l10n.gallerySystem),
         ],
         selected: _theme,
         onSelected: (value) => setState(() => _theme = value),
       ),
       MxStepper(
         value: _cards,
-        decrementLabel: 'Fewer cards',
-        incrementLabel: 'More cards',
+        decrementLabel: context.l10n.galleryFewerCards,
+        incrementLabel: context.l10n.galleryMoreCards,
         onDecrement: _cards > _minCards ? () => setState(() => _cards--) : null,
         onIncrement: _cards < _maxCards ? () => setState(() => _cards++) : null,
       ),

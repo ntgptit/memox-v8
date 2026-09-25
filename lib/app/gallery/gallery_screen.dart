@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_actions_section.dart';
 import 'package:memox/app/gallery/gallery_chrome_section.dart';
 import 'package:memox/app/gallery/gallery_inputs_section.dart';
@@ -40,22 +41,26 @@ class _GalleryScreenState extends State<GalleryScreen> {
       ),
       child: MxAppShell(
         appBar: MxAppBar(
-          title: 'Gallery',
+          title: context.l10n.galleryGallery,
           density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
-            semanticLabel: 'Back',
+            semanticLabel: context.l10n.commonBack,
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           actions: [
             MxIconButton(
               icon: AppIcons.themeMode,
-              semanticLabel: _isDark ? 'Light theme' : 'Dark theme',
+              semanticLabel: _isDark
+                  ? context.l10n.galleryLightTheme
+                  : context.l10n.galleryDarkTheme,
               onPressed: () => setState(() => _isDark = !_isDark),
             ),
             MxIconButton(
               icon: AppIcons.textScale,
-              semanticLabel: _isLargeText ? 'Normal text' : 'Large text',
+              semanticLabel: _isLargeText
+                  ? context.l10n.galleryNormalText
+                  : context.l10n.galleryLargeText,
               onPressed: () => setState(() => _isLargeText = !_isLargeText),
             ),
           ],

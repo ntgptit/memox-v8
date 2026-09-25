@@ -231,6 +231,18 @@ scopes:
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 
+  # Where user copy is written: product UI plus the app shell and the debug
+  # gallery (FE-C7). Only the literal-string rule reads it; the colour and
+  # radius rules keep `ui_surfaces`.
+  ui_copy_surfaces:
+    include:
+      - lib/features/*/presentation/**/*.dart
+      - lib/shared/**/*.dart
+      - lib/app/**/*.dart
+    exclude:
+      - '**/*.g.dart'
+      - '**/*.freezed.dart'
+
   # Product UI *plus* the theme, for the rules where "where tokens are defined"
   # is not an exemption but the very place the regression happens.
   #

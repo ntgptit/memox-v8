@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -22,26 +23,26 @@ class GalleryOverlaysSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GallerySection(
-    title: 'F · Overlays & feedback',
+    title: context.l10n.galleryFOverlaysFeedback,
     children: [
       MxSheetActions(
-        cancelLabel: 'Cancel',
+        cancelLabel: context.l10n.commonCancel,
         onCancel: () {},
-        confirmLabel: 'Move to Trash',
+        confirmLabel: context.l10n.galleryMoveToTrash,
         onConfirm: () {},
         isDestructive: true,
       ),
-      const MxInlineBanner(
+      MxInlineBanner(
         tone: MxBannerTone.warning,
-        title: 'Ten tags at most',
-        message: 'Remove a tag before adding another one.',
+        title: context.l10n.galleryTenTagsAtMost,
+        message: context.l10n.galleryRemoveATagBeforeAdding,
       ),
       MxInlineBanner(
         tone: MxBannerTone.danger,
-        message: 'The export could not be written.',
+        message: context.l10n.galleryTheExportCouldNotBe,
         actions: [
           MxButton(
-            label: 'Retry',
+            label: context.l10n.commonRetry,
             icon: AppIcons.retry,
             size: MxButtonSize.compact,
             onPressed: () {},
@@ -53,31 +54,31 @@ class GalleryOverlaysSection extends StatelessWidget {
         runSpacing: AppSpacing.control,
         children: [
           MxButton(
-            label: 'Dialog',
+            label: context.l10n.galleryDialog,
             size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: () => unawaited(_openDialog(context)),
           ),
           MxButton(
-            label: 'Sheet',
+            label: context.l10n.gallerySheet,
             size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: () => unawaited(_openSheet(context)),
           ),
           MxButton(
-            label: 'Deck picker',
+            label: context.l10n.galleryDeckPicker,
             size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: () => unawaited(_openPicker(context)),
           ),
           MxButton(
-            label: 'Snackbar',
+            label: context.l10n.gallerySnackbar,
             size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: () => showMxSnackbar(
               context,
-              message: 'Moved to Trash',
-              actionLabel: 'Undo',
+              message: context.l10n.galleryMovedToTrash,
+              actionLabel: context.l10n.galleryUndo,
               onAction: () {},
             ),
           ),
@@ -89,12 +90,12 @@ class GalleryOverlaysSection extends StatelessWidget {
   static Future<void> _openDialog(BuildContext context) => showMxDialog<void>(
     context,
     builder: (dialogContext) => MxDialog(
-      title: 'Delete this deck?',
-      body: 'Its 42 cards move to Trash, where they stay for 30 days.',
+      title: context.l10n.galleryDeleteThisDeck,
+      body: context.l10n.galleryIts42CardsMoveTo,
       actions: MxSheetActions(
-        cancelLabel: 'Cancel',
+        cancelLabel: context.l10n.commonCancel,
         onCancel: () => Navigator.pop(dialogContext),
-        confirmLabel: 'Move to Trash',
+        confirmLabel: context.l10n.galleryMoveToTrash,
         onConfirm: () => Navigator.pop(dialogContext),
         isDestructive: true,
       ),
@@ -111,19 +112,19 @@ class GalleryOverlaysSection extends StatelessWidget {
               children: [
                 MxActionSheetCommandRow(
                   icon: AppIcons.edit,
-                  label: 'Rename',
+                  label: context.l10n.galleryRename,
                   onTap: () => Navigator.pop(sheetContext),
                 ),
                 MxActionSheetCommandRow(
                   icon: AppIcons.folder,
-                  label: 'Move',
+                  label: context.l10n.galleryMove,
                   hasChevron: true,
                   onTap: () => Navigator.pop(sheetContext),
                 ),
                 MxActionSheetCommandRow(
                   icon: AppIcons.delete,
-                  label: 'Delete',
-                  subtitle: 'Recoverable for 30 days',
+                  label: context.l10n.galleryDelete,
+                  subtitle: context.l10n.galleryRecoverableFor30Days,
                   isDestructive: true,
                   onTap: () => Navigator.pop(sheetContext),
                 ),
@@ -137,26 +138,24 @@ class GalleryOverlaysSection extends StatelessWidget {
       showMxBottomSheet<void>(
         context,
         builder: (sheetContext) => MxDeckPickerSheet(
-          title: 'Move to deck',
-          rule:
-              'Cards keep their progress. Decks that hold other decks are '
-              'not offered.',
+          title: context.l10n.galleryMoveToDeck,
+          rule: context.l10n.galleryCardsKeepTheirProgressDecks,
           candidates: [
             for (var i = 1; i <= _candidateCount; i++)
               MxPickerCandidate(
-                label: 'Deck ${i.toString()}',
+                label: context.l10n.galleryDeckNumber(i),
                 onTap: () => Navigator.pop(sheetContext),
               ),
             MxPickerCandidate(
-              label: 'Grammar',
-              reason: 'Holds other decks',
+              label: context.l10n.galleryGrammar,
+              reason: context.l10n.galleryHoldsOtherDecks,
               isEnabled: false,
               onTap: () {},
             ),
           ],
-          dismissLabel: 'Cancel',
+          dismissLabel: context.l10n.commonCancel,
           onDismiss: () => Navigator.pop(sheetContext),
-          emptyTitle: 'Nowhere to move',
+          emptyTitle: context.l10n.galleryNowhereToMove,
         ),
       );
 }
