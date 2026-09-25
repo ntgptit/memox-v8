@@ -25,6 +25,7 @@ const allowedFeatureImports = <String, Set<String>>{
   'study_mode': {'srs'},
   'study': {'study_mode', 'srs', 'settings', 'card'},
   'progress': {},
+  'search': {'deck'},
 };
 
 const _package = 'package:memox/';

@@ -69,13 +69,13 @@ Quy ước:
 | BE-D1 | Khung test migration Drift: snapshot schema theo từng version, bước nâng cấp sinh từ snapshot (`stepByStep`) và test nâng cấp; migration đầu tiên v1 → v2 của gói 2b | xong | — | S | Spec gói 2b §5, §6; `drift_schemas/`, `test/drift/migration_test.dart` | Mỗi migration sau thêm snapshot và bước của nó ([skill flutter-drift](../.claude/skills/flutter-drift/references/migrations.md)) |
 | BE-A6 | Study Home, 1 use case (UC-STUDY-002): một snapshot trong một transaction gồm phiên có thể Resume (bốn điều kiện của BR-STUDY-075, dùng chung với Tiếp tục của màn vào học) và mọi root deck kèm workload của cả cây; ba trạng thái đã tải, thứ tự của BR-STUDY-076 và tổng của hero ở domain; đọc lại sau mỗi lần ghi và ở mỗi nửa đêm, không ghi gì | xong | BE-A4 | M | [spec](superpowers/specs/2026-09-25-study-home-backend-design.md) và [plan](superpowers/plans/2026-09-25-study-home-backend.md) gói 3; test trong `test/features/study/` | FE-A8 dựng màn 13 trên use case này |
 | BE-A7 | Progress, 2 use case (UC-PROGRESS-001, UC-PROGRESS-002): tổng quan (Today tách Learning/Reviewing, bảy ngày, streak) và tiến độ theo deck ở cấp thư viện và cấp deck (bốn số cho 7 và 30 ngày từ một lần đọc, tổng đọc thẳng từ câu lệnh); ngày chia theo UTC offset của lần đọc; đọc lại sau mỗi lần ghi và ở mỗi nửa đêm, không ghi gì | xong | BE-A4 | L | [spec](superpowers/specs/2026-09-25-progress-backend-design.md) và [plan](superpowers/plans/2026-09-25-progress-backend.md) gói 4; test trong `test/features/progress/` | FE-A9 dựng màn 22 trên hai use case này |
+| BE-A8 | Tìm kiếm toàn thư viện, 1 use case (UC-SEARCH-001): tên deck, hai mặt card, tên tag; tên deck fold trong Dart từ một lần đọc cây deck, card khớp trong một câu lệnh (bậc khớp bằng `=` và `instr`, tag qua subquery tương quan, một kết quả mỗi card); deck trước card sau, trang 50 kết quả theo keyset với `through` và `nextThrough`; truy vấn rỗng không chạy câu lệnh nào; đọc lại sau mỗi lần ghi, không ghi gì | xong | BE-03, BE-04, BE-05 | M | [spec](superpowers/specs/2026-09-25-library-search-backend-design.md) và [plan](superpowers/plans/2026-09-25-library-search-backend.md) gói 5; test trong `test/features/search/` | FE-A10 dựng màn 04 trên use case này, rồi bỏ `SearchDecksUseCase` |
 | BE-A9 | Read của danh sách card cho screen handoff: mỗi card mang tag (một statement theo trang) và nhãn hạn (`CardDue`); view đếm 4 trạng thái hiển thị của cả deck; stream phát lại khi tag của card đổi | xong | BE-04, BE-05 | S | [spec căn Thư viện](superpowers/specs/2026-09-24-library-artifact-alignment-design.md) §5, phase B; test trong `test/features/card/` | Phase E đọc các trường này |
 
 ### V8.0 — còn lại
 
-| ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
-|---|---|---|---|---|---|---|
-| BE-A8 | Tìm kiếm toàn thư viện: tên deck, hai mặt card, tên tag (UC-SEARCH-001; BR-SEARCH-001…BR-SEARCH-009) | chưa bắt đầu | BE-03, BE-04, BE-05 | M | ADR-009, quyết định 2; UC chưa có code | Làm được ngay, song song với nhóm study |
+Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và chuyển lên mục
+"Đã xong".
 
 ### Sub-project sau V8.0
 
@@ -133,12 +133,15 @@ Quy ước:
 - **BE-A7** (gói 4, [spec](superpowers/specs/2026-09-25-progress-backend-design.md),
   [plan](superpowers/plans/2026-09-25-progress-backend.md)): gate năm lệnh xanh sau
   mỗi task, final review toàn nhánh trước khi mở PR.
-- **Traceability:** có test chứa ID cho 15/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003).
-  7 UC còn lại chưa có code.
+- **BE-A8** (gói 5, [spec](superpowers/specs/2026-09-25-library-search-backend-design.md),
+  [plan](superpowers/plans/2026-09-25-library-search-backend.md)): gate năm lệnh xanh
+  sau mỗi task, final review toàn nhánh trước khi mở PR.
+- **Traceability:** có test chứa ID cho 16/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003).
+  6 UC còn lại chưa có code.
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 4 (BE-A7).
+Không có hạng mục backend nào đang làm sau gói 5 (BE-A8).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -146,7 +149,6 @@ Không có hạng mục backend nào đang làm sau gói 4 (BE-A7).
 |---|---|---|---|
 | BE-C1 | Chưa chốt có thêm dependency collation hay không | Thứ tự sort tên deck | Chủ dự án quyết |
 | Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
-| BE-A8 | Tên deck chưa có cột folded: fold trong Dart như giai đoạn 2, hay thêm cột (kéo theo migration và cần BE-D1) | Cách truy vấn và hiệu năng tìm kiếm | Quyết trong spec của BE-A8 |
 | BE-B5 | Cần một dependency thông báo cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5, kèm lý do và cách rollback |
 | BE-B5 | BR-SETTINGS-008 ghi `Reset to defaults` đưa toàn bộ giá trị của `app_settings` về mặc định; BE-A1 (spec D6) chỉ đưa về mặc định bốn giá trị người dùng đặt được ở V8.0, chưa đụng `reminder_enabled`, `reminder_minute_of_day` | `Reset to defaults` khi nhắc học đã có giao diện | Quyết trong spec của BE-B5; sửa câu chữ BR-SETTINGS-008 cần chủ dự án cho phép |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | Cả 22 UC | Chủ dự án nêu phạm vi file được sửa |
@@ -167,7 +169,7 @@ Không có hạng mục backend nào đang làm sau gói 4 (BE-A7).
 
 ## Bước tiếp theo
 
-1. Gói 5: BE-A8. BE-D2 càng sớm càng tốt.
+1. BE-D2 càng sớm càng tốt.
 2. Sau V8.0: BE-B1 trước (đổi hành vi xoá và mang migration v2 → v3), rồi BE-B2…BE-B5
    theo ưu tiên sản phẩm.
 
@@ -185,6 +187,9 @@ Không có hạng mục backend nào đang làm sau gói 4 (BE-A7).
   trên cây: #49 bỏ test nhắc IT-ORG-013, và gói 3 nhắc IT-NAV-002.
 - **Cập nhật ngày 2026-09-25:** BE-A7 xong trong gói 4; gói 4 nhắc IT-NAV-011. Điểm chặn
   về mastery chuyển từ BE-A7 sang danh sách deck, nơi nó thuộc về.
+- **Cập nhật ngày 2026-09-25:** BE-A8 xong trong gói 5, hạng mục cuối của nhóm V8.0.
+  Điểm chặn về cột folded của tên deck đóng theo D3 của spec gói 5: tên deck fold
+  trong Dart, không thêm cột, không migration.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

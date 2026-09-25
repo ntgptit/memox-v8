@@ -3,7 +3,7 @@ id: UC-SEARCH-001
 title: Tìm kiếm toàn thư viện
 status: ready
 rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-009, BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SEARCH-006, BR-SEARCH-007, BR-SEARCH-008, BR-SEARCH-009, BR-TAG-001]
-code: []
+code: [lib/features/search/domain/usecases/search_library_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
