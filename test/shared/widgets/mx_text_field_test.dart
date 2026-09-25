@@ -267,4 +267,49 @@ void main() {
       );
     }
   });
+
+  testWidgets('a long hint never pads a filled or a short field', (
+    tester,
+  ) async {
+    const hint = 'The meaning; separate several with commas';
+    final controller = TextEditingController(text: 'thank you');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: controller,
+          hintText: hint,
+          variant: MxTextFieldVariant.meaning,
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(TextField)).height, 76);
+
+    controller.clear();
+    await tester.pump();
+    // Two lines of hint fit the 76 floor inside the kit's 12 padding.
+    expect(tester.getSize(find.byType(TextField)).height, 76);
+  });
+
+  testWidgets('a long meaning grows past its floor on the kit padding', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'one\ntwo\nthree\nfour');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: controller,
+          variant: MxTextFieldVariant.meaning,
+        ),
+      ),
+    );
+
+    final text = tester.getSize(find.byType(EditableText)).height;
+    expect(tester.getSize(find.byType(TextField)).height, text + 24);
+  });
 }
