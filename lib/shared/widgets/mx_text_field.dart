@@ -28,6 +28,7 @@ enum MxTextFieldVariant {
 typedef _Geometry = ({
   double floor,
   double horizontal,
+  double vertical,
   double radius,
   bool isMultiline,
 });
@@ -84,24 +85,29 @@ class MxTextField extends StatelessWidget {
     MxTextFieldVariant.form => (
       floor: AppSize.input,
       horizontal: AppSpacing.grouped,
+      // Centred by the floor: see _field.
+      vertical: 0,
       radius: AppRadius.md,
       isMultiline: false,
     ),
     MxTextFieldVariant.detail => (
       floor: _detailFloor,
       horizontal: AppSpacing.grouped,
+      vertical: AppSpacing.control,
       radius: AppRadius.md,
       isMultiline: true,
     ),
     MxTextFieldVariant.meaning => (
       floor: _meaningFloor,
       horizontal: AppSpacing.gutter,
+      vertical: AppSpacing.grouped,
       radius: AppRadius.xl,
       isMultiline: true,
     ),
     MxTextFieldVariant.term => (
       floor: _termFloor,
       horizontal: AppSpacing.gutter,
+      vertical: AppSpacing.gutter,
       radius: AppRadius.xl,
       isMultiline: true,
     ),
@@ -123,17 +129,59 @@ class MxTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = this.controller;
-    // A term restyles as it grows past its long mark.
-    if (variant == MxTextFieldVariant.term && controller != null) {
-      return ListenableBuilder(
-        listenable: controller,
-        builder: (context, _) => _field(context),
-      );
-    }
-    return _field(context);
+    if (!_geometry(variant).isMultiline) return _field(context, null);
+    // An editor box pads to its floor around what it holds, and a term
+    // restyles past its long mark: both follow the text and the width.
+    Widget sized() => LayoutBuilder(
+      builder: (context, constraints) => _field(context, constraints.maxWidth),
+    );
+    if (controller == null) return sized();
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => sized(),
+    );
   }
 
-  Widget _field(BuildContext context) {
+  /// The vertical padding that brings the box to its floor. A form field
+  /// centres one line; an editor box keeps the kit's padding, or more when
+  /// its value (or its hint, which the decorator sizes for) is shorter than
+  /// the floor, measured at [width] and the reader's text scale.
+  double _verticalPadding(
+    BuildContext context,
+    double? width,
+    TextStyle valueStyle,
+    TextStyle hintStyle,
+  ) {
+    final geometry = _geometry(variant);
+    double lineOf(TextStyle style) => style.fontSize! * style.height!;
+    if (width == null) {
+      final line = math.max(lineOf(valueStyle), lineOf(hintStyle));
+      return (geometry.floor - line) / 2;
+    }
+    final inner = width - 2 * geometry.horizontal;
+    double measure(String text, TextStyle style) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        textHeightBehavior: DefaultTextHeightBehavior.maybeOf(context),
+      )..layout(maxWidth: inner);
+      final height = painter.height;
+      painter.dispose();
+      return height;
+    }
+
+    final value = controller?.text ?? '';
+    // An empty value still holds one line.
+    final hint = hintText;
+    final content = math.max(
+      measure(value.isEmpty ? ' ' : value, valueStyle),
+      hint == null ? 0.0 : measure(hint, hintStyle),
+    );
+    return math.max(geometry.vertical, (geometry.floor - content) / 2);
+  }
+
+  Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
     final ghost = context.derivedColors.ghostBorder;
     final hasError = errorText != null;
@@ -143,15 +191,14 @@ class MxTextField extends StatelessWidget {
       borderSide: BorderSide(color: color, width: AppStroke.hairline),
     );
     final restingEdge = edge(hasError ? colors.error : ghost);
-    // The box height is a floor: padding centres one line of the taller of
-    // the value and the hint in it, the constraint absorbs the font's
-    // rounding, and more lines or scaled text grow the box.
+    // The box height is a floor painted by the decorator itself, reached by
+    // padding (InputDecoration.constraints reserves the height but paints
+    // the fill and edge around the text only); more lines or scaled text
+    // grow the box.
     final textStyle = _valueStyle(context);
     final hintStyle = variant == MxTextFieldVariant.term
         ? context.textStyles.fieldTermHint
         : context.textStyles.inputHint;
-    double lineOf(TextStyle style) => style.fontSize! * style.height!;
-    final lineHeight = math.max(lineOf(textStyle), lineOf(hintStyle));
     final isForm = variant == MxTextFieldVariant.form;
     final field = TextField(
       controller: controller,
@@ -173,7 +220,6 @@ class MxTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: hintStyle,
-        constraints: BoxConstraints(minHeight: geometry.floor),
         filled: true,
         // The editor's boxes sit white on the page; a form field lightens
         // only on focus.
@@ -185,7 +231,7 @@ class MxTextField extends StatelessWidget {
         isDense: true,
         contentPadding: EdgeInsets.symmetric(
           horizontal: geometry.horizontal,
-          vertical: (geometry.floor - lineHeight) / 2,
+          vertical: _verticalPadding(context, width, textStyle, hintStyle),
         ),
         prefixIcon: leading == null
             ? null
