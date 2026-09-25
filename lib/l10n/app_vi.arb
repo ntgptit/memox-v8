@@ -10,6 +10,7 @@
   "openGallery": "Thư viện component",
   "commonCancel": "Hủy",
   "commonRetry": "Thử lại",
+  "commonLoading": "Đang tải",
   "libraryCreateDeck": "Tạo bộ thẻ",
   "libraryEmptyTitle": "Bắt đầu thư viện của bạn",
   "libraryEmptyBody": "Một bộ thẻ gom các bộ thẻ con chứa thẻ của bạn. Hãy tạo một bộ để bắt đầu.",

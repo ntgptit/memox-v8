@@ -30,8 +30,7 @@ class GalleryStatesSection extends StatelessWidget {
           tone: tone,
           isCompact: true,
         ),
-      const MxSkeletonRow(),
-      const MxSkeletonRow(),
+      const MxSkeletonList(semanticLabel: 'Loading', rows: 2),
       const Row(
         spacing: AppSpacing.gutter,
         children: [

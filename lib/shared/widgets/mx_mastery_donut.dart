@@ -9,10 +9,14 @@ import 'package:memox/core/theme/theme_context.dart';
 /// o'clock in the MasteryRamp colour, and the percentage uses the same
 /// colour, so the number and the ring never disagree.
 class MxMasteryDonut extends StatelessWidget {
-  const MxMasteryDonut({super.key, required this.fraction})
+  const MxMasteryDonut({super.key, required this.fraction, this.semanticLabel})
     : assert(fraction >= 0 && fraction <= 1, 'fraction is within [0, 1]');
 
   final double fraction;
+
+  /// What the percentage measures ("Mastered"), read before it (§9 row 61).
+  /// Null reads the percentage alone.
+  final String? semanticLabel;
 
   static const double _box = 56;
 
@@ -35,7 +39,7 @@ class MxMasteryDonut extends StatelessWidget {
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(fraction);
-    return SizedBox.square(
+    final donut = SizedBox.square(
       dimension: _box,
       child: CustomPaint(
         painter: _DonutPainter(
@@ -54,6 +58,14 @@ class MxMasteryDonut extends StatelessWidget {
           ),
         ),
       ),
+    );
+    final label = semanticLabel;
+    if (label == null) return donut;
+    return Semantics(
+      label: label,
+      value: percent,
+      excludeSemantics: true,
+      child: donut,
     );
   }
 }

@@ -176,4 +176,63 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsNothing);
   });
+
+  testWidgets('the grabber dismisses the sheet for a screen reader', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => showMxBottomSheet<void>(
+            context,
+            builder: (_) => const MxBottomSheet(child: Text('Sheet')),
+          ),
+          child: const Text('open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    final grabber = find.byKey(const ValueKey('mx-sheet-grabber'));
+    final label = MaterialLocalizations.of(tester.element(grabber))
+        .modalBarrierDismissLabel;
+    final node = tester.getSemantics(grabber);
+    expect(node.label, label);
+    tester.semantics.tap(find.semantics.byLabel(label));
+    await tester.pumpAndSettle();
+    expect(find.text('Sheet'), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('a sheet clears the keyboard', (tester) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          final size = MediaQuery.sizeOf(context);
+          return MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(viewInsets: const EdgeInsets.only(bottom: 300)),
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: const Align(
+                alignment: Alignment.bottomCenter,
+                child: MxBottomSheet(child: TextField()),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(
+      tester.getBottomLeft(find.byType(TextField)).dy,
+      lessThanOrEqualTo(screen.height - 300),
+    );
+  });
 }

@@ -59,7 +59,12 @@ class CardHistoryScrollWidget extends ConsumerWidget {
           onRetry: () => ref.invalidate(provider),
         ),
       ],
-      _ => [for (var i = 0; i < _skeletonRows; i++) const MxSkeletonRow()],
+      _ => [
+        MxSkeletonList(
+          semanticLabel: context.l10n.commonLoading,
+          rows: _skeletonRows,
+        ),
+      ],
     };
     return MxScreenScroll(children: [...leading, ...history]);
   }

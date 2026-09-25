@@ -3,6 +3,11 @@ import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
+// ponytail: keyed by the immutable ThemeData, so a theme switch resolves
+// afresh and a dropped theme lets its entry go; a ThemeExtension if the
+// derived set ever needs lerping.
+final _derived = Expando<MxDerivedColors>('derivedColors');
+
 /// The one way UI code reads the theme.
 extension ThemeContext on BuildContext {
   ColorScheme get colors => Theme.of(this).colorScheme;
@@ -21,8 +26,14 @@ extension ThemeContext on BuildContext {
     return semantic;
   }
 
-  MxDerivedColors get derivedColors =>
-      MxDerivedColors.resolve(colors, semanticColors);
+  /// Resolved once per theme (§9 row 66), not at every read.
+  MxDerivedColors get derivedColors {
+    final theme = Theme.of(this);
+    return _derived[theme] ??= MxDerivedColors.resolve(
+      theme.colorScheme,
+      semanticColors,
+    );
+  }
 
   MxTextStyles get textStyles => MxTextStyles(texts, colors);
 

@@ -79,20 +79,29 @@ class _LoadingHeader extends StatelessWidget {
   static const double _nameWidth = 120;
 
   @override
-  Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.fromLTRB(
-      AppSpacing.gutter,
-      AppSpacing.control,
-      AppSpacing.gutter,
-      AppSpacing.control,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.grouped,
-      children: [
-        MxSkeleton(width: _pathWidth),
-        MxSkeleton(width: _nameWidth),
-      ],
+  Widget build(BuildContext context) => Semantics(
+    // The bars say nothing; the header is heard once as loading.
+    container: true,
+    label: context.l10n.commonLoading,
+    child: const ExcludeSemantics(
+      child: MxSkeletonPulse(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.gutter,
+            AppSpacing.control,
+            AppSpacing.gutter,
+            AppSpacing.control,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppSpacing.grouped,
+            children: [
+              MxSkeleton(width: _pathWidth),
+              MxSkeleton(width: _nameWidth),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }

@@ -40,6 +40,10 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "commonLoading": "Loading",
+  "@commonLoading": {
+    "description": "What a screen reader hears while a list or a value loads."
+  },
   "libraryCreateDeck": "Create deck",
   "@libraryCreateDeck": {
     "description": "Action and FAB label: create a new top-level deck."

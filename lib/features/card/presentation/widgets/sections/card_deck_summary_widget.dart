@@ -48,6 +48,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
               children: [
                 MxMasteryDonut(
                   fraction: total == 0 ? 0 : states.mastered / total,
+                  semanticLabel: context.l10n.cardStatusMastered,
                 ),
                 Expanded(
                   child: Column(

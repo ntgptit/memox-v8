@@ -111,4 +111,50 @@ void main() {
       const Size(288 * 0.45, 12),
     ]);
   });
+
+  testWidgets('a list says Loading once and runs one ticker', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 360,
+        child: MxSkeletonList(semanticLabel: 'Loading', rows: 4),
+      ),
+    );
+
+    expect(find.byType(MxSkeletonRow), findsNWidgets(4));
+    expect(find.bySemanticsLabel('Loading'), findsOneWidget);
+    expect(tester.binding.transientCallbackCount, 1);
+    handle.dispose();
+  });
+
+  testWidgets('a list under reduced motion runs no ticker', (tester) async {
+    await pumpMx(
+      tester,
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: SizedBox(
+          width: 360,
+          child: MxSkeletonList(semanticLabel: 'Loading'),
+        ),
+      ),
+    );
+
+    expect(tester.binding.transientCallbackCount, 0);
+  });
+
+  testWidgets('loose skeletons under one MxSkeletonPulse share a ticker', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxSkeletonPulse(
+        child: Column(
+          children: [MxSkeleton(width: 80), MxSkeleton(width: 120)],
+        ),
+      ),
+    );
+
+    expect(tester.binding.transientCallbackCount, 1);
+  });
 }

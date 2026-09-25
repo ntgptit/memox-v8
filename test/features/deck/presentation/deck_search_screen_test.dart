@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/features/deck/presentation/providers/deck_search_provider.dart';
+import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
+
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_search_hit_row_widget.dart';
@@ -149,5 +155,35 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('a search in flight is heard once, by its header', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final pending = StreamController<List<DeckSearchHit>>();
+    addTearDown(pending.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      DeckSearchScreen(onOpenDeck: (_) {}),
+      overrides: [
+        deckSearchProvider('or').overrideWith((ref) => pending.stream),
+      ],
+    );
+    await tester.enterText(find.byType(EditableText), 'or');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.byType(MxSkeletonRow), findsWidgets);
+    expect(find.bySemanticsLabel(_en.commonLoading), findsNothing);
+    expect(
+      find.bySemanticsLabel(
+        RegExp(RegExp.escape(_en.searchSearching('or')), caseSensitive: false),
+      ),
+      findsOneWidget,
+    );
+    handle.dispose();
   });
 }
