@@ -59,6 +59,22 @@ void main() {
     );
   });
 
+  // Stacked Vietnamese marks (Ẳ, Ổ, Ỗ) rise well above the font's ascent;
+  // an ellipsized line clips at its box, and below 1.5 the box cuts them (Ổ
+  // reads as Ố). Measured in the golden container.
+  test('ellipsized single-line styles keep a 1.5 line box', () {
+    for (final style in [
+      styles.screenTitle,
+      styles.listRowTitle,
+      styles.rowTitleMatch,
+      styles.rowSubtitle,
+      styles.tagLabel,
+      styles.removableTagLabel,
+    ]) {
+      expect(style.height, 1.5);
+    }
+  });
+
   test('empty state: title 20/700/-0.3, compact 16/700, body 14 at 1.55', () {
     expectStyle(
       styles.emptyTitle,
@@ -174,7 +190,7 @@ void main() {
     );
   });
 
-  test('row styles: title 14/600/-0.1, list title at 1.35, sub-lines 12', () {
+  test('row styles: title 14/600/-0.1, list title at 1.5, sub-lines 12', () {
     expectStyle(
       styles.rowTitle,
       size: 14,
@@ -188,7 +204,7 @@ void main() {
       weight: FontWeight.w600,
       tracking: -0.1,
     );
-    expect(styles.listRowTitle.height, 1.35);
+    expect(styles.listRowTitle.height, 1.5);
     expectStyle(
       styles.rowDescription,
       size: 12,
@@ -253,7 +269,7 @@ void main() {
       tracking: 0.1,
       color: scheme.onSurfaceVariant,
     );
-    expect(styles.tagLabel.height, 1.4);
+    expect(styles.tagLabel.height, 1.5);
   });
 
   test('note 12 at 1.5; workload 12/400 with 600 terms; donut 9/700', () {

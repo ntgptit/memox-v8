@@ -96,7 +96,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | bị chặn | — | M | §2 chốt "implement the handoff as written"; §9 | Chủ dự án quyết có sửa giá trị token của handoff không, rồi Impeccable làm |
-| FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | chưa bắt đầu | — | M | §9 dòng 5; critique 2026-09-21, P2 | Impeccable (typeset) |
+| FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | xong | — | M | Typography tiếng Việt: text một dòng có ellipsis dùng line-height 1.5 (`screenTitle`, `listRowTitle`, `rowSubtitle`, `tagLabel`); Hangul dùng font fallback của hệ điều hành; §9 dòng 5 đã đóng, dòng 102 ghi độ lệch | — |
 | FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | xong | — | S | UI-base debt, đợt 1: `MxSkeletonList`, tên cho spinner và donut, grabber có action đóng; §9 dòng 61, 65 đã đóng | — |
 | FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
 | FE-C5 | Adaptive: chưa có window-size class, chưa có navigation rail cho tablet và màn hình ngang (dòng 63) | chưa bắt đầu | — | M | §9 dòng 63 | Quyết phạm vi adaptive khi thiết kế màn hình |

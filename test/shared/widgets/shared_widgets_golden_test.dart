@@ -14,8 +14,10 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
+import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
 import '../../support/golden_harness.dart';
 
@@ -141,6 +143,23 @@ void main() {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  });
+
+  // FE-C2: an ellipsized line clips at its box; stacked marks must survive.
+  testWidgets('ellipsized Vietnamese keeps its stacked marks', (tester) async {
+    const long = 'Ẳng Ổn định Ỗ Ẫm thực · Nguyễn Hằng · Ẳ Ổ Ỗ Ẫ Ẳ Ổ Ỗ Ẫ';
+    await expectThemedGoldens(
+      tester,
+      'mx_vietnamese_ellipsis',
+      const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MxAppBar(title: long),
+          MxListRow(title: long, subtitle: long),
+          SizedBox(width: 160, child: MxTagChip(label: long)),
         ],
       ),
     );
