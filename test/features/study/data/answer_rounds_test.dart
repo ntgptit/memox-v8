@@ -7,7 +7,6 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -17,10 +16,7 @@ import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 
 // UC-STUDY-001 A0, A0c and A1 on eight_box decks: the graded modes' rounds,
-// with a right or wrong verdict standing in for their mechanics (package 2b).
-
-const _right = GradedAnswer(isCorrect: true);
-const _wrong = GradedAnswer(isCorrect: false);
+// answered right or wrong with each mode's own input (graded modes spec §7.1).
 
 void main() {
   late AppDatabase db;
@@ -49,35 +45,19 @@ void main() {
         deckId: deckId,
       )) as Ok<String, StudyRejection>).value;
 
-  Future<void> answer(
-    String sessionId,
-    StudyAnswer answer, [
-    String? card,
-  ]) async {
-    final cardId = card ?? await servedCard(db, sessionId);
-    expect(
-      await sessions.answerTurn(
-        sessionId: sessionId,
-        cardId: cardId!,
-        answer: answer,
-      ),
-      isA<Ok<void, StudyRejection>>(),
-      reason: 'answer on $cardId',
-    );
-  }
-
   Future<String> modeOf(String sessionId) async =>
       (await sessionOf(db, sessionId)).read<String>('current_mode');
+
+  /// Answers [card], or the card served, right or wrong.
+  Future<void> graded(String sessionId, {required bool right, String? card}) =>
+      answerServed(db, sessions, sessionId, right: right, cardId: card);
 
   /// Answers right until the session leaves [mode].
   Future<void> passStage(String sessionId, String mode) async {
     while (await modeOf(sessionId) == mode &&
         (await sessionOf(db, sessionId)).read<String>('status') ==
             'in_progress') {
-      await answer(
-        sessionId,
-        mode == 'browse' ? const AdvanceAnswer() : _right,
-      );
+      await graded(sessionId, right: true);
     }
   }
 
@@ -94,13 +74,13 @@ void main() {
     expect(await modeOf(id), 'recall');
     final roundOne = await queueOf(db, id, 'recall');
 
-    await answer(id, _wrong);
-    await answer(id, _wrong);
-    await answer(id, _right);
+    await graded(id, right: false);
+    await graded(id, right: false);
+    await graded(id, right: true);
     final roundTwo = await queueOf(db, id, 'recall', round: 2);
-    await answer(id, _wrong, roundTwo.first);
-    await answer(id, _right, roundTwo.last);
-    await answer(id, _right);
+    await graded(id, right: false, card: roundTwo.first);
+    await graded(id, right: true, card: roundTwo.last);
+    await graded(id, right: true);
 
     expect(roundTwo..sort(), roundOne.sublist(0, 2)..sort());
     expect(
@@ -133,14 +113,14 @@ void main() {
       await passStage(id, 'browse');
       expect(await modeOf(id), 'match');
 
-      await answer(id, _wrong, 'b');
-      await answer(id, _wrong, 'b');
-      await answer(id, _right, 'b');
-      await answer(id, _right, 'a');
+      await graded(id, right: false, card: 'b');
+      await graded(id, right: false, card: 'b');
+      await graded(id, right: true, card: 'b');
+      await graded(id, right: true, card: 'a');
 
       expect(await queueOf(db, id, 'match', round: 2), ['b']);
       expect(await modeOf(id), 'match');
-      await answer(id, _right, 'b');
+      await graded(id, right: true, card: 'b');
       expect(await modeOf(id), 'recall');
     },
   );
@@ -193,9 +173,9 @@ void main() {
     );
     final id = (opened as Ok<String, StudyRejection>).value;
 
-    await answer(id, _wrong, 'a');
-    await answer(id, _right, 'b');
-    await answer(id, _right, 'a');
+    await graded(id, right: false, card: 'a');
+    await graded(id, right: true, card: 'b');
+    await graded(id, right: true, card: 'a');
 
     final a = await scheduleRowOf(db, 'a');
     expect(a.read<int>('current_box'), 1);

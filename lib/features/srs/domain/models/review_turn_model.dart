@@ -15,6 +15,9 @@ final class ReviewTurn {
     required this.action,
     required this.answeredAt,
     this.directionCode,
+    this.outcomeReasonCode,
+    this.comparisonVersion,
+    this.usedHint,
   });
 
   final String cardId;
@@ -29,4 +32,12 @@ final class ReviewTurn {
   final Object action;
   final String? directionCode;
   final DateTime answeredAt;
+
+  /// What the mode adds to the turn, passed the way [modeCode] is: the code
+  /// of the reason a `recall` turn ended (BR-STUDY-034), and the comparison
+  /// version and the shown hint of a `fill` turn (BR-STUDY-027,
+  /// BR-STUDY-028). The schema refuses them on any other mode.
+  final String? outcomeReasonCode;
+  final int? comparisonVersion;
+  final bool? usedHint;
 }

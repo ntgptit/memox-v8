@@ -436,8 +436,8 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 |---|---|---|
 | 1 | Quan sát lượt mới | Đáp án ẩn có nhãn ngữ nghĩa; thanh trên hiện tối đa 20 giây |
 | 2 | Chờ một khoảng khi ứng dụng ở phía trước | Thời gian giảm theo thời gian tương tác; thời gian tải nội dung không bị tính vào lượt |
-| 3 | Chạm Hiện đáp án trước hạn | Mặt sau hiện ra và kết cục được chốt một lần, không còn hành động khác để đổi |
-| 4 | Quan sát trạng thái sau khi lật | Có lời xác nhận lượt đã chốt; màn hình không giống bị treo và chỉ vòng sau mới bắt đầu lại 20 giây |
+| 3 | Chạm Hiện đáp án trước hạn | Mặt sau hiện ra, đồng hồ dừng, và hai lựa chọn Nhớ được/Đã quên xuất hiện; chưa có kết cục nào được ghi (BR-STUDY-065) |
+| 4 | Chọn Nhớ được hoặc Đã quên | Chỉ lựa chọn đó được ghi, đúng một lần; lượt tự chuyển sau khi ghi, không có nút Tiếp theo (BR-STUDY-066); chỉ vòng sau mới bắt đầu lại 20 giây |
 
 ## IT-MODE-009 — `Recall` hết giờ tự lật, khóa kết cục sai và giữ thời gian khi Tiếp tục
 

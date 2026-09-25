@@ -11,9 +11,11 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
 import 'package:memox/features/study/domain/usecases/answer_study_turn_use_case.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite3;
 
 import '../../../support/card_fixtures.dart';
@@ -69,7 +71,7 @@ final class _BrokenSessions implements StudySessionRepository {
   final failed = <String>[];
 
   @override
-  Future<Outcome<void, StudyRejection>> answerTurn({
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
     required String cardId,
     required StudyAnswer answer,
@@ -110,7 +112,7 @@ void main() {
     await db.close();
   });
 
-  Future<Outcome<void, StudyRejection>> turn(
+  Future<Outcome<TurnResult, StudyRejection>> turn(
     String sessionId,
     StudyAnswer answer,
   ) async => answerTurn(
@@ -169,6 +171,46 @@ void main() {
       expect((await sessionOf(db, id)).read<String>('status'), 'completed');
     },
   );
+
+  test('a recall timeout that met a busy database is sent again and recorded '
+      'once, with its reason (BR-STUDY-033, UC-STUDY-001 E2)', () async {
+    final leaf = await insertFiveDue(
+      db,
+      DeckRepositoryImpl(db, now: () => now),
+    );
+    final opened = await entries.openReviewSession(
+      deckId: leaf.id,
+      mode: StudyMode.recall,
+    );
+    final id = (opened as Ok<String, StudyRejection>).value;
+    schedules.fault = sqlite3.SqliteException(
+      extendedResultCode: 5,
+      message: 'database is locked',
+    );
+    const timedOut = RecallAnswer(RecallOutcome.timedOut);
+
+    await expectLater(
+      turn(id, timedOut),
+      throwsA(isA<DatabaseLockedFailure>()),
+    );
+    expect(await logCount(), 0);
+
+    expect(
+      await turn(id, timedOut),
+      isA<Ok<TurnResult, StudyRejection>>().having(
+        (ok) => ok.value.isCorrect,
+        'isCorrect',
+        isFalse,
+      ),
+    );
+    final log = await db
+        .customSelect('SELECT "action", outcome_reason FROM review_log')
+        .getSingle();
+    expect(
+      (log.read<String>('action'), log.read<String>('outcome_reason')),
+      ('forgotten', 'timeout'),
+    );
+  });
 
   test('a fatal error rolls the turn back and closes the session as failed; '
       'the turns before it stay (IT-CONT-012, UC-STUDY-001 E3, BR-STUDY-018, '

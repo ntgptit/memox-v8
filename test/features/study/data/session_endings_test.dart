@@ -150,13 +150,7 @@ void main() {
     await sessions.resumeSession(sessionId: id);
 
     while ((await sessionOf(db, id)).read<String>('status') == 'in_progress') {
-      final mode = (await sessionOf(db, id)).read<String>('current_mode');
-      await answer(
-        id,
-        mode == 'browse'
-            ? const AdvanceAnswer()
-            : const GradedAnswer(isCorrect: true),
-      );
+      await answerServed(db, sessions, id, right: true);
     }
 
     final lateRows = await db
@@ -294,7 +288,7 @@ void main() {
       mode: StudyMode.recall,
     );
     final id = (opened as Ok<String, StudyRejection>).value;
-    await answer(id, const GradedAnswer(isCorrect: false));
+    await answerServed(db, sessions, id, right: false);
     await deleteCards({'b', 'c'});
     expect(await servedCard(db, id), isNull);
 
@@ -369,7 +363,7 @@ void main() {
       await sessions.answerTurn(
         sessionId: id,
         cardId: 'a',
-        answer: const GradedAnswer(isCorrect: true),
+        answer: const AdvanceAnswer(),
       ),
       _refusedWith(StudyRejection.sessionClosed),
     );

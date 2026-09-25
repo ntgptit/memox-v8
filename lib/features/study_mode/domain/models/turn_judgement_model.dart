@@ -34,8 +34,8 @@ final class TurnContext {
   /// `fill`: the hint of this turn has been shown (BR-STUDY-028).
   final bool isHintShown;
 
-  /// `guess`: the stored options of the row, in the order shown; null when
-  /// none are stored.
+  /// `guess`: the stored options of the row, in the order shown; a question
+  /// without five takes no answer (BR-STUDY-040). Null in the other modes.
   final List<String>? guessOptionIds;
 
   /// `match`: the pending pairs of the current board, card id to

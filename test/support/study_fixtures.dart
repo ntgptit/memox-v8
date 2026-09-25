@@ -5,15 +5,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
+import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
+import 'card_fixtures.dart';
+import 'deck_fixtures.dart';
 import 'invariant_queries.dart';
 
 // The study repositories and the reads the study tests check them with.
@@ -185,9 +191,40 @@ Future<Map<String, int?>> meaningSlotsOf(
     row.read<String>('card_id'): row.read<int?>('meaning_slot'),
 };
 
+/// Five learned eight_box cards `ST-01`…`ST-05` in [rootName] > Lesson, due
+/// in that order, of five meanings, each with an example and a hint: the
+/// cards of SETUP-STUDY-EB-5-FULL once learned, so a review opens straight in
+/// the mode a test takes. Returns the lesson deck.
+Future<DeckEntity> insertFiveDue(
+  AppDatabase db,
+  DeckRepository decks, [
+  String rootName = 'Korean',
+]) async {
+  final root = await decks.root(rootName);
+  final leaf = await decks.sub(root.id, 'Lesson');
+  const meanings = ['apple', 'banana', 'cherry', 'date', 'elder'];
+  for (final (index, meaning) in meanings.indexed) {
+    await insertCard(
+      db,
+      id: 'ST-0${index + 1}',
+      deckId: leaf.id,
+      front: 'term ${index + 1}',
+      back: meaning,
+      example: 'example ${index + 1}',
+      hint: 'hint ${index + 1}',
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 10 + index),
+    );
+  }
+  await lockScheduler(db, root.id);
+  return leaf;
+}
+
 /// Answers the card [sessionId] serves in its current mode, or [cardId],
-/// right or wrong as [right] says. A refusal fails the test.
-Future<void> answerServed(
+/// the way a person who knows it ([right]) or does not would, each mode with
+/// its own input (graded modes spec §7.1). A `recall` answer reveals first.
+/// A refusal fails the test.
+Future<TurnResult> answerServed(
   AppDatabase db,
   StudySessionRepositoryImpl sessions,
   String sessionId, {
@@ -195,13 +232,99 @@ Future<void> answerServed(
   String? cardId,
 }) async {
   final mode = (await sessionOf(db, sessionId)).read<String>('current_mode');
-  final card = cardId ?? await servedCard(db, sessionId);
+  final card = cardId ?? (await servedCard(db, sessionId))!;
   final outcome = await sessions.answerTurn(
     sessionId: sessionId,
-    cardId: card!,
-    answer: mode == 'browse'
-        ? const AdvanceAnswer()
-        : GradedAnswer(isCorrect: right),
+    cardId: card,
+    answer: await _answerOf(db, sessions, sessionId, mode, card, right: right),
   );
-  expect(outcome, isA<Ok<void, StudyRejection>>(), reason: 'answer on $card');
+  expect(
+    outcome,
+    isA<Ok<TurnResult, StudyRejection>>(),
+    reason: 'answer on $card',
+  );
+  return (outcome as Ok<TurnResult, StudyRejection>).value;
 }
+
+Future<StudyAnswer> _answerOf(
+  AppDatabase db,
+  StudySessionRepositoryImpl sessions,
+  String sessionId,
+  String mode,
+  String cardId, {
+  required bool right,
+}) async {
+  switch (mode) {
+    case 'browse':
+      return const AdvanceAnswer();
+    case 'self_assess':
+      return SelfAssessAnswer(right ? Sm2Action.good : Sm2Action.again);
+    case 'fill':
+      final front =
+          (await db
+                  .customSelect(
+                    'SELECT front FROM card WHERE id = ?',
+                    variables: [Variable(cardId)],
+                  )
+                  .getSingle())
+              .read<String>('front');
+      return FillAnswer(right ? front : '$front?');
+    case 'recall':
+      await sessions.revealRecallAnswer(
+        sessionId: sessionId,
+        cardId: cardId,
+        remainingMs: 10000,
+      );
+      return RecallAnswer(
+        right ? RecallOutcome.remembered : RecallOutcome.forgot,
+      );
+    case 'guess':
+      if (right) return GuessAnswer(cardId);
+      final round = await _servedRound(db, sessionId, cardId);
+      final options = await optionsOf(db, sessionId, cardId, round: round);
+      return GuessAnswer(options.firstWhere((id) => id != cardId));
+    case 'match':
+      return MatchAnswer(
+        right ? cardId : await _otherPair(db, sessionId, cardId),
+      );
+  }
+  throw ArgumentError.value(mode, 'mode');
+}
+
+/// The round in which [cardId]'s row of the current mode is served.
+Future<int> _servedRound(
+  AppDatabase db,
+  String sessionId,
+  String cardId,
+) async =>
+    (await db
+            .customSelect(
+              'SELECT MIN(q.round) AS round FROM study_queue_items q'
+              ' JOIN study_session s ON s.id = q.session_id'
+              ' WHERE q.session_id = ? AND q.mode = s.current_mode'
+              " AND q.card_id = ? AND q.status = 'pending' AND q.position >= 0",
+              variables: [Variable(sessionId), Variable(cardId)],
+            )
+            .getSingle())
+        .read<int>('round');
+
+/// Another pending pair of the `match` board [cardId] is on, whose meaning
+/// is a wrong one for it.
+Future<String> _otherPair(
+  AppDatabase db,
+  String sessionId,
+  String cardId,
+) async =>
+    (await db
+            .customSelect(
+              'SELECT q.card_id FROM study_queue_items q'
+              ' JOIN study_queue_items me ON me.session_id = q.session_id'
+              '  AND me.mode = q.mode AND me.round = q.round'
+              " WHERE me.session_id = ? AND me.mode = 'match' AND me.card_id = ?"
+              " AND me.status = 'pending' AND me.position >= 0"
+              " AND q.status = 'pending' AND q.card_id <> me.card_id"
+              ' AND q.position / 5 = me.position / 5 ORDER BY q.position LIMIT 1',
+              variables: [Variable(sessionId), Variable(cardId)],
+            )
+            .getSingle())
+        .read<String>('card_id');

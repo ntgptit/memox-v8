@@ -105,6 +105,11 @@ final class StudySessionDao {
     );
   }
 
+  /// The card [id]: a turn is judged on its folded fields (graded modes spec
+  /// §7.2). A queue row keeps its card, so the card is there.
+  Future<CardRow> cardRow(String id) =>
+      (_db.select(_db.card)..where((card) => card.id.equals(id))).getSingle();
+
   /// Whether [cardId] has a hint; a blank one is stored as NULL
   /// (BR-CARD-003).
   Future<bool> hasHint(String cardId) async {

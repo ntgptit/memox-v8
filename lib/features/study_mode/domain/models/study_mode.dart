@@ -103,14 +103,6 @@ abstract base class StudyModeHandler {
     required int distinctMeaningCount,
   }) => StageRuns([for (final card in cards) card.cardId]);
 
-  /// The action [answer] records under [scheduler], null when the mode
-  /// records none, or why [answer] does not fit (BR-MODE-011, BR-MODE-012).
-  /// Package 2a's path, which [judge] replaces in Task 6.
-  Outcome<Object?, StudyModeRejection> actionOf(
-    StudyAnswer answer,
-    SrsScheduler scheduler,
-  );
-
   /// What [answer] makes of the turn [context] describes under [scheduler],
   /// or why it does not fit (graded modes spec §7.2). The session reads the
   /// facts and writes what the verdict says.

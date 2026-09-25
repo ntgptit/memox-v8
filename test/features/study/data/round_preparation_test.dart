@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -19,26 +18,6 @@ import '../../../support/test_database.dart';
 // Graded modes spec §8.2: a round gets what it needs when it starts being
 // served, the options of its guess questions and the meaning slots of its
 // match boards, and keeps them.
-
-/// Cuts the meaning source of a guess question to the rows [keep] names,
-/// the way the fault injector of S-STUDY-GUESS-BLOCKED-V2 does, with the
-/// database untouched.
-final class _ThinMeaningSource extends QueryInterceptor {
-  _ThinMeaningSource(this.keep);
-
-  final int keep;
-
-  @override
-  Future<List<Map<String, Object?>>> runSelect(
-    QueryExecutor executor,
-    String statement,
-    List<Object?> args,
-  ) async {
-    final rows = await super.runSelect(executor, statement, args);
-    if (!statement.contains('AS meaning_folded')) return rows;
-    return rows.take(keep).toList();
-  }
-}
 
 void main() {
   late AppDatabase db;
@@ -333,7 +312,7 @@ void main() {
   test('a question its meaning source cannot fill stores no option, and the '
       'view shows it blocked (BR-STUDY-040)', () async {
     await db.close();
-    open(openTestDatabase(interceptor: _ThinMeaningSource(4)));
+    open(openTestDatabase(interceptor: ThinMeaningSource(4)));
     final leaf = await fiveDue();
     final id = await review(leaf.id, StudyMode.guess);
 

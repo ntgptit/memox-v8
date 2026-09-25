@@ -343,6 +343,13 @@ ReviewLogCompanion _logOf(
   kind: entry.kind.name,
   mode: turn.modeCode,
   direction: Value(turn.directionCode),
+  outcomeReason: Value(turn.outcomeReasonCode),
+  comparisonVersion: Value(turn.comparisonVersion),
+  usedHint: Value(switch (turn.usedHint) {
+    null => null,
+    true => 1,
+    false => 0,
+  }),
   action: (turn.action as Enum).name,
   answeredAt: turn.answeredAt,
   nextDueAt: Value(entry.nextDueAt),

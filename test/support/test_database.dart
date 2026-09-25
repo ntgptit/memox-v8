@@ -44,3 +44,24 @@ final class FailingUpdates extends QueryInterceptor {
     message: 'constraint failed',
   );
 }
+
+/// Cuts the meaning source of a `guess` question to its first [keep] rows
+/// while [keep] is set, the way the fault injector of
+/// S-STUDY-GUESS-BLOCKED-V2 does, with the database untouched.
+final class ThinMeaningSource extends QueryInterceptor {
+  ThinMeaningSource(this.keep);
+
+  int? keep;
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) async {
+    final rows = await super.runSelect(executor, statement, args);
+    final kept = keep;
+    if (kept == null || !statement.contains('AS meaning_folded')) return rows;
+    return rows.take(kept).toList();
+  }
+}

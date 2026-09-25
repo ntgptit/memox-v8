@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 
 /// The writes of a session; its screen reads through
@@ -8,9 +9,14 @@ import 'package:memox/features/study_mode/domain/models/study_answer_model.dart'
 /// ADR-010's reason: domain stays framework-free and tests substitute a fake.
 abstract interface class StudySessionRepository {
   /// UC-STUDY-001 steps 6–9: [answer] on [cardId], the card the session
-  /// serves in its current mode and round, or any pending card of a `match`
-  /// board (notCurrentCard otherwise, BR-STUDY-042). A turn with an action
-  /// is recorded through srs (BR-STUDY-009, BR-STUDY-023); the row then
+  /// serves in its current mode and round, or a pending pair of the current
+  /// `match` board (notCurrentCard otherwise, BR-STUDY-042, BR-STUDY-049).
+  /// The mode judges the answer against the card and what its row keeps
+  /// (graded modes spec §7): a blank `fill` answer, a `recall` answer out of
+  /// turn with its reveal, a blocked `guess` question, a card that is not
+  /// one of its options and a meaning off the board are refused. A turn with
+  /// an action is recorded through srs with what its mode adds (BR-STUDY-009,
+  /// BR-STUDY-023, BR-STUDY-027, BR-STUDY-028, BR-STUDY-034); the row then
   /// leaves, comes back or joins the next round (BR-STUDY-005,
   /// BR-STUDY-059, BR-STUDY-062), the cursor moves (BR-STUDY-048), and the
   /// session moves to the next round, the next stage or its end
@@ -18,8 +24,8 @@ abstract interface class StudySessionRepository {
   /// the last stage it takes part in finishes learning (BR-STUDY-053). A
   /// session whose root was reset since it opened is invalidated and the
   /// answer refused as staleGeneration (BR-STUDY-017); any other refusal
-  /// writes nothing.
-  Future<Outcome<void, StudyRejection>> answerTurn({
+  /// writes nothing. The result says whether a graded answer was right.
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
     required String cardId,
     required StudyAnswer answer,

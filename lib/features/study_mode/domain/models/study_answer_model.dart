@@ -16,14 +16,6 @@ final class SelfAssessAnswer extends StudyAnswer {
   final Object action;
 }
 
-/// A graded mode's verdict (BR-MODE-011, BR-MODE-012). Package 2a's stand-in
-/// for the real inputs below; the session stops taking it in Task 6.
-final class GradedAnswer extends StudyAnswer {
-  const GradedAnswer({required this.isCorrect});
-
-  final bool isCorrect;
-}
-
 /// `fill`: the term the person typed. It is judged and never stored
 /// (BR-STUDY-030).
 final class FillAnswer extends StudyAnswer {

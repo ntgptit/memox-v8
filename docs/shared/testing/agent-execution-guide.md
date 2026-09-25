@@ -376,7 +376,7 @@ chọn chế độ: `Match` bị vô hiệu hóa, `Guess` bị vô hiệu hóa, 
 
 #### S-STUDY-FILL-V2
 
-Một thẻ Eight Box đã học và đến hạn: mặt trước `Nghề nghiệp`, mặt sau `Công`, câu
+Một thẻ Eight Box đã học và đến hạn: mặt trước `Công`, mặt sau `Nghề nghiệp`, câu
 ví dụ `Đây là một công việc tốt.`, gợi ý `Bắt đầu bằng C`. `Fill` có số lượng 1
 và được bật. Bộ dữ liệu dựng sẵn MUST không chứa dữ liệu nhập thô từ bất kỳ lần chạy trước.
 

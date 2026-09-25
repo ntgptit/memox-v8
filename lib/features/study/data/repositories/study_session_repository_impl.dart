@@ -15,12 +15,15 @@ import 'package:memox/features/study/data/datasources/study_session_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
+import 'package:memox/features/study_mode/domain/models/match_mode.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
 /// Runs a session: its turns, its rounds and stages, and how it ends
 /// (UC-STUDY-001 steps 6–13, A1–A5); its screen reads through
@@ -50,7 +53,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
   final DateTime Function() _now;
 
   @override
-  Future<Outcome<void, StudyRejection>> answerTurn({
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
     required String cardId,
     required StudyAnswer answer,
@@ -238,8 +241,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     return const Rejected(StudyRejection.staleGeneration);
   }
 
-  /// [answer] on [cardId] in an open [session] (spec §7.3 steps 2–8).
-  Future<Outcome<void, StudyRejection>> _answer(
+  /// [answer] on [cardId] in an open [session] (spec §7.3 steps 2–8; graded
+  /// modes spec §8.1).
+  Future<Outcome<TurnResult, StudyRejection>> _answer(
     StudySession session,
     Deck root,
     String cardId,
@@ -247,22 +251,23 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     DateTime at,
   ) async {
     final mode = StudyMode.fromCode(session.currentMode);
-    final row = mode.handler.servesInOrder
-        ? await _queue.headRow(session.id, mode.code, session.cursor)
-        : await _queue.boardRow(session.id, mode.code, cardId);
-    if (row == null || row.cardId != cardId) {
-      return const Rejected(StudyRejection.notCurrentCard);
-    }
+    final row = await _servedRow(session, mode, cardId);
+    if (row == null) return const Rejected(StudyRejection.notCurrentCard);
 
     final type = SchedulerType.fromCode(root.schedulerType!);
     final scheduler = schedulerFor(type);
-    final Object? action;
-    switch (mode.handler.actionOf(answer, scheduler)) {
+    final TurnVerdict verdict;
+    switch (mode.handler.judge(
+      answer,
+      await _contextOf(mode, row),
+      scheduler,
+    )) {
       case Rejected(:final reason):
         return Rejected(StudyRejection.ofModeRefusal(reason));
       case Ok(:final value):
-        action = value;
+        verdict = value;
     }
+    final action = verdict.action;
     final kind = SessionKind.values.byName(session.sessionKind);
     if (action != null) {
       final recorded = await _schedules.recordTurn(
@@ -279,6 +284,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
           action: action,
           directionCode: row.direction,
           answeredAt: at,
+          outcomeReasonCode: verdict.outcomeReason?.code,
+          comparisonVersion: verdict.comparisonVersion,
+          usedHint: verdict.usedHint,
         ),
       );
       if (recorded case Rejected(:final reason)) {
@@ -298,6 +306,9 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       cursor: cursor,
       at: at,
     );
+    if (verdict.takesMeaningSlotOf case final other?) {
+      await _queue.swapMeaningSlots(row, other);
+    }
     await _dao.setCursor(session.id, cursor);
     // A card finishes learning with the last stage it takes part in; a
     // card at the cap stays new (BR-STUDY-053, UC-STUDY-001 A2b).
@@ -314,7 +325,54 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       );
     }
     await _progress(session, type, at);
-    return const Ok(null);
+    return Ok(TurnResult(isCorrect: verdict.isCorrect));
+  }
+
+  /// [cardId]'s row that [session] serves in [mode]: the head row, or in a
+  /// mode that does not serve in order, the card's pending pair on the board
+  /// of the head row (graded modes spec §7.6). Null when the card is not
+  /// served.
+  Future<StudyQueueItem?> _servedRow(
+    StudySession session,
+    StudyMode mode,
+    String cardId,
+  ) async {
+    final head = await _queue.headRow(session.id, mode.code, session.cursor);
+    if (head == null || mode.handler.servesInOrder) {
+      return head?.cardId == cardId ? head : null;
+    }
+    final row = await _queue.boardRow(session.id, mode.code, cardId);
+    if (row == null) return null;
+    return matchBoardOf(row.position) == matchBoardOf(head.position)
+        ? row
+        : null;
+  }
+
+  /// What [mode] judges the turn on [row] by: the card's folded fields, the
+  /// row's flags, and the stored options or the pending pairs of the board
+  /// (graded modes spec §7.2, §8.1 step 3).
+  Future<TurnContext> _contextOf(StudyMode mode, StudyQueueItem row) async {
+    final card = await _dao.cardRow(row.cardId);
+    final board = matchBoardOf(row.position) * matchBoardSize;
+    return TurnContext(
+      card: TurnCard(
+        cardId: card.id,
+        frontFolded: card.frontFolded,
+        backFolded: card.backFolded,
+      ),
+      isRevealed: row.isRevealed == 1,
+      isHintShown: row.hintShown == 1,
+      guessOptionIds: mode.handler.asksWithOptions
+          ? await _queue.optionIds(row)
+          : null,
+      boardMeanings: mode.handler.servesInOrder
+          ? const {}
+          : await _queue.pendingMeanings(
+              row,
+              from: board,
+              to: board + matchBoardSize - 1,
+            ),
+    );
   }
 
   /// What [step] does to [row] (spec §5.5).

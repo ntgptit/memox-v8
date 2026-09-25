@@ -227,9 +227,9 @@ void main() {
       mode: StudyMode.recall,
     );
     final id = (opened as Ok<String, StudyRejection>).value;
-    await answer(id, const GradedAnswer(isCorrect: false));
-    await answer(id, const GradedAnswer(isCorrect: true));
-    await answer(id, const GradedAnswer(isCorrect: true));
+    await answerServed(db, sessions, id, right: false);
+    await answerServed(db, sessions, id, right: true);
+    await answerServed(db, sessions, id, right: true);
 
     final summary = (await viewOf(id)).summary!;
 

@@ -28,23 +28,6 @@ final class SelfAssessModeHandler extends StudyModeHandler {
   bool get takesDirection => true;
 
   @override
-  Outcome<Object?, StudyModeRejection> actionOf(
-    StudyAnswer answer,
-    SrsScheduler scheduler,
-  ) => switch (answer) {
-    SelfAssessAnswer(:final action)
-        when scheduler.supportedActions.contains(action) =>
-      Ok(action),
-    SelfAssessAnswer() => const Rejected(StudyModeRejection.unsupportedAction),
-    AdvanceAnswer() ||
-    GradedAnswer() ||
-    FillAnswer() ||
-    RecallAnswer() ||
-    GuessAnswer() ||
-    MatchAnswer() => const Rejected(StudyModeRejection.answerDoesNotFitMode),
-  };
-
-  @override
   Outcome<TurnVerdict, StudyModeRejection> judge(
     StudyAnswer answer,
     TurnContext context,
@@ -55,7 +38,6 @@ final class SelfAssessModeHandler extends StudyModeHandler {
       Ok(TurnVerdict(action: action)),
     SelfAssessAnswer() => const Rejected(StudyModeRejection.unsupportedAction),
     AdvanceAnswer() ||
-    GradedAnswer() ||
     FillAnswer() ||
     RecallAnswer() ||
     GuessAnswer() ||

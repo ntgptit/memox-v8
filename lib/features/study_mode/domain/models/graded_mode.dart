@@ -3,7 +3,6 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/srs_scheduler.dart';
 import 'package:memox/features/study_mode/domain/failures/study_mode_failure.dart';
 import 'package:memox/features/study_mode/domain/models/row_step_model.dart';
-import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
@@ -16,17 +15,6 @@ abstract base class GradedModeHandler extends StudyModeHandler {
 
   @override
   bool get usesRounds => true;
-
-  @override
-  Outcome<Object?, StudyModeRejection> actionOf(
-    StudyAnswer answer,
-    SrsScheduler scheduler,
-  ) {
-    if (answer is! GradedAnswer) {
-      return const Rejected(StudyModeRejection.answerDoesNotFitMode);
-    }
-    return _actionOf(answer.isCorrect, scheduler);
-  }
 
   /// The verdict of a right or wrong answer: right is `remembered`, wrong is
   /// `forgotten`, and every level short of right is wrong (BR-MODE-012,
