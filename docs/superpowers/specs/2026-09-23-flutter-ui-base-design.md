@@ -78,7 +78,8 @@ lib/
 │   ├── mastery_ramp.dart            MasteryRamp utility
 │   ├── mx_text_styles.dart          component type treatments (phase 2)
 │   ├── app_decorations.dart         raised card surface (phase 2)
-│   ├── app_component_themes.dart    Material component themes (grows per phase)
+│   ├── app_button_style.dart        appButtonStyle(): the button ButtonStyle the theme and Mx controls share
+│   ├── app_component_themes.dart    Material component themes (§4.6)
 │   ├── app_theme.dart               buildLightTheme() / buildDarkTheme()
 │   └── theme_context.dart           context.colors / texts / semanticColors
 ├── l10n/
@@ -192,6 +193,21 @@ variant: filled/outlined buttons, `InputDecorationTheme`,
 dialog, bottom sheet, snackbar, switch, navigation bar, chip, progress indicator.
 A variant richer than the Material theme can express stays in the `Mx*` widget,
 which still reads `ColorScheme`, `TextTheme` and the tokens.
+
+Built 2026-09-25 (the phases shipped without them). The inspection per
+category:
+
+| Category | Central theme | Why |
+|---|---|---|
+| Text/input fields | `InputDecorationTheme` | Every field shares the fill that lightens on focus, the ghost/primary/error edges at radius 12 with no label gap, the 14 hint and 12 side padding. `MxTextField`'s editor variants override only the radius, the fill and the padding; `MxSearchField` only its fill and icons. |
+| Buttons | `FilledButtonTheme`, `OutlinedButtonTheme`, `TextButtonTheme` | Framework-built buttons (dialog actions, pickers) get the regular V3 size in the primary, outline and text tones, dimmed when disabled. `MxButton` keeps its tone × size matrix through the same `appButtonStyle`. |
+| Icon buttons | `IconButtonTheme` | The IconButton contract. `MxIconButton` passes the theme's style with its one ink and keeps its whole-control 0.38 dim. |
+| Dialogs | `DialogThemeData` | The high container at radius 20, flat, over the 45% scrim, with the compact title and dialog body. `MxDialog` keeps its widths and entrance. |
+| Bottom sheets | `BottomSheetThemeData` | The high container, top radius 20, flat, over the 45% scrim. `MxBottomSheet` keeps its height cap, grabber and shadow. |
+| Snackbar | `SnackBarThemeData` | The floating inverse toast at radius 12, a gutter in. `MxSnackbar` keeps its content layout. |
+| Switch, navigation bar, chip, progress | not configured | `MxToggle`, `MxBottomNav`, `MxFilterChip` and `MxSpinner` draw the kit's own controls. No Material switch, navigation bar, chip or progress indicator appears in the app or the framework screens it opens, and M3's `ColorScheme`-derived defaults hold should one appear. |
+
+The refactor changed no golden.
 
 ## 5. Component conventions
 
