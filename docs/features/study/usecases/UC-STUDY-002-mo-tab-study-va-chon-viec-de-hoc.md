@@ -3,7 +3,7 @@ id: UC-STUDY-002
 title: Mở tab Study và chọn việc để học
 status: ready
 rules: [BR-STUDY-008, BR-STUDY-017, BR-STUDY-020, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068, BR-STUDY-072, BR-STUDY-074, BR-STUDY-075, BR-STUDY-076, BR-STUDY-077]
-code: []
+code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

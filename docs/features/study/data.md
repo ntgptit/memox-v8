@@ -44,3 +44,18 @@ hoặc phiên đang ở mode khác.
 
 Một lượt mới ở round sau là một dòng mới, nên bắt đầu lại đủ 20 giây, đáp án ẩn và
 gợi ý chưa hiện (BR-STUDY-036).
+
+## Tab Study
+
+Tab Study đọc một snapshot trong một transaction: mọi root deck kèm workload của cả
+cây (cùng câu truy vấn với cấp root của Thư viện), phiên có thể Resume cùng số đếm của
+round nó đang phục vụ, và hạn gần nhất sau hiện tại (UC-STUDY-002).
+
+- Resume chỉ nhận phiên `in_progress`, bắt đầu từ đầu ngày học hiện tại, cùng
+  generation với root, deck và root không nằm trong Trash, và còn ít nhất một dòng hàng
+  đợi. Nhiều phiên thì lấy phiên mới nhất; bắt đầu cùng lúc thì lấy `id` lớn hơn
+  (BR-STUDY-075). Tiếp tục ở màn vào học dùng đúng các điều kiện này.
+- Đọc không ghi gì: phiên của ngày trước vẫn mở cho tới khi `abandonStaleSessions` đóng
+  nó (BR-STUDY-072).
+- Snapshot được đọc lại sau mỗi lần ghi vào `deck`, `card`, `card_schedule`,
+  `study_session` hay `study_queue_items`, và ở mỗi nửa đêm địa phương.
