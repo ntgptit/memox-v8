@@ -12,9 +12,11 @@ import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/presentation/providers/create_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/card_fixtures.dart';
@@ -171,7 +173,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _create(deckId));
     expect(find.text(_en.cardExampleHint), findsNothing);
 
-    await tester.tap(find.text(_en.cardAddDetails));
+    await tester.tap(find.byType(CardAddDetailsWidget));
     await tester.pump();
     for (final hint in [
       _en.cardExampleHint,
@@ -369,5 +371,54 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(counting.edits, 1);
+  });
+
+  libraryTest('a 60-character term wraps and stays in view', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.enterText(_field(0), 'a' * 60);
+    await tester.pump();
+
+    final term = tester.renderObject<RenderBox>(_field(0));
+    expect(term.size.height, greaterThan(40));
+    expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the editor at 2x holds with every field open', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId), textScale: 2);
+    await tester.scrollUntilVisible(
+      find.byType(CardAddDetailsWidget),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(MxScreenScroll),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.tap(find.byType(CardAddDetailsWidget));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the back of a new card sits on its 76 floor', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+    await tester.enterText(_field(1), 'thank you');
+    await tester.pump();
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
   });
 }

@@ -485,6 +485,9 @@ item names where it comes from.
 | 96 | A card row's flag is drawn in the warning colour, not the kit's streak colour: the theme has no streak token | library alignment phase E (E-L2) |
 | 97 | The selection header's "Select all {n}" is a compact secondary `MxButton`, not the kit's text link: no bare-text button in the widget set | library alignment phase E (E-L3) |
 | 98 | A card row's due chip is an `MxBadge` (overdue warning, today primary, else neutral), not the kit's bespoke pill | library alignment phase E (E-L4) |
+| 99 | The caption role carries no tracking. The foundations table's 1.2px appears only on the kit's documentation chrome; the kit's components track only the overline (0.6), the field count (0.2) and the study mode badge (1.2) | card editor fields (audit 2026-09-25) |
+| 100 | Field placeholders are full `onSurfaceVariant`, not the kit's 0.6 opacity, for text contrast (WCAG 1.4.3); every field centres its first line, so a filled meaning does not top-align as the kit draws it | card editor fields (audit 2026-09-25) |
+| 101 | "Add details" is 48 tall (the touch minimum), not the kit's 42, with a solid `outlineVariant` edge instead of dashed: there is no dashed-border token (row 81); its field list is 12/600, not 12/500 | card editor fields (audit 2026-09-25) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

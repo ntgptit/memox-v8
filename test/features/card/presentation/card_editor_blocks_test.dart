@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
@@ -249,5 +250,79 @@ void main() {
 
     expect(find.byType(MxSkeleton), findsWidgets);
     expect(find.byType(MxBreadcrumb), findsNothing);
+  });
+
+  libraryTest('a card field names its input once for TalkBack', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final controller = TextEditingController(text: 'gamsa');
+    addTearDown(controller.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        CardFieldWidget(
+          label: _en.cardFieldFront,
+          hint: _en.cardFrontHint,
+          limit: 60,
+          controller: controller,
+          isRequired: true,
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.byType(EditableText)).label,
+      contains(_en.cardFieldFront),
+    );
+    expect(find.bySemanticsLabel(_en.cardFieldFront), findsOneWidget);
+    handle.dispose();
+  });
+
+  libraryTest('Add details names its fields and opens them', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(CardAddDetailsWidget(onPressed: () => opened++)),
+    );
+
+    expect(find.textContaining(_en.cardAddDetails), findsOneWidget);
+    expect(find.textContaining(_en.cardAddDetailsFields), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(CardAddDetailsWidget)).height,
+      greaterThanOrEqualTo(48),
+    );
+    expect(
+      find.bySemanticsLabel(
+        RegExp(
+          '${RegExp.escape(_en.cardAddDetails)}.*'
+          '${RegExp.escape(_en.cardAddDetailsFields)}',
+          dotAll: true,
+        ),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byType(CardAddDetailsWidget));
+    expect(opened, 1);
+    handle.dispose();
+  });
+
+  libraryTest('Add details holds at 2x', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(CardAddDetailsWidget(onPressed: () {})),
+      textScale: 2,
+    );
+
+    expect(tester.takeException(), isNull);
   });
 }

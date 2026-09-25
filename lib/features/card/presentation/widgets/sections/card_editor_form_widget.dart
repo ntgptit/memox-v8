@@ -7,7 +7,6 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -17,6 +16,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_edit_summ
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
@@ -29,6 +29,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
 
@@ -353,6 +354,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller: _front,
       focusNode: _frontFocus,
       isRequired: true,
+      variant: MxTextFieldVariant.term,
       errorText: errors[_Field.front],
       onChanged: (_) => _touch(_Field.front),
     ),
@@ -362,11 +364,19 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
-      isMultiline: true,
+      variant: MxTextFieldVariant.meaning,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
     ),
-    ..._optionalFields(l10n, errors),
+    // In create, behind "Add details"; in edit, under "Optional details".
+    CardOptionalFieldsWidget(
+      isOpen: _isDetailsOpen,
+      hasHeader: !_isCreating,
+      onOpen: () => setState(() => _isDetailsOpen = true),
+      example: _input(_Field.example, _example, errors),
+      hint: _input(_Field.hint, _hint, errors),
+      pronunciation: _input(_Field.pronunciation, _pronunciation, errors),
+    ),
     CardTagEditorWidget(
       tags: _tags,
       onChanged: (tags) => setState(() => _tags = tags),
@@ -375,73 +385,14 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     ),
   ];
 
-  /// In create, behind "Add details"; in edit, under "Optional details".
-  List<Widget> _optionalFields(
-    AppLocalizations l10n,
+  /// One optional field's input, message and touch.
+  CardOptionalInput _input(
+    _Field field,
+    TextEditingController controller,
     Map<_Field, String?> errors,
-  ) {
-    if (!_isDetailsOpen) {
-      return [
-        Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
-          child: MxButton(
-            label: l10n.cardAddDetails,
-            icon: AppIcons.details,
-            tone: MxButtonTone.outline,
-            isBlock: true,
-            onPressed: () => setState(() => _isDetailsOpen = true),
-          ),
-        ),
-      ];
-    }
-    return [
-      if (!_isCreating)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.micro,
-            0,
-            AppSpacing.micro,
-            AppSpacing.control,
-          ),
-          child: Text(
-            l10n.cardOptionalDetails.toUpperCase(),
-            semanticsLabel: l10n.cardOptionalDetails,
-            style: context.textStyles.overline,
-          ),
-        ),
-      for (final (field, icon, label, hint, controller) in [
-        (
-          _Field.example,
-          AppIcons.example,
-          l10n.cardFieldExample,
-          l10n.cardExampleHint,
-          _example,
-        ),
-        (
-          _Field.hint,
-          AppIcons.hint,
-          l10n.cardFieldHint,
-          l10n.cardHintHint,
-          _hint,
-        ),
-        (
-          _Field.pronunciation,
-          AppIcons.pronunciation,
-          l10n.cardFieldPronunciation,
-          l10n.cardPronunciationHint,
-          _pronunciation,
-        ),
-      ])
-        CardFieldWidget(
-          label: label,
-          hint: hint,
-          icon: icon,
-          limit: CardDraft.maxOptionalLength,
-          controller: controller,
-          isMultiline: true,
-          errorText: errors[field],
-          onChanged: (_) => _touch(field),
-        ),
-    ];
-  }
+  ) => (
+    controller: controller,
+    errorText: errors[field],
+    onChanged: () => _touch(field),
+  );
 }
