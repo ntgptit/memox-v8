@@ -1,6 +1,6 @@
 # MemoX V8 — Library search backend design (package 5)
 
-Status: draft 2026-09-25 · Path: architectural
+Status: approved 2026-09-25 · Path: architectural
 
 ## 1. Intent
 
