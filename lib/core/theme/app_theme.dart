@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
@@ -14,11 +15,14 @@ ThemeData buildDarkTheme() =>
 ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
   // The base supplies Material's default slots, already inked onSurface.
   final base = ThemeData(colorScheme: scheme);
+  final texts = AppTypography.bind(base.textTheme);
   return base.copyWith(
-    textTheme: AppTypography.bind(base.textTheme),
+    textTheme: texts,
     // Read directly by CircleAvatar, FlexibleSpaceBar and others.
     primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
     scaffoldBackgroundColor: scheme.surface,
     extensions: [semantic],
+    // Spec §4.6: the V3 defaults of the Material components.
+    inputDecorationTheme: AppComponentThemes.fields(scheme, semantic, texts),
   );
 }

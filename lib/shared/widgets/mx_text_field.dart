@@ -5,7 +5,6 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
@@ -212,17 +211,19 @@ class MxTextField extends StatelessWidget {
 
   Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
-    final ghost = context.derivedColors.ghostBorder;
     final hasError = errorText != null;
     final geometry = _geometry(variant);
-    // No floating label, so no label gap: Material 3 would otherwise add
-    // gapPadding to each side of the text, past the kit's padding.
-    OutlineInputBorder edge(Color color) => OutlineInputBorder(
-      gapPadding: 0,
-      borderRadius: BorderRadius.circular(geometry.radius),
-      borderSide: BorderSide(color: color, width: AppStroke.hairline),
+    // The theme carries the field (spec §4.6); an editor box only rounds its
+    // edges further, and an error holds the error edge at rest too.
+    final fields = Theme.of(context).inputDecorationTheme;
+    InputBorder? edge(InputBorder? themed) => switch (themed) {
+      final OutlineInputBorder outline when geometry.radius != AppRadius.md =>
+        outline.copyWith(borderRadius: BorderRadius.circular(geometry.radius)),
+      _ => themed,
+    };
+    final restingEdge = edge(
+      hasError ? fields.errorBorder : fields.enabledBorder,
     );
-    final restingEdge = edge(hasError ? colors.error : ghost);
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints
     // the fill and edge around the text only); more lines or scaled text
@@ -230,7 +231,7 @@ class MxTextField extends StatelessWidget {
     final textStyle = _valueStyle(context);
     final hintStyle = variant == MxTextFieldVariant.term
         ? context.textStyles.fieldTermHint
-        : context.textStyles.inputHint;
+        : fields.hintStyle!;
     final isForm = variant == MxTextFieldVariant.form;
     final field = TextField(
       controller: controller,
@@ -252,15 +253,9 @@ class MxTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: hintStyle,
-        filled: true,
-        // The editor's boxes sit white on the page; a form field lightens
-        // only on focus.
-        fillColor: WidgetStateColor.resolveWith(
-          (states) => !isForm || states.contains(WidgetState.focused)
-              ? colors.surfaceContainerLowest
-              : colors.surfaceContainerLow,
-        ),
-        isDense: true,
+        // The editor's boxes sit white on the page; a form field keeps the
+        // theme's fill, which lightens on focus.
+        fillColor: isForm ? null : colors.surfaceContainerLowest,
         contentPadding: EdgeInsets.symmetric(
           horizontal: geometry.horizontal,
           vertical: _verticalPadding(context, width, textStyle, hintStyle),
@@ -287,8 +282,10 @@ class MxTextField extends StatelessWidget {
         suffixIconConstraints: const BoxConstraints(),
         border: restingEdge,
         enabledBorder: restingEdge,
-        disabledBorder: edge(ghost),
-        focusedBorder: edge(hasError ? colors.error : colors.primary),
+        disabledBorder: edge(fields.disabledBorder),
+        focusedBorder: edge(
+          hasError ? fields.focusedErrorBorder : fields.focusedBorder,
+        ),
       ),
     );
     final column = Column(
