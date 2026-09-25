@@ -11,6 +11,10 @@ typedef SessionViewRow = ({
 /// The rows of a round, done and in all.
 typedef RoundCounts = ({int completed, int total});
 
+/// The session the Study tab's Resume card offers, with the name of the deck
+/// it was opened on.
+typedef ResumableRow = ({StudySession session, String deckName});
+
 /// The counts a session's summary shows (spec D11).
 typedef SummaryCounts = ({int cardCount, int learnedCount, int wrongCount});
 
@@ -26,6 +30,21 @@ typedef BoardPairRecord = ({
   bool isCompleted,
   int? meaningSlot,
 });
+
+/// The sessions Continue and Resume may take up (BR-STUDY-075), over
+/// `study_session s`, its deck `d` and its root `r`: open, started on or after
+/// the one variable, the start of today, at the root's generation, out of the
+/// Trash and with a queue row left (Study Home spec D6).
+const _resumable =
+    ' FROM study_session s JOIN deck d ON d.id = s.deck_id'
+    ' JOIN deck r ON r.id = s.root_id'
+    " WHERE s.status = 'in_progress' AND s.started_at >= ?"
+    ' AND s.generation = r.generation'
+    ' AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL'
+    ' AND EXISTS (SELECT 1 FROM study_queue_items q WHERE q.session_id = s.id)';
+
+/// The newest of them; of two started at once, the higher id.
+const _newestFirst = ' ORDER BY s.started_at DESC, s.id DESC LIMIT 1';
 
 /// The reads of the study screens (spec §8). They write nothing
 /// (BR-STUDY-075), return Drift rows and records, never domain values.
@@ -85,29 +104,87 @@ final class StudyViewDao {
       .map((row) => row == null ? null : _db.deck.map(row.data));
 
   /// The newest open session of [deckId] that Continue can take up
-  /// (BR-STUDY-075): started on or after [startOfToday], at its root's
-  /// generation, with at least one queue row.
+  /// (BR-STUDY-075), by the conditions the Study tab's Resume card uses.
   Future<String?> resumableSessionId(
     String deckId, {
     required DateTime startOfToday,
   }) async {
     final row = await _db
         .customSelect(
-          'SELECT s.id FROM study_session s JOIN deck r ON r.id = s.root_id'
-          " WHERE s.deck_id = ? AND s.status = 'in_progress'"
-          ' AND s.started_at >= ? AND s.generation = r.generation'
-          ' AND EXISTS (SELECT 1 FROM study_queue_items q'
-          '  WHERE q.session_id = s.id)'
-          ' ORDER BY s.started_at DESC LIMIT 1',
+          'SELECT s.id$_resumable AND s.deck_id = ?$_newestFirst',
           variables: [
-            Variable<String>(deckId),
             Variable<DateTime>(startOfToday),
+            Variable<String>(deckId),
           ],
           readsFrom: {_db.studySession, _db.deck, _db.studyQueueItems},
         )
         .getSingleOrNull();
     return row?.read<String>('id');
   }
+
+  /// The session the Study tab's Resume card offers, of any deck
+  /// (BR-STUDY-075); null when none may be taken up.
+  Future<ResumableRow?> resumableSessionRow({
+    required DateTime startOfToday,
+  }) async {
+    final row = await _db
+        .customSelect(
+          'SELECT s.*, d.name AS deck_name$_resumable$_newestFirst',
+          variables: [Variable<DateTime>(startOfToday)],
+          readsFrom: {_db.studySession, _db.deck, _db.studyQueueItems},
+        )
+        .getSingleOrNull();
+    if (row == null) return null;
+    return (
+      session: _db.studySession.map(row.data),
+      deckName: row.read<String>('deck_name'),
+    );
+  }
+
+  /// Every root deck with the workload of its whole tree: the statement the
+  /// Library's root level reads (BR-STUDY-076, BR-STUDY-068).
+  Future<List<DeckTileRow>> rootDeckRows({
+    required DateTime now,
+    required DateTime startOfToday,
+  }) => _db.deckLevelOfRoots(startOfToday, now).get();
+
+  /// The earliest due date after [now] of a learned card out of the Trash
+  /// (Study Home spec D4); null when none waits.
+  Future<DateTime?> nextDueAt({required DateTime now}) async {
+    final row = await _db
+        .customSelect(
+          'SELECT MIN(cs.due_at) AS next_due_at FROM card c'
+          ' JOIN deck k ON k.id = c.deck_id'
+          ' JOIN card_schedule cs ON cs.card_id = c.id'
+          ' WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL'
+          ' AND cs.learned_at IS NOT NULL AND cs.due_at > ?',
+          variables: [Variable<DateTime>(now)],
+          readsFrom: {_db.card, _db.deck, _db.cardSchedule},
+        )
+        .getSingle();
+    return row.read<DateTime?>('next_due_at');
+  }
+
+  /// Fires once when listened to, then after every write to a table the
+  /// Study tab reads: decks, cards, schedules, sessions and queues; a
+  /// transaction fires once. It listens before it fires, so a write that
+  /// lands right after the first read is seen (Study Home spec D7).
+  Stream<void> homeChanges() => Stream.multi((listener) {
+    final updates = _db
+        .tableUpdates(
+          TableUpdateQuery.onAllTables([
+            _db.deck,
+            _db.card,
+            _db.cardSchedule,
+            _db.studySession,
+            _db.studyQueueItems,
+          ]),
+        )
+        .listen((_) => listener.add(null), onError: listener.addError);
+    listener
+      ..add(null)
+      ..onCancel = updates.cancel;
+  });
 
   Future<CardRow?> cardRow(String cardId) => (_db.select(
     _db.card,
