@@ -110,6 +110,108 @@ void main() {
         expect(tester.getSize(find.byType(IconButton)), const Size.square(48));
       });
 
+      testWidgets('a framework dialog takes the V3 surface and scrim', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (_) => const AlertDialog(title: Text('Title')),
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
+
+        final surface = tester.widget<Material>(
+          find
+              .ancestor(of: find.text('Title'), matching: find.byType(Material))
+              .first,
+        );
+        expect(surface.color, scheme.surfaceContainerHigh);
+        expect(surface.elevation, 0);
+        expect(
+          (surface.shape! as RoundedRectangleBorder).borderRadius,
+          BorderRadius.circular(20),
+        );
+        final barrier = tester.widget<ModalBarrier>(
+          find.byType(ModalBarrier).last,
+        );
+        expect(barrier.color, scheme.scrim.withValues(alpha: 0.45));
+      });
+
+      testWidgets('a framework sheet takes the V3 surface and top radius', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                builder: (_) => const Text('Sheet'),
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
+
+        final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
+        final sheets = Theme.of(tester.element(find.text('Sheet')))
+            .bottomSheetTheme;
+        expect(
+          sheet.backgroundColor ?? sheets.backgroundColor,
+          scheme.surfaceContainerHigh,
+        );
+        expect(sheets.elevation, 0);
+        expect(
+          (sheets.shape! as RoundedRectangleBorder).borderRadius,
+          const BorderRadius.vertical(top: Radius.circular(20)),
+        );
+        expect(sheets.modalBarrierColor, scheme.scrim.withValues(alpha: 0.45));
+      });
+
+      testWidgets('a raw SnackBar takes the V3 toast', (tester) async {
+        await pump(
+          tester,
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () =>
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(const SnackBar(content: Text('Toast'))),
+              child: const Text('open'),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
+
+        final toast = tester.widget<Material>(
+          find
+              .ancestor(of: find.text('Toast'), matching: find.byType(Material))
+              .first,
+        );
+        expect(toast.color, scheme.inverseSurface);
+        expect(
+          (toast.shape! as RoundedRectangleBorder).borderRadius,
+          BorderRadius.circular(12),
+        );
+        expect(
+          tester.widget<SnackBar>(find.byType(SnackBar)).behavior ??
+              Theme.of(tester.element(find.text('Toast')))
+                  .snackBarTheme
+                  .behavior,
+          SnackBarBehavior.floating,
+        );
+      });
+
       testWidgets('a raw TextField takes the V3 field', (tester) async {
         await pump(
           tester,

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -21,7 +19,7 @@ Future<T?> showMxDialog<T>(
   context: context,
   barrierDismissible: true,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  barrierColor: context.colors.scrim.withValues(alpha: AppEffects.scrimOpacity),
+  barrierColor: DialogTheme.of(context).barrierColor!,
   transitionDuration: MediaQuery.disableAnimationsOf(context)
       ? Duration.zero
       : AppDurations.standard,
@@ -67,7 +65,9 @@ class MxDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final radius = BorderRadius.circular(AppRadius.xl);
+    // The surface and radius are the theme's dialog (spec §4.6).
+    final dialogs = DialogTheme.of(context);
+    final shape = dialogs.shape! as RoundedRectangleBorder;
     final hasText = title != null || body != null || content != null;
     return Semantics(
       scopesRoute: true,
@@ -90,12 +90,12 @@ class MxDialog extends StatelessWidget {
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: radius,
+                borderRadius: shape.borderRadius,
                 boxShadow: AppShadows.overlay(colors),
               ),
               child: Material(
-                color: colors.surfaceContainerHigh,
-                shape: RoundedRectangleBorder(borderRadius: radius),
+                color: dialogs.backgroundColor,
+                shape: shape,
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

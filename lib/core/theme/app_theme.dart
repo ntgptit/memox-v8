@@ -28,5 +28,8 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     outlinedButtonTheme: AppComponentThemes.outlinedButtons(scheme, texts),
     textButtonTheme: AppComponentThemes.textButtons(scheme, texts),
     iconButtonTheme: AppComponentThemes.iconButtons(scheme),
+    dialogTheme: AppComponentThemes.dialogs(scheme, texts),
+    bottomSheetTheme: AppComponentThemes.sheets(scheme),
+    snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
   );
 }

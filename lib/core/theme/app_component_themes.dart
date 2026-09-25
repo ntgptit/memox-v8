@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -158,5 +159,63 @@ abstract final class AppComponentThemes {
           padding: const WidgetStatePropertyAll(EdgeInsets.zero),
           tapTargetSize: MaterialTapTargetSize.padded,
         ),
+      );
+
+  static Color _scrim(ColorScheme scheme) =>
+      scheme.scrim.withValues(alpha: AppEffects.scrimOpacity);
+
+  static const _sheetRadius = BorderRadius.vertical(
+    top: Radius.circular(AppRadius.xl),
+  );
+
+  /// Dialog (Dialog contract): the high container at radius 20, flat, over
+  /// the 45% scrim, with the compact title and the dialog body.
+  static DialogThemeData dialogs(ColorScheme scheme, TextTheme texts) {
+    final styles = MxTextStyles(texts, scheme);
+    return DialogThemeData(
+      backgroundColor: scheme.surfaceContainerHigh,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
+      barrierColor: _scrim(scheme),
+      titleTextStyle: styles.compactTitle,
+      contentTextStyle: styles.dialogBody,
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.card,
+        vertical: AppSpacing.section,
+      ),
+    );
+  }
+
+  /// BottomSheet (BottomSheet contract): the high container, top radius 20,
+  /// flat, over the 45% scrim.
+  static BottomSheetThemeData sheets(ColorScheme scheme) =>
+      BottomSheetThemeData(
+        backgroundColor: scheme.surfaceContainerHigh,
+        modalBackgroundColor: scheme.surfaceContainerHigh,
+        elevation: 0,
+        modalElevation: 0,
+        shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
+        modalBarrierColor: _scrim(scheme),
+      );
+
+  /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
+  /// radius 12, the snackbar message style.
+  static SnackBarThemeData snackbars(ColorScheme scheme, TextTheme texts) =>
+      SnackBarThemeData(
+        backgroundColor: scheme.inverseSurface,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        // Even sides, so no direction is needed.
+        insetPadding: const EdgeInsets.fromLTRB(
+          AppSpacing.gutter,
+          0,
+          AppSpacing.gutter,
+          AppSpacing.gutter,
+        ),
+        contentTextStyle: MxTextStyles(texts, scheme).snackbarMessage,
       );
 }

@@ -33,20 +33,11 @@ SnackBar buildMxSnackBar(
   VoidCallback? onAction,
 }) {
   final messenger = ScaffoldMessenger.of(context);
+  // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
-    backgroundColor: context.colors.inverseSurface,
-    behavior: SnackBarBehavior.floating,
-    margin: const EdgeInsetsDirectional.only(
-      start: AppSpacing.gutter,
-      end: AppSpacing.gutter,
-      bottom: AppSpacing.gutter,
-    ),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
     // so the action's 48 target sits inside the 48 toast.
     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
     content: MxSnackbarContent(
       message: message,
       actionLabel: actionLabel,

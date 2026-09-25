@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-
-const _topRadius = BorderRadius.vertical(top: Radius.circular(AppRadius.xl));
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
 /// over a 45% scrim, sliding up over 260ms. It opens instantly under reduced
@@ -15,16 +12,12 @@ Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
 }) {
-  final colors = context.colors;
+  // The surface, radius and scrim are the theme's sheet (spec §4.6).
   return showModalBottomSheet<T>(
     context: context,
     builder: builder,
     isScrollControlled: true,
     useSafeArea: true,
-    backgroundColor: colors.surfaceContainerHigh,
-    elevation: 0,
-    shape: const RoundedRectangleBorder(borderRadius: _topRadius),
-    barrierColor: colors.scrim.withValues(alpha: AppEffects.scrimOpacity),
     sheetAnimationStyle: AnimationStyle(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
@@ -66,18 +59,20 @@ class MxBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final sheets = Theme.of(context).bottomSheetTheme;
+    final shape = sheets.shape! as RoundedRectangleBorder;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * _maxHeightShare,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: _topRadius,
+          borderRadius: shape.borderRadius,
           boxShadow: AppShadows.chrome(colors),
         ),
         child: Material(
-          color: colors.surfaceContainerHigh,
-          shape: const RoundedRectangleBorder(borderRadius: _topRadius),
+          color: sheets.backgroundColor,
+          shape: shape,
           clipBehavior: Clip.antiAlias,
           child: SafeArea(
             top: false,
