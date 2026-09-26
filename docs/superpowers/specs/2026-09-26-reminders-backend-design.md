@@ -1,6 +1,6 @@
 # MemoX V8 — Daily reminder backend design (package 11a)
 
-Status: draft for review 2026-09-26 · Path: architectural
+Status: approved 2026-09-26 · Path: architectural
 
 ## 1. Intent
 
