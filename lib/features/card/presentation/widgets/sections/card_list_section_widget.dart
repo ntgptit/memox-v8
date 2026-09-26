@@ -46,6 +46,7 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.algorithm,
     required this.onAddCard,
     required this.onOpenCard,
+    this.onExport,
     this.onStudy,
   });
 
@@ -59,6 +60,10 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
 
   /// A row tap outside selection: the router opens the card's detail.
   final ValueChanged<String> onOpenCard;
+
+  /// Export on the bulk bar: the router opens the export sheet over the
+  /// selection, which stays (UC-TRANSFER-002 A1). Null hides it.
+  final ValueChanged<Set<String>>? onExport;
 
   /// The summary's Study this deck: the router opens the Study Entry.
   final VoidCallback? onStudy;
@@ -154,11 +159,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (await write && mounted) _selection().clear();
   }
 
-  /// The bulk bar's commands over [selected]: Move, Flag, Tag, Delete.
-  /// Export waits under Coming soon (spec A4, amended); Select all is in the
-  /// app bar (spec A14).
+  /// The bulk bar's commands over [selected]: Move, Flag, Tag, Export,
+  /// Delete (kit 07). Select all is in the app bar (spec A14).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
+    final onExport = widget.onExport;
     return [
       (
         icon: AppIcons.folder,
@@ -185,6 +190,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           _clearAfter(showCardTagDialog(context, cardIds: selected)),
         ),
       ),
+      if (onExport != null)
+        (
+          icon: AppIcons.fileDown,
+          label: l10n.cardExport,
+          onTap: () => onExport(selected),
+        ),
       (
         icon: AppIcons.delete,
         label: l10n.cardDelete,

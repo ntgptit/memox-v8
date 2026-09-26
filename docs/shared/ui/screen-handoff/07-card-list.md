@@ -16,13 +16,13 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
-| Bulk bar | `MxFooterBar` with four icon buttons | Move · Flag · Tag · Delete; Export waits under Coming soon (FE-B3). |
+| Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Delete. |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting. |
 
 ## Deck action sheet (`⋮`)
 
-Study this deck · Rename · Move to another deck · Delete. Study this deck opens the Study Entry, screen 14
-(FE-A6 D10); Import and Export wait under Coming soon (spec A4; FE-B3).
+Study this deck · Rename · Move to another deck · Import cards (screen 11) · Export cards
+(screen 12) · Delete. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
 
 ## States
 
@@ -50,7 +50,7 @@ detail: a tap opens it (#35).
 | Artifact | V8 | Wins |
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
-| Tags filter, Import, Export | Hidden; named under Coming soon | Spec A4 (amended) |
+| Tags filter | Hidden; named under Coming soon | Spec A4 (amended) |
 | An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
 | The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
 | "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |

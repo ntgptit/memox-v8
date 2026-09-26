@@ -508,6 +508,8 @@ item names where it comes from.
 | 103 | The detail field (kit OptionalField) grows from 48, the touch minimum, not the kit's 40: its whole box is the tap target, and the screen 09 visual audit failed Android's 48 dp guideline at 40 | FE-D2 visual audit |
 | 104 | P3 accessibility (open): `MxListSectionHeader` and its trailing `MxBadge` are two TalkBack nodes, so a group reads "Decks", then a bare "2"; screens 04 and 07. Merge the header's semantics in the shared widget in a later UI-base debt batch | FE-A10 spec D25 |
 | 105 | Success, caution and danger glyphs and success text use inks pulled toward `onSurface` (`successInk`, `warningInk`, `error`): the kit's pure green and amber fail 3:1 (glyph) and 4.5:1 (text) on their soft tints; the fills keep the kit's hues | FE-A6 D14 |
+| 106 | Card import names the fields two ways: "Term (front)" / "Meaning (back)" on the mapping, "term" and "meaning" in its notes and row reasons. One vocabulary waits for a copy pass over screens 08–12 | critique 2026-09-26 P3 (transfer) |
+| 107 | Card import shows one spinner card while a large import writes, with no progress or waiting line | critique 2026-09-26 P3 (transfer) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

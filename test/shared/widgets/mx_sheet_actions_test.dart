@@ -46,6 +46,29 @@ void main() {
     );
   });
 
+  testWidgets(
+    'a loading confirm spins and cannot be pressed; Cancel stays live',
+    (tester) async {
+      var cancelled = 0;
+      await pumpMx(
+        tester,
+        _width(
+          MxSheetActions(
+            cancelLabel: 'Cancel',
+            onCancel: () => cancelled++,
+            confirmLabel: 'Preparing',
+            onConfirm: () {},
+            isConfirmLoading: true,
+          ),
+        ),
+      );
+
+      expect(tester.widget<MxButton>(_button('Preparing')).isLoading, isTrue);
+      await tester.tap(_button('Cancel'));
+      expect(cancelled, 1);
+    },
+  );
+
   testWidgets('a destructive confirm, with its glyph passed through', (
     tester,
   ) async {

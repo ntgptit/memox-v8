@@ -303,10 +303,11 @@ void main() {
       _en.libraryTrash,
       _en.deckStudyOptions,
       _en.comingSoonProgressSort,
-      _en.comingSoonTransfer,
     ]) {
       expect(find.text(feature), findsOneWidget, reason: feature);
     }
+    // Import and export shipped (FE-B3): neither waits here any more.
+    expect(find.text(_en.deckActionExport), findsNothing);
     // Study is live (FE-A6 D10); only Study options still waits.
     expect(
       find.descendant(

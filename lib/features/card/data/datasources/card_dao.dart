@@ -3,6 +3,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 
 /// Row access for `card`, plus the reads and writes of the owning `deck` row
 /// that card writes need. It returns Drift rows, never domain entities, and
@@ -32,6 +33,44 @@ final class CardDao {
   Future<List<Deck>> deckRows(Set<String> ids) => (_db.select(
     _db.deck,
   )..where((deck) => deck.id.isIn(ids) & deck.deleteBatchId.isNull())).get();
+
+  /// The folded faces of the live cards of [deckId] (BR-TRANSFER-003).
+  Future<Set<CardFoldedPair>> foldedPairs(String deckId) async {
+    final rows =
+        await (_db.select(_db.card)..where(
+              (card) =>
+                  card.deckId.equals(deckId) & card.deleteBatchId.isNull(),
+            ))
+            .get();
+    return {
+      for (final row in rows) (front: row.frontFolded, back: row.backFolded),
+    };
+  }
+
+  /// How many live cards [deckId] holds.
+  Future<int> liveCount(String deckId) {
+    final count = _db.card.id.count();
+    final query = _db.selectOnly(_db.card)
+      ..addColumns([count])
+      ..where(_db.card.deckId.equals(deckId) & _db.card.deleteBatchId.isNull());
+    return query.map((row) => row.read(count)!).getSingle();
+  }
+
+  /// The live cards of [deckId], or those among [ids], by `created_at`, then
+  /// `id` (BR-TRANSFER-010).
+  Future<List<CardRow>> exportRows(String deckId, Set<String>? ids) =>
+      (_db.select(_db.card)
+            ..where(
+              (card) =>
+                  card.deckId.equals(deckId) &
+                  card.deleteBatchId.isNull() &
+                  (ids == null ? const Constant(true) : card.id.isIn(ids)),
+            )
+            ..orderBy([
+              (card) => OrderingTerm.asc(card.createdAt),
+              (card) => OrderingTerm.asc(card.id),
+            ]))
+          .get();
 
   Future<void> insertCard({
     required String id,

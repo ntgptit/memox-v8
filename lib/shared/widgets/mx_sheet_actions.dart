@@ -17,6 +17,7 @@ class MxSheetActions extends StatelessWidget {
     this.confirmIcon,
     this.isDestructive = false,
     this.isInSheet = false,
+    this.isConfirmLoading = false,
   }) : children = const [];
 
   /// A custom footer (Trash restore / delete-forever, a single OK) in place
@@ -31,7 +32,8 @@ class MxSheetActions extends StatelessWidget {
        confirmLabel = null,
        onConfirm = null,
        confirmIcon = null,
-       isDestructive = false;
+       isDestructive = false,
+       isConfirmLoading = false;
 
   final String? cancelLabel;
   final VoidCallback? onCancel;
@@ -43,6 +45,10 @@ class MxSheetActions extends StatelessWidget {
 
   /// The destructive Button tone on the confirm.
   final bool isDestructive;
+
+  /// The confirm's work is running: it spins and cannot be pressed; Cancel
+  /// stays live.
+  final bool isConfirmLoading;
 
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of 16
   /// all round.
@@ -74,6 +80,7 @@ class MxSheetActions extends StatelessWidget {
                   label: confirmLabel!,
                   onPressed: onConfirm,
                   icon: confirmIcon,
+                  isLoading: isConfirmLoading,
                   tone: isDestructive
                       ? MxButtonTone.destructive
                       : MxButtonTone.primary,

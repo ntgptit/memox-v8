@@ -27,6 +27,9 @@ abstract final class AppRoutes {
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
+  /// A deck's card import (kit 11, IT-NAV-012), relative to [deckChild].
+  static const String cardImportChild = 'cards/import';
+
   /// The path parameter that names a card.
   static const String cardIdParam = 'cardId';
 
@@ -46,6 +49,10 @@ abstract final class AppRoutes {
 
   /// The card editor adding cards to [deckId].
   static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';
+
+  /// The card import into [deckId].
+  static String importCards(String deckId) =>
+      '${deck(deckId)}/$cardImportChild';
 
   /// A card's detail.
   static String card(String cardId) => '$decks/card/$cardId';
