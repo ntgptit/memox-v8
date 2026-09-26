@@ -30,7 +30,7 @@ void main() {
       'INSERT INTO card (id, deck_id, front, back, created_at, updated_at) '
       "VALUES ('c', 'leaf', 'f', 'b', 0, 0)",
     );
-    await schedules.initializeCard(cardId: 'c');
+    await schedules.initializeCards(deckId: 'leaf', cardIds: ['c']);
     await db.customStatement(
       'INSERT INTO study_session (id, deck_id, root_id, generation, '
       'session_kind, current_mode, status, cursor, card_limit, started_at) '

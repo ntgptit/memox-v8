@@ -10,6 +10,7 @@ import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 
@@ -60,6 +61,40 @@ CardListItem listItemOf(
   ),
   tags: [for (final tag in tags) TagEntity(id: tag.id, name: tag.name)],
 );
+
+/// The card list from its reads: the rows [shown], whether more follow, the
+/// filter counts of the query, every schedule row of the deck, and the tags
+/// of the rows shown.
+CardListView cardListViewOf({
+  required List<(CardRow, CardSchedule)> shown,
+  required bool hasMore,
+  required ({int all, int due, int newCards, int flagged}) counts,
+  required List<CardSchedule> schedules,
+  required Map<String, List<Tag>> tags,
+  required DateTime now,
+}) {
+  final startOfToday = startOfLocalDay(now);
+  return CardListView(
+    items: [
+      for (final (card, schedule) in shown)
+        listItemOf(
+          card,
+          schedule,
+          tags: tags[card.id] ?? const [],
+          startOfToday: startOfToday,
+        ),
+    ],
+    hasMore: hasMore,
+    counts: CardListCounts(
+      all: counts.all,
+      due: counts.due,
+      newCards: counts.newCards,
+      flagged: counts.flagged,
+    ),
+    statusCounts: statusCountsOf(schedules),
+    workload: workloadOf(schedules, startOfToday),
+  );
+}
 
 /// The display state of every schedule row, counted once each.
 CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
@@ -147,6 +182,23 @@ ReviewHistoryEntry historyEntryOf(ReviewLog row) {
     nextEaseFactor: row.nextEaseFactor,
     previousIntervalDays: row.previousIntervalDays,
     nextIntervalDays: row.nextIntervalDays,
+  );
+}
+
+/// A page of the history from [logs], read one row past the page: its
+/// entries, and the cursor after the last one when more follow.
+ReviewHistoryPage historyPageOf(List<ReviewLog> logs) {
+  final entries = [
+    for (final log in logs.take(ReviewHistoryPage.size)) historyEntryOf(log),
+  ];
+  return ReviewHistoryPage(
+    entries: entries,
+    next: logs.length > ReviewHistoryPage.size
+        ? ReviewHistoryCursor(
+            answeredAt: entries.last.answeredAt,
+            id: entries.last.id,
+          )
+        : null,
   );
 }
 

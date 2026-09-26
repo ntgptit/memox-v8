@@ -31,8 +31,10 @@ CardRejection _reason(Outcome<Object?, CardRejection> result) =>
 /// schedule row are written in one transaction (BR-CARD-004).
 final class _FailingScheduleRepository implements ScheduleRepository {
   @override
-  Future<void> initializeCard({required String cardId}) async =>
-      throw StateError('schedule row not written');
+  Future<void> initializeCards({
+    required String deckId,
+    required List<String> cardIds,
+  }) async => throw StateError('schedule row not written');
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

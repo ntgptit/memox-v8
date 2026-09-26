@@ -42,8 +42,10 @@ final class _FirstSwitchFails implements ScheduleRepository {
   }
 
   @override
-  Future<void> initializeCard({required String cardId}) =>
-      _real.initializeCard(cardId: cardId);
+  Future<void> initializeCards({
+    required String deckId,
+    required List<String> cardIds,
+  }) => _real.initializeCards(deckId: deckId, cardIds: cardIds);
 
   @override
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>

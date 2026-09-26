@@ -18,7 +18,6 @@ import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
-import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
@@ -49,30 +48,21 @@ final class CardRepositoryImpl implements CardRepository {
     required String deckId,
     required CardDraft draft,
     DateTime? now,
-  }) {
-    final at = now ?? _now();
-    return _write(() async {
-      if (draft.check() case Rejected(:final reason)) return Rejected(reason);
-      final deck = await _dao.deckRow(deckId);
-      if (deck == null) return const Rejected(CardRejection.notFound);
-      final contentType = DeckContentType.values.byName(deck.contentType);
-      final container = DeckEntity.checkCreateCard(
-        parentContentType: contentType,
-      );
-      if (container case Rejected()) {
-        return const Rejected(CardRejection.notACardContainer);
-      }
+  }) => _write(
+    () async => switch (await _create(deckId, [draft], now ?? _now())) {
+      Rejected(:final reason) => Rejected(reason),
+      Ok(value: final ids) => Ok(
+        cardEntityOf((await _dao.findRow(ids.single))!),
+      ),
+    },
+  );
 
-      final id = newId();
-      await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
-      await _schedules.initializeCard(cardId: id);
-      await _replaceTags(id, draft, at);
-      if (contentType == DeckContentType.unset) {
-        await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-      }
-      return Ok(cardEntityOf((await _dao.findRow(id))!));
-    });
-  }
+  @override
+  Future<Outcome<List<String>, CardRejection>> createCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    DateTime? now,
+  }) => _write(() => _create(deckId, drafts, now ?? _now()));
 
   @override
   Future<Outcome<void, CardRejection>> editCard({
@@ -263,37 +253,19 @@ final class CardRepositoryImpl implements CardRepository {
       limit: windowSize + 1,
       now: now,
     );
-    final counts = await _listDao.counts(
-      deckId: deckId,
-      searchTerm: query.searchTerm,
-      tagIds: query.tagIds,
-      now: now,
-    );
-    final schedules = await _listDao.activeSchedules(deckId);
     final shown = rows.take(windowSize).toList();
-    final tags = await _listDao.tagsOf([
-      for (final (card, _) in shown) card.id,
-    ]);
-    final startOfToday = startOfLocalDay(now);
-    return CardListView(
-      items: [
-        for (final (card, schedule) in shown)
-          listItemOf(
-            card,
-            schedule,
-            tags: tags[card.id] ?? const [],
-            startOfToday: startOfToday,
-          ),
-      ],
+    return cardListViewOf(
+      shown: shown,
       hasMore: rows.length > windowSize,
-      counts: CardListCounts(
-        all: counts.all,
-        due: counts.due,
-        newCards: counts.newCards,
-        flagged: counts.flagged,
+      counts: await _listDao.counts(
+        deckId: deckId,
+        searchTerm: query.searchTerm,
+        tagIds: query.tagIds,
+        now: now,
       ),
-      statusCounts: statusCountsOf(schedules),
-      workload: workloadOf(schedules, startOfToday),
+      schedules: await _listDao.activeSchedules(deckId),
+      tags: await _listDao.tagsOf([for (final (card, _) in shown) card.id]),
+      now: now,
     );
   }
 
@@ -322,22 +294,10 @@ final class CardRepositoryImpl implements CardRepository {
       limit: ReviewHistoryPage.size + 1,
     );
     if (rows.isEmpty) return null;
-    final logs = [
+    return historyPageOf([
       for (final row in rows)
         if (row.r case final ReviewLog log) log,
-    ];
-    final entries = [
-      for (final log in logs.take(ReviewHistoryPage.size)) historyEntryOf(log),
-    ];
-    return ReviewHistoryPage(
-      entries: entries,
-      next: logs.length > ReviewHistoryPage.size
-          ? ReviewHistoryCursor(
-              answeredAt: entries.last.answeredAt,
-              id: entries.last.id,
-            )
-          : null,
-    );
+    ]);
   });
 
   @override
@@ -366,6 +326,51 @@ final class CardRepositoryImpl implements CardRepository {
     final roots = await _dao.rootIdsOf(deckIds);
     if (roots.length != 1) return const [];
     return _moveTargetsOf(await _detailDao.restoreTargetRows(roots.single));
+  }
+
+  /// A card create for any number of drafts: every draft is checked, then
+  /// the deck; nothing is written before both pass. The ids ascend in the
+  /// drafts' order and the cards share [at], so `(created_at, id)` keeps
+  /// that order (transfer spec D11).
+  Future<Outcome<List<String>, CardRejection>> _create(
+    String deckId,
+    List<CardDraft> drafts,
+    DateTime at,
+  ) async {
+    for (final draft in drafts) {
+      if (draft.check() case Rejected(:final reason)) return Rejected(reason);
+    }
+    final deck = await _dao.deckRow(deckId);
+    if (deck == null) return const Rejected(CardRejection.notFound);
+    final contentType = DeckContentType.values.byName(deck.contentType);
+    final container = DeckEntity.checkCreateCard(
+      parentContentType: contentType,
+    );
+    if (container case Rejected()) {
+      return const Rejected(CardRejection.notACardContainer);
+    }
+    if (drafts.isEmpty) return const Ok([]);
+
+    final ids = [for (final _ in drafts) newId()]..sort();
+    for (final (index, draft) in drafts.indexed) {
+      await _dao.insertCard(
+        id: ids[index],
+        deckId: deckId,
+        draft: draft,
+        now: at,
+      );
+    }
+    await _schedules.initializeCards(deckId: deckId, cardIds: ids);
+    // A new card carries no tag yet, so a draft without tags has none to
+    // write: skipping it spares an import one savepoint and two reads a card.
+    for (final (index, draft) in drafts.indexed) {
+      if (draft.tagNames.isEmpty) continue;
+      await _replaceTags(ids[index], draft, at);
+    }
+    if (contentType == DeckContentType.unset) {
+      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
+    }
+    return Ok(ids);
   }
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a

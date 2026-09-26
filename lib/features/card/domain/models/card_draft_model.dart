@@ -1,6 +1,7 @@
 import 'package:characters/characters.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_field_model.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 
 /// What the add and edit forms submit (card `ui.md`): the content, the flag
@@ -61,22 +62,30 @@ final class CardDraft {
     return const Ok(null);
   }
 
-  /// The first failing field, in form order: front, back, example, hint,
-  /// pronunciation, tags.
-  Outcome<void, CardRejection> check() {
-    final checks = [
-      () => checkFront(front),
-      () => checkBack(back),
-      () => checkOptional(example),
-      () => checkOptional(hint),
-      () => checkOptional(pronunciation),
-      () => checkTagNames(tagNames),
-    ];
-    for (final check in checks) {
-      final result = check();
-      if (result case Rejected()) return result;
+  /// The reason of [firstFailure], or `Ok` when every field passes.
+  Outcome<void, CardRejection> check() => switch (firstFailure()) {
+    null => const Ok(null),
+    (field: _, :final reason) => Rejected(reason),
+  };
+
+  /// The first failing field and its reason, in form order: front, back,
+  /// example, hint, pronunciation, tags. Import names it at the row it
+  /// refuses (BR-TRANSFER-002); null when the draft passes.
+  ({CardField field, CardRejection reason})? firstFailure() {
+    final checks = {
+      CardField.front: () => checkFront(front),
+      CardField.back: () => checkBack(back),
+      CardField.example: () => checkOptional(example),
+      CardField.hint: () => checkOptional(hint),
+      CardField.pronunciation: () => checkOptional(pronunciation),
+      CardField.tags: () => checkTagNames(tagNames),
+    };
+    for (final MapEntry(key: field, value: check) in checks.entries) {
+      if (check() case Rejected(:final reason)) {
+        return (field: field, reason: reason);
+      }
     }
-    return const Ok(null);
+    return null;
   }
 
   static Outcome<void, CardRejection> _checkSide(

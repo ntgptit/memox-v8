@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_field_model.dart';
 
 CardRejection? _reasonOf(Outcome<void, CardRejection> result) =>
     switch (result) {
@@ -115,5 +116,54 @@ void main() {
         );
       },
     );
+  });
+
+  group('firstFailure (BR-TRANSFER-002)', () {
+    test('a valid draft has none', () {
+      const draft = CardDraft(front: 'f', back: 'b', tagNames: ['noun']);
+      expect(draft.firstFailure(), isNull);
+    });
+    test('it names the first failing field and its reason, in form order', () {
+      expect(const CardDraft(front: ' ', back: '').firstFailure(), (
+        field: CardField.front,
+        reason: CardRejection.blankContent,
+      ));
+      expect(const CardDraft(front: 'f', back: '').firstFailure(), (
+        field: CardField.back,
+        reason: CardRejection.blankContent,
+      ));
+      expect(CardDraft(front: 'f' * 61, back: '').firstFailure(), (
+        field: CardField.front,
+        reason: CardRejection.frontTooLong,
+      ));
+      expect(
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          example: 'e' * 241,
+          hint: 'h' * 241,
+        ).firstFailure(),
+        (field: CardField.example, reason: CardRejection.optionalFieldTooLong),
+      );
+      expect(CardDraft(front: 'f', back: 'b', hint: 'h' * 241).firstFailure(), (
+        field: CardField.hint,
+        reason: CardRejection.optionalFieldTooLong,
+      ));
+      expect(
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          pronunciation: 'p' * 241,
+        ).firstFailure(),
+        (
+          field: CardField.pronunciation,
+          reason: CardRejection.optionalFieldTooLong,
+        ),
+      );
+      expect(
+        const CardDraft(front: 'f', back: 'b', tagNames: ['  ']).firstFailure(),
+        (field: CardField.tags, reason: CardRejection.invalidTagName),
+      );
+    });
   });
 }

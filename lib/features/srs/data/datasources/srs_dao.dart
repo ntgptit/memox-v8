@@ -48,6 +48,21 @@ final class SrsDao {
     return row == null ? null : _db.deck.map(row.data);
   }
 
+  /// The root of [deckId]'s tree, reached through `deck.root_id`
+  /// (BR-DECK-003); null when the deck or its root is in the Trash.
+  Future<Deck?> rootOfDeck(String deckId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT root.* FROM deck d JOIN deck root ON root.id = d.root_id'
+          ' WHERE d.id = ? AND d.delete_batch_id IS NULL'
+          ' AND root.delete_batch_id IS NULL',
+          variables: [Variable<String>(deckId)],
+          readsFrom: {_db.deck},
+        )
+        .getSingleOrNull();
+    return row == null ? null : _db.deck.map(row.data);
+  }
+
   /// The deck [id] names with what a reset of its tree would clear, in one
   /// statement; null when it does not exist or is in the Trash. The counts
   /// leave the Trash out, as the deck list does (UC-DECK-003).

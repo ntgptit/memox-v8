@@ -19,22 +19,44 @@ void main() {
   });
   tearDown(() => db.close());
 
-  test('initializeCard writes the start values of the root scheduler at the root generation (BR-CARD-004)', () async {
+  test('initializeCards writes the start values of the root scheduler at the root generation, for every card (BR-CARD-004)', () async {
     await insertStudyTree(db, 'r', scheduler: 'sm2');
     await db.customStatement("UPDATE deck SET generation = 3 WHERE id = 'r'");
     await insertBareCard(db, 'new', 'r-leaf');
+    await insertBareCard(db, 'next', 'r-leaf');
 
-    await repo.initializeCard(cardId: 'new');
+    await repo.initializeCards(deckId: 'r-leaf', cardIds: ['new', 'next']);
 
-    expectStartValues(
-      await scheduleRowOf(db, 'new'),
-      scheduler: 'sm2',
-      generation: 3,
-    );
+    for (final cardId in ['new', 'next']) {
+      expectStartValues(
+        await scheduleRowOf(db, cardId),
+        scheduler: 'sm2',
+        generation: 3,
+      );
+    }
   });
 
-  test('initializeCard of a missing card throws', () async {
-    await expectLater(repo.initializeCard(cardId: 'missing'), throwsStateError);
+  test('initializeCards reads the root once, whatever the number of cards (BR-TRANSFER-004)', () async {
+    final counter = SelectCounter();
+    final counted = openTestDatabase(interceptor: counter);
+    addTearDown(counted.close);
+    await insertStudyTree(counted, 'r');
+    for (final cardId in ['n1', 'n2', 'n3']) {
+      await insertBareCard(counted, cardId, 'r-leaf');
+    }
+    counter.selects = 0;
+
+    await ScheduleRepositoryImpl(counted)
+        .initializeCards(deckId: 'r-leaf', cardIds: ['n1', 'n2', 'n3']);
+
+    expect(counter.selects, 1);
+  });
+
+  test('initializeCards for a deck that is gone throws', () async {
+    await expectLater(
+      repo.initializeCards(deckId: 'missing', cardIds: ['x']),
+      throwsStateError,
+    );
   });
 
   test('resetLearning bumps generation and recreates card_schedule', () async {

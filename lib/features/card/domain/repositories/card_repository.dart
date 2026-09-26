@@ -24,6 +24,20 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
+  /// UC-TRANSFER-001 step 7: [drafts] become cards of [deckId] as
+  /// [createCard] makes one. Every draft is checked, then the deck, even for
+  /// an empty list; then each card is written with its schedule row and its
+  /// tags, and an `unset` deck becomes a deck of cards when a card is written
+  /// (BR-TRANSFER-004, BR-TRANSFER-005). The cards share one `created_at`
+  /// and their ids ascend in the order of [drafts], so `(created_at, id)`
+  /// keeps that order (transfer spec D11). Answers the ids in that order and
+  /// joins the caller's transaction.
+  Future<Outcome<List<String>, CardRejection>> createCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    DateTime? now,
+  });
+
   /// UC-CARD-001 A1: new content, flag and tags; the schedule row and the
   /// review log stay as they are (BR-CARD-005).
   Future<Outcome<void, CardRejection>> editCard({

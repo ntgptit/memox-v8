@@ -35,23 +35,22 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   /// Not mapped to a [Failure]: the contract's [StateError] must reach the
   /// caller, whose own transaction maps what leaves it.
   @override
-  Future<void> initializeCard({required String cardId}) =>
-      _db.transaction(() async {
-        final root = await _dao.rootOfCard(cardId);
-        if (root == null) throw StateError('card $cardId does not exist');
-        final type = SchedulerType.fromCode(root.schedulerType!);
-        final state = CardScheduleState.initial(
-          type,
-          generation: root.generation!,
-        );
-        await _dao.insertSchedule(
-          _columnsOf(
-            state,
-            type: type,
-            version: root.schedulerVersion!,
-          ).copyWith(cardId: Value(cardId)),
-        );
-      });
+  Future<void> initializeCards({
+    required String deckId,
+    required List<String> cardIds,
+  }) => _db.transaction(() async {
+    final root = await _dao.rootOfDeck(deckId);
+    if (root == null) throw StateError('deck $deckId has no active root');
+    final type = SchedulerType.fromCode(root.schedulerType!);
+    final start = _columnsOf(
+      CardScheduleState.initial(type, generation: root.generation!),
+      type: type,
+      version: root.schedulerVersion!,
+    );
+    for (final cardId in cardIds) {
+      await _dao.insertSchedule(start.copyWith(cardId: Value(cardId)));
+    }
+  });
 
   @override
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>

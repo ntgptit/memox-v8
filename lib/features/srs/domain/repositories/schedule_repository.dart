@@ -8,12 +8,16 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 /// contract exists for ADR-010's reason: domain stays framework-free and tests
 /// substitute a fake.
 abstract interface class ScheduleRepository {
-  /// Writes the schedule row of a card just created (BR-CARD-004): the start
-  /// values of its root's scheduler, at the root's generation. Joins the
-  /// caller's transaction. Throws [StateError] when the card does not exist:
-  /// the caller inserts the card first, in that same transaction, so a
-  /// missing card is a bug, not a business outcome.
-  Future<void> initializeCard({required String cardId});
+  /// Writes the schedule rows of [cardIds], cards just created in [deckId]
+  /// (BR-CARD-004): the start values of the root's scheduler, at the root's
+  /// generation, both read once for every card (BR-TRANSFER-004). Joins the
+  /// caller's transaction. Throws [StateError] when the deck or its root is
+  /// gone: the caller checked the deck in that same transaction, so that is
+  /// a bug, not a business outcome.
+  Future<void> initializeCards({
+    required String deckId,
+    required List<String> cardIds,
+  });
 
   /// Records one answer of a study session (BR-SRS-019). Only a `scheduled`
   /// turn changes the schedule; `learning` and `relearning` turns stamp
