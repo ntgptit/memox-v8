@@ -318,7 +318,7 @@ void main() {
       deckScreen(onSearch: () => searches++),
     );
 
-    await tester.tap(find.text(_en.deckSearchHint));
+    await tester.tap(find.text(_en.searchFieldHint));
     expect(searches, 1);
   });
 
