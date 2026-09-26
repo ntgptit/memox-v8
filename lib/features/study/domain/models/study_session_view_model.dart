@@ -21,6 +21,7 @@ final class StudySessionView {
     required this.progress,
     required this.summary,
     this.board,
+    this.trail = const [],
   });
 
   final String sessionId;
@@ -56,6 +57,11 @@ final class StudySessionView {
   /// null in every other mode (BR-STUDY-049).
   final MatchBoard? board;
 
+  /// `browse`: the cards of the round already shown, oldest first, for
+  /// looking back (BR-STUDY-048); empty in every other mode and once the
+  /// session has ended.
+  final List<TrailCard> trail;
+
   int get currentStageIndex => stages.indexOf(currentMode);
 
   /// The round the session serves in its current stage.
@@ -65,6 +71,24 @@ final class StudySessionView {
   /// deleted. Continue settles it (spec D12).
   bool get isStalled =>
       status == SessionStatus.inProgress && currentItem == null;
+}
+
+/// A card Browse already showed in this round, for looking back
+/// (BR-STUDY-048): what the card face draws.
+final class TrailCard {
+  const TrailCard({
+    required this.cardId,
+    required this.front,
+    required this.back,
+    required this.pronunciation,
+    required this.example,
+  });
+
+  final String cardId;
+  final String front;
+  final String back;
+  final String? pronunciation;
+  final String? example;
 }
 
 /// The card a session serves, with its queue row (spec §8.2).

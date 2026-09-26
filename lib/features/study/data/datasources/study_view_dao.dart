@@ -38,6 +38,15 @@ typedef BoardPairRecord = ({
   int? meaningSlot,
 });
 
+/// A card Browse showed in a round: its faces for looking back.
+typedef TrailRecord = ({
+  String cardId,
+  String front,
+  String back,
+  String? pronunciation,
+  String? example,
+});
+
 /// The sessions Continue and Resume may take up (BR-STUDY-075), over
 /// `study_session s`, its deck `d` and its root `r`: open, started on or after
 /// the one variable, the start of today, at the root's generation, out of the
@@ -279,6 +288,42 @@ final class StudyViewDao {
           back: row.read<String>('back'),
           isCompleted: row.read<String>('status') == 'completed',
           meaningSlot: row.read<int?>('meaning_slot'),
+        ),
+    ];
+  }
+
+  /// The completed rows of [round] of [mode], in the order served
+  /// (BR-STUDY-048: the trail keeps that order). A card in the Trash is
+  /// left out (BR-TRASH-002).
+  Future<List<TrailRecord>> trail(
+    String sessionId,
+    String mode,
+    int round,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT c.id, c.front, c.back, c.pronunciation, c.example'
+          ' FROM study_queue_items q JOIN card c ON c.id = q.card_id'
+          ' AND c.delete_batch_id IS NULL'
+          ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
+          " AND q.status = 'completed' AND q.position >= 0"
+          ' ORDER BY q.position',
+          variables: [
+            Variable<String>(sessionId),
+            Variable<String>(mode),
+            Variable<int>(round),
+          ],
+          readsFrom: {_db.studyQueueItems, _db.card},
+        )
+        .get();
+    return [
+      for (final row in rows)
+        (
+          cardId: row.read<String>('id'),
+          front: row.read<String>('front'),
+          back: row.read<String>('back'),
+          pronunciation: row.read<String?>('pronunciation'),
+          example: row.read<String?>('example'),
         ),
     ];
   }
