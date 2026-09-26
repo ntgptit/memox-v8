@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
-/// term across the whole product.
+/// term across the whole product, and an optional muted "N scheduled".
 /// - A term at zero drops out together with its separator.
 /// - The order is urgency first, and it never changes.
 /// - When nothing is due, [fallback] is the whole line.
@@ -19,8 +19,14 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     required this.newLabel,
     required this.fallback,
     this.suffix,
+    this.scheduledCount = 0,
+    this.scheduledLabel,
+    this.canWrap = false,
   }) : assert(
-         overdueCount >= 0 && todayCount >= 0 && newCount >= 0,
+         overdueCount >= 0 &&
+             todayCount >= 0 &&
+             newCount >= 0 &&
+             scheduledCount >= 0,
          'counts are never negative',
        );
 
@@ -40,6 +46,16 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   /// A trailing clause ("across 4 decks"), after a space.
   final String? suffix;
 
+  /// Learned cards resting until they fall due (BR-STUDY-068): a fourth,
+  /// muted term after New, drawn only with [scheduledLabel]. It is the
+  /// schedule running, so it takes no warning ink and no headline.
+  final int scheduledCount;
+  final String Function(int count)? scheduledLabel;
+
+  /// A row keeps one line and ellipsizes (S12, row 102); a hero statement
+  /// wraps so its suffix is never cut (kit Study Home hero).
+  final bool canWrap;
+
   static const String _separator = ' · ';
   static const String _space = ' ';
 
@@ -50,6 +66,8 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
       (overdueCount, overdueLabel, context.derivedColors.warningInk),
       (todayCount, todayLabel, context.colors.primary),
       (newCount, newLabel, context.derivedColors.statusNewInk),
+      if (scheduledLabel case final label?)
+        (scheduledCount, label, context.colors.onSurfaceVariant),
     ].where((term) => term.$1 > 0).toList();
     return Text.rich(
       TextSpan(
@@ -66,9 +84,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
           ],
         ],
       ),
-      maxLines: 1,
-      softWrap: false,
-      overflow: TextOverflow.ellipsis,
+      maxLines: canWrap ? null : 1,
+      softWrap: canWrap,
+      overflow: canWrap ? TextOverflow.visible : TextOverflow.ellipsis,
     );
   }
 }

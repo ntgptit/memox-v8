@@ -5,6 +5,8 @@ import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:flutter/rendering.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
@@ -146,5 +148,33 @@ void main() {
       findsOneWidget,
     );
     handle.dispose();
+  });
+
+  libraryTest('a long meta line wraps to two lines instead of ellipsizing', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+
+    final meta = find.textContaining('3 cards');
+    expect(tester.widget<Text>(meta).maxLines, 2);
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.descendant(of: meta, matching: find.byType(RichText)),
+    );
+    expect(paragraph.didExceedMaxLines, isFalse);
+  });
+
+  libraryTest('an entry that expires within three days shows a warning pill; '
+      'the others keep plain text', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+
+    final pill = tester.widget<MxBadge>(
+      find.widgetWithText(MxBadge, _en.trashDaysLeft(2)),
+    );
+    expect(pill.tone, MxBadgeTone.warning);
+    expect(find.widgetWithText(MxBadge, _en.trashDaysLeft(30)), findsNothing);
+    expect(find.text(_en.trashDaysLeft(30)), findsOneWidget);
   });
 }

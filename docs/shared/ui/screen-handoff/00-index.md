@@ -45,7 +45,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
-| 13 | Study home | 7 | FE-A8 | not built | [13-study-home.md](13-study-home.md) |
+| 13 | Study home | 7 | FE-A8 | built (P6) | [13-study-home.md](13-study-home.md) |
 | 14 | Study entry | 9 | FE-A6, FE-A7 | aligned | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | not built | — |
 | 16 | Study · Browse | 1 | FE-A6 | aligned | [16-study-browse.md](16-study-browse.md) |

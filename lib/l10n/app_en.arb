@@ -1653,15 +1653,11 @@
   "@trashSelectionClose": {
     "description": "Screen 06: the close control while selecting."
   },
-  "trashCardsOnly": "Only cards are selectable while cards are selected — a selection never mixes cards and decks.",
-  "@trashCardsOnly": {
-    "description": "Screen 06: why decks cannot be picked (BR-TRASH-011)."
+  "trashKindLock": "Cards and decks can't be selected together.",
+  "@trashKindLock": {
+    "description": "Screen 06: one line under the list while selecting, why the other kind is dimmed (BR-TRASH-011)."
   },
-  "trashDecksOnly": "Only decks are selectable while decks are selected — a selection never mixes cards and decks.",
-  "@trashDecksOnly": {
-    "description": "Screen 06: why cards cannot be picked (BR-TRASH-011)."
-  },
-  "trashRestoreSelected": "Restore {count}…",
+  "trashRestoreSelected": "Restore ({count})",
   "@trashRestoreSelected": {
     "placeholders": {
       "count": {
@@ -1670,9 +1666,14 @@
     },
     "description": "Screen 06 selection bar: restores the selection after asking for a target."
   },
-  "trashPurgeSelected": "Delete for good",
+  "trashPurgeSelected": "Delete ({count})",
   "@trashPurgeSelected": {
-    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010)."
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010); the destructive tone and the dialog say it is permanent."
   },
   "trashPurgeCardsTitle": "{count, plural, =1{Delete 1 card permanently?} other{Delete {count} cards permanently?}}",
   "@trashPurgeCardsTitle": {
@@ -4515,6 +4516,119 @@
       }
     },
     "description": "Screen handoff 20 (FE-A6 P4): announced when a wrong answer commits."
+  },
+  "studyHomeTitle": "Study",
+  "@studyHomeTitle": {
+    "description": "Screen handoff 13 (FE-A8): the app bar title."
+  },
+  "studyHomeResumeOverline": "Continue studying",
+  "@studyHomeResumeOverline": {
+    "description": "Screen handoff 13 (FE-A8): the Resume card's overline."
+  },
+  "studyHomeResume": "Resume",
+  "@studyHomeResume": {
+    "description": "Screen handoff 13 (FE-A8): takes the session up (UC-STUDY-002)."
+  },
+  "studyHomeResumeRefused": "This session can't be continued any more",
+  "@studyHomeResumeRefused": {
+    "description": "Screen handoff 13 (FE-A8): toast when Resume is refused (H3)."
+  },
+  "studyHomeWaiting": "Waiting for you",
+  "@studyHomeWaiting": {
+    "description": "Screen handoff 13 (FE-A8): the workload hero's overline."
+  },
+  "studyHomeDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
+  "@studyHomeDueTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 13 (FE-A8): the hero's headline: Overdue and Due today (BR-STUDY-068)."
+  },
+  "studyHomeAcrossDecks": "{count, plural, =1{across 1 deck} other{across {count} decks}}",
+  "@studyHomeAcrossDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 13 (FE-A8): the hero breakdown's suffix."
+  },
+  "workloadScheduled": "{count} scheduled",
+  "@workloadScheduled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 13 (FE-A8): the muted fourth workload term (BR-STUDY-068)."
+  },
+  "studyHomeCaughtUpTitle": "Nothing due right now",
+  "@studyHomeCaughtUpTitle": {
+    "description": "Screen handoff 13 (FE-A8): the caught-up card's title (BR-STUDY-008)."
+  },
+  "studyHomeCaughtUpTomorrow": "Every card is resting. The next one becomes due tomorrow.",
+  "@studyHomeCaughtUpTomorrow": {
+    "description": "Screen handoff 13 (FE-A8): caught up, next card due on the next local day (S2)."
+  },
+  "studyHomeCaughtUpOn": "Every card is resting. The next one becomes due on {date}.",
+  "@studyHomeCaughtUpOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 13 (FE-A8): caught up, next card due on a later day (S2)."
+  },
+  "studyHomeCaughtUpResting": "Every card is resting.",
+  "@studyHomeCaughtUpResting": {
+    "description": "Screen handoff 13 (FE-A8): caught up with no next due date (S2)."
+  },
+  "studyHomeDecks": "Your decks",
+  "@studyHomeDecks": {
+    "description": "Screen handoff 13 (FE-A8): the deck list's section header."
+  },
+  "studyHomeLibrary": "Library",
+  "@studyHomeLibrary": {
+    "description": "Screen handoff 13 (FE-A8): opens the Library root."
+  },
+  "studyHomeRowDue": "{count} due",
+  "@studyHomeRowDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 13 (FE-A8): a deck row's badge."
+  },
+  "studyHomeNoDecksTitle": "Nothing to study yet",
+  "@studyHomeNoDecksTitle": {
+    "description": "Screen handoff 13 (FE-A8): no root deck."
+  },
+  "studyHomeNoDecksBody": "Your library is empty. Create a deck in Library to get started.",
+  "@studyHomeNoDecksBody": {
+    "description": "Screen handoff 13 (FE-A8): no root deck; the starter line is dropped (H1)."
+  },
+  "studyHomeNoCardsTitle": "Your decks have no cards yet",
+  "@studyHomeNoCardsTitle": {
+    "description": "Screen handoff 13 (FE-A8): root decks with no card."
+  },
+  "studyHomeNoCardsBody": "Add cards to a sub-deck, or import them from a file, and they will show up here.",
+  "@studyHomeNoCardsBody": {
+    "description": "Screen handoff 13 (FE-A8): root decks with no card."
+  },
+  "studyHomeGoToLibrary": "Go to Library",
+  "@studyHomeGoToLibrary": {
+    "description": "Screen handoff 13 (FE-A8): the empty states' action."
+  },
+  "studyHomeErrorTitle": "Couldn't load your study overview",
+  "@studyHomeErrorTitle": {
+    "description": "Screen handoff 13 (FE-A8): the read failed."
+  },
+  "studyHomeErrorBody": "Your cards are safe on this device. You can still open Library directly.",
+  "@studyHomeErrorBody": {
+    "description": "Screen handoff 13 (FE-A8): the read failed."
   },
   "summaryAppBar": "Session summary",
   "@summaryAppBar": {

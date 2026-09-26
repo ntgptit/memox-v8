@@ -193,8 +193,11 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     final kind = state.kindIn(entries);
     return [
       const SizedBox(height: AppSpacing.control),
-      MxNote(icon: AppIcons.history, text: l10n.trashNote),
-      const SizedBox(height: AppSpacing.grouped),
+      // Read before selecting; the selection gives the list the room.
+      if (!state.isSelecting) ...[
+        MxNote(icon: AppIcons.history, text: l10n.trashNote),
+        const SizedBox(height: AppSpacing.grouped),
+      ],
       if (!state.isSelecting)
         _Filters(
           selected: state.filter,
@@ -223,12 +226,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
               : () => _trash().toggle(entry, entries),
           onActions: () => unawaited(_openActions(entry)),
         ),
-      if (kind != null)
-        MxNote(
-          text: kind == TrashKind.card
-              ? l10n.trashCardsOnly
-              : l10n.trashDecksOnly,
-        ),
+      if (kind != null) MxNote(text: l10n.trashKindLock),
       for (final note in _blockedNotes(l10n, state, entries))
         Padding(
           padding: const EdgeInsets.only(top: AppSpacing.control),
