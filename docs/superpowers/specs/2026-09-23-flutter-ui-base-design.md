@@ -522,6 +522,11 @@ item names where it comes from.
 | 117 | A selecting row's checkbox is centred vertically on the row (kit: top-aligned with the title) | owner 2026-09-26, D4 |
 | 118 | A footer pair stacks full width when a label cannot fit its share on one line (kit: always side by side, labels wrap) | owner 2026-09-26, D3 |
 | 119 | The deck summary's progress label keeps the 12 overline (`compactOverline`), onSurface, so it stays on one line on a 360 phone; every other overline is 13 (row 116) | owner 2026-09-26 |
+| 120 | Screen 23's Theme is a row naming the choice ("Follows the system setting", "Light", "Dark") that opens screen 25, not the kit's inline System · Light · Dark tray | FE-A3 D2 |
+| 121 | Screen 23 loads as `MxSkeletonList`, not skeleton sub-lines and controls inside its sections; a failed read shows `MxErrorState` with Retry, which the kit does not draw (UC-SETTINGS-001 E3). Screens 25 and 26 do the same | FE-A3 plan 1 |
+| 122 | `MxStepper` goes beyond the kit's −/+ by one: holding −/+ repeats (400 ms, then every 80 ms) and a tap on the number types one (FE-A3 D6). The number's box stays 36 tall, its tap target 48 | FE-A3 plan 1 |
+| 123 | `MxSegmentedTray` stacks its options, one per line, when their labels do not fit on one (large text, long Vietnamese labels); the kit draws one line only | FE-A3 plan 1 (visual audit) |
+| 124 | Beside a wide control, `MxSettingsRow`'s tile sits at the top with the label, as kit 23 draws it, not centred on the row | FE-A3 plan 1 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

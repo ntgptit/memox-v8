@@ -3,7 +3,7 @@ id: UC-SETTINGS-001
 title: Đặt tuỳ chọn ứng dụng
 status: ready
 rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-SETTINGS-005, BR-SETTINGS-006, BR-SETTINGS-007, BR-SETTINGS-008, BR-SRS-022, BR-STUDY-003, BR-STUDY-024, BR-STUDY-035, BR-STUDY-056, BR-STUDY-057]
-code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, lib/features/settings/domain/usecases/save_study_defaults_use_case.dart, lib/features/settings/domain/usecases/set_theme_use_case.dart, lib/features/settings/domain/usecases/set_language_use_case.dart, lib/features/settings/domain/usecases/reset_app_settings_use_case.dart, lib/features/settings/domain/usecases/watch_study_options_use_case.dart, lib/features/settings/domain/usecases/save_root_study_options_use_case.dart, lib/features/settings/domain/usecases/use_app_defaults_use_case.dart]
+code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, lib/features/settings/domain/usecases/save_study_defaults_use_case.dart, lib/features/settings/domain/usecases/set_theme_use_case.dart, lib/features/settings/domain/usecases/set_language_use_case.dart, lib/features/settings/domain/usecases/reset_app_settings_use_case.dart, lib/features/settings/domain/usecases/watch_study_options_use_case.dart, lib/features/settings/domain/usecases/save_root_study_options_use_case.dart, lib/features/settings/domain/usecases/use_app_defaults_use_case.dart, lib/features/settings/presentation/screens/settings_screen.dart, lib/features/settings/presentation/screens/theme_screen.dart, lib/features/settings/presentation/screens/language_screen.dart, lib/features/settings/presentation/controllers/settings_controller.dart, lib/app/startup_settings.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
@@ -18,9 +18,13 @@ code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l
 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và
    hiển thị ba nhóm: `Study defaults`, `Appearance`, `Language` — mỗi control
    hiển thị **giá trị đang có hiệu lực**, không phải placeholder (BR-SETTINGS-001).
-2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới, rồi bấm lưu nhóm
-   `Study defaults`. Hệ thống validate trần thẻ bằng đúng ràng buộc của tùy chọn
-   deck (BR-SETTINGS-002), ghi một transaction, và stream đẩy giá trị mới ra mọi surface.
+2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: mỗi
+   thay đổi đã dừng là một submit (trần thẻ dừng 600 ms sau bước cuối, kể cả khi giữ
+   −/+; số gõ vào và thứ tự thẻ mới lưu ngay). Hệ thống validate trần thẻ bằng đúng
+   ràng buộc của tùy chọn deck (BR-SETTINGS-002), ghi một transaction, và stream đẩy
+   giá trị mới ra mọi surface. (Sửa ngày 2026-09-26 theo quyết định D1 của
+   [spec FE-A3](../../../superpowers/specs/2026-09-26-settings-ui-design.md), chủ dự án
+   duyệt.)
 3. Hệ thống nói rõ tại chỗ rằng mặc định mới áp cho **phiên tạo sau đó**; phiên
    đang chạy giữ nguyên trần đã chốt (BR-SETTINGS-004).
 4. Người dùng chọn theme trong `System` / `Light` / `Dark`. Lựa chọn là một

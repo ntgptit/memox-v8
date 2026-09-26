@@ -60,7 +60,7 @@
 
 ## [features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md](../features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md)
 
-- L85: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L89: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/srs/usecases/UC-SRS-001-reset-learning-progress.md](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md)
 
