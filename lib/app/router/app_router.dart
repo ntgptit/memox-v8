@@ -19,6 +19,8 @@ import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart'
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
+import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -146,6 +148,9 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onAddCard: addCard,
     onImportCards: (id) => unawaited(context.push(AppRoutes.importCards(id))),
+    onExportCards: (deck) => unawaited(
+      showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
+    ),
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
     cardBreadcrumb: (id, child) =>
@@ -155,6 +160,12 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       algorithm: context.l10n.cardScheduler(view.schedulerType),
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
+      onExport: (ids) => unawaited(
+        showCardExportSheet(
+          context,
+          CardExportScope.selection(deckId: view.deck.id, ids: ids),
+        ),
+      ),
     ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );

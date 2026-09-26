@@ -14,6 +14,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_deck_brea
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
@@ -182,6 +183,7 @@ DeckLevelScreen deckScreen({
   VoidCallback? onSearch,
   ValueChanged<String>? onOpenAlgorithm,
   ValueChanged<String>? onImportCards,
+  ValueChanged<DeckEntity>? onExportCards,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
@@ -190,6 +192,7 @@ DeckLevelScreen deckScreen({
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
+  onExportCards: onExportCards ?? (_) {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
@@ -211,6 +214,7 @@ DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
+    onExport: (_) {},
   ),
   cardAppBar: (view, back, actions) =>
       CardDeckAppBarWidget(view: view, back: back, deckActions: actions),

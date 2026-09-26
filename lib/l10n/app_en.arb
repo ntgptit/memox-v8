@@ -1751,14 +1751,6 @@
   "@comingSoonProgressSortBody": {
     "description": "Coming soon: what the progress sort does."
   },
-  "comingSoonTransfer": "Export cards",
-  "@comingSoonTransfer": {
-    "description": "Coming soon: the export feature's name (import shipped, FE-B3)."
-  },
-  "comingSoonTransferBody": "Cards to a file, for a spreadsheet or another app.",
-  "@comingSoonTransferBody": {
-    "description": "Coming soon: what export does."
-  },
   "cardDeckProgress": "Deck progress · {algorithm}",
   "@cardDeckProgress": {
     "placeholders": {
@@ -3093,5 +3085,13 @@
   "exportEmptyBody": "This deck has no cards. Add or import cards first.",
   "@exportEmptyBody": {
     "description": "Export banner body for E5."
+  },
+  "deckActionExport": "Export cards",
+  "@deckActionExport": {
+    "description": "Deck action sheet: opens the export sheet over the whole deck (UC-TRANSFER-002)."
+  },
+  "cardExport": "Export",
+  "@cardExport": {
+    "description": "Bulk bar: export the selected cards (UC-TRANSFER-002 A1)."
   }
 }

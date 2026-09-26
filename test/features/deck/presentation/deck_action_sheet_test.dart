@@ -105,6 +105,42 @@ void main() {
     },
   );
 
+  libraryTest(
+    'only a deck of cards offers Export (UC-TRANSFER-002 E5, ruling E5)',
+    (tester, env) async {
+      final korean = await env.decks.root('Korean');
+      final words = await env.decks.sub(korean.id, 'Words');
+      final empty = await env.decks.sub(korean.id, 'Empty');
+      await insertCard(env.db, id: 'c1', deckId: words.id, front: 'mul');
+      final exported = <String>[];
+
+      for (final (deckId, isOffered) in [
+        (korean.id, false),
+        (empty.id, false),
+        (words.id, true),
+      ]) {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          deckScreen(
+            deckId: deckId,
+            onExportCards: (deck) => exported.add(deck.name),
+          ),
+        );
+        await _openSheet(tester);
+        expect(
+          find.text(_en.deckActionExport),
+          isOffered ? findsOneWidget : findsNothing,
+        );
+        await tester.tapAt(Offset.zero);
+        await tester.pumpAndSettle();
+      }
+
+      await _choose(tester, _en.deckActionExport);
+      expect(exported, ['Words']);
+    },
+  );
+
   libraryTest('Rename renames the open deck', (tester, env) async {
     final korean = await env.decks.root('Korean');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));

@@ -349,8 +349,6 @@
   "comingSoonStudyOptionsBody": "Số thẻ mỗi phiên, thứ tự thẻ mới.",
   "comingSoonProgressSort": "Sắp xếp theo độ thuộc",
   "comingSoonProgressSortBody": "Bộ thẻ thuộc ít nhất lên trước.",
-  "comingSoonTransfer": "Xuất thẻ",
-  "comingSoonTransferBody": "Thẻ ra tệp, cho bảng tính hoặc ứng dụng khác.",
   "cardDeckProgress": "Tiến độ bộ thẻ · {algorithm}",
   "cardMasteredOf": "{mastered}/{total} thẻ đã thuộc",
   "cardShowingOf": "Đang hiện {shown}/{total}",
@@ -623,5 +621,7 @@
   "exportStaleTitle": "Một thẻ đã chọn không còn trong bộ thẻ này",
   "exportStaleBody": "Thẻ đó vừa bị chuyển hoặc xoá. Chưa xuất gì. Hãy chọn lại rồi xuất lần nữa.",
   "exportEmptyTitle": "Không có gì để xuất",
-  "exportEmptyBody": "Bộ thẻ này chưa có thẻ. Hãy thêm hoặc nhập thẻ trước."
+  "exportEmptyBody": "Bộ thẻ này chưa có thẻ. Hãy thêm hoặc nhập thẻ trước.",
+  "deckActionExport": "Xuất thẻ",
+  "cardExport": "Xuất"
 }

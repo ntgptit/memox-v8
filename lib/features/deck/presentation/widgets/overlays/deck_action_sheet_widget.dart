@@ -15,6 +15,7 @@ enum DeckAction {
   move,
   reviewAlgorithm,
   importCards,
+  exportCards,
   reorder,
   delete,
 }
@@ -28,6 +29,7 @@ Future<DeckAction?> showDeckActionSheet(
   required bool canReorder,
   required bool hasOpen,
   bool canImport = false,
+  bool canExport = false,
 }) => showMxBottomSheet<DeckAction>(
   context,
   builder: (_) => DeckActionSheetWidget(
@@ -35,6 +37,7 @@ Future<DeckAction?> showDeckActionSheet(
     canReorder: canReorder,
     hasOpen: hasOpen,
     canImport: canImport,
+    canExport: canExport,
   ),
 );
 
@@ -45,6 +48,7 @@ class DeckActionSheetWidget extends StatelessWidget {
     required this.canReorder,
     required this.hasOpen,
     this.canImport = false,
+    this.canExport = false,
   });
 
   final DeckView view;
@@ -53,6 +57,10 @@ class DeckActionSheetWidget extends StatelessWidget {
   /// The deck takes cards: Import leads to the import screen (kit 07
   /// deckActions, UC-TRANSFER-001).
   final bool canImport;
+
+  /// The deck holds cards: Export opens the export sheet (kit 12,
+  /// UC-TRANSFER-002).
+  final bool canExport;
 
   /// From a row, the deck is not open yet; Open leads.
   final bool hasOpen;
@@ -125,6 +133,13 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckActionImport,
           hasChevron: true,
           onTap: () => choose(DeckAction.importCards),
+        ),
+      if (canExport)
+        MxActionSheetCommandRow(
+          icon: AppIcons.fileDown,
+          label: l10n.deckActionExport,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.exportCards),
         ),
       if (canReorder)
         MxActionSheetCommandRow(

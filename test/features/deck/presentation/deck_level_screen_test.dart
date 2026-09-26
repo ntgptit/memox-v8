@@ -303,10 +303,11 @@ void main() {
       _en.comingSoonStudy,
       _en.deckStudyOptions,
       _en.comingSoonProgressSort,
-      _en.comingSoonTransfer,
     ]) {
       expect(find.text(feature), findsOneWidget, reason: feature);
     }
+    // Import and export shipped (FE-B3): neither waits here any more.
+    expect(find.text(_en.deckActionExport), findsNothing);
   });
 
   libraryTest('the search field opens the search', (tester, env) async {
