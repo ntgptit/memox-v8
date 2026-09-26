@@ -172,8 +172,8 @@ và phụ thuộc giữa các màn quyết định:
 4. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
    tiết handoff của màn trước khi lập plan.
 5. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-6. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng; chưa hạng mục BE-B
-   nào xong.
+6. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng. BE-B1 xong trong gói
+   7, nên FE-B1 không còn chờ backend; BE-B2…BE-B5 chưa bắt đầu.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 
