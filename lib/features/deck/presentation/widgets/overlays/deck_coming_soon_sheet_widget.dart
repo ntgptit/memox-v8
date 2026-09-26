@@ -33,7 +33,6 @@ class DeckComingSoonSheetWidget extends StatelessWidget {
       l10n.libraryStarterDecks,
       l10n.comingSoonStarterDecksBody,
     ),
-    (AppIcons.delete, l10n.libraryTrash, l10n.comingSoonTrashBody),
   ];
 
   @override

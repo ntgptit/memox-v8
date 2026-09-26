@@ -14,9 +14,16 @@ import 'package:memox/shared/widgets/mx_card.dart';
 /// dialog as the list's (FE-B1 D13), then closes the editor with true, so
 /// the page that opened it can close too.
 class CardTrashSectionWidget extends StatelessWidget {
-  const CardTrashSectionWidget({super.key, required this.card});
+  const CardTrashSectionWidget({
+    super.key,
+    required this.card,
+    this.onOpenTrash,
+  });
 
   final CardEntity card;
+
+  /// Rides on a refused Undo's toast (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   Future<void> _move(BuildContext context) async {
     // Taken before the dialog: once the card is gone the editor swaps the
@@ -27,6 +34,7 @@ class CardTrashSectionWidget extends StatelessWidget {
       context,
       cardIds: {card.id},
       preview: (front: card.front, back: card.back),
+      onOpenTrash: onOpenTrash,
     );
     if (isMoved && navigator.mounted) navigator.pop(true);
   }

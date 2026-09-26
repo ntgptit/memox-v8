@@ -31,6 +31,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
+    this.onOpenTrash,
   });
 
   final DeckLevel level;
@@ -42,6 +43,9 @@ class DeckLevelListWidget extends ConsumerWidget {
 
   /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Opens the Trash (screen 06), for a refused Undo (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
@@ -138,6 +142,7 @@ class DeckLevelListWidget extends ConsumerWidget {
                       onOpenDeck: onOpenDeck,
                       onOpenAlgorithm: onOpenAlgorithm,
                       onOpenStudy: onOpenStudy,
+                      onOpenTrash: onOpenTrash,
                       isOpenDeck: false,
                     ),
                   ),

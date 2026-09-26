@@ -40,6 +40,10 @@
   "@commonUndo": {
     "description": "Snackbar action that reverses the last move to the Trash (BR-TRASH-008)."
   },
+  "commonOpenTrash": "Open Trash",
+  "@commonOpenTrash": {
+    "description": "Opens screen 06, the Trash: the Library app bar, the gone states and the Trash toasts (FE-B1 D1, D4, D11)."
+  },
   "commonRetry": "Retry",
   "@commonRetry": {
     "description": "Generic retry action after a failure."
@@ -2308,10 +2312,6 @@
   "comingSoonTagsBody": "Label cards, filter by label.",
   "@comingSoonTagsBody": {
     "description": "Coming soon: what tags do."
-  },
-  "comingSoonTrashBody": "Restore deleted decks and cards.",
-  "@comingSoonTrashBody": {
-    "description": "Coming soon: what the trash does."
   },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {

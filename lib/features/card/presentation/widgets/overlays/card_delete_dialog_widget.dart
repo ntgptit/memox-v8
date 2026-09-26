@@ -26,12 +26,14 @@ Future<bool> showDeleteCardsDialog(
   BuildContext context, {
   required Set<String> cardIds,
   CardTrashPreview? preview,
+  VoidCallback? onOpenTrash,
 }) async =>
     await showMxDialog<bool>(
       context,
       builder: (_) => CardDeleteDialogWidget(
         cardIds: cardIds,
         preview: cardIds.length == 1 ? preview : null,
+        onOpenTrash: onOpenTrash,
       ),
     ) ??
     false;
@@ -43,10 +45,14 @@ class CardDeleteDialogWidget extends ConsumerStatefulWidget {
     super.key,
     required this.cardIds,
     this.preview,
+    this.onOpenTrash,
   });
 
   final Set<String> cardIds;
   final CardTrashPreview? preview;
+
+  /// Rides on the toast of several cards and on a refused Undo (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<CardDeleteDialogWidget> createState() =>
@@ -73,6 +79,7 @@ class _CardDeleteDialogWidgetState
             context,
             batchIds: batchIds,
             front: widget.preview?.front,
+            onOpenTrash: widget.onOpenTrash,
           );
         case Rejected(:final reason):
           showMxSnackbar(context, message: context.l10n.cardRejection(reason));

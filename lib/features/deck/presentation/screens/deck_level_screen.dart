@@ -45,6 +45,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -86,6 +87,10 @@ class DeckLevelScreen extends StatelessWidget {
   /// sheet over the whole deck.
   final ValueChanged<DeckEntity> onExportCards;
 
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
+
   /// A deck of cards' FAB, from the card feature like [cardContent] (spec
   /// D8). It hides itself while cards are selected.
   final Widget Function(String deckId) cardFab;
@@ -97,6 +102,7 @@ class DeckLevelScreen extends StatelessWidget {
       onSearch: onSearch,
       onOpenAlgorithm: onOpenAlgorithm,
       onOpenStudy: onOpenStudy,
+      onOpenTrash: onOpenTrash,
     ),
     final id => _OpenDeck(
       deckId: id,
@@ -110,6 +116,7 @@ class DeckLevelScreen extends StatelessWidget {
       onAddCard: onAddCard,
       onImportCards: onImportCards,
       onExportCards: onExportCards,
+      onOpenTrash: onOpenTrash,
       cardFab: cardFab,
     ),
   };
@@ -129,6 +136,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -146,6 +154,10 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final ValueChanged<String> onImportCards;
   final ValueChanged<DeckEntity> onExportCards;
+
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
   final Widget Function(String deckId) cardFab;
 
   static const int _skeletonRows = 4;
@@ -172,6 +184,7 @@ class _OpenDeck extends ConsumerWidget {
         onAddCard: onAddCard,
         onImportCards: onImportCards,
         onExportCards: onExportCards,
+        onOpenTrash: onOpenTrash,
         cardFab: cardFab,
       ),
       AsyncError() => MxAppShell(
@@ -190,7 +203,10 @@ class _OpenDeck extends ConsumerWidget {
       // Spec A8: deleted while open. Say so; the way back is the Library.
       AsyncData(value: Rejected()) => MxAppShell(
         appBar: bar,
-        body: DeckGoneStateWidget(onBackToLibrary: () => onOpenAncestor(null)),
+        body: DeckGoneStateWidget(
+          onBackToLibrary: () => onOpenAncestor(null),
+          onOpenTrash: onOpenTrash,
+        ),
       ),
       _ => MxAppShell(
         appBar: bar,
@@ -221,6 +237,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -238,6 +255,10 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final ValueChanged<String> onImportCards;
   final ValueChanged<DeckEntity> onExportCards;
+
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
   final Widget Function(String deckId) cardFab;
 
   @override
@@ -267,6 +288,7 @@ class _OpenDeckContent extends ConsumerWidget {
               ? () => onExportCards(deck)
               : null,
           onOpenStudy: onOpenStudy,
+          onOpenTrash: onOpenTrash,
           isOpenDeck: true,
         ),
       ),
@@ -321,6 +343,7 @@ class _OpenDeckContent extends ConsumerWidget {
                 onOpenDeck: onOpenDeck,
                 onOpenAlgorithm: onOpenAlgorithm,
                 onOpenStudy: onOpenStudy,
+                onOpenTrash: onOpenTrash,
                 schedulerType: view.schedulerType,
                 // Owner decision C-O6: its sub-decks are at level 10.
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,

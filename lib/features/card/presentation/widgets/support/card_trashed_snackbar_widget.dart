@@ -12,8 +12,8 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Says cards went to the Trash (FE-B1 D3, D4). One card, named by its
-/// [front] when the caller has it, gets Undo for 8 seconds; several do not
-/// (BR-TRASH-008).
+/// [front] when the caller has it, gets Undo for 8 seconds; several get
+/// [onOpenTrash] instead (BR-TRASH-008), as a refused Undo does.
 ///
 /// The toast outlives the dialog and often the screen that showed it, so it
 /// lives on the root navigator and Undo reads the app's container, not a
@@ -22,6 +22,7 @@ void showCardsTrashedSnackbar(
   BuildContext context, {
   required List<String> batchIds,
   String? front,
+  VoidCallback? onOpenTrash,
 }) {
   final host = Navigator.of(context, rootNavigator: true).context;
   final l10n = context.l10n;
@@ -34,11 +35,16 @@ void showCardsTrashedSnackbar(
           : l10n.cardTrashedToast(front),
       actionLabel: l10n.commonUndo,
       duration: AppDurations.undoWindow,
-      onAction: () => unawaited(_undo(host, container, batchId)),
+      onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
     );
     return;
   }
-  showMxSnackbar(host, message: l10n.cardsTrashedToast(batchIds.length));
+  showMxSnackbar(
+    host,
+    message: l10n.cardsTrashedToast(batchIds.length),
+    actionLabel: onOpenTrash == null ? null : l10n.commonOpenTrash,
+    onAction: onOpenTrash,
+  );
 }
 
 /// The card goes back into its deck; a refusal says why and leaves it in
@@ -47,6 +53,7 @@ Future<void> _undo(
   BuildContext host,
   ProviderContainer container,
   String batchId,
+  VoidCallback? onOpenTrash,
 ) async {
   try {
     final outcome = await container
@@ -57,6 +64,8 @@ Future<void> _undo(
       showMxSnackbar(
         host,
         message: l10n.cardUndoRefused(l10n.cardRejection(reason)),
+        actionLabel: onOpenTrash == null ? null : l10n.commonOpenTrash,
+        onAction: onOpenTrash,
       );
     }
   } on Failure catch (failure) {

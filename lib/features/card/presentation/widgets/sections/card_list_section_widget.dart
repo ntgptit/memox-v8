@@ -48,6 +48,7 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.onOpenCard,
     this.onExport,
     this.onStudy,
+    this.onOpenTrash,
   });
 
   final String deckId;
@@ -67,6 +68,10 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
 
   /// The summary's Study this deck: the router opens the Study Entry.
   final VoidCallback? onStudy;
+
+  /// Opens the Trash (screen 06), for the toasts and the gone state
+  /// (FE-B1). Hidden without it.
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -215,6 +220,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               context,
               cardIds: selected,
               preview: _previewOf(selected),
+              onOpenTrash: widget.onOpenTrash,
             ),
           ),
         ),

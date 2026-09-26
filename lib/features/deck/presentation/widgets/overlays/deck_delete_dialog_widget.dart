@@ -21,10 +21,12 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 Future<bool> showDeleteDeckDialog(
   BuildContext context, {
   required DeckEntity deck,
+  VoidCallback? onOpenTrash,
 }) async =>
     await showMxDialog<bool>(
       context,
-      builder: (_) => DeckDeleteDialogWidget(deck: deck),
+      builder: (_) =>
+          DeckDeleteDialogWidget(deck: deck, onOpenTrash: onOpenTrash),
     ) ??
     false;
 
@@ -33,9 +35,16 @@ Future<bool> showDeleteDeckDialog(
 /// since the Trash keeps them for 30 days, and it spins while the deck
 /// moves (FE-B1 D15).
 class DeckDeleteDialogWidget extends ConsumerStatefulWidget {
-  const DeckDeleteDialogWidget({super.key, required this.deck});
+  const DeckDeleteDialogWidget({
+    super.key,
+    required this.deck,
+    this.onOpenTrash,
+  });
 
   final DeckEntity deck;
+
+  /// Rides on a refused Undo's toast (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<DeckDeleteDialogWidget> createState() =>
@@ -63,6 +72,7 @@ class _DeckDeleteDialogWidgetState
             deckName: widget.deck.name,
             summary: summary,
             batchId: batchId,
+            onOpenTrash: widget.onOpenTrash,
           );
         case Rejected(:final reason):
           showMxSnackbar(context, message: context.l10n.deckRejection(reason));

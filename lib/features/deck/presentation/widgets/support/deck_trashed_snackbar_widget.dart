@@ -17,12 +17,13 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 ///
 /// The toast outlives the dialog and often the screen that showed it, so it
 /// lives on the root navigator and Undo reads the app's container, not a
-/// widget's.
+/// widget's. A refused Undo offers [onOpenTrash] when there is one.
 void showDeckTrashedSnackbar(
   BuildContext context, {
   required String deckName,
   required DeckDeletionSummary summary,
   required String batchId,
+  VoidCallback? onOpenTrash,
 }) {
   final host = Navigator.of(context, rootNavigator: true).context;
   final container = ProviderScope.containerOf(context, listen: false);
@@ -36,7 +37,7 @@ void showDeckTrashedSnackbar(
     ),
     actionLabel: l10n.commonUndo,
     duration: AppDurations.undoWindow,
-    onAction: () => unawaited(_undo(host, container, batchId)),
+    onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
   );
 }
 
@@ -46,6 +47,7 @@ Future<void> _undo(
   BuildContext host,
   ProviderContainer container,
   String batchId,
+  VoidCallback? onOpenTrash,
 ) async {
   try {
     final outcome = await container
@@ -56,6 +58,8 @@ Future<void> _undo(
       showMxSnackbar(
         host,
         message: l10n.deckUndoRefused(l10n.deckRejection(reason)),
+        actionLabel: onOpenTrash == null ? null : l10n.commonOpenTrash,
+        onAction: onOpenTrash,
       );
     }
   } on Failure catch (failure) {

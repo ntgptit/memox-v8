@@ -24,6 +24,11 @@ abstract final class AppRoutes {
 
   static const String deckSearch = '$decks/$searchChild';
 
+  /// The Trash (screen 06), relative to [decks]: a full-screen task on the
+  /// root navigator (FE-B1 D2).
+  static const String trashChild = 'trash';
+  static const String trash = '$decks/$trashChild';
+
   /// A root deck's review algorithm (screen 02), relative to [deckChild].
   static const String algorithmChild = 'algorithm';
 

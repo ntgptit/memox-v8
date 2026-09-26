@@ -25,6 +25,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
+    this.onOpenTrash,
   });
 
   final String? parentId;
@@ -35,6 +36,9 @@ class DeckLevelBodyWidget extends ConsumerWidget {
 
   /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Opens the Trash (screen 06), for a refused Undo (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   /// The open deck's algorithm for its summary card; null at the root.
   final SchedulerType? schedulerType;
@@ -69,6 +73,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
                   onOpenDeck: onOpenDeck,
                   onOpenAlgorithm: onOpenAlgorithm,
                   onOpenStudy: onOpenStudy,
+                  onOpenTrash: onOpenTrash,
                   emptyState: emptyState,
                   schedulerType: schedulerType,
                   hasDeepestSubDecks: hasDeepestSubDecks,

@@ -15,7 +15,8 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// Opens a deck's action sheet and then the chosen command's own dialog or
 /// sheet (spec §6.2): from a row's ⋮, or from the open deck's ⋮.
 /// [onImportCards] offers Import on a deck that takes cards (UC-TRANSFER-001),
-/// [onExportCards] Export on a deck of cards (UC-TRANSFER-002). It reads
+/// [onExportCards] Export on a deck of cards (UC-TRANSFER-002);
+/// [onOpenTrash] rides on a refused Undo's toast (FE-B1). It reads
 /// the deck's view once first, so a deck gone meanwhile says so instead
 /// (ruling C-L6).
 Future<void> openDeckActions(
@@ -29,6 +30,7 @@ Future<void> openDeckActions(
   required bool isOpenDeck,
   VoidCallback? onImportCards,
   VoidCallback? onExportCards,
+  VoidCallback? onOpenTrash,
 }) async {
   // A row's deck has no listener yet: keep its view alive until it emits,
   // or the auto-disposed provider would never complete the read.
@@ -79,7 +81,12 @@ Future<void> openDeckActions(
     case DeckAction.reorder:
       ref.read(deckReorderModeProvider(reorderLevel).notifier).start();
     case DeckAction.delete:
-      await _deleteDeck(context, view: view, isOpenDeck: isOpenDeck);
+      await _deleteDeck(
+        context,
+        view: view,
+        isOpenDeck: isOpenDeck,
+        onOpenTrash: onOpenTrash,
+      );
   }
 }
 
@@ -90,11 +97,16 @@ Future<void> _deleteDeck(
   BuildContext context, {
   required DeckView view,
   required bool isOpenDeck,
+  VoidCallback? onOpenTrash,
 }) async {
   // Taken before the dialog: once the deck is gone its screen swaps its
   // content, and [context] with it.
   final navigator = Navigator.of(context);
-  final isDeleted = await showDeleteDeckDialog(context, deck: view.deck);
+  final isDeleted = await showDeleteDeckDialog(
+    context,
+    deck: view.deck,
+    onOpenTrash: onOpenTrash,
+  );
   if (!isDeleted || !isOpenDeck || !navigator.mounted) return;
   await navigator.maybePop();
 }
