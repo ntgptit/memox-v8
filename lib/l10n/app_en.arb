@@ -2319,6 +2319,22 @@
   "@galleryNew": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryDue": "Due",
+  "@galleryDue": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryReviewed": "Reviewed",
+  "@galleryReviewed": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryAnswered": "Answered",
+  "@galleryAnswered": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryWrong": "Wrong",
+  "@galleryWrong": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
   "galleryLearning": "Learning",
   "@galleryLearning": {
     "description": "Debug gallery: sample copy in the component showcase."

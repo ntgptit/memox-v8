@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
+import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
@@ -115,6 +116,51 @@ void main() {
               MxMasteryDonut(fraction: 0.2),
               MxMasteryDonut(fraction: 0.5),
               MxMasteryDonut(fraction: 1),
+            ],
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxStatTile, boxed and inline (FE-A6 D17)', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_stat_tile',
+      const Column(
+        spacing: 16,
+        children: [
+          Row(
+            spacing: 8,
+            children: [
+              Expanded(
+                child: MxStatTile(
+                  value: '0',
+                  label: 'New',
+                  layout: MxStatTileLayout.boxed,
+                ),
+              ),
+              Expanded(
+                child: MxStatTile(
+                  value: '12',
+                  label: 'Due',
+                  emphasis: MxStatTileEmphasis.primary,
+                  layout: MxStatTileLayout.boxed,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: MxStatTile(value: '20', label: 'Reviewed'),
+              ),
+              Expanded(
+                child: MxStatTile(value: '20', label: 'Answered'),
+              ),
+              Expanded(
+                child: MxStatTile(value: '3 / 23', label: 'Wrong'),
+              ),
             ],
           ),
         ],
