@@ -160,7 +160,11 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
     return _Tile(
       tile: term,
       label: context.l10n.studyMatchTerm(term.text),
-      tone: _toneOf(term, isSelected: term.cardId == _selectedTerm),
+      tone: _toneOf(
+        term,
+        isSelected: term.cardId == _selectedTerm,
+        isInHeldPair: widget.heldPair?.$1 == term.cardId,
+      ),
       order: row.toDouble(),
       isTerm: true,
       onTap: () => _tapTerm(term),
@@ -173,18 +177,25 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
     return _Tile(
       tile: meaning,
       label: context.l10n.studyMatchMeaning(meaning.text),
-      tone: _toneOf(meaning, isSelected: false),
+      tone: _toneOf(
+        meaning,
+        isSelected: false,
+        isInHeldPair: widget.heldPair?.$2 == meaning.cardId,
+      ),
       order: _columnOrder + row,
       isTerm: false,
       onTap: () => _tapMeaning(meaning),
     );
   }
 
-  StudyChoiceTone _toneOf(MatchTile tile, {required bool isSelected}) {
+  /// [isInHeldPair] is the column's own side of the pair on hold: a card
+  /// has a term tile and a meaning tile, and only the tapped ones flash.
+  StudyChoiceTone _toneOf(
+    MatchTile tile, {
+    required bool isSelected,
+    required bool isInHeldPair,
+  }) {
     if (tile.isMatched) return StudyChoiceTone.right;
-    final pair = widget.heldPair;
-    final isInHeldPair =
-        pair != null && (pair.$1 == tile.cardId || pair.$2 == tile.cardId);
     if (_isWrongPair && isInHeldPair) return StudyChoiceTone.wrong;
     if (isSelected) return StudyChoiceTone.selected;
     return StudyChoiceTone.idle;

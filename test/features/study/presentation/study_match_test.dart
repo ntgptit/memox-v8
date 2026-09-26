@@ -99,6 +99,9 @@ void main() {
 
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.wrong);
     expect(_tile(tester, 'banana').tone, StudyChoiceTone.wrong);
+    // The same cards' other sides are not part of the wrong pair.
+    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
     expect(find.text(_en.studyMatchHintWrong), findsOneWidget);
     expect(
       tester.takeAnnouncements().map((a) => a.message),

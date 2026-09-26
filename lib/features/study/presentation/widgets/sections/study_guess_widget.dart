@@ -109,12 +109,24 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
     final l10n = context.l10n;
     final question = widget.item.guess!;
     if (question.isBlocked) {
-      return MxErrorState(
-        title: l10n.studyGuessBlockedTitle,
-        body: l10n.studyGuessBlockedBody,
-        icon: AppIcons.close,
-        retryLabel: l10n.studySessionClose,
-        onRetry: widget.onClose,
+      // Close ends the session: nothing here can be retried (BR-STUDY-040).
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        children: [
+          MxErrorState(
+            title: l10n.studyGuessBlockedTitle,
+            body: l10n.studyGuessBlockedBody,
+            icon: AppIcons.close,
+          ),
+          const SizedBox(height: AppSpacing.gutter),
+          Center(
+            child: MxButton(
+              label: l10n.studySessionClose,
+              icon: AppIcons.close,
+              onPressed: widget.onClose,
+            ),
+          ),
+        ],
       );
     }
     final body = CustomScrollView(

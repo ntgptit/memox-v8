@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -190,6 +191,8 @@ void main() {
 
       expect(find.text(_en.studyGuessBlockedTitle), findsOneWidget);
       expect(find.text('apple'), findsNothing);
+      // Close ends the session; it is not a retry.
+      expect(find.byIcon(AppIcons.retry), findsNothing);
 
       await tester.tap(find.text(_en.studySessionClose));
       await tester.pumpAndSettle();
