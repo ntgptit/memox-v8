@@ -48,6 +48,7 @@ final class MxTextStyles {
   static const double _summaryTitleTracking = -0.4;
   static const double _factValueSize = 16;
   static const double _statValueHeight = 1.1;
+  static const double _buttonDetailHeight = 1.2;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -58,6 +59,23 @@ final class MxTextStyles {
   /// Button label on the compact and chip sizes: 12/600, 0.1 tracking.
   TextStyle get buttonLabelSmall =>
       _texts.labelSmall!.copyWith(letterSpacing: _labelTracking);
+
+  /// A button's second line, such as the interval a grade gives (screen
+  /// 16a): 12/500 tabular. Built without the role's colour, so the button's
+  /// ink reaches it through DefaultTextStyle.
+  TextStyle get buttonDetail {
+    final base = AppTypography.withWeight(_texts.labelSmall!, FontWeight.w500);
+    return TextStyle(
+      fontFamily: base.fontFamily,
+      fontFamilyFallback: base.fontFamilyFallback,
+      fontSize: base.fontSize,
+      fontWeight: base.fontWeight,
+      fontVariations: base.fontVariations,
+      letterSpacing: base.letterSpacing,
+      height: _buttonDetailHeight,
+      fontFeatures: _tabular,
+    );
+  }
 
   /// App-bar content title (deck and card names): 16/700, -0.3.
   TextStyle get contentTitle => AppTypography.withWeight(

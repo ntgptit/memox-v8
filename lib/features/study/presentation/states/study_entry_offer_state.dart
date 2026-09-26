@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The study modes the app has a screen for: Browse (P1c); the rest arrive
-/// in P2–P4, and the set goes once all six are built (FE-A6 spec §3). An
-/// unbuilt stage is never offered.
-const Set<StudyMode> builtStudyModes = {StudyMode.browse};
+/// The study modes the app has a screen for: Browse (P1c) and Self-assess
+/// (P2); the rest arrive in P3–P4, and the set goes once all six are built
+/// (FE-A6 spec §3). An unbuilt stage is never offered.
+const Set<StudyMode> builtStudyModes = {StudyMode.browse, StudyMode.selfAssess};
 
 /// How the entry shows a review mode.
 enum ReviewOfferStatus {
@@ -36,6 +36,7 @@ final class StudyEntryOffer {
     required this.isLearnComingSoon,
     required this.learnShown,
     required this.reviews,
+    required this.reviewTarget,
     required this.canContinue,
   });
 
@@ -53,6 +54,10 @@ final class StudyEntryOffer {
   final int learnShown;
   final List<ReviewOffer> reviews;
 
+  /// The review the footer starts: the one available review mode
+  /// (BR-STUDY-055); null with none or, until P3 adds the pick, more than one.
+  final ReviewModeOption? reviewTarget;
+
   /// A resumable session whose current mode is built (BR-STUDY-075).
   final bool canContinue;
 }
@@ -66,15 +71,24 @@ StudyEntryOffer studyEntryOfferOf(
   final isSequenceBuilt = stageSequenceOf(entry.schedulerType)
       .every(built.contains);
   final resumable = entry.resumable;
+  final reviews = [
+    for (final option in entry.reviewModes)
+      ReviewOffer(option: option, status: _statusOf(option, built)),
+  ];
+  // A mode runs on no due cards too; a review still needs a card to ask.
+  final available = [
+    for (final review in reviews)
+      if (review.status == ReviewOfferStatus.available &&
+          review.option.cardCount > 0)
+        review.option,
+  ];
   return StudyEntryOffer(
     isNothingDue: entry.newCardCount == 0 && entry.dueCardCount == 0,
     canLearn: hasNew && isSequenceBuilt,
     isLearnComingSoon: hasNew && !isSequenceBuilt,
     learnShown: min(entry.newCardCount, entry.cardLimit),
-    reviews: [
-      for (final option in entry.reviewModes)
-        ReviewOffer(option: option, status: _statusOf(option, built)),
-    ],
+    reviews: reviews,
+    reviewTarget: available.length == 1 ? available.single : null,
     canContinue: resumable != null && built.contains(resumable.mode),
   );
 }
@@ -83,4 +97,14 @@ ReviewOfferStatus _statusOf(ReviewModeOption option, Set<StudyMode> built) {
   if (option.unavailableReason != null) return ReviewOfferStatus.unavailable;
   if (built.contains(option.mode)) return ReviewOfferStatus.available;
   return ReviewOfferStatus.comingSoon;
+}
+
+/// The footer's one action (screen 14): a review when there is one to start,
+/// else Learn; none when neither can run, and the footer is not drawn.
+enum EntryFooterAction { review, learn }
+
+EntryFooterAction? entryFooterActionOf(StudyEntryOffer offer) {
+  if (offer.reviewTarget != null) return EntryFooterAction.review;
+  if (offer.canLearn) return EntryFooterAction.learn;
+  return null;
 }

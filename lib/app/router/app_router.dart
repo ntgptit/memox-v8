@@ -78,6 +78,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       GoRoute(
                         path: AppRoutes.studyChild,
                         builder: (context, state) => _studyEntry(
+                          context,
                           state.pathParameters[AppRoutes.deckIdParam]!,
                         ),
                       ),
@@ -199,14 +200,20 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
 
 /// Screen 14 with the deck's name and path from the deck feature, which
 /// the study feature may not read (FE-A6 D16).
-StudyEntryScreen _studyEntry(String deckId) => StudyEntryScreen(
-  deckId: deckId,
-  title: DeckStudyHeaderWidget(deckId: deckId, part: DeckStudyHeaderPart.title),
-  breadcrumb: DeckStudyHeaderWidget(
-    deckId: deckId,
-    part: DeckStudyHeaderPart.breadcrumb,
-  ),
-);
+StudyEntryScreen _studyEntry(BuildContext context, String deckId) =>
+    StudyEntryScreen(
+      deckId: deckId,
+      title: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.title,
+      ),
+      breadcrumb: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.breadcrumb,
+      ),
+      onOpenSession: (sessionId) =>
+          context.go(AppRoutes.studySession(sessionId)),
+    );
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>
