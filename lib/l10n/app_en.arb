@@ -1321,6 +1321,200 @@
   "@libraryTrash": {
     "description": "Screen handoff 01/04 (library alignment phase C): libraryTrash."
   },
+  "trashNote": "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go.",
+  "@trashNote": {
+    "description": "Screen 06: the retention note over the list (BR-TRASH-009, BR-TRASH-006)."
+  },
+  "trashSelect": "Select",
+  "@trashSelect": {
+    "description": "Screen 06: the app bar action that turns the rows into checkboxes (BR-TRASH-011)."
+  },
+  "trashFilterAll": "All",
+  "@trashFilterAll": {
+    "description": "Screen 06: the filter chip for every entry."
+  },
+  "trashFilterCards": "Cards",
+  "@trashFilterCards": {
+    "description": "Screen 06: the filter chip for card entries."
+  },
+  "trashFilterDecks": "Decks",
+  "@trashFilterDecks": {
+    "description": "Screen 06: the filter chip for deck entries."
+  },
+  "trashEntriesHeader": "{count, plural, =1{1 entry · newest first} other{{count} entries · newest first}}",
+  "@trashEntriesHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: the list header (UC-TRASH-001 step 3)."
+  },
+  "trashCardMeta": "Card · deleted {ago}",
+  "@trashCardMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a card row's meta line; ago is a trashDeleted* phrase."
+  },
+  "trashDeckMeta": "Deck · {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} · {cardCount, plural, =1{1 card} other{{cardCount} cards}} · deleted {ago}",
+  "@trashDeckMeta": {
+    "placeholders": {
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      },
+      "ago": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a deck row's meta line; ago is a trashDeleted* phrase."
+  },
+  "trashDeletedMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
+  "@trashDeletedMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, under an hour ago."
+  },
+  "trashDeletedHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@trashDeletedHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, under a day ago."
+  },
+  "trashDeletedYesterday": "yesterday",
+  "@trashDeletedYesterday": {
+    "description": "Screen 06: when an entry was deleted, a day ago."
+  },
+  "trashDeletedDays": "{count} days ago",
+  "@trashDeletedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, two days ago or more."
+  },
+  "trashWasIn": "Was in {path}",
+  "@trashWasIn": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: where the item was; information only (BR-TRASH-012)."
+  },
+  "trashTopLevel": "Top level",
+  "@trashTopLevel": {
+    "description": "Screen 06: the place of a top-level deck, and its one restore target."
+  },
+  "trashDaysLeft": "{count, plural, =1{1 day left} other{{count} days left}}",
+  "@trashDaysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: time until the auto-purge (BR-TRASH-009)."
+  },
+  "trashHoursLeft": "{count}h left",
+  "@trashHoursLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: time until the auto-purge, under a day (BR-TRASH-009)."
+  },
+  "trashEntryActions": "Actions for {name}",
+  "@trashEntryActions": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the row's ⋮ label."
+  },
+  "trashEntrySemantics": "{name}, {meta}, {timeLeft}, {origin}",
+  "@trashEntrySemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "meta": {
+        "type": "String"
+      },
+      "timeLeft": {
+        "type": "String"
+      },
+      "origin": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: what TalkBack reads for a row, every fact the ellipsis may hide (spec D15)."
+  },
+  "trashCardActionsMeta": "Card · deleted {ago} · was in {deck}",
+  "@trashCardActionsMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the actions sheet's sub-line for a card."
+  },
+  "trashDeckActionsMeta": "Deck · deleted {ago} · was in {deck}",
+  "@trashDeckActionsMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the actions sheet's sub-line for a deck."
+  },
+  "trashRestore": "Restore…",
+  "@trashRestore": {
+    "description": "Screen 06: the actions sheet command that asks for a target (BR-TRASH-006)."
+  },
+  "trashRestoreHint": "Choose which deck it goes to",
+  "@trashRestoreHint": {
+    "description": "Screen 06: the Restore command's sub-line."
+  },
+  "trashDeletePermanently": "Delete permanently",
+  "@trashDeletePermanently": {
+    "description": "Screen 06: the actions sheet command that purges one entry (BR-TRASH-010)."
+  },
+  "trashDeletePermanentlyHint": "Cannot be undone · history lost",
+  "@trashDeletePermanentlyHint": {
+    "description": "Screen 06: the Delete permanently command's sub-line."
+  },
+  "trashEmptyTitle": "Trash is empty",
+  "@trashEmptyTitle": {
+    "description": "Screen 06: the empty state title."
+  },
+  "trashEmptyBody": "Decks and cards you delete stay here for 30 days before they are removed for good.",
+  "@trashEmptyBody": {
+    "description": "Screen 06: the empty state body (BR-TRASH-009)."
+  },
+  "trashLoadErrorTitle": "Couldn't open Trash",
+  "@trashLoadErrorTitle": {
+    "description": "Screen 06: the error state title (UC-TRASH-001 E5)."
+  },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
     "placeholders": {
