@@ -5,7 +5,6 @@ import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.da
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
-import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -71,11 +70,4 @@ abstract interface class DeckRepository {
 
   /// UC-DECK-005: where [deckId] may move, in tree order; empty for a root.
   Stream<List<DeckMoveTarget>> watchMoveTargets(String deckId);
-
-  /// IT-DISC-006: the decks below [scopeDeckId], or all when it is null,
-  /// whose folded name holds [foldedTerm], in tree order.
-  Stream<List<DeckSearchHit>> watchSearch({
-    required String? scopeDeckId,
-    required String foldedTerm,
-  });
 }

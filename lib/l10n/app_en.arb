@@ -326,27 +326,6 @@
     },
     "description": "Delete dialog body: what the delete takes with it."
   },
-  "deckSearchHint": "Search decks",
-  "@deckSearchHint": {
-    "description": "Hint in the deck search field."
-  },
-  "deckSearchClear": "Clear search",
-  "@deckSearchClear": {
-    "description": "Accessible name of the search clear button."
-  },
-  "deckSearchEmptyTitle": "No matches for “{term}”",
-  "@deckSearchEmptyTitle": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Search empty state; term is what the person typed."
-  },
-  "deckSearchEmptyBody": "Accents matter — “hoc” does not find “học”. Search covers deck names.",
-  "@deckSearchEmptyBody": {
-    "description": "Search empty state body."
-  },
   "srsRejectionUnsupportedAction": "This answer doesn't fit the deck's scheduler.",
   "@srsRejectionUnsupportedAction": {
     "description": "Scheduler refusal: unsupported answer."

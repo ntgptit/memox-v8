@@ -3,7 +3,6 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
-import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/deck/data/datasources/deck_dao.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -13,7 +12,6 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
-import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
@@ -269,28 +267,6 @@ final class DeckRepositoryImpl implements DeckRepository {
           (node, path) =>
               DeckMoveTarget(id: node.id, name: node.name, path: path),
         ),
-      )
-      .mapDatabaseErrors();
-
-  @override
-  Stream<List<DeckSearchHit>> watchSearch({
-    required String? scopeDeckId,
-    required String foldedTerm,
-  }) => _dao
-      .watchSearchRows(scopeDeckId)
-      .map(
-        (rows) => [
-          for (final hit in candidatesInTreeOrder(
-            [for (final row in rows) _nodeOf(row)],
-            (node, path) => DeckSearchHit(
-              id: node.id,
-              name: node.name,
-              path: path,
-              contentType: node.contentType,
-            ),
-          ))
-            if (foldText(hit.name).contains(foldedTerm)) hit,
-        ],
       )
       .mapDatabaseErrors();
 
