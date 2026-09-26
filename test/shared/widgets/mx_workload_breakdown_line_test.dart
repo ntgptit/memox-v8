@@ -136,4 +136,35 @@ void main() {
     );
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
   });
+
+  testWidgets('a hero line wraps instead of cutting its suffix (FE-A8, kit '
+      'hero)', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 160,
+        child: MxWorkloadBreakdownLine(
+          overdueCount: 1100,
+          todayCount: 160,
+          newCount: 7400,
+          overdueLabel: (n) => '$n overdue',
+          todayLabel: (n) => '$n today',
+          newLabel: (n) => '$n new',
+          fallback: 'Nothing due',
+          suffix: 'across 4 decks',
+          canWrap: true,
+        ),
+      ),
+    );
+
+    final text = tester.widget<Text>(
+      find.descendant(
+        of: find.byType(MxWorkloadBreakdownLine),
+        matching: find.byType(Text),
+      ),
+    );
+    expect(text.maxLines, isNull);
+    expect(text.softWrap, isTrue);
+    expect(text.overflow, isNot(TextOverflow.ellipsis));
+  });
 }

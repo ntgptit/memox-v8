@@ -71,6 +71,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
             scheduledLabel: l10n.workloadScheduled,
             fallback: l10n.studyHomeCaughtUpTitle,
             suffix: l10n.studyHomeAcrossDecks(workload.workloadDeckCount),
+            canWrap: true,
           ),
         ],
       ),
@@ -94,14 +95,13 @@ class _CaughtUp extends StatelessWidget {
         DateFormat.MMMd(l10n.localeName).format(day),
       ),
     };
-    return MxCard(
-      child: MxEmptyState(
-        icon: AppIcons.learned,
-        title: l10n.studyHomeCaughtUpTitle,
-        body: body,
-        tone: MxEmptyStateTone.success,
-        isCompact: true,
-      ),
+    // The empty state draws its own card surface (kit zero workload).
+    return MxEmptyState(
+      icon: AppIcons.learned,
+      title: l10n.studyHomeCaughtUpTitle,
+      body: body,
+      tone: MxEmptyStateTone.success,
+      isCompact: true,
     );
   }
 }

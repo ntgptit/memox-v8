@@ -21,6 +21,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     this.suffix,
     this.scheduledCount = 0,
     this.scheduledLabel,
+    this.canWrap = false,
   }) : assert(
          overdueCount >= 0 &&
              todayCount >= 0 &&
@@ -51,6 +52,10 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   final int scheduledCount;
   final String Function(int count)? scheduledLabel;
 
+  /// A row keeps one line and ellipsizes (S12, row 102); a hero statement
+  /// wraps so its suffix is never cut (kit Study Home hero).
+  final bool canWrap;
+
   static const String _separator = ' · ';
   static const String _space = ' ';
 
@@ -79,9 +84,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
           ],
         ],
       ),
-      maxLines: 1,
-      softWrap: false,
-      overflow: TextOverflow.ellipsis,
+      maxLines: canWrap ? null : 1,
+      softWrap: canWrap,
+      overflow: canWrap ? TextOverflow.visible : TextOverflow.ellipsis,
     );
   }
 }
