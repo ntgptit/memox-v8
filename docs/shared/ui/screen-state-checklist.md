@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **115**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **67**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **122**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **60**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -48,7 +48,7 @@ Kit có **26 màn, 211 state**. Xong **115**; một phần **5**; đã dựng nh
 | 10 | Card detail | FE-A2 | 7 | 1 | 6 | 0 | 0 | — |
 | 11 | Card import | FE-B3 | 16 | 16 | 0 | 0 | 0 | [11-card-import.md](screen-handoff/11-card-import.md) |
 | 12 | Card export | FE-B3 | 9 | 9 | 0 | 0 | 0 | [12-card-export.md](screen-handoff/12-card-export.md) |
-| 13 | Study home | FE-A8 | 7 | 0 | 0 | 7 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
+| 13 | Study home | FE-A8 | 7 | 7 | 0 | 0 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
 | 14 | Study entry | FE-A6, FE-A7 | 9 | 9 | 0 | 0 | 0 | [14-study-entry.md](screen-handoff/14-study-entry.md) |
 | 15 | Study options | FE-A3 | 7 | 0 | 0 | 7 | 0 | — |
 | 16 | Study · Browse | FE-A6 | 1 | 1 | 0 | 0 | 0 | [16-study-browse.md](screen-handoff/16-study-browse.md) |
@@ -293,13 +293,13 @@ FE-A8 · [13-study-home.md](screen-handoff/13-study-home.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Resume + workload | `loaded` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | Workload | `noResume` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | Zero workload | `zero` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | No decks | `noDecks` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | No cards | `noCards` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | Loading | `loading` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
-| [ ] | Error | `error` | chưa làm | Phase P6 của roadmap luồng học; detail file đã có. |
+| [x] | Resume + workload | `loaded` | xong | P6. |
+| [x] | Workload | `noResume` | xong | P6. |
+| [x] | Zero workload | `zero` | xong | P6. |
+| [x] | No decks | `noDecks` | xong | P6. |
+| [x] | No cards | `noCards` | xong | P6. |
+| [x] | Loading | `loading` | xong | P6. |
+| [x] | Error | `error` | xong | P6. |
 
 ### 14 · Study entry
 

@@ -1,3 +1,5 @@
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
+
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
@@ -189,6 +191,11 @@ void main() {
       findsOneWidget,
     );
     expect(_button(_en.studyEntryReviewInstead), findsOneWidget);
+    // The session's progress as a track too (FE-A8 H2).
+    expect(
+      tester.widget<MxLinearProgress>(find.byType(MxLinearProgress)).value,
+      0,
+    );
 
     await tester.tap(_button(_en.studyEntryContinue));
     await tester.pumpAndSettle();
