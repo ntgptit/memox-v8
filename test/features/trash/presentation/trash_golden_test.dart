@@ -101,7 +101,7 @@ void main() {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
         await _selectCards(tester);
-        await tester.tap(find.text(_en.trashPurgeSelected));
+        await tester.tap(find.text(_en.trashPurgeSelected(2)));
         await _settle(tester);
         await expectBoundaryGolden(
           tester,
