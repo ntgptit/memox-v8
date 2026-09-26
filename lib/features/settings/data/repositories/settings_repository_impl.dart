@@ -9,6 +9,8 @@ import 'package:memox/features/settings/domain/entities/app_settings_entity.dart
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
@@ -60,7 +62,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
   Future<Outcome<void, SettingsRejection>> resetToDefaults() {
     const defaults = AppSettingsEntity.defaults;
     return _save(
-      AppSettingsCompanion(
+      reminderColumnsOf(defaults.reminder).copyWith(
         cardLimit: Value(defaults.studyDefaults.cardLimit),
         newCardOrder: Value(defaults.studyDefaults.newCardOrder.name),
         themeMode: Value(defaults.theme.name),
@@ -68,6 +70,33 @@ final class SettingsRepositoryImpl implements SettingsRepository {
       ),
     );
   }
+
+  @override
+  Future<Outcome<void, SettingsRejection>> saveReminder({
+    required ReminderSettings reminder,
+  }) {
+    final at = _now();
+    return _write(() async {
+      if (reminder.check() case Rejected(:final reason)) {
+        return Rejected(reason);
+      }
+      await _dao.updateRow(
+        reminderColumnsOf(reminder).copyWith(updatedAt: Value(at)),
+      );
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<ReminderSnapshot> reminderSnapshot() =>
+      _mapped(() async => reminderSnapshotOf(await _dao.row()));
+
+  @override
+  Future<void> recordReminderDelivered({required DateTime at}) => _mapped(
+    () => _dao.updateRow(
+      AppSettingsCompanion(reminderLastDeliveredAt: Value(at)),
+    ),
+  );
 
   @override
   Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId}) =>

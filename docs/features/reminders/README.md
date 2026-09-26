@@ -1,15 +1,17 @@
 ---
 feature: reminders
-code: []
-depends_on: [deck, study]
+code: [lib/features/reminders/domain, lib/features/reminders/data, lib/features/reminders/di]
+depends_on: [deck, settings, study]
 ---
 ## Phạm vi
 
-**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2).
+**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở BE-B5a
+([spec](../../superpowers/specs/2026-09-26-reminders-backend-design.md)); adapter Android là BE-B5b; màn 24 thuộc FE-B5.
 
-Nhắc học hằng ngày (UC-REMINDER-001).
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+Nhắc học hằng ngày (UC-REMINDER-001). Công tắc, giờ nhắc và lần gửi gần nhất nằm trong
+dòng `app_settings`, do feature `settings` ghi. Feature này giữ port tới nền tảng
+(`ReminderPlatformRepository`), workload đọc lúc fire, digest và thứ tự của nó, giờ nhắc
+kế tiếp theo giờ địa phương, và sáu use case.
 
 ## Màn hình → Use case
 

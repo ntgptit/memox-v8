@@ -56,6 +56,12 @@ abstract final class AppIcons {
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;
   static const IconData themeMode = Icons.contrast;
+  static const IconData theme = Icons.palette_outlined;
+  static const IconData shuffle = Icons.shuffle; // shuffle
+  static const IconData language = Icons.language; // globe
+  static const IconData resetOptions =
+      Icons.settings_backup_restore; // rotate-ccw
+  static const IconData safe = Icons.verified_user_outlined; // shield-check
   static const IconData textScale = Icons.format_size;
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.

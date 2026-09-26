@@ -62,7 +62,10 @@ class MxIconTile extends StatelessWidget {
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
     final (fill, ink) = switch (tone) {
-      MxIconTileTone.tinted => (tinted.withValues(alpha: tint), tinted),
+      MxIconTileTone.tinted => (
+        tinted.withValues(alpha: tint),
+        seed ?? context.derivedColors.primaryInk,
+      ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
       MxIconTileTone.warning => (
         context.semanticColors.warning,

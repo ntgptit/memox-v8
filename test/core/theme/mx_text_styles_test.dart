@@ -125,8 +125,8 @@ void main() {
     expect(styles.counter.color, scheme.onSurfaceVariant);
   });
 
-  test('nav label is primary only when selected', () {
-    expect(styles.navLabel(isSelected: true).color, scheme.primary);
+  // The selected colour is pinned in mx_text_styles_ink_test.dart.
+  test('nav label is onSurfaceVariant when not selected', () {
     expect(styles.navLabel(isSelected: false).color, scheme.onSurfaceVariant);
     expectStyle(
       styles.navLabel(isSelected: true),
@@ -374,11 +374,10 @@ void main() {
     );
   });
 
-  test('rowTitleMatch is the list row title, bold, in primary', () {
+  test('rowTitleMatch is the list row title, bold (ink: see _ink_test)', () {
     expect(styles.rowTitleMatch.fontSize, styles.listRowTitle.fontSize);
     expect(styles.rowTitleMatch.height, styles.listRowTitle.height);
     expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
-    expect(styles.rowTitleMatch.color, AppColorSchemes.light.primary);
   });
 
   test('card editor field roles (kit 08/09)', () {

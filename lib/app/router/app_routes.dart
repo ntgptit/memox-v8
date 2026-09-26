@@ -12,6 +12,16 @@ abstract final class AppRoutes {
   /// A study session, full screen on the root navigator (FE-A6 D2).
   static const String studySessionPath = '$study/session/:$sessionIdParam';
 
+  /// The theme (screen 25), relative to [settings]: a full-screen page on
+  /// the root navigator, as the kit draws it (FE-A3 D2).
+  static const String settingsThemeChild = 'theme';
+  static const String settingsTheme = '$settings/$settingsThemeChild';
+
+  /// The language (screen 26), relative to [settings], on the root
+  /// navigator.
+  static const String settingsLanguageChild = 'language';
+  static const String settingsLanguage = '$settings/$settingsLanguageChild';
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 

@@ -417,6 +417,8 @@ rules:
       - lib/features/card/presentation/widgets/sections/card_schedule_widget.dart
       # Three stat tiles side by side: their tops align, not their centres.
       - lib/features/study/presentation/widgets/sections/session_summary_hero_widget.dart
+      # Three theme cards side by side (screen 25): their tops align.
+      - lib/features/settings/presentation/screens/theme_screen.dart
     patterns:
       - '\bRow\((?:(?!\bchildren:)[\s\S]){0,240}?\bcrossAxisAlignment:\s*CrossAxisAlignment\.start\b'
     tags:

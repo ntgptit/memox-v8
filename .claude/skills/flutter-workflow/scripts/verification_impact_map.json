@@ -25,7 +25,9 @@
     "progress": [],
     "reminders": [],
     "search": [],
-    "settings": [],
+    "settings": [
+      "reminders"
+    ],
     "srs": [
       "progress",
       "settings",

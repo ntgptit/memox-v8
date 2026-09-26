@@ -124,7 +124,9 @@ class _Step extends StatelessWidget {
         : isCurrent
         ? colors.primary
         : colors.surfaceContainerHigh;
-    final ink = isDone || isCurrent
+    final ink = isDone
+        ? semantic.onMastery
+        : isCurrent
         ? colors.onPrimary
         : colors.onSurfaceVariant;
     final styles = context.textStyles;

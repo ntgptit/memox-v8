@@ -57,8 +57,10 @@ abstract final class AppColorSchemes {
         seedColor: seed,
         brightness: Brightness.dark,
       ).copyWith(
-        primary: const Color(0xFF8B9AFF),
-        onPrimary: const Color(0xFF11173A),
+        // The brand indigo in both themes (spec 2026-09-27 D1; kit: #8B9AFF).
+        // Primary text and icons read in MxDerivedColors.primaryInk instead.
+        primary: seed,
+        onPrimary: const Color(0xFFFFFFFF),
         primaryContainer: const Color(0xFF2D346A),
         onPrimaryContainer: const Color(0xFFD9DFFF),
         secondary: const Color(0xFF9DA8E8),

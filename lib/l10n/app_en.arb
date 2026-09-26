@@ -48,6 +48,10 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "commonEdit": "Edit",
+  "@commonEdit": {
+    "description": "Generic action to change a value; TalkBack names it on a typeable number."
+  },
   "commonLoading": "Loading",
   "@commonLoading": {
     "description": "What a screen reader hears while a list or a value loads."
@@ -4842,5 +4846,240 @@
   "summaryDoneCaption": "Done returns you to the deck.",
   "@summaryDoneCaption": {
     "description": "Screen handoff 21 (FE-A6 P1c): the footer caption."
+  },
+  "settingsLoadErrorTitle": "Couldn't open Settings",
+  "@settingsLoadErrorTitle": {
+    "description": "Settings screens, the app_settings row failed to read (UC-SETTINGS-001 E3)."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Screen 25 title and the Settings row that opens it (FE-A3 D2, D7)."
+  },
+  "settingsThemeSystem": "System",
+  "@settingsThemeSystem": {
+    "description": "Theme choice that follows the phone."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme choice: always light."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme choice: always dark."
+  },
+  "settingsThemeSystemHint": "Match phone",
+  "@settingsThemeSystemHint": {
+    "description": "Line under the System theme card (FE-A3 D7)."
+  },
+  "settingsThemeLightHint": "Always light",
+  "@settingsThemeLightHint": {
+    "description": "Line under the Light theme card, and the Theme row when Light is chosen (FE-A3 D7)."
+  },
+  "settingsThemeDarkHint": "Always dark",
+  "@settingsThemeDarkHint": {
+    "description": "Line under the Dark theme card, and the Theme row when Dark is chosen (FE-A3 D7)."
+  },
+  "settingsThemeCard": "{name}, {hint}",
+  "@settingsThemeCard": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    },
+    "description": "TalkBack label of a theme card: its name and its line."
+  },
+  "settingsAppliesAtOnce": "Applies at once — no restart, and you stay where you are.",
+  "@settingsAppliesAtOnce": {
+    "description": "Footnote of screen 25 (BR-SETTINGS-005)."
+  },
+  "settingsThemeSaveFailed": "Couldn't change the theme.",
+  "@settingsThemeSaveFailed": {
+    "description": "Toast when saving the theme failed (E2); offers Retry."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Screen 26 title and the Settings row that opens it."
+  },
+  "settingsLanguageSystem": "Follow the system",
+  "@settingsLanguageSystem": {
+    "description": "Language choice that follows the phone (BR-SETTINGS-006)."
+  },
+  "settingsLanguagePhoneIs": "Phone is set to {language}",
+  "@settingsLanguagePhoneIs": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Line under Follow the system when the phone language is supported (FE-A3 D8)."
+  },
+  "settingsLanguageUnavailable": "Your phone's language isn't available · English",
+  "@settingsLanguageUnavailable": {
+    "description": "Line under Follow the system when the phone language is not supported: the app falls back to English (FE-A3 D8)."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "The English language in its own name (endonym); never translated."
+  },
+  "languageVietnamese": "Tiếng Việt",
+  "@languageVietnamese": {
+    "description": "The Vietnamese language in its own name (endonym); never translated."
+  },
+  "settingsLanguageEnglishName": "English",
+  "@settingsLanguageEnglishName": {
+    "description": "The English language named in the UI language (FE-A3 D8)."
+  },
+  "settingsLanguageVietnameseName": "Vietnamese",
+  "@settingsLanguageVietnameseName": {
+    "description": "The Vietnamese language named in the UI language (FE-A3 D8)."
+  },
+  "settingsLanguageNote": "Applies at once — no restart, and you stay where you are. Your cards stay in their own language.",
+  "@settingsLanguageNote": {
+    "description": "Footnote of screen 26 (BR-SETTINGS-006, BR-STUDY-035)."
+  },
+  "settingsLanguageSwitched": "Switched to English",
+  "@settingsLanguageSwitched": {
+    "description": "Toast after a language switch, read in the language switched to."
+  },
+  "settingsLanguageSaveFailed": "Couldn't change the language.",
+  "@settingsLanguageSaveFailed": {
+    "description": "Toast when saving the language failed (E2); offers Retry."
+  },
+  "settingsStudyDefaults": "Study defaults",
+  "@settingsStudyDefaults": {
+    "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
+  },
+  "settingsStudyDefaultsNote": "Apply to sessions started from now on. A deck with its own study options keeps them.",
+  "@settingsStudyDefaultsNote": {
+    "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
+  },
+  "settingsCardLimit": "Cards per session",
+  "@settingsCardLimit": {
+    "description": "The app-wide card limit row, and its number for TalkBack (BR-SETTINGS-002)."
+  },
+  "settingsCardLimitRange": "1 to {max} · default {count}",
+  "@settingsCardLimitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Line under Cards per session."
+  },
+  "settingsCardLimitInvalid": "Enter a number from {min} to {max}",
+  "@settingsCardLimitInvalid": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Message under a typed card limit out of range (UC-SETTINGS-001 E1)."
+  },
+  "settingsFewerCards": "Fewer cards per session",
+  "@settingsFewerCards": {
+    "description": "Stepper minus button."
+  },
+  "settingsMoreCards": "More cards per session",
+  "@settingsMoreCards": {
+    "description": "Stepper plus button."
+  },
+  "settingsNewCardOrder": "New-card order",
+  "@settingsNewCardOrder": {
+    "description": "The app-wide new-card order row (BR-STUDY-057)."
+  },
+  "settingsNewCardOrderHint": "How new cards enter a learning session",
+  "@settingsNewCardOrderHint": {
+    "description": "Line under New-card order."
+  },
+  "settingsOrderCreated": "Created",
+  "@settingsOrderCreated": {
+    "description": "New-card order: the order cards were created."
+  },
+  "settingsOrderRandom": "Random",
+  "@settingsOrderRandom": {
+    "description": "New-card order: shuffled."
+  },
+  "settingsApp": "App",
+  "@settingsApp": {
+    "description": "Screen 23 section title for theme and language."
+  },
+  "settingsThemeFollowsSystem": "Follows the system setting",
+  "@settingsThemeFollowsSystem": {
+    "description": "Line under the Theme row when System is chosen."
+  },
+  "settingsLanguageSystemHint": "System · {language}",
+  "@settingsLanguageSystemHint": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Line under the Language row when Follow the system is chosen; names what it resolves to."
+  },
+  "settingsReset": "Reset",
+  "@settingsReset": {
+    "description": "Screen 23 section title for Reset app options."
+  },
+  "settingsResetNote": "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched.",
+  "@settingsResetNote": {
+    "description": "Note under the Reset section (BR-SETTINGS-008)."
+  },
+  "settingsResetRow": "Reset app options",
+  "@settingsResetRow": {
+    "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
+  },
+  "settingsResetRowHint": "Theme, language, study defaults",
+  "@settingsResetRowHint": {
+    "description": "Line under Reset app options."
+  },
+  "settingsResetTitle": "Reset app options?",
+  "@settingsResetTitle": {
+    "description": "Reset confirmation title."
+  },
+  "settingsResetBody": "Theme, language, cards per session and new-card order go back to their defaults.",
+  "@settingsResetBody": {
+    "description": "Reset confirmation body; names what the app shows (FE-A3 D4)."
+  },
+  "settingsResetSafe": "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.",
+  "@settingsResetSafe": {
+    "description": "Reset confirmation note: it is not Reset learning progress (BR-SETTINGS-008, BR-SRS-022)."
+  },
+  "settingsResetConfirm": "Reset options",
+  "@settingsResetConfirm": {
+    "description": "Reset confirmation button."
+  },
+  "settingsResetDone": "App options reset to defaults",
+  "@settingsResetDone": {
+    "description": "Toast after a reset."
+  },
+  "settingsResetFailed": "Couldn't reset the app options. Nothing changed.",
+  "@settingsResetFailed": {
+    "description": "Toast when the reset failed (E2); offers Retry."
+  },
+  "settingsSaved": "Saved",
+  "@settingsSaved": {
+    "description": "Toast after a study default was saved (FE-A3 D1)."
+  },
+  "settingsCardLimitSaveFailed": "Couldn't save cards per session. Still {count}.",
+  "@settingsCardLimitSaveFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Toast when saving the card limit failed (E2); names the value that stands, and offers Retry."
+  },
+  "settingsOrderSaveFailed": "Couldn't save the new-card order.",
+  "@settingsOrderSaveFailed": {
+    "description": "Toast when saving the new-card order failed (E2); offers Retry."
   }
 }

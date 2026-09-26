@@ -57,7 +57,10 @@ class _MxToggleState extends State<MxToggle> {
       foregroundDecoration: _hasFocus
           ? BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.full),
-              border: Border.all(color: colors.primary, width: AppStroke.focus),
+              border: Border.all(
+                color: context.derivedColors.primaryInk,
+                width: AppStroke.focus,
+              ),
             )
           : null,
       child: AnimatedAlign(

@@ -52,7 +52,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
-                      color: colors.primary,
+                      color: context.derivedColors.primaryInk,
                       size: AppIconSize.inline,
                     ),
                     child: Row(

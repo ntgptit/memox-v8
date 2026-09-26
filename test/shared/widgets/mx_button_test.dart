@@ -142,7 +142,7 @@ void main() {
     );
   });
 
-  testWidgets('outline tone has no fill, primary ink, 1px outlineVariant', (
+  testWidgets('outline tone has no fill, primaryInk, 1px outlineVariant', (
     tester,
   ) async {
     await pumpMx(
@@ -152,7 +152,7 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, scheme.primary);
+    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
     expect(
       (material.shape! as RoundedRectangleBorder).side,
       BorderSide(color: scheme.outlineVariant),

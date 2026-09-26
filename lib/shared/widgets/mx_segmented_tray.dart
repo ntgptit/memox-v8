@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
@@ -15,8 +17,9 @@ final class MxSegment<T> {
 }
 
 /// A two- or three-option exclusive switch: a recessed tray with a raised
-/// thumb behind the active option. Beyond three options, or when labels stop
-/// fitting, use MxOptionRow instead.
+/// thumb behind the active option. When the labels stop fitting on one line
+/// (long copy, large text), the options stack, one per line (FE-A3 ruling).
+/// Beyond three options, use MxOptionRow instead.
 class MxSegmentedTray<T> extends StatelessWidget {
   const MxSegmentedTray({
     super.key,
@@ -42,7 +45,61 @@ class MxSegmentedTray<T> extends StatelessWidget {
   static const double _segmentGap = 2;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) =>
+        _naturalWidth(context) > constraints.maxWidth
+        ? _stacked(context)
+        : _inline(context),
+  );
+
+  double get _padding => isWide ? AppSpacing.gutter : AppSpacing.grouped;
+
+  /// The one-line width: each option its label and padding, at least a
+  /// touch target, plus the gaps and the tray's inset.
+  double _naturalWidth(BuildContext context) {
+    final style = context.textStyles.trayLabel(isSelected: true);
+    final textScaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    var width = AppSpacing.micro * 2 + _segmentGap * (segments.length - 1);
+    for (final segment in segments) {
+      final painter = TextPainter(
+        text: TextSpan(text: segment.label, style: style),
+        textDirection: direction,
+        textScaler: textScaler,
+        maxLines: 1,
+      )..layout();
+      width += math.max(AppSize.touchTarget, painter.width + _padding * 2);
+      painter.dispose();
+    }
+    return width;
+  }
+
+  Widget _stacked(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: context.colors.surfaceContainer,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(AppSpacing.micro),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: _segmentGap,
+        children: [
+          for (final segment in segments)
+            _Segment(
+              label: segment.label,
+              isSelected: segment.value == selected,
+              padding: _padding,
+              isStretched: true,
+              onTap: () => onSelected(segment.value),
+            ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _inline(BuildContext context) {
     // Ruling I4: the tray paints 40 tall inside a 48 layout band.
     const trayHeight = _thumbHeight + AppSpacing.micro + AppSpacing.micro;
     return Stack(
@@ -72,7 +129,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
                 _Segment(
                   label: segment.label,
                   isSelected: segment.value == selected,
-                  padding: isWide ? AppSpacing.gutter : AppSpacing.grouped,
+                  padding: _padding,
                   onTap: () => onSelected(segment.value),
                 ),
             ],
@@ -89,12 +146,16 @@ class _Segment extends StatelessWidget {
     required this.isSelected,
     required this.padding,
     required this.onTap,
+    this.isStretched = false,
   });
 
   final String label;
   final bool isSelected;
   final double padding;
   final VoidCallback onTap;
+
+  /// Stacked: the thumb spans the tray's width.
+  final bool isStretched;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +176,7 @@ class _Segment extends StatelessWidget {
             ),
             child: Center(
               heightFactor: 1,
+              widthFactor: isStretched ? null : 1,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: isSelected ? colors.surfaceContainerLowest : null,
@@ -123,6 +185,7 @@ class _Segment extends StatelessWidget {
                 ),
                 child: SizedBox(
                   height: MxSegmentedTray._thumbHeight,
+                  width: isStretched ? double.infinity : null,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: padding),
                     child: Center(

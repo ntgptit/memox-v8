@@ -48,7 +48,7 @@ abstract final class AppComponentThemes {
       border: fieldEdge(ghost),
       enabledBorder: fieldEdge(ghost),
       disabledBorder: fieldEdge(ghost),
-      focusedBorder: fieldEdge(scheme.primary),
+      focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
       errorBorder: fieldEdge(scheme.error),
       focusedErrorBorder: fieldEdge(scheme.error),
     );
@@ -68,7 +68,7 @@ abstract final class AppComponentThemes {
       fill: fill,
       ink: ink,
       edge: edge,
-      focusColor: scheme.primary,
+      focusColor: MxDerivedColors.primaryInkOf(scheme),
       height: AppSize.buttonRegular,
       radius: AppRadius.md,
       padding: AppSpacing.gutter,
@@ -117,7 +117,7 @@ abstract final class AppComponentThemes {
       scheme,
       texts,
       fill: null,
-      ink: scheme.primary,
+      ink: MxDerivedColors.primaryInkOf(scheme),
       edge: BorderSide(color: scheme.outlineVariant, width: AppStroke.hairline),
     ),
   );
@@ -129,7 +129,7 @@ abstract final class AppComponentThemes {
           scheme,
           texts,
           fill: null,
-          ink: scheme.primary,
+          ink: MxDerivedColors.primaryInkOf(scheme),
           edge: BorderSide.none,
         ),
       );
@@ -154,7 +154,10 @@ abstract final class AppComponentThemes {
           ),
           side: WidgetStateProperty.resolveWith(
             (states) => states.contains(WidgetState.focused)
-                ? BorderSide(color: scheme.primary, width: AppStroke.focus)
+                ? BorderSide(
+                    color: MxDerivedColors.primaryInkOf(scheme),
+                    width: AppStroke.focus,
+                  )
                 : null,
           ),
           shape: const WidgetStatePropertyAll(CircleBorder()),

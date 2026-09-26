@@ -27,6 +27,22 @@ void main() {
     );
 
     group(name, () {
+      test('outlined and text buttons ink and focus in primaryInk; the '
+          'filled fill keeps primary (spec 2026-09-27 D2)', () {
+        final ink = MxDerivedColors.primaryInkOf(scheme);
+        const focused = {WidgetState.focused};
+        for (final style in [
+          theme.outlinedButtonTheme.style!,
+          theme.textButtonTheme.style!,
+        ]) {
+          expect(style.foregroundColor!.resolve({}), ink);
+          expect(style.side!.resolve(focused)!.color, ink);
+        }
+        final filled = theme.filledButtonTheme.style!;
+        expect(filled.backgroundColor!.resolve({}), scheme.primary);
+        expect(filled.side!.resolve(focused)!.color, ink);
+      });
+
       test('fields: filled, ghost edge, radius 12, no label gap', () {
         final fields = theme.inputDecorationTheme;
         expect(fields.filled, isTrue);
@@ -46,7 +62,7 @@ void main() {
         expect(edge.borderRadius, BorderRadius.circular(12));
         expect(
           (fields.focusedBorder! as OutlineInputBorder).borderSide.color,
-          scheme.primary,
+          MxDerivedColors.primaryInkOf(scheme),
         );
         expect(
           (fields.errorBorder! as OutlineInputBorder).borderSide.color,
