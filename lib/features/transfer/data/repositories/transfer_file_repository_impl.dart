@@ -76,7 +76,7 @@ Outcome<SourceTable, TransferRejection> _delimitedFile(
   }
   final delimiter = format == TransferFormat.tsv
       ? DelimitedTextDataSource.tab
-      : DelimitedTextDataSource.comma;
+      : _delimited.delimiterOfCsv(text);
   return Ok(SourceTable(rows: _delimited.parse(text, delimiter)));
 }
 
