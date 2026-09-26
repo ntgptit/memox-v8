@@ -52,6 +52,7 @@ final class MxTextStyles {
   static const double _optionSize = 16;
   static const double _optionTracking = -0.1;
   static const double _choiceHeight = 1.25;
+  static const double _studyPassageHeight = 1.55;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -395,6 +396,27 @@ final class MxTextStyles {
     _texts.bodyMedium!,
     FontWeight.w600,
   ).copyWith(height: _choiceHeight, letterSpacing: 0, color: ink);
+
+  /// A study face's running text (kit Recall's meaning, Fill's prompt):
+  /// 16/400 at 1.55. One role for both; the kit's 14 on Fill is ruled up to
+  /// 16 for legibility (FE-A6 P4).
+  TextStyle get studyPassage => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
+    FontWeight.w400,
+  ).copyWith(height: _studyPassageHeight, color: _scheme.onSurface);
+
+  /// A checked Fill answer (kit Fill `wrong`): 24/700 at -0.3, in [ink];
+  /// the typed answer is struck through in its own ink when [isStruck].
+  TextStyle fillAnswer(Color ink, {required bool isStruck}) =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
+        FontWeight.w700,
+      ).copyWith(
+        letterSpacing: _studyMeaningTracking,
+        color: ink,
+        decoration: isStruck ? TextDecoration.lineThrough : null,
+        decorationColor: isStruck ? ink : null,
+      );
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.
