@@ -48,8 +48,8 @@ is 4.63:1, and dark ink on it would be 3.76:1, so `onPrimary` must become white.
 
 - **dark**, `t` = 0.45 → about `#94A0F7`, whose worst case over every dark ground and
   tint is 4.68:1;
-- **light**, `t` = 0.15 → about `#4A5AD7`, whose worst case over every light ground
-  and tint is ≥ 4.5:1.
+- **light**, `t` = 0.25 → about `#4151C6`, whose worst case over every light ground
+  and tint is 4.61:1.
 
 The unit test computes both on the real `onSurface` values.
 
@@ -58,7 +58,7 @@ The unit test computes both on the real `onSurface` values.
 | # | Decision | Owner |
 |---|---|---|
 | D1 | Dark `primary` is `AppColorSchemes.seed` (`#5265F5`); dark `onPrimary` is `#FFFFFF` | Owner, 2026-09-27 |
-| D2 | A new derived colour, `MxDerivedColors.primaryInk`, is primary pulled toward `onSurface` (dark 0.45, light 0.15). It is the only primary for text, icons, spinner arcs off a fill, and focus rings, in both themes | Owner, 2026-09-27 |
+| D2 | A new derived colour, `MxDerivedColors.primaryInk`, is primary pulled toward `onSurface` (dark 0.45, light 0.25). It is the only primary for text, icons, spinner arcs off a fill, and focus rings, in both themes | Owner, 2026-09-27 |
 | D3 | Fills, selected edges, radio and checkbox fills, toggles, schedule bars, dots, cursors and tints keep `primary` | Owner, 2026-09-27 |
 | D4 | Unchanged: the light `inversePrimary` `#8B9AFF` (a snackbar action is text on the dark inverse surface), `statusReviewing` `#8B9AFF` (a status colour), and `primaryContainer` | Owner, 2026-09-27 |
 | D5 | `MxBadge` solid is allowed only with the primary tone: `onPrimary` is the only ink guaranteed on its fill. This closes a latent white-on-mint or white-on-amber case | Owner, 2026-09-27 |
@@ -114,8 +114,9 @@ the same rule: text, icon or focus → `primaryInk`; fill, edge, indicator or ti
   - dark `primary` = `0xFF5265F5`, dark `onPrimary` = `0xFFFFFFFF`;
   - light `inversePrimary` stays `0xFF8B9AFF`, dark `inversePrimary` stays the seed.
 - **`mx_derived_colors_test.dart`:**
-  - `primaryInk` reaches ≥ 4.5:1 against every `surface*` ground of its theme and
-    against primary at 8–20 % over those grounds (computed, not pinned);
+  - `primaryInk` reaches ≥ 4.5:1 against every `surface*` ground of its theme, and
+    against primary at 8–20 % over the grounds that carry primary tints (page, card,
+    sheet); computed, not pinned;
   - `primaryInk` light differs from primary;
   - the dark `ghostBorder` and `surfaceHero` expectations follow the new primary.
 - **Widget tests:** one assertion per group above that the text or glyph uses
