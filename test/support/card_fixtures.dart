@@ -5,6 +5,8 @@ import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 
+import 'trash_fixtures.dart';
+
 /// A card and its schedule row written straight to the tables, in one
 /// transaction, so a read test can set any schedule state and the watchers
 /// hear of it once. The schedule row follows the root's scheduler, at the
@@ -26,6 +28,14 @@ Future<void> insertCard(
   DateTime? createdAt,
 }) => db.transaction(() async {
   final created = createdAt ?? DateTime(2026, 9, 1);
+  if (deleteBatchId != null) {
+    await insertDeleteBatch(
+      db,
+      deleteBatchId,
+      itemType: 'card',
+      rootItemId: id,
+    );
+  }
   await db.customUpdate(
     "UPDATE deck SET content_type = 'card' "
     'WHERE id = ? AND parent_id IS NOT NULL',

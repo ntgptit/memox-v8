@@ -8,7 +8,7 @@ import 'generated/schema.dart';
 
 // BE-D1: every schema version upgrades to the current one, with its rows and
 // their values intact (spec §5.3; .claude/skills/flutter-drift/references/
-// migrations.md).
+// migrations.md). v3 is the Trash's (trash spec §5.3).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -54,6 +54,15 @@ const _v1Rows = <String>[
   "INSERT INTO app_settings (id, card_limit, new_card_order, theme_mode, language, updated_at) VALUES (1, 15, 'random', 'dark', 'vi', 5)",
 ];
 
+/// What a v2 database adds to those rows: a fill hint shown, the meaning
+/// slots of a match board, and the five options of the guess question in
+/// progress.
+const _v2Rows = <String>[
+  "UPDATE study_queue_items SET hint_shown = 1 WHERE session_id = 'open' AND mode = 'fill'",
+  "UPDATE study_queue_items SET meaning_slot = position WHERE session_id = 'learned' AND mode = 'match'",
+  "INSERT INTO study_guess_options (session_id, round, card_id, slot, option_card_id) VALUES ('open', 1, 'k4', 0, 'k6'), ('open', 1, 'k4', 1, 'k4'), ('open', 1, 'k4', 2, 'k3'), ('open', 1, 'k4', 3, 'k5'), ('open', 1, 'k4', 4, 'k1')",
+];
+
 /// The tables of v1, whose rows the upgrade must keep as they are.
 const _v1Tables = [
   'deck',
@@ -74,6 +83,13 @@ const _v2Columns = {'hint_shown', 'meaning_slot'};
 String _canonical(Map<String, Object?> row) =>
     ([...row.keys]..sort()).map((column) => '$column=${row[column]}').join('|');
 
+/// The tables of v2: v1's and the options of a guess question.
+const _v2Tables = [..._v1Tables, 'study_guess_options'];
+
+/// [rows] as text, in a stable order.
+List<String> _values(Iterable<Map<String, Object?>> rows) =>
+    [for (final row in rows) _canonical(row)]..sort();
+
 /// [rows] as text without v2's columns, in a stable order.
 List<String> _v1Values(Iterable<Map<String, Object?>> rows) => [
   for (final row in rows)
@@ -87,18 +103,24 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v2', () async {
+  test('v1 upgrades to the schema of v3', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 2);
+    await verifier.migrateAndValidate(db, 3);
+  });
+
+  test('v2 upgrades to the schema of v3', () async {
+    final db = AppDatabase(await verifier.startAt(2));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 3);
   });
 
   test(
-    'a new database has the schema of v2, the one an upgrade ends at',
+    'a new database has the schema of v3, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 2);
+      await verifier.migrateAndValidate(db, 3);
     },
   );
 
@@ -116,7 +138,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 2);
+      await verifier.migrateAndValidate(db, 3);
     });
     tearDown(() => db.close());
 
@@ -161,6 +183,120 @@ void main() {
     test('passes the integrity and foreign key checks', () async {
       final integrity = await db.customSelect('PRAGMA integrity_check').get();
       expect([for (final row in integrity) row.data.values.single], ['ok']);
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    });
+  });
+
+  group('a v2 database with rows', () {
+    late AppDatabase db;
+    late Map<String, List<String>> before;
+
+    setUp(() async {
+      final schema = await verifier.schemaAt(2);
+      for (final statement in [..._v1Rows, ..._v2Rows]) {
+        schema.rawDatabase.execute(statement);
+      }
+      before = {
+        for (final table in _v2Tables)
+          table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
+      };
+      db = AppDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 3);
+    });
+    tearDown(() => db.close());
+
+    Future<List<String>> ids(String sql) async => [
+      for (final row in await db.customSelect(sql).get())
+        '${row.data.values.single}',
+    ]..sort();
+
+    test('keeps every row of v2 with its values', () async {
+      for (final table in _v2Tables) {
+        final after = await db.customSelect('SELECT * FROM $table').get();
+        expect(
+          _values([for (final row in after) row.data]),
+          before[table],
+          reason: table,
+        );
+      }
+      expect(before['study_guess_options'], hasLength(5));
+      expect(await ids('SELECT id FROM delete_batches'), isEmpty);
+    });
+
+    test('still holds every invariant of schema.md', () async {
+      for (final MapEntry(key: number, value: query)
+          in invariantQueries.entries) {
+        expect(
+          await db.customSelect(query).get(),
+          isEmpty,
+          reason: 'invariant $number: ${invariantSummaries[number]}',
+        );
+      }
+    });
+
+    test('passes the integrity and foreign key checks', () async {
+      final integrity = await db.customSelect('PRAGMA integrity_check').get();
+      expect([for (final row in integrity) row.data.values.single], ['ok']);
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    });
+
+    test('deleting a batch deletes its rows and what hangs off them, and no '
+        'other row (BR-TRASH-010)', () async {
+      await db.customStatement(
+        'INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) '
+        "VALUES ('b1', 'card', 'k1', 0), ('b2', 'deck', 'S1', 0)",
+      );
+      await db.customStatement(
+        "UPDATE card SET delete_batch_id = 'b1' WHERE id = 'k1'",
+      );
+      await db.customStatement(
+        "UPDATE deck SET delete_batch_id = 'b2' WHERE id = 'S1'",
+      );
+      await db.customStatement(
+        "UPDATE card SET delete_batch_id = 'b2' WHERE id = 'm1'",
+      );
+
+      await db.customStatement('DELETE FROM delete_batches');
+
+      expect(await ids('SELECT id FROM deck'), ['R', 'R1', 'S']);
+      expect(await ids('SELECT id FROM card'), ['k2', 'k3', 'k4', 'k5', 'k6']);
+      expect(await ids('SELECT card_id FROM card_schedule'), [
+        'k2',
+        'k3',
+        'k4',
+        'k5',
+        'k6',
+      ]);
+      expect(await ids('SELECT id FROM review_log'), [
+        'l1',
+        'l10',
+        'l11',
+        'l12',
+        'l13',
+        'l4',
+        'l5',
+        'l7',
+      ]);
+      expect(await ids('SELECT card_id FROM card_tags'), isEmpty);
+      expect(await ids('SELECT id FROM tags'), ['t1']);
+      expect(await ids('SELECT id FROM study_session'), [
+        'learned',
+        'open',
+        'review',
+        'sm2',
+      ]);
+      expect(
+        await ids(
+          "SELECT COUNT(*) FROM study_queue_items WHERE card_id IN ('k1', 'm1')",
+        ),
+        ['0'],
+      );
+      expect(await ids('SELECT option_card_id FROM study_guess_options'), [
+        'k3',
+        'k4',
+        'k5',
+        'k6',
+      ]);
       expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
     });
   });

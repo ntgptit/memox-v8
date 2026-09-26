@@ -93,19 +93,64 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
-  Future<Outcome<void, CardRejection>> deleteCards({
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
+    DateTime? now,
   }) {
-    final at = _now();
+    final at = now ?? _now();
     return _write(() async {
-      if (cardIds.isEmpty) return const Ok(null);
+      if (cardIds.isEmpty) return const Ok([]);
       final rows = await _dao.liveRows(cardIds);
       if (rows.length != cardIds.length) {
         return const Rejected(CardRejection.notFound);
       }
-      await _dao.deleteCards(cardIds);
+      // One batch per card, all at one time: each card is an item the person
+      // can restore on its own (BR-TRASH-001).
+      final batchIds = <String>[];
+      for (final cardId in cardIds) {
+        final batchId = newId();
+        await _dao.moveToTrash(cardId, batchId, at);
+        batchIds.add(batchId);
+      }
       await _unsetEmptied({for (final row in rows) row.deckId}, at);
-      return const Ok(null);
+      for (final batchId in batchIds) {
+        await _dao.closeSessionsTouching(batchId, at);
+      }
+      return Ok(batchIds);
+    });
+  }
+
+  @override
+  Future<Outcome<void, CardRejection>> restoreCards({
+    required Set<String> batchIds,
+    required String deckId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      if (batchIds.isEmpty) return const Ok(null);
+      final cards = <String, CardRow>{};
+      for (final batchId in batchIds) {
+        final card = await _dao.itemOf(batchId);
+        if (card == null) return const Rejected(CardRejection.notFound);
+        cards[batchId] = card;
+      }
+      return _restoreInto(deckId, cards, updatedAt: at, at: at);
+    });
+  }
+
+  @override
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const Rejected(CardRejection.notFound);
+      // Back into its own deck with its own updated_at: an Undo is not a
+      // move (trash spec D9).
+      return _restoreInto(card.deckId, {batchId: card}, at: at);
     });
   }
 
@@ -221,6 +266,7 @@ final class CardRepositoryImpl implements CardRepository {
     final counts = await _listDao.counts(
       deckId: deckId,
       searchTerm: query.searchTerm,
+      tagIds: query.tagIds,
       now: now,
     );
     final schedules = await _listDao.activeSchedules(deckId);
@@ -298,14 +344,29 @@ final class CardRepositoryImpl implements CardRepository {
   Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId) =>
       _detailDao
           .watchMoveTargetRows(sourceDeckId)
-          .map(
-            (rows) => candidatesInTreeOrder(
-              [for (final row in rows) deckTreeNodeOf(row)],
-              (node, path) =>
-                  CardMoveTarget(id: node.id, name: node.name, path: path),
-            ),
-          )
+          .map(_moveTargetsOf)
           .mapDatabaseErrors();
+
+  @override
+  Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds) => _dao
+      .restoreTargetChanges()
+      .asyncMap((_) => _db.transaction(() => _restoreTargets(batchIds)))
+      .mapDatabaseErrors();
+
+  /// Where the cards of [batchIds] may go back: the decks of their one root
+  /// that hold cards or nothing; none when they come from two roots, or a
+  /// batch is gone (BR-TRASH-006).
+  Future<List<CardMoveTarget>> _restoreTargets(Set<String> batchIds) async {
+    final deckIds = <String>{};
+    for (final batchId in batchIds) {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const [];
+      deckIds.add(card.deckId);
+    }
+    final roots = await _dao.rootIdsOf(deckIds);
+    if (roots.length != 1) return const [];
+    return _moveTargetsOf(await _detailDao.restoreTargetRows(roots.single));
+  }
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
   /// refusal here is a bug: throwing rolls the whole write back.
@@ -318,6 +379,47 @@ final class CardRepositoryImpl implements CardRepository {
     if (result case Rejected(:final reason)) {
       throw StateError('tags refused a checked draft: $reason');
     }
+  }
+
+  /// [cards], by batch, come back into [deckId] when it takes them
+  /// (BR-TRASH-006, BR-TRASH-007); [updatedAt] stamps them as a move does.
+  /// An unset deck becomes a deck of cards (BR-DECK-008).
+  Future<Outcome<void, CardRejection>> _restoreInto(
+    String deckId,
+    Map<String, CardRow> cards, {
+    DateTime? updatedAt,
+    required DateTime at,
+  }) async {
+    final target = await _dao.deckRow(deckId);
+    if (target == null) {
+      return Rejected(
+        await _dao.isDeckInTrash(deckId)
+            ? CardRejection.targetInTrash
+            : CardRejection.targetNotFound,
+      );
+    }
+    final targetContentType = DeckContentType.values.byName(target.contentType);
+    final rule = CardEntity.checkTarget(
+      targetRootId: target.rootId,
+      targetIsRoot: target.parentId == null,
+      targetContentType: targetContentType,
+      sourceRootIds: await _dao.rootIdsOf({
+        for (final card in cards.values) card.deckId,
+      }),
+    );
+    if (rule case Rejected(:final reason)) return Rejected(reason);
+    for (final MapEntry(key: batchId, value: card) in cards.entries) {
+      await _dao.restoreFromBatch(
+        batchId,
+        card.id,
+        deckId: deckId,
+        updatedAt: updatedAt,
+      );
+    }
+    if (targetContentType == DeckContentType.unset) {
+      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
+    }
+    return const Ok(null);
   }
 
   /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).
@@ -342,3 +444,9 @@ final class CardRepositoryImpl implements CardRepository {
     }
   }
 }
+
+List<CardMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>
+    candidatesInTreeOrder(
+      [for (final row in rows) deckTreeNodeOf(row)],
+      (node, path) => CardMoveTarget(id: node.id, name: node.name, path: path),
+    );

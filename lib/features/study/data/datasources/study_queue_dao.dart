@@ -173,7 +173,7 @@ final class StudyQueueDao {
     final rows = await _db
         .customSelect(
           'SELECT q.card_id, c.back_folded FROM study_queue_items q'
-          ' JOIN card c ON c.id = q.card_id'
+          ' JOIN card c ON c.id = q.card_id AND c.delete_batch_id IS NULL'
           ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
           ' AND q.status = ? AND q.position BETWEEN ? AND ?',
           variables: [

@@ -51,7 +51,8 @@
   },
   "database_query_features": {
     "card_queries": ["card"],
-    "deck_queries": ["deck"]
+    "deck_queries": ["deck"],
+    "trash_queries": ["card", "deck", "trash"]
   },
   "full_scope_prefixes": [
     ".github/",

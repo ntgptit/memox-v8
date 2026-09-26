@@ -12,6 +12,7 @@ import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 
 import '../../../support/srs_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The two writes a study session makes on srs: one turn, and the end of a
 // card's learning (UC-STUDY-001 steps 7–11).
@@ -258,10 +259,7 @@ void main() {
   test('a card in the Trash is notFound: the study flow never writes it '
       '(BE-C3)', () async {
     final (_, cardId, _) = await insertStudyTree(db, 'r');
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = ?",
-      [cardId],
-    );
+    await trashCardRow(db, cardId);
     final before = await totalChanges(db);
 
     expect(
@@ -277,6 +275,9 @@ void main() {
 
   test('a card whose deck is in the Trash is notFound (BE-C3)', () async {
     final (_, cardId, _) = await insertStudyTree(db, 'r');
+    // The card is left active on purpose, a state invariant 33 forbids: the
+    // deck alone keeps it out of the study flow.
+    await insertDeleteBatch(db, 'b', itemType: 'deck', rootItemId: 'r-leaf');
     await db.customStatement(
       "UPDATE deck SET delete_batch_id = 'b' WHERE id = 'r-leaf'",
     );
