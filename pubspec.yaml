@@ -8,8 +8,10 @@ environment:
 
 dependencies:
   characters: ^1.4.1
+  csv: ^8.0.0
   drift: ^2.35.0
   drift_flutter: ^0.3.1
+  excel: ^4.0.6
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -18,6 +20,7 @@ dependencies:
   go_router: ^18.0.1
   intl: any
   riverpod_annotation: ^4.0.7
+  share_plus: ^13.3.0
   sqlite3: ^3.6.0
   uuid: ^4.6.0
 
