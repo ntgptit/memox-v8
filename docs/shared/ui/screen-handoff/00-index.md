@@ -35,10 +35,10 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 03 | Starter decks | 10 | FE-B4 | out of V8 | — |
 | 04 | Library search | 5 | FE-A1, FE-A10 | aligned | [04-library-search.md](04-library-search.md) |
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |
-| 06 | Trash | 15 | FE-B1 | out of V8 | — |
+| 06 | Trash | 15 | FE-B1 | not built | — (FE-B1 plan 2) |
 | 07 | Card list | 15 | FE-A2 | aligned | [07-card-list.md](07-card-list.md) |
 | 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
-| 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
+| 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84; Move to Trash in [07-card-list.md](07-card-list.md)) |
 | 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
@@ -64,7 +64,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
   sheet names each such feature (spec A4, amended 2026-09-25).
 - **Data displays without their data** are hidden, never drawn empty: an empty mastery
   bar would claim 0 % (spec A5).
-- **Delete is permanent in V8.0** (BR-DECK-022, BR-DECK-023). Every "Move to Trash",
-  "Recoverable for 30 days" and "Undo" of the artifact becomes a permanent delete with
-  a count, until the Trash sub-project (UC-TRASH-001).
+- **Delete moves to the Trash** (UC-TRASH-001). "Move to Trash", "Recoverable for 30
+  days" and "Undo" are built as the artifact draws them: Undo after one item, for 8
+  seconds and until acted on under TalkBack (FE-B1 D3, D14).
 - **Copy** is the artifact's English; Vietnamese is added to the ARB with the screen.

@@ -103,6 +103,23 @@
       ]
     },
     {
+      "num": "09",
+      "dir": "09-card-edit",
+      "title": "Card edit",
+      "states": [
+        { "id": "delConfirm", "label": "Move to Trash" },
+        { "id": "notFound", "label": "Card gone" }
+      ]
+    },
+    {
+      "num": "10",
+      "dir": "10-card-detail",
+      "title": "Card detail",
+      "states": [
+        { "id": "notFound", "label": "Not found" }
+      ]
+    },
+    {
       "num": "11",
       "dir": "11-card-import",
       "title": "Card import",

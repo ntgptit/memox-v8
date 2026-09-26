@@ -16,13 +16,13 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
-| Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Delete. |
+| Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting. |
 
 ## Deck action sheet (`⋮`)
 
 Study this deck · Rename · Move to another deck · Import cards (screen 11) · Export cards
-(screen 12) · Delete. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
+(screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
 
 ## States
 
@@ -34,22 +34,26 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
 | error | ![](img/07-card-list/error-light.png) | ![](img/07-card-list/error-dark.png) | As drawn. |
 | notFound | ![](img/07-card-list/notFound-light.png) | ![](img/07-card-list/notFound-dark.png) | As screen 01 deckNotFound. |
-| deckActions | ![](img/07-card-list/deckActions-light.png) | ![](img/07-card-list/deckActions-dark.png) | Delete replaces Move to Trash. |
+| deckActions | ![](img/07-card-list/deckActions-light.png) | ![](img/07-card-list/deckActions-dark.png) | As drawn. |
 | selection | ![](img/07-card-list/selection-light.png) | ![](img/07-card-list/selection-dark.png) | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | ![](img/07-card-list/moveTargets-light.png) | ![](img/07-card-list/moveTargets-dark.png) | As drawn. |
 | noMoveTarget | ![](img/07-card-list/noMoveTarget-light.png) | ![](img/07-card-list/noMoveTarget-dark.png) | As drawn. |
-| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Delete keep their sheet or dialog open and say it there. The selection stays. |
-| delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | **Deviation:** permanent delete. |
-| delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | **Deviation:** permanent delete. |
+| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
+| delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | One selected card, as drawn, without the glyph. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
+| delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | As screen 01 deckDelete. |
+| trashed | ![](img/07-card-list/trashed-light.png) | ![](img/07-card-list/trashed-dark.png) | One card: as drawn, Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash", no Undo (D4); FE-B1 plan 2 adds Open Trash. |
 
-Not captured: `trashed` (Undo; no Trash in V8.0). `cardActions` gives way to the card
-detail: a tap opens it (#35).
+Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
+editor (screen 09) moves its card to the Trash from its "More" card with the same dialog
+(FE-B1 D13):
+![](img/09-card-edit/delConfirm-light.png)
 
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
+| A trash glyph beside the Move to Trash dialog's title | No glyph | `MxDialog` has no glyph slot |
+| "Recoverable for 30 days with its 7 answers of history" | "Recoverable from Trash for 30 days, with its schedule and history" | The dialog reads no history count |
 | Tags filter | Hidden; named under Coming soon | Spec A4 (amended) |
 | An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
 | The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
@@ -60,7 +64,8 @@ detail: a tap opens it (#35).
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
 - Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first".
-- Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Delete".
+- Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Trash".
+- Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
 - Search empty: "No cards match “{term}”" · "Try a different term, or clear the search to see all {n} cards."
 - Error: "Couldn't open this deck" · "Your data is safe on this device. Try again in a moment."

@@ -482,7 +482,7 @@ item names where it comes from.
 | 79 | The card editor follows the V3 kit (08, 09) over library spec §6.5: live validation with Save disabled until valid, failures inside the form (inline banner, warning banner, gone state), and a discard confirm | library phase 4a P4a-L1…L5 |
 | 80 | A new card has no flag control; the flag toggles from the edit app bar, and its glyph changes but does not recolour (`Icon(color:)` is banned) | library phase 4a P4a-L6 |
 | 81 | The editor's deck context drops the kit's pill border, and Add tag is an outline chip, not dashed: no `BorderSide`, and no dashed-border token | library phase 4a P4a-L7, P4a-L8 |
-| 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b | library phase 4a P4a-L10 |
+| 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b — Move to Trash closed by FE-B1 (D13): a "More" card at the foot of the edit form | library phase 4a P4a-L10 |
 | 83 | The edit mode is built and tested in phase 4a but has no route until phase 4b adds the card detail, which opens it — closed by library phase 4b | library phase 4a split |
 | 84 | A top-level deck holds sub-decks only, so its empty state offers New sub-deck alone, with its own copy; New card shows where the deck's create options include cards | library phase 4a (Task 4 ruling) |
 | 85 | The card detail follows the V3 kit (10) over library spec §6.6: a schedule card with the eight-box ramp or the SM-2 facts, history grouped by cycle, Load older history, and an end-of-history line | library phase 4b P4b-L1 |
@@ -496,7 +496,7 @@ item names where it comes from.
 | 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
 | 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
 | 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D — closed by library alignment phase D | library alignment phase C (C-L3) |
-| 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
+| 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back, now with the Move to Trash toast and its Undo (FE-B1 D3) | library alignment phase C (C-L5) |
 | 95 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
 | 96 | A card row's flag is drawn in the warning colour, not the kit's streak colour: the theme has no streak token | library alignment phase E (E-L2) |
 | 97 | The selection header's "Select all {n}" is a compact secondary `MxButton`, not the kit's text link: no bare-text button in the widget set | library alignment phase E (E-L3) |
@@ -510,6 +510,9 @@ item names where it comes from.
 | 105 | Success, caution and danger glyphs and success text use inks pulled toward `onSurface` (`successInk`, `warningInk`, `error`): the kit's pure green and amber fail 3:1 (glyph) and 4.5:1 (text) on their soft tints; the fills keep the kit's hues | FE-A6 D14 |
 | 106 | Card import names the fields two ways: "Term (front)" / "Meaning (back)" on the mapping, "term" and "meaning" in its notes and row reasons. One vocabulary waits for a copy pass over screens 08–12 | critique 2026-09-26 P3 (transfer) |
 | 107 | Card import shows one spinner card while a large import writes, with no progress or waiting line | critique 2026-09-26 P3 (transfer) |
+| 108 | The Move to Trash dialogs (screens 01, 07, 09) draw no trash glyph over or beside their title: `MxDialog` has no glyph slot | FE-B1 plan 1 |
+| 109 | A refused Undo reads "Can't undo. {reason} Restore it from Trash and choose a deck." where the item was deleted, not screen 06's "Can't undo — “{deck}” is in Trash too. Restore it from here…": the rejection carries no deck name | FE-B1 D7 |
+| 110 | Move to Trash names no counts the dialog cannot read: the card note says "with its schedule and history", not "with its 7 answers of history", and the editor's "More" card says "Leaves this deck", not the deck's name, which the path above it shows | FE-B1 plan 1 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

@@ -112,9 +112,11 @@ lib/features/trash/presentation/
     {n} sub-decks, {m} cards", with Undo (D3).
   - Deleting the open deck still steps back to its parent first (C-L5). The snackbar
     replaces "Deck deleted" (row 94).
-- **Card editor (D13).** The "More" card at the foot of the edit form opens the one-card
-  dialog below. On Ok the editor closes to the card list, which shows the one-card
-  snackbar with Undo.
+- **Card editor (D13).** The "More" card at the foot of the edit form ("Move this card
+  to Trash", "Leaves this deck and can be restored from Trash for 30 days, schedule and
+  history included.") opens the one-card dialog below. On Ok the editor closes with
+  true and the card detail under it closes too, back to where the detail was opened;
+  the one-card snackbar with Undo is up.
 - **Cards,** from the bulk bar's Delete.
   - **One card:** the kit's dialog. Its title is "Move this card to Trash?", with the
     card's front over its back. Its note is "Recoverable from Trash for 30 days, with its
@@ -125,8 +127,9 @@ lib/features/trash/presentation/
     cards are unaffected." The snackbar reads "{n} cards moved to Trash" (D4); plan 2
     adds its "Open Trash".
 - **Undo (A1).** The item goes back where it was.
-  - A refused Undo (E3) shows the snackbar "Can't undo — {reason} Restore it from Trash
-    and choose a deck.", where `{reason}` is the D16 string. Plan 2 adds "Open Trash".
+  - A refused Undo (E3) shows the snackbar "Can't undo. {reason} Restore it from Trash
+    and choose a deck.", where `{reason}` is the rejection's own sentence (D16 and the
+    older values). Plan 2 adds "Open Trash".
   - The item stays in the Trash.
   - The kit shows this refusal on screen 06 with "from here", but an Undo happens
     where the item was deleted.
