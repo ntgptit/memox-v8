@@ -1,9 +1,11 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
+import 'package:memox/features/transfer/domain/models/export_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_result_model.dart';
 import 'package:memox/features/transfer/domain/models/import_sheet_model.dart';
 import 'package:memox/features/transfer/domain/models/import_source_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
 
 /// The one implementation is `TransferRepositoryImpl` (data layer). The
 /// contract exists for ADR-010's reason: domain stays framework-free and
@@ -39,5 +41,19 @@ abstract interface class TransferRepository {
     required ImportSheet sheet,
     required ImportSettings settings,
     DateTime? now,
+  });
+
+  /// UC-TRANSFER-002 steps 4-5: the cards of [scope] in [deckId] as one file
+  /// of [format], read from one snapshot, oldest first (BR-TRANSFER-010),
+  /// and named for the deck and the local day of [now] (BR-TRANSFER-013).
+  /// Writes nothing (BR-TRANSFER-011). Refuses a deck that is gone or in the
+  /// Trash (deckNotFound), a scope with no card (emptyScope, E5), and a
+  /// selection holding a card that is no longer active in the deck
+  /// (staleSelection, E6). A failed read leaves as a database `Failure` (E3).
+  Future<Outcome<ExportFile, TransferRejection>> exportCards({
+    required String deckId,
+    required ExportScope scope,
+    required TransferFormat format,
+    required DateTime now,
   });
 }

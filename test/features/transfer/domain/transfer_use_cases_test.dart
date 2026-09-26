@@ -11,15 +11,19 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
+import 'package:memox/features/transfer/domain/models/export_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_result_model.dart';
 import 'package:memox/features/transfer/domain/models/import_sheet_model.dart';
 import 'package:memox/features/transfer/domain/models/import_source_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
+import 'package:memox/features/transfer/domain/usecases/export_cards_use_case.dart';
 import 'package:memox/features/transfer/domain/usecases/import_cards_use_case.dart';
 import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
 import 'package:memox/features/transfer/domain/usecases/read_import_source_use_case.dart';
 
 import '../../../support/deck_fixtures.dart';
+import '../../../support/fake_day_clock.dart';
 import '../../../support/test_database.dart';
 
 // UC-TRANSFER-001 and UC-TRANSFER-002: each use case passes its arguments
@@ -122,6 +126,28 @@ void main() {
         'reason',
         TransferRejection.unsupportedFormat,
       ),
+    );
+  });
+
+  test('ExportCardsUseCase names the file with the day of the clock', () async {
+    await cards.createCard(
+      deckId: leaf.id,
+      draft: const CardDraft(front: 'tip', back: 'tiền boa'),
+    );
+
+    final result =
+        await ExportCardsUseCase(
+          transfer,
+          FakeDayClock(DateTime(2026, 12, 31, 23)),
+        )(
+          deckId: leaf.id,
+          scope: const ExportAllCards(),
+          format: TransferFormat.tsv,
+        );
+
+    expect(
+      (result as Ok<ExportFile, TransferRejection>).value.fileName,
+      'l 2026-12-31.tsv',
     );
   });
 }

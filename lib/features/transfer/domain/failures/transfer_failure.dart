@@ -19,4 +19,12 @@ enum TransferRejection {
   /// UC-TRANSFER-001 E4, BR-TRANSFER-001: the target deck is a root or
   /// holds sub-decks.
   deckRejectsCards,
+
+  /// UC-TRANSFER-002 E5, BR-TRANSFER-007: the deck has no card, or the
+  /// selection is empty.
+  emptyScope,
+
+  /// UC-TRANSFER-002 E6, BR-TRANSFER-007: a selected card is gone, in the
+  /// Trash, or in another deck.
+  staleSelection,
 }

@@ -14,6 +14,7 @@ const _quote = '"';
 const _carriageReturn = '\r';
 const _lineFeed = '\n';
 const _utf8Bom = [0xEF, 0xBB, 0xBF];
+const _recordEnd = '\r\n';
 const _utf16LittleEndianBom = [0xFF, 0xFE];
 const _utf16BigEndianBom = [0xFE, 0xFF];
 
@@ -37,6 +38,36 @@ Outcome<ImportDocument, TransferRejection> readDelimited(ImportSource source) {
         TransferFormat.tsv => _tab,
       });
   }
+}
+
+/// [records] as a CSV or TSV file (transfer spec D14): a UTF-8 BOM, then
+/// each record and a CRLF; a cell is quoted, its quotes doubled, only when
+/// it holds the delimiter, a quote, a CR or an LF, and is otherwise written
+/// as it is (BR-TRANSFER-012).
+Uint8List writeDelimited(List<List<String>> records, TransferFormat format) {
+  final delimiter = switch (format) {
+    TransferFormat.csv => _comma,
+    TransferFormat.tsv => _tab,
+  };
+  final text = StringBuffer();
+  for (final record in records) {
+    text
+      ..writeAll([
+        for (final cell in record) _cellOf(cell, delimiter),
+      ], delimiter)
+      ..write(_recordEnd);
+  }
+  return Uint8List.fromList([..._utf8Bom, ...utf8.encode(text.toString())]);
+}
+
+String _cellOf(String cell, String delimiter) {
+  final isQuoted =
+      cell.contains(delimiter) ||
+      cell.contains(_quote) ||
+      cell.contains(_carriageReturn) ||
+      cell.contains(_lineFeed);
+  if (!isQuoted) return cell;
+  return '$_quote${cell.replaceAll(_quote, '$_quote$_quote')}$_quote';
 }
 
 /// [bytes] as strict UTF-8 after an optional UTF-8 BOM; null when they are

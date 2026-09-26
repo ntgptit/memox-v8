@@ -4,14 +4,19 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_field_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/transfer/data/datasources/transfer_dao.dart';
 import 'package:memox/features/transfer/data/mappers/delimited_text_mapper.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
+import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
+import 'package:memox/features/transfer/domain/models/export_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_result_model.dart';
 import 'package:memox/features/transfer/domain/models/import_sheet_model.dart';
 import 'package:memox/features/transfer/domain/models/import_source_model.dart';
+import 'package:memox/features/transfer/domain/models/tag_cell_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_repository.dart';
 
 /// Import and export (transfer spec §7, §8). The commit of an import is one
@@ -91,6 +96,40 @@ final class TransferRepositoryImpl implements TransferRepository {
     }),
   );
 
+  @override
+  Future<Outcome<ExportFile, TransferRejection>> exportCards({
+    required String deckId,
+    required ExportScope scope,
+    required TransferFormat format,
+    required DateTime now,
+  }) async {
+    final (:deckName, :cards, :tags) = await _mapped(
+      () => _db.transaction(
+        () async => (
+          deckName: await _dao.activeDeckName(deckId),
+          cards: await _dao.activeCards(deckId),
+          tags: await _dao.tagNames(deckId),
+        ),
+      ),
+    );
+    if (deckName == null) return const Rejected(TransferRejection.deckNotFound);
+    return switch (_cardsIn(scope, cards)) {
+      Rejected(:final reason) => Rejected(reason),
+      Ok(value: final chosen) => Ok(
+        ExportFile(
+          fileName: exportFileName(
+            deckName: deckName,
+            now: now,
+            format: format,
+          ),
+          mimeType: format.mimeType,
+          bytes: writeDelimited(_recordsOf(chosen, tags), format),
+          cardCount: chosen.length,
+        ),
+      ),
+    };
+  }
+
   /// [body], with an unexpected database error leaving as its [Failure].
   Future<T> _mapped<T>(Future<T> Function() body) async {
     try {
@@ -100,3 +139,48 @@ final class TransferRepositoryImpl implements TransferRepository {
     }
   }
 }
+
+/// The cards of [scope] among the snapshot's [cards], in the snapshot's
+/// order (transfer spec §8.2).
+Outcome<List<CardRow>, TransferRejection> _cardsIn(
+  ExportScope scope,
+  List<CardRow> cards,
+) {
+  final chosen = switch (scope) {
+    ExportAllCards() => cards,
+    ExportSelectedCards(:final cardIds) => [
+      for (final card in cards)
+        if (cardIds.contains(card.id)) card,
+    ],
+  };
+  if (scope case ExportSelectedCards(:final cardIds)
+      when chosen.length < cardIds.length) {
+    // An id the snapshot does not hold: the card is gone, in the Trash or in
+    // another deck, and the whole request fails.
+    return const Rejected(TransferRejection.staleSelection);
+  }
+  if (chosen.isEmpty) return const Rejected(TransferRejection.emptyScope);
+  return Ok(chosen);
+}
+
+/// The header, then each card's six fields in file order (BR-TRANSFER-008,
+/// BR-TRANSFER-012): an empty cell for an empty field, and the tags through
+/// the one codec (BR-TRANSFER-009).
+List<List<String>> _recordsOf(
+  List<CardRow> cards,
+  Map<String, List<String>> tags,
+) => [
+  canonicalHeaders.values.toList(),
+  for (final card in cards)
+    [
+      for (final field in canonicalHeaders.keys)
+        switch (field) {
+          CardField.front => card.front,
+          CardField.back => card.back,
+          CardField.example => card.example ?? '',
+          CardField.hint => card.hint ?? '',
+          CardField.pronunciation => card.pronunciation ?? '',
+          CardField.tags => TagCell.encode(tags[card.id] ?? const []),
+        },
+    ],
+];
