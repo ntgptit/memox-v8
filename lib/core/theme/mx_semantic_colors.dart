@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 /// MemoX product colours that Material has no honest role for
 /// (02-theme-binding MEMOX_SEMANTIC_COLOR, BIND_NOW only).
 ///
-/// Holds exactly the nine semantics a V3 component paints. Aliases resolve to
+/// Holds the semantics a V3 component paints, plus onMastery (spec
+/// 2026-09-27: the done import step lost its ink). Aliases resolve to
 /// their ColorScheme role, derived colours live in MxDerivedColors, and the
 /// PRESERVE_ONLY semantics (streak, mastery-fixed…) get no field
 /// until a component consumes them. Green means mastery, never tertiary.
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   const MxSemanticColors({
     required this.mastery,
+    required this.onMastery,
     required this.warning,
     required this.onWarning,
     required this.statusNew,
@@ -24,6 +26,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
 
   static const MxSemanticColors light = MxSemanticColors(
     mastery: Color(0xFF1F8A5B),
+    onMastery: Color(0xFFFFFFFF),
     warning: Color(0xFFF59E0B),
     onWarning: Color(0xFF3A2A00),
     statusNew: Color(0xFF8C95B8),
@@ -37,6 +40,8 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
 
   static const MxSemanticColors dark = MxSemanticColors(
     mastery: Color(0xFF6FE0BD),
+    // The dark onPrimary before spec 2026-09-27 D1 made it white.
+    onMastery: Color(0xFF11173A),
     warning: Color(0xFFFFC658),
     onWarning: Color(0xFF2A1E00),
     statusNew: Color(0xFF6B75A3),
@@ -50,6 +55,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
 
   /// Mastery and progress green.
   final Color mastery;
+
+  /// Glyph on a [mastery] fill, such as a done import step.
+  final Color onMastery;
   final Color warning;
 
   /// Ink on a warning fill.
@@ -72,6 +80,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   @override
   MxSemanticColors copyWith({
     Color? mastery,
+    Color? onMastery,
     Color? warning,
     Color? onWarning,
     Color? statusNew,
@@ -83,6 +92,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     Color? success,
   }) => MxSemanticColors(
     mastery: mastery ?? this.mastery,
+    onMastery: onMastery ?? this.onMastery,
     warning: warning ?? this.warning,
     onWarning: onWarning ?? this.onWarning,
     statusNew: statusNew ?? this.statusNew,
@@ -103,6 +113,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
 
     return MxSemanticColors(
       mastery: Color.lerp(mastery, other.mastery, t)!,
+      onMastery: Color.lerp(onMastery, other.onMastery, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       onWarning: Color.lerp(onWarning, other.onWarning, t)!,
       statusNew: Color.lerp(statusNew, other.statusNew, t)!,
