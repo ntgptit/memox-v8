@@ -638,6 +638,18 @@
     },
     "description": "Snackbar when Undo of a card is refused; reason is the rejection sentence (UC-TRASH-001 E3)."
   },
+  "cardEditMore": "More",
+  "@cardEditMore": {
+    "description": "Card editor, edit mode: the overline over the Move to Trash card (FE-B1 D13, kit 09)."
+  },
+  "cardEditTrashTitle": "Move this card to Trash",
+  "@cardEditTrashTitle": {
+    "description": "Card editor, edit mode: the Move to Trash card title (kit 09)."
+  },
+  "cardEditTrashBody": "Leaves this deck and can be restored from Trash for 30 days, schedule and history included.",
+  "@cardEditTrashBody": {
+    "description": "Card editor, edit mode: what Move to Trash does (kit 09; the deck path above names the deck)."
+  },
   "cardRejectionBlankContent": "Enter both the front and the back.",
   "@cardRejectionBlankContent": {
     "description": "Card refusal: blank content."

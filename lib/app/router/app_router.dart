@@ -102,8 +102,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     builder: (context, state) => CardDetailScreen(
                       cardId: state.pathParameters[AppRoutes.cardIdParam]!,
                       deckContext: _deckContext,
-                      onEdit: (id) =>
-                          unawaited(context.push(AppRoutes.editCard(id))),
+                      onEdit: (id) => unawaited(_editCard(context, id)),
                     ),
                     routes: [
                       GoRoute(
@@ -207,6 +206,14 @@ StudyEntryScreen _studyEntry(String deckId) => StudyEntryScreen(
     part: DeckStudyHeaderPart.breadcrumb,
   ),
 );
+
+/// Opens the editor over the card detail. The editor closes with true when
+/// it moved the card to the Trash; the detail, whose card is gone, closes
+/// with it (FE-B1 D13).
+Future<void> _editCard(BuildContext context, String cardId) async {
+  final isTrashed = await context.push<bool>(AppRoutes.editCard(cardId));
+  if (isTrashed == true && context.mounted) context.pop();
+}
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>

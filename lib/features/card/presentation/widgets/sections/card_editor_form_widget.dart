@@ -18,6 +18,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_field_wid
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_trash_section_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -383,6 +384,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       onPendingChanged: (isPending) =>
           setState(() => _hasPendingTag = isPending),
     ),
+    if (_card case final card?) CardTrashSectionWidget(card: card),
   ];
 
   /// One optional field's input, message and touch.
