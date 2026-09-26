@@ -11,7 +11,7 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (screen density) | Title only, muted ink: "Session summary". No back control, no actions — v1's minimal bar, Share removed. |
-| Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + new: session-status hero | Icon and tone by outcome (ok · paused · ended · error), a title, one body sentence with the headline count bold, and — where the session has facts — three stats side by side. |
+| Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × 3 | Icon and tone by outcome — ok `success`, paused tinted, ended `warning`, error `danger` (FE-A6 spec D14) — a title, one body sentence with the headline count bold, and — where the session has facts — three stats side by side. |
 | Facts | `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 | "This session"; rows: finished (label depends on session kind), cards answered, wrong turns — leading a small tinted `MxIconTile`, trailing the value in tabular numerals, warning ink when wrong > 0. Omitted where the session has no facts (`schedulerChanged`). |
 | End note | `MxNote` | One calm info line, only for the states that need it. |
 | Footer | `MxFooterBar` + `MxButton` × 2 | Outline "Study this deck" (hidden once the outcome is `ended`/`error`) + primary "Done" (disabled while loading); a caption line under them. |
@@ -37,6 +37,16 @@ BR-TRASH-004); V8.0 has no Trash, so a permanently deleted card just drops out o
 session runs to `completed` instead (same file, row 1) — this state cannot occur. The
 `SessionEndReason.contentDeleted` code stays in
 `lib/features/study/domain/models/session_status_model.dart` for the later Trash sub-project only.
+
+## Accessibility
+
+- TalkBack reads the title, then the hero (title, body, then each stat as one node "{label}: {value}"), the facts, the note and the footer. The hero glyph is decorative.
+- Touch targets are at least 48 × 48; the two footer buttons keep 8 between them.
+
+## Nothing answered
+
+A session that ended before its first turn shows the hero without stats and no Facts card, as
+`schedulerChanged` does (FE-A6 spec D18).
 
 ## Deviations
 
