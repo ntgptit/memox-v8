@@ -66,14 +66,48 @@ while a delete is in flight", so screens that use one either block the whole UI
 during a background operation or show nothing while refreshing.
 
 ```dart
-@freezed
-sealed class DeckListState with _$DeckListState {
-  const factory DeckListState({
-    @Default(AsyncValue<List<Deck>>.loading()) AsyncValue<List<Deck>> decks,
-    @Default(false) bool isRefreshing,
-    @Default(<String>{}) Set<String> deletingIds,   // per-item, not global
+@immutable
+final class DeckListState {
+  const DeckListState({
+    this.decks = const AsyncValue<List<Deck>>.loading(),
+    this.isRefreshing = false,
+    this.deletingIds = const <String>{},   // per-item, not global
+    this.actionError,
+  });
+
+  final AsyncValue<List<Deck>> decks;
+  final bool isRefreshing;
+  final Set<String> deletingIds;
+  final String? actionError;
+
+  DeckListState copyWith({
+    AsyncValue<List<Deck>>? decks,
+    bool? isRefreshing,
+    Set<String>? deletingIds,
     String? actionError,
-  }) = _DeckListState;
+    bool isActionErrorCleared = false,
+  }) => DeckListState(
+    decks: decks ?? this.decks,
+    isRefreshing: isRefreshing ?? this.isRefreshing,
+    deletingIds: deletingIds ?? this.deletingIds,
+    actionError: isActionErrorCleared ? null : actionError ?? this.actionError,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is DeckListState &&
+      other.decks == decks &&
+      other.isRefreshing == isRefreshing &&
+      setEquals(other.deletingIds, deletingIds) &&
+      other.actionError == actionError;
+
+  @override
+  int get hashCode => Object.hash(
+    decks,
+    isRefreshing,
+    Object.hashAllUnordered(deletingIds),
+    actionError,
+  );
 }
 ```
 
@@ -89,9 +123,10 @@ Empty is not a separate `AsyncValue` case; it is `data` with an empty list. The
 UI decides to render `AppEmptyState` — that is a presentation decision, not a
 state-machine one.
 
-State is immutable — `freezed`, or a hand-written class with `copyWith` and
-value equality. A mutated-in-place object can compare equal to itself and the UI
-will not rebuild, which presents as "the screen doesn't update" with no error.
+State is immutable — a hand-written `@immutable` class with `copyWith` and
+value equality, as above. V8 does not use `freezed` (CLAUDE.md). A
+mutated-in-place object can compare equal to itself and the UI will not
+rebuild, which presents as "the screen doesn't update" with no error.
 
 ## Controllers
 
