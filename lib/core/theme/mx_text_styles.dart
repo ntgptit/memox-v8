@@ -24,6 +24,7 @@ final class MxTextStyles {
   static const double _rowTitleTracking = -0.1;
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
+  static const double _overlineSize = 13;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -258,14 +259,16 @@ final class MxTextStyles {
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Overline (Section, ListSectionHeader): 12/700, 0.6 tracking,
-  /// onSurfaceVariant. Tabular, so a trailing static count lines up. The
-  /// widget upper-cases the text.
+  /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
+  /// tracking, onSurface, so a group title reads as a boundary (spec
+  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 114). Tabular, so
+  /// a trailing static count lines up. The widget upper-cases the text.
   TextStyle get overline =>
       AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        fontSize: _overlineSize,
         letterSpacing: _overlineTracking,
         fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
+        color: _scheme.onSurface,
       );
 
   /// A stat's figure (StatTile): the headline role at 700, tabular, tight
