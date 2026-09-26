@@ -1,0 +1,132 @@
+{
+  "templateId": "fixture.hangul-basics",
+  "version": 1,
+  "locale": "en",
+  "title": "Korean → Romanisation · Hangul basics",
+  "contentSource": "Development fixture",
+  "frontLanguage": "ko",
+  "backLanguage": "ko-Latn",
+  "defaultScheduler": "sm2",
+  "decks": [
+    {
+      "name": "Consonants",
+      "cards": [
+        {
+          "front": "ㄱ",
+          "back": "g / k",
+          "hint": "기역 (giyeok)"
+        },
+        {
+          "front": "ㄴ",
+          "back": "n",
+          "hint": "니은 (nieun)"
+        },
+        {
+          "front": "ㄷ",
+          "back": "d / t",
+          "hint": "디귿 (digeut)"
+        },
+        {
+          "front": "ㄹ",
+          "back": "r / l",
+          "hint": "리을 (rieul)"
+        },
+        {
+          "front": "ㅁ",
+          "back": "m",
+          "hint": "미음 (mieum)"
+        },
+        {
+          "front": "ㅂ",
+          "back": "b / p",
+          "hint": "비읍 (bieup)"
+        },
+        {
+          "front": "ㅅ",
+          "back": "s",
+          "hint": "시옷 (siot)"
+        },
+        {
+          "front": "ㅇ",
+          "back": "ng; silent at the start of a syllable",
+          "hint": "이응 (ieung)"
+        },
+        {
+          "front": "ㅈ",
+          "back": "j",
+          "hint": "지읒 (jieut)"
+        },
+        {
+          "front": "ㅊ",
+          "back": "ch",
+          "hint": "치읓 (chieut)"
+        },
+        {
+          "front": "ㅋ",
+          "back": "k",
+          "hint": "키읔 (kieuk)"
+        },
+        {
+          "front": "ㅌ",
+          "back": "t",
+          "hint": "티읕 (tieut)"
+        },
+        {
+          "front": "ㅍ",
+          "back": "p",
+          "hint": "피읖 (pieup)"
+        },
+        {
+          "front": "ㅎ",
+          "back": "h",
+          "hint": "히읗 (hieut)"
+        }
+      ]
+    },
+    {
+      "name": "Vowels",
+      "cards": [
+        {
+          "front": "ㅏ",
+          "back": "a"
+        },
+        {
+          "front": "ㅑ",
+          "back": "ya"
+        },
+        {
+          "front": "ㅓ",
+          "back": "eo"
+        },
+        {
+          "front": "ㅕ",
+          "back": "yeo"
+        },
+        {
+          "front": "ㅗ",
+          "back": "o"
+        },
+        {
+          "front": "ㅛ",
+          "back": "yo"
+        },
+        {
+          "front": "ㅜ",
+          "back": "u"
+        },
+        {
+          "front": "ㅠ",
+          "back": "yu"
+        },
+        {
+          "front": "ㅡ",
+          "back": "eu"
+        },
+        {
+          "front": "ㅣ",
+          "back": "i"
+        }
+      ]
+    }
+  ]
+}
