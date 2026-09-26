@@ -1,6 +1,6 @@
 # MemoX V8 — Verification tooling without V7 (package 12a)
 
-Status: draft for review · design sections 1 and 2 approved in conversation 2026-09-26 · Path: architectural
+Status: approved 2026-09-26 (design sections 1 and 2 in conversation, then this spec) · Path: architectural
 
 ## 1. Intent
 
