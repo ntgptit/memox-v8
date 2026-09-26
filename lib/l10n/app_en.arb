@@ -2956,5 +2956,142 @@
   "deckUnsetImport": "Import cards from a file",
   "@deckUnsetImport": {
     "description": "An empty deck's third option: opens the import."
+  },
+  "exportTitleDeck": "{count, plural, =1{Export 1 card} other{Export all {count} cards}}",
+  "@exportTitleDeck": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Export sheet title for the whole deck (kit 12)."
+  },
+  "exportTitleSelection": "{count, plural, =1{Export 1 selected card} other{Export {count} selected cards}}",
+  "@exportTitleSelection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Export sheet title for a selection (UC-TRANSFER-002 A1)."
+  },
+  "exportBodyDeck": "Every card in {deck}, whatever filter or search is active.",
+  "@exportBodyDeck": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Export sheet subtitle for the whole deck."
+  },
+  "exportBodySelection": "Only the cards you selected.",
+  "@exportBodySelection": {
+    "description": "Export sheet subtitle for a selection."
+  },
+  "exportFormatSection": "Format",
+  "@exportFormatSection": {
+    "description": "Export sheet: the format section's overline."
+  },
+  "exportFormatCsv": "CSV",
+  "@exportFormatCsv": {
+    "description": "Export format name."
+  },
+  "exportFormatCsvBody": "Comma-separated · opens anywhere",
+  "@exportFormatCsvBody": {
+    "description": "Export format: what CSV is for."
+  },
+  "exportFormatTsv": "TSV",
+  "@exportFormatTsv": {
+    "description": "Export format name."
+  },
+  "exportFormatTsvBody": "Tab-separated · safest for commas in text",
+  "@exportFormatTsvBody": {
+    "description": "Export format: what TSV is for."
+  },
+  "exportFormatXlsx": "XLSX",
+  "@exportFormatXlsx": {
+    "description": "Export format name."
+  },
+  "exportFormatXlsxBody": "Excel workbook",
+  "@exportFormatXlsxBody": {
+    "description": "Export format: what XLSX is."
+  },
+  "exportRecommended": "Recommended",
+  "@exportRecommended": {
+    "description": "The badge on the default format, CSV (UC-TRANSFER-002 step 2)."
+  },
+  "exportContentNote": "Six columns: front, back, example, hint, pronunciation, tags. No schedule, no history — this is content, not a backup.",
+  "@exportContentNote": {
+    "description": "Export sheet: what the file holds and what it leaves out (BR-TRANSFER-008)."
+  },
+  "exportAction": "{count, plural, =1{Export 1 card} other{Export {count} cards}}",
+  "@exportAction": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Export sheet primary action (UC-TRANSFER-002 step 3)."
+  },
+  "exportPreparing": "Preparing…",
+  "@exportPreparing": {
+    "description": "Export sheet primary action while the file is built and shared."
+  },
+  "exportClose": "Close",
+  "@exportClose": {
+    "description": "Export sheet: the one action once nothing can be exported."
+  },
+  "exportTryAgain": "Try again",
+  "@exportTryAgain": {
+    "description": "Export sheet: export again after a failure (E2–E4)."
+  },
+  "exportHandedOver": "{count, plural, =1{Handed 1 card to the system.} other{Handed {count} cards to the system.}}",
+  "@exportHandedOver": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Toast once the share sheet took the file; never says where it was saved (BR-TRANSFER-014)."
+  },
+  "exportFailedTitle": "Couldn’t prepare the file",
+  "@exportFailedTitle": {
+    "description": "Export banner: the cards could not be read or the file written (E3, E4)."
+  },
+  "exportFailedBody": "Nothing was shared. Your cards are unchanged — try again.",
+  "@exportFailedBody": {
+    "description": "Export banner body for E3, E4."
+  },
+  "exportShareFailedTitle": "Couldn’t hand the file over",
+  "@exportShareFailedTitle": {
+    "description": "Export banner: the platform failed while sharing (E2)."
+  },
+  "exportShareFailedBody": "The share sheet stopped with an error. Nothing was shared — try again.",
+  "@exportShareFailedBody": {
+    "description": "Export banner body for E2."
+  },
+  "exportNoTargetTitle": "No app on this device can receive a file",
+  "@exportNoTargetTitle": {
+    "description": "Export banner: no share sheet (E1)."
+  },
+  "exportNoTargetBody": "Install a file manager, drive or mail app, then export again.",
+  "@exportNoTargetBody": {
+    "description": "Export banner body for E1."
+  },
+  "exportStaleTitle": "A selected card is no longer in this deck",
+  "@exportStaleTitle": {
+    "description": "Export banner: a selected card is gone or moved (E6)."
+  },
+  "exportStaleBody": "It was moved or deleted meanwhile. Nothing was exported. Refresh the selection and export again.",
+  "@exportStaleBody": {
+    "description": "Export banner body for E6."
+  },
+  "exportEmptyTitle": "There is nothing to export",
+  "@exportEmptyTitle": {
+    "description": "Export banner: the scope holds no card (E5)."
+  },
+  "exportEmptyBody": "This deck has no cards. Add or import cards first.",
+  "@exportEmptyBody": {
+    "description": "Export banner body for E5."
   }
 }

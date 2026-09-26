@@ -68,6 +68,9 @@ abstract final class AppIcons {
   static const IconData arrowRight = Icons.arrow_forward; // arrow-right
   static const IconData preview = Icons.visibility_outlined; // eye
   static const IconData download = Icons.download; // download
+  // Card export (kit 12).
+  static const IconData share = Icons.share_outlined; // share-2
+  static const IconData fileDown = Icons.file_download_outlined; // file-down
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;
