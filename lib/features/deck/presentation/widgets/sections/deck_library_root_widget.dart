@@ -85,7 +85,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               AppSpacing.control,
             ),
             child: MxSearchField.trigger(
-              hintText: l10n.deckSearchHint,
+              hintText: l10n.searchFieldHint,
               onTap: onSearch,
             ),
           ),
