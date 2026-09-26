@@ -89,7 +89,7 @@ class CardExportSheetWidget extends ConsumerWidget {
     });
     final state = ref.watch(provider);
     final problem = state.problem;
-    return MxBottomSheet(
+    final sheet = MxBottomSheet(
       header: _Header(scope: scope),
       footer: _Actions(
         scope: scope,
@@ -135,6 +135,13 @@ class CardExportSheetWidget extends ConsumerWidget {
           ],
         ),
       ),
+    );
+    // Every way out pops this route: the file in progress is never shared.
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _sheet(ref).close();
+      },
+      child: sheet,
     );
   }
 }

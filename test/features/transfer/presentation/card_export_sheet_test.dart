@@ -1,10 +1,18 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/di/card_repository_provider.dart';
+import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/export_share_repository_provider.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/export_artifact_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
+import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
+import 'package:memox/features/transfer/domain/usecases/build_export_use_case.dart';
+import 'package:memox/features/transfer/presentation/providers/build_export_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -42,6 +50,26 @@ class _Host extends StatelessWidget {
 }
 
 Finder _button(String label) => find.widgetWithText(MxButton, label);
+
+/// The real encoders, inline, each write waiting for [hold].
+final class _HeldFiles implements TransferFileRepository {
+  final _inner = TransferFileRepositoryImpl(
+    run: <Q, R>(callback, message) async => callback(message),
+  );
+  final hold = Completer<void>();
+
+  @override
+  Future<Outcome<Uint8List, TransferRejection>> write(
+    List<List<String>> rows,
+    TransferFormat format,
+  ) async {
+    await hold.future;
+    return _inner.write(rows, format);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.tap(finder);
@@ -178,6 +206,56 @@ void main() {
     expect(_button(_en.exportClose), findsOneWidget);
     expect(share.shared, isEmpty);
   });
+
+  for (final (how, dismiss) in <(String, Future<void> Function(WidgetTester))>[
+    ('Cancel', (tester) => tester.tap(_button(_en.commonCancel))),
+    ('Back', (tester) => tester.binding.handlePopRoute()),
+  ]) {
+    libraryTest(
+      '$how while the file is prepared shares nothing, even once it is ready (A5, ruling E6)',
+      (tester, env) async {
+        final root = await env.decks.root('Korean');
+        final deck = await env.decks.sub(root.id, 'Words');
+        await insertCard(env.db, id: 'a', deckId: deck.id);
+        final share = FakeExportShare();
+        final files = _HeldFiles();
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _Host(
+            (context) => showCardExportSheet(
+              context,
+              CardExportScope.deck(
+                deckId: deck.id,
+                deckName: 'Words',
+                cardCount: 1,
+              ),
+            ),
+          ),
+          overrides: [
+            exportShareRepositoryProvider.overrideWithValue(share),
+            buildExportUseCaseProvider.overrideWith(
+              (ref) =>
+                  BuildExportUseCase(ref.watch(cardRepositoryProvider), files),
+            ),
+          ],
+        );
+        await _tap(tester, _button(_open));
+
+        await tester.tap(_button(_en.exportAction(1)));
+        await tester.pump();
+        expect(find.text(_en.exportPreparing), findsOneWidget);
+        await dismiss(tester);
+        // The file is ready while the sheet is still sliding away.
+        await tester.pump(const Duration(milliseconds: 50));
+        files.hold.complete();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(CardExportSheetWidget), findsNothing);
+        expect(share.shared, isEmpty);
+      },
+    );
+  }
 
   libraryTest('an empty deck opens on nothing to export (E5)', (
     tester,

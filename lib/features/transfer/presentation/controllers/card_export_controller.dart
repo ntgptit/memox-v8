@@ -16,6 +16,12 @@ part 'card_export_controller.g.dart';
 /// nothing.
 @riverpod
 class CardExportController extends _$CardExportController {
+  /// The sheet is closing. Its route stays mounted while it slides away, so
+  /// the provider outlives the tap by the close animation.
+  var _isClosed = false;
+
+  bool get _isGone => _isClosed || !ref.mounted;
+
   @override
   CardExportState build(CardExportScope scope) => CardExportState(
     problem: scope.cardCount == 0 ? CardExportProblem.nothingToExport : null,
@@ -26,6 +32,10 @@ class CardExportController extends _$CardExportController {
     if (state.isPreparing || state.isHandedOver) return;
     state = CardExportState(format: format, problem: state.problem);
   }
+
+  /// Cancel, Back, a scrim tap or a drag down (A5): the file in progress is
+  /// never shared.
+  void close() => _isClosed = true;
 
   /// Steps 4–7: build the file and hand it to the share sheet. A second
   /// call while one runs does nothing (A4).
@@ -69,10 +79,10 @@ class CardExportController extends _$CardExportController {
         cardIds: scope.cardIds,
       );
     } on Failure {
-      if (ref.mounted) _fail(format, CardExportProblem.prepareFailed);
+      if (!_isGone) _fail(format, CardExportProblem.prepareFailed);
       return null;
     }
-    if (!ref.mounted) return null;
+    if (_isGone) return null;
     switch (built) {
       case Ok(:final value):
         return value;
