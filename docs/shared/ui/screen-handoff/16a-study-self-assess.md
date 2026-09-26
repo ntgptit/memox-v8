@@ -58,6 +58,8 @@ the goldens become its record.
 **Built (FE-A6 P2):** `StudySelfAssessWidget` in the session route's mode switch. Two
 `StudyFaceCardWidget`s (the prompt raised, the answer on `MxCard.isRecessed`), each with
 its label in flow above the face, so a face grown by large text never slides under it.
+The two faces share the height equally, as the kit's `StudyFaceCard` owns its `flex: 1`
+growth; a short face is centred in its half.
 "Show answer" is the kit's study action (`MxButtonSize.study`); the grades are
 `StudyGradeRowWidget`: four `MxButton`s, Again in the `dangerSoft` tone and the rest
 `secondary`, each with the interval as `MxButton.detail`, one semantics node "{grade},
