@@ -20,6 +20,10 @@ const String searchFaceSeparator = ' · ';
   return (start, start + folded.length);
 }
 
+/// A card's two faces on one line, as [searchPairMatch] counts them.
+String searchPairTitle(String first, String second) =>
+    '$first$searchFaceSeparator$second';
+
 /// The match in "[first][searchFaceSeparator][second]": [first]'s own
 /// range, else [second]'s shifted past [first] and the separator; null when
 /// neither face holds [term], as for a card found by a tag only. Each face

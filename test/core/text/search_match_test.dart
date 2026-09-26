@@ -40,6 +40,13 @@ void main() {
       expect(searchPairMatch('homework', 'bài tập', 'học'), isNull);
     });
 
+    test('the title joins the faces, and its range points into it', () {
+      final title = searchPairTitle('학생', 'học sinh');
+      expect(title, '학생 · học sinh');
+      final (start, end) = searchPairMatch('학생', 'học sinh', 'sinh')!;
+      expect(title.substring(start, end), 'sinh');
+    });
+
     test('the separator itself is never matched', () {
       expect(searchPairMatch('a', 'b', '·'), isNull);
       expect(searchPairMatch('a', 'b', 'a · b'), isNull);
