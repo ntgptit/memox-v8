@@ -1435,7 +1435,7 @@
   "@searchHintDeckExample": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchHintDeckExample."
   },
-  "searchAccentNote": "Case does not matter, accents do: “hoc” will not find “học”.",
+  "searchAccentNote": "Case does not matter, accents do: “hoc” will not find “học”. Examples, hints and pronunciation are not searched.",
   "@searchAccentNote": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchAccentNote."
   },
@@ -1504,6 +1504,101 @@
   "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
+  },
+  "searchFieldHint": "Search decks, cards, tags",
+  "@searchFieldHint": {
+    "description": "Screen handoff 04: hint of the library search field and of the Library root's search trigger (FE-A10, spec D15)."
+  },
+  "searchClear": "Clear search",
+  "@searchClear": {
+    "description": "Screen handoff 04: the search field's clear button, for screen readers."
+  },
+  "searchHintCardTerm": "a card term or meaning",
+  "@searchHintCardTerm": {
+    "description": "Screen handoff 04: hint row, what search finds on cards."
+  },
+  "searchHintCardExample": "학생, học sinh, homework",
+  "@searchHintCardExample": {
+    "description": "Screen handoff 04: examples under the card hint row. Sample vocabulary; keep as is in every language."
+  },
+  "searchHintTagName": "a tag name",
+  "@searchHintTagName": {
+    "description": "Screen handoff 04: hint row, what search finds on tags."
+  },
+  "searchHintTagExample": "verb, Học",
+  "@searchHintTagExample": {
+    "description": "Screen handoff 04: examples under the tag hint row. Sample tags; keep as is in every language."
+  },
+  "searchCardsGroup": "Cards",
+  "@searchCardsGroup": {
+    "description": "Screen handoff 04: the card group's header."
+  },
+  "searchGroupCountMore": "{count}+",
+  "@searchGroupCountMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 04: a group's count while more results follow (spec D10)."
+  },
+  "searchLoadMore": "Load more results",
+  "@searchLoadMore": {
+    "description": "Screen handoff 04: reads the next page (BR-SEARCH-007)."
+  },
+  "searchLoadMoreFailed": "Couldn't load more results. What is shown is still correct.",
+  "@searchLoadMoreFailed": {
+    "description": "Screen handoff 04: the end of the list when the next page failed (UC-SEARCH-001 E2, spec D13)."
+  },
+  "searchFooter": "Decks first, then cards · case-insensitive, accents matter",
+  "@searchFooter": {
+    "description": "Screen handoff 04: the line under the results."
+  },
+  "searchNoMatchesTitle": "No matches for “{term}”",
+  "@searchNoMatchesTitle": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: no deck and no card holds the term."
+  },
+  "searchNoMatchesBody": "Accents matter — “hoc” does not find “học”. Search covers deck names, card terms and meanings, and tag names.",
+  "@searchNoMatchesBody": {
+    "description": "Screen handoff 04: under the no-results title (spec D14)."
+  },
+  "searchCardRowLabel": "{front}, {back}, in {path}",
+  "@searchCardRowLabel": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      },
+      "back": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: what a screen reader says for a card result (spec D22)."
+  },
+  "searchCardRowTagLabel": "{front}, {back}, tag {tag}, in {path}",
+  "@searchCardRowTagLabel": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      },
+      "back": {
+        "type": "String"
+      },
+      "tag": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: a card result found by its tag only, for screen readers (spec D22)."
   },
   "algorithmUnlockedTitle": "Can still be changed",
   "@algorithmUnlockedTitle": {
