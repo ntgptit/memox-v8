@@ -252,4 +252,36 @@ void main() {
   test('a deck that is gone is null (UC-STUDY-001 E1)', () async {
     expect(await entries.watchEntry(deckId: 'missing', now: now).first, isNull);
   });
+
+  test('reading the counts and badges makes no session; only Learn does '
+      '(IT-STUDY-002, BR-STUDY-020)', () async {
+    final root = await decks.root('Korean');
+    final leaf = await decks.sub(root.id, 'Lesson');
+    for (var i = 1; i <= 5; i++) {
+      await insertCard(db, id: 'n$i', deckId: leaf.id, back: 'meaning $i');
+    }
+    Future<int> sessionCount() async =>
+        (await db
+                .customSelect('SELECT COUNT(*) AS n FROM study_session')
+                .getSingle())
+            .read<int>('n');
+
+    for (var look = 0; look < 2; look++) {
+      final tile =
+          (await decks
+                  .watchLevel(parentId: null, now: now, startOfToday: now)
+                  .first)
+              .single;
+      expect((tile.newCount, tile.dueTodayCount), (5, 0));
+      final entry = await entryOf(leaf.id);
+      expect((entry.newCardCount, entry.dueCardCount), (5, 0));
+      expect(entry.resumable, isNull);
+    }
+    expect(await sessionCount(), 0);
+
+    final opened = await entries.openLearningSession(deckId: leaf.id);
+    expect(opened, isA<Ok<String, StudyRejection>>());
+    expect(await sessionCount(), 1);
+    expect((await entryOf(leaf.id)).resumable, isNotNull);
+  });
 }

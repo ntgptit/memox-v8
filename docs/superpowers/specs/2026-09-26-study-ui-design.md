@@ -44,7 +44,7 @@ not part of it.
 | P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003); the Study entry's actions (Learn, Review, Continue; starting, refused, startFailed; resume), which P1 left read-only. | `sm2` decks: learning (browse → self_assess) and review. |
 | P3 | Guess 18, Match 17; the Study entry's pick among `eight_box` review modes; the top bar keeps its track at large text. | `eight_box` reviews in Match and Guess. |
 | P4 | Recall 19 (D12), Fill 20 ([plan](../plans/2026-09-26-study-p4-recall-fill.md)); the built-mode set goes. | `eight_box` decks end to end. |
-| P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong. | The IT set is closed. |
+| P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong ([plan](../plans/2026-09-26-study-p5-it-records.md)). | The IT set is closed. |
 
 **Unbuilt stages are never offered.** A learning session runs its algorithm's whole stage
 sequence (BR-MODE-004), so the entry offers Learn only when every stage of that

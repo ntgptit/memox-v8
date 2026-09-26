@@ -515,6 +515,8 @@ item names where it comes from.
 | 110 | Move to Trash names no counts the dialog cannot read: the card note says "with its schedule and history", not "with its 7 answers of history", and the editor's "More" card says "Leaves this deck", not the deck's name, which the path above it shows | FE-B1 plan 1 |
 | 111 | A Trash restore target reads as its path, without the kit's card count or "where it was": `CardMoveTarget` and `DeckMoveTarget` carry no counts, as in the move sheets | FE-B1 plan 2 |
 | 112 | Screen 06's kind tile is the tinted `MxIconTile`, not the kit's grey one, and "Was in" has no corner glyph; "Select" is a compact secondary `MxButton` (ruling E-L3); "Delete for good" is a filled destructive `MxButton`, not a red outline | FE-B1 plan 2 |
+| 113 | Match's and Guess's widget-local geometry constants (`_badgeTint` 0.10, the letter ring `_ring` 1.5, `_columnOrder`) are named in the widget but are not theme tokens | FE-A6 P3 final review |
+| 114 | Screen 14 offers Learn twice when nothing is due: the Learn row's button and the footer both start the same learning session, as the kit draws them | FE-A6 P2 final review |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

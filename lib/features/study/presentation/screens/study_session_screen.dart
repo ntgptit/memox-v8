@@ -9,7 +9,6 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
-import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
@@ -324,10 +323,6 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
-  /// The held result of [item]'s own turn, if it is the one held (D5).
-  TurnResult? _heldResultOf(StudyTurnState turn, StudyItem item) =>
-      turn.held?.item.cardId == item.cardId ? turn.held?.result : null;
-
   /// One body per mode (D3): a seventh mode is a compile error here.
   Widget _modeBody(
     StudySessionView view,
@@ -351,7 +346,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       key: ValueKey('guess#${item.cardId}#${item.round}'),
       item: item,
       chosenCardId: _chosenCardId,
-      result: _heldResultOf(turn, item),
+      result: turn.held?.result,
       isBusy: turn.isBusy,
       onPick: (optionCardId) => _pick(item, optionCardId),
       onContinue: _release,
@@ -369,7 +364,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     StudyMode.recall => StudyRecallWidget(
       key: ValueKey('recall#${item.cardId}#${item.answersInSession}'),
       item: item,
-      result: _heldResultOf(turn, item),
+      result: turn.held?.result,
       isBusy: turn.isBusy,
       onReveal: (ms) => unawaited(_controller.revealRecall(item, ms)),
       onSaveTime: (ms) => unawaited(_controller.saveRecallTime(item, ms)),
@@ -381,7 +376,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     StudyMode.fill => StudyFillWidget(
       key: ValueKey('fill#${item.cardId}#${item.answersInSession}'),
       item: item,
-      result: _heldResultOf(turn, item),
+      result: turn.held?.result,
       isBusy: turn.isBusy,
       onCheck: (typed) => _check(item, typed),
       onShowHint: () => unawaited(_controller.showFillHint(item)),
