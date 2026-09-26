@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
@@ -43,6 +44,22 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   static const int _skeletonRows = 3;
 
   TrashController _trash() => ref.read(trashControllerProvider.notifier);
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_purgeExpired());
+  }
+
+  /// Opening the Trash purges what expired (UC-TRASH-001 A4); the stream
+  /// drops those rows in place. A failure keeps them for the next try.
+  Future<void> _purgeExpired() async {
+    try {
+      await _trash().purgeExpired();
+    } on Failure {
+      // The list still shows; the next start, resume or visit retries.
+    }
+  }
 
   Future<void> _openActions(TrashEntry entry) async {
     final action = await showTrashEntryActionsSheet(
