@@ -18,6 +18,7 @@
         { "id": "rootCreate", "label": "Root · create deck" },
         { "id": "rootRename", "label": "Root · rename" },
         { "id": "rootDelete", "label": "Root · move to Trash" },
+        { "id": "rootTrashed", "label": "Root · trashed · Undo" },
         { "id": "deckLoaded", "label": "In deck · sub-decks" },
         { "id": "deckEmpty", "label": "In deck · empty deck" },
         { "id": "deckMaxDepth", "label": "In deck · level 10" },
@@ -26,7 +27,8 @@
         { "id": "deckNotFound", "label": "In deck · not found" },
         { "id": "deckOverflow", "label": "In deck · sub-deck actions" },
         { "id": "deckMove", "label": "In deck · move sheet" },
-        { "id": "deckDelete", "label": "In deck · move to Trash" }
+        { "id": "deckDelete", "label": "In deck · move to Trash" },
+        { "id": "deckTrashed", "label": "In deck · trashed · Undo" }
       ]
     },
     {
@@ -58,6 +60,28 @@
       ]
     },
     {
+      "num": "06",
+      "dir": "06-trash",
+      "title": "Trash",
+      "states": [
+        { "id": "all", "label": "All" },
+        { "id": "cards", "label": "Cards only" },
+        { "id": "decks", "label": "Decks only" },
+        { "id": "actions", "label": "Entry actions" },
+        { "id": "restoreTarget", "label": "Choose target" },
+        { "id": "noTarget", "label": "No valid target" },
+        { "id": "restored", "label": "Restored" },
+        { "id": "undoRefused", "label": "Undo refused" },
+        { "id": "selection", "label": "Selection" },
+        { "id": "purgeConfirm", "label": "Delete for good" },
+        { "id": "purged", "label": "Deleted" },
+        { "id": "youngerInside", "label": "Younger inside" },
+        { "id": "empty", "label": "Empty" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" }
+      ]
+    },
+    {
       "num": "07",
       "dir": "07-card-list",
       "title": "Card list",
@@ -74,6 +98,7 @@
         { "id": "noMoveTarget", "label": "No move target" },
         { "id": "bulkFailed", "label": "Bulk failed" },
         { "id": "delCard", "label": "Card → Trash" },
+        { "id": "trashed", "label": "Trashed · Undo" },
         { "id": "delDeck", "label": "Deck → Trash" }
       ]
     },
