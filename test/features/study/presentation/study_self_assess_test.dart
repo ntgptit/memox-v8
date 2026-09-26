@@ -28,7 +28,10 @@ Future<void> _reveal(WidgetTester tester) async {
 
 void main() {
   libraryTest('the prompt shows first, the answer waits for Show answer, and '
-      'revealing writes nothing (BR-MODE-006)', (tester, env) async {
+      'revealing writes nothing (IT-MODE-012, BR-MODE-006)', (
+    tester,
+    env,
+  ) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
     await pumpLibraryScreen(tester, env, _screen(id));
 
@@ -89,10 +92,8 @@ void main() {
     expect(find.text('meaning 2'), findsNothing);
   });
 
-  libraryTest('a double tap on a grade records one turn (BR-STUDY-004)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a double tap on a grade records one turn (IT-MODE-012, '
+      'BR-STUDY-004)', (tester, env) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
     await pumpLibraryScreen(tester, env, _screen(id));
     await _reveal(tester);

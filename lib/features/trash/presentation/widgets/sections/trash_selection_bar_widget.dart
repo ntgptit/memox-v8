@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Screen 06's bar while selecting: Restore the selection after asking
 /// where, or delete it for good (UC-TRASH-001 A2). Both wait for a pick.
@@ -28,29 +28,24 @@ class TrashSelectionBarWidget extends StatelessWidget {
     final l10n = context.l10n;
     final hasPick = count > 0;
     return MxFooterBar(
-      child: Row(
-        spacing: AppSpacing.control,
-        children: [
-          Expanded(
-            flex: _restoreShare,
-            child: MxButton(
-              label: l10n.trashRestoreSelected(count),
-              icon: AppIcons.restore,
-              isBlock: true,
-              onPressed: hasPick ? onRestore : null,
-            ),
-          ),
-          Expanded(
-            flex: _purgeShare,
-            child: MxButton(
-              label: l10n.trashPurgeSelected,
-              icon: AppIcons.delete,
-              tone: MxButtonTone.destructive,
-              isBlock: true,
-              onPressed: hasPick ? onPurge : null,
-            ),
-          ),
-        ],
+      child: MxActionPair(
+        leading: MxButton(
+          label: l10n.trashRestoreSelected(count),
+          icon: AppIcons.restore,
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: hasPick ? onRestore : null,
+        ),
+        trailing: MxButton(
+          label: l10n.trashPurgeSelected,
+          icon: AppIcons.delete,
+          tone: MxButtonTone.destructive,
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: hasPick ? onPurge : null,
+        ),
+        leadingFlex: _restoreShare,
+        trailingFlex: _purgeShare,
       ),
     );
   }

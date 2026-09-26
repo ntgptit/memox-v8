@@ -94,6 +94,25 @@ Future<void> _swipeLeft(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// Steps 3–4 of IT-CONT-004 and IT-NAV-010: the turn taken before leaving
+/// stays recorded, and the deck's entry offers no Continue.
+Future<void> _expectLeftForGood(LibraryEnv env, String id) async {
+  final done = await env.db
+      .customSelect(
+        "SELECT COUNT(*) AS n FROM study_queue_items "
+        "WHERE session_id = ? AND status = 'completed'",
+        variables: [Variable(id)],
+      )
+      .getSingle();
+  expect(done.read<int>('n'), greaterThanOrEqualTo(1));
+  final deckId = (await sessionOf(env.db, id)).read<String>('deck_id');
+  final entry = await studyEntryRepository(
+    env.db,
+    env.clock.now,
+  ).watchEntry(deckId: deckId, now: env.clock.now()).first;
+  expect(entry!.resumable, isNull);
+}
+
 void main() {
   libraryTest('the shell names the mode, the round and the stage '
       '(handoff 16; BR-STUDY-049)', (tester, env) async {
@@ -121,9 +140,14 @@ void main() {
   });
 
   libraryTest('✕ abandons at once and the same screen shows "You left '
-      'early" (owner ruling on D8; UC-STUDY-001 A3)', (tester, env) async {
+      'early"; the turn taken stays, and the entry offers no Continue '
+      '(IT-CONT-004; owner ruling on D8; UC-STUDY-001 A3)', (
+    tester,
+    env,
+  ) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
+    await _swipeLeft(tester);
 
     await tester.tap(find.byTooltip(_en.studySessionClose));
     await tester.pumpAndSettle();
@@ -131,17 +155,21 @@ void main() {
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     final session = await sessionOf(env.db, id);
     expect(session.read<String>('end_reason'), 'user_exit');
+    await _expectLeftForGood(env, id);
   });
 
-  libraryTest('system Back mid-session abandons too; Back on the summary '
-      'is Done, never a return to a closed session', (tester, env) async {
-    final id = await _session(env, ['a']);
+  libraryTest('system Back mid-session keeps the ✕ contract: it abandons, '
+      'the turn taken stays, no Continue; Back on the summary is Done, '
+      'never a return to a closed session (IT-NAV-010)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
     final done = <String>[];
     await _pumpScreen(tester, env, id, onDone: done.add);
+    await _swipeLeft(tester);
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+    await _expectLeftForGood(env, id);
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();

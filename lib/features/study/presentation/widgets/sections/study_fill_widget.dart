@@ -167,7 +167,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                     MxButton(
                       label: l10n.studyContinue,
                       size: MxButtonSize.study,
-                      onPressed: widget.onContinue,
+                      onPressed: widget.isBusy ? null : widget.onContinue,
                     ),
                   ]
                 : [
