@@ -92,22 +92,6 @@ final class DeckListState {
     deletingIds: deletingIds ?? this.deletingIds,
     actionError: isActionErrorCleared ? null : actionError ?? this.actionError,
   );
-
-  @override
-  bool operator ==(Object other) =>
-      other is DeckListState &&
-      other.decks == decks &&
-      other.isRefreshing == isRefreshing &&
-      setEquals(other.deletingIds, deletingIds) &&
-      other.actionError == actionError;
-
-  @override
-  int get hashCode => Object.hash(
-    decks,
-    isRefreshing,
-    Object.hashAllUnordered(deletingIds),
-    actionError,
-  );
 }
 ```
 
@@ -123,10 +107,16 @@ Empty is not a separate `AsyncValue` case; it is `data` with an empty list. The
 UI decides to render `AppEmptyState` — that is a presentation decision, not a
 state-machine one.
 
-State is immutable — a hand-written `@immutable` class with `copyWith` and
-value equality, as above. V8 does not use `freezed` (CLAUDE.md). A
-mutated-in-place object can compare equal to itself and the UI will not
-rebuild, which presents as "the screen doesn't update" with no error.
+State is immutable — a hand-written `@immutable` class with `copyWith`, as
+above. V8 does not use `freezed` (foundation spec §3). A mutated-in-place object
+can compare equal to itself and the UI will not rebuild, which presents as "the
+screen doesn't update" with no error.
+
+Do not override `==` on screen state. Riverpod notifies only when
+`previous != next`, so a hand-written `==` that misses one field silently drops
+that field's updates. Without an override every new instance notifies, and a
+spare rebuild is cheap. Override `==` only on a value object compared by value
+(`CardExportScope` is one), and test it.
 
 ## Controllers
 

@@ -300,8 +300,9 @@ inside `features/deck/presentation/` and were moved for exactly this reason.
 ## Domain purity
 
 `domain/` compiles as plain Dart: no Flutter, no Drift, no Riverpod, no
-`json_annotation`. `freezed_annotation` and `meta` are allowed — pure-Dart
-annotation packages. Enforced by `check_architecture.sh` rule 1 and
+`json_annotation`. `meta` is allowed — a pure-Dart annotation package. Models
+are plain Dart 3 classes, `sealed` hierarchies and records; V8 does not use
+`freezed` (foundation spec §3). Enforced by `check_architecture.sh` rule 1 and
 `memox.architecture.domain_no_infrastructure_import`.
 
 A Drift row must never appear above the repository. The mapper is the boundary:

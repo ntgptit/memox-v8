@@ -25,8 +25,8 @@ does.
 | ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. Removed from this project at M2.2; the row is struck rather than deleted because a session that has seen the old advice will look for it here. |
 | `path_provider` | — | Locates the database directory. |
 | `path` | — | Joins that path portably. |
-| `freezed_annotation` | — | Immutable data classes, unions, `copyWith`. |
-| `json_annotation` | — | JSON codegen annotations. |
+| ~~`freezed_annotation`~~ | — | **Not used** (foundation spec §3). Models are plain Dart 3 classes, `sealed` hierarchies and records; `copyWith` is hand-written where a class needs one. The API phase does not change this: DTOs need JSON, not unions or deep `copyWith`. |
+| `json_annotation` | — | JSON codegen annotations for DTOs in `data/` only (`flutter-data-layer`). **Deferred** — add with the first API DTO, alongside `dio`. |
 | `intl` | — | Locale-aware dates and numbers. |
 | `collection` | — | `firstWhereOrNull`, equality helpers. Avoids hand-rolled bugs. |
 | `uuid` | — | Client-generated IDs. Needed **from day one** even without sync: changing the primary-key strategy later means rewriting every foreign key (AD-03). |
@@ -50,8 +50,8 @@ Add only when the need is real:
 | ~~`riverpod_lint`~~ | **Descoped** — it needs `custom_lint` as its host. Its checks moved to code-verification-guard. |
 | ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `json_serializable`, `freezed` and `drift_dev` all require. Its job is now code-verification-guard's — see `docs/wbs.md`. |
 | `drift_dev` | Drift table and DAO codegen. |
-| `freezed` | Data class codegen. |
-| `json_serializable` | `fromJson` / `toJson`. |
+| ~~`freezed`~~ | **Not used** — see `freezed_annotation` above. |
+| `json_serializable` | `fromJson` / `toJson` for DTOs. **Deferred** — with `json_annotation`. |
 | `mocktail` | Mocks without codegen — less friction than `mockito`. |
 | `golden_toolkit` *or* `alchemist` | Golden tests with stable fonts. Pick one, only when Phase 15.4 starts. |
 | `flutter_lints` | Baseline rule set that `analysis_options.yaml` extends. |
