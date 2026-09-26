@@ -99,3 +99,11 @@ extension SummaryOutcomeRules on SummaryOutcome {
   /// The facts card: every state but an algorithm change.
   bool get drawsFacts => this != SummaryOutcome.schedulerChanged;
 }
+
+/// The cards a summary counts as finished: in learning, those now learned;
+/// in a review, those answered — each answer set its schedule (handoff 21).
+int summaryFinishedCount(StudySessionView view, SessionSummary summary) =>
+    switch (view.kind) {
+      SessionKind.learning => summary.learnedCardCount ?? 0,
+      SessionKind.reviewing => summary.answeredCardCount,
+    };
