@@ -8,8 +8,9 @@ disagree, the file wins, and this page is corrected in the same change.
 `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py`, pins what
 the file must keep doing, and it runs inside the gate.
 
-It runs on every pull request, and by hand (`workflow_dispatch`), on
-`ubuntu-latest`, as three jobs:
+It runs by hand (`workflow_dispatch`) on `ubuntu-latest`, as three jobs. The
+`pull_request` trigger is paused during active development; the file's `on:`
+block says how to resume it.
 
 | Job | What it runs | Limit |
 |---|---|---|

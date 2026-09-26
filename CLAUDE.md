@@ -46,10 +46,35 @@ Each layer answers one question; none takes over another's.
 | Deviations from the kit or a UI spec | the screen's detail file or the UI-base register (§9) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
+| Work in flight that moves to another session | a session handoff in `.claude/handoff/`, on the branch only |
 
 Do not add another store, such as `.ecc/memory/`. Anything meant to outlive
-a session and bind the project goes into the repo through a PR. Handoff to
-another harness goes through `AGENTS.md` or `docs/`.
+a session and bind the project goes into the repo through a PR. Standing
+context for another harness goes through `AGENTS.md` or `docs/`; unfinished
+work goes through a [session handoff](#session-handoff).
+
+### Session handoff
+
+A session handoff is a short file that carries the live thread of one piece
+of unfinished work to a fresh agent. It is unrelated to the design and screen
+handoffs under `docs/shared/ui/`. Write one when the owner asks for a handoff.
+
+- **When:** only when the work moves to another harness (Claude ↔ Codex),
+  another machine or cloud container, another person, or a side task forked to
+  a second agent. When the work stays in the same harness and checkout, use
+  `/compact`.
+- **Where:** `.claude/handoff/<yyyy-mm-dd>-<topic>.md` on the working branch.
+  Commit and push it, then give the next session the branch and the path; a
+  new cloud session gets the branch as its `source_revision`. One file per
+  piece of work: a later handoff replaces the earlier one.
+- **What:** the state, the open decisions, the next step, and the skills the
+  next agent should load (the Superpowers skill for the current phase, the
+  `flutter-*` skills the task touches). Plans, specs, ADRs, PRs and commits
+  appear as paths or URLs, never copied. Label every claim this session did
+  not verify as an assumption, because the next agent takes the file as fact.
+  Leave out secrets and personal data.
+- **Lifetime:** delete the file when completing the branch, before the merge,
+  so `master` never carries a handoff.
 
 ### Hooks
 
@@ -133,6 +158,19 @@ Avoid speculative abstractions.
 - Do not scaffold layers or folders "for later".
 - Do not create pass-through layers or single-implementation interfaces
   without a concrete architectural reason.
+
+## Asking the owner
+
+Every question to the owner goes through the `AskUserQuestion` popup, never as
+plain chat text. This covers:
+
+- clarifying questions and choices between options;
+- approvals of a design, spec, plan or deviation;
+- requests to act: starting a phase, running a command with side effects,
+  installing a tool, opening or merging a PR.
+
+End a presented design, spec or plan with the popup (approve / request
+changes), not with a question in prose.
 
 ## Language
 
