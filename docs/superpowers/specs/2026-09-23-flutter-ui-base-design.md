@@ -522,6 +522,9 @@ item names where it comes from.
 | 117 | A selecting row's checkbox is centred vertically on the row (kit: top-aligned with the title) | owner 2026-09-26, D4 |
 | 118 | A footer pair stacks full width when a label cannot fit its share on one line (kit: always side by side, labels wrap) | owner 2026-09-26, D3 |
 | 119 | The deck summary's progress label keeps the 12 overline (`compactOverline`), onSurface, so it stays on one line on a 360 phone; every other overline is 13 (row 116) | owner 2026-09-26 |
+| 120 | Dark `primary` is the brand indigo `#5265F5`, as in light, with white `onPrimary` (kit: `#8B9AFF` with `#11173A`) | owner 2026-09-27, spec shared-primary D1 |
+| 121 | `primaryInk` (primary pulled toward onSurface: dark 0.45, light 0.25) inks primary text, icons, focus rings and off-fill spinners; the kit inks them in primary, which fails 4.5:1 | owner 2026-09-27, D2 |
+| 122 | Dark `primary-soft`, `primary-border` and `surface-hero` follow the new primary (the kit mixes `#8B9AFF`); a solid `MxBadge` is primary only; a done import step's check inks in `onMastery` (the kit's dark on-primary, kept) | owner 2026-09-27, D1, D5 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
