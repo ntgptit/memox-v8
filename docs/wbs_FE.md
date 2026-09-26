@@ -34,6 +34,9 @@
   - Handoff V3 có foundations, theme binding và 46 widget; các màn nằm ở
     [screen handoff](shared/ui/screen-handoff/00-index.md). File chi tiết đã có cho 01,
     02, 04, 06, 07, 11–14, 16–21 (kèm 16a); màn 03, 05, 08–10, 15, 22–26 chưa có.
+  - [Checklist màn hình và state](shared/ui/screen-state-checklist.md) liệt kê 26 màn và
+    211 state của kit, và đánh dấu từng state xong, một phần, chưa làm hay không làm.
+    Khi một hạng mục FE làm xong một state, sửa dòng của state đó ở checklist.
   - [Critique 2026-09-21](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md)
     ghi luồng học chưa được thiết kế (P1, đóng ở FE-A5) và typography tiếng Việt/tiếng
     Hàn chưa được thiết kế (P2, đóng ở FE-C2).
@@ -223,7 +226,11 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   (dọn cột "Việc tiếp theo"; luồng học đã xử lý `sessionClosed` và `notFound`), FE-A6 đã
   qua P3 nên "Đang làm", FE-A8 và "Bước tiếp theo" theo roadmap P4 → P6; danh sách file
   chi tiết handoff tính cả 06, 11, 12.
-- **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
+- **Cập nhật ngày 2026-09-26:** thêm [checklist màn hình và state](shared/ui/screen-state-checklist.md)
+  theo kit (26 màn, 211 state; tại `e2ad9de`: 108 xong, 6 một phần, 22 đã dựng nhưng chưa
+  đối chiếu, 73 chưa làm, 2 không làm).
+- **Cập nhật cùng commit:** sửa file này, và dòng của state ở checklist màn hình và
+  state, trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate đang áp dụng pass; màn hình có đủ
   kiểm chứng ở mục "Trạng thái kiểm chứng".
 - **Hoãn hoặc cắt:** giữ nguyên dòng, đổi trạng thái và ghi lý do.
