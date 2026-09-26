@@ -101,13 +101,13 @@ Widget _app(
     locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: Builder(
-      builder: (context) => MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(textScale)),
-        child: screen,
-      ),
+    // Above the navigator, so sheets and dialogs scale with the screen.
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: TextScaler.linear(textScale)),
+      child: child!,
     ),
+    home: screen,
   ),
 );
 

@@ -7,6 +7,7 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_context_h
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -125,6 +126,8 @@ void main() {
     await _tap(tester, _en.importReadAction);
 
     expect(find.text(_en.importMappingIncomplete), findsOneWidget);
+    // Nothing was mapped, so the note does not say it was.
+    expect(find.text(_en.importMappingNote), findsNothing);
     await _tap(tester, _en.importPreviewAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
   });
@@ -149,6 +152,28 @@ void main() {
 
     expect(find.text(_en.importProblemEncodingTitle), findsOneWidget);
     expect(await _cards(env), 0);
+    // Reading the same file again cannot help (kit 11 badEncoding).
+    final read = find.widgetWithText(MxButton, _en.importReadAction);
+    expect(tester.widget<MxButton>(read).onPressed, isNull);
+    expect(find.text(_en.importCaptionProblemFile), findsOneWidget);
+  });
+
+  libraryTest('pasted text is read on the device, and the caption says text', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id);
+    await _tap(tester, _en.importSourcePaste);
+    await tester.enterText(
+      find.byType(EditableText),
+      'front\tback\nbap\trice\n',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.importCaptionPrivatePaste), findsOneWidget);
+    expect(find.text(_en.importCaptionPrivate), findsNothing);
   });
 
   libraryTest(

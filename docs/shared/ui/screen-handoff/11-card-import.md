@@ -39,11 +39,11 @@ bar is gone while it is open.
 | empty (Source) | ![](img/11-card-import/empty-light.png) | ![](img/11-card-import/empty-dark.png) | Deck chip replaced by the deck context header. |
 | pasted | ![](img/11-card-import/pasted-light.png) | ![](img/11-card-import/pasted-dark.png) | The paste field uses the body font, not monospace. |
 | fileSelected | ![](img/11-card-import/fileSelected-light.png) | ![](img/11-card-import/fileSelected-dark.png) | The source options give way to the chip (K1). |
-| badEncoding | ![](img/11-card-import/badEncoding-light.png) | ![](img/11-card-import/badEncoding-dark.png) | As drawn (E1). |
+| badEncoding | ![](img/11-card-import/badEncoding-light.png) | ![](img/11-card-import/badEncoding-dark.png) | As drawn (E1): Read is locked and the caption says to choose another file; pasted text says to edit it. |
 | emptySheet | ![](img/11-card-import/emptySheet-light.png) | ![](img/11-card-import/emptySheet-dark.png) | One copy for a file, a sheet or text with no row (E2); another sheet can still be chosen (A2). |
 | parsing | ![](img/11-card-import/parsing-light.png) | ![](img/11-card-import/parsing-dark.png) | "Reading your file…" in the source area. |
 | mapping | ![](img/11-card-import/mapping-light.png) | ![](img/11-card-import/mapping-dark.png) | Only canonical header names map by themselves (D2); the kit's `term`/`meaning` sample would stay unmapped. |
-| mappingIncomplete | ![](img/11-card-import/mappingIncomplete-light.png) | ![](img/11-card-import/mappingIncomplete-dark.png) | The error is a banner of its own, not a red border (K3). |
+| mappingIncomplete | ![](img/11-card-import/mappingIncomplete-light.png) | ![](img/11-card-import/mappingIncomplete-dark.png) | The error is a banner of its own, not a red border (K3). The "mapped for you" note shows only once the mapping is complete. |
 | previewAll | ![](img/11-card-import/previewAll-light.png) | ![](img/11-card-import/previewAll-dark.png) | Rows stack front over back instead of three columns. |
 | previewMix | ![](img/11-card-import/previewMix-light.png) | ![](img/11-card-import/previewMix-dark.png) | As previewAll; the invalid row is not tinted, its reason and icon say it. |
 | importing | ![](img/11-card-import/importing-light.png) | ![](img/11-card-import/importing-dark.png) | As drawn; navigation is inert (IT-NAV-012 step 5). |

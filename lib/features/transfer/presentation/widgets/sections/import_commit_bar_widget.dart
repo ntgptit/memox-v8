@@ -29,14 +29,21 @@ class ImportCommitBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final isBusy = draft.isBusy;
+    final isPaste = draft.sourceKind == CardImportSourceKind.paste;
+    // A source that failed to read fails again: only a new one helps.
+    final canRead = draft.source != null && draft.problem == null;
     final (label, icon, action, caption) = switch (draft.step) {
       CardImportStep.source => (
         l10n.importReadAction,
         AppIcons.arrowRight,
-        draft.source == null ? null : onRead,
-        draft.source == null
-            ? l10n.importCaptionSource
-            : l10n.importCaptionPrivate,
+        canRead ? onRead : null,
+        switch ((draft.source, draft.problem)) {
+          (_, _?) when isPaste => l10n.importCaptionProblemPaste,
+          (_, _?) => l10n.importCaptionProblemFile,
+          (null, _) => l10n.importCaptionSource,
+          _ when isPaste => l10n.importCaptionPrivatePaste,
+          _ => l10n.importCaptionPrivate,
+        },
       ),
       CardImportStep.columns => (
         l10n.importPreviewAction,
