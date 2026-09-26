@@ -71,6 +71,40 @@ void main() {
     expect(find.text(_en.deckReviewAlgorithm), findsNothing);
   });
 
+  libraryTest(
+    'a deck that takes cards offers Import; a root and a deck of decks do not (BR-TRANSFER-008)',
+    (tester, env) async {
+      final korean = await env.decks.root('Korean');
+      final words = await env.decks.sub(korean.id, 'Words');
+      final grammar = await env.decks.sub(korean.id, 'Grammar');
+      await env.decks.sub(grammar.id, 'Particles');
+      await insertCard(env.db, id: 'c1', deckId: words.id, front: 'mul');
+      final imported = <String>[];
+
+      for (final (deckId, isOffered) in [
+        (korean.id, false),
+        (grammar.id, false),
+        (words.id, true),
+      ]) {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          deckScreen(deckId: deckId, onImportCards: imported.add),
+        );
+        await _openSheet(tester);
+        expect(
+          find.text(_en.deckActionImport),
+          isOffered ? findsOneWidget : findsNothing,
+        );
+        await tester.tapAt(Offset.zero);
+        await tester.pumpAndSettle();
+      }
+
+      await _choose(tester, _en.deckActionImport);
+      expect(imported, [words.id]);
+    },
+  );
+
   libraryTest('Rename renames the open deck', (tester, env) async {
     final korean = await env.decks.root('Korean');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));

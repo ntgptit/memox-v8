@@ -13,7 +13,8 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Opens a deck's action sheet and then the chosen command's own dialog or
-/// sheet (spec §6.2): from a row's ⋮, or from the open deck's ⋮. It reads
+/// sheet (spec §6.2): from a row's ⋮, or from the open deck's ⋮.
+/// [onImportCards] offers Import on a deck that takes cards (UC-TRANSFER-001). It reads
 /// the deck's view once first, so a deck gone meanwhile says so instead
 /// (ruling C-L6).
 Future<void> openDeckActions(
@@ -24,6 +25,7 @@ Future<void> openDeckActions(
   required ValueChanged<String> onOpenDeck,
   required ValueChanged<String> onOpenAlgorithm,
   required bool isOpenDeck,
+  VoidCallback? onImportCards,
 }) async {
   // A row's deck has no listener yet: keep its view alive until it emits,
   // or the auto-disposed provider would never complete the read.
@@ -52,6 +54,7 @@ Future<void> openDeckActions(
     view: view,
     canReorder: canReorder,
     hasOpen: !isOpenDeck,
+    canImport: onImportCards != null,
   );
   if (action == null || !context.mounted) return;
   switch (action) {
@@ -63,6 +66,8 @@ Future<void> openDeckActions(
       await showMoveDeckSheet(context, deck: view.deck);
     case DeckAction.reviewAlgorithm:
       onOpenAlgorithm(deckId);
+    case DeckAction.importCards:
+      onImportCards?.call();
     case DeckAction.reorder:
       ref.read(deckReorderModeProvider(reorderLevel).notifier).start();
     case DeckAction.delete:

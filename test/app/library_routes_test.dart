@@ -224,6 +224,27 @@ void main() {
     expect(find.text('mul'), findsOneWidget);
   });
 
+  libraryTest(
+    'Import covers the shell; Close returns to the deck (IT-NAV-012)',
+    (tester, env) async {
+      await env.decks.sub((await env.decks.root('Korean')).id, 'Words');
+      await pumpMemoxApp(tester, env);
+      await _tap(tester, find.text('Korean'));
+      await _tap(tester, find.text('Words'));
+      await tester.ensureVisible(
+        find.widgetWithText(MxButton, _en.deckUnsetImport),
+      );
+      await _tap(tester, find.widgetWithText(MxButton, _en.deckUnsetImport));
+
+      expect(_barTitle(_en.importTitle), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsNothing);
+
+      await _tap(tester, find.byTooltip(_en.importClose));
+      expect(_barTitle('Words'), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsOneWidget);
+    },
+  );
+
   libraryTest('Close on a typed card asks; Discard leaves (RF2)', (
     tester,
     env,

@@ -9,7 +9,15 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 /// What the deck action sheet can start (spec §6.2).
-enum DeckAction { open, rename, move, reviewAlgorithm, reorder, delete }
+enum DeckAction {
+  open,
+  rename,
+  move,
+  reviewAlgorithm,
+  importCards,
+  reorder,
+  delete,
+}
 
 /// A deck's commands (screen 01), from its row's ⋮ or the open deck's ⋮. It
 /// completes with the chosen one, which the caller then opens, or with null
@@ -19,12 +27,14 @@ Future<DeckAction?> showDeckActionSheet(
   required DeckView view,
   required bool canReorder,
   required bool hasOpen,
+  bool canImport = false,
 }) => showMxBottomSheet<DeckAction>(
   context,
   builder: (_) => DeckActionSheetWidget(
     view: view,
     canReorder: canReorder,
     hasOpen: hasOpen,
+    canImport: canImport,
   ),
 );
 
@@ -34,10 +44,15 @@ class DeckActionSheetWidget extends StatelessWidget {
     required this.view,
     required this.canReorder,
     required this.hasOpen,
+    this.canImport = false,
   });
 
   final DeckView view;
   final bool canReorder;
+
+  /// The deck takes cards: Import leads to the import screen (kit 07
+  /// deckActions, UC-TRANSFER-001).
+  final bool canImport;
 
   /// From a row, the deck is not open yet; Open leads.
   final bool hasOpen;
@@ -103,6 +118,13 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckMove,
           hasChevron: true,
           onTap: () => choose(DeckAction.move),
+        ),
+      if (canImport)
+        MxActionSheetCommandRow(
+          icon: AppIcons.fileUp,
+          label: l10n.deckActionImport,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.importCards),
         ),
       if (canReorder)
         MxActionSheetCommandRow(

@@ -42,6 +42,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
     required this.cardFab,
   });
 
@@ -72,6 +73,10 @@ class DeckLevelScreen extends StatelessWidget {
   /// New card for [deckId]: the router opens the card editor.
   final ValueChanged<String> onAddCard;
 
+  /// Import cards into [deckId] (UC-TRANSFER-001): the router opens the
+  /// import screen.
+  final ValueChanged<String> onImportCards;
+
   /// A deck of cards' FAB, from the card feature like [cardContent] (spec
   /// D8). It hides itself while cards are selected.
   final Widget Function(String deckId) cardFab;
@@ -92,6 +97,7 @@ class DeckLevelScreen extends StatelessWidget {
       cardAppBar: cardAppBar,
       cardBreadcrumb: cardBreadcrumb,
       onAddCard: onAddCard,
+      onImportCards: onImportCards,
       cardFab: cardFab,
     ),
   };
@@ -108,6 +114,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
     required this.cardFab,
   });
 
@@ -120,6 +127,7 @@ class _OpenDeck extends ConsumerWidget {
   cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
+  final ValueChanged<String> onImportCards;
   final Widget Function(String deckId) cardFab;
 
   static const int _skeletonRows = 4;
@@ -143,6 +151,7 @@ class _OpenDeck extends ConsumerWidget {
         cardAppBar: cardAppBar,
         cardBreadcrumb: cardBreadcrumb,
         onAddCard: onAddCard,
+        onImportCards: onImportCards,
         cardFab: cardFab,
       ),
       AsyncError() => MxAppShell(
@@ -189,6 +198,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
     required this.cardFab,
   });
 
@@ -201,6 +211,7 @@ class _OpenDeckContent extends ConsumerWidget {
   cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
+  final ValueChanged<String> onImportCards;
   final Widget Function(String deckId) cardFab;
 
   @override
@@ -223,6 +234,7 @@ class _OpenDeckContent extends ConsumerWidget {
           parentId: deck.parentId,
           onOpenDeck: onOpenDeck,
           onOpenAlgorithm: onOpenAlgorithm,
+          onImportCards: canCreateCard ? () => onImportCards(deck.id) : null,
           isOpenDeck: true,
         ),
       ),
@@ -281,6 +293,9 @@ class _OpenDeckContent extends ConsumerWidget {
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
                 emptyState: DeckUnsetStateWidget(
                   onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
+                  onImportCards: canCreateCard
+                      ? () => onImportCards(deck.id)
+                      : null,
                   onCreateSubDeck: canCreateDeck ? createSubDeck : null,
                 ),
               ),

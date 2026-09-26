@@ -123,6 +123,24 @@ void main() {
     expect(find.text('Verbs'), findsOneWidget);
   });
 
+  libraryTest('an empty sub-deck imports cards from a file (UC-TRANSFER-001)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final imported = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onImportCards: imported.add),
+    );
+
+    await tester.ensureVisible(_unsetButton(_en.deckUnsetImport));
+    await tester.tap(_unsetButton(_en.deckUnsetImport));
+    expect(imported, [words.id]);
+  });
+
   libraryTest('a top-level deck offers sub-decks only (BR-DECK-005)', (
     tester,
     env,
