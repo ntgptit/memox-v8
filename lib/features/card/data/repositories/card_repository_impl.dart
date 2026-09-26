@@ -266,6 +266,7 @@ final class CardRepositoryImpl implements CardRepository {
     final counts = await _listDao.counts(
       deckId: deckId,
       searchTerm: query.searchTerm,
+      tagIds: query.tagIds,
       now: now,
     );
     final schedules = await _listDao.activeSchedules(deckId);
