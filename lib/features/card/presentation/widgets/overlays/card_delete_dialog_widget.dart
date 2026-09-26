@@ -58,6 +58,9 @@ class _CardDeleteDialogWidgetState
   var _isDeleting = false;
 
   Future<void> _delete() async {
+    // A second tap in the same frame reaches here before the busy confirm
+    // is drawn.
+    if (_isDeleting) return;
     setState(() => _isDeleting = true);
     try {
       final outcome = await ref

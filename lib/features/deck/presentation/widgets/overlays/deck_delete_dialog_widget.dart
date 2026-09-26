@@ -47,6 +47,9 @@ class _DeckDeleteDialogWidgetState
   var _isDeleting = false;
 
   Future<void> _delete(DeckDeletionSummary summary) async {
+    // A second tap in the same frame reaches here before the busy confirm
+    // is drawn.
+    if (_isDeleting) return;
     setState(() => _isDeleting = true);
     try {
       final outcome = await ref
