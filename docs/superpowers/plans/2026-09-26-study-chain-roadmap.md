@@ -1,5 +1,7 @@
 # Study screen chain — roadmap for the phases left (P3 → P6)
 
+Status: approved by the owner (2026-09-26): run P3 → P6 back to back, merging each phase's PR once green.
+
 > **For agentic workers:** this roadmap does not replace the per-phase plans.
 > At the start of each phase, write that phase's detailed plan with
 > writing-plans, from this roadmap's rulings, then execute it with
