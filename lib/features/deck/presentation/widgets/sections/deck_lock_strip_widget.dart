@@ -32,8 +32,8 @@ class DeckLockStripWidget extends StatelessWidget {
       child: MxCard(
         isHero: !isLocked,
         isWarning: isLocked,
+        // The tile centres on the title and body (owner 2026-09-26).
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.grouped,
           children: [
             MxIconTile(

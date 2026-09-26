@@ -50,12 +50,13 @@ class TrashEntryRowWidget extends StatelessWidget {
     final meta = _meta(context);
     final timeLeft = trashTimeLeft(l10n, entry, now);
     final origin = l10n.trashWasIn(trashOrigin(l10n, entry));
+    // The tile or the checkbox centres on the lines (spec 2026-09-26 D4,
+    // extended by the owner 2026-09-26).
     final lines = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.grouped,
       children: [
         if (isSelecting)
-          Align(child: MxSelectionCheckbox(isChecked: isSelected))
+          MxSelectionCheckbox(isChecked: isSelected)
         else
           MxIconTile(
             icon: entry is TrashDeckEntry
@@ -79,8 +80,8 @@ class TrashEntryRowWidget extends StatelessWidget {
     final card = MxCard(
       isFullBleed: true,
       isSelected: isSelected,
+      // ⋮ centres on the entry, as its tile does.
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             // One TalkBack node with every fact, whatever the ellipsis
@@ -98,9 +99,7 @@ class TrashEntryRowWidget extends StatelessWidget {
                   onTap: onTap,
                   child: Padding(
                     padding: const EdgeInsets.all(_rowPadding),
-                    // The row takes a definite height while selecting, so
-                    // the checkbox centres on it (spec 2026-09-26 D4).
-                    child: isSelecting ? IntrinsicHeight(child: lines) : lines,
+                    child: lines,
                   ),
                 ),
               ),
@@ -108,10 +107,7 @@ class TrashEntryRowWidget extends StatelessWidget {
           ),
           if (onActions case final onActions? when !isSelecting)
             Padding(
-              padding: const EdgeInsets.only(
-                top: AppSpacing.micro,
-                right: AppSpacing.micro,
-              ),
+              padding: const EdgeInsets.only(right: AppSpacing.micro),
               child: MxIconButton(
                 icon: AppIcons.more,
                 semanticLabel: l10n.trashEntryActions(name),

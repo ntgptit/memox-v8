@@ -31,8 +31,8 @@ class ImportPreviewRowWidget extends StatelessWidget {
           horizontal: AppSpacing.gutter,
           vertical: AppSpacing.grouped,
         ),
+        // The number and the mark centre on the row (kit 11).
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.grouped,
           children: [
             Text(
