@@ -1,6 +1,12 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
+import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
+import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
@@ -206,4 +212,106 @@ void main() {
     expect(find.byType(StudyModeNotBuiltWidget), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
   });
+
+  libraryTest('a held turn stays on screen when its answer ends the session; '
+      'the summary follows its release (spec D5)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final leaf = await env.decks.sub(root.id, 'Lesson');
+    await insertCard(
+      env.db,
+      id: 'due',
+      deckId: leaf.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 24, 8),
+      box: 2,
+    );
+    await lockScheduler(env.db, root.id);
+    final opened = await studyEntryRepository(
+      env.db,
+      env.clock.now,
+    ).openReviewSession(deckId: leaf.id, mode: StudyMode.recall);
+    final id = (opened as Ok<String, StudyRejection>).value;
+    await _pumpScreen(tester, env, id);
+    final item = (await watchSessionOnce(env.db, id)).currentItem!;
+    await env.sessions.revealRecallAnswer(
+      sessionId: id,
+      cardId: item.cardId,
+      remainingMs: 10000,
+    );
+    final controller = _controllerOf(tester, id);
+
+    await controller.answer(
+      item,
+      const RecallAnswer(RecallOutcome.remembered),
+      shouldHoldFeedback: true,
+    );
+    await tester.pumpAndSettle();
+    expect((await sessionOf(env.db, id)).read<String>('status'), 'completed');
+    expect(find.byType(MxStudyTopBar), findsOneWidget);
+    expect(find.text(_en.summaryReviewFinished), findsNothing);
+
+    controller.release();
+    await tester.pumpAndSettle();
+    expect(find.text(_en.summaryReviewFinished), findsOneWidget);
+  });
+
+  libraryTest('a stalled round waits for a held turn before it settles '
+      '(spec D5)', (tester, env) async {
+    final id = await _session(env, ['a', 'b', 'c']);
+    await _pumpScreen(tester, env, id);
+    final controller = _controllerOf(tester, id);
+    final first = (await watchSessionOnce(env.db, id)).currentItem!;
+
+    await controller.answer(
+      first,
+      const AdvanceAnswer(),
+      shouldHoldFeedback: true,
+    );
+    await tester.pumpAndSettle();
+    final rest = {'a', 'b', 'c'}..remove(first.cardId);
+    await hardDeleteCards(env.db, rest);
+    await tester.pumpAndSettle();
+    expect((await watchSessionOnce(env.db, id)).isStalled, isTrue);
+
+    controller.release();
+    await tester.pumpAndSettle();
+    expect((await watchSessionOnce(env.db, id)).isStalled, isFalse);
+  });
+
+  libraryTest('a session that cannot be read says so and Retry reads again '
+      '(UC-STUDY-001 E5)', (tester, env) async {
+    var reads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen('s'),
+      overrides: [
+        studySessionProvider('s').overrideWith((_) {
+          reads++;
+          return Stream.error(
+            const UnknownDatabaseFailure(cause: '/data/memox.sqlite'),
+          );
+        }),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studySessionErrorTitle), findsOneWidget);
+    expect(find.text(_en.summaryAppBar), findsNothing);
+    final before = reads;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pumpAndSettle();
+    expect(reads, before + 1);
+  });
 }
+
+StudySessionScreen _screen(String id) => StudySessionScreen(
+  sessionId: id,
+  onDone: (_) {},
+  onStudyDeck: (_) {},
+  onLeave: (_) {},
+);
+
+StudySessionController _controllerOf(WidgetTester tester, String id) =>
+    ProviderScope.containerOf(tester.element(find.byType(StudySessionScreen)))
+        .read(studySessionControllerProvider(id).notifier);

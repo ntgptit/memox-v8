@@ -45,7 +45,10 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 subtitle: isLearning
                     ? l10n.summaryFactLearnedSub
                     : l10n.summaryFactReviewedSub,
-                leading: const MxIconTile(icon: AppIcons.learned),
+                leading: const MxIconTile(
+                  icon: AppIcons.learned,
+                  tone: MxIconTileTone.success,
+                ),
                 trailing: Text(
                   l10n.studyCount(summaryFinishedCount(view, summary)),
                   style: styles.factValue(context.derivedColors.successInk),
@@ -68,7 +71,13 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                       : l10n.summaryFactWrongSub(turns),
                   style: styles.noteText,
                 ),
-                leading: const MxIconTile(icon: AppIcons.lapses),
+                // The glyph takes its value's tone (kit ResultRow).
+                leading: MxIconTile(
+                  icon: AppIcons.lapses,
+                  tone: wrong > 0
+                      ? MxIconTileTone.caution
+                      : MxIconTileTone.tinted,
+                ),
                 trailing: Text(
                   l10n.summaryWrongOf(wrong, turns),
                   style: styles.factValue(

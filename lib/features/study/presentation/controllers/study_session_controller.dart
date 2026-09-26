@@ -87,9 +87,10 @@ class StudySessionController extends _$StudySessionController {
     }
   }
 
-  /// A stalled round (its cards were deleted) moves on (spec D12).
+  /// A stalled round (its cards were deleted) moves on (spec D12). Not
+  /// while a turn is held: it settles once released (D5).
   Future<void> settle() async {
-    if (state.isBusy) return;
+    if (state.isBusy || state.held != null) return;
     state = const StudyTurnState(isBusy: true);
     try {
       await ref.read(resumeStudySessionUseCaseProvider)(sessionId: sessionId);

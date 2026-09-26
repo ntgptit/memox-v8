@@ -65,6 +65,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// A leave runs once, whatever the stream emits after it.
   var _hasLeft = false;
 
+  /// The last view of the open session that served a card: a held turn is
+  /// drawn in it even after its answer ended the session or stalled the
+  /// round (spec D5).
+  StudySessionView? _lastOpenView;
+
   StudySessionController get _controller =>
       ref.read(studySessionControllerProvider(widget.sessionId).notifier);
 
@@ -88,10 +93,24 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       case AsyncData(value: Ok(:final value))
           when sessionEndingOf(value) is LeaveStale:
         _leave(l10n.studySessionStaleToast, value.deckId);
-      case AsyncData(value: Ok(:final value)) when value.isStalled:
+      // A held turn is on screen first; its release settles (spec D5).
+      case AsyncData(value: Ok(:final value))
+          when value.isStalled && !_isHolding:
         unawaited(_controller.settle());
       default:
         break;
+    }
+  }
+
+  bool get _isHolding =>
+      ref.read(studySessionControllerProvider(widget.sessionId)).held != null;
+
+  /// A released hold lets a round stalled meanwhile settle (spec D5, D12).
+  void _onTurn(StudyTurnState? previous, StudyTurnState next) {
+    if (previous?.held == null || next.held != null) return;
+    final current = ref.read(studySessionProvider(widget.sessionId));
+    if (current case AsyncData(value: Ok(:final value)) when value.isStalled) {
+      unawaited(_controller.settle());
     }
   }
 
@@ -116,7 +135,9 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(studySessionProvider(widget.sessionId), _onView);
+    ref
+      ..listen(studySessionProvider(widget.sessionId), _onView)
+      ..listen(studySessionControllerProvider(widget.sessionId), _onTurn);
     final turn = ref.watch(studySessionControllerProvider(widget.sessionId));
     final page = switch (ref.watch(studySessionProvider(widget.sessionId))) {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
@@ -128,17 +149,28 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     return PopScope(canPop: false, onPopInvokedWithResult: _onPop, child: page);
   }
 
-  Widget _pageOf(StudySessionView view, StudyTurnState turn) =>
-      switch (sessionEndingOf(view)) {
-        ShowSummary(:final outcome) => SessionSummaryWidget(
-          view: view,
-          outcome: outcome,
-          onDone: () => widget.onDone(view.deckId),
-          onStudyDeck: () => widget.onStudyDeck(view.deckId),
-        ),
-        LeaveStale() => const MxAppShell(body: SizedBox.shrink()),
-        null => _sessionPage(context, view, turn),
-      };
+  Widget _pageOf(StudySessionView view, StudyTurnState turn) {
+    final ending = sessionEndingOf(view);
+    // Only a view that serves a card can frame a held turn.
+    if (ending == null && view.progress != null && view.currentItem != null) {
+      _lastOpenView = view;
+    }
+    // The held turn stays until its mode releases it, even when its answer
+    // ended the session: only then does the summary show (spec D5).
+    if (turn.held != null) {
+      return _sessionPage(context, _lastOpenView ?? view, turn);
+    }
+    return switch (ending) {
+      ShowSummary(:final outcome) => SessionSummaryWidget(
+        view: view,
+        outcome: outcome,
+        onDone: () => widget.onDone(view.deckId),
+        onStudyDeck: () => widget.onStudyDeck(view.deckId),
+      ),
+      LeaveStale() => const MxAppShell(body: SizedBox.shrink()),
+      null => _sessionPage(context, view, turn),
+    };
+  }
 
   Widget _sessionPage(
     BuildContext context,
@@ -228,7 +260,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     final l10n = context.l10n;
     return MxAppShell(
       appBar: MxAppBar(
-        title: l10n.summaryAppBar,
+        title: l10n.navStudy,
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.close,
