@@ -56,9 +56,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
   bool get _isWrong => widget.result?.isCorrect == false;
 
   bool get _canCheck =>
-      !widget.isBusy &&
-      widget.result == null &&
-      _answer.text.trim().isNotEmpty;
+      !widget.isBusy && widget.result == null && _answer.text.trim().isNotEmpty;
 
   @override
   void initState() {
