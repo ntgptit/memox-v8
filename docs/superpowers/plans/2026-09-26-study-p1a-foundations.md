@@ -923,7 +923,7 @@ git commit -m "feat(study): the summary counts answered cards and turns (FE-A6 D
 ### Task 6: Records
 
 **Files:**
-- Modify: `docs/wbs_FE.md` (FE-A6 row: evidence "P1a: [plan](superpowers/plans/2026-09-26-study-p1a-foundations.md)", status `đang làm`), `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md` §9 (a row: "Success and caution/danger glyph inks are pulled toward `onSurface` for 3:1 and 4.5:1; the kit's pure hues fail on their soft tints | FE-A6 D14"), `docs/features/study/README.md` or `data.md` if either documents `StudyEntry`/`SessionSummary` fields (`grep -rn "resumableSessionId\|wrongTurnCount" docs`), `docs/_generated/` (regenerated).
+- Modify: `docs/wbs_FE.md` (FE-A6 row: evidence "P1a: a link to `superpowers/plans/2026-09-26-study-p1a-foundations.md`", status `đang làm`), `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md` §9 (a row: "Success and caution/danger glyph inks are pulled toward `onSurface` for 3:1 and 4.5:1; the kit's pure hues fail on their soft tints | FE-A6 D14"), `docs/features/study/README.md` or `data.md` if either documents `StudyEntry`/`SessionSummary` fields (`grep -rn "resumableSessionId\|wrongTurnCount" docs`), `docs/_generated/` (regenerated).
 
 - [ ] **Step 1: Edit, regenerate, check**
 
