@@ -134,7 +134,9 @@ class _MxSearchFieldState extends State<MxSearchField> {
           child: Icon(
             AppIcons.search,
             size: AppIconSize.compact,
-            color: isFocused ? colors.primary : colors.onSurfaceVariant,
+            color: isFocused
+                ? context.derivedColors.primaryInk
+                : colors.onSurfaceVariant,
           ),
         ),
         prefixIconConstraints: const BoxConstraints(),

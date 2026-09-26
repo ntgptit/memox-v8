@@ -97,7 +97,7 @@ class MxButton extends StatelessWidget {
         fill: paint.fill,
         ink: paint.ink,
         edge: paint.edge,
-        focusColor: context.colors.primary,
+        focusColor: context.derivedColors.primaryInk,
         height: geometry.height,
         radius: geometry.radius,
         padding: geometry.padding,
@@ -164,7 +164,7 @@ class MxButton extends StatelessWidget {
       ),
       MxButtonTone.outline => (
         fill: null,
-        ink: colors.primary,
+        ink: context.derivedColors.primaryInk,
         edge: BorderSide(
           color: colors.outlineVariant,
           width: AppStroke.hairline,

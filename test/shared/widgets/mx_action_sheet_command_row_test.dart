@@ -40,7 +40,10 @@ void main() {
     expect(_tile(tester).color, scheme.primary.withValues(alpha: 0.08));
     expect(_tile(tester).borderRadius, BorderRadius.circular(8));
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
-    expect((glyph.size, glyph.color), (16, scheme.primary));
+    expect(
+      (glyph.size, glyph.color),
+      (16, MxDerivedColors.primaryInkOf(scheme)),
+    );
     expect(tester.widget<Text>(find.text('Rename')).style!.fontSize, 14);
     expect(tester.getTopLeft(find.text('Rename')).dx - row.dx, 52);
     await expectAccessibleTargets(tester);

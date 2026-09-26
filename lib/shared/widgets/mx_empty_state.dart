@@ -87,7 +87,14 @@ class MxEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Tile(icon: icon, color: toneColor, isCompact: isCompact),
+              _Tile(
+                icon: icon,
+                color: toneColor,
+                ink: tone == MxEmptyStateTone.primary
+                    ? context.derivedColors.primaryInk
+                    : toneColor,
+                isCompact: isCompact,
+              ),
               // Ruling R7: the tile→title and title→body gaps are
               // UNSPECIFIED in the contract.
               const SizedBox(height: AppSpacing.gutter),
@@ -144,11 +151,17 @@ class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
     required this.color,
+    required this.ink,
     required this.isCompact,
   });
 
   final IconData icon;
+
+  /// The tint's base.
   final Color color;
+
+  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2).
+  final Color ink;
   final bool isCompact;
 
   @override
@@ -167,7 +180,7 @@ class _Tile extends StatelessWidget {
         child: Icon(
           icon,
           size: isCompact ? AppIconSize.standard : AppIconSize.large,
-          color: color,
+          color: ink,
         ),
       ),
     ),

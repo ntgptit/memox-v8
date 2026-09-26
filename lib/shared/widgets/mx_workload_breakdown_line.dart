@@ -48,7 +48,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     final styles = context.textStyles;
     final terms = [
       (overdueCount, overdueLabel, context.derivedColors.warningInk),
-      (todayCount, todayLabel, context.colors.primary),
+      (todayCount, todayLabel, context.derivedColors.primaryInk),
       (newCount, newLabel, context.derivedColors.statusNewInk),
     ].where((term) => term.$1 > 0).toList();
     return Text.rich(
