@@ -4732,5 +4732,106 @@
   "summaryDoneCaption": "Done returns you to the deck.",
   "@summaryDoneCaption": {
     "description": "Screen handoff 21 (FE-A6 P1c): the footer caption."
+  },
+  "settingsLoadErrorTitle": "Couldn't open Settings",
+  "@settingsLoadErrorTitle": {
+    "description": "Settings screens, the app_settings row failed to read (UC-SETTINGS-001 E3)."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Screen 25 title and the Settings row that opens it (FE-A3 D2, D7)."
+  },
+  "settingsThemeSystem": "System",
+  "@settingsThemeSystem": {
+    "description": "Theme choice that follows the phone."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Theme choice: always light."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Theme choice: always dark."
+  },
+  "settingsThemeSystemHint": "Match phone",
+  "@settingsThemeSystemHint": {
+    "description": "Line under the System theme card (FE-A3 D7)."
+  },
+  "settingsThemeLightHint": "Always light",
+  "@settingsThemeLightHint": {
+    "description": "Line under the Light theme card, and the Theme row when Light is chosen (FE-A3 D7)."
+  },
+  "settingsThemeDarkHint": "Always dark",
+  "@settingsThemeDarkHint": {
+    "description": "Line under the Dark theme card, and the Theme row when Dark is chosen (FE-A3 D7)."
+  },
+  "settingsThemeCard": "{name}, {hint}",
+  "@settingsThemeCard": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    },
+    "description": "TalkBack label of a theme card: its name and its line."
+  },
+  "settingsAppliesAtOnce": "Applies at once — no restart, and you stay where you are.",
+  "@settingsAppliesAtOnce": {
+    "description": "Footnote of screen 25 (BR-SETTINGS-005)."
+  },
+  "settingsThemeSaveFailed": "Couldn't change the theme.",
+  "@settingsThemeSaveFailed": {
+    "description": "Toast when saving the theme failed (E2); offers Retry."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Screen 26 title and the Settings row that opens it."
+  },
+  "settingsLanguageSystem": "Follow the system",
+  "@settingsLanguageSystem": {
+    "description": "Language choice that follows the phone (BR-SETTINGS-006)."
+  },
+  "settingsLanguagePhoneIs": "Phone is set to {language}",
+  "@settingsLanguagePhoneIs": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Line under Follow the system when the phone language is supported (FE-A3 D8)."
+  },
+  "settingsLanguageUnavailable": "Your phone's language isn't available · English",
+  "@settingsLanguageUnavailable": {
+    "description": "Line under Follow the system when the phone language is not supported: the app falls back to English (FE-A3 D8)."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "The English language in its own name (endonym); never translated."
+  },
+  "languageVietnamese": "Tiếng Việt",
+  "@languageVietnamese": {
+    "description": "The Vietnamese language in its own name (endonym); never translated."
+  },
+  "settingsLanguageEnglishName": "English",
+  "@settingsLanguageEnglishName": {
+    "description": "The English language named in the UI language (FE-A3 D8)."
+  },
+  "settingsLanguageVietnameseName": "Vietnamese",
+  "@settingsLanguageVietnameseName": {
+    "description": "The Vietnamese language named in the UI language (FE-A3 D8)."
+  },
+  "settingsLanguageNote": "Applies at once — no restart, and you stay where you are. Your cards stay in their own language.",
+  "@settingsLanguageNote": {
+    "description": "Footnote of screen 26 (BR-SETTINGS-006, BR-STUDY-035)."
+  },
+  "settingsLanguageSwitched": "Switched to English",
+  "@settingsLanguageSwitched": {
+    "description": "Toast after a language switch, read in the language switched to."
+  },
+  "settingsLanguageSaveFailed": "Couldn't change the language.",
+  "@settingsLanguageSaveFailed": {
+    "description": "Toast when saving the language failed (E2); offers Retry."
   }
 }

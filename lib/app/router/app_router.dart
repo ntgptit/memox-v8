@@ -18,6 +18,8 @@ import 'package:memox/features/card/presentation/widgets/support/card_history_la
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
+import 'package:memox/features/settings/presentation/screens/language_screen.dart';
+import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
@@ -142,6 +144,18 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       ? () => context.push(AppRoutes.gallery)
                       : null,
                 ),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.settingsThemeChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const ThemeScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsLanguageChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const LanguageScreen(),
+                  ),
+                ],
               ),
             ],
           ),
