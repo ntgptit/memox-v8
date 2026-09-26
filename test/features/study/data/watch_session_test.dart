@@ -75,19 +75,8 @@ void main() {
     isA<Ok<void, StudyRejection>>(),
   );
 
-  Future<void> deleteCards(Set<String> cardIds) async {
-    final schedules = ScheduleRepositoryImpl(db, now: () => now);
-    final cards = CardRepositoryImpl(
-      db,
-      schedules,
-      TagRepositoryImpl(db, now: () => now),
-      now: () => now,
-    );
-    expect(
-      await cards.deleteCards(cardIds: cardIds),
-      isA<Ok<void, CardRejection>>(),
-    );
-  }
+  /// Spec D12 settles the sessions a build before the Trash left open.
+  Future<void> deleteCards(Set<String> cardIds) => hardDeleteCards(db, cardIds);
 
   test('the view names the deck, the kind and the stages, and serves the '
       'head card with the count of its round (IT-MODE-001, '
@@ -202,8 +191,14 @@ void main() {
       expect(view.isStalled, isFalse);
       final summary = view.summary!;
       expect(
-        (summary.cardCount, summary.learnedCardCount, summary.wrongTurnCount),
-        (2, 2, 1),
+        (
+          summary.cardCount,
+          summary.learnedCardCount,
+          summary.wrongTurnCount,
+          summary.answeredCardCount,
+          summary.turnCount,
+        ),
+        (2, 2, 1, 2, 3),
       );
     },
   );
@@ -234,8 +229,35 @@ void main() {
     final summary = (await viewOf(id)).summary!;
 
     expect(
-      (summary.cardCount, summary.learnedCardCount, summary.wrongTurnCount),
-      (2, null, 1),
+      (
+        summary.cardCount,
+        summary.learnedCardCount,
+        summary.wrongTurnCount,
+        summary.answeredCardCount,
+        summary.turnCount,
+      ),
+      (2, null, 1, 2, 3),
+    );
+  });
+
+  test('a session left in Browse has answered nothing: no turn is counted '
+      'for an advance (FE-A6 D18, BR-MODE-006)', () async {
+    final (_, leaf) = await tree(SchedulerType.sm2);
+    for (final id in ['c1', 'c2']) {
+      await insertCard(db, id: id, deckId: leaf.id);
+    }
+    final id = await learning(leaf);
+    await answer(id, const AdvanceAnswer());
+    expect(
+      await sessions.abandonSession(sessionId: id),
+      isA<Ok<void, StudyRejection>>(),
+    );
+
+    final summary = (await viewOf(id)).summary!;
+
+    expect(
+      (summary.answeredCardCount, summary.turnCount, summary.hasAnswers),
+      (0, 0, false),
     );
   });
 
@@ -260,8 +282,8 @@ void main() {
     expect(settled.currentMode, StudyMode.match);
   });
 
-  test('once its deck is deleted the session is notFound, and the watch '
-      'says so (UC-STUDY-001 A5, E5; IT-CONT-007)', () async {
+  test('once its deck goes to the Trash the session is notFound, and the '
+      'watch says so (UC-STUDY-001 A5; IT-CONT-007; BR-TRASH-002)', () async {
     final (_, leaf) = await tree();
     await insertCard(db, id: 'c1', deckId: leaf.id);
     final id = await learning(leaf);
@@ -279,7 +301,7 @@ void main() {
     );
     expect(
       await decks.deleteDeck(deckId: leaf.id),
-      isA<Ok<void, DeckRejection>>(),
+      isA<Ok<String, DeckRejection>>(),
     );
     await gone;
   });

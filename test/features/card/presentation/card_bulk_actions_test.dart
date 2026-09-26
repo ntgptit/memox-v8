@@ -222,7 +222,13 @@ void main() {
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.cardDelete));
     await tester.pumpAndSettle();
-    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card'), 2);
+    expect(
+      await _count(
+        env,
+        'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+      ),
+      2,
+    );
     expect(find.text(_en.cardDeletedToast(2)), findsOneWidget);
   });
 

@@ -14,6 +14,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // Graded modes spec §8.2: a round gets what it needs when it starts being
 // served, the options of its guess questions and the meaning slots of its
@@ -307,6 +308,32 @@ void main() {
     final rebuilt = await optionsOf(db, id, 'asked');
     expect(rebuilt, hasLength(5));
     expect(rebuilt, isNot(contains(gone)));
+  });
+
+  test('an option that went to the Trash is never shown: the question is '
+      'blocked, as for a deleted card (BR-TRASH-002, BR-STUDY-040)', () async {
+    final (root, leaf) = await tree();
+    await learned(root, leaf.id, 'asked', back: 'library', due: true);
+    for (final (index, meaning) in [
+      'kitchen',
+      'school',
+      'office',
+      'garden',
+      'river',
+    ].indexed) {
+      await learned(root, leaf.id, 'd$index', back: meaning);
+    }
+    final id = await review(leaf.id, StudyMode.guess);
+    final trashed = (await optionsOf(
+      db,
+      id,
+      'asked',
+    )).firstWhere((card) => card != 'asked');
+    await trashCardRow(db, trashed);
+
+    final question = (await viewOf(id)).currentItem!.guess!;
+    expect(question.isBlocked, isTrue);
+    expect(question.options, isEmpty);
   });
 
   test('a question its meaning source cannot fill stores no option, and the '

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/di/export_share_repository_provider.dart';
-import 'package:memox/features/card/di/card_repository_provider.dart';
+import 'package:memox/features/card/di/card_transfer_repository_provider.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 import 'package:memox/features/transfer/domain/usecases/build_export_use_case.dart';
@@ -70,7 +70,7 @@ void main() {
           if (isFailing)
             buildExportUseCaseProvider.overrideWith(
               (ref) => BuildExportUseCase(
-                ref.watch(cardRepositoryProvider),
+                ref.watch(cardTransferRepositoryProvider),
                 _FailingFiles(),
               ),
             ),

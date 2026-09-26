@@ -54,7 +54,7 @@ class CardActionsController extends _$CardActionsController {
     targetDeckId: targetDeckId,
   );
 
-  Future<Outcome<void, CardRejection>> deleteCards({
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
   }) => ref.read(deleteCardsUseCaseProvider)(cardIds: cardIds);
 

@@ -22,8 +22,12 @@ Future<void> _choose(WidgetTester tester, String command) async {
   await tester.pumpAndSettle();
 }
 
-Future<int> _deckCount(LibraryEnv env) async =>
-    (await env.db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle())
+Future<int> _activeDeckCount(LibraryEnv env) async =>
+    (await env.db
+            .customSelect(
+              'SELECT COUNT(*) AS n FROM deck WHERE delete_batch_id IS NULL',
+            )
+            .getSingle())
         .read<int>('n');
 
 Future<String?> _parentOf(LibraryEnv env, String id) async =>
@@ -50,9 +54,10 @@ void main() {
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
-    // Study and Study options wait under Coming soon (spec A4, amended).
+    // Study opens the entry (FE-A6 D10); Study options waits under Coming
+    // soon (spec A4, amended).
+    expect(find.text(_en.studyThisDeck), findsOneWidget);
     expect(find.text(_en.deckStudyOptions), findsNothing);
-    expect(find.byIcon(AppIcons.play), findsNothing);
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (
@@ -153,10 +158,8 @@ void main() {
     expect(find.text('Hàn Quốc'), findsNWidgets(2));
   });
 
-  libraryTest('Delete says what goes with the deck, then deletes it', (
-    tester,
-    env,
-  ) async {
+  libraryTest('Delete says what goes with the deck, then sends it to the '
+      'Trash', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     final verbs = await env.decks.sub(words.id, 'Verbs');
@@ -173,7 +176,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(await _deckCount(env), 1);
+    expect(await _activeDeckCount(env), 1);
     expect(find.text(_en.deckDeletedToast), findsOneWidget);
   });
 
@@ -237,6 +240,27 @@ void main() {
     await _choose(tester, _en.deckReviewAlgorithm);
 
     expect(opened, [korean.id]);
+  });
+
+  libraryTest('Study opens the Study Entry, for a root and for a sub-deck '
+      '(FE-A6 D10)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final opened = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id, onOpenStudy: opened.add),
+    );
+    await _choose(tester, _en.studyThisDeck);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onOpenStudy: opened.add),
+    );
+    await _choose(tester, _en.studyThisDeck);
+
+    expect(opened, [korean.id, words.id]);
   });
 
   libraryTest('Reorder from the sheet shows the drag handles', (

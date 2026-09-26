@@ -184,12 +184,14 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onOpenAlgorithm,
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
+  ValueChanged<String>? onOpenStudy,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
   onOpenAncestor: onOpenAncestor ?? (_) {},
   onSearch: onSearch ?? () {},
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
+  onOpenStudy: onOpenStudy ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},
@@ -215,6 +217,7 @@ DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
     onAddCard: () {},
     onOpenCard: (_) {},
     onExport: (_) {},
+    onStudy: () {},
   ),
   cardAppBar: (view, back, actions) =>
       CardDeckAppBarWidget(view: view, back: back, deckActions: actions),

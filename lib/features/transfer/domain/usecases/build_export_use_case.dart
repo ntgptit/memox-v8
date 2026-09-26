@@ -1,6 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/export_artifact_model.dart';
@@ -15,7 +15,7 @@ import 'package:memox/features/transfer/domain/repositories/transfer_file_reposi
 final class BuildExportUseCase {
   const BuildExportUseCase(this._cards, this._files);
 
-  final CardRepository _cards;
+  final CardTransferRepository _cards;
   final TransferFileRepository _files;
 
   Future<Outcome<ExportArtifact, TransferRejection>> call({

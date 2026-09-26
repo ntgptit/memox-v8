@@ -1,6 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
@@ -11,7 +11,7 @@ import 'package:memox/features/transfer/domain/models/import_summary_model.dart'
 final class CommitImportUseCase {
   const CommitImportUseCase(this._cards);
 
-  final CardRepository _cards;
+  final CardTransferRepository _cards;
 
   Future<Outcome<ImportSummary, TransferRejection>> call({
     required String deckId,

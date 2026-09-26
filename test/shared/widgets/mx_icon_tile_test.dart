@@ -132,4 +132,39 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  for (final brightness in Brightness.values) {
+    for (final tone in [
+      MxIconTileTone.success,
+      MxIconTileTone.caution,
+      MxIconTileTone.danger,
+    ]) {
+      testWidgets('${tone.name}, ${brightness.name}: a soft tint, and the '
+          'glyph reads 3:1 on it over the surface (FE-A6 D14)', (tester) async {
+        await pumpMx(
+          tester,
+          MxIconTile(icon: AppIcons.check, tone: tone),
+          brightness: brightness,
+        );
+        final scheme = brightness == Brightness.light
+            ? AppColorSchemes.light
+            : AppColorSchemes.dark;
+        final fill = _tile(tester).color!;
+        final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
+
+        expect(fill.a, lessThan(1), reason: 'a soft tint, not a solid fill');
+        expect(
+          _ratio(glyph, Color.alphaBlend(fill, scheme.surface)),
+          greaterThanOrEqualTo(3),
+        );
+      });
+    }
+  }
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }

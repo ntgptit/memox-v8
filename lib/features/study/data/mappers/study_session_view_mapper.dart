@@ -75,6 +75,8 @@ StudySessionView studySessionViewOf(
               SessionKind.reviewing => null,
             },
             wrongTurnCount: counts.wrongCount,
+            answeredCardCount: counts.answeredCount,
+            turnCount: counts.turnCount,
           ),
     board: switch (served?.board) {
       final List<BoardPairRecord> pairs => _boardOf(pairs),

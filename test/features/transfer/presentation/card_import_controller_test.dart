@@ -8,11 +8,12 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_import_result_model.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -40,10 +41,10 @@ ImportPickedFile _file(String name, String text) =>
 
 /// Throws on the commit, the way a full disk does (E5), until [isBroken]
 /// turns false; holds the commit open while [hold] is pending.
-final class _BrokenImport implements CardRepository {
+final class _BrokenImport implements CardTransferRepository {
   _BrokenImport(this._cards);
 
-  final CardRepository _cards;
+  final CardTransferRepository _cards;
   var isBroken = true;
   Completer<void>? hold;
 
@@ -91,12 +92,17 @@ void main() {
   });
   tearDown(() => db.close());
 
-  ProviderContainer container({CardRepository Function(CardRepository)? wrap}) {
-    final cards = CardRepositoryImpl(
+  ProviderContainer container({
+    CardTransferRepository Function(CardTransferRepository)? wrap,
+  }) {
+    final cards = CardTransferRepositoryImpl(
       db,
-      ScheduleRepositoryImpl(db, now: _now),
-      TagRepositoryImpl(db, now: _now),
-      now: _now,
+      CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db, now: _now),
+        TagRepositoryImpl(db, now: _now),
+        now: _now,
+      ),
     );
     final result = ProviderContainer(
       overrides: [

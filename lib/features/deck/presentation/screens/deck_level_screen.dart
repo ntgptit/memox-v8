@@ -38,6 +38,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onOpenAncestor,
     required this.onSearch,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
@@ -56,6 +57,9 @@ class DeckLevelScreen extends StatelessWidget {
 
   /// A root's review algorithm: the router opens screen 02.
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
+  final ValueChanged<String> onOpenStudy;
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
@@ -92,12 +96,14 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenDeck: onOpenDeck,
       onSearch: onSearch,
       onOpenAlgorithm: onOpenAlgorithm,
+      onOpenStudy: onOpenStudy,
     ),
     final id => _OpenDeck(
       deckId: id,
       onOpenDeck: onOpenDeck,
       onOpenAncestor: onOpenAncestor,
       onOpenAlgorithm: onOpenAlgorithm,
+      onOpenStudy: onOpenStudy,
       cardContent: cardContent,
       cardAppBar: cardAppBar,
       cardBreadcrumb: cardBreadcrumb,
@@ -116,6 +122,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
@@ -129,6 +136,9 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
+  final ValueChanged<String> onOpenStudy;
   final Widget Function(DeckView view) cardContent;
   final Widget Function(DeckView view, Widget back, Widget deckActions)
   cardAppBar;
@@ -155,6 +165,7 @@ class _OpenDeck extends ConsumerWidget {
         onOpenDeck: onOpenDeck,
         onOpenAncestor: onOpenAncestor,
         onOpenAlgorithm: onOpenAlgorithm,
+        onOpenStudy: onOpenStudy,
         cardContent: cardContent,
         cardAppBar: cardAppBar,
         cardBreadcrumb: cardBreadcrumb,
@@ -203,6 +214,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
@@ -216,6 +228,9 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
+  final ValueChanged<String> onOpenStudy;
   final Widget Function(DeckView view) cardContent;
   final Widget Function(DeckView view, Widget back, Widget deckActions)
   cardAppBar;
@@ -251,6 +266,7 @@ class _OpenDeckContent extends ConsumerWidget {
           onExportCards: deck.contentType == DeckContentType.card
               ? () => onExportCards(deck)
               : null,
+          onOpenStudy: onOpenStudy,
           isOpenDeck: true,
         ),
       ),
@@ -304,6 +320,7 @@ class _OpenDeckContent extends ConsumerWidget {
                 parentId: deck.id,
                 onOpenDeck: onOpenDeck,
                 onOpenAlgorithm: onOpenAlgorithm,
+                onOpenStudy: onOpenStudy,
                 schedulerType: view.schedulerType,
                 // Owner decision C-O6: its sub-decks are at level 10.
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,

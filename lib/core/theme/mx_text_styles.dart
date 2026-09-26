@@ -38,6 +38,7 @@ final class MxTextStyles {
   static const double _termHeight = 1.25;
   static const double _termLongSize = 18;
   static const double _fieldBodyHeight = 1.45;
+  static const double _statValueHeight = 1.1;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -232,6 +233,16 @@ final class MxTextStyles {
         color: _scheme.onSurfaceVariant,
       );
 
+  /// A stat's figure (StatTile): the headline role at 700, tabular, tight
+  /// line box, in the ink the tile's emphasis picks (FE-A6 D17).
+  TextStyle statValue(Color ink) => AppTypography.withWeight(
+    _texts.headlineSmall!,
+    FontWeight.w700,
+  ).copyWith(height: _statValueHeight, fontFeatures: _tabular, color: ink);
+
+  /// A stat's label: the overline. The widget upper-cases it.
+  TextStyle get statLabel => overline;
+
   /// A card row's status label (screen 07): the overline's 12/700 and 0.6
   /// tracking, in its status ink. The widget upper-cases the text.
   TextStyle statusLabel(Color ink) => overline.copyWith(color: ink);
@@ -267,6 +278,11 @@ final class MxTextStyles {
     height: _noteHeight,
     color: _scheme.onSurfaceVariant,
   );
+
+  /// Note text carrying a status in [ink], such as the Study Entry's
+  /// overdue note in the warning ink (screen 14): the note role at 600.
+  TextStyle statusNote(Color ink) =>
+      AppTypography.withWeight(noteText, FontWeight.w600).copyWith(color: ink);
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.

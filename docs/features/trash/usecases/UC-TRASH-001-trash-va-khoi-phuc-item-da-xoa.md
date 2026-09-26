@@ -3,11 +3,11 @@ id: UC-TRASH-001
 title: Trash và khôi phục item đã xoá
 status: ready
 rules: [BR-CARD-010, BR-CARD-012, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-015, BR-DECK-017, BR-DECK-018, BR-SRS-006, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-007, BR-TRASH-008, BR-TRASH-009, BR-TRASH-010, BR-TRASH-011, BR-TRASH-012]
-code: []
+code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/features/trash/domain/usecases/watch_deck_restore_targets_use_case.dart, lib/features/trash/domain/usecases/watch_card_restore_targets_use_case.dart, lib/features/trash/domain/usecases/restore_decks_from_trash_use_case.dart, lib/features/trash/domain/usecases/restore_cards_from_trash_use_case.dart, lib/features/trash/domain/usecases/purge_trash_use_case.dart, lib/features/trash/domain/usecases/purge_expired_trash_use_case.dart, lib/features/deck/domain/usecases/delete_deck_use_case.dart, lib/features/deck/domain/usecases/undo_deck_deletion_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/undo_card_deletion_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — Trash (spec §2).
+**Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1.
 
 **Actor:** Người dùng
 **Trigger:** Xoá một card hoặc deck (vào Trash), hoặc mở `Trash` từ app bar của

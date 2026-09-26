@@ -8,6 +8,7 @@ import 'package:memox/features/settings/domain/models/effective_study_options_mo
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The study options of a root deck (UC-SETTINGS-001 A1, BR-STUDY-056): its
 // override, or the app-wide defaults when it has none or cannot be read.
@@ -36,9 +37,7 @@ Future<void> _insertTree(AppDatabase db, {String? studyConfig}) async {
   );
 }
 
-Future<void> _moveTreeToTrash(AppDatabase db) => db.customStatement(
-  "UPDATE deck SET delete_batch_id = 'b' WHERE root_id = 'r'",
-);
+Future<void> _moveTreeToTrash(AppDatabase db) => trashDeckRows(db, 'r');
 
 Future<({String? studyConfig, DateTime updatedAt})> _root(
   AppDatabase db,

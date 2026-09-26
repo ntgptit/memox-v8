@@ -35,6 +35,32 @@ void main() {
     expect(dark.warningSoft, isColorCloseTo(0x2EFFC658));
   });
 
+  test('successSoft: success at 10% light, 18% dark (FE-A6 D14)', () {
+    expect(light.successSoft, isColorCloseTo(0x1A2BA88B));
+    expect(dark.successSoft, isColorCloseTo(0x2E6FE0BD));
+  });
+
+  test('successBorder: success at 26% light, 32% dark', () {
+    expect(light.successBorder, isColorCloseTo(0x422BA88B));
+    expect(dark.successBorder, isColorCloseTo(0x526FE0BD));
+  });
+
+  for (final (name, scheme, derived) in [
+    ('light', AppColorSchemes.light, light),
+    ('dark', AppColorSchemes.dark, dark),
+  ]) {
+    test('successInk reads 4.5:1 on the surface and on its soft tint '
+        '($name)', () {
+      final soft = Color.alphaBlend(derived.successSoft, scheme.surface);
+
+      expect(
+        _ratio(derived.successInk, scheme.surface),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(_ratio(derived.successInk, soft), greaterThanOrEqualTo(4.5));
+    });
+  }
+
   test('surfaceHero blends over surfaceBright in light, surface in dark', () {
     // Light: #5265F5 at 5% over #FFFFFF. Dark: #8B9AFF at 12% over #0A0E27.
     expect(light.surfaceHero, isColorCloseTo(0xFFF6F7FE));
@@ -117,4 +143,11 @@ void main() {
     expect(identical(first, light), isFalse);
     expect(first.ghostBorder, isNot(light.ghostBorder));
   });
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }

@@ -1,6 +1,6 @@
 # MemoX V8 — Study UI (FE-A6, FE-A7)
 
-Status: draft for owner review (2026-09-26).
+Status: approved by the owner (2026-09-26).
 
 ## 1. Intent
 
@@ -27,13 +27,20 @@ not part of it.
 | D10 | Entry points: a real `DeckAction.study` in the deck action sheet, and the card list summary's "Study this deck". Both leave the Coming soon sheet; Study options stays there (spec A4). Study home (A8) adds its own entry later. | Handoff 07 and 14. |
 | D11 | Two backend additions, each with its own tests, in the phase that needs it. `SessionSummary` gains `answeredCardCount` and `turnCount` (P1, handoff 21). A read-only `PreviewSelfAssessIntervalsUseCase` returns the four next intervals for a scheduled `self_assess` turn and null on a relearning turn, computed by the same `Sm2Scheduler.next` the write uses (P2, handoff 16a). | The kit's summary numbers; the owner-confirmed 16a brief. |
 | D12 | Recall's clock is a widget ticker. `SaveRecallTimeUseCase` runs on `AppLifecycleState.paused` and on dispose, never per tick. At zero, the ticker answers `RecallAnswer(timedOut)`. | BR-STUDY-031, BR-STUDY-036. |
-| D13 | Layout follows the Library pattern: `lib/features/study/presentation/{providers,controllers,screens,widgets/{sections,items,overlays}}`; use-case providers one per file; `app/` composes and routes (spec A14). | ADR-010 and the Library screens. |
+| D13 | Layout follows the Library pattern: `lib/features/study/presentation/{providers,controllers,states,screens,widgets/{sections,items,overlays}}`; use-case providers one per file; `app/` composes and routes (spec A14). | ADR-010 and the Library screens. |
+| D14 | **Summary hero tones.** The theme binds the PRESERVE_ONLY `success` semantic as a field of `MxSemanticColors` (a green of its own, never `mastery`), and `MxIconTile` and the hero card gain a `success` and a `danger` tone (`danger` on the existing soft danger tint, `dangerSoft`/`dangerBorder` with the `error` glyph, as `MxInlineBanner` and `MxErrorState` draw it; the solid `errorFill`/`onErrorFill` pair stays the destructive button's). Outcome → tone: ok (`completed`) success; paused (`user_exit`, `interrupted`) tinted; ended (`scheduler_reset`, `scheduler_changed`) warning; error (`persistence_error`) danger. Built under `flutter-theme-design` (theme slot and Mx widget together). | Owner, 2026-09-26 (Impeccable critique before P1): the kit's four tones; green stays mastery-only. |
+| D15 | **Study entry read model.** `StudyEntry` gains `overdueCardCount` (the due cards whose due day is before today, same local-day boundary as BR-STUDY-068) and `resumable`, a `ResumableSession` (the Study Home shape: kind, mode, progress) replacing the bare `resumableSessionId`. Each with its own repository test, in P1. | Owner, 2026-09-26: the kit's overdue note and resume banner. |
+| D16 | **Deck context on the entry.** The deck name and breadcrumb come from the deck feature, composed by `app/` and passed to the entry screen as a widget, as the card editor's `_deckContext` does: `study` may not import `deck` (`boundary_rules.dart`). | ADR-011 D2. |
+| D17 | **`MxStatTile`.** A new shared widget: a large tabular number over a small-caps label, inked as the kit draws New and Due (Due above zero primary, New above zero muted, a zero plain), one semantics node "{label}: {value}". Callers: the entry hero (New, Due) and the summary hero (three stats). Built under `flutter-theme-design`, with its widget test and goldens. | Owner, 2026-09-26: two callers exist (14, 21). |
+| D18 | **A summary with nothing answered.** A session that ended before its first turn shows the hero without stats and no Facts card, as `schedulerChanged` does. | Owner, 2026-09-26. |
+| D19 | **Accessibility.** 14, 16 and 21 follow 16a's rules: card faces wrap and never ellipsize; single-line text keeps line-height 1.5 for stacked marks (UI-base §9 row 102); every target 48 dp; the resume pulse dot and hero glyphs are decorative (no own node); a stat tile is one node; the Browse card reads term then meaning; the feedback hold keeps focus on the card. | Owner, 2026-09-26. |
+| D20 | **Browse edges.** The footer hint does not change; a right swipe on the round's first card does nothing; a left swipe on the stage's last card answers it and the session moves on. | Owner, 2026-09-26. |
 
 ## 3. Screens by phase
 
 | Phase | Scope | Makes usable |
 |---|---|---|
-| P1 | Routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a; entry points (D10); stale-session sweep (D9). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
+| P1 | Theme tones and `MxStatTile` (D14, D17); the entry read model (D15); routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a and D18; entry points (D10); stale-session sweep (D9). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
 | P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003). | `sm2` decks: learning (browse → self_assess) and review. |
 | P3 | Guess 18, Match 17. | Those stages. |
 | P4 | Recall 19 (D12), Fill 20. | `eight_box` decks end to end. |

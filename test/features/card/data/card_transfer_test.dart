@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -53,17 +54,20 @@ final class _SecondScheduleFails implements ScheduleRepository {
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
-  late CardRepositoryImpl cards;
+  late CardTransferRepositoryImpl cards;
   late DeckEntity root;
   late DeckEntity leaf;
   setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardRepositoryImpl(
+    cards = CardTransferRepositoryImpl(
       db,
-      ScheduleRepositoryImpl(db, now: _now),
-      TagRepositoryImpl(db, now: _now),
-      now: _now,
+      CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db, now: _now),
+        TagRepositoryImpl(db, now: _now),
+        now: _now,
+      ),
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'l');
@@ -259,11 +263,14 @@ void main() {
     test(
       'a write that fails half way rolls the whole batch back (E5)',
       () async {
-        final failing = CardRepositoryImpl(
+        final failing = CardTransferRepositoryImpl(
           db,
-          _SecondScheduleFails(ScheduleRepositoryImpl(db, now: _now)),
-          TagRepositoryImpl(db, now: _now),
-          now: _now,
+          CardRepositoryImpl(
+            db,
+            _SecondScheduleFails(ScheduleRepositoryImpl(db, now: _now)),
+            TagRepositoryImpl(db, now: _now),
+            now: _now,
+          ),
         );
 
         await expectLater(

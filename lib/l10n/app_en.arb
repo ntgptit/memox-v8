@@ -200,6 +200,22 @@
   "@deckRejectionSameParent": {
     "description": "Why a deck write was refused: same parent."
   },
+  "deckRejectionTargetNotFound": "That deck no longer exists.",
+  "@deckRejectionTargetNotFound": {
+    "description": "Why a deck restore was refused: the chosen deck is gone."
+  },
+  "deckRejectionTargetInTrash": "That deck is in the Trash too.",
+  "@deckRejectionTargetInTrash": {
+    "description": "Why a deck restore or Undo was refused: the deck it goes to is in the Trash."
+  },
+  "deckRejectionRootRestoresToTopLevel": "A top-level deck goes back to the top level.",
+  "@deckRejectionRootRestoresToTopLevel": {
+    "description": "Why a deck restore was refused: a root deck was aimed under a deck."
+  },
+  "deckRejectionSubDeckNeedsParent": "Choose a deck to put it in.",
+  "@deckRejectionSubDeckNeedsParent": {
+    "description": "Why a deck restore was refused: a sub-deck was aimed at the top level."
+  },
   "failureConstraint": "Nothing was saved: the change breaks a data rule.",
   "@failureConstraint": {
     "description": "A write was refused by a data rule; nothing was saved."
@@ -325,27 +341,6 @@
       }
     },
     "description": "Delete dialog body: what the delete takes with it."
-  },
-  "deckSearchHint": "Search decks",
-  "@deckSearchHint": {
-    "description": "Hint in the deck search field."
-  },
-  "deckSearchClear": "Clear search",
-  "@deckSearchClear": {
-    "description": "Accessible name of the search clear button."
-  },
-  "deckSearchEmptyTitle": "No matches for “{term}”",
-  "@deckSearchEmptyTitle": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Search empty state; term is what the person typed."
-  },
-  "deckSearchEmptyBody": "Accents matter — “hoc” does not find “học”. Search covers deck names.",
-  "@deckSearchEmptyBody": {
-    "description": "Search empty state body."
   },
   "srsRejectionUnsupportedAction": "This answer doesn't fit the deck's scheduler.",
   "@srsRejectionUnsupportedAction": {
@@ -638,6 +633,10 @@
   "@cardRejectionCrossRootMove": {
     "description": "Card move refusal: another root."
   },
+  "cardRejectionTargetInTrash": "That deck is in the Trash.",
+  "@cardRejectionTargetInTrash": {
+    "description": "Card restore or Undo refusal: the deck it goes to is in the Trash."
+  },
   "tagRejectionBlankName": "Enter a tag name.",
   "@tagRejectionBlankName": {
     "description": "Tag refusal: blank name."
@@ -657,6 +656,10 @@
   "tagRejectionNotFound": "A card or tag no longer exists.",
   "@tagRejectionNotFound": {
     "description": "Tag refusal: a card or tag is gone."
+  },
+  "tagRejectionMergeNotConfirmed": "Another tag now has this name. Check the merge and confirm again.",
+  "@tagRejectionMergeNotConfirmed": {
+    "description": "Tag refusal: a rename would now merge into a tag the person did not confirm."
   },
   "cardAddTitle": "New card",
   "@cardAddTitle": {
@@ -1435,7 +1438,7 @@
   "@searchHintDeckExample": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchHintDeckExample."
   },
-  "searchAccentNote": "Case does not matter, accents do: “hoc” will not find “học”.",
+  "searchAccentNote": "Case does not matter, accents do: “hoc” will not find “học”. Examples, hints and pronunciation are not searched.",
   "@searchAccentNote": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchAccentNote."
   },
@@ -1504,6 +1507,101 @@
   "searchErrorBody": "Your library is safe on this device. Try again in a moment.",
   "@searchErrorBody": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchErrorBody."
+  },
+  "searchFieldHint": "Search decks, cards, tags",
+  "@searchFieldHint": {
+    "description": "Screen handoff 04: hint of the library search field and of the Library root's search trigger (FE-A10, spec D15)."
+  },
+  "searchClear": "Clear search",
+  "@searchClear": {
+    "description": "Screen handoff 04: the search field's clear button, for screen readers."
+  },
+  "searchHintCardTerm": "a card term or meaning",
+  "@searchHintCardTerm": {
+    "description": "Screen handoff 04: hint row, what search finds on cards."
+  },
+  "searchHintCardExample": "학생, học sinh, homework",
+  "@searchHintCardExample": {
+    "description": "Screen handoff 04: examples under the card hint row. Sample vocabulary; keep as is in every language."
+  },
+  "searchHintTagName": "a tag name",
+  "@searchHintTagName": {
+    "description": "Screen handoff 04: hint row, what search finds on tags."
+  },
+  "searchHintTagExample": "verb, Học",
+  "@searchHintTagExample": {
+    "description": "Screen handoff 04: examples under the tag hint row. Sample tags; keep as is in every language."
+  },
+  "searchCardsGroup": "Cards",
+  "@searchCardsGroup": {
+    "description": "Screen handoff 04: the card group's header."
+  },
+  "searchGroupCountMore": "{count}+",
+  "@searchGroupCountMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 04: a group's count while more results follow (spec D10)."
+  },
+  "searchLoadMore": "Load more results",
+  "@searchLoadMore": {
+    "description": "Screen handoff 04: reads the next page (BR-SEARCH-007)."
+  },
+  "searchLoadMoreFailed": "Couldn't load more results. What is shown is still correct.",
+  "@searchLoadMoreFailed": {
+    "description": "Screen handoff 04: the end of the list when the next page failed (UC-SEARCH-001 E2, spec D13)."
+  },
+  "searchFooter": "Decks first, then cards · case-insensitive, accents matter",
+  "@searchFooter": {
+    "description": "Screen handoff 04: the line under the results."
+  },
+  "searchNoMatchesTitle": "No matches for “{term}”",
+  "@searchNoMatchesTitle": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: no deck and no card holds the term."
+  },
+  "searchNoMatchesBody": "Accents matter — “hoc” does not find “học”. Search covers deck names, card terms and meanings, and tag names.",
+  "@searchNoMatchesBody": {
+    "description": "Screen handoff 04: under the no-results title (spec D14)."
+  },
+  "searchCardRowLabel": "{front}, {back}, in {path}",
+  "@searchCardRowLabel": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      },
+      "back": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: what a screen reader says for a card result (spec D22)."
+  },
+  "searchCardRowTagLabel": "{front}, {back}, tag {tag}, in {path}",
+  "@searchCardRowTagLabel": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      },
+      "back": {
+        "type": "String"
+      },
+      "tag": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 04: a card result found by its tag only, for screen readers (spec D22)."
   },
   "algorithmUnlockedTitle": "Can still be changed",
   "@algorithmUnlockedTitle": {
@@ -1730,14 +1828,6 @@
   "comingSoonTrashBody": "Restore deleted decks and cards.",
   "@comingSoonTrashBody": {
     "description": "Coming soon: what the trash does."
-  },
-  "comingSoonStudy": "Study",
-  "@comingSoonStudy": {
-    "description": "Coming soon: the study feature's name."
-  },
-  "comingSoonStudyBody": "Study a deck's due cards.",
-  "@comingSoonStudyBody": {
-    "description": "Coming soon: what studying a deck does."
   },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {
@@ -2237,6 +2327,22 @@
   "@galleryNew": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryDue": "Due",
+  "@galleryDue": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryReviewed": "Reviewed",
+  "@galleryReviewed": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryAnswered": "Answered",
+  "@galleryAnswered": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryWrong": "Wrong",
+  "@galleryWrong": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
   "galleryLearning": "Learning",
   "@galleryLearning": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -2284,6 +2390,14 @@
   "galleryWarningCard": "Warning card",
   "@galleryWarningCard": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySuccessCard": "Success card",
+  "@gallerySuccessCard": {
+    "description": "Debug gallery: the success card sample (FE-A6 D14)."
+  },
+  "galleryDangerCard": "Danger card",
+  "@galleryDangerCard": {
+    "description": "Debug gallery: the danger card sample (FE-A6 D14)."
   },
   "gallerySelectedCard": "Selected card",
   "@gallerySelectedCard": {
@@ -2410,6 +2524,170 @@
   "galleryN5": "N5",
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "studyEntryOverline": "{algorithm} · cards per session {limit}",
+  "@studyEntryOverline": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the hero's overline, the deck's algorithm and the session limit (BR-STUDY-024)."
+  },
+  "studyEntryNew": "New",
+  "@studyEntryNew": {
+    "description": "Screen handoff 14 (FE-A6): the hero's New stat label."
+  },
+  "studyEntryDue": "Due",
+  "@studyEntryDue": {
+    "description": "Screen handoff 14 (FE-A6): the hero's Due stat label."
+  },
+  "studyEntryOverdue": "{count} of the due cards are overdue",
+  "@studyEntryOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the hero's note on due cards from before today."
+  },
+  "studyEntryNothingTitle": "Nothing to do right now",
+  "@studyEntryNothingTitle": {
+    "description": "Screen handoff 14 (FE-A6): the nothing-due state's title (BR-STUDY-008)."
+  },
+  "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
+  "@studyEntryNothingBody": {
+    "description": "Screen handoff 14 (FE-A6): the nothing-due state's body."
+  },
+  "studyEntryLearnTitle": "Learn new cards",
+  "@studyEntryLearnTitle": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's title."
+  },
+  "studyEntryLearnStagesSm2": "Browse, then self-assess",
+  "@studyEntryLearnStagesSm2": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's stage line for SM-2."
+  },
+  "studyEntryLearnStagesEightBox": "Browse → match → guess → recall → fill",
+  "@studyEntryLearnStagesEightBox": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's stage line for Eight boxes."
+  },
+  "studyEntryLearnCount": "{shown} of {total} new · in creation order",
+  "@studyEntryLearnCount": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): how many new cards a learning session takes (BR-STUDY-056)."
+  },
+  "studyEntryLearnLine": "{stages} · {count}",
+  "@studyEntryLearnLine": {
+    "placeholders": {
+      "stages": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the Learn row's subtitle: the stage line, then the count line."
+  },
+  "studyEntryLearn": "Learn",
+  "@studyEntryLearn": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's button."
+  },
+  "studyEntryReviewHeader": "Review · choose how cards are asked",
+  "@studyEntryReviewHeader": {
+    "description": "Screen handoff 14 (FE-A6): the review modes' section header."
+  },
+  "studyEntryModeMatchBody": "Pair terms with meanings, up to 5 at a time",
+  "@studyEntryModeMatchBody": {
+    "description": "Screen handoff 14 (FE-A6): the Match mode's description."
+  },
+  "studyEntryModeGuessBody": "Pick the meaning out of five",
+  "@studyEntryModeGuessBody": {
+    "description": "Screen handoff 14 (FE-A6): the Guess mode's description."
+  },
+  "studyEntryModeRecallBody": "Recall the meaning within 20 seconds",
+  "@studyEntryModeRecallBody": {
+    "description": "Screen handoff 14 (FE-A6): the Recall mode's description."
+  },
+  "studyEntryModeFillBody": "Type the term for the meaning",
+  "@studyEntryModeFillBody": {
+    "description": "Screen handoff 14 (FE-A6): the Fill mode's description."
+  },
+  "studyEntryModeCards": "{count} cards",
+  "@studyEntryModeCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): a review mode's badge, how many cards it would ask."
+  },
+  "studyEntryNotAvailable": "Not available",
+  "@studyEntryNotAvailable": {
+    "description": "Screen handoff 14 (FE-A6): the badge of a review mode the cards cannot run (BR-STUDY-044)."
+  },
+  "studyEntryUnavailableNote": "A mode that is not available lacks suitable cards for this review — it comes back when the cards qualify.",
+  "@studyEntryUnavailableNote": {
+    "description": "Screen handoff 14 (FE-A6): the note under the review modes when one is not available."
+  },
+  "studyEntryReasonNoExample": "Needs an example on the due cards",
+  "@studyEntryReasonNoExample": {
+    "description": "Screen handoff 14 (FE-A6): why Fill is not available (BR-MODE-009)."
+  },
+  "studyEntryReasonTooFewPairs": "Needs at least two due cards",
+  "@studyEntryReasonTooFewPairs": {
+    "description": "Screen handoff 14 (FE-A6): why Match is not available (BR-MODE-009)."
+  },
+  "studyEntryReasonTooFewMeanings": "Needs five different meanings among the due cards",
+  "@studyEntryReasonTooFewMeanings": {
+    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009)."
+  },
+  "studyComingSoon": "Coming soon",
+  "@studyComingSoon": {
+    "description": "Screen handoff 14 (FE-A6): the badge of a study mode the app has not built yet (FE-A6 spec §3)."
+  },
+  "studyEntryDeckGone": "This deck no longer exists",
+  "@studyEntryDeckGone": {
+    "description": "Screen handoff 14 (FE-A6): the toast when the deck is deleted while its entry is open (UC-STUDY-001 E1)."
+  },
+  "studyEntryErrorTitle": "Couldn't read this deck",
+  "@studyEntryErrorTitle": {
+    "description": "Screen handoff 14 (FE-A6): the error state's title."
+  },
+  "studyEntryErrorBody": "Your cards are safe on this device. Try again in a moment.",
+  "@studyEntryErrorBody": {
+    "description": "Screen handoff 14 (FE-A6): the error state's body."
+  },
+  "studyCount": "{count}",
+  "@studyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): a stat tile's figure."
+  },
+  "studyThisDeckDue": "Study this deck · {due} due",
+  "@studyThisDeckDue": {
+    "placeholders": {
+      "due": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry while cards are due."
+  },
+  "studyThisDeck": "Study this deck",
+  "@studyThisDeck": {
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
   },
   "importTitle": "Import cards",
   "@importTitle": {

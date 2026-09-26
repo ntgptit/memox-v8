@@ -1,6 +1,6 @@
 ---
 feature: search
-code: [lib/features/search/domain, lib/features/search/data, lib/features/search/di]
+code: [lib/features/search/domain, lib/features/search/data, lib/features/search/di, lib/features/search/presentation]
 depends_on: [card, deck, tags]
 ---
 ## Phạm vi

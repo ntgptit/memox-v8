@@ -4,8 +4,8 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/repositories/study_session_view_repository.dart';
 
 /// UC-STUDY-001 steps 6–13: the session screen, again after every turn, and
-/// notFound once the session is gone with its deck (A5, E5). It writes
-/// nothing (BR-STUDY-075).
+/// notFound once its deck is in the Trash or the session is gone (A5, E5;
+/// BR-TRASH-002). It writes nothing (BR-STUDY-075).
 final class WatchStudySessionUseCase {
   const WatchStudySessionUseCase(this._sessions);
 

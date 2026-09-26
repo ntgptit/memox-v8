@@ -8,7 +8,7 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/providers/deck_move_targets_provider.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_path_label_widget.dart';
+import 'package:memox/core/text/path_label.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -81,7 +81,7 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
         candidates: [
           for (final target in value)
             MxPickerCandidate(
-              label: deckPathLabel([
+              label: pathLabel([
                 for (final entry in target.path) entry.name,
                 target.name,
               ]),

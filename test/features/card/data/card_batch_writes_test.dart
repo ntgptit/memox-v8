@@ -14,6 +14,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The card writes stage 2 adds: edit, and the batches of BR-CARD-011, each
 // all or nothing in one transaction.
@@ -166,7 +167,7 @@ void main() {
   });
 
   group('deleteCards (BR-CARD-011)', () {
-    test('deletes the batch with its schedule rows and tag links; an emptied deck is unset', () async {
+    test('moves the cards to the Trash with their schedule rows and tag links; an emptied deck is unset', () async {
       final a = await cards.card(
         nouns.id,
         const CardDraft(front: 'a', back: 'a', tagNames: ['t']),
@@ -176,14 +177,14 @@ void main() {
 
       final result = await cards.deleteCards(cardIds: {a.id, b.id});
 
-      expect(result, isA<Ok<void, CardRejection>>());
+      expect(result, isA<Ok<List<String>, CardRejection>>());
       expect(
         (
           await count('card'),
           await count('card_schedule'),
           await count('card_tags'),
         ),
-        (1, 1, 0),
+        (3, 3, 1),
       );
       expect(await contentTypeOf(nouns.id), DeckContentType.unset);
       expect(await contentTypeOf(verbs.id), DeckContentType.card);
@@ -340,7 +341,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {}),
-        isA<Ok<void, CardRejection>>(),
+        isA<Ok<List<String>, CardRejection>>(),
       );
       expect(
         await cards.moveCards(cardIds: {}, targetDeckId: empty.id),
@@ -359,14 +360,8 @@ void main() {
     final card = await cards.card(nouns.id);
     final trashedCard = await cards.card(nouns.id);
     final trashedDeck = await decks.sub(root.id, 'Trashed');
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = ?",
-      [trashedCard.id],
-    );
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
-      [trashedDeck.id],
-    );
+    await trashCardRow(db, trashedCard.id);
+    await trashDeckRows(db, trashedDeck.id);
     final before = await totalChanges(db);
     const draft = CardDraft(front: 'f', back: 'b');
 
@@ -415,6 +410,12 @@ void main() {
     setUp(() async {
       trashed = await decks.sub(root.id, 'Trashed');
       cardId = (await cards.card(trashed.id)).id;
+      await insertDeleteBatch(
+        db,
+        'b',
+        itemType: 'deck',
+        rootItemId: trashed.id,
+      );
       await db.customStatement(
         "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
         [trashed.id],
@@ -435,7 +436,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {cardId}),
-        isA<Ok<void, CardRejection>>(),
+        isA<Ok<List<String>, CardRejection>>(),
       );
       expect(await deckRow(trashed.id), before);
     });

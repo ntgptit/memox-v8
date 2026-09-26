@@ -158,4 +158,44 @@ void main() {
     expect(_shape(tester).side, BorderSide(color: scheme.primary, width: 2));
     expect(_surface(tester).color, scheme.surfaceContainerLowest);
   });
+
+  testWidgets('a success card and a danger card take their decoration '
+      '(FE-A6 D14)', (tester) async {
+    await pumpMx(
+      tester,
+      const Column(
+        children: [
+          MxCard(isSuccess: true, child: Text('ok')),
+          MxCard(isDanger: true, child: Text('error')),
+        ],
+      ),
+    );
+    final colors = tester
+        .widgetList<Material>(
+          find.descendant(
+            of: find.byType(MxCard),
+            matching: find.byType(Material),
+          ),
+        )
+        .map((material) => material.color)
+        .toList();
+    final scheme = AppColorSchemes.light;
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+
+    expect(colors, [
+      AppDecorations.successCard(scheme, derived).color,
+      AppDecorations.dangerCard(scheme, derived).color,
+    ]);
+  });
+
+  test('a card takes one tone at most', () {
+    expect(
+      () => MxCard(isHero: true, isSuccess: true, child: const SizedBox()),
+      throwsAssertionError,
+    );
+    expect(
+      () => MxCard(isWarning: true, isDanger: true, child: const SizedBox()),
+      throwsAssertionError,
+    );
+  });
 }

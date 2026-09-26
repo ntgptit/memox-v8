@@ -5,7 +5,7 @@ import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.da
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
-import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
+import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -52,7 +52,35 @@ abstract interface class DeckRepository {
     DateTime? now,
   });
 
-  Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId});
+  /// UC-DECK-002: [deckId] and every active deck and card under it go to the
+  /// Trash as one batch, whose id comes back for an Undo (BR-DECK-022,
+  /// BR-TRASH-001). The sessions it touches end (BR-TRASH-004).
+  Future<Outcome<String, DeckRejection>> deleteDeck({
+    required String deckId,
+    DateTime? now,
+  });
+
+  /// UC-TRASH-001 steps 5-7: the decks of [batchIds] come back under
+  /// [parentId], or to the top level when it is null, each last among its
+  /// new siblings, in the order given, all or none. A root deck goes back to
+  /// the top level only, a sub-deck under a deck only, and each passes the
+  /// rules of a move (BR-TRASH-006, BR-TRASH-007).
+  Future<Outcome<void, DeckRejection>> restoreDecks({
+    required Set<String> batchIds,
+    required String? parentId,
+    DateTime? now,
+  });
+
+  /// BR-TRASH-008: the deck of [batchId] goes back where it was, at its old
+  /// position; refused, typed, when that place no longer takes it.
+  Future<Outcome<void, DeckRejection>> undoDeckDeletion({
+    required String batchId,
+    DateTime? now,
+  });
+
+  /// UC-TRASH-001 step 5: where the decks of [batchIds] may go back, again
+  /// on every change of the decks or the batches (BR-TRASH-006, E1, E2).
+  Stream<DeckRestoreTargets> watchRestoreTargets(Set<String> batchIds);
 
   Future<DeckEntity?> findById(String id);
 
@@ -71,11 +99,4 @@ abstract interface class DeckRepository {
 
   /// UC-DECK-005: where [deckId] may move, in tree order; empty for a root.
   Stream<List<DeckMoveTarget>> watchMoveTargets(String deckId);
-
-  /// IT-DISC-006: the decks below [scopeDeckId], or all when it is null,
-  /// whose folded name holds [foldedTerm], in tree order.
-  Stream<List<DeckSearchHit>> watchSearch({
-    required String? scopeDeckId,
-    required String foldedTerm,
-  });
 }

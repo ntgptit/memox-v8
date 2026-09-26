@@ -16,8 +16,10 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
-import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
+import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
+import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
@@ -73,6 +75,12 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                         ),
                       ),
                       GoRoute(
+                        path: AppRoutes.studyChild,
+                        builder: (context, state) => _studyEntry(
+                          state.pathParameters[AppRoutes.deckIdParam]!,
+                        ),
+                      ),
+                      GoRoute(
                         path: AppRoutes.algorithmChild,
                         builder: (context, state) => DeckAlgorithmScreen(
                           deckId: state.pathParameters[AppRoutes.deckIdParam]!,
@@ -83,8 +91,9 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                   ),
                   GoRoute(
                     path: AppRoutes.searchChild,
-                    builder: (context, state) => DeckSearchScreen(
+                    builder: (context, state) => LibrarySearchScreen(
                       onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+                      onOpenCard: (id) => context.push(AppRoutes.card(id)),
                     ),
                   ),
                   GoRoute(
@@ -139,6 +148,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
 /// so Back climbs one level (library spec §4).
 DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
   void addCard(String id) => unawaited(context.push(AppRoutes.newCard(id)));
+  void study(String id) => unawaited(context.push(AppRoutes.studyEntry(id)));
   return DeckLevelScreen(
     deckId: deckId,
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
@@ -146,6 +156,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onSearch: () => context.push(AppRoutes.deckSearch),
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
+    onOpenStudy: study,
     onAddCard: addCard,
     onImportCards: (id) => unawaited(context.push(AppRoutes.importCards(id))),
     onExportCards: (deck) => unawaited(
@@ -160,6 +171,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       algorithm: context.l10n.cardScheduler(view.schedulerType),
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
+      onStudy: () => study(view.deck.id),
       onExport: (ids) => unawaited(
         showCardExportSheet(
           context,
@@ -170,6 +182,17 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );
 }
+
+/// Screen 14 with the deck's name and path from the deck feature, which
+/// the study feature may not read (FE-A6 D16).
+StudyEntryScreen _studyEntry(String deckId) => StudyEntryScreen(
+  deckId: deckId,
+  title: DeckStudyHeaderWidget(deckId: deckId, part: DeckStudyHeaderPart.title),
+  breadcrumb: DeckStudyHeaderWidget(
+    deckId: deckId,
+    part: DeckStudyHeaderPart.breadcrumb,
+  ),
+);
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>

@@ -1,7 +1,8 @@
 import 'card.drift';
 
--- Scope: V8.0, tagging a card only (ADR-009 decision 4). Tag Management
--- (UC-TAG-001) is a later sub-project.
+-- Scope: V8.0 tags a card (ADR-009 decision 4). Tag Management (UC-TAG-001),
+-- a sub-project after V8.0, renames, merges and deletes tags on these same
+-- tables from BE-B2.
 CREATE TABLE tags (
   id TEXT NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,

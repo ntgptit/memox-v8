@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -15,14 +16,13 @@ import '../../../support/test_database.dart';
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
-  late CardRepositoryImpl cards;
+  late CardTransferRepositoryImpl cards;
   setUp(() {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db);
-    cards = CardRepositoryImpl(
+    cards = CardTransferRepositoryImpl(
       db,
-      ScheduleRepositoryImpl(db),
-      TagRepositoryImpl(db),
+      CardRepositoryImpl(db, ScheduleRepositoryImpl(db), TagRepositoryImpl(db)),
     );
   });
   tearDown(() => db.close());

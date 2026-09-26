@@ -2,7 +2,6 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
-import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
@@ -11,9 +10,6 @@ import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
-import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
-import 'package:memox/features/card/domain/models/card_import_result_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/card_move_target_model.dart';
@@ -67,7 +63,7 @@ final class CardRepositoryImpl implements CardRepository {
         return const Rejected(CardRejection.notACardContainer);
       }
 
-      final id = await _insertCard(deckId, draft, at);
+      final id = await insertCard(deckId, draft, at);
       if (contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
@@ -94,19 +90,64 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
-  Future<Outcome<void, CardRejection>> deleteCards({
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
+    DateTime? now,
   }) {
-    final at = _now();
+    final at = now ?? _now();
     return _write(() async {
-      if (cardIds.isEmpty) return const Ok(null);
+      if (cardIds.isEmpty) return const Ok([]);
       final rows = await _dao.liveRows(cardIds);
       if (rows.length != cardIds.length) {
         return const Rejected(CardRejection.notFound);
       }
-      await _dao.deleteCards(cardIds);
+      // One batch per card, all at one time: each card is an item the person
+      // can restore on its own (BR-TRASH-001).
+      final batchIds = <String>[];
+      for (final cardId in cardIds) {
+        final batchId = newId();
+        await _dao.moveToTrash(cardId, batchId, at);
+        batchIds.add(batchId);
+      }
       await _unsetEmptied({for (final row in rows) row.deckId}, at);
-      return const Ok(null);
+      for (final batchId in batchIds) {
+        await _dao.closeSessionsTouching(batchId, at);
+      }
+      return Ok(batchIds);
+    });
+  }
+
+  @override
+  Future<Outcome<void, CardRejection>> restoreCards({
+    required Set<String> batchIds,
+    required String deckId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      if (batchIds.isEmpty) return const Ok(null);
+      final cards = <String, CardRow>{};
+      for (final batchId in batchIds) {
+        final card = await _dao.itemOf(batchId);
+        if (card == null) return const Rejected(CardRejection.notFound);
+        cards[batchId] = card;
+      }
+      return _restoreInto(deckId, cards, updatedAt: at, at: at);
+    });
+  }
+
+  @override
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const Rejected(CardRejection.notFound);
+      // Back into its own deck with its own updated_at: an Undo is not a
+      // move (trash spec D9).
+      return _restoreInto(card.deckId, {batchId: card}, at: at);
     });
   }
 
@@ -222,6 +263,7 @@ final class CardRepositoryImpl implements CardRepository {
     final counts = await _listDao.counts(
       deckId: deckId,
       searchTerm: query.searchTerm,
+      tagIds: query.tagIds,
       now: now,
     );
     final schedules = await _listDao.activeSchedules(deckId);
@@ -299,110 +341,39 @@ final class CardRepositoryImpl implements CardRepository {
   Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId) =>
       _detailDao
           .watchMoveTargetRows(sourceDeckId)
-          .map(
-            (rows) => candidatesInTreeOrder(
-              [for (final row in rows) deckTreeNodeOf(row)],
-              (node, path) =>
-                  CardMoveTarget(id: node.id, name: node.name, path: path),
-            ),
-          )
+          .map(_moveTargetsOf)
           .mapDatabaseErrors();
 
-  @override
-  Future<Set<CardFoldedPair>> foldedPairs(String deckId) =>
-      _mapped(() => _dao.foldedPairs(deckId));
-
-  @override
-  Future<Outcome<CardImportResult, CardRejection>> importCards({
-    required String deckId,
-    required List<CardDraft> drafts,
-    required bool includeDuplicates,
-    DateTime? now,
-  }) {
-    final at = now ?? _now();
-    return _write(() async {
-      for (final draft in drafts) {
-        if (draft.check() case Rejected(:final reason)) return Rejected(reason);
-      }
-      final deck = await _dao.deckRow(deckId);
-      if (deck == null) return const Rejected(CardRejection.notFound);
-      final contentType = DeckContentType.values.byName(deck.contentType);
-      if (DeckEntity.checkCreateCard(parentContentType: contentType)
-          case Rejected()) {
-        return const Rejected(CardRejection.notACardContainer);
-      }
-
-      final taken = await _dao.foldedPairs(deckId);
-      var written = 0;
-      for (final draft in drafts) {
-        final pair = (front: foldText(draft.front), back: foldText(draft.back));
-        if (!includeDuplicates && taken.contains(pair)) continue;
-        taken.add(pair);
-        await _insertCard(deckId, draft, at);
-        written++;
-      }
-      if (written > 0 && contentType == DeckContentType.unset) {
-        await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-      }
-      return Ok(
-        CardImportResult(
-          written: written,
-          skippedDuplicates: drafts.length - written,
-        ),
-      );
-    });
-  }
-
-  @override
-  Future<int> countCards(String deckId) =>
-      _mapped(() => _dao.liveCount(deckId));
-
-  @override
-  Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
-    required String deckId,
-    Set<String>? cardIds,
-  }) => _mapped(
-    () => _db.transaction(() async {
-      final deck = await _dao.deckRow(deckId);
-      if (deck == null) return const Rejected(CardRejection.notFound);
-      final rows = await _dao.exportRows(deckId, cardIds);
-      if (cardIds != null && rows.length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
-      final tags = await _listDao.tagsOf([for (final row in rows) row.id]);
-      return Ok(
-        CardExportSnapshot(
-          deckName: deck.name,
-          rows: [
-            for (final row in rows)
-              CardExportRow(
-                front: row.front,
-                back: row.back,
-                example: row.example,
-                hint: row.hint,
-                pronunciation: row.pronunciation,
-                tagNames: [
-                  for (final tag in tags[row.id] ?? const <Tag>[]) tag.name,
-                ],
-              ),
-          ],
-        ),
-      );
-    }),
-  );
-
   /// One card, its schedule row (BR-CARD-004) and its tags, inside the
-  /// caller's transaction; the new card's id.
-  Future<String> _insertCard(
-    String deckId,
-    CardDraft draft,
-    DateTime at,
-  ) async {
+  /// caller's transaction; the new card's id. An import writes each card
+  /// through it too (`CardTransferRepositoryImpl`, BR-TRANSFER-004).
+  Future<String> insertCard(String deckId, CardDraft draft, DateTime at) async {
     final id = newId();
     await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
     await _schedules.initializeCard(cardId: id);
     await _replaceTags(id, draft, at);
     return id;
+  }
+
+  @override
+  Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds) => _dao
+      .restoreTargetChanges()
+      .asyncMap((_) => _db.transaction(() => _restoreTargets(batchIds)))
+      .mapDatabaseErrors();
+
+  /// Where the cards of [batchIds] may go back: the decks of their one root
+  /// that hold cards or nothing; none when they come from two roots, or a
+  /// batch is gone (BR-TRASH-006).
+  Future<List<CardMoveTarget>> _restoreTargets(Set<String> batchIds) async {
+    final deckIds = <String>{};
+    for (final batchId in batchIds) {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const [];
+      deckIds.add(card.deckId);
+    }
+    final roots = await _dao.rootIdsOf(deckIds);
+    if (roots.length != 1) return const [];
+    return _moveTargetsOf(await _detailDao.restoreTargetRows(roots.single));
   }
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
@@ -416,6 +387,47 @@ final class CardRepositoryImpl implements CardRepository {
     if (result case Rejected(:final reason)) {
       throw StateError('tags refused a checked draft: $reason');
     }
+  }
+
+  /// [cards], by batch, come back into [deckId] when it takes them
+  /// (BR-TRASH-006, BR-TRASH-007); [updatedAt] stamps them as a move does.
+  /// An unset deck becomes a deck of cards (BR-DECK-008).
+  Future<Outcome<void, CardRejection>> _restoreInto(
+    String deckId,
+    Map<String, CardRow> cards, {
+    DateTime? updatedAt,
+    required DateTime at,
+  }) async {
+    final target = await _dao.deckRow(deckId);
+    if (target == null) {
+      return Rejected(
+        await _dao.isDeckInTrash(deckId)
+            ? CardRejection.targetInTrash
+            : CardRejection.targetNotFound,
+      );
+    }
+    final targetContentType = DeckContentType.values.byName(target.contentType);
+    final rule = CardEntity.checkTarget(
+      targetRootId: target.rootId,
+      targetIsRoot: target.parentId == null,
+      targetContentType: targetContentType,
+      sourceRootIds: await _dao.rootIdsOf({
+        for (final card in cards.values) card.deckId,
+      }),
+    );
+    if (rule case Rejected(:final reason)) return Rejected(reason);
+    for (final MapEntry(key: batchId, value: card) in cards.entries) {
+      await _dao.restoreFromBatch(
+        batchId,
+        card.id,
+        deckId: deckId,
+        updatedAt: updatedAt,
+      );
+    }
+    if (targetContentType == DeckContentType.unset) {
+      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
+    }
+    return const Ok(null);
   }
 
   /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).
@@ -440,3 +452,9 @@ final class CardRepositoryImpl implements CardRepository {
     }
   }
 }
+
+List<CardMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>
+    candidatesInTreeOrder(
+      [for (final row in rows) deckTreeNodeOf(row)],
+      (node, path) => CardMoveTarget(id: node.id, name: node.name, path: path),
+    );

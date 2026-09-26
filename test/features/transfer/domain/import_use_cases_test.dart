@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
@@ -34,7 +35,7 @@ TransferRejection _reason(Outcome<Object?, TransferRejection> result) =>
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
-  late CardRepositoryImpl cards;
+  late CardTransferRepositoryImpl cards;
   late DeckEntity root;
   late DeckEntity leaf;
   const files = TransferFileRepositoryImpl();
@@ -44,11 +45,14 @@ void main() {
   setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardRepositoryImpl(
+    cards = CardTransferRepositoryImpl(
       db,
-      ScheduleRepositoryImpl(db, now: _now),
-      TagRepositoryImpl(db, now: _now),
-      now: _now,
+      CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db, now: _now),
+        TagRepositoryImpl(db, now: _now),
+        now: _now,
+      ),
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'Nhà hàng');

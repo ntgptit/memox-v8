@@ -9,9 +9,9 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Back, deck name. The kit's trailing "Study options" icon is hidden — see Deviations. |
+| App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16). The kit's trailing "Study options" icon is hidden — see Deviations. |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
-| Hero | `MxCard` (hero) | "{algorithm} · cards per session {n}" (BR-STUDY-024); two stat tiles, New and Due, each dimmed at zero (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note when any are overdue. |
+| Hero | `MxCard` (hero) + `MxStatTile` × 2 (FE-A6 spec D17) | "{algorithm} · cards per session {n}" (BR-STUDY-024); two stat tiles, New and Due: Due above zero in primary, New above zero muted, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning ink, when any are overdue. |
 | Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
 | Nothing-due state | `MxEmptyState` (compact, success tone) | "Nothing to do right now" (BR-STUDY-008, BR-STUDY-054). |
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing compact `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051), independent of the footer's Review action. |
@@ -45,6 +45,23 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 
 Not captured: none — all nine kit states are V8-supported.
 
+**Built so far (FE-A6 P1b):** `sm2`, `eightBox`, `onlyNew`, `nothing` (the hero over the empty state) and `loading` (hero and option-list skeletons),
+read-only: no study mode has its screen yet, so the Learn row and every runnable
+review mode show a neutral "Coming soon" badge instead of their action, at full
+contrast (only a mode the cards cannot run is dimmed); the review list needs due
+cards, and the
+footer is not drawn (spec §3: an unbuilt stage is never offered). `resume`,
+`starting`, `refused` and `startFailed` need a session to open and come with the
+session screens (P1c, P2). A deck deleted while its entry is open leaves with the
+toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
+`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading}_*`.
+
+## Accessibility
+
+- TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n}", "Due: {n}" — each stat tile is one node), the overdue note, then the rows and the footer. The resume banner's pulse dot is decorative.
+- Single-line text that ellipsizes keeps line-height 1.5 for stacked marks (UI-base §9 row 102). Touch targets are at least 48 × 48.
+- While a session opens, the locked footer and options stay in the reading order and read as disabled.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
@@ -52,6 +69,7 @@ Not captured: none — all nine kit states are V8-supported.
 | SM-2's direction choice as inline `MxOptionRow`s on the entry screen itself | A separate `MxBottomSheet` opened by the footer's Review action, with the same three choices and a locked "Start review" action | UC-STUDY-003 (the documented flow is a sheet, opened after Review, not an inline section) |
 | App bar's trailing "Study options" icon | Hidden; named under Coming soon | Spec A4 row 92 (amended 2026-09-25) names "Study options" explicitly; no screen or UC defines its destination yet |
 | Resume banner's pulse dot in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: no `streak` tone exists |
+| The `resume` frame draws the SM-2 direction rows inline under the Continue banner | The rows are not drawn; the direction is chosen in the Direction sheet, as in every other state | The sheet deviation above (UC-STUDY-003); FE-A6 spec D19 notes |
 | The direction descriptions name Korean ("See the Korean, recall the meaning") | "See the term, recall the meaning": no language named; UC-STUDY-003 uses the kit's "Term first" | BR-CARD-002 (FE-A5 ruling) |
 
 ## Copy

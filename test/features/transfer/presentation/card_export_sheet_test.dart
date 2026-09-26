@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/di/card_repository_provider.dart';
+import 'package:memox/features/card/di/card_transfer_repository_provider.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/export_share_repository_provider.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
@@ -235,8 +235,10 @@ void main() {
           overrides: [
             exportShareRepositoryProvider.overrideWithValue(share),
             buildExportUseCaseProvider.overrideWith(
-              (ref) =>
-                  BuildExportUseCase(ref.watch(cardRepositoryProvider), files),
+              (ref) => BuildExportUseCase(
+                ref.watch(cardTransferRepositoryProvider),
+                files,
+              ),
             ),
           ],
         );

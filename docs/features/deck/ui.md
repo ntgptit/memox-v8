@@ -26,8 +26,8 @@ flowchart TD
 
     B -->|"Đổi tên"| E["Validate rồi lưu · UC-DECK-002, BR-DECK-020"]
 
-    B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ bị xoá vĩnh viễn · UC-DECK-002, BR-DECK-023"]
-    F -->|"Đồng ý"| F1["Xoá cứng cả cây theo cascade, trong một transaction · BR-DECK-022 · Trash là sub-project sau, xem UC-TRASH-001"]
+    B -->|"Xoá"| F["Xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck · UC-DECK-002, BR-DECK-023"]
+    F -->|"Đồng ý"| F1["Chuyển cả cây active vào Trash thành một batch, trong một transaction · BR-DECK-022, BR-TRASH-001 · Undo hoặc khôi phục: UC-TRASH-001"]
     F -->|"Huỷ"| F2["Không xảy ra gì · UC-DECK-002 A3"]
 
     B -->|"Di chuyển"| G{"Bốn phép kiểm, theo thứ tự · UC-DECK-005"}

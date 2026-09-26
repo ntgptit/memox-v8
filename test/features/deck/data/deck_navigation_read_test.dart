@@ -2,18 +2,16 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
-import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
-import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 /// A path as a person reads it, so two paths compare by their names.
 String _shown(List<DeckPathEntry> path) =>
@@ -28,10 +26,7 @@ void main() {
   });
   tearDown(() => db.close());
 
-  Future<void> trash(String deckId) => db.customStatement(
-    "UPDATE deck SET delete_batch_id = 'batch' WHERE id = ?",
-    [deckId],
-  );
+  Future<void> trash(String deckId) => trashDeckRows(db, deckId);
 
   group('watchDeck', () {
     test('gives the deck, the root scheduler, the lock, the options and the breadcrumb', () async {
@@ -166,78 +161,7 @@ void main() {
     );
   });
 
-  group('watchSearch (IT-DISC-006)', () {
-    late DeckEntity eightBox;
-    setUp(() async {
-      eightBox = await repo.root('D-EB');
-      final vocabulary = await repo.sub(eightBox.id, 'Vocabulary');
-      await repo.sub(vocabulary.id, 'Academic words');
-      await repo.sub(eightBox.id, 'Ăn uống');
-      final sm2 = await repo.root('D-SM2', SchedulerType.sm2);
-      await repo.sub(sm2.id, 'Academic phrases');
-    });
-
-    List<(String, String)> shown(List<DeckSearchHit> hits) => [
-      for (final hit in hits) (hit.name, _shown(hit.path)),
-    ];
-
-    test('finds the decks below the scope, each with its path', () async {
-      final hits = await repo
-          .watchSearch(scopeDeckId: eightBox.id, foldedTerm: 'academic')
-          .first;
-
-      expect(shown(hits), [('Academic words', 'D-EB / Vocabulary')]);
-    });
-
-    test('with no scope it searches every deck', () async {
-      final hits = await repo
-          .watchSearch(scopeDeckId: null, foldedTerm: 'academic')
-          .first;
-
-      expect(shown(hits), [
-        ('Academic words', 'D-EB / Vocabulary'),
-        ('Academic phrases', 'D-SM2'),
-      ]);
-    });
-
-    test('matches letters beyond ASCII whatever their case', () async {
-      final hits = await repo
-          .watchSearch(scopeDeckId: null, foldedTerm: 'ăn')
-          .first;
-
-      expect(shown(hits), [('Ăn uống', 'D-EB')]);
-    });
-
-    test('each hit carries what its deck holds', () async {
-      final eat =
-          (await repo
-                  .watchSearch(scopeDeckId: null, foldedTerm: 'ăn uống')
-                  .first)
-              .single;
-      await insertCard(db, id: 'meal', deckId: eat.id);
-
-      final hits = {
-        for (final hit
-            in await repo.watchSearch(scopeDeckId: null, foldedTerm: '').first)
-          hit.name: hit.contentType,
-      };
-
-      expect(hits['D-EB'], DeckContentType.deck);
-      expect(hits['Vocabulary'], DeckContentType.deck);
-      expect(hits['Academic words'], DeckContentType.unset);
-      expect(hits['Ăn uống'], DeckContentType.card);
-    });
-
-    test('the scope itself is not a hit', () async {
-      final hits = await repo
-          .watchSearch(scopeDeckId: eightBox.id, foldedTerm: 'd-eb')
-          .first;
-
-      expect(hits, isEmpty);
-    });
-  });
-
-  test('a target and a hit carry the deck id', () async {
+  test('a target carries the deck id', () async {
     final korean = await repo.root('Korean');
     final moving = await repo.sub(korean.id, 'Moving');
     final other = await repo.sub(korean.id, 'Other');
@@ -245,11 +169,7 @@ void main() {
     final List<DeckMoveTarget> targets = await repo
         .watchMoveTargets(moving.id)
         .first;
-    final hits = await repo
-        .watchSearch(scopeDeckId: null, foldedTerm: 'other')
-        .first;
 
     expect([for (final target in targets) target.id], [other.id]);
-    expect(hits.single.id, other.id);
   });
 }

@@ -1,4 +1,4 @@
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 
 /// UC-TRANSFER-002 step 1: how many cards a whole-deck export holds, read
 /// before its sheet opens so the sheet itself never loads. 0 opens the
@@ -6,7 +6,7 @@ import 'package:memox/features/card/domain/repositories/card_repository.dart';
 final class CountExportCardsUseCase {
   const CountExportCardsUseCase(this._cards);
 
-  final CardRepository _cards;
+  final CardTransferRepository _cards;
 
   Future<int> call(String deckId) => _cards.countCards(deckId);
 }

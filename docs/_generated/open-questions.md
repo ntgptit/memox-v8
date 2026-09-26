@@ -4,7 +4,7 @@
 
 ## [features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md](../features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md)
 
-- L88: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md](../features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md)
 
@@ -20,7 +20,7 @@
 
 ## [features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md)
 
-- L90: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
 
@@ -92,11 +92,7 @@
 
 ## [features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md)
 
-- L103: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/trash/README.md](../features/trash/README.md)
-
-- L22: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+- L104: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 

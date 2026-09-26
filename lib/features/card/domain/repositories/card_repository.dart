@@ -3,9 +3,6 @@ import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
-import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
-import 'package:memox/features/card/domain/models/card_import_result_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/card_move_target_model.dart';
@@ -35,10 +32,30 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
-  /// Their schedule rows, logs and tag links go with them; a deck left with
-  /// no card is unset again (BR-DECK-015).
-  Future<Outcome<void, CardRejection>> deleteCards({
+  /// UC-CARD-001 A2: each card goes to the Trash as a batch of its own, all
+  /// at one time, and the batch ids come back in the order of [cardIds]
+  /// (BR-TRASH-001). A deck left with no active card is unset again
+  /// (BR-TRASH-005); the sessions they touch end (BR-TRASH-004).
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
+    DateTime? now,
+  });
+
+  /// UC-TRASH-001 steps 5-7: the cards of [batchIds] come back into
+  /// [deckId], a sub-deck of their root that holds cards or nothing, all or
+  /// none; `deck_id` and `updated_at` change as in a move (BR-TRASH-006,
+  /// BR-TRASH-007).
+  Future<Outcome<void, CardRejection>> restoreCards({
+    required Set<String> batchIds,
+    required String deckId,
+    DateTime? now,
+  });
+
+  /// BR-TRASH-008: the card of [batchId] goes back into its deck with its
+  /// `updated_at` kept; refused, typed, when that deck no longer takes it.
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+    DateTime? now,
   });
 
   /// BR-CARD-010: only `deck_id` and `updated_at` change.
@@ -57,10 +74,10 @@ abstract interface class CardRepository {
 
   /// UC-CARD-001: the first [windowSize] cards of [deckId] that [query] lets
   /// through, whether more follow, and the count of every filter under the
-  /// same search (IT-ORG-005). Due is due at [now]. Each item carries its
-  /// tags and due label, and the view counts the deck's display states
-  /// whatever the search and filter. Emits again on every change of a card,
-  /// a schedule row or a card's tags.
+  /// same search and tags (IT-ORG-005, BR-TAG-004). Due is due at [now].
+  /// Each item carries its tags and due label, and the view counts the
+  /// deck's display states whatever the search, filter and tags. Emits again
+  /// on every change of a card, a schedule row, a tag or a card's tags.
   Stream<CardListView> watchCardList({
     required String deckId,
     required CardListQuery query,
@@ -90,36 +107,8 @@ abstract interface class CardRepository {
   /// BR-CARD-010: where the cards of [sourceDeckId] may move, in tree order.
   Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId);
 
-  /// BR-TRANSFER-003: the folded faces of the live cards of [deckId], the
-  /// set an import preview marks duplicates against.
-  Future<Set<CardFoldedPair>> foldedPairs(String deckId);
-
-  /// UC-TRANSFER-001 step 7, in one transaction: the deck is checked again
-  /// (BR-TRANSFER-001), the duplicate policy is applied again against the
-  /// deck as it is now and within [drafts] (BR-TRANSFER-003), and each draft
-  /// kept is written as [createCard] writes one (BR-TRANSFER-004). The deck
-  /// becomes a deck of cards only when a card was written (BR-TRANSFER-005).
-  /// A draft the card rules refuse refuses the batch, and nothing is
-  /// written.
-  Future<Outcome<CardImportResult, CardRejection>> importCards({
-    required String deckId,
-    required List<CardDraft> drafts,
-    required bool includeDuplicates,
-    DateTime? now,
-  });
-
-  /// UC-TRANSFER-002 step 1: how many live cards [deckId] holds, the count a
-  /// whole-deck export names before its sheet opens; 0 for a deck that is
-  /// gone.
-  Future<int> countCards(String deckId);
-
-  /// UC-TRANSFER-002 step 4: the deck's name and its live cards, or those of
-  /// [cardIds], in one read that writes nothing (BR-TRANSFER-010,
-  /// BR-TRANSFER-011). A missing deck, or an id that is gone or in another
-  /// deck, is `notFound` for the whole request (BR-TRANSFER-007). An empty
-  /// scope is an empty snapshot; the caller refuses it.
-  Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
-    required String deckId,
-    Set<String>? cardIds,
-  });
+  /// UC-TRASH-001 step 5: where the cards of [batchIds] may go back, again
+  /// on every change of the decks, the cards or the batches: the decks of
+  /// their one root that hold cards or nothing (BR-TRASH-006, E1, E2).
+  Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds);
 }

@@ -92,7 +92,7 @@ Success means:
 | D3 | CSV/TSV codec | Package `csv` (8.x). Decoding bytes to text is ours: strict `utf8.decode` after stripping a BOM, so malformed input is refused, never guessed | owner (approach), 2026-09-26 |
 | D4 | XLSX codec | Package `excel` (4.0.x) for read and write, imported by one file only. It has not been published since 2024-08; the fallback is a small reader/writer on `archive` + `xml` in that same file | owner, 2026-09-26 |
 | D5 | Platform plugins | `file_picker` to choose a file, `share_plus` to hand the export to the system. Both support web, which ADR-001 needs for E2E | this spec |
-| D6 | Who writes cards | The card feature. `CardRepository` gains `foldedPairs`, `importCards` and `exportSnapshot`; transfer never writes or reads the `card` table itself | ADR-011 D2/D3, this spec |
+| D6 | Who writes cards | The card feature, through its own contract `CardTransferRepository` (`foldedPairs`, `importCards`, `countCards`, `exportSnapshot`; split from `CardRepository` when the Trash backend grew it past the size budget); transfer never writes or reads the `card` table itself | ADR-011 D2/D3, this spec |
 | D7 | Parsing off the UI thread | Parse and preview run in `Isolate.run`; the kit's sample is a 1,500-row file | this spec |
 | D8 | Import route | `AppRoutes.deckChild` + `cards/import` → `/decks/deck/<id>/cards/import`, on the root navigator so the wizard covers the shell. IT-NAV-012 writes `/decks/<id>/cards/import`; it follows the real route shape and the scenario is corrected in the same commit | IT-NAV-012, this spec |
 
@@ -162,12 +162,12 @@ first rows for the table. It writes nothing. "Include duplicates" moves both dup
 kinds into "will write" (A4). "Will write" of zero locks Continue (E3).
 
 The target deck's folded pairs are read once per preview through
-`CardRepository.foldedPairs(deckId)`, a read the preview needs anyway to report
+`CardTransferRepository.foldedPairs(deckId)`, a read the preview needs anyway to report
 `duplicateInDeck`.
 
 ### 5.4 Commit
 
-`CardRepository.importCards({deckId, drafts, includeDuplicates})` →
+`CardTransferRepository.importCards({deckId, drafts, includeDuplicates})` →
 `Outcome<ImportResult, CardRejection>`, in one transaction:
 
 1. Re-read the target; not found, root-level or holding sub-decks → `notACardContainer`
@@ -187,7 +187,7 @@ a refusal → `rejects`; an error → `failed`.
 
 ## 6. Export
 
-- `CardRepository.exportSnapshot({deckId, cardIds?})` →
+- `CardTransferRepository.exportSnapshot({deckId, cardIds?})` →
   `Outcome<ExportSnapshot, CardRejection>`: the deck's name and, for each card in
   `created_at ASC, id ASC`, the six fields and its tag names in a fixed order. Reading
   writes nothing (BR-TRANSFER-011). An empty scope → `emptyScope`; an id missing or in

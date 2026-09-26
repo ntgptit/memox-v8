@@ -12,7 +12,10 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
+import '../support/card_fixtures.dart';
+import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/study_fixtures.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -197,6 +200,25 @@ void main() {
     expect(
       router.configuration.routes.whereType<GoRoute>().map((r) => r.path),
       isNot(contains(AppRoutes.gallery)),
+    );
+  });
+
+  libraryTest("the app closes an earlier day's open session as interrupted "
+      'when it starts (BR-STUDY-072, FE-A6 D9)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    await insertCard(env.db, id: 'c1', deckId: root.id);
+    await studyEntryRepository(
+      env.db,
+      () => DateTime(2026, 9, 23, 20),
+    ).openLearningSession(deckId: root.id);
+    await _pumpApp(tester, env);
+
+    final session = await env.db
+        .customSelect('SELECT status, end_reason FROM study_session')
+        .getSingle();
+    expect(
+      (session.read<String>('status'), session.read<String>('end_reason')),
+      ('abandoned', 'interrupted'),
     );
   });
 }

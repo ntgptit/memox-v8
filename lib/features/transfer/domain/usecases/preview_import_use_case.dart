@@ -1,5 +1,5 @@
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -10,7 +10,7 @@ import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 final class PreviewImportUseCase {
   const PreviewImportUseCase(this._cards);
 
-  final CardRepository _cards;
+  final CardTransferRepository _cards;
 
   Future<Outcome<ImportPreview, TransferRejection>> call({
     required String deckId,

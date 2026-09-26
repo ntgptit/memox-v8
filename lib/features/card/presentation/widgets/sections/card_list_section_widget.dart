@@ -47,6 +47,7 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.onAddCard,
     required this.onOpenCard,
     this.onExport,
+    this.onStudy,
   });
 
   final String deckId;
@@ -63,6 +64,9 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
   /// Export on the bulk bar: the router opens the export sheet over the
   /// selection, which stays (UC-TRANSFER-002 A1). Null hides it.
   final ValueChanged<Set<String>>? onExport;
+
+  /// The summary's Study this deck: the router opens the Study Entry.
+  final VoidCallback? onStudy;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -323,7 +327,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           ),
         ),
       if (!isSelecting) ...[
-        CardDeckSummaryWidget(view: view, algorithm: widget.algorithm),
+        CardDeckSummaryWidget(
+          view: view,
+          algorithm: widget.algorithm,
+          onStudy: widget.onStudy,
+        ),
         CardListToolbarWidget(
           request: request,
           counts: view.counts,

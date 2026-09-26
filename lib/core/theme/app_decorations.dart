@@ -47,4 +47,33 @@ abstract final class AppDecorations {
       ),
     );
   }
+
+  /// The success Card: the success-soft ground over the raised fill, edged
+  /// with the success border, for a finished session (FE-A6 D14).
+  static BoxDecoration successCard(
+    ColorScheme scheme,
+    MxDerivedColors derived,
+  ) {
+    final raised = raisedCard(scheme, derived);
+    return raised.copyWith(
+      color: Color.alphaBlend(derived.successSoft, raised.color!),
+      border: Border.all(
+        color: derived.successBorder,
+        width: AppStroke.hairline,
+      ),
+    );
+  }
+
+  /// The danger Card: the danger-soft ground over the raised fill, edged
+  /// with the destructive border, for a session stopped by an error.
+  static BoxDecoration dangerCard(ColorScheme scheme, MxDerivedColors derived) {
+    final raised = raisedCard(scheme, derived);
+    return raised.copyWith(
+      color: Color.alphaBlend(derived.dangerSoft, raised.color!),
+      border: Border.all(
+        color: derived.dangerBorder,
+        width: AppStroke.hairline,
+      ),
+    );
+  }
 }

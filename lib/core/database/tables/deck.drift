@@ -1,3 +1,5 @@
+import 'trash.drift';
+
 CREATE TABLE deck (
   id TEXT NOT NULL PRIMARY KEY,
   name TEXT NOT NULL,
@@ -16,8 +18,9 @@ CREATE TABLE deck (
   -- Scope: sub-project sau (Starter decks). No FK yet: deck_templates does not exist.
   source_template_id TEXT,
   source_template_version INTEGER,
-  -- Scope: sub-project sau (Trash). No FK yet: delete_batches does not exist.
-  delete_batch_id TEXT,
+  -- NULL = active; otherwise a tombstone of that batch (BR-TRASH-001,
+  -- BR-TRASH-003). Purging the batch deletes the row.
+  delete_batch_id TEXT REFERENCES delete_batches (id) ON DELETE CASCADE,
   sibling_position INTEGER NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
@@ -35,3 +38,4 @@ CREATE TABLE deck (
 
 CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id);
 CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id);
+CREATE INDEX idx_deck_delete_batch ON deck (delete_batch_id);
