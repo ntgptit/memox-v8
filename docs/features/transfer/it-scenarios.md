@@ -12,7 +12,7 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
-| 1 | Mở Import từ overflow của Card List | Wizard che toàn màn; **không** còn bottom navigation bar; URL là `/decks/<id>/cards/import` |
+| 1 | Mở Import từ overflow của Card List | Wizard che toàn màn; **không** còn bottom navigation bar; URL là `/decks/deck/<id>/cards/import` |
 | 2 | Bấm Close khi chưa có draft | Quay về đúng Card List vừa rời; bottom bar trở lại |
 | 3 | Mở Import từ sheet tạo của deck `unset`, rồi Close | Quay về deck detail của chính deck đó — không rơi vào Card List; deck vẫn `unset` và vẫn đủ lựa chọn Create card/Create sub-deck |
 | 4 | Ở bước Preview/Import bấm Android Back | Lùi một bước và giữ state; ở bước Source thì hành xử như Close |

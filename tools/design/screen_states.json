@@ -78,6 +78,29 @@
       ]
     },
     {
+      "num": "11",
+      "dir": "11-card-import",
+      "title": "Card import",
+      "states": [
+        { "id": "empty", "label": "Source" },
+        { "id": "pasted", "label": "Pasted text" },
+        { "id": "fileSelected", "label": "File chosen" },
+        { "id": "badEncoding", "label": "Not UTF-8" },
+        { "id": "emptySheet", "label": "Empty sheet" },
+        { "id": "parsing", "label": "Reading" },
+        { "id": "mapping", "label": "Map columns" },
+        { "id": "mappingIncomplete", "label": "Back not mapped" },
+        { "id": "previewAll", "label": "Preview · all ready" },
+        { "id": "previewMix", "label": "Preview · mixed" },
+        { "id": "importing", "label": "Importing" },
+        { "id": "success", "label": "Imported" },
+        { "id": "partial", "label": "With skips" },
+        { "id": "none", "label": "Nothing added" },
+        { "id": "failed", "label": "Failed" },
+        { "id": "rejects", "label": "Deck rejects" }
+      ]
+    },
+    {
       "num": "13",
       "dir": "13-study-home",
       "title": "Study home",

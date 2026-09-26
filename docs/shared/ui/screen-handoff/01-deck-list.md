@@ -25,7 +25,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 | Summary card | `MxCard` (hero) | For a deck holding sub-decks: the scheduler name ("SM-2"), "N sub-decks · N cards", overdue · today · new · N scheduled. "Study this deck" waits under Coming soon (FE-A6). |
 | List | as root | Header "N sub-decks" with the sort pill. |
 | FAB | `MxFab` | "New sub-deck"; none at level 10 (BR-DECK-001). |
-| By content type | — | `unset`: empty state with the two create choices (BR-DECK-007). `card`: the card list, screen 07. |
+| By content type | — | `unset`: empty state with the two create choices (BR-DECK-007) and "Import cards from a file" (screen 11). `card`: the card list, screen 07. |
 
 ## Action sheet
 
@@ -65,7 +65,7 @@ One `MxBottomSheet`, "Sort & filter":
 | rootRename | ![](img/01-deck-list/rootRename-light.png) | ![](img/01-deck-list/rootRename-dark.png) | As drawn. |
 | rootDelete | ![](img/01-deck-list/rootDelete-light.png) | ![](img/01-deck-list/rootDelete-dark.png) | **Deviation:** permanent delete. |
 | deckLoaded | ![](img/01-deck-list/deckLoaded-light.png) | ![](img/01-deck-list/deckLoaded-dark.png) | No donut, no "Mastered", no Study (Coming soon). |
-| deckEmpty | ![](img/01-deck-list/deckEmpty-light.png) | ![](img/01-deck-list/deckEmpty-dark.png) | `unset` deck: both create choices. |
+| deckEmpty | ![](img/01-deck-list/deckEmpty-light.png) | ![](img/01-deck-list/deckEmpty-dark.png) | `unset` deck: both create choices and "Import cards from a file" (screen 11). |
 | deckMaxDepth | ![](img/01-deck-list/deckMaxDepth-light.png) | ![](img/01-deck-list/deckMaxDepth-dark.png) | No FAB. |
 | deckLoading | ![](img/01-deck-list/deckLoading-light.png) | ![](img/01-deck-list/deckLoading-dark.png) | As drawn. |
 | deckError | ![](img/01-deck-list/deckError-light.png) | ![](img/01-deck-list/deckError-dark.png) | As drawn. |

@@ -21,8 +21,8 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 
 ## Deck action sheet (`⋮`)
 
-Rename · Move to another deck · Delete. Study, Import and Export wait under Coming soon
-(spec A4; FE-A6, FE-B3).
+Rename · Move to another deck · Import cards (screen 11) · Delete. Study and Export wait
+under Coming soon (spec A4; FE-A6, FE-B3).
 
 ## States
 
@@ -50,7 +50,7 @@ detail: a tap opens it (#35).
 | Artifact | V8 | Wins |
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
-| Tags filter, Import, Export, Study | Hidden; named under Coming soon | Spec A4 (amended) |
+| Tags filter, Export, Study | Hidden; named under Coming soon | Spec A4 (amended) |
 | An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
 | The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
 | "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |

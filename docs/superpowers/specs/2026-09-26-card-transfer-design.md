@@ -123,8 +123,9 @@ feature's entry in the import map is added in the commit that creates the folder
 
 ### 5.1 Source and decoding
 
-- A source is either `FileSource(bytes, extension)` or `PastedSource(text)`. The file name
-  is never kept past choosing the format and is never logged.
+- A source is either `FileSource(bytes, extension)` or `PastedSource(text)`. The domain
+  never carries the file name; the wizard shows it on the source chip while it is open
+  (screen 11), and it is never logged or stored.
 - `.csv` and `.tsv` and pasted text: strip a UTF-8 BOM, then strict UTF-8 decode; failure →
   `badEncoding` with the guidance "Save the file as UTF-8 and try again". Pasted text
   splits on tab when its first line contains a tab, else on comma.
