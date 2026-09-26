@@ -8,6 +8,11 @@ import 'tombstone_rules.dart';
 /// with its reason (trash spec §11). A statement that reads active content
 /// gets the filter, not an entry.
 const _readsTombstones = <String, String>{
+  'lib/core/database/queries/trash_queries.drift#trashDeckForest':
+      'the origin of an entry walks decks in the Trash too (BR-TRASH-012)',
+  'lib/core/database/queries/trash_queries.drift#trashBlockersOf':
+      "a purge looks for anything left in a batch's decks, in the Trash or "
+      'not (BR-TRASH-010)',
   'lib/core/database/tables/srs.drift#review_log_no_delete':
       'asks whether the card row is still there, tombstone or not: only a '
       "purge's cascade may delete a review log",
