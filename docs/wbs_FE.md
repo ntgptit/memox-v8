@@ -80,7 +80,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-A7 | Chọn chiều hỏi trước lượt đầu của phiên self-assess (UC-STUDY-003) | chưa bắt đầu | FE-A6, BE-A5 | S | BE-A5 xong; nằm trong các trạng thái của màn 14; [README study](features/study/README.md) | Gộp vào phase P2 của FE-A6 (spec study UI §3) |
 | FE-A8 | Tab Học: Study Home (UC-STUDY-002) | chưa bắt đầu | FE-A5, BE-A6 | M | Tab Học đang là placeholder; BE-A6 xong (`WatchStudyHomeUseCase`); file chi tiết [13](shared/ui/screen-handoff/13-study-home.md) có | Sau phase P1 của FE-A6: Resume và chạm vào deck cần route của phiên và của Study entry (spec study UI D1, D2) |
 | FE-A9 | Tab Tiến độ và drill-down theo deck (UC-PROGRESS-001, UC-PROGRESS-002) | chưa bắt đầu | BE-A7 | L | Tab Tiến độ đang là placeholder; nội dung theo `navigation.md`; [kịch bản IT](features/progress/it-scenarios.md); BE-A7 xong (`WatchProgressUseCase`, `WatchDeckProgressUseCase`) | Đọc màn 22 trong kit, viết file chi tiết handoff (chưa có `ui.md` của progress), rồi lập plan |
-| FE-A10 | Tìm kiếm toàn thư viện từ header của Thư viện, ở mọi cấp (UC-SEARCH-001) | chưa bắt đầu | BE-A8, FE-A1 | M | BE-A8 xong; [README search](features/search/README.md), hợp đồng cho UI ở §8 của [spec gói 5](superpowers/specs/2026-09-25-library-search-backend-design.md). Màn 04 `aligned` là phần căn giao diện của FE-A11; `deck_search_screen.dart` vẫn gọi `SearchDecksUseCase` (chỉ tên deck) | Làm được ngay: dựng màn 04 trên `SearchLibraryUseCase`, rồi bỏ `SearchDecksUseCase` (spec gói 5, D1) |
+| FE-A10 | Tìm kiếm toàn thư viện từ header của Thư viện, ở mọi cấp (UC-SEARCH-001) | xong | BE-A8, FE-A1 | M | [PR #68](https://github.com/ntgptit/memox-v8/pull/68); [spec](superpowers/specs/2026-09-26-library-search-ui-design.md) và [plan](superpowers/plans/2026-09-26-library-search-ui.md); màn 04 trên `SearchLibraryUseCase` ở `lib/features/search/presentation/`: deck, card và tag, debounce 250 ms, Load more theo keyset, lỗi trang đầu (E1) và trang sau (E2); `SearchDecksUseCase` cùng phần đọc phía deck đã bỏ; IT-DISC-006/007 kiểm trên màn 04 theo nghĩa toàn thư viện; [handoff 04](shared/ui/screen-handoff/04-library-search.md) | — |
 | FE-A11 | Căn Thư viện theo screen handoff V3 (artifact "MemoX — Mobile UI Kit v3"): màn 01, 02, 04, 07; 5 phase A–E | xong | FE-A1, FE-A2, BE-A2 | L | [spec](superpowers/specs/2026-09-24-library-artifact-alignment-design.md); phase A (#32), B (#34), C (#38), D (#42), E (#46, #49) | — |
 
 ### Sub-project sau V8.0
@@ -165,14 +165,13 @@ bỏ nhánh này trước P1.
 Mọi hạng mục FE của V8.0 đã có backend (BE-A1…BE-A10 xong). Thứ tự còn lại do thiết kế
 và phụ thuộc giữa các màn quyết định:
 
-1. FE-A10 (tìm kiếm toàn thư viện): không chờ gì, cần ít thiết kế nhất.
-2. FE-A6 kèm FE-A7 (luồng học), sau khi chủ dự án duyệt spec study UI và nhánh
+1. FE-A6 kèm FE-A7 (luồng học), sau khi chủ dự án duyệt spec study UI và nhánh
    `claude/study-large-files` được xử lý; P1 → P5.
-3. FE-A8 (Study Home), sau phase P1 của FE-A6.
-4. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
+2. FE-A8 (Study Home), sau phase P1 của FE-A6.
+3. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
    tiết handoff của màn trước khi lập plan.
-5. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-6. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng; chưa hạng mục BE-B
+4. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
+5. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng; chưa hạng mục BE-B
    nào xong.
 
 ## Ước lượng effort (rà soát 2026-09-25)
@@ -215,6 +214,10 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   tại `867819b`. Đưa "Việc tiếp theo", "Đang làm", điểm chặn và "Bước tiếp theo" về
   đúng trạng thái: FE-A5, FE-D2 và backend BE-A6…BE-A8 đã xong; ghi rằng FE-A10 chưa
   làm dù màn 04 `aligned`, và FE-A8 cần route của FE-A6 P1.
+- **Cập nhật ngày 2026-09-26:** FE-A10 xong: màn 04 tìm toàn thư viện trên
+  `SearchLibraryUseCase` ([spec](superpowers/specs/2026-09-26-library-search-ui-design.md),
+  [plan](superpowers/plans/2026-09-26-library-search-ui.md)); phần còn lại của V8.0
+  (FE-A3, FE-A6…FE-A9) khoảng 23–35 giờ agent.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate đang áp dụng pass; màn hình có đủ
   kiểm chứng ở mục "Trạng thái kiểm chứng".

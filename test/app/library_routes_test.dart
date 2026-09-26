@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
@@ -88,8 +89,9 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text(_en.deckSearchHint));
+    await _tap(tester, find.text(_en.searchFieldHint));
     await tester.enterText(find.byType(EditableText), 'verb');
+    await tester.pump(searchDebounce);
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Verbs'));
     expect(_barTitle('Verbs'), findsOneWidget);

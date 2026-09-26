@@ -64,11 +64,6 @@ final class DeckDao {
     required int maxDepth,
   }) => _db.deckMoveTargets(id, maxDepth).watch();
 
-  /// The decks a search inside [scopeId] looks through, every active deck
-  /// when it is null, and the decks on their paths.
-  Stream<List<DeckForestRow>> watchSearchRows(String? scopeId) =>
-      _db.deckSearchScope(scopeId).watch();
-
   /// One statement (`deck_queries.drift`); null when [id] is not an active
   /// deck.
   Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>
