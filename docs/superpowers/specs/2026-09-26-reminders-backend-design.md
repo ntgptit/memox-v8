@@ -458,6 +458,17 @@ must fail a test.
   another shape, it changes the port and the one adapter; the use cases keep their tests.
 - **Deferred alarms.** D12 keeps a late fire from showing after midnight. A fire deferred
   within the same day still shows, late.
+- **Overlapping operations.** The use cases assume one reminder operation at a time, and
+  nothing in this package serializes them. Two that overlap can leave the stored reminder
+  and the pending fire out of step. A Reconcile or a Disable that reads the reminder off
+  while an Enable is between its schedule and its save cancels the new schedule: the
+  reminder then reads on with nothing pending until the next Reconcile. A Deliver in the
+  background reschedules from the settings it read at fire time, so it can undo a time
+  change made in the same instant; the fire check (D12) keeps that to one late reminder at
+  most. Nothing in this package reaches either: its only adapter is unsupported, and it has
+  no screen. FE-B5 starts no reminder operation while another runs. BE-B5b decides how
+  Reconcile (at start, after a reset, and on any resume or time-zone trigger it adds) and
+  the background Deliver stay clear of them. Found by the package's final review.
 - **Rollback.** The package adds a feature and extends settings. Reverting the merge
   removes them.
   - The reminder columns keep whatever they hold. With the unsupported adapter, nothing
