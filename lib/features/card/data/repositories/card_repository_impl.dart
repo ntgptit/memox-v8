@@ -2,6 +2,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
+import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
@@ -10,6 +11,9 @@ import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
+import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
+import 'package:memox/features/card/domain/models/card_import_result_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/card_move_target_model.dart';
@@ -63,10 +67,7 @@ final class CardRepositoryImpl implements CardRepository {
         return const Rejected(CardRejection.notACardContainer);
       }
 
-      final id = newId();
-      await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
-      await _schedules.initializeCard(cardId: id);
-      await _replaceTags(id, draft, at);
+      final id = await _insertCard(deckId, draft, at);
       if (contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
@@ -306,6 +307,99 @@ final class CardRepositoryImpl implements CardRepository {
             ),
           )
           .mapDatabaseErrors();
+
+  @override
+  Future<Set<CardFoldedPair>> foldedPairs(String deckId) =>
+      _mapped(() => _dao.foldedPairs(deckId));
+
+  @override
+  Future<Outcome<CardImportResult, CardRejection>> importCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required bool includeDuplicates,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      for (final draft in drafts) {
+        if (draft.check() case Rejected(:final reason)) return Rejected(reason);
+      }
+      final deck = await _dao.deckRow(deckId);
+      if (deck == null) return const Rejected(CardRejection.notFound);
+      final contentType = DeckContentType.values.byName(deck.contentType);
+      if (DeckEntity.checkCreateCard(parentContentType: contentType)
+          case Rejected()) {
+        return const Rejected(CardRejection.notACardContainer);
+      }
+
+      final taken = await _dao.foldedPairs(deckId);
+      var written = 0;
+      for (final draft in drafts) {
+        final pair = (front: foldText(draft.front), back: foldText(draft.back));
+        if (!includeDuplicates && taken.contains(pair)) continue;
+        taken.add(pair);
+        await _insertCard(deckId, draft, at);
+        written++;
+      }
+      if (written > 0 && contentType == DeckContentType.unset) {
+        await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
+      }
+      return Ok(
+        CardImportResult(
+          written: written,
+          skippedDuplicates: drafts.length - written,
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
+    required String deckId,
+    Set<String>? cardIds,
+  }) => _mapped(
+    () => _db.transaction(() async {
+      final deck = await _dao.deckRow(deckId);
+      if (deck == null) return const Rejected(CardRejection.notFound);
+      final rows = await _dao.exportRows(deckId, cardIds);
+      if (cardIds != null && rows.length != cardIds.length) {
+        return const Rejected(CardRejection.notFound);
+      }
+      final tags = await _listDao.tagsOf([for (final row in rows) row.id]);
+      return Ok(
+        CardExportSnapshot(
+          deckName: deck.name,
+          rows: [
+            for (final row in rows)
+              CardExportRow(
+                front: row.front,
+                back: row.back,
+                example: row.example,
+                hint: row.hint,
+                pronunciation: row.pronunciation,
+                tagNames: [
+                  for (final tag in tags[row.id] ?? const <Tag>[]) tag.name,
+                ],
+              ),
+          ],
+        ),
+      );
+    }),
+  );
+
+  /// One card, its schedule row (BR-CARD-004) and its tags, inside the
+  /// caller's transaction; the new card's id.
+  Future<String> _insertCard(
+    String deckId,
+    CardDraft draft,
+    DateTime at,
+  ) async {
+    final id = newId();
+    await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
+    await _schedules.initializeCard(cardId: id);
+    await _replaceTags(id, draft, at);
+    return id;
+  }
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
   /// refusal here is a bug: throwing rolls the whole write back.
