@@ -15,6 +15,9 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_lock_strip_widget.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -163,6 +166,24 @@ void main() {
       expect(_option(tester, title).onSelected, isNull, reason: title);
     }
     expect(find.text(_en.algorithmResetAction), findsOneWidget);
+  });
+
+  libraryTest('the lock strip centres its tile on the title and body (owner '
+      '2026-09-26)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+
+    final strip = find.byType(DeckLockStripWidget);
+    expectCentredOn(
+      tester,
+      find.descendant(of: strip, matching: find.byType(MxCard)),
+      [find.descendant(of: strip, matching: find.byType(MxIconTile))],
+    );
   });
 
   libraryTest('a switch refused because the tree just locked says why (E4)', (

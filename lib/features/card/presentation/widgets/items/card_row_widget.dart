@@ -44,22 +44,20 @@ class CardRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = item.displayStatus;
+    // The dot or the checkbox and the trailing column centre on the row
+    // (spec 2026-09-26 D4, extended by the owner 2026-09-26).
     final row = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.grouped,
       children: [
         if (isSelecting)
-          Align(child: MxSelectionCheckbox(isChecked: isSelected))
+          MxSelectionCheckbox(isChecked: isSelected)
         else
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.micro),
-            // The status line already says it: one announcement per row.
-            child: ExcludeSemantics(
-              child: MxStatusBadge(
-                status: mxCardStatus(status),
-                label: context.l10n.cardStatus(status),
-                isDot: true,
-              ),
+          // The status line already says it: one announcement per row.
+          ExcludeSemantics(
+            child: MxStatusBadge(
+              status: mxCardStatus(status),
+              label: context.l10n.cardStatus(status),
+              isDot: true,
             ),
           ),
         Expanded(child: _Content(item: item)),
@@ -82,9 +80,7 @@ class CardRowWidget extends StatelessWidget {
                 onTap: onTap,
                 child: Padding(
                   padding: const EdgeInsets.all(_rowPadding),
-                  // The row takes a definite height while selecting, so the
-                  // checkbox centres on it (spec 2026-09-26 D4).
-                  child: isSelecting ? IntrinsicHeight(child: row) : row,
+                  child: row,
                 ),
               ),
             ),

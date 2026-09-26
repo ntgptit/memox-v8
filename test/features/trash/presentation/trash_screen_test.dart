@@ -7,9 +7,14 @@ import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:flutter/rendering.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
+import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -148,6 +153,25 @@ void main() {
       findsOneWidget,
     );
     handle.dispose();
+  });
+
+  libraryTest('the kind tile and ⋮ are centred on a tall entry (owner '
+      '2026-09-26)', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+
+    final entry = find.ancestor(
+      of: find.text('Places'),
+      matching: find.byType(TrashEntryRowWidget),
+    );
+    expectCentredOn(
+      tester,
+      find.descendant(of: entry, matching: find.byType(MxCard)),
+      [
+        find.descendant(of: entry, matching: find.byType(MxIconTile)),
+        find.descendant(of: entry, matching: find.byType(MxIconButton)),
+      ],
+    );
   });
 
   libraryTest('a long meta line wraps to two lines instead of ellipsizing', (

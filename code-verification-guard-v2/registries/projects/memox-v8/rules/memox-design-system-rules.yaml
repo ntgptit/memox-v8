@@ -383,3 +383,42 @@ rules:
     tags:
       - memox-v8
       - design-system
+
+  # A row's leading and trailing marks — a status dot, a checkbox, an icon
+  # tile, a row number, a status mark, ⋮ — centre on the row, as
+  # `MxListRow`, `MxOptionRow` and `MxSettingsRow` already do (owner
+  # 2026-09-26, extending spec 2026-09-26 D4). Hand-rolled rows had pinned
+  # them to the top with `CrossAxisAlignment.start`, and one checkbox was
+  # patched back to the centre with `IntrinsicHeight` + `Align` while its
+  # neighbours stayed pinned. The pattern stops at `children:`, so a nested
+  # Column's alignment never matches.
+  #
+  # Excluded by file, each with its reason — a row whose children are not
+  # leading/trailing marks:
+  - id: memox_v8.design_system.row_marks_centre_on_the_row
+    type: regex
+    severity: error
+    enabled: true
+    mode: file
+    message: >-
+      A row centres its leading and trailing marks (dot, checkbox, icon,
+      number, status mark, ⋮) on the row: drop `crossAxisAlignment:
+      CrossAxisAlignment.start` (owner 2026-09-26). A row that is not a
+      leading/trailing layout goes on this rule's `exclude:` with its reason.
+    scopes:
+      - dart_lib
+    exclude:
+      # Prose callouts: the glyph sits on the first line of a paragraph,
+      # and a banner's actions sit under its text (kit Note, InlineBanner).
+      - lib/shared/widgets/mx_note.dart
+      - lib/shared/widgets/mx_inline_banner.dart
+      - lib/shared/widgets/mx_field_message.dart
+      # A two-column grid of facts: each cell starts at the top of its line.
+      - lib/features/card/presentation/widgets/sections/card_schedule_widget.dart
+      # Three stat tiles side by side: their tops align, not their centres.
+      - lib/features/study/presentation/widgets/sections/session_summary_hero_widget.dart
+    patterns:
+      - '\bRow\((?:(?!\bchildren:)[\s\S]){0,240}?\bcrossAxisAlignment:\s*CrossAxisAlignment\.start\b'
+    tags:
+      - memox-v8
+      - design-system

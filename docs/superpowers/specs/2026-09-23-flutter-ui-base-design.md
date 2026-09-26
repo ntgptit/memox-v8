@@ -519,7 +519,7 @@ item names where it comes from.
 | 114 | Screen 14 offers Learn twice when nothing is due: the Learn row's button and the footer both start the same learning session, as the kit draws them | FE-A6 P2 final review |
 | 115 | `MxCard` and every card surface use radius 12 (kit: 20), the one radius of in-flow surfaces with banners, notes and buttons; dialogs and sheets keep 20 | owner 2026-09-26, spec shared-ui-refinements D2 |
 | 116 | `overline` is 13/700 in `onSurface` (kit: 12/700 `onSurfaceVariant`), so a group title reads as a boundary | owner 2026-09-26, D5 |
-| 117 | A selecting row's checkbox is centred vertically on the row (kit: top-aligned with the title) | owner 2026-09-26, D4 |
+| 117 | A row's leading and trailing marks centre vertically on the row: the selecting checkbox (D4), and since the second ruling also the card list's status dot and due column, Trash's kind tile and ⋮, the algorithm lock strip's tile and the card detail's field glyphs (kit: top-aligned with the title). The kit's own import preview row centres already; the code had drifted from it. Guard rule `memox_v8.design_system.row_marks_centre_on_the_row` holds it; prose callouts (note, banner, field message), the schedule's fact grid and the summary's stat tiles are excluded by file | owner 2026-09-26, D4; owner 2026-09-26 (all row marks) |
 | 118 | A footer pair stacks full width when a label cannot fit its share on one line (kit: always side by side, labels wrap) | owner 2026-09-26, D3 |
 | 119 | The deck summary's progress label keeps the 12 overline (`compactOverline`), onSurface, so it stays on one line on a 360 phone; every other overline is 13 (row 116) | owner 2026-09-26 |
 
