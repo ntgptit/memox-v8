@@ -17,6 +17,7 @@ import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_match_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
@@ -96,9 +97,25 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
+  /// The Match pair on hold: its term, then its meaning (M2).
+  (String, String)? _heldPair;
+
+  void _pair(StudyItem item, String termCardId, String meaningCardId) {
+    setState(() => _heldPair = (termCardId, meaningCardId));
+    unawaited(
+      _controller.answer(
+        item,
+        MatchAnswer(meaningCardId),
+        shouldHoldFeedback: true,
+        cardId: termCardId,
+      ),
+    );
+  }
+
   /// The held turn met its continue condition (D5): the next one follows.
   void _release() {
     _chosenCardId = null;
+    _heldPair = null;
     _controller.release();
   }
 
@@ -311,7 +328,15 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       onContinue: _release,
       onClose: _abandon,
     ),
-    StudyMode.match ||
+    StudyMode.match => StudyMatchWidget(
+      key: ValueKey('match#${item.round}#${view.board!.terms.first.cardId}'),
+      board: view.board!,
+      result: turn.held?.result,
+      heldPair: _heldPair,
+      isBusy: turn.isBusy,
+      onPair: (term, meaning) => _pair(item, term, meaning),
+      onSettled: _release,
+    ),
     StudyMode.recall ||
     StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
   };
