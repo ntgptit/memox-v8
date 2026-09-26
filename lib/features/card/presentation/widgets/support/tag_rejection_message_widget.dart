@@ -9,5 +9,6 @@ extension TagRejectionMessage on AppLocalizations {
     TagRejection.controlCharacter => tagRejectionControlCharacter,
     TagRejection.tooManyTags => tagRejectionTooManyTags,
     TagRejection.notFound => tagRejectionNotFound,
+    TagRejection.mergeNotConfirmed => tagRejectionMergeNotConfirmed,
   };
 }

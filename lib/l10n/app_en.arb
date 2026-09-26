@@ -657,6 +657,10 @@
   "@tagRejectionNotFound": {
     "description": "Tag refusal: a card or tag is gone."
   },
+  "tagRejectionMergeNotConfirmed": "Another tag now has this name. Check the merge and confirm again.",
+  "@tagRejectionMergeNotConfirmed": {
+    "description": "Tag refusal: a rename would now merge into a tag the person did not confirm."
+  },
   "cardAddTitle": "New card",
   "@cardAddTitle": {
     "description": "Card editor title in create mode, and its breadcrumb segment."

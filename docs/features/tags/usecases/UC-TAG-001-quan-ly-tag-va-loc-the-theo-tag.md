@@ -3,11 +3,12 @@ id: UC-TAG-001
 title: Quản lý tag và lọc thẻ theo tag
 status: ready
 rules: [BR-CARD-012, BR-DECK-015, BR-TAG-001, BR-TAG-002, BR-TAG-003, BR-TAG-004, BR-TAG-005, BR-TAG-006, BR-TAG-007, BR-TAG-008, BR-TAG-009, BR-TAG-010, BR-TAG-011, BR-TRANSFER-009]
-code: []
+code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/features/tags/domain/usecases/watch_deck_tag_counts_use_case.dart, lib/features/tags/domain/usecases/plan_tag_rename_use_case.dart, lib/features/tags/domain/usecases/rename_tag_use_case.dart, lib/features/tags/domain/usecases/delete_tag_use_case.dart, lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/features/card/domain/usecases/select_all_card_ids_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — Tags (spec §2).
+**Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overlay lọc
+thuộc FE-B2.
 
 **Actor:** Người dùng
 **Trigger:** Chạm hành động `Tags` trên app bar của Library, hoặc `Manage tags`
@@ -24,7 +25,7 @@ rỗng là câu trả lời hợp lệ, không phải lỗi
 2. Hệ thống hiển thị mỗi tag thành một hàng: tên canonical, số thẻ, và một menu
    hành động có `Rename` và `Delete`.
 3. Người dùng gõ vào ô tìm kiếm để thu hẹp catalog. Hệ thống lọc theo cùng phép
-   fold mà BR-TAG-001 dùng, nên `Dong tu` và `động từ` tìm thấy nhau đúng như lúc tạo
+   fold mà BR-TAG-001 dùng, nên `ĐỘNG TỪ` và `động từ` tìm thấy nhau đúng như lúc tạo
    tag (BR-TAG-003).
 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã
    điền sẵn.

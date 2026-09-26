@@ -26,6 +26,7 @@ final class CardListQuery {
     this.filter = CardListFilter.all,
     this.sort = CardListSort.newest,
     this.searchTerm = '',
+    this.tagIds = const {},
   });
 
   final CardListFilter filter;
@@ -34,4 +35,8 @@ final class CardListQuery {
   /// As typed: folded before it is matched, and a blank term searches
   /// nothing out.
   final String searchTerm;
+
+  /// A card passes when it carries any of these tags (BR-TAG-004); none
+  /// lets every card through. An id that no longer exists matches no card.
+  final Set<String> tagIds;
 }
