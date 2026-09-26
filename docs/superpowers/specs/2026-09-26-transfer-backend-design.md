@@ -1,6 +1,6 @@
 # MemoX V8 — Card Transfer backend design (package 9a: CSV, TSV, pasted text)
 
-Status: draft 2026-09-26 · Path: architectural
+Status: approved 2026-09-26 · Path: architectural
 
 ## 1. Intent
 
