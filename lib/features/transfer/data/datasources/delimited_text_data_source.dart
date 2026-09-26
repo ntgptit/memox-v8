@@ -98,9 +98,24 @@ String _csvDelimiterOf(List<_Delimiters> records) {
 bool _isSteady(List<int> counts) =>
     counts.first > 0 && counts.every((count) => count == counts.first);
 
+/// One of the delimiters a record may use.
+bool _isDelimiter(String char) =>
+    char == DelimitedTextDataSource.comma ||
+    char == DelimitedTextDataSource.semicolon ||
+    char == DelimitedTextDataSource.tab;
+
+/// Whether a quote inside a quoted field closes it: as the `csv` parser
+/// reads quotes, only before a delimiter, a line end or the end of [text].
+bool _closesQuote(String text, int next) =>
+    next == text.length ||
+    _isDelimiter(text[next]) ||
+    text[next] == _carriageReturn ||
+    text[next] == _lineFeed;
+
 /// The delimiters outside quotes of each of the first [_sniffedRecords]
 /// records that hold a character other than whitespace. A quote opens a
-/// quoted field only where a field starts.
+/// quoted field only where a field starts, and any other quote inside it
+/// is text unless [_closesQuote].
 List<_Delimiters> _recordDelimiters(String text) {
   final records = <_Delimiters>[];
   var commas = 0;
@@ -131,7 +146,7 @@ List<_Delimiters> _recordDelimiters(String text) {
         index++;
         continue;
       }
-      isQuoted = false;
+      isQuoted = !_closesQuote(text, index);
       continue;
     }
     if (char == _carriageReturn || char == _lineFeed) {
@@ -144,10 +159,7 @@ List<_Delimiters> _recordDelimiters(String text) {
       isFieldStart = false;
       continue;
     }
-    isFieldStart =
-        char == DelimitedTextDataSource.comma ||
-        char == DelimitedTextDataSource.semicolon ||
-        char == DelimitedTextDataSource.tab;
+    isFieldStart = _isDelimiter(char);
     switch (char) {
       case DelimitedTextDataSource.comma:
         commas++;
