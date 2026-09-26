@@ -17,6 +17,9 @@ The screens of the V3 handoff. The generated handoff next to this folder
 - **Images:** `img/<screen>/<state>-{light,dark}.png`, 390 px, only the states V8
   supports, captured with `node tools/design/capture_screens.mjs --html <artifact.html>`
   (states listed in `tools/design/screen_states.json`).
+- **State checklist:** every state of every kit screen, and whether it is built, is in
+  [../screen-state-checklist.md](../screen-state-checklist.md). This index tracks screens;
+  the checklist tracks states.
 
 ## Status values
 
