@@ -1,3 +1,9 @@
+import 'package:memox/shared/widgets/mx_button.dart';
+
+import '../support/study_entry_fixtures.dart';
+
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 // Study routes (FE-A6 D1, D2, D10): the entry from a deck, Back, and the
 // full-screen session route. Split from library_routes_test.dart.
 
@@ -142,5 +148,46 @@ void main() {
 
     expect(find.byType(StudySessionScreen), findsNothing);
     expect(_barTitle('Lesson'), findsOneWidget);
+  });
+
+  Finder navTab(String label) =>
+      find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
+
+  libraryTest('the Study tab lists the root decks; a row opens that deck\'s '
+      'Study Entry and makes no session (FE-A8 H3)', (tester, env) async {
+    await insertFiveDue(env.db, env.decks);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, navTab(_en.navStudy));
+
+    expect(find.byType(StudyHomeScreen), findsOneWidget);
+    await _tap(tester, find.text('Korean'));
+
+    expect(find.byType(StudyEntryScreen), findsOneWidget);
+    final sessions = await env.db
+        .customSelect('SELECT COUNT(*) AS n FROM study_session')
+        .getSingle();
+    expect(sessions.read<int>('n'), 0);
+  });
+
+  libraryTest("Resume on the Study tab opens today's session; Library opens "
+      'the Library (FE-A8 H3)', (tester, env) async {
+    await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, navTab(_en.navStudy));
+
+    await tester.tap(find.text(_en.studyHomeResume));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byType(StudySessionScreen), findsOneWidget);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await _tap(tester, find.text(_en.summaryDone));
+    await _tap(tester, navTab(_en.navStudy));
+    await _tap(tester, find.widgetWithText(MxButton, _en.studyHomeLibrary));
+    expect(_barTitle(_en.navLibrary), findsOneWidget);
   });
 }

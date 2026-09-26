@@ -107,15 +107,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  libraryTest('Library opens on its screen; the other tabs are placeholders', (
-    tester,
-    env,
-  ) async {
+  libraryTest('Library opens on its screen; Study shows Study Home (FE-A8); '
+      'Progress is still a placeholder', (tester, env) async {
     await _pumpApp(tester, env);
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
     expect(find.text(_en.placeholderTitle), findsNothing);
 
     await tester.tap(_tab(_en.navStudy));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyHomeNoDecksTitle), findsOneWidget);
+    expect(find.text(_en.placeholderTitle), findsNothing);
+
+    await tester.tap(_tab(_en.navProgress));
     await tester.pumpAndSettle();
     expect(find.text(_en.placeholderTitle), findsOneWidget);
   });
