@@ -79,34 +79,41 @@ class _TrashPurgeDialogWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final count = widget.entries.length;
-    return MxDialog(
-      title: _isCards
-          ? l10n.trashPurgeCardsTitle(count)
-          : l10n.trashPurgeDecksTitle(count),
-      body: l10n.trashPurgeBody(count),
-      actions: MxSheetActions.custom(
-        children: [
-          Expanded(
-            flex: _keepShare,
-            child: MxButton(
-              label: l10n.trashPurgeKeep,
-              onPressed: () => Navigator.of(context).pop(false),
-              isBlock: true,
-              isAutofocused: true,
+    // Once Delete runs, nothing may look like a cancel: the batches go
+    // whatever the dialog does (BR-TRASH-011).
+    return PopScope(
+      canPop: !_isPurging,
+      child: MxDialog(
+        title: _isCards
+            ? l10n.trashPurgeCardsTitle(count)
+            : l10n.trashPurgeDecksTitle(count),
+        body: l10n.trashPurgeBody(count),
+        actions: MxSheetActions.custom(
+          children: [
+            Expanded(
+              flex: _keepShare,
+              child: MxButton(
+                label: l10n.trashPurgeKeep,
+                onPressed: _isPurging
+                    ? null
+                    : () => Navigator.of(context).pop(false),
+                isBlock: true,
+                isAutofocused: true,
+              ),
             ),
-          ),
-          Expanded(
-            flex: _deleteShare,
-            child: MxButton(
-              label: l10n.trashPurgeConfirm(count),
-              icon: AppIcons.delete,
-              tone: MxButtonTone.destructive,
-              isBlock: true,
-              isLoading: _isPurging,
-              onPressed: _purge,
+            Expanded(
+              flex: _deleteShare,
+              child: MxButton(
+                label: l10n.trashPurgeConfirm(count),
+                icon: AppIcons.delete,
+                tone: MxButtonTone.destructive,
+                isBlock: true,
+                isLoading: _isPurging,
+                onPressed: _purge,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -55,6 +55,11 @@ final class TrashState {
     }
     return null;
   }
+
+  /// How many of [entries] are picked; a batch that left the Trash while
+  /// picked no longer counts.
+  int countIn(List<TrashEntry> entries) =>
+      entries.where((entry) => selected.contains(entry.batchId)).length;
 }
 
 /// The batches a restore sheet is for, equal by value so a provider keyed

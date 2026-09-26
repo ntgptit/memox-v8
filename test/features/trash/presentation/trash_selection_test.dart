@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -153,5 +155,52 @@ void main() {
       find.text(_en.trashPurgeBlocked('Food', 'bap · rice')),
       findsOneWidget,
     );
+  });
+
+  libraryTest('a picked entry that leaves the Trash leaves every count', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+    expect(find.text(_en.trashCardsSelected(2)), findsOneWidget);
+
+    // "homework" expires while it is picked; the resume purge takes it.
+    env.clock.current = libraryToday.add(const Duration(hours: 2));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(TrashScreen)),
+    );
+    await container.read(purgeExpiredTrashUseCaseProvider)();
+    await tester.pumpAndSettle();
+
+    expect(find.text('homework · bai tap'), findsNothing);
+    expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
+    expect(
+      find.text(_en.trashSelectedOfCards(1, 1).toUpperCase()),
+      findsOneWidget,
+    );
+    expect(_button(_en.trashRestoreSelected(1)), findsOneWidget);
+  });
+
+  libraryTest('while the purge runs, Keep in Trash and Back wait for it; '
+      'nothing is deleted behind a closed dialog', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+    await _tap(tester, _button(_en.trashPurgeSelected));
+    await tester.tap(_inDialog(_en.trashPurgeConfirm(2)));
+    await tester.pump();
+
+    final keep = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.trashPurgeKeep),
+    );
+    expect(keep.onPressed, isNull);
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.byType(MxDialog), findsOneWidget);
+
+    await tester.pumpAndSettle();
+    expect(find.text(_en.trashPurgedCards(2)), findsOneWidget);
   });
 }

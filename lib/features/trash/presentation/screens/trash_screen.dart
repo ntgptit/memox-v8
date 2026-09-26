@@ -167,7 +167,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         ],
       );
     }
-    final count = state.selected.length;
+    final count = state.countIn(entries);
     return MxAppBar(
       title: switch (state.kindIn(entries)) {
         null => l10n.trashSelectTitle,
@@ -245,7 +245,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   ) {
     int total(TrashKind of) =>
         shown.where((entry) => TrashKind.of(entry) == of).length;
-    final count = state.selected.length;
+    final count = state.countIn(shown);
     return switch (kind) {
       TrashKind.card => l10n.trashSelectedOfCards(count, total(TrashKind.card)),
       TrashKind.deck => l10n.trashSelectedOfDecks(count, total(TrashKind.deck)),
