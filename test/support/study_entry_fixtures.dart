@@ -1,8 +1,11 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/domain/repositories/study_entry_repository.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
@@ -43,4 +46,77 @@ Future<String> openSelfAssessReview(
     direction: direction,
   );
   return (opened as Ok<String, StudyRejection>).value;
+}
+
+/// A sm2 root `Korean` > `Lesson` with [newCards] new cards `n0`… and
+/// [dueCards] learned cards `d0`… due before the harness's day. Returns the
+/// leaf's id.
+Future<String> sm2Leaf(
+  AppDatabase db,
+  DeckRepository decks, {
+  int newCards = 0,
+  int dueCards = 0,
+}) async {
+  final root = await decks.root('Korean', SchedulerType.sm2);
+  final leaf = await decks.sub(root.id, 'Lesson');
+  for (var i = 0; i < newCards; i++) {
+    await insertCard(db, id: 'n$i', deckId: leaf.id, back: 'new $i');
+  }
+  for (var i = 0; i < dueCards; i++) {
+    await insertCard(
+      db,
+      id: 'd$i',
+      deckId: leaf.id,
+      back: 'due $i',
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 20),
+    );
+  }
+  if (dueCards > 0) await lockScheduler(db, root.id);
+  return leaf.id;
+}
+
+/// The app's entry store; a test sets [isFailing] to make an opening fail as
+/// a broken write does (screen 14 startFailed), and reads [opened].
+final class FailingEntries implements StudyEntryRepository {
+  FailingEntries(this._inner);
+
+  final StudyEntryRepository _inner;
+  var isFailing = false;
+
+  /// The openings that reached the store.
+  var opened = 0;
+
+  @override
+  Future<Outcome<String, StudyRejection>> openLearningSession({
+    required String deckId,
+    DateTime? now,
+  }) {
+    opened++;
+    if (isFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.openLearningSession(deckId: deckId, now: now);
+  }
+
+  @override
+  Future<Outcome<String, StudyRejection>> openReviewSession({
+    required String deckId,
+    required StudyMode mode,
+    DirectionChoice? direction,
+    DateTime? now,
+  }) {
+    opened++;
+    if (isFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.openReviewSession(
+      deckId: deckId,
+      mode: mode,
+      direction: direction,
+      now: now,
+    );
+  }
+
+  @override
+  Stream<StudyEntry?> watchEntry({
+    required String deckId,
+    required DateTime now,
+  }) => _inner.watchEntry(deckId: deckId, now: now);
 }
