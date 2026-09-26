@@ -44,7 +44,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | decks | ![](img/06-trash/decks-light.png) | ![](img/06-trash/decks-dark.png) | As drawn. |
 | actions | ![](img/06-trash/actions-light.png) | ![](img/06-trash/actions-dark.png) | As drawn; a row tap opens it too. |
 | restoreTarget | ![](img/06-trash/restoreTarget-light.png) | ![](img/06-trash/restoreTarget-dark.png) | Targets read as paths, without counts or "where it was". |
-| noTarget | ![](img/06-trash/noTarget-light.png) | ![](img/06-trash/noTarget-dark.png) | As drawn. |
+| noTarget | ![](img/06-trash/noTarget-light.png) | ![](img/06-trash/noTarget-dark.png) | As the move sheets draw it: the neutral folder, and a filled OK. |
 | restored | ![](img/06-trash/restored-light.png) | ![](img/06-trash/restored-dark.png) | As drawn. |
 | undoRefused | ![](img/06-trash/undoRefused-light.png) | ![](img/06-trash/undoRefused-dark.png) | Shown where the item was deleted, with Open Trash (UI-base row 109). |
 | selection | ![](img/06-trash/selection-light.png) | ![](img/06-trash/selection-dark.png) | As drawn; "Delete for good" is a filled destructive button. |
@@ -67,6 +67,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 | "Select" as a text link | A compact secondary `MxButton` | Ruling E-L3 |
 | A neutral grey kind tile; "Was in" after a corner glyph | The tinted `MxIconTile`; the text alone | The shared tile's tones; no per-site glyph ink |
 | "Delete for good" as a red outline | A filled destructive `MxButton` | `MxButton` has no destructive outline |
+| noTarget's tree glyph in a tinted tile, and an outline OK | The neutral folder, and a filled OK | `MxDeckPickerSheet`'s empty state, shared with the move sheets (ruling O11) |
 | A refusal inside the restore sheet | The sheet closes and the refusal is a toast; the list follows the store | As the move sheets (spec §6) |
 
 ## Copy
