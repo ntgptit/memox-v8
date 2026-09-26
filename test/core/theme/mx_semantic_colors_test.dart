@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-// The ten BIND_NOW MEMOX_SEMANTIC_COLOR entries, light then dark.
+// The ten BIND_NOW MEMOX_SEMANTIC_COLOR entries plus onMastery (spec
+// 2026-09-27), light then dark.
 final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'mastery': ((c) => c.mastery, 0xFF1F8A5B, 0xFF6FE0BD),
   'warning': ((c) => c.warning, 0xFFF59E0B, 0xFFFFC658),
@@ -13,6 +14,7 @@ final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'statusMastered': ((c) => c.statusMastered, 0xFF1F8A5B, 0xFF6FE0BD),
   'errorFill': ((c) => c.errorFill, 0xFFDC2D4E, 0xFFB0485C),
   'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFFFFFFFF),
+  'onMastery': ((c) => c.onMastery, 0xFFFFFFFF, 0xFF11173A),
   'success': ((c) => c.success, 0xFF2BA88B, 0xFF6FE0BD),
 };
 

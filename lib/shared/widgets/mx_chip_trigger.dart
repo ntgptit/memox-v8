@@ -33,7 +33,7 @@ class MxChipTrigger extends StatelessWidget {
         fill: null,
         ink: colors.onSurfaceVariant,
         edge: BorderSide.none,
-        focusColor: colors.primary,
+        focusColor: context.derivedColors.primaryInk,
         height: AppSize.chip,
         radius: AppRadius.full,
         padding: AppSpacing.control,

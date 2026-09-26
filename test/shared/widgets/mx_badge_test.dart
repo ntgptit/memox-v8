@@ -34,7 +34,7 @@ void main() {
 
     expect(_pill(tester).color, scheme.primary.withValues(alpha: 0.12));
     expect(_pill(tester).borderRadius, BorderRadius.circular(999));
-    expect(_ink(tester, '23 due'), scheme.primary);
+    expect(_ink(tester, '23 due'), MxDerivedColors.primaryInkOf(scheme));
     expect(tester.getSize(find.byType(MxBadge)).height, 22);
     expect(
       tester.getTopLeft(find.text('23 due')).dx -

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 
-// Every V3_DEFINED role from 02-theme-binding.md, light then dark.
+// Every V3_DEFINED role from 02-theme-binding.md, light then dark. The dark
+// primary pair follows spec 2026-09-27 D1, not the kit.
 const _v3Roles = <String, (int, int)>{
-  'primary': (0xFF5265F5, 0xFF8B9AFF),
-  'onPrimary': (0xFFFFFFFF, 0xFF11173A),
+  'primary': (0xFF5265F5, 0xFF5265F5),
+  'onPrimary': (0xFFFFFFFF, 0xFFFFFFFF),
   'primaryContainer': (0xFFE0E5FE, 0xFF2D346A),
   'onPrimaryContainer': (0xFF1A2580, 0xFFD9DFFF),
   'secondary': (0xFF6E7CD9, 0xFF9DA8E8),

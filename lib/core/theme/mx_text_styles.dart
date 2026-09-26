@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 
 /// Component type treatments: the overrides of the nearest V3 role that a
 /// widget contract states (spec §4.3). They live in the theme so shared
@@ -9,6 +10,9 @@ final class MxTextStyles {
   const MxTextStyles(this._texts, this._scheme);
 
   final TextTheme _texts;
+
+  /// Primary as text (spec 2026-09-27 D2): never the primary fill.
+  Color get _primaryInk => MxDerivedColors.primaryInkOf(_scheme);
   final ColorScheme _scheme;
 
   static const double _labelTracking = 0.1;
@@ -149,9 +153,9 @@ final class MxTextStyles {
   /// The number on an import step's dot (kit 11): the counter in [ink].
   TextStyle stepNumber(Color ink) => counter.copyWith(color: ink);
 
-  /// BottomNav label: 12/600, primary on the current destination.
+  /// BottomNav label: 12/600, primaryInk on the current destination.
   TextStyle navLabel({required bool isSelected}) => _texts.labelSmall!.copyWith(
-    color: isSelected ? _scheme.primary : _scheme.onSurfaceVariant,
+    color: isSelected ? _primaryInk : _scheme.onSurfaceVariant,
   );
 
   /// FooterBar caption under the actions: 12, onSurfaceVariant.
@@ -190,9 +194,10 @@ final class MxTextStyles {
         color: _scheme.onSurface,
       );
 
-  /// A disclosure's label (kit card editor "Add details"): 12/600 primary.
+  /// A disclosure's label (kit card editor "Add details"): 12/600
+  /// primaryInk.
   TextStyle get disclosureLabel =>
-      _texts.labelSmall!.copyWith(color: _scheme.primary);
+      _texts.labelSmall!.copyWith(color: _primaryInk);
 
   /// The term's placeholder: 16/500, onSurfaceVariant.
   TextStyle get fieldTermHint =>
@@ -227,11 +232,11 @@ final class MxTextStyles {
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
   /// The matched part of a search hit's name (screen 04): the list row
-  /// title, bold, in primary, so it sits on the title's line unchanged.
+  /// title, bold, in primaryInk, so it sits on the title's line unchanged.
   TextStyle get rowTitleMatch => AppTypography.withWeight(
     listRowTitle,
     FontWeight.w700,
-  ).copyWith(color: _scheme.primary);
+  ).copyWith(color: _primaryInk);
 
   /// Row description (OptionRow, SettingsRow sub): the caption role at
   /// line-height 1.45 (I5, S5).
@@ -293,7 +298,7 @@ final class MxTextStyles {
   TextStyle statusLabel(Color ink) => overline.copyWith(color: ink);
 
   /// A card field's "Required" marker: the overline in primary (kit 08).
-  TextStyle get requiredMarker => overline.copyWith(color: _scheme.primary);
+  TextStyle get requiredMarker => overline.copyWith(color: _primaryInk);
 
   /// A card field's count (kit FieldHeader): the counter at 0.2 tracking, in
   /// error past the limit.
@@ -303,7 +308,7 @@ final class MxTextStyles {
   );
 
   /// A removable tag's label: the tag label in primary, on its tint.
-  TextStyle get removableTagLabel => tagLabel.copyWith(color: _scheme.primary);
+  TextStyle get removableTagLabel => tagLabel.copyWith(color: _primaryInk);
 
   /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
   /// label's 0.1 tracking (S4).

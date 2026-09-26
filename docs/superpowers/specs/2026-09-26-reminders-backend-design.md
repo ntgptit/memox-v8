@@ -129,7 +129,7 @@ Success means:
 | D1 | Scope: BE-B5a only. No dependency, no schema change, no migration, no Android or iOS file. | The owner's split (2026-09-26); §2 "The platform". |
 | D2 | The settings feature owns every column of `app_settings`, the reminder's included. The reminders feature reads and writes them through `SettingsRepository`, and the import map gains `'reminders': {'settings', 'deck', 'srs'}`. | The owner's choice of approach A (2026-09-26). If reminders owned its own columns, settings' reset would need the reminder defaults from reminders while reminders needs `language` from settings: a cycle ADR-011 forbids. A separate table would contradict `schema.md`. |
 | D3 | `Reset to defaults` returns six values in one transaction: the four of package 1, plus `reminder_enabled = 0` and `reminder_minute_of_day = 1200`. `reminder_last_delivered_at` is left as it is. UC-SETTINGS-001 A3 says six. This closes the question D6 of the settings spec left open. | The owner's decision (2026-09-26); BR-SETTINGS-008 already says "all values". Bookkeeping is not a person's choice (`schema.md`). A reminder still pending after a reset skips itself when it fires, because it reads "off". |
-| D4 | The kit's reset copy (the dialog body and the row's sub-line) leaves the reminder out. FE-A3 names it. This is recorded as row 120 of the UI-base debt register (§9 of the UI-base spec). | A BR beats the kit (CLAUDE.md). Screen 23 has no detail file yet. |
+| D4 | The kit's reset copy (the dialog body and the row's sub-line) leaves the reminder out. FE-A3 names it. This is recorded as row 123 of the UI-base debt register (§9 of the UI-base spec). | A BR beats the kit (CLAUDE.md). Screen 23 has no detail file yet. |
 | D5 | `recordReminderDelivered` writes `reminder_last_delivered_at` and nothing else, not even `updated_at`. | `schema.md`: the background writer must not overwrite a choice the person just changed, and bookkeeping is not an edit of the settings. |
 | D6 | The operating system is reached through one domain contract, `ReminderPlatformRepository` (§6), which uses no plugin type. Its calls never throw: a platform error comes back as a typed `Rejected`. | BR-012; E3 ("a platform error maps to a typed reason"). The guard admits `_repository` as the suffix of a domain contract. |
 | D7 | 11a ships `UnsupportedReminderPlatformRepositoryImpl` as the only adapter, on every platform. 11b replaces it on Android through a conditional import, and Web keeps it. | ADR-001 (no plugin may break the Web build); BR-012 (`unavailable`, never a toggle that does nothing). |
@@ -418,7 +418,7 @@ must fail a test.
   - the open question on missing code is removed.
 - **The settings README:** its out-of-scope row says the settings feature stores the
   reminder's values.
-- **UI-base debt register, row 120:** D4.
+- **UI-base debt register, row 123:** D4.
 - **`docs/wbs_BE.md`:**
   - BE-B5 becomes BE-B5a (done, with its evidence) and BE-B5b (the adapter, the plugins
     with reason and rollback, the manifest and gradle changes, the background entry point,
@@ -427,7 +427,7 @@ must fail a test.
     blocker is added there;
   - the BR-SETTINGS-008 blocker closes;
   - traceability is 22/22 UC, and BE-D4 counts 18 UC.
-- **`docs/wbs_FE.md`:** FE-A3 (row 120, reconcile after a reset) and FE-B5 (depends on
+- **`docs/wbs_FE.md`:** FE-A3 (row 123, reconcile after a reset) and FE-B5 (depends on
   BE-B5b; §9).
 - **`docs/_generated`:** regenerated.
 

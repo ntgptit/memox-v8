@@ -69,11 +69,14 @@ void main() {
     );
   });
 
-  testWidgets('edges: ghost at rest, primary focused', (tester) async {
+  testWidgets('edges: ghost at rest, primaryInk focused', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
 
     expect(_edge(_decoration(tester).enabledBorder), ghost);
-    expect(_edge(_decoration(tester).focusedBorder), scheme.primary);
+    expect(
+      _edge(_decoration(tester).focusedBorder),
+      MxDerivedColors.primaryInkOf(scheme),
+    );
   });
 
   testWidgets('an error colours the edge and pushes a message below', (

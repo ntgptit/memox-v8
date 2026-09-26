@@ -147,7 +147,9 @@ class _Item extends StatelessWidget {
                 child: Icon(
                   isSelected ? destination.selectedIcon : destination.icon,
                   size: AppIconSize.compact,
-                  color: isSelected ? colors.primary : colors.onSurfaceVariant,
+                  color: isSelected
+                      ? context.derivedColors.primaryInk
+                      : colors.onSurfaceVariant,
                 ),
               ),
             ),

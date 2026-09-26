@@ -34,7 +34,7 @@ class MxStatTile extends StatelessWidget {
     final colors = context.colors;
     final styles = context.textStyles;
     final ink = switch (emphasis) {
-      MxStatTileEmphasis.primary => colors.primary,
+      MxStatTileEmphasis.primary => context.derivedColors.primaryInk,
       MxStatTileEmphasis.plain => colors.onSurface,
       MxStatTileEmphasis.muted => colors.onSurfaceVariant,
     };

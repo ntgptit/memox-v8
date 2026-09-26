@@ -120,7 +120,7 @@ class _StepButton extends StatelessWidget {
               fill: colors.surfaceContainer,
               ink: colors.onSurface,
               edge: BorderSide.none,
-              focusColor: colors.primary,
+              focusColor: context.derivedColors.primaryInk,
               height: AppSize.buttonSmall,
               radius: AppRadius.md,
               padding: MxStepper._buttonPadding,
