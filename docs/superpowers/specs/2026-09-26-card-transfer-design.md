@@ -34,7 +34,7 @@ Success means:
 - `master` is at `b69b45c`. Every V8.0 backend item is done; the Library tab and its card
   screens are real, while Study, Progress and Settings are still placeholders.
 - **The use cases.** UC-TRANSFER-001 and UC-TRANSFER-002 are `ready` with `code: []`. Their
-  acceptance criteria are an OPEN QUESTION ("no Given/When/Then yet").
+  acceptance criteria are still missing: neither has Given/When/Then.
 - **The rules, in short.**
   - The target is a sub-deck that is `unset` or holds cards (BR-TRANSFER-001); a target
     that stops qualifying between preview and commit refuses the commit.
