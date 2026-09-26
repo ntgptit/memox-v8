@@ -517,6 +517,7 @@ item names where it comes from.
 | 112 | Screen 06's kind tile is the tinted `MxIconTile`, not the kit's grey one, and "Was in" has no corner glyph; "Select" is a compact secondary `MxButton` (ruling E-L3); "Delete for good" is a filled destructive `MxButton`, not a red outline | FE-B1 plan 2 |
 | 113 | Match's and Guess's widget-local geometry constants (`_badgeTint` 0.10, the letter ring `_ring` 1.5, `_columnOrder`) are named in the widget but are not theme tokens | FE-A6 P3 final review |
 | 114 | Screen 14 offers Learn twice when nothing is due: the Learn row's button and the footer both start the same learning session, as the kit draws them | FE-A6 P2 final review |
+| 115 | The Reset dialog disables Cancel while it resets (a null `onCancel` on `MxSheetActions`, the global disabled rule), where the kit draws Cancel live: the owner keeps the phase D ruling that a reset is not left mid-way | consistency critique 2026-09-26, owner |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

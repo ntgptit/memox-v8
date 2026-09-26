@@ -45,6 +45,7 @@ abstract final class AppIcons {
       Icons.keyboard_double_arrow_right; // chevrons-right
   static const IconData learned = Icons.check_circle_outline; // check-circle-2
   static const IconData repeat = Icons.repeat; // repeat
+  // The kit draws rotate-ccw for all three: a lapse, a reset and a restore.
   static const IconData lapses = Icons.replay; // rotate-ccw
   static const IconData resetProgress = Icons.replay; // rotate-ccw
   static const IconData restore = Icons.replay; // rotate-ccw

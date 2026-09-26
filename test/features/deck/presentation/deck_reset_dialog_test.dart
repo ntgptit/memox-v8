@@ -14,6 +14,7 @@ import 'package:memox/features/srs/domain/repositories/schedule_repository.dart'
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 
@@ -254,7 +255,7 @@ void main() {
     expect(find.text(_en.resetConfirm(3)), findsOneWidget);
   });
 
-  libraryTest('while the reset runs the dialog says so and Cancel waits', (
+  libraryTest('while the reset runs the dialog says so and Cancel is off', (
     tester,
     env,
   ) async {
@@ -276,7 +277,13 @@ void main() {
       _option(tester, _en.resetSwitchTo(_en.deckSchedulerEightBox)).onSelected,
       isNull,
     );
-    await tester.tap(find.text(_en.commonCancel));
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(find.text(_en.commonCancel), warnIfMissed: false);
     await tester.pump();
     expect(find.text(_en.resetDialogTitle), findsOneWidget);
 

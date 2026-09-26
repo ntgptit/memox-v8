@@ -135,7 +135,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: _isResetting ? () {} : () => Navigator.of(context).pop(),
+        onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
         confirmLabel: _isResetting
             ? l10n.resetRunning
             : l10n.resetConfirm(_nextCycle(view)),

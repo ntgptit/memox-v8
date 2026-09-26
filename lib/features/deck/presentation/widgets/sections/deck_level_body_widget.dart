@@ -62,7 +62,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
       filter: query.filter,
     );
     final isReordering = ref.watch(deckReorderModeProvider(parentId));
-    return ref
+    final body = ref
         .watch(provider)
         .when(
           data: (level) => isReordering
@@ -99,5 +99,16 @@ class DeckLevelBodyWidget extends ConsumerWidget {
             ],
           ),
         );
+    // Back leaves reorder mode before it leaves the level, as it leaves
+    // selection first on the card list and the Trash.
+    return PopScope(
+      canPop: !isReordering,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          ref.read(deckReorderModeProvider(parentId).notifier).finish();
+        }
+      },
+      child: body,
+    );
   }
 }

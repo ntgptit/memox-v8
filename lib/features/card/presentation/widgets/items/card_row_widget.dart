@@ -39,8 +39,6 @@ class CardRowWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
-  static const double _rowPadding = 12;
-
   @override
   Widget build(BuildContext context) {
     final status = item.displayStatus;
@@ -59,7 +57,7 @@ class CardRowWidget extends StatelessWidget {
               child: MxRowInk(
                 onTap: onTap,
                 child: Padding(
-                  padding: const EdgeInsets.all(_rowPadding),
+                  padding: const EdgeInsets.all(AppSpacing.grouped),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: AppSpacing.grouped,

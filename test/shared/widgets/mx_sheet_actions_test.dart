@@ -69,6 +69,23 @@ void main() {
     },
   );
 
+  testWidgets('a null onCancel disables Cancel (row 115)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: null,
+          confirmLabel: 'Resetting',
+          onConfirm: null,
+          isConfirmLoading: true,
+        ),
+      ),
+    );
+
+    expect(tester.widget<MxButton>(_button('Cancel')).onPressed, isNull);
+  });
+
   testWidgets('a destructive confirm, with its glyph passed through', (
     tester,
   ) async {

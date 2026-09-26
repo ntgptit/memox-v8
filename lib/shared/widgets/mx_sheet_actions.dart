@@ -11,7 +11,7 @@ class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
     required String this.cancelLabel,
-    required VoidCallback this.onCancel,
+    required this.onCancel,
     required String this.confirmLabel,
     required this.onConfirm,
     this.confirmIcon,
@@ -36,6 +36,10 @@ class MxSheetActions extends StatelessWidget {
        isConfirmLoading = false;
 
   final String? cancelLabel;
+
+  /// Null disables Cancel, for work that must not be left half-done (the
+  /// Reset dialog while it resets, UI-base row 115). Otherwise Cancel stays
+  /// live.
   final VoidCallback? onCancel;
   final String? confirmLabel;
 

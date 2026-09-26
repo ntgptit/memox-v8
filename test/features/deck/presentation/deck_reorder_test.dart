@@ -211,6 +211,22 @@ void main() {
     expect(find.byType(MxFab), findsOneWidget);
   });
 
+  libraryTest('Back ends the mode before it leaves the level', (
+    tester,
+    env,
+  ) async {
+    for (final name in ['A', 'B']) {
+      await env.decks.root(name);
+    }
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await _startReorder(tester);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DeckReorderRowWidget), findsNothing);
+    expect(find.byType(MxFab), findsOneWidget);
+  });
+
   libraryTest('a refused drop snaps back and says why (RF3)', (
     tester,
     env,
