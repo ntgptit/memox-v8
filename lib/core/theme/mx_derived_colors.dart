@@ -14,6 +14,9 @@ final class MxDerivedColors {
     required this.dangerBorder,
     required this.warningSoft,
     required this.warningBorder,
+    required this.successSoft,
+    required this.successBorder,
+    required this.successInk,
     required this.surfaceHero,
     required this.chromeGlass,
     required this.ghostBorder,
@@ -43,6 +46,19 @@ final class MxDerivedColors {
       // not in the derived registry. Its ratios come from that contract (O6).
       warningBorder: semantic.warning.withValues(
         alpha: isDark ? _warningBorderDark : _warningBorderLight,
+      ),
+      successSoft: semantic.success.withValues(
+        alpha: isDark ? _successSoftDark : _successSoftLight,
+      ),
+      successBorder: semantic.success.withValues(
+        alpha: isDark ? _successBorderDark : _successBorderLight,
+      ),
+      // Success TEXT and glyphs: the kit's green fails 4.5:1 on light
+      // surfaces, so it is pulled toward onSurface as the status inks are.
+      successInk: _ink(
+        semantic.success,
+        scheme,
+        isDark ? _successInkDark : _successInkLight,
       ),
       // The one derivation whose base changes with the theme.
       surfaceHero: Color.alphaBlend(
@@ -95,6 +111,12 @@ final class MxDerivedColors {
   static const double _warningSoftDark = 0.18;
   static const double _warningBorderLight = 0.26;
   static const double _warningBorderDark = 0.32;
+  static const double _successSoftLight = 0.10;
+  static const double _successSoftDark = 0.18;
+  static const double _successBorderLight = 0.26;
+  static const double _successBorderDark = 0.32;
+  static const double _successInkLight = 0.40;
+  static const double _successInkDark = 0;
   static const double _surfaceHeroLight = 0.05;
   static const double _surfaceHeroDark = 0.12;
   static const double _ghostBorderLight = 0.14;
@@ -122,6 +144,15 @@ final class MxDerivedColors {
 
   /// InlineBanner warning edge.
   final Color warningBorder;
+
+  /// Success tint (V3 success-soft).
+  final Color successSoft;
+
+  /// Success card edge, at the warning border's ratios.
+  final Color successBorder;
+
+  /// Success TEXT and glyphs, never the success fill.
+  final Color successInk;
 
   /// Tinted hero card fill.
   final Color surfaceHero;
