@@ -262,7 +262,7 @@ final class MxTextStyles {
 
   /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
   /// tracking, onSurface, so a group title reads as a boundary (spec
-  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 114). Tabular, so
+  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
   /// a trailing static count lines up. The widget upper-cases the text.
   TextStyle get overline =>
       AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
@@ -274,7 +274,7 @@ final class MxTextStyles {
 
   /// The overline at 12, for a label inside a card that 13 would wrap on a
   /// phone: the deck summary's progress line (owner 2026-09-26, register
-  /// row 117).
+  /// row 119).
   TextStyle get compactOverline =>
       overline.copyWith(fontSize: _compactOverlineSize);
 

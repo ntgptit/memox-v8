@@ -48,7 +48,7 @@ Traced from FE-B1's `trash_selection_light.png` golden and the code on `master`:
 | D4 | A selecting row's checkbox is vertically centred on the row | Owner, 2026-09-26 |
 | D5 | `overline` becomes 13/700 in `onSurface`, still upper-cased with 0.6 tracking. It is one role, so every overline follows, including the card editor's field labels and the sort sheet header | Owner, 2026-09-26 |
 | D6 | `warningInk` is not changed. It already passes AA, and nine call sites paint it, some on a warning fill | Owner, 2026-09-26 |
-| D7 | The deck summary's progress label (card list) keeps the 12 overline as `compactOverline`: at 13, "DECK PROGRESS · EIGHT BOXES" wraps on a 360 phone (register row 117) | Owner, 2026-09-26 |
+| D7 | The deck summary's progress label (card list) keeps the 12 overline as `compactOverline`: at 13, "DECK PROGRESS · EIGHT BOXES" wraps on a 360 phone (register row 119) | Owner, 2026-09-26 |
 
 ## 4. Design
 
@@ -131,16 +131,18 @@ tracking 0.6, tabular figures, colour `onSurface`. The doc comment says so.
 ## 6. Register rows
 
 These rows are added to [§9 of the UI-base spec](2026-09-23-flutter-ui-base-design.md).
-Numbering starts at 113, because FE-B1 (#78) added 108–112.
+They landed as 115–119: FE-B1 (#78) added 108–112 and FE-A6 (#82) added 113–114 while this package was open.
 
-- **113:** `MxCard` radius 12 (kit: 20), so a card matches banners, notes and buttons
+- **115:** `MxCard` radius 12 (kit: 20), so a card matches banners, notes and buttons
   (owner 2026-09-26).
-- **114:** `overline` 13/700 `onSurface` (kit: 12/700 `onSurfaceVariant`) (owner
+- **116:** `overline` 13/700 `onSurface` (kit: 12/700 `onSurfaceVariant`) (owner
   2026-09-26).
-- **115:** a selecting row's checkbox is centred vertically (kit: top-aligned with the
+- **117:** a selecting row's checkbox is centred vertically (kit: top-aligned with the
   title) (owner 2026-09-26).
-- **116:** a footer pair stacks when a label does not fit on one line (kit: always side
+- **118:** a footer pair stacks when a label does not fit on one line (kit: always side
   by side) (owner 2026-09-26).
+- **119:** the deck summary's progress label keeps the 12 overline, `compactOverline` (owner
+  2026-09-26, D7).
 
 ## 7. Out of scope: phase 2 (Trash, after FE-B1 merges)
 

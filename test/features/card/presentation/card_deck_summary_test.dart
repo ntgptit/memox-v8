@@ -169,7 +169,7 @@ void main() {
   });
 
   libraryTest('the progress label keeps the 12 overline, one line on a phone '
-      '(owner 2026-09-26, register 117)', (tester, env) async {
+      '(owner 2026-09-26, register 119)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _host());
 
     final label = tester.widget<Text>(

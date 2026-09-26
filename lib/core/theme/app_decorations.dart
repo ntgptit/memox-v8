@@ -7,7 +7,7 @@ import 'package:memox/core/theme/mx_derived_colors.dart';
 /// Surface treatments shared by more than one component contract.
 abstract final class AppDecorations {
   /// The Card surface: surface-raised fill and radius 12, the one radius of
-  /// every in-flow surface (spec 2026-09-26 D2; kit: 20, register row 113);
+  /// every in-flow surface (spec 2026-09-26 D2; kit: 20, register row 115);
   /// the whisper shadow in light and a 1px ghost border in dark, which has no
   /// shadow.
   static BoxDecoration raisedCard(

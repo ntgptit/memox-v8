@@ -23,6 +23,10 @@ call site, Trash's included:
 
 **Spec:** `docs/superpowers/specs/2026-09-26-shared-ui-refinements-design.md`
 
+**Executed 2026-09-26.** The register rows landed as 115–118, not 113–116: #82 took
+113–114 during execution. D7 (the deck summary label at 12) followed the final review
+as row 119.
+
 ## Global Constraints
 
 - Tokens only: no literal colour, spacing, radius or type size in widget code. A new

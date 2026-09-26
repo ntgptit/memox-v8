@@ -118,7 +118,11 @@ class MxButton extends StatelessWidget {
   /// its style and the context's text scale, the icon and its gap, and the
   /// horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
-    final geometry = _geometryFor(size, hasIcon: icon != null);
+    final geometry = _geometryFor(
+      size,
+      hasIcon: icon != null,
+      isBlock: isBlock,
+    );
     final style = geometry.isSmallType
         ? context.textStyles.buttonLabelSmall
         : context.textStyles.buttonLabel;
