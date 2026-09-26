@@ -178,9 +178,11 @@ final class StudyViewDao {
     _db.studyQueueItems,
   ]);
 
-  Future<CardRow?> cardRow(String cardId) => (_db.select(
-    _db.card,
-  )..where((card) => card.id.equals(cardId))).getSingleOrNull();
+  Future<CardRow?> cardRow(String cardId) =>
+      (_db.select(_db.card)..where(
+            (card) => card.id.equals(cardId) & card.deleteBatchId.isNull(),
+          ))
+          .getSingleOrNull();
 
   /// The modes [sessionId] has rows in.
   Future<Set<String>> modesOf(String sessionId) async {
@@ -263,6 +265,7 @@ final class StudyViewDao {
         .customSelect(
           'SELECT q.card_id, q.status, q.meaning_slot, c.front, c.back'
           ' FROM study_queue_items q JOIN card c ON c.id = q.card_id'
+          ' AND c.delete_batch_id IS NULL'
           ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
           ' AND q.position BETWEEN ? AND ? ORDER BY q.position',
           variables: [

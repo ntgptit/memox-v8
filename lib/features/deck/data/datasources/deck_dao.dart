@@ -128,14 +128,15 @@ final class DeckDao {
     return row.read<int>('next');
   }
 
-  /// [id] and every deck above it. Cycle-safe (`UNION`) and never capped, as
-  /// schema.md asks of a tree walk.
+  /// [id] and every deck above it, while they are active. Cycle-safe
+  /// (`UNION`) and never capped, as schema.md asks of a tree walk.
   Future<List<String>> ancestorIds(String id) async {
     final rows = await _db
         .customSelect(
           'WITH RECURSIVE up(id, parent_id) AS ('
-          ' SELECT id, parent_id FROM deck WHERE id = ?'
+          ' SELECT id, parent_id FROM deck WHERE id = ? AND delete_batch_id IS NULL'
           ' UNION SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id'
+          ' WHERE d.delete_batch_id IS NULL'
           ') SELECT id FROM up',
           variables: [Variable<String>(id)],
           readsFrom: {_db.deck},

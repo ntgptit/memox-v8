@@ -13,7 +13,8 @@ const _invalidated = 'invalidated';
 String _ofTree(String session, String root) =>
     '($session.root_id = $root OR EXISTS (SELECT 1 FROM study_queue_items q'
     ' JOIN card c ON c.id = q.card_id JOIN deck k ON k.id = c.deck_id'
-    ' WHERE q.session_id = $session.id AND k.root_id = $root))';
+    ' WHERE q.session_id = $session.id AND k.root_id = $root'
+    ' AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL))';
 
 /// Row access for `card_schedule` and `review_log`, plus the reads of `deck`
 /// srs needs and the sessions a reset closes. It returns Drift rows, never
@@ -39,7 +40,7 @@ final class SrsDao {
           ' JOIN deck d ON d.id = c.deck_id'
           ' JOIN deck root ON root.id = d.root_id'
           ' WHERE c.id = ? AND c.delete_batch_id IS NULL'
-          ' AND d.delete_batch_id IS NULL',
+          ' AND d.delete_batch_id IS NULL AND root.delete_batch_id IS NULL',
           variables: [Variable<String>(cardId)],
           readsFrom: {_db.card, _db.deck},
         )

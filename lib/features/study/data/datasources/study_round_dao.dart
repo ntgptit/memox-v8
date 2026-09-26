@@ -34,6 +34,7 @@ final class StudyRoundDao {
           '  WHERE o.session_id = q.session_id AND o.mode = q.mode'
           '  AND o.round = q.round AND o.card_id = q.card_id) AS option_count'
           ' FROM study_queue_items q JOIN card c ON c.id = q.card_id'
+          ' AND c.delete_batch_id IS NULL'
           ' WHERE q.session_id = ? AND q.mode = ? AND q.round = ?'
           ' AND q.position >= 0 ORDER BY q.position',
           variables: [

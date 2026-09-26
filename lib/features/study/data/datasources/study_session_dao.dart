@@ -108,14 +108,17 @@ final class StudySessionDao {
   /// The card [id]: a turn is judged on its folded fields (graded modes spec
   /// §7.2). A queue row keeps its card, so the card is there.
   Future<CardRow> cardRow(String id) =>
-      (_db.select(_db.card)..where((card) => card.id.equals(id))).getSingle();
+      (_db.select(_db.card)
+            ..where((card) => card.id.equals(id) & card.deleteBatchId.isNull()))
+          .getSingle();
 
   /// Whether [cardId] has a hint; a blank one is stored as NULL
   /// (BR-CARD-003).
   Future<bool> hasHint(String cardId) async {
     final row = await _db
         .customSelect(
-          'SELECT hint IS NOT NULL AS has_hint FROM card WHERE id = ?',
+          'SELECT hint IS NOT NULL AS has_hint FROM card WHERE id = ?'
+          ' AND delete_batch_id IS NULL',
           variables: [Variable<String>(cardId)],
           readsFrom: {_db.card},
         )

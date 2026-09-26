@@ -92,7 +92,7 @@ SELECT
   COALESCE(counts.due_today_count, 0) AS due_today_count,
   counts.oldest_due_at AS oldest_due_at
 FROM deck d
-JOIN deck r ON r.id = d.root_id
+JOIN deck r ON r.id = d.root_id AND r.delete_batch_id IS NULL
 LEFT JOIN counts ON counts.tile_id = d.id
 WHERE d.parent_id = :parent_id AND d.delete_batch_id IS NULL
 ORDER BY d.sibling_position, d.id;
@@ -105,6 +105,7 @@ WITH RECURSIVE up(id, parent_id) AS (
   WHERE id = :deck_id AND delete_batch_id IS NULL
   UNION
   SELECT d.id, d.parent_id FROM deck d JOIN up ON d.id = up.parent_id
+  WHERE d.delete_batch_id IS NULL
 )
 SELECT * FROM deck WHERE id IN (SELECT id FROM up) ORDER BY depth;
 
@@ -134,7 +135,7 @@ WITH RECURSIVE
 SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   d.id <> m.parent_id AS is_candidate
 FROM deck d
-JOIN deck r ON r.id = d.root_id
+JOIN deck r ON r.id = d.root_id AND r.delete_batch_id IS NULL
 JOIN moving m
   ON r.scheduler_type = m.scheduler_type AND r.generation = m.generation
 WHERE d.delete_batch_id IS NULL
