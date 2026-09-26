@@ -6,15 +6,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
+import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
@@ -78,7 +81,23 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   void _advance(StudyItem item) =>
       unawaited(_controller.answer(item, const AdvanceAnswer()));
 
+  void _grade(StudyItem item, Sm2Action action) =>
+      unawaited(_controller.answer(item, SelfAssessAnswer(action)));
+
   void _retry() => unawaited(_controller.retry());
+
+  /// Watched while the card is served, so the grades have it at the reveal
+  /// (16a). A failed read shows no interval.
+  Map<Object, int>? _previewOf(StudySessionView view, StudyItem item) => ref
+      .watch(
+        selfAssessPreviewProvider(
+          kind: view.kind,
+          cardId: item.cardId,
+          round: item.round,
+          answersInSession: item.answersInSession,
+        ),
+      )
+      .value;
 
   void _reload() => ref.invalidate(studySessionProvider(widget.sessionId));
 
@@ -199,16 +218,22 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (view.kind == SessionKind.learning)
-            SessionContextLineWidget(
-              text: l10n.studyContextLearning(
+          SessionContextLineWidget(
+            text: switch (view.kind) {
+              SessionKind.learning => l10n.studyContextLearning(
                 view.deckName,
                 l10n.studyKindLearning,
                 view.currentStageIndex + 1,
                 view.stages.length,
                 mode,
               ),
-            ),
+              SessionKind.reviewing => l10n.studyContextReview(
+                view.deckName,
+                l10n.studyKindReview,
+                mode,
+              ),
+            },
+          ),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -248,7 +273,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       isBusy: turn.isBusy,
       onAdvance: () => _advance(item),
     ),
-    StudyMode.selfAssess ||
+    StudyMode.selfAssess => StudySelfAssessWidget(
+      key: ValueKey('${item.cardId}#${item.answersInSession}'),
+      item: item,
+      intervals: _previewOf(view, item),
+      isBusy: turn.isBusy,
+      onGrade: (action) => _grade(item, action),
+    ),
     StudyMode.match ||
     StudyMode.guess ||
     StudyMode.recall ||
