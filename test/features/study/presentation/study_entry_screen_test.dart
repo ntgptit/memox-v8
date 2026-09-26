@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/screens/study_entry_screen.dar
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -29,6 +30,7 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
   deckId: deckId,
   title: const Text('Deck'),
   breadcrumb: const SizedBox.shrink(),
+  onOpenSession: (_) {},
 );
 
 Future<void> _learned(LibraryEnv env, String deckId, String id, DateTime due) =>
@@ -105,8 +107,8 @@ void main() {
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
-      'or its reason, none tappable before it is built (IT-STUDY-004, '
-      'spec §3)', (tester, env) async {
+      'or its reason; only a built mode the cards can run is tappable '
+      '(IT-STUDY-004, spec §3, P3)', (tester, env) async {
     final root = await env.decks.root('Korean');
     for (final id in ['a', 'b', 'c']) {
       await _learned(env, root.id, id, DateTime(2026, 9, 20));
@@ -124,7 +126,11 @@ void main() {
         _en.cardModeFill,
       ],
     );
-    expect(rows.every((row) => row.onSelected == null), isTrue);
+    expect(
+      [for (final row in rows) row.onSelected != null],
+      [true, false, false, false],
+    );
+    expect(rows.first.isSelected, isTrue);
     // Only a mode the cards cannot run is dimmed (kit eightBox).
     expect([for (final row in rows) row.isDimmed], [false, true, false, true]);
     expect(
@@ -140,13 +146,16 @@ void main() {
       find.widgetWithText(MxBadge, _en.studyEntryNotAvailable),
       findsNWidgets(2),
     );
-    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsNWidgets(2));
+    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsOneWidget);
     expect(find.text(_en.studyEntryUnavailableNote), findsOneWidget);
-    expect(find.byType(MxFooterBar), findsNothing);
+    expect(find.byType(MxFooterBar), findsOneWidget);
   });
 
-  libraryTest('SM-2 lists no review modes on the entry; Learn is coming '
-      'soon while its stages are not built', (tester, env) async {
+  libraryTest('SM-2 lists no review modes on the entry; Learn is offered '
+      'now that Browse and Self-assess are built (FE-A6 P2)', (
+    tester,
+    env,
+  ) async {
     final root = await env.decks.root('Korean', SchedulerType.sm2);
     await insertCard(env.db, id: 'n1', deckId: root.id);
     await pumpLibraryScreen(tester, env, _screen(root.id));
@@ -155,7 +164,8 @@ void main() {
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnCount(1, 1)), findsOneWidget);
-    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsOneWidget);
+    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsOneWidget);
+    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsNothing);
   });
 
   libraryTest('with nothing due, no review mode is listed: only the Learn '

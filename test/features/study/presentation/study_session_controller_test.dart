@@ -172,4 +172,58 @@ void main() {
 
     expect((await watchSessionOnce(db, id)).isStalled, isFalse);
   });
+
+  /// A review in `match` of five due cards: one board of five pairs.
+  Future<String> matching() async {
+    final leaf = await insertFiveDue(
+      db,
+      DeckRepositoryImpl(db, now: () => _now),
+    );
+    final opened = await studyEntryRepository(
+      db,
+      () => _now,
+    ).openReviewSession(deckId: leaf.id, mode: StudyMode.match);
+    return (opened as Ok<String, StudyRejection>).value;
+  }
+
+  test('a match answer names any pending pair of the board, not only the '
+      'served one (BR-STUDY-049)', () async {
+    final id = await matching();
+    final controller = await controllerOf(id);
+    final before = await watchSessionOnce(db, id);
+    final served = before.currentItem!;
+    final other = before.board!.terms
+        .firstWhere((tile) => tile.cardId != served.cardId)
+        .cardId;
+
+    await controller.answer(served, MatchAnswer(other), cardId: other);
+
+    final after = await watchSessionOnce(db, id);
+    expect(
+      after.board!.terms.singleWhere((tile) => tile.cardId == other).isMatched,
+      isTrue,
+    );
+    expect(after.currentItem!.cardId, served.cardId);
+  });
+
+  test('Retry resends the same pair the busy database refused (E2)', () async {
+    final id = await matching();
+    final controller = await controllerOf(id);
+    final before = await watchSessionOnce(db, id);
+    final served = before.currentItem!;
+    final other = before.board!.terms
+        .firstWhere((tile) => tile.cardId != served.cardId)
+        .cardId;
+
+    sessions.isLocked = true;
+    await controller.answer(served, MatchAnswer(other), cardId: other);
+    sessions.isLocked = false;
+    await controller.retry();
+
+    final after = await watchSessionOnce(db, id);
+    expect(
+      after.board!.terms.singleWhere((tile) => tile.cardId == other).isMatched,
+      isTrue,
+    );
+  });
 }

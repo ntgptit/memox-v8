@@ -45,16 +45,18 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 
 Not captured: none — all nine kit states are V8-supported.
 
-**Built so far (FE-A6 P1b):** `sm2`, `eightBox`, `onlyNew`, `nothing` (the hero over the empty state) and `loading` (hero and option-list skeletons),
-read-only: no study mode has its screen yet, so the Learn row and every runnable
-review mode show a neutral "Coming soon" badge instead of their action, at full
-contrast (only a mode the cards cannot run is dimmed); the review list needs due
-cards, and the
-footer is not drawn (spec §3: an unbuilt stage is never offered). `resume`,
-`starting`, `refused` and `startFailed` need a session to open and come with the
-session screens (P1c, P2). A deck deleted while its entry is open leaves with the
-toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
-`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading}_*`.
+**Built (FE-A6 P2):** all nine kit states on `sm2`. Learn (the row's button
+and, with nothing due, the footer) opens a learning session; the footer's Review
+opens the Direction sheet, then the review; Continue takes up today's session.
+While a session opens, the footer spins with "Starting…" in its caption and the
+Learn button and Continue lock (BR-STUDY-004); a refusal shows the warning
+banner and a failed write the danger banner, whose footer is "Try again"
+(repeating the same start, direction included). `eight_box` reviews in its built modes
+(Match and Guess, FE-A6 P3): the available rows are a pick, the first available one
+picked at first, and the footer reviews the picked mode with the caption "{mode} · {n}
+due cards · oldest first"; Recall and Fill say "Coming soon" until P4, as does Learn. A deck deleted while its entry is open leaves with
+the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
+`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
 
 ## Accessibility
 
@@ -66,10 +68,17 @@ toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| SM-2's direction choice as inline `MxOptionRow`s on the entry screen itself | A separate `MxBottomSheet` opened by the footer's Review action, with the same three choices and a locked "Start review" action | UC-STUDY-003 (the documented flow is a sheet, opened after Review, not an inline section) |
+| SM-2's direction choice as inline `MxOptionRow`s on the entry screen itself | A separate `MxBottomSheet` opened by the footer's Review action, with the same three choices and a locked "Start review" action; the space the rows took stays empty above the pinned footer, as the kit's own `onlyNew` frame draws it | UC-STUDY-003 (the documented flow is a sheet, opened after Review, not an inline section) |
 | App bar's trailing "Study options" icon | Hidden; named under Coming soon | Spec A4 row 92 (amended 2026-09-25) names "Study options" explicitly; no screen or UC defines its destination yet |
 | Resume banner's pulse dot in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: no `streak` tone exists |
 | The `resume` frame draws the SM-2 direction rows inline under the Continue banner | The rows are not drawn; the direction is chosen in the Direction sheet, as in every other state | The sheet deviation above (UC-STUDY-003); FE-A6 spec D19 notes |
+| `refused` draws the footer disabled | The footer is rebuilt from the counts, already up to date when the banner shows, and stays usable; the banner stays until the next start | A disabled footer strands the person when the action still exists (FE-A6 P2 plan R5) |
+| `starting` shows a spinner and "Starting…" inside the button | The button spins (`MxButton.isLoading`) and "Starting…" is the footer's caption | `MxButton` draws its spinner in place of the label; both the glyph and the words stay (plan R6) |
+| "Start review" locks the sheet while the session opens | Start review answers the choice and closes the sheet; the entry's footer shows `starting`, and Try again repeats the review with the same direction | One place owns the starting state (plan R7) |
+| SM-2 caption "Term first · 20 of 40 due · oldest first" | "{shown} of {due} due · oldest first" | The direction is chosen in the sheet, after this caption (UC-STUDY-003; plan R8) |
+| One refusal copy, "Nothing is due any more." | One title per refusal: nothing due, no new cards, a mode that no longer runs, a session that can no longer be continued | A start can meet each of them (plan R9) |
+| The `eightBox` frame pre-selects Recall | The first available mode in kit order is picked at first; the pick is not kept | No BR names a default; default review modes belong to Study options (FE-A3) (FE-A6 P3 ruling C5) |
+| The Learn button tinted in the new-status colour | The secondary tone with the sparkles glyph | `MxButton` has no status tone; the Learn row's label names the action |
 | The direction descriptions name Korean ("See the Korean, recall the meaning") | "See the term, recall the meaning": no language named; UC-STUDY-003 uses the kit's "Term first" | BR-CARD-002 (FE-A5 ruling) |
 
 ## Copy
@@ -80,5 +89,5 @@ toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - Learn row: "Learn new cards" · "Browse, then self-assess" (SM-2) / "Browse → match → guess → recall → fill" (Eight boxes) · "{n} of {n} new · in creation order" · "Learn".
 - Review options, Eight boxes: "Review · choose how cards are asked" · "Match" "Pair terms with meanings, up to 5 at a time" · "Guess" "Pick the meaning out of five" · "Recall" "Recall the meaning within 20 seconds" · "Fill" "Type the term for the meaning" · "{n} cards" · "Not available" · "A mode that is not available lacks suitable cards for this review — it comes back when the cards qualify."
 - Direction sheet, SM-2: "Review · question direction" · "Term first" "See the term, recall the meaning" · "Meaning first" "See the meaning, recall the term" · "Mixed" "Half each way, evenly split" · "SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy. The direction cannot change once the session starts." · "Start review".
-- Banners: "Nothing is due any more." "The due cards were reviewed from another session or deleted since this screen was opened. Counts are up to date now." · "Couldn't start the session." "Nothing was written. Try again."
-- Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try again" · "Start a new review instead" · captions "Nothing is due — review is available once cards come due." · "Recall · 12 due cards · oldest first" · "Term first · 20 of 40 due · oldest first".
+- Banners: "Nothing is due any more." "The due cards were reviewed from another session or deleted since this screen was opened. Counts are up to date now." · "No new cards left to learn." "They were learned in another session or deleted since this screen was opened. Counts are up to date now." · "This mode can't run on the due cards any more." "The due cards changed since this screen was opened. Counts are up to date now." · "That session can't be continued." "It ended since this screen was opened, and its answers are kept. Start a new one below." · "Couldn't start the session." "Nothing was written. Try again."
+- Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try again" · "Start a new review instead" · captions "Nothing is due — review is available once cards come due." · "{mode} · {n} due cards · oldest first" (Eight boxes) · "{shown} of {due} due · oldest first" (SM-2).

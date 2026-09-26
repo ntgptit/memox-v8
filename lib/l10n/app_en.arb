@@ -2399,6 +2399,10 @@
   "@galleryDangerCard": {
     "description": "Debug gallery: the danger card sample (FE-A6 D14)."
   },
+  "galleryRecessedCard": "Recessed card",
+  "@galleryRecessedCard": {
+    "description": "Debug gallery: the recessed card sample, a study answer face (FE-A6 P2)."
+  },
   "gallerySelectedCard": "Selected card",
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -2666,6 +2670,182 @@
   "studyEntryErrorBody": "Your cards are safe on this device. Try again in a moment.",
   "@studyEntryErrorBody": {
     "description": "Screen handoff 14 (FE-A6): the error state's body."
+  },
+  "studyEntryStart": "Starting…",
+  "@studyEntryStart": {
+    "description": "Screen handoff 14 (FE-A6 P2): footer caption while a session opens."
+  },
+  "studyEntryLearnCta": "{count, plural, =1{Learn 1 new card} other{Learn {count} new cards}}",
+  "@studyEntryLearnCta": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P2): footer action, Learn."
+  },
+  "studyEntryReviewCta": "{count, plural, =1{Review 1 due card} other{Review {count} due cards}}",
+  "@studyEntryReviewCta": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P2): footer action, Review."
+  },
+  "studyEntryReviewInstead": "Start a new review instead",
+  "@studyEntryReviewInstead": {
+    "description": "Screen handoff 14 (FE-A6 P2): footer action, Review, with a resumable session."
+  },
+  "studyEntryTryAgain": "Try again",
+  "@studyEntryTryAgain": {
+    "description": "Screen handoff 14 (FE-A6 P2): footer action after a failed start."
+  },
+  "studyEntryReviewCaption": "{shown} of {due} due · oldest first",
+  "@studyEntryReviewCaption": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "due": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P2): footer caption under Review."
+  },
+  "studyEntryNothingDueCaption": "Nothing is due — review is available once cards come due.",
+  "@studyEntryNothingDueCaption": {
+    "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
+  },
+  "studyEntryResumeOverline": "Session from today",
+  "@studyEntryResumeOverline": {
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner overline."
+  },
+  "studyEntryResumeLine": "{kind} · {mode} · {done} of {total} cards",
+  "@studyEntryResumeLine": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner line."
+  },
+  "studyEntryResumeLineNoProgress": "{kind} · {mode}",
+  "@studyEntryResumeLineNoProgress": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner line of a session serving nothing."
+  },
+  "studyEntryResumeBody": "Continue where you stopped, or start something new — that ends this one and keeps its answers.",
+  "@studyEntryResumeBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner body."
+  },
+  "studyEntryContinue": "Continue",
+  "@studyEntryContinue": {
+    "description": "Screen handoff 14 (FE-A6 P2): resume banner action."
+  },
+  "studyEntryRefusedDueTitle": "Nothing is due any more.",
+  "@studyEntryRefusedDueTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner title, nothing due."
+  },
+  "studyEntryRefusedDueBody": "The due cards were reviewed from another session or deleted since this screen was opened. Counts are up to date now.",
+  "@studyEntryRefusedDueBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner body, nothing due."
+  },
+  "studyEntryRefusedNewTitle": "No new cards left to learn.",
+  "@studyEntryRefusedNewTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner title, nothing new."
+  },
+  "studyEntryRefusedNewBody": "They were learned in another session or deleted since this screen was opened. Counts are up to date now.",
+  "@studyEntryRefusedNewBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner body, nothing new."
+  },
+  "studyEntryRefusedModeTitle": "This mode can't run on the due cards any more.",
+  "@studyEntryRefusedModeTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner title, mode unavailable."
+  },
+  "studyEntryRefusedModeBody": "The due cards changed since this screen was opened. Counts are up to date now.",
+  "@studyEntryRefusedModeBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner body, mode unavailable."
+  },
+  "studyEntryRefusedSessionTitle": "That session can't be continued.",
+  "@studyEntryRefusedSessionTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner title, Continue on an ended session."
+  },
+  "studyEntryRefusedSessionBody": "It ended since this screen was opened, and its answers are kept. Start a new one below.",
+  "@studyEntryRefusedSessionBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): refused banner body, Continue on an ended session."
+  },
+  "studyEntryStartFailedTitle": "Couldn't start the session.",
+  "@studyEntryStartFailedTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): startFailed banner title."
+  },
+  "studyEntryStartFailedBody": "Nothing was written. Try again.",
+  "@studyEntryStartFailedBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): startFailed banner body."
+  },
+  "studyEntryModeCaption": "{mode} · {count, plural, =1{1 due card} other{{count} due cards}} · oldest first",
+  "@studyEntryModeCaption": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review."
+  },
+  "studyDirectionTitle": "Review · question direction",
+  "@studyDirectionTitle": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet title (FE-A7)."
+  },
+  "studyDirectionTermFirst": "Term first",
+  "@studyDirectionTermFirst": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option."
+  },
+  "studyDirectionTermFirstBody": "See the term, recall the meaning",
+  "@studyDirectionTermFirstBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option description."
+  },
+  "studyDirectionMeaningFirst": "Meaning first",
+  "@studyDirectionMeaningFirst": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option."
+  },
+  "studyDirectionMeaningFirstBody": "See the meaning, recall the term",
+  "@studyDirectionMeaningFirstBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option description."
+  },
+  "studyDirectionMixed": "Mixed",
+  "@studyDirectionMixed": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option."
+  },
+  "studyDirectionMixedBody": "Half each way, evenly split",
+  "@studyDirectionMixedBody": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet option description."
+  },
+  "studyDirectionNote": "SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy. The direction cannot change once the session starts.",
+  "@studyDirectionNote": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet note (BR-MODE-017)."
+  },
+  "studyDirectionStart": "Start review",
+  "@studyDirectionStart": {
+    "description": "Screen handoff 14 (FE-A6 P2): direction sheet action."
   },
   "studyCount": "{count}",
   "@studyCount": {
@@ -3481,6 +3661,260 @@
   "studySessionStaleToast": "This session ended: the deck's learning progress was reset.",
   "@studySessionStaleToast": {
     "description": "Study session shell (FE-A6 P1c): the toast after a stale-generation write (UC-STUDY-001 E4)."
+  },
+  "studyKindReview": "Review",
+  "@studyKindReview": {
+    "description": "Study session shell (FE-A6 P2): the kind of a review session in the context line."
+  },
+  "studyContextReview": "{deck} · {kind} · {mode}",
+  "@studyContextReview": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "kind": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "Study session shell (FE-A6 P2): the context line of a review session."
+  },
+  "studySelfAssessShowAnswer": "Show answer",
+  "@studySelfAssessShowAnswer": {
+    "description": "Screen handoff 16a (FE-A6 P2): the reveal button."
+  },
+  "studySelfAssessHintPrompt": "Recall the answer, then show it",
+  "@studySelfAssessHintPrompt": {
+    "description": "Screen handoff 16a (FE-A6 P2): footer hint before the reveal."
+  },
+  "studySelfAssessHintGrade": "Be honest — grade how well you remembered",
+  "@studySelfAssessHintGrade": {
+    "description": "Screen handoff 16a (FE-A6 P2): footer hint after the reveal."
+  },
+  "studyIntervalDays": "{days}d",
+  "@studyIntervalDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): a grade's next interval under 30 days."
+  },
+  "studyIntervalMonths": "{months}mo",
+  "@studyIntervalMonths": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): a grade's next interval under a year."
+  },
+  "studyIntervalYears": "{years}y",
+  "@studyIntervalYears": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): a grade's next interval from a year; years is a formatted number."
+  },
+  "studyIntervalDaysLong": "{days, plural, =1{1 day} other{{days} days}}",
+  "@studyIntervalDaysLong": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): the spoken interval in days."
+  },
+  "studyIntervalMonthsLong": "{months, plural, =1{1 month} other{{months} months}}",
+  "@studyIntervalMonthsLong": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): the spoken interval in months."
+  },
+  "studyIntervalYearsLong": "{years, select, 1{1 year} other{{years} years}}",
+  "@studyIntervalYearsLong": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): the spoken interval in years; years is a formatted number."
+  },
+  "studyGradeNextIn": "{grade}, next in {interval}",
+  "@studyGradeNextIn": {
+    "placeholders": {
+      "grade": {
+        "type": "String"
+      },
+      "interval": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 16a (FE-A6 P2): what TalkBack reads for a grade with its interval."
+  },
+  "studyContextRound": "{context} · round {round}",
+  "@studyContextRound": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "round": {
+        "type": "int"
+      }
+    },
+    "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
+  },
+  "studyContextPairsLeft": "{context} · {count, plural, =1{1 pair left} other{{count} pairs left}}",
+  "@studyContextPairsLeft": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): the context line with the board's pairs left."
+  },
+  "studyContextFirstPick": "{context} · first pick counts",
+  "@studyContextFirstPick": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the context line of a guess stage."
+  },
+  "studyGuessPrompt": "What is this?",
+  "@studyGuessPrompt": {
+    "description": "Screen handoff 18 (FE-A6 P3): the prompt face overline."
+  },
+  "studyGuessHintIdle": "Only your first pick counts",
+  "@studyGuessHintIdle": {
+    "description": "Screen handoff 18 (FE-A6 P3): footer hint before the pick."
+  },
+  "studyGuessHintAnswered": "Answer shown — the correct option is highlighted",
+  "@studyGuessHintAnswered": {
+    "description": "Screen handoff 18 (FE-A6 P3): footer hint after the pick."
+  },
+  "studyGuessNext": "Next",
+  "@studyGuessNext": {
+    "description": "Screen handoff 18 (FE-A6 P3): the Next button shown with TalkBack on."
+  },
+  "studyGuessOption": "Option {letter}: {meaning}",
+  "@studyGuessOption": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      },
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): an option's TalkBack label."
+  },
+  "studyGuessOptionRight": "{option}, correct",
+  "@studyGuessOptionRight": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the right option's TalkBack label once answered."
+  },
+  "studyGuessOptionWrong": "{option}, your pick, wrong",
+  "@studyGuessOptionWrong": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the wrong pick's TalkBack label."
+  },
+  "studyGuessAnnounceRight": "Correct",
+  "@studyGuessAnnounceRight": {
+    "description": "Screen handoff 18 (FE-A6 P3): announced when a right pick commits."
+  },
+  "studyGuessAnnounceWrong": "Wrong. The answer is {meaning}.",
+  "@studyGuessAnnounceWrong": {
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): announced when a wrong pick commits."
+  },
+  "studyGuessBlockedTitle": "This question can't be shown",
+  "@studyGuessBlockedTitle": {
+    "description": "Screen handoff 18 (FE-A6 P3): a blocked question (BR-STUDY-040)."
+  },
+  "studyGuessBlockedBody": "Its options could not be built. Close the session; every answer so far is kept.",
+  "@studyGuessBlockedBody": {
+    "description": "Screen handoff 18 (FE-A6 P3): a blocked question body."
+  },
+  "studyMatchHint": "Tap a term, then its meaning to match",
+  "@studyMatchHint": {
+    "description": "Screen handoff 17 (FE-A6 P3): footer hint."
+  },
+  "studyMatchHintWrong": "Not a match — this pair comes back next round",
+  "@studyMatchHintWrong": {
+    "description": "Screen handoff 17 (FE-A6 P3): footer hint and announcement after a wrong pair."
+  },
+  "studyMatchTerm": "Term: {text}",
+  "@studyMatchTerm": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a term tile's TalkBack label."
+  },
+  "studyMatchMeaning": "Meaning: {text}",
+  "@studyMatchMeaning": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a meaning tile's TalkBack label."
+  },
+  "studyMatchTileSelected": "{tile}, selected",
+  "@studyMatchTileSelected": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a selected tile's label."
+  },
+  "studyMatchTileMatched": "{tile}, matched",
+  "@studyMatchTileMatched": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a matched tile's label."
+  },
+  "studyMatchTileWrong": "{tile}, not a match",
+  "@studyMatchTileWrong": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a tile of a wrong pair, during its flash."
+  },
+  "studyMatchAnnounceRight": "Matched",
+  "@studyMatchAnnounceRight": {
+    "description": "Screen handoff 17 (FE-A6 P3): announced when a right pair commits."
   },
   "summaryAppBar": "Session summary",
   "@summaryAppBar": {

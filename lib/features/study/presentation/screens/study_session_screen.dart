@@ -6,20 +6,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
+import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_match_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -78,7 +84,59 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   void _advance(StudyItem item) =>
       unawaited(_controller.answer(item, const AdvanceAnswer()));
 
+  /// The Guess option picked for the turn on screen (G1).
+  String? _chosenCardId;
+
+  void _pick(StudyItem item, String optionCardId) {
+    setState(() => _chosenCardId = optionCardId);
+    unawaited(
+      _controller.answer(
+        item,
+        GuessAnswer(optionCardId),
+        shouldHoldFeedback: true,
+      ),
+    );
+  }
+
+  /// The Match pair on hold: its term, then its meaning (M2).
+  (String, String)? _heldPair;
+
+  void _pair(StudyItem item, String termCardId, String meaningCardId) {
+    setState(() => _heldPair = (termCardId, meaningCardId));
+    unawaited(
+      _controller.answer(
+        item,
+        MatchAnswer(meaningCardId),
+        shouldHoldFeedback: true,
+        cardId: termCardId,
+      ),
+    );
+  }
+
+  /// The held turn met its continue condition (D5): the next one follows.
+  void _release() {
+    _chosenCardId = null;
+    _heldPair = null;
+    _controller.release();
+  }
+
+  void _grade(StudyItem item, Sm2Action action) =>
+      unawaited(_controller.answer(item, SelfAssessAnswer(action)));
+
   void _retry() => unawaited(_controller.retry());
+
+  /// Watched while the card is served, so the grades have it at the reveal
+  /// (16a). A failed read shows no interval.
+  Map<Object, int>? _previewOf(StudySessionView view, StudyItem item) => ref
+      .watch(
+        selfAssessPreviewProvider(
+          kind: view.kind,
+          cardId: item.cardId,
+          round: item.round,
+          answersInSession: item.answersInSession,
+        ),
+      )
+      .value;
 
   void _reload() => ref.invalidate(studySessionProvider(widget.sessionId));
 
@@ -151,14 +209,22 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
 
   Widget _pageOf(StudySessionView view, StudyTurnState turn) {
     final ending = sessionEndingOf(view);
-    // Only a view that serves a card can frame a held turn.
-    if (ending == null && view.progress != null && view.currentItem != null) {
+    // While a write runs or a turn is held, the screen stays on the view the
+    // answer was given in: the stream may already serve the next board or
+    // round, and a mode keyed by it would lose its hold (spec D5; P3 final
+    // review). Only a view that serves a card can frame a turn.
+    final isFrozen = turn.isBusy || turn.held != null;
+    if (!isFrozen &&
+        ending == null &&
+        view.progress != null &&
+        view.currentItem != null) {
       _lastOpenView = view;
     }
     // The held turn stays until its mode releases it, even when its answer
     // ended the session: only then does the summary show (spec D5).
-    if (turn.held != null) {
-      return _sessionPage(context, _lastOpenView ?? view, turn);
+    final frame = _lastOpenView;
+    if (turn.held != null || (turn.isBusy && frame != null)) {
+      return _sessionPage(context, frame ?? view, turn);
     }
     return switch (ending) {
       ShowSummary(:final outcome) => SessionSummaryWidget(
@@ -199,16 +265,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (view.kind == SessionKind.learning)
-            SessionContextLineWidget(
-              text: l10n.studyContextLearning(
-                view.deckName,
-                l10n.studyKindLearning,
-                view.currentStageIndex + 1,
-                view.stages.length,
-                mode,
-              ),
-            ),
+          SessionContextLineWidget(text: _contextOf(l10n, view, mode)),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -236,6 +293,39 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
+  /// The context line: deck, kind and mode (a learning session adds its
+  /// stage); a round-based stage adds its round, Guess its first-pick rule
+  /// and Match the board's pairs left (handoffs 17, 18; FE-A6 P3 M3).
+  String _contextOf(AppLocalizations l10n, StudySessionView view, String mode) {
+    final base = switch (view.kind) {
+      SessionKind.learning => l10n.studyContextLearning(
+        view.deckName,
+        l10n.studyKindLearning,
+        view.currentStageIndex + 1,
+        view.stages.length,
+        mode,
+      ),
+      SessionKind.reviewing => l10n.studyContextReview(
+        view.deckName,
+        l10n.studyKindReview,
+        mode,
+      ),
+    };
+    if (!view.currentMode.handler.usesRounds) return base;
+    final round = l10n.studyContextRound(base, view.currentRound ?? 1);
+    return switch (view.currentMode) {
+      StudyMode.guess => l10n.studyContextFirstPick(round),
+      StudyMode.match => l10n.studyContextPairsLeft(
+        round,
+        view.board?.terms.where((tile) => !tile.isMatched).length ?? 0,
+      ),
+      StudyMode.browse ||
+      StudyMode.selfAssess ||
+      StudyMode.recall ||
+      StudyMode.fill => round,
+    };
+  }
+
   /// One body per mode (D3): a seventh mode is a compile error here.
   Widget _modeBody(
     StudySessionView view,
@@ -248,9 +338,32 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       isBusy: turn.isBusy,
       onAdvance: () => _advance(item),
     ),
-    StudyMode.selfAssess ||
-    StudyMode.match ||
-    StudyMode.guess ||
+    StudyMode.selfAssess => StudySelfAssessWidget(
+      key: ValueKey('${item.cardId}#${item.answersInSession}'),
+      item: item,
+      intervals: _previewOf(view, item),
+      isBusy: turn.isBusy,
+      onGrade: (action) => _grade(item, action),
+    ),
+    StudyMode.guess => StudyGuessWidget(
+      key: ValueKey('guess#${item.cardId}#${item.round}'),
+      item: item,
+      chosenCardId: _chosenCardId,
+      result: turn.held?.item.cardId == item.cardId ? turn.held?.result : null,
+      isBusy: turn.isBusy,
+      onPick: (optionCardId) => _pick(item, optionCardId),
+      onContinue: _release,
+      onClose: _abandon,
+    ),
+    StudyMode.match => StudyMatchWidget(
+      key: ValueKey('match#${item.round}#${view.board!.terms.first.cardId}'),
+      board: view.board!,
+      result: turn.held?.result,
+      heldPair: _heldPair,
+      isBusy: turn.isBusy,
+      onPair: (term, meaning) => _pair(item, term, meaning),
+      onSettled: _release,
+    ),
     StudyMode.recall ||
     StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
   };

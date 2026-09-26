@@ -48,6 +48,10 @@ final class MxTextStyles {
   static const double _summaryTitleTracking = -0.4;
   static const double _factValueSize = 16;
   static const double _statValueHeight = 1.1;
+  static const double _buttonDetailHeight = 1.2;
+  static const double _optionSize = 16;
+  static const double _optionTracking = -0.1;
+  static const double _choiceHeight = 1.25;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -58,6 +62,23 @@ final class MxTextStyles {
   /// Button label on the compact and chip sizes: 12/600, 0.1 tracking.
   TextStyle get buttonLabelSmall =>
       _texts.labelSmall!.copyWith(letterSpacing: _labelTracking);
+
+  /// A button's second line, such as the interval a grade gives (screen
+  /// 16a): 12/500 tabular. Built without the role's colour, so the button's
+  /// ink reaches it through DefaultTextStyle.
+  TextStyle get buttonDetail {
+    final base = AppTypography.withWeight(_texts.labelSmall!, FontWeight.w500);
+    return TextStyle(
+      fontFamily: base.fontFamily,
+      fontFamilyFallback: base.fontFamilyFallback,
+      fontSize: base.fontSize,
+      fontWeight: base.fontWeight,
+      fontVariations: base.fontVariations,
+      letterSpacing: base.letterSpacing,
+      height: _buttonDetailHeight,
+      fontFeatures: _tabular,
+    );
+  }
 
   /// App-bar content title (deck and card names): 16/700, -0.3.
   TextStyle get contentTitle => AppTypography.withWeight(
@@ -101,10 +122,14 @@ final class MxTextStyles {
   ).copyWith(letterSpacing: _labelTracking, color: _scheme.onSurface);
 
   /// StudyTopBar mode badge: 12/700, 1.2 tracking, in the caller's accent.
-  TextStyle studyBadge(Color accent) => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w700,
-  ).copyWith(letterSpacing: _badgeTracking, color: accent);
+  TextStyle studyBadge(Color accent) =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        letterSpacing: _badgeTracking,
+        // It ellipsizes at large text, so it keeps the single-line height
+        // (UI-base §9 row 102; FE-A6 P3 T1).
+        height: _singleLineHeight,
+        color: accent,
+      );
 
   /// StudyTopBar n / total counter: 12/600, tabular numerals.
   TextStyle get counter => _texts.labelSmall!.copyWith(
@@ -345,6 +370,31 @@ final class MxTextStyles {
     _texts.bodyLarge!.copyWith(fontSize: _factValueSize),
     FontWeight.w700,
   ).copyWith(fontFeatures: _tabular, color: ink);
+
+  /// A guess option's meaning (kit GuessScreen): 16/500 at 1.25, -0.1
+  /// tracking, in its tone's [ink] (FE-A6 P3).
+  TextStyle studyOption(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
+    FontWeight.w500,
+  ).copyWith(height: _choiceHeight, letterSpacing: _optionTracking, color: ink);
+
+  /// A guess option's letter badge: 12/700 at height 1, in [ink].
+  TextStyle studyOptionLetter(Color ink) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w700,
+  ).copyWith(height: 1, letterSpacing: 0, color: ink);
+
+  /// A match term tile (kit MatchScreen): 18/700 at 1.25, -0.4, in [ink].
+  TextStyle matchTerm(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _termLongSize),
+    FontWeight.w700,
+  ).copyWith(height: _choiceHeight, letterSpacing: _termTracking, color: ink);
+
+  /// A match meaning tile: 14/600 at 1.25, in [ink].
+  TextStyle matchMeaning(Color ink) => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(height: _choiceHeight, letterSpacing: 0, color: ink);
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.

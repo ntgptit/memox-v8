@@ -81,4 +81,36 @@ void main() {
     expectStyle(value, size: 16, weight: FontWeight.w700, color: ink);
     expect(value.fontFeatures, contains(const FontFeature.tabularFigures()));
   });
+
+  test('guess option 16/500 at -0.1 and its letter 12/700; match term '
+      '18/700 at -0.4 and meaning 14/600, all in the given ink (FE-A6 P3)', () {
+    const ink = Color(0xFF123456);
+    expectStyle(
+      styles.studyOption(ink),
+      size: 16,
+      weight: FontWeight.w500,
+      tracking: -0.1,
+      color: ink,
+    );
+    expect(styles.studyOption(ink).height, 1.25);
+    expectStyle(
+      styles.studyOptionLetter(ink),
+      size: 12,
+      weight: FontWeight.w700,
+      color: ink,
+    );
+    expectStyle(
+      styles.matchTerm(ink),
+      size: 18,
+      weight: FontWeight.w700,
+      tracking: -0.4,
+      color: ink,
+    );
+    expectStyle(
+      styles.matchMeaning(ink),
+      size: 14,
+      weight: FontWeight.w600,
+      color: ink,
+    );
+  });
 }

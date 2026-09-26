@@ -202,13 +202,20 @@ void main() {
   });
 
   libraryTest('a stage not built yet says so; the top bar stays '
-      '(spec §3)', (tester, env) async {
+      '(spec §3; Recall until P4)', (tester, env) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
     await _swipeLeft(tester);
     await _swipeLeft(tester);
 
-    // Browse is done; the next stage has no screen yet.
+    // Browse is done, then Match (P3); Guess sits out with two meanings
+    // (BR-MODE-009), and Recall has no screen yet.
+    for (final id in ['a', 'b']) {
+      await tester.tap(find.text('front $id'));
+      await tester.pump();
+      await tester.tap(find.text('back $id'));
+      await tester.pumpAndSettle();
+    }
     expect(find.byType(StudyModeNotBuiltWidget), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
   });

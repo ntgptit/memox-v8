@@ -43,12 +43,12 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
 | 13 | Study home | 7 | FE-A8 | not built | [13-study-home.md](13-study-home.md) |
-| 14 | Study entry | 9 | FE-A6, FE-A7 | built (P1b, read-only) | [14-study-entry.md](14-study-entry.md) |
+| 14 | Study entry | 9 | FE-A6, FE-A7 | built (P2) | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | not built | — |
 | 16 | Study · Browse | 1 | FE-A6 | built (P1c) | [16-study-browse.md](16-study-browse.md) |
-| 16a | Study · Self-check (`self_assess`; not in the kit) | — | FE-A6 | not built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
-| 17 | Study · Match | 1 | FE-A6 | not built | [17-study-match.md](17-study-match.md) |
-| 18 | Study · Guess | 1 | FE-A6 | not built | [18-study-guess.md](18-study-guess.md) |
+| 16a | Study · Self-check (`self_assess`; not in the kit) | — | FE-A6 | built (P2) | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
+| 17 | Study · Match | 1 | FE-A6 | built (P3) | [17-study-match.md](17-study-match.md) |
+| 18 | Study · Guess | 1 | FE-A6 | built (P3) | [18-study-guess.md](18-study-guess.md) |
 | 19 | Study · Recall | 3 | FE-A6 | not built | [19-study-recall.md](19-study-recall.md) |
 | 20 | Study · Fill | 3 | FE-A6 | not built | [20-study-fill.md](20-study-fill.md) |
 | 21 | Session summary | 10 | FE-A6 | built (P1c) | [21-session-summary.md](21-session-summary.md) |

@@ -46,6 +46,12 @@ void main() {
           ),
           MxButton(label: 'Chip', size: MxButtonSize.chip, onPressed: () {}),
           MxButton(label: 'Reveal', size: MxButtonSize.study, onPressed: () {}),
+          MxButton(
+            label: 'Good',
+            detail: '6d',
+            tone: MxButtonTone.secondary,
+            onPressed: () {},
+          ),
           const MxButton(label: 'Disabled', onPressed: null),
           MxButton(label: 'Saving', isLoading: true, onPressed: () {}),
           MxButton(
