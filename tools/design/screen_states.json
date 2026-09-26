@@ -78,6 +78,45 @@
       ]
     },
     {
+      "num": "11",
+      "dir": "11-card-import",
+      "title": "Card import",
+      "states": [
+        { "id": "empty", "label": "Source" },
+        { "id": "pasted", "label": "Pasted text" },
+        { "id": "fileSelected", "label": "File chosen" },
+        { "id": "badEncoding", "label": "Not UTF-8" },
+        { "id": "emptySheet", "label": "Empty sheet" },
+        { "id": "parsing", "label": "Reading" },
+        { "id": "mapping", "label": "Map columns" },
+        { "id": "mappingIncomplete", "label": "Back not mapped" },
+        { "id": "previewAll", "label": "Preview · all ready" },
+        { "id": "previewMix", "label": "Preview · mixed" },
+        { "id": "importing", "label": "Importing" },
+        { "id": "success", "label": "Imported" },
+        { "id": "partial", "label": "With skips" },
+        { "id": "none", "label": "Nothing added" },
+        { "id": "failed", "label": "Failed" },
+        { "id": "rejects", "label": "Deck rejects" }
+      ]
+    },
+    {
+      "num": "12",
+      "dir": "12-card-export",
+      "title": "Card export",
+      "states": [
+        { "id": "wholeDeck", "label": "Whole deck" },
+        { "id": "selection", "label": "Selection" },
+        { "id": "preparing", "label": "Preparing" },
+        { "id": "handedOver", "label": "Handed over" },
+        { "id": "shareClosed", "label": "Share closed" },
+        { "id": "failed", "label": "Failed" },
+        { "id": "noShareTarget", "label": "No share target" },
+        { "id": "staleSelection", "label": "Stale selection" },
+        { "id": "nothingToExport", "label": "Nothing to export" }
+      ]
+    },
+    {
       "num": "13",
       "dir": "13-study-home",
       "title": "Study home",

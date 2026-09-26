@@ -112,6 +112,15 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The import step tracker's label (kit 11): 12/600, onSurface once the
+  /// step is reached, onSurfaceVariant before.
+  TextStyle stepLabel({required bool isReached}) => _texts.labelSmall!.copyWith(
+    color: isReached ? _scheme.onSurface : _scheme.onSurfaceVariant,
+  );
+
+  /// The number on an import step's dot (kit 11): the counter in [ink].
+  TextStyle stepNumber(Color ink) => counter.copyWith(color: ink);
+
   /// BottomNav label: 12/600, primary on the current destination.
   TextStyle navLabel({required bool isSelected}) => _texts.labelSmall!.copyWith(
     color: isSelected ? _scheme.primary : _scheme.onSurfaceVariant,

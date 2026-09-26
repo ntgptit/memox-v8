@@ -21,6 +21,9 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_context_h
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
+import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
+import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -28,115 +31,132 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 /// The app's routes: four top-level branches in a stateful shell, each
 /// keeping its own stack, plus the component gallery when [hasGallery]
 /// (debug builds by default, so release builds never register it).
-GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
-  initialLocation: AppRoutes.decks,
-  routes: [
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          _TabShell(navigationShell: navigationShell),
-      branches: [
-        // The Library (library spec §4): one page per deck level.
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.decks,
-              builder: (context, state) => _deckLevel(context),
-              routes: [
-                GoRoute(
-                  path: AppRoutes.deckChild,
-                  builder: (context, state) => _deckLevel(
-                    context,
-                    deckId: state.pathParameters[AppRoutes.deckIdParam],
+GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
+  // The root navigator: a route on it covers the shell and its bottom bar.
+  final rootNavigator = GlobalKey<NavigatorState>();
+  return GoRouter(
+    navigatorKey: rootNavigator,
+    initialLocation: AppRoutes.decks,
+    routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            _TabShell(navigationShell: navigationShell),
+        branches: [
+          // The Library (library spec §4): one page per deck level.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.decks,
+                builder: (context, state) => _deckLevel(context),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.deckChild,
+                    builder: (context, state) => _deckLevel(
+                      context,
+                      deckId: state.pathParameters[AppRoutes.deckIdParam],
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.cardNewChild,
+                        builder: (context, state) => CardEditorScreen.create(
+                          deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                          deckContext: _deckContext,
+                        ),
+                      ),
+                      // A full-screen task above the shell: no bottom bar
+                      // (IT-NAV-012 step 1).
+                      GoRoute(
+                        path: AppRoutes.cardImportChild,
+                        parentNavigatorKey: rootNavigator,
+                        builder: (context, state) => CardImportScreen(
+                          deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                          deckContext: _deckContext,
+                          onClose: () => context.pop(),
+                          onViewCards: () => context.pop(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: AppRoutes.studyChild,
+                        builder: (context, state) => _studyEntry(
+                          state.pathParameters[AppRoutes.deckIdParam]!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: AppRoutes.algorithmChild,
+                        builder: (context, state) => DeckAlgorithmScreen(
+                          deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                          onOpenAncestor: (id) => _openAncestor(context, id),
+                        ),
+                      ),
+                    ],
                   ),
-                  routes: [
-                    GoRoute(
-                      path: AppRoutes.cardNewChild,
-                      builder: (context, state) => CardEditorScreen.create(
-                        deckId: state.pathParameters[AppRoutes.deckIdParam]!,
-                        deckContext: _deckContext,
-                      ),
+                  GoRoute(
+                    path: AppRoutes.searchChild,
+                    builder: (context, state) => LibrarySearchScreen(
+                      onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+                      onOpenCard: (id) => context.push(AppRoutes.card(id)),
                     ),
-                    GoRoute(
-                      path: AppRoutes.studyChild,
-                      builder: (context, state) => _studyEntry(
-                        state.pathParameters[AppRoutes.deckIdParam]!,
-                      ),
-                    ),
-                    GoRoute(
-                      path: AppRoutes.algorithmChild,
-                      builder: (context, state) => DeckAlgorithmScreen(
-                        deckId: state.pathParameters[AppRoutes.deckIdParam]!,
-                        onOpenAncestor: (id) => _openAncestor(context, id),
-                      ),
-                    ),
-                  ],
-                ),
-                GoRoute(
-                  path: AppRoutes.searchChild,
-                  builder: (context, state) => LibrarySearchScreen(
-                    onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
-                    onOpenCard: (id) => context.push(AppRoutes.card(id)),
                   ),
-                ),
-                GoRoute(
-                  path: AppRoutes.cardChild,
-                  builder: (context, state) => CardDetailScreen(
-                    cardId: state.pathParameters[AppRoutes.cardIdParam]!,
-                    deckContext: _deckContext,
-                    onEdit: (id) =>
-                        unawaited(context.push(AppRoutes.editCard(id))),
-                  ),
-                  routes: [
-                    GoRoute(
-                      path: AppRoutes.cardEditChild,
-                      builder: (context, state) => CardEditorScreen.edit(
-                        cardId: state.pathParameters[AppRoutes.cardIdParam]!,
-                        deckContext: _deckContext,
-                      ),
+                  GoRoute(
+                    path: AppRoutes.cardChild,
+                    builder: (context, state) => CardDetailScreen(
+                      cardId: state.pathParameters[AppRoutes.cardIdParam]!,
+                      deckContext: _deckContext,
+                      onEdit: (id) =>
+                          unawaited(context.push(AppRoutes.editCard(id))),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-        _branch(AppRoutes.study, (context) => context.l10n.navStudy),
-        _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.settings,
-              builder: (context, state) => PlaceholderScreen(
-                title: context.l10n.navSettings,
-                onOpenGallery: hasGallery
-                    ? () => context.push(AppRoutes.gallery)
-                    : null,
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.cardEditChild,
+                        builder: (context, state) => CardEditorScreen.edit(
+                          cardId: state.pathParameters[AppRoutes.cardIdParam]!,
+                          deckContext: _deckContext,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
-    ),
-    // Full screen, no tab bar: a session is one route, its summary too
-    // (FE-A6 D2).
-    GoRoute(
-      path: AppRoutes.studySessionPath,
-      builder: (context, state) => StudySessionScreen(
-        sessionId: state.pathParameters[AppRoutes.sessionIdParam]!,
-        onDone: (deckId) => context.go(AppRoutes.deck(deckId)),
-        onStudyDeck: (deckId) => context.go(AppRoutes.studyEntry(deckId)),
-        onLeave: (deckId) => context.go(
-          deckId == null ? AppRoutes.decks : AppRoutes.deck(deckId),
-        ),
+            ],
+          ),
+          _branch(AppRoutes.study, (context) => context.l10n.navStudy),
+          _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.settings,
+                builder: (context, state) => PlaceholderScreen(
+                  title: context.l10n.navSettings,
+                  onOpenGallery: hasGallery
+                      ? () => context.push(AppRoutes.gallery)
+                      : null,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-    ),
-    if (hasGallery)
+      // Full screen, no tab bar: a session is one route, its summary too
+      // (FE-A6 D2).
       GoRoute(
-        path: AppRoutes.gallery,
-        builder: (context, state) => const GalleryScreen(),
+        path: AppRoutes.studySessionPath,
+        builder: (context, state) => StudySessionScreen(
+          sessionId: state.pathParameters[AppRoutes.sessionIdParam]!,
+          onDone: (deckId) => context.go(AppRoutes.deck(deckId)),
+          onStudyDeck: (deckId) => context.go(AppRoutes.studyEntry(deckId)),
+          onLeave: (deckId) => context.go(
+            deckId == null ? AppRoutes.decks : AppRoutes.deck(deckId),
+          ),
+        ),
       ),
-  ],
-);
+      if (hasGallery)
+        GoRoute(
+          path: AppRoutes.gallery,
+          builder: (context, state) => const GalleryScreen(),
+        ),
+    ],
+  );
+}
 
 /// A Library level wired to the router: each deck opened is one more page,
 /// so Back climbs one level (library spec §4).
@@ -152,6 +172,10 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onOpenStudy: study,
     onAddCard: addCard,
+    onImportCards: (id) => unawaited(context.push(AppRoutes.importCards(id))),
+    onExportCards: (deck) => unawaited(
+      showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
+    ),
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
     cardBreadcrumb: (id, child) =>
@@ -162,6 +186,12 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
       onStudy: () => study(view.deck.id),
+      onExport: (ids) => unawaited(
+        showCardExportSheet(
+          context,
+          CardExportScope.selection(deckId: view.deck.id, ids: ids),
+        ),
+      ),
     ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );

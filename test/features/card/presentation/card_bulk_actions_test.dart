@@ -73,6 +73,37 @@ Finder _inDialog(String text) =>
     find.descendant(of: find.byType(MxDialog), matching: find.text(text));
 
 void main() {
+  libraryTest(
+    'Export hands the selection over and keeps it (UC-TRANSFER-002 A1)',
+    (tester, env) async {
+      final ids = await _seed(env);
+      final exported = <Set<String>>[];
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: CardListSectionWidget(
+            deckId: ids.words,
+            algorithm: 'Eight boxes',
+            onAddCard: () {},
+            onOpenCard: (_) {},
+            onExport: exported.add,
+          ),
+        ),
+      );
+      await _select(tester, ['annyeong', 'mul']);
+      await _bulk(tester, _en.cardExport);
+
+      expect(exported, [
+        {'new1', 'flag1'},
+      ]);
+      final checked = find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      );
+      expect(checked, findsNWidgets(2));
+    },
+  );
+
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));

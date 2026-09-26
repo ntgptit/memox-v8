@@ -33,6 +33,8 @@ Widget _section(String deckId) => Scaffold(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
+    // As the router wires it: the bulk bar holds its five commands.
+    onExport: (_) {},
   ),
 );
 
@@ -130,7 +132,7 @@ void main() {
     expect(find.text(_en.cardSelectedOf(1, 2).toUpperCase()), findsOneWidget);
   });
 
-  libraryTest('the bulk bar offers Move, Flag, Tag, Delete', (
+  libraryTest('the bulk bar offers Move, Flag, Tag, Export, Delete (kit 07)', (
     tester,
     env,
   ) async {
@@ -144,6 +146,7 @@ void main() {
       _en.cardMove,
       _en.cardFlag,
       _en.cardTag,
+      _en.cardExport,
       _en.cardDelete,
     ]) {
       expect(
@@ -154,7 +157,7 @@ void main() {
     }
     expect(
       find.descendant(of: bar, matching: find.byType(Text)),
-      findsNWidgets(4),
+      findsNWidgets(5),
     );
   });
 

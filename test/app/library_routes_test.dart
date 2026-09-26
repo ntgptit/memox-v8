@@ -238,6 +238,54 @@ void main() {
     expect(find.text('mul'), findsOneWidget);
   });
 
+  libraryTest(
+    'Import covers the shell; Close returns to the deck (IT-NAV-012)',
+    (tester, env) async {
+      await env.decks.sub((await env.decks.root('Korean')).id, 'Words');
+      await pumpMemoxApp(tester, env);
+      await _tap(tester, find.text('Korean'));
+      await _tap(tester, find.text('Words'));
+      await tester.ensureVisible(
+        find.widgetWithText(MxButton, _en.deckUnsetImport),
+      );
+      await _tap(tester, find.widgetWithText(MxButton, _en.deckUnsetImport));
+
+      expect(_barTitle(_en.importTitle), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsNothing);
+
+      await _tap(tester, find.byTooltip(_en.importClose));
+      expect(_barTitle('Words'), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsOneWidget);
+    },
+  );
+
+  libraryTest(
+    'Export opens its sheet from the deck and from a selection (UC-TRANSFER-002)',
+    (tester, env) async {
+      final words = await env.decks.sub(
+        (await env.decks.root('Korean')).id,
+        'Words',
+      );
+      await insertCard(env.db, id: 'a', deckId: words.id, front: 'bap');
+      await insertCard(env.db, id: 'b', deckId: words.id, front: 'mul');
+      await pumpMemoxApp(tester, env);
+      await _tap(tester, find.text('Korean'));
+      await _tap(tester, find.text('Words'));
+
+      await _tap(tester, find.byTooltip(_en.deckActions));
+      await _tap(tester, find.text(_en.deckActionExport));
+      expect(find.text(_en.exportTitleDeck(2)), findsOneWidget);
+      await _tap(tester, find.widgetWithText(MxButton, _en.commonCancel));
+
+      await tester.longPress(find.text('bap'));
+      await tester.pumpAndSettle();
+      await _tap(tester, find.text(_en.cardExport));
+      expect(find.text(_en.exportTitleSelection(1)), findsOneWidget);
+      await _tap(tester, find.widgetWithText(MxButton, _en.commonCancel));
+      expect(_barTitle(_en.cardSelectedCount(1)), findsOneWidget);
+    },
+  );
+
   libraryTest('Close on a typed card asks; Discard leaves (RF2)', (
     tester,
     env,

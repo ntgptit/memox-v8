@@ -63,10 +63,7 @@ final class CardRepositoryImpl implements CardRepository {
         return const Rejected(CardRejection.notACardContainer);
       }
 
-      final id = newId();
-      await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
-      await _schedules.initializeCard(cardId: id);
-      await _replaceTags(id, draft, at);
+      final id = await insertCard(deckId, draft, at);
       if (contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
@@ -346,6 +343,17 @@ final class CardRepositoryImpl implements CardRepository {
           .watchMoveTargetRows(sourceDeckId)
           .map(_moveTargetsOf)
           .mapDatabaseErrors();
+
+  /// One card, its schedule row (BR-CARD-004) and its tags, inside the
+  /// caller's transaction; the new card's id. An import writes each card
+  /// through it too (`CardTransferRepositoryImpl`, BR-TRANSFER-004).
+  Future<String> insertCard(String deckId, CardDraft draft, DateTime at) async {
+    final id = newId();
+    await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
+    await _schedules.initializeCard(cardId: id);
+    await _replaceTags(id, draft, at);
+    return id;
+  }
 
   @override
   Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds) => _dao
