@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_entry_h
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_learn_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_review_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -49,7 +50,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
           onRetry: () => _retry(ref),
         ),
       ],
-      _ => [MxSkeletonList(semanticLabel: l10n.commonLoading)],
+      _ => const [_LoadingEntry()],
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,15 +63,21 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 
   List<Widget> _loaded(StudyEntry entry) {
     final offer = studyEntryOfferOf(entry);
-    if (offer.isNothingDue) return const [_NothingDue()];
     return [
       const SizedBox(height: AppSpacing.micro),
+      // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
+      if (offer.isNothingDue) ...[
+        const SizedBox(height: AppSpacing.grouped),
+        const _NothingDue(),
+      ],
       if (entry.newCardCount > 0) ...[
         const SizedBox(height: AppSpacing.grouped),
         StudyEntryLearnWidget(entry: entry, offer: offer),
       ],
-      if (offer.reviews.length >= _minModesToChoose) ...[
+      // A review needs due cards (kit onlyNew, nothing).
+      if (entry.dueCardCount > 0 &&
+          offer.reviews.length >= _minModesToChoose) ...[
         const SizedBox(height: AppSpacing.grouped),
         StudyEntryReviewWidget(reviews: offer.reviews),
       ],
@@ -90,5 +97,74 @@ class _NothingDue extends StatelessWidget {
     body: context.l10n.studyEntryNothingBody,
     tone: MxEmptyStateTone.success,
     isCompact: true,
+  );
+}
+
+/// The entry's shape while it loads (kit loading): the hero's overline and
+/// figures, then a card of three option rows, so nothing jumps when the
+/// entry arrives. Heard once as loading; the bars say nothing.
+class _LoadingEntry extends StatelessWidget {
+  const _LoadingEntry();
+
+  static const int _optionRows = 3;
+  static const double _overlineWidth = 120;
+  static const double _figuresHeight = 56;
+  static const double _radioSize = 20;
+  static const double _titleWidth = 120;
+  static const double _lineWidth = 200;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    label: context.l10n.commonLoading,
+    child: ExcludeSemantics(
+      child: MxSkeletonPulse(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: AppSpacing.micro),
+            const MxCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.grouped,
+                children: [
+                  MxSkeleton(width: _overlineWidth),
+                  MxSkeleton(height: _figuresHeight),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.grouped),
+            MxCard(
+              child: Column(
+                spacing: AppSpacing.grouped,
+                children: [
+                  for (var i = 0; i < _optionRows; i++)
+                    const Row(
+                      spacing: AppSpacing.grouped,
+                      children: [
+                        MxSkeleton(
+                          width: _radioSize,
+                          height: _radioSize,
+                          isCircle: true,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: AppSpacing.micro,
+                            children: [
+                              MxSkeleton(width: _titleWidth),
+                              MxSkeleton(width: _lineWidth),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
   );
 }

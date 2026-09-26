@@ -361,7 +361,7 @@ void main() {
       tester,
       find.descendant(
         of: find.byType(MxActionSheetCommandRow),
-        matching: find.text(_en.deckStudy),
+        matching: find.text(_en.studyThisDeck),
       ),
     );
 

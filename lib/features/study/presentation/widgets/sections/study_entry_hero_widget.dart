@@ -15,10 +15,13 @@ class StudyEntryHeroWidget extends StatelessWidget {
 
   final StudyEntry entry;
 
-  /// A figure the screen acts on draws the eye; a zero stays a plain 0
-  /// (FE-A6 D17, as the kit draws it).
-  static MxStatTileEmphasis _emphasisOf(int count) =>
-      count > 0 ? MxStatTileEmphasis.primary : MxStatTileEmphasis.plain;
+  /// As the kit inks them (FE-A6 D17): the due cards, what a review takes,
+  /// draw the eye; waiting new cards are a quieter fact; a zero stays a
+  /// plain 0.
+  static MxStatTileEmphasis _emphasisOf(
+    int count, {
+    required MxStatTileEmphasis whenAny,
+  }) => count > 0 ? whenAny : MxStatTileEmphasis.plain;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,10 @@ class StudyEntryHeroWidget extends StatelessWidget {
                 child: MxStatTile(
                   value: l10n.studyCount(entry.newCardCount),
                   label: l10n.studyEntryNew,
-                  emphasis: _emphasisOf(entry.newCardCount),
+                  emphasis: _emphasisOf(
+                    entry.newCardCount,
+                    whenAny: MxStatTileEmphasis.muted,
+                  ),
                   layout: MxStatTileLayout.boxed,
                 ),
               ),
@@ -54,7 +60,10 @@ class StudyEntryHeroWidget extends StatelessWidget {
                 child: MxStatTile(
                   value: l10n.studyCount(entry.dueCardCount),
                   label: l10n.studyEntryDue,
-                  emphasis: _emphasisOf(entry.dueCardCount),
+                  emphasis: _emphasisOf(
+                    entry.dueCardCount,
+                    whenAny: MxStatTileEmphasis.primary,
+                  ),
                   layout: MxStatTileLayout.boxed,
                 ),
               ),
@@ -63,7 +72,7 @@ class StudyEntryHeroWidget extends StatelessWidget {
           if (entry.overdueCardCount > 0)
             Text(
               l10n.studyEntryOverdue(entry.overdueCardCount),
-              style: styles.noteText,
+              style: styles.statusNote(context.derivedColors.warningInk),
             ),
         ],
       ),

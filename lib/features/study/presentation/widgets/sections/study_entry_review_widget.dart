@@ -39,6 +39,8 @@ class StudyEntryReviewWidget extends StatelessWidget {
                   description: _description(l10n, review),
                   isSelected: false,
                   onSelected: null,
+                  // Only a mode the cards cannot run dims (kit eightBox).
+                  isDimmed: review.status == ReviewOfferStatus.unavailable,
                   trailing: _badge(l10n, review),
                   hasDivider: index < reviews.length - 1,
                 ),

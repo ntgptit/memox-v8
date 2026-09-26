@@ -52,7 +52,7 @@ void main() {
     expect(find.text(_en.deckReorder), findsNothing);
     // Study opens the entry (FE-A6 D10); Study options waits under Coming
     // soon (spec A4, amended).
-    expect(find.text(_en.deckStudy), findsOneWidget);
+    expect(find.text(_en.studyThisDeck), findsOneWidget);
     expect(find.text(_en.deckStudyOptions), findsNothing);
   });
 
@@ -180,13 +180,13 @@ void main() {
       env,
       deckScreen(deckId: korean.id, onOpenStudy: opened.add),
     );
-    await _choose(tester, _en.deckStudy);
+    await _choose(tester, _en.studyThisDeck);
     await pumpLibraryScreen(
       tester,
       env,
       deckScreen(deckId: words.id, onOpenStudy: opened.add),
     );
-    await _choose(tester, _en.deckStudy);
+    await _choose(tester, _en.studyThisDeck);
 
     expect(opened, [korean.id, words.id]);
   });

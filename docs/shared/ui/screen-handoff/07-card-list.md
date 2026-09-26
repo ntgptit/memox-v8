@@ -21,7 +21,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 
 ## Deck action sheet (`⋮`)
 
-Study · Rename · Move to another deck · Delete. Study opens the Study Entry, screen 14
+Study this deck · Rename · Move to another deck · Delete. Study this deck opens the Study Entry, screen 14
 (FE-A6 D10); Import and Export wait under Coming soon (spec A4; FE-B3).
 
 ## States

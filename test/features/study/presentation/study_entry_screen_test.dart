@@ -1,13 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/presentation/providers/study_entry_provider.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -62,8 +69,8 @@ void main() {
     expect(find.text(_en.studyEntryOverdue(1)), findsOneWidget);
   });
 
-  libraryTest('a zero stays a visible 0 in plain ink; a figure above zero '
-      'is primary (FE-A6 D17)', (tester, env) async {
+  libraryTest('as the kit inks them: Due above zero is primary, New above '
+      'zero is muted, a zero is a plain 0 (FE-A6 D17)', (tester, env) async {
     final root = await env.decks.root('Korean');
     await _learned(env, root.id, 'd1', DateTime(2026, 9, 24, 8));
     await lockScheduler(env.db, root.id);
@@ -76,6 +83,25 @@ void main() {
       MxStatTileEmphasis.primary,
     );
     expect(find.text(_en.studyEntryOverdue(0)), findsNothing);
+
+    await insertCard(env.db, id: 'n1', deckId: root.id);
+    await tester.pump();
+    await tester.pump();
+    expect(_tile(tester, _en.studyEntryNew).emphasis, MxStatTileEmphasis.muted);
+  });
+
+  libraryTest('the overdue note is in the warning ink (kit sm2)', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    await _learned(env, root.id, 'd1', DateTime(2026, 9, 20));
+    await lockScheduler(env.db, root.id);
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+
+    final note = tester.widget<Text>(find.text(_en.studyEntryOverdue(1)));
+    final context = tester.element(find.text(_en.studyEntryOverdue(1)));
+    expect(note.style?.color, context.derivedColors.warningInk);
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
@@ -99,6 +125,8 @@ void main() {
       ],
     );
     expect(rows.every((row) => row.onSelected == null), isTrue);
+    // Only a mode the cards cannot run is dimmed (kit eightBox).
+    expect([for (final row in rows) row.isDimmed], [false, true, false, true]);
     expect(
       [for (final row in rows) row.description],
       [
@@ -130,6 +158,17 @@ void main() {
     expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsOneWidget);
   });
 
+  libraryTest('with nothing due, no review mode is listed: only the Learn '
+      'row (kit onlyNew), on Eight boxes as on SM-2', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    await insertCard(env.db, id: 'n1', deckId: root.id);
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+
+    expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
+    expect(find.byType(MxOptionRow), findsNothing);
+    expect(find.text(_en.studyEntryReviewHeader), findsNothing);
+  });
+
   libraryTest('nothing new and nothing due is the calm empty state '
       '(BR-STUDY-008)', (tester, env) async {
     final root = await env.decks.root('Korean');
@@ -139,7 +178,62 @@ void main() {
 
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text(_en.studyEntryNothingTitle), findsOneWidget);
-    expect(find.byType(MxStatTile), findsNothing);
+    // The hero stays above it, reading 0 and 0 (kit nothing).
+    expect(_tile(tester, _en.studyEntryNew).value, '0');
+    expect(_tile(tester, _en.studyEntryDue).value, '0');
+    expect(find.byType(MxOptionRow), findsNothing);
+  });
+
+  libraryTest('loading draws the hero and the option list as skeletons '
+      '(kit loading)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final pending = StreamController<Never>();
+    addTearDown(pending.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(root.id),
+      overrides: [
+        studyEntryProvider(root.id).overrideWith((_) => pending.stream),
+      ],
+    );
+
+    expect(find.byType(MxSkeletonList), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSkeleton && widget.isCircle,
+      ),
+      findsNWidgets(3),
+    );
+    expect(find.bySemanticsLabel(_en.commonLoading), findsOneWidget);
+  });
+
+  libraryTest('a read that fails says so and Retry reads again '
+      '(UC-STUDY-001)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    var reads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(root.id),
+      overrides: [
+        studyEntryProvider(root.id).overrideWith((_) {
+          reads++;
+          return Stream.error(
+            const UnknownDatabaseFailure(cause: '/data/memox.sqlite'),
+          );
+        }),
+      ],
+    );
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.text(_en.studyEntryErrorTitle), findsOneWidget);
+    expect(find.text(_en.studyEntryErrorBody), findsOneWidget);
+    final before = reads;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+    await tester.pump();
+    expect(reads, before + 1);
   });
 
   libraryTest('a deck deleted while its entry is open leaves with a message '

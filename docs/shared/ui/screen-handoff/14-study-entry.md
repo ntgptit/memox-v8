@@ -11,7 +11,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 |---|---|---|
 | App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16). The kit's trailing "Study options" icon is hidden — see Deviations. |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
-| Hero | `MxCard` (hero) + `MxStatTile` × 2 (FE-A6 spec D17) | "{algorithm} · cards per session {n}" (BR-STUDY-024); two stat tiles, New and Due: a figure above zero in primary, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note when any are overdue. |
+| Hero | `MxCard` (hero) + `MxStatTile` × 2 (FE-A6 spec D17) | "{algorithm} · cards per session {n}" (BR-STUDY-024); two stat tiles, New and Due: Due above zero in primary, New above zero muted, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning ink, when any are overdue. |
 | Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
 | Nothing-due state | `MxEmptyState` (compact, success tone) | "Nothing to do right now" (BR-STUDY-008, BR-STUDY-054). |
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing compact `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051), independent of the footer's Review action. |
@@ -45,14 +45,16 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 
 Not captured: none — all nine kit states are V8-supported.
 
-**Built so far (FE-A6 P1b):** `sm2`, `eightBox`, `onlyNew`, `nothing` and `loading`,
+**Built so far (FE-A6 P1b):** `sm2`, `eightBox`, `onlyNew`, `nothing` (the hero over the empty state) and `loading` (hero and option-list skeletons),
 read-only: no study mode has its screen yet, so the Learn row and every runnable
-review mode show a neutral "Coming soon" badge instead of their action, and the
+review mode show a neutral "Coming soon" badge instead of their action, at full
+contrast (only a mode the cards cannot run is dimmed); the review list needs due
+cards, and the
 footer is not drawn (spec §3: an unbuilt stage is never offered). `resume`,
 `starting`, `refused` and `startFailed` need a session to open and come with the
 session screens (P1c, P2). A deck deleted while its entry is open leaves with the
 toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
-`test/features/study/presentation/goldens/study_entry_*`.
+`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading}_*`.
 
 ## Accessibility
 

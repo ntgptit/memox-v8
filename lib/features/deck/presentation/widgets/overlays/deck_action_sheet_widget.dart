@@ -84,7 +84,7 @@ class DeckActionSheetWidget extends StatelessWidget {
         ),
       MxActionSheetCommandRow(
         icon: AppIcons.play,
-        label: l10n.deckStudy,
+        label: l10n.studyThisDeck,
         hasChevron: true,
         onTap: () => choose(DeckAction.study),
       ),

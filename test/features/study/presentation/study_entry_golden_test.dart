@@ -82,6 +82,16 @@ Future<String> _sm2(LibraryEnv env) async {
   return leaf.id;
 }
 
+/// The kit's onlyNew frame: SM-2, new cards only.
+Future<String> _onlyNew(LibraryEnv env) async {
+  final root = await env.decks.root('TOPIK I', SchedulerType.sm2);
+  final leaf = await env.decks.sub(root.id, 'Động từ');
+  for (var i = 0; i < 25; i++) {
+    await insertCard(env.db, id: 'n$i', deckId: leaf.id);
+  }
+  return leaf.id;
+}
+
 /// Every card learned and resting.
 Future<String> _nothing(LibraryEnv env) async {
   final root = await env.decks.root('TOPIK I');
@@ -97,6 +107,7 @@ void main() {
     for (final (name, seed) in [
       ('eight_box', _eightBox),
       ('sm2', _sm2),
+      ('only_new', _onlyNew),
       ('nothing', _nothing),
     ]) {
       libraryTest('study entry, $name, $theme', (tester, env) async {

@@ -2660,10 +2660,6 @@
     },
     "description": "Screen handoff 14 (FE-A6): a stat tile's figure."
   },
-  "deckStudy": "Study",
-  "@deckStudy": {
-    "description": "Screen handoff 01/02 (FE-A6 D10): the deck action sheet's Study row."
-  },
   "studyThisDeckDue": "Study this deck · {due} due",
   "@studyThisDeckDue": {
     "placeholders": {

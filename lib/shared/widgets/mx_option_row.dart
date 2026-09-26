@@ -17,6 +17,7 @@ class MxOptionRow extends StatelessWidget {
     this.description,
     this.trailing,
     this.hasDivider = true,
+    this.isDimmed,
   });
 
   final String title;
@@ -24,6 +25,12 @@ class MxOptionRow extends StatelessWidget {
 
   /// Null disables the row.
   final VoidCallback? onSelected;
+
+  /// Whether the row draws at the disabled opacity; null dims exactly the
+  /// rows that cannot be selected. False keeps a row that cannot be picked
+  /// yet at full contrast, such as a study mode not built yet (FE-A6 spec
+  /// §3): the kit dims only a choice that is blocked.
+  final bool? isDimmed;
 
   /// Wraps to as many lines as it needs; the row grows.
   final String? description;
@@ -110,7 +117,7 @@ class MxOptionRow extends StatelessWidget {
         ),
       ),
     );
-    if (onSelected != null) return row;
+    if (!(isDimmed ?? onSelected == null)) return row;
     return Opacity(opacity: AppOpacity.disabled, child: row);
   }
 }

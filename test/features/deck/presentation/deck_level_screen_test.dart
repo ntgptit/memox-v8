@@ -311,7 +311,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(DeckComingSoonSheetWidget),
-        matching: find.text(_en.deckStudy),
+        matching: find.text(_en.studyThisDeck),
       ),
       findsNothing,
     );

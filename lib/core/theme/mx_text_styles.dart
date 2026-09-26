@@ -270,6 +270,11 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// Note text carrying a status in [ink], such as the Study Entry's
+  /// overdue note in the warning ink (screen 14): the note role at 600.
+  TextStyle statusNote(Color ink) =>
+      AppTypography.withWeight(noteText, FontWeight.w600).copyWith(color: ink);
+
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.
   TextStyle get workloadText =>

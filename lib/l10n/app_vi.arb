@@ -536,7 +536,6 @@
   "studyEntryErrorTitle": "Không đọc được bộ thẻ này",
   "studyEntryErrorBody": "Thẻ của bạn vẫn an toàn trên máy. Hãy thử lại sau giây lát.",
   "studyCount": "{count}",
-  "deckStudy": "Học",
   "studyThisDeckDue": "Học bộ thẻ này · {due} đến hạn",
   "studyThisDeck": "Học bộ thẻ này"
 }

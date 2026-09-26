@@ -32,10 +32,10 @@ One recursive screen for the Library root (`/decks`) and any open deck
 `MxBottomSheet` with a header (tile, name, "N sub-decks · N cards · {algorithm}") and
 `MxActionSheetCommandRow`s:
 
-- **Root deck:** Open deck · Study → screen 14 · Rename · Review algorithm
+- **Root deck:** Open deck · Study this deck → screen 14 · Rename · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
   Delete.
-- **Sub-deck:** Open ("N sub-decks · N cards") · Study → screen 14 · Rename ·
+- **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck → screen 14 · Rename ·
   Move to another deck · Reorder ("Move before or after a sibling") · Delete.
 
 ## Sort & filter sheet
