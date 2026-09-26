@@ -4,6 +4,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_entry_provider.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
@@ -13,6 +14,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_entry_h
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_learn_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_review_widget.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -47,12 +49,16 @@ class StudyEntryBodyWidget extends ConsumerWidget {
 
   void _retry(WidgetRef ref) => ref.invalidate(studyEntryProvider(deckId));
 
+  void _pick(WidgetRef ref, StudyMode mode) =>
+      ref.read(reviewModePickControllerProvider(deckId).notifier).pick(mode);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final start = ref.watch(studyEntryControllerProvider(deckId));
+    final picked = ref.watch(reviewModePickControllerProvider(deckId));
     final content = switch (ref.watch(studyEntryProvider(deckId))) {
-      AsyncData(value: Ok(:final value)) => _loaded(value, start),
+      AsyncData(value: Ok(:final value)) => _loaded(ref, value, start, picked),
       // The screen leaves on notFound (UC-STUDY-001 E1).
       AsyncData() => const <Widget>[],
       AsyncError() => [
@@ -74,8 +80,13 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     );
   }
 
-  List<Widget> _loaded(StudyEntry entry, StudyStartState start) {
-    final offer = studyEntryOfferOf(entry);
+  List<Widget> _loaded(
+    WidgetRef ref,
+    StudyEntry entry,
+    StudyStartState start,
+    StudyMode? picked,
+  ) {
+    final offer = studyEntryOfferOf(entry, picked: picked);
     final resumable = entry.resumable;
     return [
       const SizedBox(height: AppSpacing.micro),
@@ -105,7 +116,12 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       if (entry.dueCardCount > 0 &&
           offer.reviews.length >= _minModesToChoose) ...[
         const SizedBox(height: AppSpacing.grouped),
-        StudyEntryReviewWidget(reviews: offer.reviews),
+        StudyEntryReviewWidget(
+          reviews: offer.reviews,
+          target: offer.reviewTarget,
+          isLocked: start.isStarting,
+          onPick: (mode) => _pick(ref, mode),
+        ),
       ],
       if (start.status == StudyStartStatus.refused ||
           start.status == StudyStartStatus.failed) ...[

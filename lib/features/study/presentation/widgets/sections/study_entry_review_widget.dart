@@ -1,3 +1,5 @@
+import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
@@ -13,11 +15,25 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 /// Screen 14's review modes (UC-STUDY-001 step 4): each with its card count,
 /// or its reason when the due cards cannot run it (BR-STUDY-044,
 /// BR-MODE-009), or "Coming soon" while the app has no screen for it (FE-A6
-/// spec §3). Nothing here can be picked until a mode is built.
+/// spec §3). An available mode can be picked; the footer reviews the
+/// picked one (FE-A6 P3, E1).
 class StudyEntryReviewWidget extends StatelessWidget {
-  const StudyEntryReviewWidget({super.key, required this.reviews});
+  const StudyEntryReviewWidget({
+    super.key,
+    required this.reviews,
+    required this.target,
+    required this.isLocked,
+    required this.onPick,
+  });
 
   final List<ReviewOffer> reviews;
+
+  /// The review the footer starts; its row is the selected one.
+  final ReviewModeOption? target;
+
+  /// A start is running: the pick does not change (BR-STUDY-004).
+  final bool isLocked;
+  final ValueChanged<StudyMode> onPick;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +53,8 @@ class StudyEntryReviewWidget extends StatelessWidget {
                 MxOptionRow(
                   title: l10n.studyMode(review.option.mode),
                   description: _description(l10n, review),
-                  isSelected: false,
-                  onSelected: null,
+                  isSelected: review.option.mode == target?.mode,
+                  onSelected: _onSelected(review),
                   // Only a mode the cards cannot run dims (kit eightBox).
                   isDimmed: review.status == ReviewOfferStatus.unavailable,
                   trailing: _badge(l10n, review),
@@ -53,6 +69,11 @@ class StudyEntryReviewWidget extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  VoidCallback? _onSelected(ReviewOffer review) {
+    if (review.status != ReviewOfferStatus.available || isLocked) return null;
+    return () => onPick(review.option.mode);
   }
 
   static String? _description(AppLocalizations l10n, ReviewOffer review) {

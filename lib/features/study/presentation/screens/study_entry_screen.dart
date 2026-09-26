@@ -6,6 +6,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_entry_provider.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
@@ -99,7 +100,10 @@ class StudyEntryScreen extends ConsumerWidget {
     WidgetRef ref,
     StudyEntry entry,
   ) async {
-    final target = studyEntryOfferOf(entry).reviewTarget;
+    final target = studyEntryOfferOf(
+      entry,
+      picked: ref.read(reviewModePickControllerProvider(deckId)),
+    ).reviewTarget;
     if (target == null) return;
     DirectionChoice? direction;
     if (target.isDirectionRequired) {

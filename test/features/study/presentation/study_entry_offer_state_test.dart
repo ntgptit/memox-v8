@@ -117,25 +117,59 @@ void main() {
     expect(entryFooterActionOf(nothing), isNull);
   });
 
-  test('eight_box offers nothing yet: no built review mode, Learn coming '
-      'soon (plan R10)', () {
+  test('eight_box reviews in its built modes; Learn waits for recall and '
+      'fill (P3)', () {
     final offer = studyEntryOfferOf(
-      _entry(reviews: [_mode(StudyMode.match), _mode(StudyMode.recall)]),
+      _entry(reviews: [_mode(StudyMode.recall), _mode(StudyMode.match)]),
     );
 
-    expect(offer.reviewTarget, isNull);
+    expect(offer.reviewTarget?.mode, StudyMode.match);
     expect(offer.isLearnComingSoon, isTrue);
-    expect(entryFooterActionOf(offer), isNull);
+    expect(entryFooterActionOf(offer), EntryFooterAction.review);
   });
 
-  test('two available review modes give no single target (picking one '
-      'comes with P3)', () {
-    final offer = studyEntryOfferOf(
-      _entry(reviews: [_mode(StudyMode.match), _mode(StudyMode.recall)]),
-      built: {StudyMode.match, StudyMode.recall},
+  test('with several modes available the first is the target until one is '
+      'picked (E1)', () {
+    final entry = _entry(
+      reviews: [_mode(StudyMode.match), _mode(StudyMode.guess)],
+    );
+    const built = {StudyMode.match, StudyMode.guess};
+
+    expect(
+      studyEntryOfferOf(entry, built: built).reviewTarget?.mode,
+      StudyMode.match,
+    );
+    expect(
+      studyEntryOfferOf(
+        entry,
+        built: built,
+        picked: StudyMode.guess,
+      ).reviewTarget?.mode,
+      StudyMode.guess,
+    );
+  });
+
+  test('a picked mode that stops being available falls back to the first '
+      'available one (E1)', () {
+    final entry = _entry(
+      reviews: [
+        _mode(StudyMode.match),
+        _mode(StudyMode.guess, reason: ModeUnavailableReason.tooFewMeanings),
+      ],
     );
 
-    expect(offer.reviewTarget, isNull);
+    expect(
+      studyEntryOfferOf(
+        entry,
+        built: const {StudyMode.match, StudyMode.guess},
+        picked: StudyMode.guess,
+      ).reviewTarget?.mode,
+      StudyMode.match,
+    );
+  });
+
+  test('P3 builds Match and Guess', () {
+    expect(builtStudyModes, containsAll({StudyMode.match, StudyMode.guess}));
   });
 
   test('an unavailable self-assess review is no target', () {

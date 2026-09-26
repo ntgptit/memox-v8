@@ -219,4 +219,69 @@ void main() {
     gate.complete();
     await tester.pumpAndSettle();
   });
+
+  libraryTest('eight_box: Match is picked at first; picking Guess moves the '
+      'footer, which opens a Guess review with no sheet (E1)', (
+    tester,
+    env,
+  ) async {
+    final leaf = await insertFiveDue(env.db, env.decks);
+    String? opened;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(leaf.id, onOpen: (id) => opened = id),
+    );
+
+    MxOptionRow row(String mode) =>
+        tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
+    expect(row(_en.cardModeMatch).isSelected, isTrue);
+    expect(
+      find.text(_en.studyEntryModeCaption(_en.cardModeMatch, 5)),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text(_en.cardModeGuess));
+    await tester.pump();
+
+    expect(row(_en.cardModeGuess).isSelected, isTrue);
+    expect(row(_en.cardModeMatch).isSelected, isFalse);
+    expect(
+      find.text(_en.studyEntryModeCaption(_en.cardModeGuess, 5)),
+      findsOneWidget,
+    );
+
+    await tester.tap(_button(_en.studyEntryReviewCta(5)));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyDirectionTitle), findsNothing);
+    expect(
+      (await sessionOf(env.db, opened!)).read<String>('current_mode'),
+      'guess',
+    );
+  });
+
+  libraryTest('while a start runs the review rows keep their pick (E1, '
+      'BR-STUDY-004)', (tester, env) async {
+    final leaf = await insertFiveDue(env.db, env.decks);
+    final gate = Completer<void>();
+    env.entries.gate = gate.future;
+    await pumpLibraryScreen(tester, env, _screen(leaf.id));
+
+    await tester.tap(_button(_en.studyEntryReviewCta(5)));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardModeGuess));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<MxOptionRow>(
+            find.widgetWithText(MxOptionRow, _en.cardModeMatch),
+          )
+          .isSelected,
+      isTrue,
+    );
+    gate.complete();
+    await tester.pumpAndSettle();
+  });
 }
