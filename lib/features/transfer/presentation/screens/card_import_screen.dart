@@ -22,6 +22,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Imports cards from a file or pasted text into [deckId] (UC-TRANSFER-001,
 /// kit 11): a full-screen task above the shell (IT-NAV-012). [deckContext]
@@ -171,27 +172,24 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
       appBar: _appBar(context, l10n.importResultsTitle),
       body: MxScreenScroll(children: [ImportResultWidget(state: state)]),
       footer: MxFooterBar(
-        child: Row(
-          spacing: AppSpacing.control,
-          children: [
-            if (secondary case (final label, final onPressed))
-              Expanded(
-                child: MxButton(
-                  label: label,
-                  tone: MxButtonTone.outline,
-                  isBlock: true,
-                  onPressed: onPressed,
-                ),
-              ),
-            Expanded(
-              child: MxButton(
-                label: primary.$1,
-                icon: primary.$3,
-                isBlock: true,
-                onPressed: primary.$2,
-              ),
+        child: MxActionPair(
+          leading: switch (secondary) {
+            (final label, final onPressed) => MxButton(
+              label: label,
+              tone: MxButtonTone.outline,
+              isBlock: true,
+              isSingleLine: true,
+              onPressed: onPressed,
             ),
-          ],
+            null => null,
+          },
+          trailing: MxButton(
+            label: primary.$1,
+            icon: primary.$3,
+            isBlock: true,
+            isSingleLine: true,
+            onPressed: primary.$2,
+          ),
         ),
       ),
     );

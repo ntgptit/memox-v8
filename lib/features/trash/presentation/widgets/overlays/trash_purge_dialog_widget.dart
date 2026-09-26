@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Asks before [entries], all of one kind, are deleted for good
 /// (UC-TRASH-001 A3). Completes true once the purge ran; the batches the
@@ -91,25 +92,27 @@ class _TrashPurgeDialogWidgetState
         actions: MxSheetActions.custom(
           children: [
             Expanded(
-              flex: _keepShare,
-              child: MxButton(
-                label: l10n.trashPurgeKeep,
-                onPressed: _isPurging
-                    ? null
-                    : () => Navigator.of(context).pop(false),
-                isBlock: true,
-                isAutofocused: true,
-              ),
-            ),
-            Expanded(
-              flex: _deleteShare,
-              child: MxButton(
-                label: l10n.trashPurgeConfirm(count),
-                icon: AppIcons.delete,
-                tone: MxButtonTone.destructive,
-                isBlock: true,
-                isLoading: _isPurging,
-                onPressed: _purge,
+              child: MxActionPair(
+                leading: MxButton(
+                  label: l10n.trashPurgeKeep,
+                  onPressed: _isPurging
+                      ? null
+                      : () => Navigator.of(context).pop(false),
+                  isBlock: true,
+                  isSingleLine: true,
+                  isAutofocused: true,
+                ),
+                trailing: MxButton(
+                  label: l10n.trashPurgeConfirm(count),
+                  icon: AppIcons.delete,
+                  tone: MxButtonTone.destructive,
+                  isBlock: true,
+                  isSingleLine: true,
+                  isLoading: _isPurging,
+                  onPressed: _purge,
+                ),
+                leadingFlex: _keepShare,
+                trailingFlex: _deleteShare,
               ),
             ),
           ],

@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -202,5 +203,39 @@ void main() {
 
     await tester.pumpAndSettle();
     expect(find.text(_en.trashPurgedCards(2)), findsOneWidget);
+  });
+
+  libraryTest('the selection bar is one MxActionPair, Restore 13 : Delete 10', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, 13);
+    expect(pair.trailingFlex, 10);
+    expect(pair.leading!.isSingleLine, isTrue);
+    expect(pair.trailing.isSingleLine, isTrue);
+  });
+
+  libraryTest('the purge dialog footer is one MxActionPair, Keep autofocused', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+    await _tap(tester, _button(_en.trashPurgeSelected));
+
+    final pair = tester.widget<MxActionPair>(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.byType(MxActionPair),
+      ),
+    );
+    expect(pair.leading!.label, _en.trashPurgeKeep);
+    expect(pair.leading!.isAutofocused, isTrue);
   });
 }
