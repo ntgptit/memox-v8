@@ -40,7 +40,6 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 |---|---|---|
 | A matched tile in the kit's `mastery` green | The `success` semantic | FE-A6 spec D14 (P3 ruling C1) |
 | The footer hint never changes | During a wrong pair's flash it reads "Not a match — this pair comes back next round" | P3 ruling C7 |
-|---|---|---|
 | Only `idle`/`selected`/`matched` tile states are drawn; no feedback for a wrong pair | V8 adds a brief error-tone flash on both tiles after the write commits, then both settle back to `idle` and stay pending on the board | BR-STUDY-063 (paint an outcome only after commit), BR-STUDY-070 (a non-correct outcome must read as wrong) |
 | — | A wrong pair keeps its row `pending` for this board **and** is guaranteed one slot in the next round, even if it is matched correctly later in this same round | BR-STUDY-060, BR-STUDY-062 |
 
