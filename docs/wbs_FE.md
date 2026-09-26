@@ -95,7 +95,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | chưa bắt đầu | BE-B2, FE-A2 | M | BE-B2 xong: hợp đồng cho UI ở §9 của [spec gói 8](superpowers/specs/2026-09-26-tag-management-backend-design.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | Màn 05 trên 5 use case của `tags`: gọi `PlanTagRenameUseCase` khi tên đổi, xác nhận gộp bằng `mergeIntoTagId`, gặp `mergeNotConfirmed` thì xem trước lại; ghi lệch với kit ở `renameMerge`: số thẻ sau gộp là hợp các thẻ (spec D6), không phải tổng `31 + 46`; overlay lọc của màn 07 đọc `WatchDeckTagCountsUseCase`, đặt `CardListQuery.tagIds` và bỏ khỏi lựa chọn tag không còn trong danh sách; hành động `Tags` trên app bar của Library; "Find cards with this tag" là tìm kiếm thư viện theo tên tag (spec D12) |
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | chưa bắt đầu | BE-B4, FE-A1 | M | BE-B4 xong: hợp đồng cho UI ở §9 của [spec gói 10](superpowers/specs/2026-09-26-starter-decks-backend-design.md); [ui.md](features/starter-decks/ui.md) | Màn 03 trên 2 use case của `starter_decks`: `WatchStarterLibraryUseCase` cho `loading`, `list`, `none`, `loadFailed`; `AddStarterDeckUseCase` cho `adding`, `added` (Open tới `rootDeckId`), `alreadyPresent` (`alreadyInLibrary`), `secondCopy` (xác nhận rồi gọi lại với `allowSecondCopy`) và `addFailed`; sheet chọn scheduler chọn sẵn `suggestedScheduler`; tên ngôn ngữ lấy từ thẻ BCP 47; note "Development fixture" theo BR-STARTER-010 |
-| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | chưa bắt đầu | BE-B5, FE-A3 | S–M | [README reminders](features/reminders/README.md) | Sau BE-B5 |
+| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | chưa bắt đầu | BE-B5a, BE-B5b, FE-A3 | S–M | [README reminders](features/reminders/README.md); hợp đồng sáu use case ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §9 | Sau BE-B5b. Màn 24 không bắt đầu một thao tác nhắc học khi thao tác trước chưa xong ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14). Khi hiện hàng Daily reminder ở màn 23: câu chữ reset nêu cả nhắc học (dòng 123 của sổ nợ UI-base), và sau khi reset thì gọi `ReconcileReminderUseCase` (spec gói 11a §9; FE-A3 D4) |
 
 ### Nợ của UI base (spec UI base §9)
 
@@ -170,8 +170,9 @@ và phụ thuộc giữa các màn quyết định:
 1. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
    tiết handoff của màn trước khi lập plan. Luồng học (FE-A6, FE-A7, FE-A8) đã xong.
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-5. Sau V8.0: FE-B1 (Trash, #78) và FE-B3 (import/export, #72) đã xong. FE-B2 (tag) và
-   FE-B4 (starter) không còn chờ backend vì BE-B2 và BE-B4 đã xong; FE-B5 chờ BE-B5.
+3. Sau V8.0: FE-B1 (Trash, #78) và FE-B3 (import/export, #72) đã xong. FE-B2 (tag) và
+   FE-B4 (starter) không còn chờ backend vì BE-B2 và BE-B4 đã xong. BE-B5a xong trong
+   gói 11a; FE-B5 còn chờ BE-B5b, adapter Android.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 
@@ -244,3 +245,6 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
 - **Cập nhật ngày 2026-09-26:** FE-A3 plan 1 xong: màn 23, 25, 26 thay placeholder của
   tab Settings; theme và ngôn ngữ lưu được và áp cho cả app. FE-A3 chuyển sang "đang
   làm"; còn plan 2 (màn 15).
+- **Cập nhật ngày 2026-09-27:** sau khi BE-B5a (#88) vào `master`, chủ dự án giữ D4 của FE-A3:
+  câu chữ reset chưa nêu nhắc học; FE-B5 thêm nó và gọi `ReconcileReminderUseCase` khi hiện
+  hàng Daily reminder (dòng FE-B5 và dòng 123 của sổ nợ UI-base).

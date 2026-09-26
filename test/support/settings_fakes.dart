@@ -6,6 +6,8 @@ import 'package:memox/features/settings/domain/entities/app_settings_entity.dart
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
@@ -55,6 +57,18 @@ final class FlakySettingsRepository implements SettingsRepository {
   @override
   Future<Outcome<void, SettingsRejection>> resetToDefaults() =>
       _write(_inner.resetToDefaults);
+
+  @override
+  Future<Outcome<void, SettingsRejection>> saveReminder({
+    required ReminderSettings reminder,
+  }) => _write(() => _inner.saveReminder(reminder: reminder));
+
+  @override
+  Future<ReminderSnapshot> reminderSnapshot() => _inner.reminderSnapshot();
+
+  @override
+  Future<void> recordReminderDelivered({required DateTime at}) =>
+      _inner.recordReminderDelivered(at: at);
 
   @override
   Stream<EffectiveStudyOptions?> watchStudyOptions({required String deckId}) =>

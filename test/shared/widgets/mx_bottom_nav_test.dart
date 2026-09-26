@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -64,7 +65,7 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination is primary with its filled glyph', (
+  testWidgets('the selected destination is primaryInk with its filled glyph', (
     tester,
   ) async {
     await pumpMx(tester, _nav(selected: 1));
@@ -73,7 +74,7 @@ void main() {
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      scheme.primary,
+      MxDerivedColors.primaryInkOf(scheme),
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -81,7 +82,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('Study')).style!.color,
-      scheme.primary,
+      MxDerivedColors.primaryInkOf(scheme),
     );
   });
 

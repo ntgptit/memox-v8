@@ -62,9 +62,22 @@ void main() {
   }
 
   test('surfaceHero blends over surfaceBright in light, surface in dark', () {
-    // Light: #5265F5 at 5% over #FFFFFF. Dark: #8B9AFF at 12% over #0A0E27.
+    // Light: #5265F5 at 5% over #FFFFFF. Dark: #5265F5 at 18% over #0A0E27.
     expect(light.surfaceHero, isColorCloseTo(0xFFF6F7FE));
-    expect(dark.surfaceHero, isColorCloseTo(0xFF191F41));
+    expect(dark.surfaceHero, isColorCloseTo(0xFF171E4C));
+  });
+
+  test('the dark hero lifts off the page and its boxed tiles as the kit '
+      'hero did (#8B9AFF at 12%: 1.19 and 1.06)', () {
+    final scheme = AppColorSchemes.dark;
+    expect(
+      _ratio(dark.surfaceHero, scheme.surface),
+      greaterThanOrEqualTo(1.19),
+    );
+    expect(
+      _ratio(dark.surfaceHero, scheme.surfaceContainerLowest),
+      greaterThanOrEqualTo(1.06),
+    );
   });
 
   test('chromeGlass is surface at the glass opacity, not pre-flattened', () {
@@ -74,7 +87,7 @@ void main() {
 
   test('ghostBorder is primary at 14% light, 16% dark', () {
     expect(light.ghostBorder, isColorCloseTo(0x245265F5));
-    expect(dark.ghostBorder, isColorCloseTo(0x298B9AFF));
+    expect(dark.ghostBorder, isColorCloseTo(0x295265F5));
   });
 
   test('warningInk is onWarning in light and the amber in dark (I1)', () {
@@ -142,6 +155,49 @@ void main() {
     await tester.pumpAndSettle();
     expect(identical(first, light), isFalse);
     expect(first.ghostBorder, isNot(light.ghostBorder));
+  });
+
+  group('primaryInk (spec 2026-09-27 D2)', () {
+    for (final (name, scheme, derived) in [
+      ('light', AppColorSchemes.light, light),
+      ('dark', AppColorSchemes.dark, dark),
+    ]) {
+      final grounds = [
+        scheme.surface,
+        scheme.surfaceBright,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainerLow,
+        scheme.surfaceContainer,
+        scheme.surfaceContainerHigh,
+        derived.surfaceHero,
+      ];
+      // Primary tints sit on the page, a card or a sheet (nav pill, badge,
+      // tag chip, command row), never on the higher containers.
+      final tinted = [
+        scheme.surface,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainerLow,
+      ];
+      test('$name: 4.5:1 on every ground and on primary tints', () {
+        for (final ground in grounds) {
+          expect(_ratio(derived.primaryInk, ground), greaterThanOrEqualTo(4.5));
+        }
+        for (final ground in tinted) {
+          for (final alpha in [0.08, 0.10, 0.12, 0.16, 0.20]) {
+            final tint = Color.alphaBlend(
+              scheme.primary.withValues(alpha: alpha),
+              ground,
+            );
+            expect(_ratio(derived.primaryInk, tint), greaterThanOrEqualTo(4.5));
+          }
+        }
+      });
+      test('$name: an indigo between primary and onSurface', () {
+        expect(derived.primaryInk, isNot(scheme.primary));
+        expect(derived.primaryInk, isNot(scheme.onSurface));
+        expect(derived.primaryInk, MxDerivedColors.primaryInkOf(scheme));
+      });
+    }
   });
 }
 

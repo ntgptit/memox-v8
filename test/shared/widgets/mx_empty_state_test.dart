@@ -6,6 +6,7 @@ import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -76,7 +77,11 @@ void main() {
         color.withValues(alpha: 0.10),
         reason: '$tone',
       );
-      expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, color);
+      // The primary glyph reads in primaryInk (spec 2026-09-27 D2).
+      final glyph = tone == MxEmptyStateTone.primary
+          ? MxDerivedColors.primaryInkOf(scheme)
+          : color;
+      expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
     }
   });
 

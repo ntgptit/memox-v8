@@ -36,7 +36,7 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | State | Light | Dark | V8 |
 |---|---|---|---|
 | loaded | ![](img/23-settings/loaded-light.png) | ![](img/23-settings/loaded-dark.png) | Theme is a row that opens screen 25 (D2); the Daily reminder row is hidden until FE-B5. |
-| loading | ![](img/23-settings/loading-light.png) | ![](img/23-settings/loading-dark.png) | Skeleton rows (UI-base row 121). |
+| loading | ![](img/23-settings/loading-light.png) | ![](img/23-settings/loading-dark.png) | Skeleton rows (UI-base row 125). |
 | saving | ![](img/23-settings/saving-light.png) | ![](img/23-settings/saving-dark.png) | The stepper's spinner; the other rows stay usable. |
 | saved | ![](img/23-settings/saved-light.png) | ![](img/23-settings/saved-dark.png) | As drawn. |
 | invalidLimit | ![](img/23-settings/invalidLimit-light.png) | ![](img/23-settings/invalidLimit-dark.png) | **Deviation:** the message sits under the stepper and the sub-line stays (UC E1). |
@@ -51,14 +51,14 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| Theme as an inline System · Light · Dark tray | A row naming the choice, opening screen 25 | D2 (owner); UI-base row 120 |
+| Theme as an inline System · Light · Dark tray | A row naming the choice, opening screen 25 | D2 (owner); UI-base row 124 |
 | The Daily reminder row | Hidden until FE-B5 | Spec A4: a control without its feature is hidden |
 | "Enter a number from 1 to 200" in place of the sub-line | Under the stepper, the sub-line kept | UC-SETTINGS-001 E1 ("under the field") |
-| −/+ by one | −/+, a hold that repeats, and a typed number | D6 (owner); UI-base row 122 |
-| Loading as skeleton sub-lines inside the sections | `MxSkeletonList` | UI-base row 121 |
-| No read-error state | `MxErrorState` with Retry | UC E3; UI-base row 121 |
-| The tray on one line at any size | The options stack when their labels do not fit | UI-base row 123 |
-| The tile centred on a row with a wide control | The tile beside the label, as the kit draws it | UI-base row 124 |
+| −/+ by one | −/+, a hold that repeats, and a typed number | D6 (owner); UI-base row 126 |
+| Loading as skeleton sub-lines inside the sections | `MxSkeletonList` | UI-base row 125 |
+| No read-error state | `MxErrorState` with Retry | UC E3; UI-base row 125 |
+| The tray on one line at any size | The options stack when their labels do not fit | UI-base row 127 |
+| The tile centred on a row with a wide control | The tile beside the label, as the kit draws it | UI-base row 128 |
 
 ## Copy
 

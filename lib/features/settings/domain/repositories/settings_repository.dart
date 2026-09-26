@@ -3,6 +3,8 @@ import 'package:memox/features/settings/domain/entities/app_settings_entity.dart
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 
@@ -28,9 +30,26 @@ abstract interface class SettingsRepository {
     required LanguageChoice language,
   });
 
-  /// The four values a person can set back to their defaults, and nothing
-  /// else (BR-SETTINGS-008).
+  /// The six values a person can set back to their defaults, in one
+  /// transaction, and nothing else: not the last delivery of the reminder,
+  /// which is bookkeeping (BR-SETTINGS-008; reminders spec D3).
   Future<Outcome<void, SettingsRejection>> resetToDefaults();
+
+  /// The daily reminder's switch and time (UC-REMINDER-001 steps 2-3, A1,
+  /// A2). A minute out of range is refused before anything is written
+  /// (BR-REMINDER-002).
+  Future<Outcome<void, SettingsRejection>> saveReminder({
+    required ReminderSettings reminder,
+  });
+
+  /// The reminder, its last delivery and the language, read in one
+  /// statement: the moment a schedule or a delivery is decided from.
+  Future<ReminderSnapshot> reminderSnapshot();
+
+  /// Records that the digest was shown at [at]. It writes that one column and
+  /// nothing else, not even `updated_at`: the background delivery must never
+  /// overwrite a choice the person just changed (`schema.md`).
+  Future<void> recordReminderDelivered({required DateTime at});
 
   /// The options [deckId] studies with: its root's override, or the app-wide
   /// defaults when there is none or it cannot be read (BR-STUDY-056,

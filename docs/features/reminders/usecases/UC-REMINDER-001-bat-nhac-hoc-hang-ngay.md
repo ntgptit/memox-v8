@@ -3,11 +3,13 @@ id: UC-REMINDER-001
 title: Bật nhắc học hằng ngày
 status: ready
 rules: [BR-DECK-003, BR-CORE-001, BR-CORE-002, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-003, BR-REMINDER-004, BR-REMINDER-005, BR-REMINDER-006, BR-REMINDER-007, BR-REMINDER-008, BR-REMINDER-009, BR-REMINDER-010, BR-REMINDER-011, BR-REMINDER-012, BR-STUDY-051, BR-STUDY-067, BR-STUDY-074]
-code: []
+code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2).
+**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở BE-B5a
+([spec](../../../superpowers/specs/2026-09-26-reminders-backend-design.md)); adapter Android (lịch nền, notification, quyền) là BE-B5b; màn
+24 thuộc FE-B5.
 
 **Actor:** Người dùng
 **Trigger:** Mở `Settings → Daily reminder`
@@ -95,4 +97,17 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** nhắc học đang tắt, **when** người dùng bật lúc 20:00 và cấp quyền, **then** quyền được xin đúng lúc này, đúng một lượt nhắc được đặt cho lần 20:00 địa phương kế tiếp, rồi settings mới lưu bật cùng giờ (BR-REMINDER-009, BR-REMINDER-011; main 2–3).
+- [ ] **Given** người dùng từ chối quyền, **when** bật, **then** settings vẫn tắt, không có lượt nào chờ, và hệ thống không tự xin lại (E1).
+- [ ] **Given** nền tảng không hỗ trợ nhắc học, **when** mở màn hoặc bật, **then** capability báo không hỗ trợ và không có gì được xin, lưu hay đặt lịch (E2).
+- [ ] **Given** nền tảng từ chối đặt lịch, **when** bật hoặc đổi giờ, **then** settings giữ nguyên giá trị cũ và không có gì được ghi (E3).
+- [ ] **Given** lưu settings thất bại, **when** bật, **then** lượt vừa đặt bị gỡ và lỗi đến tay người gọi dưới dạng `Failure` (E4).
+- [ ] **Given** nhắc học đang bật và có thẻ đến hạn, **when** đến giờ, **then** workload được đọc lại, đúng một digest hiện tên root deck cấp bách nhất theo BR-REMINDER-006, số thẻ đến hạn của deck đó và số deck khác còn thẻ đến hạn, lần gửi được ghi, và lượt của ngày mai được đặt (main 4).
+- [ ] **Given** không còn thẻ đến hạn, hoặc chỉ còn thẻ chưa học, **when** đến giờ, **then** không hiện gì và lượt kế tiếp vẫn được đặt (A3, A4).
+- [ ] **Given** đọc workload thất bại lúc fire, **when** đến giờ, **then** không hiện gì và lượt kế tiếp vẫn được đặt (E5).
+- [ ] **Given** một ngày địa phương đã có digest, **when** lượt nhắc fire lần nữa trong ngày đó, **then** không hiện thêm (BR-REMINDER-004).
+- [ ] **Given** nhắc học đang bật, **when** người dùng đổi giờ, **then** giờ mới được đặt lịch rồi mới lưu, trong cùng một thao tác (A1).
+- [ ] **Given** người dùng tắt nhắc học, **when** huỷ lịch thất bại, **then** settings đã tắt và lý do là `couldNotCancel`; thử lại chỉ huỷ, không ghi gì (A2, E6).
+- [ ] **Given** app mở lại nhiều lần trong ngày khi đang bật, **when** hoà giải chạy, **then** vẫn đúng một lượt chờ; khi đang tắt, lượt còn sót bị huỷ (A5, BR-REMINDER-010).
+- [ ] **Given** đọc settings thất bại khi mở màn, **then** stream báo `Failure`, không có giá trị bịa (E7).
+- [ ] Main 5 và A6 (chạm và vuốt bỏ notification) được kiểm ở BE-B5b và FE-B5, trên thiết bị.

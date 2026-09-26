@@ -17,7 +17,7 @@ Method: one batched pass. The 30 settings goldens (light and dark, every kit sta
 
 ## Checked and matching the kit (with the recorded deviations)
 
-- **Screen 23:** all 8 states. The tray stacks at 2x in Vietnamese (row 123). The section tiles sit beside their labels (row 124). The reset footer pair follows row 118.
+- **Screen 23:** all 8 states. The tray stacks at 2x in Vietnamese (row 127). The section tiles sit beside their labels (row 128). The reset footer pair follows row 118.
 - **Screen 25:** system, light and dark. The title is "Theme" with plain descriptors (D7).
 - **Screen 26:** english, vietnamese and system. D8 names what "Follow the system" resolves to. The radio rows read clearly at 2x.
 

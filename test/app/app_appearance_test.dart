@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -19,6 +20,7 @@ const _dark = AppSettingsEntity(
   studyDefaults: StudyOptions.defaults,
   theme: ThemeChoice.dark,
   language: LanguageChoice.system,
+  reminder: ReminderSettings.defaults,
 );
 
 Brightness _brightness(WidgetTester tester) =>

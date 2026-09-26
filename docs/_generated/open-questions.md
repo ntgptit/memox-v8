@@ -46,21 +46,13 @@
 
 - L85: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/reminders/README.md](../features/reminders/README.md)
-
-- L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-## [features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md](../features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md)
-
-- L98: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md](../features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md)
 
 - L74: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md](../features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md)
 
-- L89: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/srs/usecases/UC-SRS-001-reset-learning-progress.md](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md)
 

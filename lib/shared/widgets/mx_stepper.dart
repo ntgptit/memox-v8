@@ -161,7 +161,9 @@ class _MxStepperState extends State<MxStepper> {
           // invalid adds colour, never layout.
           border: widget.isInvalid || _isEditing
               ? Border.all(
-                  color: widget.isInvalid ? colors.error : colors.primary,
+                  color: widget.isInvalid
+                      ? colors.error
+                      : context.derivedColors.primaryInk,
                   width: AppStroke.hairline,
                 )
               : null,
@@ -307,7 +309,7 @@ class _StepButtonState extends State<_StepButton> {
                 fill: colors.surfaceContainer,
                 ink: colors.onSurface,
                 edge: BorderSide.none,
-                focusColor: colors.primary,
+                focusColor: context.derivedColors.primaryInk,
                 height: AppSize.buttonSmall,
                 radius: AppRadius.md,
                 padding: MxStepper._buttonPadding,

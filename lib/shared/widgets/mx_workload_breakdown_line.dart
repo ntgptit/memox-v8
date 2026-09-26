@@ -102,7 +102,12 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
         context.derivedColors.warningInk,
         AppIcons.overdue,
       ),
-      (todayCount, todayLabel, context.colors.primary, AppIcons.dueNow),
+      (
+        todayCount,
+        todayLabel,
+        context.derivedColors.primaryInk,
+        AppIcons.dueNow,
+      ),
       (
         newCount,
         newLabel,

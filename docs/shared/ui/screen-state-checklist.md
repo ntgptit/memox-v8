@@ -427,7 +427,7 @@ FE-A3 · [23-settings.md](screen-handoff/23-settings.md)
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | [x] | Loaded | `loaded` | xong | Theme là hàng mở màn 25 (D2); hàng Daily reminder ẩn tới FE-B5. |
-| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 121). |
+| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 125). |
 | [x] | Saving | `saving` | xong | Spinner trong stepper. |
 | [x] | Saved | `saved` | xong |  |
 | [x] | Invalid limit | `invalidLimit` | xong | Thông báo nằm dưới stepper (UC E1). |
