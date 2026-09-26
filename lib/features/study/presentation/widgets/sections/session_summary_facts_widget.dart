@@ -61,9 +61,13 @@ class SessionSummaryFactsWidget extends StatelessWidget {
               ),
               MxListRow(
                 title: l10n.summaryFactWrong,
-                subtitle: wrong > 0
-                    ? l10n.summaryFactWrongCameBack(turns)
-                    : l10n.summaryFactWrongSub(turns),
+                // The kit wraps this line; the row's own subtitle is one.
+                meta: Text(
+                  wrong > 0
+                      ? l10n.summaryFactWrongCameBack(turns)
+                      : l10n.summaryFactWrongSub(turns),
+                  style: styles.noteText,
+                ),
                 leading: const MxIconTile(icon: AppIcons.lapses),
                 trailing: Text(
                   l10n.summaryWrongOf(wrong, turns),

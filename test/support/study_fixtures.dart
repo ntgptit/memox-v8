@@ -17,6 +17,9 @@ import 'package:memox/features/study/data/repositories/study_session_repository_
 import 'package:memox/features/study/data/repositories/study_session_view_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
+import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
@@ -439,3 +442,30 @@ final class LockableSessions implements StudySessionRepository {
   Future<void> abandonStaleSessions({DateTime? now}) =>
       _inner.abandonStaleSessions(now: now);
 }
+
+/// An ended session's view, built by hand, for screen 21 (handoff 21).
+StudySessionView summaryView({
+  SessionKind kind = SessionKind.reviewing,
+  SessionStatus status = SessionStatus.completed,
+  SessionEndReason? reason,
+  SessionSummary summary = const SessionSummary(
+    cardCount: 20,
+    learnedCardCount: null,
+    wrongTurnCount: 3,
+    answeredCardCount: 20,
+    turnCount: 23,
+  ),
+}) => StudySessionView(
+  sessionId: 's',
+  deckId: 'd',
+  deckName: 'Nhà hàng',
+  kind: kind,
+  status: status,
+  endReason: reason,
+  currentMode: StudyMode.recall,
+  direction: null,
+  stages: const [StudyMode.recall],
+  currentItem: null,
+  progress: null,
+  summary: summary,
+);

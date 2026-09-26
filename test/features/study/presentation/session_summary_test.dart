@@ -5,43 +5,17 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
-import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/study_fixtures.dart';
 
 // Screen 21: handoff states; UC-STUDY-001 steps 13, A3, E3; FE-A6 D18.
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-StudySessionView summaryView({
-  SessionKind kind = SessionKind.reviewing,
-  SessionStatus status = SessionStatus.completed,
-  SessionEndReason? reason,
-  SessionSummary summary = const SessionSummary(
-    cardCount: 20,
-    learnedCardCount: null,
-    wrongTurnCount: 3,
-    answeredCardCount: 20,
-    turnCount: 23,
-  ),
-}) => StudySessionView(
-  sessionId: 's',
-  deckId: 'd',
-  deckName: 'Nhà hàng',
-  kind: kind,
-  status: status,
-  endReason: reason,
-  currentMode: StudyMode.recall,
-  direction: null,
-  stages: const [StudyMode.recall],
-  currentItem: null,
-  progress: null,
-  summary: summary,
-);
 
 Future<void> _pump(
   WidgetTester tester,
