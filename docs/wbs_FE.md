@@ -14,10 +14,11 @@
   [spec UI base](superpowers/specs/2026-09-23-flutter-ui-base-design.md) (§2, §9).
 - **Phụ thuộc:** [`wbs_BE.md`](wbs_BE.md), vì mỗi màn hình cần use case của feature
   đó; [`PRODUCT.md`](../PRODUCT.md) là product context cho Impeccable.
-- **Ngữ cảnh bằng chứng:** `master` tại `867819b`, ngày 2026-09-26 (rà soát độ sẵn sàng
-  backend của từng màn). Thư viện phase 1–4 và căn theo screen handoff phase A–E đã merge
-  qua PR #28–#53; màn 01, 02, 04, 07 `aligned`, màn 08–10 `built`
-  ([screen handoff index](shared/ui/screen-handoff/00-index.md)). Mọi hạng mục BE của
+- **Ngữ cảnh bằng chứng:** `master` tại `7de0101` (PR #78), ngày 2026-09-26. Thư viện
+  phase 1–4 và căn theo screen handoff phase A–E đã merge qua PR #28–#53; tìm kiếm toàn
+  thư viện (#68), import/export (#72, #74), luồng học P1–P3 (#71, #73, #75, #76) và Trash
+  (#78) đã merge. Trạng thái từng màn ở
+  [screen handoff index](shared/ui/screen-handoff/00-index.md). Mọi hạng mục BE của
   V8.0 đã xong ([`wbs_BE.md`](wbs_BE.md)). Việc session khác còn làm dở mà chưa đẩy lên
   (nếu có) không có trong file này.
 
@@ -32,7 +33,7 @@
   accessibility (`CLAUDE.md`).
   - Handoff V3 có foundations, theme binding và 46 widget; các màn nằm ở
     [screen handoff](shared/ui/screen-handoff/00-index.md). File chi tiết đã có cho 01,
-    02, 04, 07, 13, 14, 16–21; màn 08–10, 15, 22, 23, 25, 26 chưa có.
+    02, 04, 06, 07, 11–14, 16–21 (kèm 16a); màn 03, 05, 08–10, 15, 22–26 chưa có.
   - [Critique 2026-09-21](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md)
     ghi luồng học chưa được thiết kế (P1, đóng ở FE-A5) và typography tiếng Việt/tiếng
     Hàn chưa được thiết kế (P2, đóng ở FE-C2).
@@ -78,7 +79,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-A5 | Thiết kế luồng học (Impeccable): mặt thẻ, lật thẻ, hàng chấm điểm, tổng kết phiên, streak, cách trình bày sáu mode | xong | FE-07 | S | File chi tiết handoff 13, 14, 16–21 kèm ảnh state ([screen handoff index](shared/ui/screen-handoff/00-index.md)); shape cho phiên `self_assess` ở `16a-study-self-assess.md` (chấm Again/Hard/Good/Easy, hiện khoảng ôn dự kiến ở lượt scheduled) | — |
 | FE-A6 | Study Entry, màn hình phiên học và ôn tập cho sáu mode, tổng kết phiên (UC-STUDY-001; BR-MODE-001…BR-MODE-019) | đang làm | FE-A5, BE-A3, BE-A4, BE-A10 | XL | Backend đã sẵn (BE-A3, BE-A4, BE-A10 xong); màn 14, 16–21 trong kit; kịch bản IT của [study](features/study/it-scenarios.md) và [study-mode](features/study-mode/it-scenarios.md); [spec study UI](superpowers/specs/2026-09-26-study-ui-design.md) (đã duyệt 2026-09-26, chia phase P1–P5; D11 thêm hai phần backend nhỏ trong P1 và P2); phase P1a (nền: tone `success`/`caution`/`danger`, `MxStatTile`, read model của entry và tổng kết): [plan](superpowers/plans/2026-09-26-study-p1a-foundations.md); phase P1b (màn 14 chỉ đọc, route, lối vào từ action sheet và summary, đóng phiên cũ khi mở app): [plan](superpowers/plans/2026-09-26-study-p1b-entry.md); phase P1c (route phiên toàn màn hình, controller, màn 16 Browse, màn 21 Summary; thoát giữa phiên hiện tổng kết theo quyết định của chủ dự án về D8): [plan](superpowers/plans/2026-09-26-study-p1c-session.md); phase P2 (màn 16a self-assess với preview khoảng cách D11b, các action của màn 14: Learn, Review, Continue, starting/refused/startFailed, sheet chọn chiều hỏi FE-A7; deck `sm2` học được trọn vẹn): [plan](superpowers/plans/2026-09-26-study-p2-self-assess.md); roadmap P3→P6 đã duyệt: [roadmap](superpowers/plans/2026-09-26-study-chain-roadmap.md); phase P3 (Guess 18, Match 17, chọn mode ôn cho eight_box, sửa `MxStudyTopBar` ở chữ 2x): [plan](superpowers/plans/2026-09-26-study-p3-guess-match.md); phase P4 (Recall 19, Fill 20; deck `eight_box` học và ôn được trọn vẹn, bỏ tập mode đã dựng): [plan](superpowers/plans/2026-09-26-study-p4-recall-fill.md) | Phase P5: kịch bản IT, đóng index và WBS |
 | FE-A7 | Chọn chiều hỏi trước lượt đầu của phiên self-assess (UC-STUDY-003) | xong | FE-A6, BE-A5 | S | Sheet chọn chiều hỏi của màn 14, làm trong phase P2 của FE-A6: [plan](superpowers/plans/2026-09-26-study-p2-self-assess.md) | — |
-| FE-A8 | Tab Học: Study Home (UC-STUDY-002) | chưa bắt đầu | FE-A5, BE-A6 | M | Tab Học đang là placeholder; BE-A6 xong (`WatchStudyHomeUseCase`); file chi tiết [13](shared/ui/screen-handoff/13-study-home.md) có | Sau phase P1 của FE-A6: Resume và chạm vào deck cần route của phiên và của Study entry (spec study UI D1, D2) |
+| FE-A8 | Tab Học: Study Home (UC-STUDY-002) | chưa bắt đầu | FE-A5, BE-A6 | M | Tab Học đang là placeholder; BE-A6 xong (`WatchStudyHomeUseCase`); file chi tiết [13](shared/ui/screen-handoff/13-study-home.md) có | Phase P6 của [roadmap luồng học](superpowers/plans/2026-09-26-study-chain-roadmap.md), sau P5; route của phiên và của Study entry mà Resume và chạm vào deck cần (spec study UI D1, D2) đã có từ P1 |
 | FE-A9 | Tab Tiến độ và drill-down theo deck (UC-PROGRESS-001, UC-PROGRESS-002) | chưa bắt đầu | BE-A7 | L | Tab Tiến độ đang là placeholder; nội dung theo `navigation.md`; [kịch bản IT](features/progress/it-scenarios.md); BE-A7 xong (`WatchProgressUseCase`, `WatchDeckProgressUseCase`) | Đọc màn 22 trong kit, viết file chi tiết handoff (chưa có `ui.md` của progress), rồi lập plan |
 | FE-A10 | Tìm kiếm toàn thư viện từ header của Thư viện, ở mọi cấp (UC-SEARCH-001) | xong | BE-A8, FE-A1 | M | [PR #68](https://github.com/ntgptit/memox-v8/pull/68); [spec](superpowers/specs/2026-09-26-library-search-ui-design.md) và [plan](superpowers/plans/2026-09-26-library-search-ui.md); màn 04 trên `SearchLibraryUseCase` ở `lib/features/search/presentation/`: deck, card và tag, debounce 250 ms, Load more theo keyset, lỗi trang đầu (E1) và trang sau (E2); `SearchDecksUseCase` cùng phần đọc phía deck đã bỏ; IT-DISC-006/007 kiểm trên màn 04 theo nghĩa toàn thư viện; [handoff 04](shared/ui/screen-handoff/04-library-search.md) | — |
 | FE-A11 | Căn Thư viện theo screen handoff V3 (artifact "MemoX — Mobile UI Kit v3"): màn 01, 02, 04, 07; 5 phase A–E | xong | FE-A1, FE-A2, BE-A2 | L | [spec](superpowers/specs/2026-09-24-library-artifact-alignment-design.md); phase A (#32), B (#34), C (#38), D (#42), E (#46, #49) | — |
@@ -87,7 +88,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| FE-B1 | Trash: màn hình Trash mở từ app bar, xoá vào Trash, khôi phục (UC-TRASH-001) | chưa bắt đầu | BE-B1, FE-A1, FE-A2 | M | BE-B1 xong: hợp đồng cho UI ở §10 của [spec gói 7](superpowers/specs/2026-09-25-trash-backend-design.md); [README trash](features/trash/README.md) | Màn 06 trên 7 use case của `trash`; snackbar Undo cho xoá **một** item (`UndoDeckDeletionUseCase`, `UndoCardDeletionUseCase`) với thời gian UI chọn; gọi `PurgeExpiredTrashUseCase` lúc mở app, khi resume, khi mở Trash và khi Trash được focus lại; đổi câu chữ "xoá vĩnh viễn" của hộp thoại xoá và của quy tắc chung "Delete is permanent in V8.0" trong screen handoff; căn câu chữ của 5 lý do từ chối mới (D16) theo kit; ghi lệch với kit ở `youngerInside` (kit nói "xoá sau", bất biến 36 chỉ cho phép ngược lại). Tiếp tục hoặc rời một phiên mà nội dung vừa vào Trash nay trả `sessionClosed`; phiên có deck trong Trash thì watch trả `notFound` |
+| FE-B1 | Trash: màn hình Trash mở từ app bar, xoá vào Trash, khôi phục (UC-TRASH-001) | xong | BE-B1, FE-A1, FE-A2 | M | [spec](superpowers/specs/2026-09-26-trash-ui-design.md); [plan 1: luồng xoá, Undo, câu chữ](superpowers/plans/2026-09-26-trash-delete-flows.md); [plan 2: màn 06, lối vào, auto-purge](superpowers/plans/2026-09-26-trash-screen.md); [screen handoff 06](shared/ui/screen-handoff/06-trash.md). Hợp đồng cho UI ở §10 của [spec gói 7](superpowers/specs/2026-09-25-trash-backend-design.md); [README trash](features/trash/README.md) | — |
 | FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | chưa bắt đầu | BE-B2, FE-A2 | M | BE-B2 xong: hợp đồng cho UI ở §9 của [spec gói 8](superpowers/specs/2026-09-26-tag-management-backend-design.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | Màn 05 trên 5 use case của `tags`: gọi `PlanTagRenameUseCase` khi tên đổi, xác nhận gộp bằng `mergeIntoTagId`, gặp `mergeNotConfirmed` thì xem trước lại; ghi lệch với kit ở `renameMerge`: số thẻ sau gộp là hợp các thẻ (spec D6), không phải tổng `31 + 46`; overlay lọc của màn 07 đọc `WatchDeckTagCountsUseCase`, đặt `CardListQuery.tagIds` và bỏ khỏi lựa chọn tag không còn trong danh sách; hành động `Tags` trên app bar của Library; "Find cards with this tag" là tìm kiếm thư viện theo tên tag (spec D12) |
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | chưa bắt đầu | BE-B4, FE-A1 | M | BE-B4 xong: hợp đồng cho UI ở §9 của [spec gói 10](superpowers/specs/2026-09-26-starter-decks-backend-design.md); [ui.md](features/starter-decks/ui.md) | Màn 03 trên 2 use case của `starter_decks`: `WatchStarterLibraryUseCase` cho `loading`, `list`, `none`, `loadFailed`; `AddStarterDeckUseCase` cho `adding`, `added` (Open tới `rootDeckId`), `alreadyPresent` (`alreadyInLibrary`), `secondCopy` (xác nhận rồi gọi lại với `allowSecondCopy`) và `addFailed`; sheet chọn scheduler chọn sẵn `suggestedScheduler`; tên ngôn ngữ lấy từ thẻ BCP 47; note "Development fixture" theo BR-STARTER-010 |
@@ -127,9 +128,10 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 ## Đang làm
 
-FE-A6 kèm FE-A7: chủ dự án duyệt [spec study UI](superpowers/specs/2026-09-26-study-ui-design.md)
-ngày 2026-09-26; việc tiếp theo là Impeccable critique màn 14, 16–21 so với kit, rồi plan
-phase P1.
+- **FE-A6:** phase P1 (#71, #73), P2 (#75, kèm FE-A7) và P3 (#76) đã merge. Việc tiếp theo là
+  P4 (Recall 19, Fill 20), rồi P5 và P6 (FE-A8) theo
+  [roadmap](superpowers/plans/2026-09-26-study-chain-roadmap.md) đã duyệt.
+- **FE-A1, FE-A2:** chức năng xong; phần còn lại ở cột "Việc tiếp theo" của từng dòng.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
 sinh trong công cụ kiểm kiến trúc; `study_turn_data_source.dart`) đã vào `master` ở #53.
@@ -162,14 +164,13 @@ so nội dung.
 Mọi hạng mục FE của V8.0 đã có backend (BE-A1…BE-A10 xong). Thứ tự còn lại do thiết kế
 và phụ thuộc giữa các màn quyết định:
 
-1. FE-A6 kèm FE-A7 (luồng học), spec đã duyệt; P1 → P5.
-2. FE-A8 (Study Home), sau phase P1 của FE-A6.
+1. FE-A6 (luồng học): P4 → P5 theo roadmap; P1–P3 và FE-A7 đã xong.
+2. FE-A8 (Study Home): phase P6 của cùng roadmap.
 3. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
    tiết handoff của màn trước khi lập plan.
 4. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-5. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng. BE-B1 và BE-B2 xong
-   trong gói 7 và gói 8, nên FE-B1 và FE-B2 không còn chờ backend; BE-B3…BE-B5 chưa bắt
-   đầu.
+5. Sau V8.0: FE-B1 (Trash, #78) và FE-B3 (import/export, #72) đã xong. FE-B2 (tag) và
+   FE-B4 (starter) không còn chờ backend vì BE-B2 và BE-B4 đã xong; FE-B5 chờ BE-B5.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 
@@ -200,6 +201,9 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   Ngày 2026-09-26, FE-A5, FE-C2, FE-C3, FE-C4, FE-C6, FE-C7, FE-C8 và FE-D2 đã xong;
   phần còn lại (FE-A3, FE-A6…FE-A10) khoảng **25–38 giờ agent**, và không phần nào còn
   chờ backend.
+- **Ngày 2026-09-26, sau #78:** FE-A10, FE-B1, FE-B3 và phase P1–P3 của FE-A6 đã xong.
+  Còn lại của V8.0: FE-A3, FE-A6 (P4, P5), FE-A8, FE-A9; sau V8.0: FE-B2, FE-B4, FE-B5.
+  Chưa ước lượng lại số giờ sau các phase này.
 - **Rủi ro lớn nhất:** FE-A6. Đó là luồng nhiều tương tác nhất; màn `self_assess` không
   có trong kit và dựng theo shape brief 16a.
 
@@ -215,6 +219,10 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   `SearchLibraryUseCase` ([spec](superpowers/specs/2026-09-26-library-search-ui-design.md),
   [plan](superpowers/plans/2026-09-26-library-search-ui.md)); phần còn lại của V8.0
   (FE-A3, FE-A6…FE-A9) khoảng 23–35 giờ agent.
+- **Cập nhật ngày 2026-09-26:** rà lại trên `master` tại `7de0101` sau #78: FE-B1 xong
+  (dọn cột "Việc tiếp theo"; luồng học đã xử lý `sessionClosed` và `notFound`), FE-A6 đã
+  qua P3 nên "Đang làm", FE-A8 và "Bước tiếp theo" theo roadmap P4 → P6; danh sách file
+  chi tiết handoff tính cả 06, 11, 12.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate đang áp dụng pass; màn hình có đủ
   kiểm chứng ở mục "Trạng thái kiểm chứng".

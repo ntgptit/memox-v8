@@ -34,9 +34,10 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
-  Delete.
+  Move to Trash ("Recoverable for 30 days").
 - **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck → screen 14 · Rename ·
-  Move to another deck · Reorder ("Move before or after a sibling") · Delete.
+  Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
+  ("Recoverable for 30 days").
 
 ## Sort & filter sheet
 
@@ -60,27 +61,29 @@ One `MxBottomSheet`, "Sort & filter":
 | rootSearch | ![](img/01-deck-list/rootSearch-light.png) | ![](img/01-deck-list/rootSearch-dark.png) | The field is a trigger: a tap opens screen 04 instead of typing here. |
 | rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | No "Progress" sort (Coming soon). |
 | rootDueEmpty | ![](img/01-deck-list/rootDueEmpty-light.png) | ![](img/01-deck-list/rootDueEmpty-dark.png) | As drawn. |
-| rootOverflow | ![](img/01-deck-list/rootOverflow-light.png) | ![](img/01-deck-list/rootOverflow-dark.png) | Rows as in "Action sheet"; Reorder added; Delete replaces Move to Trash. |
+| rootOverflow | ![](img/01-deck-list/rootOverflow-light.png) | ![](img/01-deck-list/rootOverflow-dark.png) | Rows as in "Action sheet"; Reorder added. |
 | rootCreate | ![](img/01-deck-list/rootCreate-light.png) | ![](img/01-deck-list/rootCreate-dark.png) | As drawn (BR-SRS-001). |
 | rootRename | ![](img/01-deck-list/rootRename-light.png) | ![](img/01-deck-list/rootRename-dark.png) | As drawn. |
-| rootDelete | ![](img/01-deck-list/rootDelete-light.png) | ![](img/01-deck-list/rootDelete-dark.png) | **Deviation:** permanent delete. |
+| rootDelete | ![](img/01-deck-list/rootDelete-light.png) | ![](img/01-deck-list/rootDelete-dark.png) | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
+| rootTrashed | ![](img/01-deck-list/rootTrashed-light.png) | ![](img/01-deck-list/rootTrashed-dark.png) | As drawn: Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
 | deckLoaded | ![](img/01-deck-list/deckLoaded-light.png) | ![](img/01-deck-list/deckLoaded-dark.png) | No donut, no "Mastered". |
 | deckEmpty | ![](img/01-deck-list/deckEmpty-light.png) | ![](img/01-deck-list/deckEmpty-dark.png) | `unset` deck: both create choices and "Import cards from a file" (screen 11). |
 | deckMaxDepth | ![](img/01-deck-list/deckMaxDepth-light.png) | ![](img/01-deck-list/deckMaxDepth-dark.png) | No FAB. |
 | deckLoading | ![](img/01-deck-list/deckLoading-light.png) | ![](img/01-deck-list/deckLoading-dark.png) | As drawn. |
 | deckError | ![](img/01-deck-list/deckError-light.png) | ![](img/01-deck-list/deckError-dark.png) | As drawn. |
-| deckNotFound | ![](img/01-deck-list/deckNotFound-light.png) | ![](img/01-deck-list/deckNotFound-dark.png) | Back to Library only; replaces ruling P2-L7. |
-| deckOverflow | ![](img/01-deck-list/deckOverflow-light.png) | ![](img/01-deck-list/deckOverflow-dark.png) | Delete replaces Move to Trash. |
+| deckNotFound | ![](img/01-deck-list/deckNotFound-light.png) | ![](img/01-deck-list/deckNotFound-dark.png) | The kit's body, Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
+| deckOverflow | ![](img/01-deck-list/deckOverflow-light.png) | ![](img/01-deck-list/deckOverflow-dark.png) | As drawn. |
 | deckMove | ![](img/01-deck-list/deckMove-light.png) | ![](img/01-deck-list/deckMove-dark.png) | As drawn (UC-DECK-005 checks). |
-| deckDelete | ![](img/01-deck-list/deckDelete-light.png) | ![](img/01-deck-list/deckDelete-dark.png) | **Deviation:** permanent delete. |
-
-Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash in V8.0).
+| deckDelete | ![](img/01-deck-list/deckDelete-light.png) | ![](img/01-deck-list/deckDelete-dark.png) | As rootDelete. |
+| deckTrashed | ![](img/01-deck-list/deckTrashed-light.png) | ![](img/01-deck-list/deckTrashed-dark.png) | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
 
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| "Move to Trash", "Recoverable for 30 days", neutral confirm, Undo snackbar | "Delete deck?" naming the sub-deck and card counts, destructive confirm, no Undo | BR-DECK-022, BR-DECK-023 |
+| Starter decks · Tags · Trash in the root app bar | Trash · Coming soon (which names starter decks and tags) | FE-B4 and FE-B2 wait (FE-B1 D1) |
+| A trash glyph over the Move to Trash dialog's title, the deck's name in bold | No glyph; the name in quotes | `MxDialog` has no glyph slot; no per-site text styling |
+| "Can't undo — “{deck}” is in Trash too. Restore it from here and choose a deck." on screen 06 | "Can't undo. {reason} Restore it from Trash and choose a deck." where the deck was deleted | An Undo happens where the item was deleted; the rejection carries no deck name (FE-B1 D7) |
 | Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for a BR/UC definition, blocked in `wbs_BE.md`) |
 | Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for FE-A10) |
 | No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
@@ -98,13 +101,12 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 
 | Element | Shown as | Waits for |
 |---|---|---|
-| Starter decks, Tags, Trash actions | under Coming soon | FE-B4, FE-B2, FE-B1 |
+| Starter decks, Tags actions | under Coming soon | FE-B4, FE-B2 |
 | "Browse starter decks" | under Coming soon | FE-B4 |
 | Study options | under Coming soon | FE-A3 |
 | Sort by progress | under Coming soon | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Mastery bar, donut | hidden | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Due strip tap | not interactive | FE-A8 |
-| "Open Trash" | under Coming soon (as Trash) | FE-B1 |
 | Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at level 10 | absent; the header says "· level 10" | a later phase (owner decision C-O6) |
 
 ## Copy
@@ -116,6 +118,7 @@ Not captured: `rootTrashed`, `deckTrashed` (Undo after Move to Trash; no Trash i
 - Due filter, none: "Nothing due right now" · "No deck has cards waiting. The next card becomes due tomorrow at 00:00." · "Show all decks".
 - Create: "New deck" · "Holds sub-decks; sub-decks hold cards." · "Name" · "Review algorithm · required" · "Eight boxes" / "Cards move up a box each time you remember them, back to box 1 when you forget. Forgiving of long breaks." · "SM-2" / "Intervals adapt to how well you recall each card. You grade yourself: again · hard · good · easy." · "Locks once the first card finishes learning. After that, only “Reset learning progress” starts a new cycle." · "Cancel" · "Create deck".
 - Rename: "Rename deck" · "Only the name changes — sub-decks, cards and schedules stay as they are." · "Rename".
-- Not found: "This deck is no longer here" · "Back to Library" · "Open Trash". The artifact body mentions Trash; V8 uses "It was deleted while you were away." until FE-B1.
+- Not found: "This deck is no longer here" · "It was moved to Trash or deleted while you were away. Anything in Trash can still be restored." · "Back to Library" · "Open Trash".
+- Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck to Trash?" · "“{name}” goes to Trash with its {n} sub-decks and {n} cards." · "Recoverable from Trash for 30 days. Any open study session on these cards ends." · "Cancel" · "Move to Trash" · "“{name}” moved to Trash · {n} sub-decks, {n} cards" · "Undo".
 - Move: "Move “{name}” to…" · "Its {n} sub-decks and {n} cards come along, schedules included. Only decks in the same review algorithm can receive it." · "Move here".
 - Sort & filter: as in "Sort & filter sheet".

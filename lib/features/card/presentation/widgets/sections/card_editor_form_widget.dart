@@ -18,6 +18,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_field_wid
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_trash_section_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -42,6 +43,7 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
     required this.deckId,
     required this.deckContext,
     this.detail,
+    this.onOpenTrash,
   });
 
   /// The deck the card is written to.
@@ -50,6 +52,9 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
 
   /// The card to edit; null creates.
   final CardDetail? detail;
+
+  /// Opens the Trash from the gone state and a refused Undo (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<CardEditorFormWidget> createState() =>
@@ -286,6 +291,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                     : l10n.cardGoneTitle,
                 body: _isCreating ? l10n.cardDeckGoneBody : l10n.cardGoneBody,
                 onBack: _leave,
+                onOpenTrash: widget.onOpenTrash,
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -383,6 +389,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       onPendingChanged: (isPending) =>
           setState(() => _hasPendingTag = isPending),
     ),
+    if (_card case final card?)
+      CardTrashSectionWidget(card: card, onOpenTrash: widget.onOpenTrash),
   ];
 
   /// One optional field's input, message and touch.

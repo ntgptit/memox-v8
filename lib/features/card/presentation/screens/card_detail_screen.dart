@@ -30,6 +30,7 @@ class CardDetailScreen extends ConsumerWidget {
     required this.cardId,
     required this.deckContext,
     required this.onEdit,
+    this.onOpenTrash,
   });
 
   final String cardId;
@@ -37,6 +38,9 @@ class CardDetailScreen extends ConsumerWidget {
 
   /// Edit for [cardId]: the router opens the editor.
   final ValueChanged<String> onEdit;
+
+  /// Opens the Trash from the gone state (FE-B1 D11).
+  final VoidCallback? onOpenTrash;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,6 +70,7 @@ class CardDetailScreen extends ConsumerWidget {
         cardId: cardId,
         detail: detail,
         deckContext: deckContext,
+        onOpenTrash: onOpenTrash,
       ),
     );
   }
@@ -77,11 +82,13 @@ class _DetailBody extends ConsumerWidget {
     required this.cardId,
     required this.detail,
     required this.deckContext,
+    this.onOpenTrash,
   });
 
   final String cardId;
   final AsyncValue<Outcome<CardDetail, CardRejection>> detail;
   final Widget Function(String deckId, String currentLabel) deckContext;
+  final VoidCallback? onOpenTrash;
 
   static const int _skeletonRows = 4;
 
@@ -110,6 +117,7 @@ class _DetailBody extends ConsumerWidget {
         title: l10n.cardGoneTitle,
         body: l10n.cardDetailGoneBody,
         onBack: () => unawaited(Navigator.of(context).maybePop()),
+        onOpenTrash: onOpenTrash,
       ),
       AsyncError() => MxScreenScroll(
         children: [

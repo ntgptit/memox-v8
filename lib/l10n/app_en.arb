@@ -36,6 +36,14 @@
   "@commonCancel": {
     "description": "Generic cancel action."
   },
+  "commonUndo": "Undo",
+  "@commonUndo": {
+    "description": "Snackbar action that reverses the last move to the Trash (BR-TRASH-008)."
+  },
+  "commonOpenTrash": "Open Trash",
+  "@commonOpenTrash": {
+    "description": "Opens screen 06, the Trash: the Library app bar, the gone states and the Trash toasts (FE-B1 D1, D4, D11)."
+  },
   "commonRetry": "Retry",
   "@commonRetry": {
     "description": "Generic retry action after a failure."
@@ -248,10 +256,6 @@
   "@deckLoadErrorTitle": {
     "description": "Error state title when an open deck fails to load."
   },
-  "deckDeletedToast": "Deck deleted",
-  "@deckDeletedToast": {
-    "description": "Snackbar after the open deck is deleted."
-  },
   "deckCreateSub": "Create sub-deck",
   "@deckCreateSub": {
     "description": "Action that creates a deck inside the open deck."
@@ -317,22 +321,24 @@
   "@deckReorder": {
     "description": "Deck action sheet command that starts drag-to-reorder."
   },
-  "deckDelete": "Delete",
+  "deckDelete": "Move to Trash",
   "@deckDelete": {
-    "description": "Deck action sheet command and delete confirm."
+    "description": "Deck action sheet command and the confirm of its dialog (FE-B1, kit 01)."
   },
-  "deckDeleteTitle": "Delete “{deck}”?",
+  "deckDeleteHint": "Recoverable for 30 days",
+  "@deckDeleteHint": {
+    "description": "Deck action sheet: the Move to Trash command's sub-line (kit 01)."
+  },
+  "deckDeleteTitle": "Move this deck to Trash?",
   "@deckDeleteTitle": {
+    "description": "Move to Trash dialog title (kit 01)."
+  },
+  "deckDeleteSummary": "“{deck}” goes to Trash with {subDeckCount, plural, =0{no sub-decks} =1{its 1 sub-deck} other{its {subDeckCount} sub-decks}} and {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}.",
+  "@deckDeleteSummary": {
     "placeholders": {
       "deck": {
         "type": "String"
-      }
-    },
-    "description": "Delete dialog title; deck is the deck's name."
-  },
-  "deckDeleteSummary": "This permanently deletes {subDeckCount, plural, =0{no sub-decks} =1{1 sub-deck} other{{subDeckCount} sub-decks}} and {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}. This can't be undone.",
-  "@deckDeleteSummary": {
-    "placeholders": {
+      },
       "subDeckCount": {
         "type": "int"
       },
@@ -340,7 +346,35 @@
         "type": "int"
       }
     },
-    "description": "Delete dialog body: what the delete takes with it."
+    "description": "Move to Trash dialog body: what goes with the deck (BR-DECK-023, kit 01)."
+  },
+  "deckDeleteNote": "Recoverable from Trash for 30 days. Any open study session on these cards ends.",
+  "@deckDeleteNote": {
+    "description": "Move to Trash dialog note (kit 01)."
+  },
+  "deckTrashedToast": "“{deck}” moved to Trash · {subDeckCount, plural, =0{no sub-decks} =1{1 sub-deck} other{{subDeckCount} sub-decks}}, {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}",
+  "@deckTrashedToast": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a deck moves to the Trash, with Undo (FE-B1 D3, kit 01)."
+  },
+  "deckUndoRefused": "Can't undo. {reason} Restore it from Trash and choose a deck.",
+  "@deckUndoRefused": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar when Undo of a deck is refused; reason is the rejection sentence (UC-TRASH-001 E3)."
   },
   "srsRejectionUnsupportedAction": "This answer doesn't fit the deck's scheduler.",
   "@srsRejectionUnsupportedAction": {
@@ -477,9 +511,9 @@
   "@cardMove": {
     "description": "Bulk bar action."
   },
-  "cardDelete": "Delete",
+  "cardDelete": "Trash",
   "@cardDelete": {
-    "description": "Bulk bar action and delete confirm."
+    "description": "Bulk bar command that moves the selected cards to the Trash (FE-B1, kit 07)."
   },
   "cardFlagSet": "Flag cards",
   "@cardFlagSet": {
@@ -559,27 +593,66 @@
     },
     "description": "Snackbar after a move; deck is the target's name."
   },
-  "cardDeleteTitle": "{count, plural, =1{Delete 1 card?} other{Delete {count} cards?}}",
+  "cardDeleteTitle": "{count, plural, =1{Move this card to Trash?} other{Move {count} cards to Trash?}}",
   "@cardDeleteTitle": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Delete dialog title."
+    "description": "Move to Trash dialog title (kit 07)."
   },
-  "cardDeleteBody": "The cards and their learning history are deleted for good. This can't be undone.",
-  "@cardDeleteBody": {
-    "description": "Delete dialog body."
-  },
-  "cardDeletedToast": "{count, plural, =1{1 card deleted} other{{count} cards deleted}}",
-  "@cardDeletedToast": {
+  "cardDeleteNote": "{count, plural, =1{Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected.} other{Recoverable from Trash for 30 days, with their schedule and history. Other cards are unaffected.}}",
+  "@cardDeleteNote": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Snackbar after a delete."
+    "description": "Move to Trash dialog note (kit 07)."
+  },
+  "cardMoveToTrash": "Move to Trash",
+  "@cardMoveToTrash": {
+    "description": "The Move to Trash dialog's confirm (kit 07, 09)."
+  },
+  "cardTrashedToast": "“{front}” moved to Trash",
+  "@cardTrashedToast": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after one card moves to the Trash, with Undo (FE-B1 D3); front is the card's front."
+  },
+  "cardsTrashedToast": "{count, plural, =1{1 card moved to Trash} other{{count} cards moved to Trash}}",
+  "@cardsTrashedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after cards move to the Trash (FE-B1 D4)."
+  },
+  "cardUndoRefused": "Can't undo. {reason} Restore it from Trash and choose a deck.",
+  "@cardUndoRefused": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar when Undo of a card is refused; reason is the rejection sentence (UC-TRASH-001 E3)."
+  },
+  "cardEditMore": "More",
+  "@cardEditMore": {
+    "description": "Card editor, edit mode: the overline over the Move to Trash card (FE-B1 D13, kit 09)."
+  },
+  "cardEditTrashTitle": "Move this card to Trash",
+  "@cardEditTrashTitle": {
+    "description": "Card editor, edit mode: the Move to Trash card title (kit 09)."
+  },
+  "cardEditTrashBody": "Leaves this deck and can be restored from Trash for 30 days, schedule and history included.",
+  "@cardEditTrashBody": {
+    "description": "Card editor, edit mode: what Move to Trash does (kit 09; the deck path above names the deck)."
   },
   "cardRejectionBlankContent": "Enter both the front and the back.",
   "@cardRejectionBlankContent": {
@@ -866,17 +939,17 @@
   "@cardGoneTitle": {
     "description": "Editor state when the card was deleted meanwhile."
   },
-  "cardGoneBody": "It was deleted while you were editing. Your changes were not saved.",
+  "cardGoneBody": "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash.",
   "@cardGoneBody": {
-    "description": "Body of the gone card state."
+    "description": "Editor state when the card went to the Trash meanwhile (FE-B1 D11, kit 09)."
   },
   "cardDeckGoneTitle": "This deck is no longer here",
   "@cardDeckGoneTitle": {
     "description": "Editor state when the deck was deleted meanwhile."
   },
-  "cardDeckGoneBody": "It was deleted while you were adding cards. This card was not saved.",
+  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved.",
   "@cardDeckGoneBody": {
-    "description": "Body of the gone deck state."
+    "description": "Editor state when the deck went to the Trash meanwhile (FE-B1 D11)."
   },
   "cardBackToDeck": "Back to deck",
   "@cardBackToDeck": {
@@ -977,9 +1050,9 @@
   "@cardFlaggedLabel": {
     "description": "Accessible name of the flag glyph on a flagged card."
   },
-  "cardDetailGoneBody": "It was deleted while this page was open.",
+  "cardDetailGoneBody": "It was moved to Trash while you were away. It can still be restored from Trash, with its history.",
   "@cardDetailGoneBody": {
-    "description": "Body of the card detail's gone state."
+    "description": "Card detail state when the card went to the Trash meanwhile (FE-B1 D11, kit 10)."
   },
   "cardScheduleBox": "Current schedule · Box {box} of {count}",
   "@cardScheduleBox": {
@@ -1252,6 +1325,421 @@
   "@libraryTrash": {
     "description": "Screen handoff 01/04 (library alignment phase C): libraryTrash."
   },
+  "trashNote": "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go.",
+  "@trashNote": {
+    "description": "Screen 06: the retention note over the list (BR-TRASH-009, BR-TRASH-006)."
+  },
+  "trashSelect": "Select",
+  "@trashSelect": {
+    "description": "Screen 06: the app bar action that turns the rows into checkboxes (BR-TRASH-011)."
+  },
+  "trashFilterAll": "All",
+  "@trashFilterAll": {
+    "description": "Screen 06: the filter chip for every entry."
+  },
+  "trashFilterCards": "Cards",
+  "@trashFilterCards": {
+    "description": "Screen 06: the filter chip for card entries."
+  },
+  "trashFilterDecks": "Decks",
+  "@trashFilterDecks": {
+    "description": "Screen 06: the filter chip for deck entries."
+  },
+  "trashEntriesHeader": "{count, plural, =1{1 entry · newest first} other{{count} entries · newest first}}",
+  "@trashEntriesHeader": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: the list header (UC-TRASH-001 step 3)."
+  },
+  "trashCardMeta": "Card · deleted {ago}",
+  "@trashCardMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a card row's meta line; ago is a trashDeleted* phrase."
+  },
+  "trashDeckMeta": "Deck · {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} · {cardCount, plural, =1{1 card} other{{cardCount} cards}} · deleted {ago}",
+  "@trashDeckMeta": {
+    "placeholders": {
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      },
+      "ago": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a deck row's meta line; ago is a trashDeleted* phrase."
+  },
+  "trashDeletedMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
+  "@trashDeletedMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, under an hour ago."
+  },
+  "trashDeletedHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@trashDeletedHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, under a day ago."
+  },
+  "trashDeletedYesterday": "yesterday",
+  "@trashDeletedYesterday": {
+    "description": "Screen 06: when an entry was deleted, a day ago."
+  },
+  "trashDeletedDays": "{count} days ago",
+  "@trashDeletedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: when an entry was deleted, two days ago or more."
+  },
+  "trashWasIn": "Was in {path}",
+  "@trashWasIn": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: where the item was; information only (BR-TRASH-012)."
+  },
+  "trashTopLevel": "Top level",
+  "@trashTopLevel": {
+    "description": "Screen 06: the place of a top-level deck, and its one restore target."
+  },
+  "trashDaysLeft": "{count, plural, =1{1 day left} other{{count} days left}}",
+  "@trashDaysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: time until the auto-purge (BR-TRASH-009)."
+  },
+  "trashHoursLeft": "{count}h left",
+  "@trashHoursLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06: time until the auto-purge, under a day (BR-TRASH-009)."
+  },
+  "trashEntryActions": "Actions for {name}",
+  "@trashEntryActions": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the row's ⋮ label."
+  },
+  "trashEntrySemantics": "{name}, {meta}, {timeLeft}, {origin}",
+  "@trashEntrySemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "meta": {
+        "type": "String"
+      },
+      "timeLeft": {
+        "type": "String"
+      },
+      "origin": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: what TalkBack reads for a row, every fact the ellipsis may hide (spec D15)."
+  },
+  "trashCardActionsMeta": "Card · deleted {ago} · was in {deck}",
+  "@trashCardActionsMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the actions sheet's sub-line for a card."
+  },
+  "trashDeckActionsMeta": "Deck · deleted {ago} · was in {deck}",
+  "@trashDeckActionsMeta": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: the actions sheet's sub-line for a deck."
+  },
+  "trashRestore": "Restore…",
+  "@trashRestore": {
+    "description": "Screen 06: the actions sheet command that asks for a target (BR-TRASH-006)."
+  },
+  "trashRestoreHint": "Choose which deck it goes to",
+  "@trashRestoreHint": {
+    "description": "Screen 06: the Restore command's sub-line."
+  },
+  "trashDeletePermanently": "Delete permanently",
+  "@trashDeletePermanently": {
+    "description": "Screen 06: the actions sheet command that purges one entry (BR-TRASH-010)."
+  },
+  "trashDeletePermanentlyHint": "Cannot be undone · history lost",
+  "@trashDeletePermanentlyHint": {
+    "description": "Screen 06: the Delete permanently command's sub-line."
+  },
+  "trashEmptyTitle": "Trash is empty",
+  "@trashEmptyTitle": {
+    "description": "Screen 06: the empty state title."
+  },
+  "trashEmptyBody": "Decks and cards you delete stay here for 30 days before they are removed for good.",
+  "@trashEmptyBody": {
+    "description": "Screen 06: the empty state body (BR-TRASH-009)."
+  },
+  "trashLoadErrorTitle": "Couldn't open Trash",
+  "@trashLoadErrorTitle": {
+    "description": "Screen 06: the error state title (UC-TRASH-001 E5)."
+  },
+  "trashRestoreOneTitle": "Restore “{name}” to…",
+  "@trashRestoreOneTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 restore sheet title for one entry (UC-TRASH-001 step 5)."
+  },
+  "trashRestoreCardsTitle": "{count, plural, =1{Restore 1 card to…} other{Restore {count} cards to…}}",
+  "@trashRestoreCardsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 restore sheet title for selected cards."
+  },
+  "trashRestoreDecksTitle": "{count, plural, =1{Restore 1 deck to…} other{Restore {count} decks to…}}",
+  "@trashRestoreDecksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 restore sheet title for selected decks."
+  },
+  "trashRestoreCardsRule": "Its schedule, history, flag and tags come back with it. Only decks in the same tree that hold cards or are empty are offered.",
+  "@trashRestoreCardsRule": {
+    "description": "Screen 06 restore sheet rule for cards (kit 06, BR-TRASH-006)."
+  },
+  "trashRestoreDecksRule": "Its sub-decks and cards come back with it, schedules and history included. Only decks that could take it by a move are offered.",
+  "@trashRestoreDecksRule": {
+    "description": "Screen 06 restore sheet rule for sub-decks (BR-TRASH-006; the kit draws only cards)."
+  },
+  "trashRestoreRootsRule": "A top-level deck goes back to the top level, with everything in it.",
+  "@trashRestoreRootsRule": {
+    "description": "Screen 06 restore sheet rule for top-level decks (BR-TRASH-006)."
+  },
+  "trashRestoreEmptyTitle": "Nowhere to restore right now",
+  "@trashRestoreEmptyTitle": {
+    "description": "Screen 06 restore sheet with no target (UC-TRASH-001 E1)."
+  },
+  "trashRestoreNoCardTargetBody": "No deck in “{root}” can hold cards at the moment. Create an empty sub-deck there, then restore.",
+  "@trashRestoreNoCardTargetBody": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 restore sheet with no card target (kit 06 noTarget); root is the top-level deck the cards came from."
+  },
+  "trashRestoreNoDeckTargetBody": "No deck can take it at the moment. Restore or create the deck it goes under first, then restore.",
+  "@trashRestoreNoDeckTargetBody": {
+    "description": "Screen 06 restore sheet with no deck target (UC-TRASH-001 E1)."
+  },
+  "trashRestoredOne": "“{name}” restored to {deck}",
+  "@trashRestoredOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after one entry is restored (kit 06 restored)."
+  },
+  "trashRestoredMany": "{count, plural, =1{1 entry restored to {deck}} other{{count} entries restored to {deck}}}",
+  "@trashRestoredMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after several entries are restored."
+  },
+  "trashSelectTitle": "Select entries",
+  "@trashSelectTitle": {
+    "description": "Screen 06 app bar while selecting, before anything is chosen."
+  },
+  "trashCardsSelected": "{count, plural, =1{1 card selected} other{{count} cards selected}}",
+  "@trashCardsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 app bar while cards are selected (kit 06 selection)."
+  },
+  "trashDecksSelected": "{count, plural, =1{1 deck selected} other{{count} decks selected}}",
+  "@trashDecksSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 app bar while decks are selected."
+  },
+  "trashSelectedOfCards": "{count} of {total} cards",
+  "@trashSelectedOfCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 list header while cards are selected."
+  },
+  "trashSelectedOfDecks": "{count} of {total} decks",
+  "@trashSelectedOfDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 list header while decks are selected."
+  },
+  "trashSelectionClose": "Clear selection",
+  "@trashSelectionClose": {
+    "description": "Screen 06: the close control while selecting."
+  },
+  "trashCardsOnly": "Only cards are selectable while cards are selected — a selection never mixes cards and decks.",
+  "@trashCardsOnly": {
+    "description": "Screen 06: why decks cannot be picked (BR-TRASH-011)."
+  },
+  "trashDecksOnly": "Only decks are selectable while decks are selected — a selection never mixes cards and decks.",
+  "@trashDecksOnly": {
+    "description": "Screen 06: why cards cannot be picked (BR-TRASH-011)."
+  },
+  "trashRestoreSelected": "Restore {count}…",
+  "@trashRestoreSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 selection bar: restores the selection after asking for a target."
+  },
+  "trashPurgeSelected": "Delete for good",
+  "@trashPurgeSelected": {
+    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010)."
+  },
+  "trashPurgeCardsTitle": "{count, plural, =1{Delete 1 card permanently?} other{Delete {count} cards permanently?}}",
+  "@trashPurgeCardsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog title for cards (BR-TRASH-011: the exact count)."
+  },
+  "trashPurgeDecksTitle": "{count, plural, =1{Delete 1 deck permanently?} other{Delete {count} decks permanently?}}",
+  "@trashPurgeDecksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog title for decks."
+  },
+  "trashPurgeBody": "{count, plural, =1{It disappears for good, together with its study history. This cannot be undone.} other{They disappear for good, together with their study history. This cannot be undone.}}",
+  "@trashPurgeBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body (BR-TRASH-011: history is lost)."
+  },
+  "trashPurgeKeep": "Keep in Trash",
+  "@trashPurgeKeep": {
+    "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
+  },
+  "trashPurgeConfirm": "Delete {count}",
+  "@trashPurgeConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog: the destructive confirm."
+  },
+  "trashPurgedCards": "{count, plural, =1{1 card deleted permanently} other{{count} cards deleted permanently}}",
+  "@trashPurgedCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a purge of cards (kit 06 purged)."
+  },
+  "trashPurgedDecks": "{count, plural, =1{1 deck deleted permanently} other{{count} decks deleted permanently}}",
+  "@trashPurgedDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a purge of decks."
+  },
+  "trashPurgeBlocked": "“{deck}” still contains an entry deleted earlier (“{entries}”). It can be removed for good once that entry is gone.",
+  "@trashPurgeBlocked": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "entries": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a purge the store skipped (spec D6; the kit's youngerInside says 'later', invariant 36 allows only 'earlier')."
+  },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
     "placeholders": {
@@ -1418,9 +1906,9 @@
   "@deckGoneTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckGoneTitle."
   },
-  "deckGoneBody": "It was deleted while you were away.",
+  "deckGoneBody": "It was moved to Trash or deleted while you were away. Anything in Trash can still be restored.",
   "@deckGoneBody": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckGoneBody."
+    "description": "Deck state when the deck went to the Trash meanwhile (FE-B1 D11, kit 01)."
   },
   "deckBackToLibrary": "Back to Library",
   "@deckBackToLibrary": {
@@ -1824,10 +2312,6 @@
   "comingSoonTagsBody": "Label cards, filter by label.",
   "@comingSoonTagsBody": {
     "description": "Coming soon: what tags do."
-  },
-  "comingSoonTrashBody": "Restore deleted decks and cards.",
-  "@comingSoonTrashBody": {
-    "description": "Coming soon: what the trash does."
   },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {
@@ -3540,7 +4024,7 @@
   "@exportStaleTitle": {
     "description": "Export banner: a selected card is gone or moved (E6)."
   },
-  "exportStaleBody": "It was moved or deleted meanwhile. Nothing was exported. Refresh the selection and export again.",
+  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Refresh the selection and export again.",
   "@exportStaleBody": {
     "description": "Export banner body for E6."
   },

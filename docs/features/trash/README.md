@@ -1,6 +1,6 @@
 ---
 feature: trash
-code: [lib/features/trash/domain, lib/features/trash/data, lib/features/trash/di]
+code: [lib/features/trash/domain, lib/features/trash/data, lib/features/trash/di, lib/features/trash/presentation]
 depends_on: [card, deck, srs]
 ---
 ## Phạm vi
@@ -33,5 +33,4 @@ Nguồn: trigger của UC-TRASH-001.
 
 | Thứ | Vì sao |
 |---|---|
-| Màn Trash, câu chữ của hộp thoại xoá, snackbar Undo và thời gian của nó, lúc gọi auto-purge, xác nhận purge | FE-B1 ([`wbs_FE.md`](../../wbs_FE.md)); tới lúc đó hộp thoại xoá giữ câu chữ "xoá vĩnh viễn" và chưa gì gọi auto-purge (spec D15) |
 | Đồng bộ batch giữa các thiết bị | `owner_id` luôn NULL; thuộc sub-project auth/sync sau |

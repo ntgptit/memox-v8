@@ -47,6 +47,7 @@ abstract final class AppIcons {
   static const IconData repeat = Icons.repeat; // repeat
   static const IconData lapses = Icons.replay; // rotate-ccw
   static const IconData resetProgress = Icons.replay; // rotate-ccw
+  static const IconData restore = Icons.replay; // rotate-ccw
   static const IconData lock = Icons.lock_outline; // lock
   static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off

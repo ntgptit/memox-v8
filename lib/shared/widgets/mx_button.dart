@@ -39,6 +39,7 @@ class MxButton extends StatelessWidget {
     this.icon,
     this.isBlock = false,
     this.isLoading = false,
+    this.isAutofocused = false,
     this.detail,
   }) : assert(
          detail == null ||
@@ -62,6 +63,10 @@ class MxButton extends StatelessWidget {
   /// Replaces the label with a spinner, keeps the width and blocks presses.
   final bool isLoading;
 
+  /// Takes the focus when it first shows: the safe choice of a destructive
+  /// dialog (BR-TRASH-011).
+  final bool isAutofocused;
+
   /// A second line under the label, in the button ink, such as the interval
   /// a grade gives (screen 16a). It grows the button instead of clipping.
   final String? detail;
@@ -82,6 +87,7 @@ class MxButton extends StatelessWidget {
     );
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
+      autofocus: isAutofocused,
       style: appButtonStyle(
         fill: paint.fill,
         ink: paint.ink,

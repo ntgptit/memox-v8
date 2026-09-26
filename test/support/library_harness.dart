@@ -206,6 +206,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
   ValueChanged<String>? onOpenStudy,
+  VoidCallback? onOpenTrash,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
@@ -216,6 +217,7 @@ DeckLevelScreen deckScreen({
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},
+  onOpenTrash: onOpenTrash ?? () {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
@@ -239,6 +241,7 @@ DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
     onOpenCard: (_) {},
     onExport: (_) {},
     onStudy: () {},
+    onOpenTrash: () {},
   ),
   cardAppBar: (view, back, actions) =>
       CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
