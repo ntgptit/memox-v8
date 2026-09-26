@@ -25,6 +25,7 @@ final class MxDerivedColors {
     required this.statusLearningInk,
     required this.statusReviewingInk,
     required this.statusMasteredInk,
+    required this.primaryInk,
   });
 
   factory MxDerivedColors.resolve(
@@ -100,6 +101,7 @@ final class MxDerivedColors {
         scheme,
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
+      primaryInk: primaryInkOf(scheme),
     );
   }
 
@@ -118,7 +120,10 @@ final class MxDerivedColors {
   static const double _successInkLight = 0.40;
   static const double _successInkDark = 0;
   static const double _surfaceHeroLight = 0.05;
-  static const double _surfaceHeroDark = 0.12;
+  // 18 %, not the kit's 12 %: the deeper #5265F5 needs it to lift the hero
+  // off the page and its boxed tiles as the kit's #8B9AFF did (spec
+  // 2026-09-27).
+  static const double _surfaceHeroDark = 0.18;
   static const double _ghostBorderLight = 0.14;
   static const double _ghostBorderDark = 0.16;
   static const double _newInkLight = 0.40;
@@ -129,6 +134,18 @@ final class MxDerivedColors {
   static const double _reviewingInkDark = 0.10;
   static const double _masteredInkLight = 0.25;
   static const double _masteredInkDark = 0;
+  static const double _primaryInkLight = 0.25;
+  static const double _primaryInkDark = 0.45;
+
+  /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
+  /// toward onSurface until it reads at 4.5:1 on every ground and primary
+  /// tint (spec 2026-09-27 D2). Fills, edges and tints keep primary. The
+  /// one source for MxTextStyles and the component themes too.
+  static Color primaryInkOf(ColorScheme scheme) => _ink(
+    scheme.primary,
+    scheme,
+    scheme.brightness == Brightness.dark ? _primaryInkDark : _primaryInkLight,
+  );
 
   static Color _ink(Color status, ColorScheme scheme, double mix) =>
       Color.lerp(status, scheme.onSurface, mix)!;
@@ -153,6 +170,9 @@ final class MxDerivedColors {
 
   /// Success TEXT and glyphs, never the success fill.
   final Color successInk;
+
+  /// Primary text, icons and focus rings, never a fill.
+  final Color primaryInk;
 
   /// Tinted hero card fill.
   final Color surfaceHero;

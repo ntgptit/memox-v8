@@ -56,6 +56,8 @@ class MxStudyTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accentColor = accent ?? colors.primary;
+    // The badge text is ink: primaryInk unless the caller names an accent.
+    final accentInk = accent ?? context.derivedColors.primaryInk;
     final styles = context.textStyles;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
@@ -98,7 +100,7 @@ class MxStudyTopBar extends StatelessWidget {
                           modeLabel.toUpperCase(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.studyBadge(accentColor),
+                          style: styles.studyBadge(accentInk),
                         ),
                       ),
                     ),

@@ -83,8 +83,10 @@ class MxOptionRow extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
+                              // A stroke glyph, so primaryInk (spec
+                              // 2026-09-27): it reads 3:1 on a sheet.
                               color: isSelected
-                                  ? colors.primary
+                                  ? context.derivedColors.primaryInk
                                   : colors.outline,
                               width: isSelected
                                   ? AppStroke.selectedRing
