@@ -153,4 +153,25 @@ void main() {
 
     expect(offer.reviewTarget, isNull);
   });
+
+  test('a review with no card to ask is no target, even when its mode runs: '
+      'the entry reads a mode of nothing due as runnable (kit onlyNew)', () {
+    final offer = studyEntryOfferOf(
+      _entry(
+        type: SchedulerType.sm2,
+        due: 0,
+        reviews: const [
+          ReviewModeOption(
+            mode: StudyMode.selfAssess,
+            cardCount: 0,
+            unavailableReason: null,
+            isDirectionRequired: true,
+          ),
+        ],
+      ),
+    );
+
+    expect(offer.reviewTarget, isNull);
+    expect(entryFooterActionOf(offer), EntryFooterAction.learn);
+  });
 }

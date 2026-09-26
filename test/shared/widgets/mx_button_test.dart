@@ -102,10 +102,7 @@ void main() {
       tester.getRect(find.text('6d')).top,
       greaterThanOrEqualTo(tester.getRect(find.text('Good')).bottom),
     );
-    expect(
-      DefaultTextStyle.of(context).style.color,
-      scheme.onSurface,
-    );
+    expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
     expect(
       tester.widget<Text>(find.text('6d')).style,
       context.textStyles.buttonDetail,

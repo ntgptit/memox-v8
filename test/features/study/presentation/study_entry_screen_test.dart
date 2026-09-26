@@ -30,6 +30,7 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
   deckId: deckId,
   title: const Text('Deck'),
   breadcrumb: const SizedBox.shrink(),
+  onOpenSession: (_) {},
 );
 
 Future<void> _learned(LibraryEnv env, String deckId, String id, DateTime due) =>

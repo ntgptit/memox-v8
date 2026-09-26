@@ -4,10 +4,14 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_entry_provider.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
+import 'package:memox/features/study/presentation/states/study_start_state.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_banner_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_hero_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_learn_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_review_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -23,12 +27,20 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     super.key,
     required this.deckId,
     required this.breadcrumb,
+    required this.onLearn,
+    required this.onContinue,
   });
 
   final String deckId;
 
   /// The deck's path from the Library, built by `app/` (FE-A6 D16).
   final Widget breadcrumb;
+
+  /// Starts a learning session (BR-STUDY-051).
+  final VoidCallback onLearn;
+
+  /// Takes up today's open session (UC-STUDY-001 A3b).
+  final ValueChanged<String> onContinue;
 
   /// A review list is shown only when there is a choice (BR-STUDY-055).
   static const int _minModesToChoose = 2;
@@ -38,8 +50,9 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final start = ref.watch(studyEntryControllerProvider(deckId));
     final content = switch (ref.watch(studyEntryProvider(deckId))) {
-      AsyncData(value: Ok(:final value)) => _loaded(value),
+      AsyncData(value: Ok(:final value)) => _loaded(value, start),
       // The screen leaves on notFound (UC-STUDY-001 E1).
       AsyncData() => const <Widget>[],
       AsyncError() => [
@@ -61,25 +74,43 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     );
   }
 
-  List<Widget> _loaded(StudyEntry entry) {
+  List<Widget> _loaded(StudyEntry entry, StudyStartState start) {
     final offer = studyEntryOfferOf(entry);
+    final resumable = entry.resumable;
     return [
       const SizedBox(height: AppSpacing.micro),
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
+      if (resumable != null && offer.canContinue) ...[
+        const SizedBox(height: AppSpacing.grouped),
+        StudyEntryResumeWidget(
+          session: resumable,
+          isLocked: start.isStarting,
+          onContinue: () => onContinue(resumable.sessionId),
+        ),
+      ],
       if (offer.isNothingDue) ...[
         const SizedBox(height: AppSpacing.grouped),
         const _NothingDue(),
       ],
       if (entry.newCardCount > 0) ...[
         const SizedBox(height: AppSpacing.grouped),
-        StudyEntryLearnWidget(entry: entry, offer: offer),
+        StudyEntryLearnWidget(
+          entry: entry,
+          offer: offer,
+          onLearn: start.isStarting ? null : onLearn,
+        ),
       ],
       // A review needs due cards (kit onlyNew, nothing).
       if (entry.dueCardCount > 0 &&
           offer.reviews.length >= _minModesToChoose) ...[
         const SizedBox(height: AppSpacing.grouped),
         StudyEntryReviewWidget(reviews: offer.reviews),
+      ],
+      if (start.status == StudyStartStatus.refused ||
+          start.status == StudyStartStatus.failed) ...[
+        const SizedBox(height: AppSpacing.grouped),
+        StudyEntryBannerWidget(start: start),
       ],
     ];
   }

@@ -87,12 +87,16 @@ final class FailingEntries implements StudyEntryRepository {
   /// The openings that reached the store.
   var opened = 0;
 
+  /// When set, an opening waits for it: the screen's starting state.
+  Future<void>? gate;
+
   @override
   Future<Outcome<String, StudyRejection>> openLearningSession({
     required String deckId,
     DateTime? now,
-  }) {
+  }) async {
     opened++;
+    await gate;
     if (isFailing) throw const UnknownDatabaseFailure(cause: 'test');
     return _inner.openLearningSession(deckId: deckId, now: now);
   }
@@ -103,8 +107,9 @@ final class FailingEntries implements StudyEntryRepository {
     required StudyMode mode,
     DirectionChoice? direction,
     DateTime? now,
-  }) {
+  }) async {
     opened++;
+    await gate;
     if (isFailing) throw const UnknownDatabaseFailure(cause: 'test');
     return _inner.openReviewSession(
       deckId: deckId,

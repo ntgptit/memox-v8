@@ -75,9 +75,12 @@ StudyEntryOffer studyEntryOfferOf(
     for (final option in entry.reviewModes)
       ReviewOffer(option: option, status: _statusOf(option, built)),
   ];
+  // A mode runs on no due cards too; a review still needs a card to ask.
   final available = [
     for (final review in reviews)
-      if (review.status == ReviewOfferStatus.available) review.option,
+      if (review.status == ReviewOfferStatus.available &&
+          review.option.cardCount > 0)
+        review.option,
   ];
   return StudyEntryOffer(
     isNothingDue: entry.newCardCount == 0 && entry.dueCardCount == 0,

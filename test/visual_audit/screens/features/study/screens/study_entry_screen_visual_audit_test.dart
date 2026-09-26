@@ -13,6 +13,7 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
     deckId: deckId,
     part: DeckStudyHeaderPart.breadcrumb,
   ),
+  onOpenSession: (_) {},
 );
 
 void main() {
