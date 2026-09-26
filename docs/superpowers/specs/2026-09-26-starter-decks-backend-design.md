@@ -1,6 +1,8 @@
 # MemoX V8 — Starter decks backend design (package 10)
 
-Status: approved 2026-09-26 · Path: architectural
+Status: approved 2026-09-26; amended 2026-09-26 (the result of a copy is named
+`AddedStarterDeck`, as the guard's `common.no_temp_file_name` rejects "copy" in a file
+name) · Path: architectural
 
 ## 1. Intent
 
@@ -104,7 +106,7 @@ Success means:
 lib/features/starter_decks/
 ├── domain/
 │   ├── models/        starter_template_model (template, deck and card nodes),
-│   │                  starter_library_entry_model, starter_copy_model
+│   │                  starter_library_entry_model, added_starter_deck_model
 │   ├── repositories/  starter_library_repository
 │   ├── failures/      starter_failure (enum StarterRejection)
 │   └── usecases/      watch_starter_library_use_case, add_starter_deck_use_case
@@ -201,7 +203,7 @@ and its Revised Romanization; the consonants carry the letter's name as `hint`
 ## 7. The copy (write)
 
 `addStarterDeck(templateId, schedulerType, {allowSecondCopy = false})` →
-`Outcome<StarterCopy, StarterRejection>`, one transaction:
+`Outcome<AddedStarterDeck, StarterRejection>`, one transaction:
 
 1. The template with `templateId` from §5.3; none → `templateNotFound`, nothing written.
 2. "In library" (D7) for its `(templateId, version)`; a copy and no `allowSecondCopy` →
@@ -214,8 +216,8 @@ and its Revised Romanization; the consonants carry the letter's name as `hint`
 5. Any `Rejected` in 3–4 throws (D10); any database error propagates. Either way the
    transaction rolls back, and the caller gets a `Failure`: the kit's `addFailed`.
 
-`StarterCopy` carries `rootDeckId`, `title`, `schedulerType` and `cardCount`: what the
-`added` snackbar and its Open action need.
+`AddedStarterDeck` carries `rootDeckId`, `title`, `schedulerType` and `cardCount`: what
+the `added` snackbar and its Open action need.
 
 The result, for every copy: a root with `content_type = 'deck'`, `root_id = id`,
 `depth = 1`, `generation = 1`, `first_answered_at = NULL`, the chosen scheduler and the two
@@ -242,7 +244,7 @@ the database changes.
 | Use case | Signature | Kit states |
 |---|---|---|
 | `WatchStarterLibraryUseCase` | `Stream<List<StarterLibraryEntry>> call()` | `loading` (no value yet), `list`, `none` (empty), `loadFailed` (error) |
-| `AddStarterDeckUseCase` | `Future<Outcome<StarterCopy, StarterRejection>> call({required String templateId, required SchedulerType schedulerType, bool allowSecondCopy = false})` | `adding`, `added` (`Ok`), `alreadyPresent` (`alreadyInLibrary`), `addFailed` (a `Failure`) |
+| `AddStarterDeckUseCase` | `Future<Outcome<AddedStarterDeck, StarterRejection>> call({required String templateId, required SchedulerType schedulerType, bool allowSecondCopy = false})` | `adding`, `added` (`Ok`), `alreadyPresent` (`alreadyInLibrary`), `addFailed` (a `Failure`) |
 
 - `StarterLibraryEntry`: `templateId`, `version`, `title`, `locale`, `frontLanguage`,
   `backLanguage`, `contentSource`, `suggestedScheduler`, `cardCount`, `subDeckCount`,
@@ -251,7 +253,8 @@ the database changes.
   `isInLibrary` opens `secondCopy`; its confirmation calls with `allowSecondCopy: true`.
   "Add to library" calls without it, so a copy that appeared meanwhile ends in
   `alreadyPresent`.
-- Open uses `StarterCopy.rootDeckId`; the snackbar's count is `StarterCopy.cardCount`.
+- Open uses `AddedStarterDeck.rootDeckId`; the snackbar's count is
+  `AddedStarterDeck.cardCount`.
 - `templateNotFound` is reachable only through a stale entry; FE-B4 treats it like
   `addFailed`.
 
