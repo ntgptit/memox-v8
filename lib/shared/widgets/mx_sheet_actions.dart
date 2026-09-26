@@ -3,10 +3,12 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// The footer every dialog and sheet ends with. The confirm takes 1.3 shares
 /// to Cancel's 1, so a real verb ("Move to Trash") keeps its line and Cancel
-/// gives up width first.
+/// gives up width first; when a label cannot fit its share on one line, the
+/// two stack instead (MxActionPair, spec 2026-09-26 D3).
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
@@ -60,35 +62,30 @@ class MxSheetActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final row = Row(
-      spacing: AppSpacing.control,
-      children: children.isNotEmpty
-          ? children
-          : [
-              Expanded(
-                flex: _cancelShare,
-                child: MxButton(
-                  label: cancelLabel!,
-                  onPressed: onCancel,
-                  tone: MxButtonTone.outline,
-                  isBlock: true,
-                ),
-              ),
-              Expanded(
-                flex: _confirmShare,
-                child: MxButton(
-                  label: confirmLabel!,
-                  onPressed: onConfirm,
-                  icon: confirmIcon,
-                  isLoading: isConfirmLoading,
-                  tone: isDestructive
-                      ? MxButtonTone.destructive
-                      : MxButtonTone.primary,
-                  isBlock: true,
-                ),
-              ),
-            ],
-    );
+    final Widget row = children.isNotEmpty
+        ? Row(spacing: AppSpacing.control, children: children)
+        : MxActionPair(
+            leading: MxButton(
+              label: cancelLabel!,
+              onPressed: onCancel,
+              tone: MxButtonTone.outline,
+              isBlock: true,
+              isSingleLine: true,
+            ),
+            trailing: MxButton(
+              label: confirmLabel!,
+              onPressed: onConfirm,
+              icon: confirmIcon,
+              isLoading: isConfirmLoading,
+              tone: isDestructive
+                  ? MxButtonTone.destructive
+                  : MxButtonTone.primary,
+              isBlock: true,
+              isSingleLine: true,
+            ),
+            leadingFlex: _cancelShare,
+            trailingFlex: _confirmShare,
+          );
     if (!isInSheet) {
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.gutter),

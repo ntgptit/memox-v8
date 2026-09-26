@@ -48,6 +48,29 @@ class TrashEntryRowWidget extends StatelessWidget {
     final meta = _meta(context);
     final timeLeft = trashTimeLeft(l10n, entry, now);
     final origin = l10n.trashWasIn(trashOrigin(l10n, entry));
+    final lines = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.grouped,
+      children: [
+        if (isSelecting)
+          Align(child: MxSelectionCheckbox(isChecked: isSelected))
+        else
+          MxIconTile(
+            icon: entry is TrashDeckEntry
+                ? AppIcons.library
+                : AppIcons.cardDeck,
+          ),
+        Expanded(
+          child: _Lines(
+            name: name,
+            timeLeft: timeLeft,
+            isExpiringSoon: isTrashExpiringSoon(entry, now),
+            meta: meta,
+            origin: origin,
+          ),
+        ),
+      ],
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.control),
       child: MxCard(
@@ -72,34 +95,11 @@ class TrashEntryRowWidget extends StatelessWidget {
                     onTap: onTap,
                     child: Padding(
                       padding: const EdgeInsets.all(_rowPadding),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: AppSpacing.grouped,
-                        children: [
-                          if (isSelecting)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: AppSpacing.micro,
-                              ),
-                              child: MxSelectionCheckbox(isChecked: isSelected),
-                            )
-                          else
-                            MxIconTile(
-                              icon: entry is TrashDeckEntry
-                                  ? AppIcons.library
-                                  : AppIcons.cardDeck,
-                            ),
-                          Expanded(
-                            child: _Lines(
-                              name: name,
-                              timeLeft: timeLeft,
-                              isExpiringSoon: isTrashExpiringSoon(entry, now),
-                              meta: meta,
-                              origin: origin,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // The row takes a definite height while selecting, so
+                      // the checkbox centres on it (spec 2026-09-26 D4).
+                      child: isSelecting
+                          ? IntrinsicHeight(child: lines)
+                          : lines,
                     ),
                   ),
                 ),

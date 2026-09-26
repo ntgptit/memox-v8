@@ -24,6 +24,8 @@ final class MxTextStyles {
   static const double _rowTitleTracking = -0.1;
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
+  static const double _overlineSize = 13;
+  static const double _compactOverlineSize = 12;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -258,15 +260,23 @@ final class MxTextStyles {
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Overline (Section, ListSectionHeader): 12/700, 0.6 tracking,
-  /// onSurfaceVariant. Tabular, so a trailing static count lines up. The
-  /// widget upper-cases the text.
+  /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
+  /// tracking, onSurface, so a group title reads as a boundary (spec
+  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
+  /// a trailing static count lines up. The widget upper-cases the text.
   TextStyle get overline =>
       AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        fontSize: _overlineSize,
         letterSpacing: _overlineTracking,
         fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
+        color: _scheme.onSurface,
       );
+
+  /// The overline at 12, for a label inside a card that 13 would wrap on a
+  /// phone: the deck summary's progress line (owner 2026-09-26, register
+  /// row 119).
+  TextStyle get compactOverline =>
+      overline.copyWith(fontSize: _compactOverlineSize);
 
   /// A stat's figure (StatTile): the headline role at 700, tabular, tight
   /// line box, in the ink the tile's emphasis picks (FE-A6 D17).
