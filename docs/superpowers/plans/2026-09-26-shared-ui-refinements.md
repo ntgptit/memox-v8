@@ -2,17 +2,22 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix the shared half of the owner's screen 06 review on `master`. Pairs of
-footer buttons stop truncating or wrapping, cards use radius 12, a selecting checkbox
-is vertically centred, and the overline reads as a section boundary.
+**Goal:** Fix the shared half of the owner's screen 06 review on `master`, at every
+call site, Trash's included:
+- pairs of footer, dialog and sheet buttons stop truncating or wrapping;
+- cards use radius 12;
+- a selecting checkbox is vertically centred;
+- the overline reads as a section boundary.
 
 **Architecture:**
 - `MxButton` gains a single-line mode and can measure its own natural width. A new
   `MxActionPair` uses that measurement to place two buttons side by side or stacked.
+  `MxSheetActions`' own pair uses it, so every dialog and sheet footer follows.
 - The card radius changes at its single source, `AppDecorations.raisedCard`, and every
   card tone derives from it.
 - The overline changes at its single source, `MxTextStyles.overline`.
-- The card list row centres its checkbox with `IntrinsicHeight` while selecting.
+- The card list row and the Trash row centre their checkbox with `IntrinsicHeight`
+  while selecting.
 
 **Tech Stack:** Flutter 3.47.5, Dart 3.13, flutter_test, Riverpod (untouched).
 
@@ -32,8 +37,10 @@ is vertically centred, and the overline reads as a section boundary.
 - Goldens are rewritten only in this Linux container, after the unmodified suite has
   been shown green here. Never on Windows.
 - Register rows 113–116 go into §9 of
-  `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`, because FE-B1 uses
-  108–112.
+  `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`, because FE-B1 (#78)
+  added 108–112.
+- `MxButton.isAutofocused` (#78) stays; the Trash purge dialog's Keep button relies on
+  it.
 
 ## Review Focus
 
@@ -174,6 +181,7 @@ Then:
     this.icon,
     this.isBlock = false,
     this.isLoading = false,
+    this.isAutofocused = false,
     this.isSingleLine = false,
     this.detail,
   }) : assert(
@@ -490,43 +498,187 @@ git commit -m "feat(ui): MxActionPair stacks a footer pair that cannot fit"
 
 ---
 
-### Task 3: Move the two paired footers to `MxActionPair`
+### Task 3: Move every two-button footer to `MxActionPair`
 
 **Files:**
+- Modify: `lib/shared/widgets/mx_sheet_actions.dart` (the default pair)
+- Modify: `lib/features/trash/presentation/widgets/overlays/trash_purge_dialog_widget.dart`
+- Modify: `lib/features/trash/presentation/widgets/sections/trash_selection_bar_widget.dart`
 - Modify: `lib/features/study/presentation/widgets/sections/session_summary_widget.dart`
 - Modify: `lib/features/transfer/presentation/screens/card_import_screen.dart`
-- Test: the existing tests of both screens (`test/features/study/...`,
-  `test/features/transfer/...`). Find them with
-  `grep -rln "SessionSummaryWidget\|CardImportScreen" test`.
+- Check and leave unless they are a two-button pair: the other `MxSheetActions.custom`
+  users, `study_direction_sheet_widget.dart`, `card_export_sheet_widget.dart` and
+  `mx_deck_picker_sheet.dart`.
+- Test: `test/shared/widgets/mx_sheet_actions_test.dart`,
+  `test/features/trash/presentation/trash_selection_test.dart`, and the existing tests
+  of the summary and import screens (find them with
+  `grep -rln "SessionSummaryWidget\|CardImportScreen" test`).
 
 **Interfaces:**
 - Consumes: `MxActionPair` (Task 2), `MxButton.isSingleLine` (Task 1).
 
-- [ ] **Step 1: Write the failing test** (in the session summary widget test file)
+- [ ] **Step 1: Write the failing tests**
+
+`mx_sheet_actions_test.dart` (the existing 10 : 13 test must keep passing):
 
 ```dart
-  testWidgets('the footer is one MxActionPair: Study this deck 5, Done 6', (
+  testWidgets('labels too long for their shares stack the pair', (
     tester,
   ) async {
-    // Pump the summary exactly as that file's first test does, with an
-    // outcome whose canStudyAgain is true.
-    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
-    expect(pair.leadingFlex, 5);
-    expect(pair.trailingFlex, 6);
-    expect(pair.leading!.isSingleLine, isTrue);
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Giữ lại tất cả',
+          onCancel: () {},
+          confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
+          confirmIcon: Icons.delete,
+          isDestructive: true,
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final cancel = tester.getRect(_button('Giữ lại tất cả'));
+    final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
+
+    expect(confirm.top, greaterThan(cancel.bottom));
+    expect(cancel.width, confirm.width);
+    expect(tester.takeException(), isNull);
   });
 ```
 
-In the card import screen test file, add the same kind of test for the results
-footer: `find.byType(MxActionPair)` finds one pair, and its `leading` is the outline
-button.
+`trash_selection_test.dart`:
+
+```dart
+  libraryTest('the selection bar is one MxActionPair, Restore 13 : Delete 10', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, 13);
+    expect(pair.trailingFlex, 10);
+    expect(pair.leading!.isSingleLine, isTrue);
+    expect(pair.trailing.isSingleLine, isTrue);
+  });
+```
+
+(Import `package:memox/shared/widgets/mx_action_pair.dart`.)
+
+In the same file, beside the existing purge dialog test, add a test that the open purge
+dialog holds one `MxActionPair` whose `leading` is autofocused
+(`pair.leading!.isAutofocused`).
+
+In the summary widget's test file, add a test that the footer is one `MxActionPair`
+with `leadingFlex` 5 and `trailingFlex` 6. Pump it exactly as that file's first test
+does, with an outcome whose `canStudyAgain` is true. In the card import screen's test
+file, add a test that the results footer is one `MxActionPair` whose `leading` is the
+outline button.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `flutter test <the two test files>`
-Expected: FAIL: no `MxActionPair` is found.
+Run: `flutter test test/shared/widgets/mx_sheet_actions_test.dart test/features/trash/presentation/trash_selection_test.dart <the two screen test files>`
+Expected: the stacking test fails (the pair stays in one row), and the other new tests
+fail to find `MxActionPair`.
 
 - [ ] **Step 3: Implement**
+
+`mx_sheet_actions.dart`: build the footer's body as below, and keep the padding and
+sheet decoration code as it is. Custom children keep their `Row`.
+
+```dart
+    final Widget row = children.isNotEmpty
+        ? Row(spacing: AppSpacing.control, children: children)
+        : MxActionPair(
+            leading: MxButton(
+              label: cancelLabel!,
+              onPressed: onCancel,
+              tone: MxButtonTone.outline,
+              isBlock: true,
+              isSingleLine: true,
+            ),
+            trailing: MxButton(
+              label: confirmLabel!,
+              onPressed: onConfirm,
+              icon: confirmIcon,
+              isLoading: isConfirmLoading,
+              tone: isDestructive
+                  ? MxButtonTone.destructive
+                  : MxButtonTone.primary,
+              isBlock: true,
+              isSingleLine: true,
+            ),
+            leadingFlex: _cancelShare,
+            trailingFlex: _confirmShare,
+          );
+```
+
+Update the class doc to say the pair stacks when a label cannot fit its share (spec
+2026-09-26 D3).
+
+`trash_purge_dialog_widget.dart`: the custom footer becomes a single child:
+
+```dart
+        actions: MxSheetActions.custom(
+          children: [
+            Expanded(
+              child: MxActionPair(
+                leading: MxButton(
+                  label: l10n.trashPurgeKeep,
+                  onPressed: _isPurging
+                      ? null
+                      : () => Navigator.of(context).pop(false),
+                  isBlock: true,
+                  isSingleLine: true,
+                  isAutofocused: true,
+                ),
+                trailing: MxButton(
+                  label: l10n.trashPurgeConfirm(count),
+                  icon: AppIcons.delete,
+                  tone: MxButtonTone.destructive,
+                  isBlock: true,
+                  isSingleLine: true,
+                  isLoading: _isPurging,
+                  onPressed: _purge,
+                ),
+                leadingFlex: _keepShare,
+                trailingFlex: _deleteShare,
+              ),
+            ),
+          ],
+        ),
+```
+
+`trash_selection_bar_widget.dart`:
+
+```dart
+    return MxFooterBar(
+      child: MxActionPair(
+        leading: MxButton(
+          label: l10n.trashRestoreSelected(count),
+          icon: AppIcons.restore,
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: hasPick ? onRestore : null,
+        ),
+        trailing: MxButton(
+          label: l10n.trashPurgeSelected,
+          icon: AppIcons.delete,
+          tone: MxButtonTone.destructive,
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: hasPick ? onPurge : null,
+        ),
+        leadingFlex: _restoreShare,
+        trailingFlex: _purgeShare,
+      ),
+    );
+```
+
+Drop the `app_spacing.dart` import if nothing else in the file uses it.
 
 `session_summary_widget.dart`: replace the footer's `Row` with:
 
@@ -554,9 +706,6 @@ Expected: FAIL: no `MxActionPair` is found.
         ),
 ```
 
-Import `package:memox/shared/widgets/mx_action_pair.dart`. Drop the `app_spacing.dart`
-import only if nothing else in the file uses `AppSpacing`.
-
 `card_import_screen.dart`, `_resultShell`: replace the footer's `Row` with:
 
 ```dart
@@ -581,19 +730,21 @@ import only if nothing else in the file uses `AppSpacing`.
         ),
 ```
 
-Import `mx_action_pair.dart`.
+Each file imports `package:memox/shared/widgets/mx_action_pair.dart`. Then open the
+three other `MxSheetActions.custom` users. Move one only if it is two buttons of
+equal standing, and say which ones you left in the commit message.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `flutter test test/features/study test/features/transfer --exclude-tags golden`
+Run: `flutter test test/shared test/features/trash test/features/study test/features/transfer --exclude-tags golden`
 Expected: all pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add lib/features/study/presentation/widgets/sections/session_summary_widget.dart \
-  lib/features/transfer/presentation/screens/card_import_screen.dart <the test files>
-git commit -m "refactor(ui): summary and import results footers use MxActionPair"
+git add lib/shared/widgets/mx_sheet_actions.dart lib/features/trash lib/features/study \
+  lib/features/transfer test
+git commit -m "refactor(ui): sheet actions and footer pairs use MxActionPair"
 ```
 
 ---
@@ -667,11 +818,13 @@ git commit -m "feat(ui): cards take radius 12, the in-flow surface radius"
 
 ---
 
-### Task 5: Centre the card list's selecting checkbox
+### Task 5: Centre the selecting checkbox (card list and Trash)
 
 **Files:**
 - Modify: `lib/features/card/presentation/widgets/items/card_row_widget.dart:60-85`
-- Test: `test/features/card/presentation/card_row_test.dart`
+- Modify: `lib/features/trash/presentation/widgets/items/trash_entry_row_widget.dart:85-115`
+- Test: `test/features/card/presentation/card_row_test.dart`,
+  `test/features/trash/presentation/trash_selection_test.dart`
 
 **Interfaces:** none new.
 
@@ -711,10 +864,38 @@ git commit -m "feat(ui): cards take radius 12, the in-flow surface radius"
 
 (Import `package:memox/shared/widgets/mx_card.dart`.)
 
-- [ ] **Step 2: Run it to verify it fails**
+In `trash_selection_test.dart`, add:
 
-Run: `flutter test test/features/card/presentation/card_row_test.dart`
-Expected: FAIL: the checkbox centre sits above the card centre.
+```dart
+  libraryTest('while selecting, each checkbox is centred on its row', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _tap(tester, _button(_en.trashSelect));
+
+    final rows = find.byType(TrashEntryRowWidget);
+    for (var i = 0; i < tester.widgetList(rows).length; i++) {
+      final row = rows.at(i);
+      final box = tester.getRect(
+        find.descendant(of: row, matching: find.byType(MxSelectionCheckbox)),
+      );
+      final card = tester.getRect(
+        find.descendant(of: row, matching: find.byType(MxCard)),
+      );
+      expect(box.center.dy, closeTo(card.center.dy, 0.5));
+    }
+  });
+```
+
+(Import `trash_entry_row_widget.dart`, `mx_selection_checkbox.dart` and
+`mx_card.dart`.)
+
+- [ ] **Step 2: Run them to verify they fail**
+
+Run: `flutter test test/features/card/presentation/card_row_test.dart test/features/trash/presentation/trash_selection_test.dart`
+Expected: FAIL: each checkbox centre sits above its card centre.
 
 - [ ] **Step 3: Implement**
 
@@ -750,17 +931,50 @@ the checkbox; it is applied only while selecting, so the idle list pays nothing.
 Then use `isSelecting ? IntrinsicHeight(child: row) : row` as the child of the
 `Padding(padding: const EdgeInsets.all(_rowPadding), ...)`.
 
+In `TrashEntryRowWidget.build`, do the same to the inner row (the one holding the
+checkbox or icon tile and `_Lines`):
+
+```dart
+    final lines = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.grouped,
+      children: [
+        if (isSelecting)
+          Align(child: MxSelectionCheckbox(isChecked: isSelected))
+        else
+          MxIconTile(
+            icon: entry is TrashDeckEntry ? AppIcons.library : AppIcons.cardDeck,
+          ),
+        Expanded(
+          child: _Lines(
+            name: name,
+            timeLeft: timeLeft,
+            isExpiringSoon: isTrashExpiringSoon(entry, now),
+            meta: meta,
+            origin: origin,
+          ),
+        ),
+      ],
+    );
+```
+
+It becomes the child of `Padding(padding: const EdgeInsets.all(_rowPadding), ...)` as
+`isSelecting ? IntrinsicHeight(child: lines) : lines`. The old `micro` top padding
+around the checkbox goes.
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `flutter test test/features/card/presentation --exclude-tags golden`
+Run: `flutter test test/features/card/presentation test/features/trash --exclude-tags golden`
 Expected: all pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add lib/features/card/presentation/widgets/items/card_row_widget.dart \
-  test/features/card/presentation/card_row_test.dart
-git commit -m "feat(card): centre the selecting checkbox on the row"
+  lib/features/trash/presentation/widgets/items/trash_entry_row_widget.dart \
+  test/features/card/presentation/card_row_test.dart \
+  test/features/trash/presentation/trash_selection_test.dart
+git commit -m "feat(ui): centre the selecting checkbox on card and Trash rows"
 ```
 
 ---
@@ -878,8 +1092,9 @@ For each changed PNG, open the new file (Read tool) and confirm that only the
 intended changes appear:
 - card corners are 12;
 - overline text is 13 and dark;
-- the summary and import footers show the right layout;
-- the card list's selecting checkbox is centred.
+- the summary, import and Trash footers, and every dialog or sheet footer, show the
+  right layout;
+- the card list's and Trash's selecting checkboxes are centred.
 
 Nothing else may move. Any other difference is a bug: fix it in the owning task
 before continuing.
