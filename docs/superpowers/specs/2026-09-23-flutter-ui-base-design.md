@@ -517,6 +517,11 @@ item names where it comes from.
 | 112 | Screen 06's kind tile is the tinted `MxIconTile`, not the kit's grey one, and "Was in" has no corner glyph; "Select" is a compact secondary `MxButton` (ruling E-L3); "Delete for good" is a filled destructive `MxButton`, not a red outline | FE-B1 plan 2 |
 | 113 | Match's and Guess's widget-local geometry constants (`_badgeTint` 0.10, the letter ring `_ring` 1.5, `_columnOrder`) are named in the widget but are not theme tokens | FE-A6 P3 final review |
 | 114 | Screen 14 offers Learn twice when nothing is due: the Learn row's button and the footer both start the same learning session, as the kit draws them | FE-A6 P2 final review |
+| 115 | `MxCard` and every card surface use radius 12 (kit: 20), the one radius of in-flow surfaces with banners, notes and buttons; dialogs and sheets keep 20 | owner 2026-09-26, spec shared-ui-refinements D2 |
+| 116 | `overline` is 13/700 in `onSurface` (kit: 12/700 `onSurfaceVariant`), so a group title reads as a boundary | owner 2026-09-26, D5 |
+| 117 | A selecting row's checkbox is centred vertically on the row (kit: top-aligned with the title) | owner 2026-09-26, D4 |
+| 118 | A footer pair stacks full width when a label cannot fit its share on one line (kit: always side by side, labels wrap) | owner 2026-09-26, D3 |
+| 119 | The deck summary's progress label keeps the 12 overline (`compactOverline`), onSurface, so it stays on one line on a 360 phone; every other overline is 13 (row 116) | owner 2026-09-26 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

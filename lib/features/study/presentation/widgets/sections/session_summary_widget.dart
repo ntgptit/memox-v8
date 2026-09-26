@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Screen 21, the session summary (kit StudyResultScreenV3): how the
 /// session ended, what it did, and the way back (UC-STUDY-001 step 13, A3,
@@ -65,30 +66,26 @@ class SessionSummaryWidget extends StatelessWidget {
       ),
       footer: MxFooterBar(
         caption: l10n.summaryDoneCaption,
-        child: Row(
-          spacing: AppSpacing.control,
-          children: [
-            if (outcome.canStudyAgain)
-              Expanded(
-                flex: _studyFlex,
-                child: MxButton(
+        child: MxActionPair(
+          leading: outcome.canStudyAgain
+              ? MxButton(
                   label: l10n.studyThisDeck,
                   tone: MxButtonTone.outline,
                   icon: AppIcons.play,
                   isBlock: true,
+                  isSingleLine: true,
                   onPressed: onStudyDeck,
-                ),
-              ),
-            Expanded(
-              flex: _doneFlex,
-              child: MxButton(
-                label: l10n.summaryDone,
-                icon: AppIcons.check,
-                isBlock: true,
-                onPressed: onDone,
-              ),
-            ),
-          ],
+                )
+              : null,
+          trailing: MxButton(
+            label: l10n.summaryDone,
+            icon: AppIcons.check,
+            isBlock: true,
+            isSingleLine: true,
+            onPressed: onDone,
+          ),
+          leadingFlex: _studyFlex,
+          trailingFlex: _doneFlex,
         ),
       ),
     );

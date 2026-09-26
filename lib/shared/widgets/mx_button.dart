@@ -40,6 +40,7 @@ class MxButton extends StatelessWidget {
     this.isBlock = false,
     this.isLoading = false,
     this.isAutofocused = false,
+    this.isSingleLine = false,
     this.detail,
   }) : assert(
          detail == null ||
@@ -70,6 +71,10 @@ class MxButton extends StatelessWidget {
   /// A second line under the label, in the button ink, such as the interval
   /// a grade gives (screen 16a). It grows the button instead of clipping.
   final String? detail;
+
+  /// Keeps the label on one line whatever the size: a caller that has
+  /// checked [naturalWidth] (MxActionPair) never lets it wrap.
+  final bool isSingleLine;
 
   /// A caller-constrained label wraps to at most this many lines.
   static const int _maxWrappedLines = 2;
@@ -107,6 +112,30 @@ class MxButton extends StatelessWidget {
         : button;
     if (onPressed != null) return sized;
     return Opacity(opacity: AppOpacity.disabled, child: sized);
+  }
+
+  /// The width this button needs to show its label on one line: the label at
+  /// its style and the context's text scale, the icon and its gap, and the
+  /// horizontal padding on both sides.
+  double naturalWidth(BuildContext context) {
+    final geometry = _geometryFor(
+      size,
+      hasIcon: icon != null,
+      isBlock: isBlock,
+    );
+    final style = geometry.isSmallType
+        ? context.textStyles.buttonLabelSmall
+        : context.textStyles.buttonLabel;
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final iconWidth = icon == null ? 0 : AppIconSize.inline + AppSpacing.micro;
+    final width = painter.width + iconWidth + geometry.padding * 2;
+    painter.dispose();
+    return width.ceilToDouble();
   }
 
   _Paint _paintFor(BuildContext context) {
@@ -205,11 +234,12 @@ class MxButton extends StatelessWidget {
   };
 
   Widget _content(Color ink, _Geometry geometry, TextStyle detailStyle) {
+    final canWrap = geometry.canWrap && !isSingleLine;
     final labelText = Text(
       label,
       textAlign: TextAlign.center,
-      maxLines: geometry.canWrap ? _maxWrappedLines : 1,
-      softWrap: geometry.canWrap,
+      maxLines: canWrap ? _maxWrappedLines : 1,
+      softWrap: canWrap,
     );
     final detail = this.detail;
     final text = detail == null

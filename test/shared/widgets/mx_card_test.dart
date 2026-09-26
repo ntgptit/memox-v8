@@ -35,7 +35,7 @@ List<BoxShadow>? _shadow(WidgetTester tester) =>
         .boxShadow;
 
 void main() {
-  testWidgets('light: raised fill, radius 20, 20 padding, whisper, no edge', (
+  testWidgets('light: raised fill, radius 12, 20 padding, whisper, no edge', (
     tester,
   ) async {
     final scheme = AppColorSchemes.light;
@@ -45,7 +45,7 @@ void main() {
     );
 
     expect(_surface(tester).color, scheme.surfaceContainerLowest);
-    expect(_shape(tester).borderRadius, BorderRadius.circular(20));
+    expect(_shape(tester).borderRadius, BorderRadius.circular(12));
     expect(_shape(tester).side, BorderSide.none);
     expect(_shadow(tester), AppShadows.whisper(scheme));
     expect(

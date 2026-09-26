@@ -237,18 +237,20 @@ void main() {
     );
   });
 
-  test('overline 12/700 at 0.6, tabular, onSurfaceVariant', () {
+  test('overline 13/700 at 0.6, tabular, onSurface (spec 2026-09-26 D5)', () {
     expectStyle(
       styles.overline,
-      size: 12,
+      size: 13,
       weight: FontWeight.w700,
       tracking: 0.6,
-      color: scheme.onSurfaceVariant,
+      color: scheme.onSurface,
     );
     expect(
       styles.overline.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
+    // D7: the deck summary label keeps 12, otherwise the same overline.
+    expect(styles.compactOverline, styles.overline.copyWith(fontSize: 12));
   });
 
   test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {
