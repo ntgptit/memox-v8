@@ -935,17 +935,17 @@
   "@cardGoneTitle": {
     "description": "Editor state when the card was deleted meanwhile."
   },
-  "cardGoneBody": "It was deleted while you were editing. Your changes were not saved.",
+  "cardGoneBody": "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash.",
   "@cardGoneBody": {
-    "description": "Body of the gone card state."
+    "description": "Editor state when the card went to the Trash meanwhile (FE-B1 D11, kit 09)."
   },
   "cardDeckGoneTitle": "This deck is no longer here",
   "@cardDeckGoneTitle": {
     "description": "Editor state when the deck was deleted meanwhile."
   },
-  "cardDeckGoneBody": "It was deleted while you were adding cards. This card was not saved.",
+  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved.",
   "@cardDeckGoneBody": {
-    "description": "Body of the gone deck state."
+    "description": "Editor state when the deck went to the Trash meanwhile (FE-B1 D11)."
   },
   "cardBackToDeck": "Back to deck",
   "@cardBackToDeck": {
@@ -1046,9 +1046,9 @@
   "@cardFlaggedLabel": {
     "description": "Accessible name of the flag glyph on a flagged card."
   },
-  "cardDetailGoneBody": "It was deleted while this page was open.",
+  "cardDetailGoneBody": "It was moved to Trash while you were away. It can still be restored from Trash, with its history.",
   "@cardDetailGoneBody": {
-    "description": "Body of the card detail's gone state."
+    "description": "Card detail state when the card went to the Trash meanwhile (FE-B1 D11, kit 10)."
   },
   "cardScheduleBox": "Current schedule · Box {box} of {count}",
   "@cardScheduleBox": {
@@ -1487,9 +1487,9 @@
   "@deckGoneTitle": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckGoneTitle."
   },
-  "deckGoneBody": "It was deleted while you were away.",
+  "deckGoneBody": "It was moved to Trash or deleted while you were away. Anything in Trash can still be restored.",
   "@deckGoneBody": {
-    "description": "Screen handoff 01/04 (library alignment phase C): deckGoneBody."
+    "description": "Deck state when the deck went to the Trash meanwhile (FE-B1 D11, kit 01)."
   },
   "deckBackToLibrary": "Back to Library",
   "@deckBackToLibrary": {
@@ -3433,7 +3433,7 @@
   "@exportStaleTitle": {
     "description": "Export banner: a selected card is gone or moved (E6)."
   },
-  "exportStaleBody": "It was moved or deleted meanwhile. Nothing was exported. Refresh the selection and export again.",
+  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Refresh the selection and export again.",
   "@exportStaleBody": {
     "description": "Export banner body for E6."
   },
