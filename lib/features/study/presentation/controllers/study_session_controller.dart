@@ -4,7 +4,11 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/presentation/providers/abandon_study_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/answer_study_turn_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/resume_study_session_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/reveal_recall_answer_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/save_recall_time_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/show_fill_hint_use_case_provider.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
+import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -74,6 +78,60 @@ class StudySessionController extends _$StudySessionController {
       cardId: pending.cardId,
     );
   }
+
+  /// `recall`: shows [item]'s meaning with [remainingMs] left; records no
+  /// outcome (BR-STUDY-065, BR-STUDY-036). The stream shows it revealed. A
+  /// refusal or a failure leaves the turn as it was, to be tapped again.
+  /// Dropped while a write runs (BR-STUDY-004).
+  Future<void> revealRecall(StudyItem item, int remainingMs) => _write(
+    () => ref.read(revealRecallAnswerUseCaseProvider)(
+      sessionId: sessionId,
+      cardId: item.cardId,
+      remainingMs: _turnTime(remainingMs),
+    ),
+  );
+
+  /// `fill`: shows [item]'s hint; noted, it changes no result
+  /// (BR-STUDY-028). As [revealRecall] on a refusal or a failure.
+  Future<void> showFillHint(StudyItem item) => _write(
+    () => ref.read(showFillHintUseCaseProvider)(
+      sessionId: sessionId,
+      cardId: item.cardId,
+    ),
+  );
+
+  /// `recall`: keeps [item]'s time left, so the turn takes it up where it
+  /// stopped (spec D12, BR-STUDY-036). A background save: it marks no write
+  /// running, is skipped while one runs, and a failure is left to the next
+  /// save or the turn's answer.
+  Future<void> saveRecallTime(StudyItem item, int remainingMs) async {
+    if (state.isBusy) return;
+    try {
+      await ref.read(saveRecallTimeUseCaseProvider)(
+        sessionId: sessionId,
+        cardId: item.cardId,
+        remainingMs: _turnTime(remainingMs),
+      );
+    } on Failure {
+      // Superseded by the next save or the answer.
+    }
+  }
+
+  /// One write with no outcome to hold: busy while it runs, then back to
+  /// idle whatever happened; the stream shows what changed.
+  Future<void> _write(Future<Object?> Function() command) async {
+    if (state.isBusy) return;
+    state = const StudyTurnState(isBusy: true);
+    try {
+      await command();
+    } on Failure {
+      // The turn stays as it was.
+    }
+    if (!ref.mounted) return;
+    state = const StudyTurnState();
+  }
+
+  static int _turnTime(int remainingMs) => remainingMs.clamp(0, recallTurnMs);
 
   /// The held turn's mode met its continue condition (D5).
   void release() {
