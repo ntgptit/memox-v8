@@ -92,7 +92,7 @@
 
 ## [features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md)
 
-- L103: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L104: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/transfer/README.md](../features/transfer/README.md)
 

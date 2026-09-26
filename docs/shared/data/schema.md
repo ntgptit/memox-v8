@@ -231,7 +231,7 @@ trang 50 thẻ đi từ 1193µs xuống 102µs.
 
 ## `tags`
 
-**Phạm vi:** V8.0 cho việc gắn/gỡ tag trên thẻ (ADR-009 quyết định 4; chủ dự án chốt ngày 2026-09-23). Tag Management (UC-TAG-001) vẫn là sub-project sau.
+**Phạm vi:** V8.0 cho việc gắn/gỡ tag trên thẻ (ADR-009 quyết định 4; chủ dự án chốt ngày 2026-09-23). Tag Management (UC-TAG-001), sub-project sau V8.0, đổi tên, gộp và xoá tag trên chính hai bảng này từ BE-B2, không đổi schema.
 
 Nhãn phân loại nội dung do người dùng đặt — `noun`, `people`, `verb`. Nội dung,
 không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
@@ -271,8 +271,9 @@ chúng là các tag khác nhau.
 | `tag_id` | TEXT NOT NULL | → `tags(id)` ON DELETE CASCADE |
 
 PK là `(card_id, tag_id)`. Index thứ hai `idx_card_tags_tag` trên `(tag_id,
-card_id)` cho chiều ngược lại — "mọi thẻ mang tag này" là câu mà bộ lọc hỏi, và
-PK không phục vụ được nó.
+card_id)` cho chiều ngược lại — "mọi thẻ mang tag này" là câu mà số đếm của catalog
+và việc gộp hỏi, và PK không phục vụ được nó. Bộ lọc tag của card list hỏi chiều kia:
+với từng thẻ, một `EXISTS` đi theo PK (BR-TAG-004).
 
 Cả hai FK đều `CASCADE`: xoá thẻ thì liên kết mất theo (BR-CARD-009 nói cùng điều đó
 cho cờ), xoá tag thì nó biến khỏi mọi thẻ. Không có bản ghi mồ côi nào cần dọn.

@@ -73,6 +73,8 @@ Quy ước:
 | BE-A9 | Read của danh sách card cho screen handoff: mỗi card mang tag (một statement theo trang) và nhãn hạn (`CardDue`); view đếm 4 trạng thái hiển thị của cả deck; stream phát lại khi tag của card đổi | xong | BE-04, BE-05 | S | [spec căn Thư viện](superpowers/specs/2026-09-24-library-artifact-alignment-design.md) §5, phase B; test trong `test/features/card/` | Phase E đọc các trường này |
 | BE-D2 | CI chạy gate trên Linux cho mỗi pull request: job `gate` dựng lại code sinh từ đầu rồi chạy `dod_check.sh` đầy đủ; job `goldens` so ảnh golden và đếm số test đã chạy (sàn 60); job `CI gate` chỉ xanh khi mọi job khác thành công, là check duy nhất cần bắt buộc. Gỡ công cụ CI của V7 không còn gì dùng | xong | — | M | [spec](superpowers/specs/2026-09-25-ci-gate-design.md) và [plan](superpowers/plans/2026-09-25-ci-gate.md) gói 6; `.github/workflows/ci.yml`; test hợp đồng workflow và test đếm golden trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | Chủ dự án đặt `CI gate` làm check bắt buộc trong ruleset ([`README.md` gốc](../README.md)); BE-D5 |
 | BE-B1 | Trash, phần store (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012): schema v3 với `delete_batches` và khoá `delete_batch_id` → `delete_batches(id)` (migration v2 → v3 bằng dựng lại bảng, test nâng cấp từ v1 và v2); xoá deck và card là soft-delete theo batch, đóng phiên chạm tới batch (kể cả qua lựa chọn `guess`); khôi phục và Undo theo đúng luật di chuyển; đích khôi phục; danh sách Trash và purge theo lượt, bỏ qua trọn batch còn chứa batch khác; 11 use case; test hình dạng câu lệnh của BR-TRASH-002 với allowlist có lý do | xong | BE-02, BE-D1 | L | [spec](superpowers/specs/2026-09-25-trash-backend-design.md) và [plan](superpowers/plans/2026-09-26-trash-backend.md) gói 7; test trong `test/features/trash/`, `test/features/deck/data/deck_trash_test.dart`, `test/features/card/data/card_trash_test.dart`, `test/drift/migration_test.dart`, `test/architecture/tombstone_filter_test.dart` | FE-B1 dựng màn 06, snackbar Undo và lời gọi auto-purge trên các use case này |
+| BE-B2 | Tag Management, phần store (UC-TAG-001; BR-TAG-003…BR-TAG-011): catalog tag kèm số thẻ đang hoạt động, trong thư viện hoặc trong một deck, tìm theo đúng phép fold của BR-TAG-001; xem trước đổi tên (giữ nguyên, đổi tên, hay gộp vào tag nào và còn bao nhiêu thẻ) rồi ghi sau chốt chặn `mergeNotConfirmed`; gộp bằng `INSERT OR IGNORE` rồi xoá tag nguồn theo cascade, kể cả liên kết của thẻ trong Trash; xoá tag theo cascade; chỉ ghi `tags` và `card_tags`; 5 use case; không đổi schema | xong | BE-05 | M | [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md) và [plan](superpowers/plans/2026-09-26-tag-management-backend.md) gói 8; test trong `test/features/tags/` | FE-B2 dựng màn 05 và overlay lọc trên các use case này |
+| BE-C4 | Lọc card list theo tag (BR-TAG-004): `CardListQuery.tagIds`, một `EXISTS` trên `card_tags` trong vị từ chung của danh sách, số đếm và Select all; số đếm trạng thái và workload vẫn tính cả deck | xong | BE-B2 | S | Spec gói 8 §8; `test/features/card/data/card_list_tag_filter_test.dart` | — |
 
 ### V8.0 — còn lại
 
@@ -83,7 +85,6 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-B2 | Tag Management: danh mục tag, đổi tên có gộp, xoá, lọc card theo tag (UC-TAG-001; BR-TAG-003…BR-TAG-011) | chưa bắt đầu | BE-05 | M | Hàm predicate của card list đã chừa chỗ cho BR-TAG-004 (spec backend deck/card §8) | Gồm cả BE-C4 |
 | BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | chưa bắt đầu | BE-04, BE-05 | M–L | Nice-to-have N1 trong [`docs/README.md`](README.md): import CSV/TSV/XLSX, export nội dung | Tuân thủ BR-CORE-001, BR-CORE-002, BR-CORE-004 |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | chưa bắt đầu | BE-03, BE-04 | M | Cột `source_template_id` và `source_template_version` đã có trong `deck` | — |
 | BE-B5 | Nhắc học hằng ngày (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012) | chưa bắt đầu | BE-03, BE-A4 | M | Các cột `reminder_*` trong `app_settings` đã có | Cần quyết định dependency thông báo cục bộ (xem Điểm chặn) |
@@ -94,7 +95,6 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 |---|---|---|---|---|---|---|
 | BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | bị chặn | — | S | `DeckLevelSort.name`; Clarification 13 của [plan backend deck/card](superpowers/plans/2026-09-23-deck-card-backend.md) | Chủ dự án quyết có thêm dependency collation hay không |
 | BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite | chưa bắt đầu | — | S | Clarification 16 của plan backend deck/card | Chia lô trong cùng transaction khi có nhu cầu thật |
-| BE-C4 | Lọc card list theo tag (BR-TAG-004) | chưa bắt đầu | BE-B2 | S | Spec backend deck/card §8 | Làm trong BE-B2 |
 
 ### Hạ tầng và tài liệu
 
@@ -140,16 +140,20 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 - **BE-B1** (gói 7, [spec](superpowers/specs/2026-09-25-trash-backend-design.md),
   [plan](superpowers/plans/2026-09-26-trash-backend.md)): gate xanh sau mỗi task, final
   review toàn nhánh trước khi mở PR.
+- **BE-B2, BE-C4** (gói 8,
+  [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-tag-management-backend.md)): gate xanh sau mỗi
+  task, final review toàn nhánh trước khi mở PR.
 - **BE-D2** (gói 6, [spec](superpowers/specs/2026-09-25-ci-gate-design.md),
   [plan](superpowers/plans/2026-09-25-ci-gate.md)): gate xanh sau mỗi task, final review
   toàn nhánh trước khi mở PR. PR của gói là lần chạy đầu của CI: một commit thử làm
   `gate`, `goldens` và `CI gate` đỏ, rồi commit hoàn lại đưa cả ba về xanh trước khi merge.
-- **Traceability:** có test chứa ID cho 17/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003, UC-TRASH-001).
-  5 UC còn lại chưa có code.
+- **Traceability:** có test chứa ID cho 18/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRASH-001).
+  4 UC còn lại chưa có code.
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 7 (BE-B1).
+Không có hạng mục backend nào đang làm sau gói 8 (BE-B2).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -178,7 +182,7 @@ Không có hạng mục backend nào đang làm sau gói 7 (BE-B1).
 
 ## Bước tiếp theo
 
-1. BE-B2…BE-B5 theo ưu tiên sản phẩm. Truy vấn mới của chúng đọc `card` hoặc `deck` sẽ
+1. BE-B3…BE-B5 theo ưu tiên sản phẩm. Truy vấn mới của chúng đọc `card` hoặc `deck` sẽ
    gặp test hình dạng của BR-TRASH-002 (spec gói 7 §11).
 2. BE-D5 khi thuận tiện; không hạng mục nào chờ nó.
 
@@ -203,6 +207,8 @@ Không có hạng mục backend nào đang làm sau gói 7 (BE-B1).
   pull request. Thêm BE-D5 cho phần của planner chỉ CI của V7 dùng.
 - **Cập nhật ngày 2026-09-26:** BE-B1 xong trong gói 7, hạng mục đầu của nhóm sau V8.0:
   schema v3, xoá vào Trash, khôi phục, Undo, purge.
+- **Cập nhật ngày 2026-09-26:** BE-B2 và BE-C4 xong trong gói 8: catalog tag, đổi tên có
+  gộp, xoá tag, lọc card list theo tag; không đổi schema.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.
