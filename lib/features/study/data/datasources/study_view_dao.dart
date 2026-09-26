@@ -17,7 +17,13 @@ typedef RoundCounts = ({int completed, int total});
 typedef ResumableRow = ({StudySession session, String deckName});
 
 /// The counts a session's summary shows (spec D11).
-typedef SummaryCounts = ({int cardCount, int learnedCount, int wrongCount});
+typedef SummaryCounts = ({
+  int cardCount,
+  int learnedCount,
+  int wrongCount,
+  int answeredCount,
+  int turnCount,
+});
 
 /// An option of a `guess` question: the option card and its meaning.
 typedef OptionRecord = ({String cardId, String back});
@@ -272,7 +278,8 @@ final class StudyViewDao {
   }
 
   /// The distinct cards of [sessionId]'s queue, those of them now learned,
-  /// and its logs whose action is one of [lapseActions].
+  /// its logs whose action is one of [lapseActions], and its graded turns
+  /// and the distinct cards they answered (FE-A6 D11).
   Future<SummaryCounts> summaryCounts(
     String sessionId, {
     required List<String> lapseActions,
@@ -287,9 +294,15 @@ final class StudyViewDao {
           '  JOIN card_schedule cs ON cs.card_id = q.card_id'
           '  WHERE q.session_id = ? AND cs.learned_at IS NOT NULL)'
           '  AS learned_count,'
+          ' (SELECT COUNT(DISTINCT card_id) FROM review_log'
+          '  WHERE session_id = ?) AS answered_count,'
+          ' (SELECT COUNT(*) FROM review_log WHERE session_id = ?)'
+          '  AS turn_count,'
           ' (SELECT COUNT(*) FROM review_log WHERE session_id = ?'
           '  AND action IN ($lapses)) AS wrong_count',
           variables: [
+            Variable<String>(sessionId),
+            Variable<String>(sessionId),
             Variable<String>(sessionId),
             Variable<String>(sessionId),
             Variable<String>(sessionId),
@@ -302,6 +315,8 @@ final class StudyViewDao {
       cardCount: row.read<int>('card_count'),
       learnedCount: row.read<int>('learned_count'),
       wrongCount: row.read<int>('wrong_count'),
+      answeredCount: row.read<int>('answered_count'),
+      turnCount: row.read<int>('turn_count'),
     );
   }
 }
