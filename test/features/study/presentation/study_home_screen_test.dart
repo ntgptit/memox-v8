@@ -183,11 +183,7 @@ void main() {
     // Shown, dimmed, and read as a disabled button (S4).
     expect(
       tester.getSemantics(find.text('Empty')),
-      containsSemantics(
-        isButton: true,
-        hasEnabledState: true,
-        isEnabled: false,
-      ),
+      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
     );
     handle.dispose();
   });

@@ -30,6 +30,17 @@ snapshot. UC-STUDY-002.
 
 Not captured: none — all seven kit states are V8-supported.
 
+**Built (FE-A8, study roadmap P6):** `StudyHomeScreen` in the Study tab's branch, over
+`WatchStudyHomeUseCase`; it writes nothing but Resume (BR-STUDY-075).
+- Resume runs `ResumeStudySessionUseCase` and opens the session route. A refusal
+  shows the toast "This session can't be continued any more", and a failed write shows
+  "Couldn't start the session."; the stream refreshes by itself.
+- A deck row opens that deck's Study Entry; "Library" and "Go to Library" open the
+  Library root. Both navigate into the Library branch, as the summary's "Study this deck"
+  does.
+- Goldens:
+  `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error,large_text}_*`.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
@@ -38,14 +49,29 @@ Not captured: none — all seven kit states are V8-supported.
 | Resume card's pulse dot and paused-icon tile in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: `Badge` (and the palette generally) offers no `streak` tone |
 | App bar's trailing date "Tuesday, 16 Sep" | Dropped | `MxAppBar.actions` takes buttons only; no BR/UC calls for a date display here |
 | noDecks: "Browse starter decks" primary action, pointing at the Starter Library | Hidden; "Go to Library" is the only action | Spec A4 (starter decks wait under Coming soon; screen 03 is out of V8) — same ruling already applied to 01-deck-list's `rootEmpty` |
-| Resume card's linear progress track | new shared `MxLinearProgress`, the themed `LinearProgressIndicator`: 13 and 14 both draw it | Two screens use it (no speculative widget) |
+| Resume card's linear progress track | new shared `MxLinearProgress`, a themed 4-tall track: 13 and 14 both draw it | Two screens use it (no speculative widget) |
+| The dot beside "Continue studying" pulses | Static and decorative, as on 14 | FE-A8 ruling S3: one treatment for both resume surfaces; no looping motion |
+| The zero-workload body always says "tomorrow at 00:00" | "…tomorrow." on the next local day, "…on {date}." later, "Every card is resting." with no next date | FE-A8 ruling S2; BR-STUDY-074 (the local day) |
+| The zero card's check tile in the mastery green | The `success` tone | FE-A6 spec D14: green is mastery's alone |
+| Resume in the soft-primary pill | `MxButton` primary, block, with the play glyph | FE-A8 ruling S9: `primary-soft` is PRESERVE_ONLY in the theme binding |
+| "Library" as a text link with a chevron | A compact secondary `MxButton` | Ruling E-L3, as the handoff's layout names it |
+| The hero's breakdown in one line | It wraps, so "across {n} decks" is never cut; rows keep one line | Kit hero style (`whiteSpace: normal`) |
+
+## Accessibility
+
+- The dot and the glyphs are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
+- A deck with no card is shown dimmed and read as a disabled button (S4); every row is at least 48 tall.
+- The hero title, "across {n} decks" and "{n} due" are plurals (S5).
+- At 2x a row's breakdown stays on one line and ellipsizes; its first term always shows (S6). The hero's breakdown wraps.
 
 ## Copy
 
 - Header: "Study" · "Tuesday, 16 Sep" (dropped).
 - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" · "Resume".
 - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks".
-- Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow at 00:00."
+- Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow." · "…on {date}." · "Every card is resting." (V8, S2; the kit's "tomorrow at 00:00" is not kept).
+- Workload hero: "{n} scheduled" joins the breakdown, muted (BR-STUDY-068).
+- Resume refused: "This session can't be continued any more".
 - Section: "Your decks" · "Library".
 - Row: "{n} due".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library". V8 drops the starter line: "Your library is empty. Create a deck in Library to get started."
