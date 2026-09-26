@@ -1,13 +1,17 @@
+import 'dart:isolate';
+
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/transfer/data/datasources/transfer_dao.dart';
+import 'package:memox/features/transfer/data/mappers/delimited_text_mapper.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_result_model.dart';
 import 'package:memox/features/transfer/domain/models/import_sheet_model.dart';
+import 'package:memox/features/transfer/domain/models/import_source_model.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_repository.dart';
 
 /// Import and export (transfer spec §7, §8). The commit of an import is one
@@ -21,6 +25,11 @@ final class TransferRepositoryImpl implements TransferRepository {
   final CardRepository _cards;
   final TransferDao _dao;
   final DateTime Function() _now;
+
+  @override
+  Future<Outcome<ImportDocument, TransferRejection>> readSource(
+    ImportSource source,
+  ) => Isolate.run(() => readDelimited(source));
 
   @override
   Future<ImportPreview> previewImport({

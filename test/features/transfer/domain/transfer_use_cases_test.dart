@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -12,8 +14,10 @@ import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_result_model.dart';
 import 'package:memox/features/transfer/domain/models/import_sheet_model.dart';
+import 'package:memox/features/transfer/domain/models/import_source_model.dart';
 import 'package:memox/features/transfer/domain/usecases/import_cards_use_case.dart';
 import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/domain/usecases/read_import_source_use_case.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
@@ -89,4 +93,35 @@ void main() {
       );
     },
   );
+
+  test('ReadImportSourceUseCase reads a source through the repository, '
+      'and passes its refusal through', () async {
+    final read = ReadImportSourceUseCase(transfer);
+
+    final document = await read(const PastedText('front\tback\ntip\ttiền boa'));
+
+    expect(
+      [
+        for (final row
+            in (document as Ok<ImportDocument, TransferRejection>)
+                .value
+                .sheets
+                .single
+                .rows)
+          row.cells,
+      ],
+      [
+        ['front', 'back'],
+        ['tip', 'tiền boa'],
+      ],
+    );
+    expect(
+      await read(ImportFile(name: 'cards.pdf', bytes: Uint8List(0))),
+      isA<Rejected<ImportDocument, TransferRejection>>().having(
+        (rejected) => rejected.reason,
+        'reason',
+        TransferRejection.unsupportedFormat,
+      ),
+    );
+  });
 }
