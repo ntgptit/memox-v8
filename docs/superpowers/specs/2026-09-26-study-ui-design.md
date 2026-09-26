@@ -1,6 +1,6 @@
 # MemoX V8 — Study UI (FE-A6, FE-A7)
 
-Status: draft for owner review (2026-09-26).
+Status: approved by the owner (2026-09-26).
 
 ## 1. Intent
 
