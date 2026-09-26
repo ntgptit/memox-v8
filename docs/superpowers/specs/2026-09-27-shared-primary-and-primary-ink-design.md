@@ -59,9 +59,10 @@ The unit test computes both on the real `onSurface` values.
 |---|---|---|
 | D1 | Dark `primary` is `AppColorSchemes.seed` (`#5265F5`); dark `onPrimary` is `#FFFFFF` | Owner, 2026-09-27 |
 | D2 | A new derived colour, `MxDerivedColors.primaryInk`, is primary pulled toward `onSurface` (dark 0.45, light 0.25). It is the only primary for text, icons, spinner arcs off a fill, and focus rings, in both themes | Owner, 2026-09-27 |
-| D3 | Fills, selected edges, radio and checkbox fills, toggles, schedule bars, dots, cursors and tints keep `primary` | Owner, 2026-09-27 |
+| D3 | Fills, selected edges, checkbox fills, toggles, schedule bars, dots, cursors and tints keep `primary` | Owner, 2026-09-27 |
 | D4 | Unchanged: the light `inversePrimary` `#8B9AFF` (a snackbar action is text on the dark inverse surface), `statusReviewing` `#8B9AFF` (a status colour), and `primaryContainer` | Owner, 2026-09-27 |
 | D5 | `MxBadge` solid is allowed only with the primary tone: `onPrimary` is the only ink guaranteed on its fill. This closes a latent white-on-mint or white-on-amber case | Owner, 2026-09-27 |
+| D6 | Found in the golden check. The `MxOptionRow` selected ring is a stroke glyph, so it inks in `primaryInk`: the dark primary reads 2.46:1 on a sheet, below the 3:1 of a state. The dark `surfaceHero` mixes the primary at 18 %, not 12 %, so the hero lifts off the page (1.20) and its boxed tiles (1.07) as the kit's did (1.19, 1.06). A done import step's check inks in the new `onMastery`, which keeps the old dark on-primary `#11173A` | Execution ruling, 2026-09-27 |
 
 ## 4. Call sites
 
@@ -84,6 +85,7 @@ The unit test computes both on the real `onSurface` values.
 - **`mx_search_field.dart`:** the focused icon.
 - **`mx_empty_state.dart`:** the primary tone's glyph ink. Any tint stays primary.
 - **`mx_stat_tile.dart`:** the primary emphasis.
+- **`mx_option_row.dart`:** the selected radio ring (D6).
 - **`mx_spinner.dart`:** the arc when not on a fill.
 - **`mx_icon_tile.dart`:** the tinted tone's glyph when no seed is given. The tint
   stays primary.
@@ -96,8 +98,7 @@ The unit test computes both on the real `onSurface` values.
 **→ `primary`, unchanged:**
 
 - **Fills and edges:** the elevated button fill, `MxButton` primary fill, `MxFab`,
-  `MxFilterChip` selected fill, the `MxCard` selected edge, and the `MxOptionRow` radio
-  ring.
+  `MxFilterChip` selected fill and the `MxCard` selected edge.
 - **Indicators:** `MxToggle` track, `MxSelectionCheckbox`, the `card_schedule` bars
   and the `study_entry_resume` dot.
 - **Other:** `import_step_tracker` fills, the `StudyChoice` selected tone, cursor

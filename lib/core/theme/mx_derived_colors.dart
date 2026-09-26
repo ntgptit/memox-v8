@@ -120,7 +120,10 @@ final class MxDerivedColors {
   static const double _successInkLight = 0.40;
   static const double _successInkDark = 0;
   static const double _surfaceHeroLight = 0.05;
-  static const double _surfaceHeroDark = 0.12;
+  // 18 %, not the kit's 12 %: the deeper #5265F5 needs it to lift the hero
+  // off the page and its boxed tiles as the kit's #8B9AFF did (spec
+  // 2026-09-27).
+  static const double _surfaceHeroDark = 0.18;
   static const double _ghostBorderLight = 0.14;
   static const double _ghostBorderDark = 0.16;
   static const double _newInkLight = 0.40;

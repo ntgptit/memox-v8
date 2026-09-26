@@ -62,9 +62,22 @@ void main() {
   }
 
   test('surfaceHero blends over surfaceBright in light, surface in dark', () {
-    // Light: #5265F5 at 5% over #FFFFFF. Dark: #5265F5 at 12% over #0A0E27.
+    // Light: #5265F5 at 5% over #FFFFFF. Dark: #5265F5 at 18% over #0A0E27.
     expect(light.surfaceHero, isColorCloseTo(0xFFF6F7FE));
-    expect(dark.surfaceHero, isColorCloseTo(0xFF131840));
+    expect(dark.surfaceHero, isColorCloseTo(0xFF171E4C));
+  });
+
+  test('the dark hero lifts off the page and its boxed tiles as the kit '
+      'hero did (#8B9AFF at 12%: 1.19 and 1.06)', () {
+    final scheme = AppColorSchemes.dark;
+    expect(
+      _ratio(dark.surfaceHero, scheme.surface),
+      greaterThanOrEqualTo(1.19),
+    );
+    expect(
+      _ratio(dark.surfaceHero, scheme.surfaceContainerLowest),
+      greaterThanOrEqualTo(1.06),
+    );
   });
 
   test('chromeGlass is surface at the glass opacity, not pre-flattened', () {
