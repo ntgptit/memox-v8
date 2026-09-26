@@ -87,7 +87,8 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 |---|---|---|---|---|---|---|
 | BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | FE-B3 dựng màn 11 và sheet 12 trên năm use case này |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
-| BE-B5 | Nhắc học hằng ngày (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012) | chưa bắt đầu | BE-03, BE-A4 | M | Các cột `reminder_*` trong `app_settings` đã có | Cần quyết định dependency thông báo cục bộ (xem Điểm chặn) |
+| BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
+| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn) |
 
 ### Tồn đọng từ backend deck/card
 
@@ -102,7 +103,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Sửa trong commit của hạng mục chạm tới phần đó (tài liệu và code cùng commit, [`docs/README.md`](README.md)) |
-| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 19 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
+| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
 | BE-D5 | Tỉa phần chỉ phục vụ CI của `build_verification_plan.py` (shard, `--github-output`, cờ Widgetbook và memox-api) cùng test của nó; sửa lời giúp của `dod_check.sh`, nơi `--changed` và `--fast` còn được tả theo CI của V7 | chưa bắt đầu | BE-D2 | M | CI của V8 chạy gate đầy đủ, không dùng planner ([spec gói 6](superpowers/specs/2026-09-25-ci-gate-design.md) D2, D11); planner vẫn phục vụ `dod_check.sh --changed` | Giữ phần `--changed` dùng, bỏ phần chỉ CI của V7 cần, kèm test |
 
 ## Đã xong và đã kiểm chứng
@@ -148,16 +149,18 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 - **BE-B4** (gói 10, [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md),
   [plan](superpowers/plans/2026-09-26-starter-decks-backend.md)): gate xanh sau mỗi task,
   final review toàn nhánh trước khi mở PR.
+- **BE-B5a** (gói 11a, [spec](superpowers/specs/2026-09-26-reminders-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-reminders-backend.md)): gate xanh sau mỗi task, final review
+  toàn nhánh trước khi mở PR.
 - **BE-D2** (gói 6, [spec](superpowers/specs/2026-09-25-ci-gate-design.md),
   [plan](superpowers/plans/2026-09-25-ci-gate.md)): gate xanh sau mỗi task, final review
   toàn nhánh trước khi mở PR. PR của gói là lần chạy đầu của CI: một commit thử làm
   `gate`, `goldens` và `CI gate` đỏ, rồi commit hoàn lại đưa cả ba về xanh trước khi merge.
-- **Traceability:** có test chứa ID cho 21/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
-  UC còn lại (UC-REMINDER-001) chưa có code.
+- **Traceability:** có test chứa ID cho 22/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 10 (BE-B4).
+Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -166,9 +169,9 @@ Không có hạng mục backend nào đang làm sau gói 10 (BE-B4).
 | BE-C1 | Chưa chốt có thêm dependency collation hay không | Thứ tự sort tên deck | Chủ dự án quyết |
 | BE-C5 | Chưa chốt có chuẩn hoá Unicode (NFC) hay không, và nếu có thì bằng dependency nào | Kiểm trùng khi import, tên tag, tìm kiếm | Chủ dự án quyết; đổi phép fold là đổi dữ liệu đã lưu (`front_folded`, `back_folded`, `name_folded`), cần migration |
 | Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
-| BE-B5 | Cần một dependency thông báo cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5, kèm lý do và cách rollback |
-| BE-B5 | BR-SETTINGS-008 ghi `Reset to defaults` đưa toàn bộ giá trị của `app_settings` về mặc định; BE-A1 (spec D6) chỉ đưa về mặc định bốn giá trị người dùng đặt được ở V8.0, chưa đụng `reminder_enabled`, `reminder_minute_of_day` | `Reset to defaults` khi nhắc học đã có giao diện | Quyết trong spec của BE-B5; sửa câu chữ BR-SETTINGS-008 cần chủ dự án cho phép |
-| BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 19 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
+| BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
+| BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
+| BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
 
@@ -187,8 +190,7 @@ Không có hạng mục backend nào đang làm sau gói 10 (BE-B4).
 
 ## Bước tiếp theo
 
-1. BE-B5 theo ưu tiên sản phẩm. Truy vấn mới của nó đọc `card` hoặc `deck` sẽ
-   gặp test hình dạng của BR-TRASH-002 (spec gói 7 §11).
+1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
 2. BE-D5 khi thuận tiện; không hạng mục nào chờ nó.
 
 ## Ngữ cảnh cập nhật
@@ -217,6 +219,11 @@ Không có hạng mục backend nào đang làm sau gói 10 (BE-B4).
 - **Cập nhật ngày 2026-09-26:** BE-B4 xong trong gói 10: thư viện starter với hai
   fixture, sao chép trong một transaction qua repository của deck và card; không đổi
   schema. Thêm lại BE-C5 (Unicode NFC), dòng gói 9a đã thêm nhưng không merge.
+- **Cập nhật ngày 2026-09-26:** chủ dự án tách BE-B5 thành BE-B5a và BE-B5b. BE-B5a xong
+  trong gói 11a: toàn bộ logic của nhắc học sau một port tới nền tảng, với adapter
+  "không hỗ trợ"; không đổi schema, không thêm dependency. Điểm chặn BR-SETTINGS-008 đóng:
+  reset đưa cả nhắc học về mặc định (quyết định của chủ dự án). Dependency notification
+  chuyển sang BE-B5b.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

@@ -510,6 +510,7 @@ item names where it comes from.
 | 105 | Success, caution and danger glyphs and success text use inks pulled toward `onSurface` (`successInk`, `warningInk`, `error`): the kit's pure green and amber fail 3:1 (glyph) and 4.5:1 (text) on their soft tints; the fills keep the kit's hues | FE-A6 D14 |
 | 106 | Card import names the fields two ways: "Term (front)" / "Meaning (back)" on the mapping, "term" and "meaning" in its notes and row reasons. One vocabulary waits for a copy pass over screens 08–12 | critique 2026-09-26 P3 (transfer) |
 | 107 | Card import shows one spinner card while a large import writes, with no progress or waiting line | critique 2026-09-26 P3 (transfer) |
+| 108 | "Reset app options" also turns the daily reminder off and puts it back at 20:00 (BR-SETTINGS-008): the kit's confirmation body ("Theme, language, cards per session and new-card order go back to their defaults.") and the row's sub-line ("Theme, language, study defaults") leave it out, and FE-A3 names it in both | reminders spec D3, D4 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
