@@ -101,6 +101,22 @@
       ]
     },
     {
+      "num": "12",
+      "dir": "12-card-export",
+      "title": "Card export",
+      "states": [
+        { "id": "wholeDeck", "label": "Whole deck" },
+        { "id": "selection", "label": "Selection" },
+        { "id": "preparing", "label": "Preparing" },
+        { "id": "handedOver", "label": "Handed over" },
+        { "id": "shareClosed", "label": "Share closed" },
+        { "id": "failed", "label": "Failed" },
+        { "id": "noShareTarget", "label": "No share target" },
+        { "id": "staleSelection", "label": "Stale selection" },
+        { "id": "nothingToExport", "label": "Nothing to export" }
+      ]
+    },
+    {
       "num": "13",
       "dir": "13-study-home",
       "title": "Study home",

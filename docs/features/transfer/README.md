@@ -1,11 +1,11 @@
 ---
 feature: transfer
-code: [lib/features/transfer/domain, lib/features/transfer/data, lib/features/transfer/di]
+code: [lib/features/transfer/domain, lib/features/transfer/data, lib/features/transfer/di, lib/features/transfer/presentation]
 depends_on: [card, deck, tags]
 ---
 ## Phạm vi
 
-**Phạm vi:** Card Transfer: backend BE-B3 xong; màn hình import (kit 11) và sheet export (kit 12) là FE-B3. Thiết kế: [spec card transfer](../../superpowers/specs/2026-09-26-card-transfer-design.md).
+**Phạm vi:** Card Transfer: backend BE-B3 và giao diện FE-B3 xong — màn import ([kit 11](../../shared/ui/screen-handoff/11-card-import.md)) và sheet export ([kit 12](../../shared/ui/screen-handoff/12-card-export.md)). Thiết kế: [spec card transfer](../../superpowers/specs/2026-09-26-card-transfer-design.md).
 
 Import card hàng loạt vào một deck và export card của một deck ra file (Card Transfer).
 

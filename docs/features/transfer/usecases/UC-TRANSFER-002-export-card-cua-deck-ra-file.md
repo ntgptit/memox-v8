@@ -3,11 +3,11 @@ id: UC-TRANSFER-002
 title: Export card của một deck ra file
 status: ready
 rules: [BR-CARD-012, BR-DECK-015, BR-CORE-001, BR-CORE-002, BR-CORE-004, BR-TAG-001, BR-TAG-002, BR-TRANSFER-007, BR-TRANSFER-008, BR-TRANSFER-009, BR-TRANSFER-010, BR-TRANSFER-011, BR-TRANSFER-012, BR-TRANSFER-013, BR-TRANSFER-014]
-code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/features/transfer/domain/usecases/share_export_use_case.dart]
+code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/features/transfer/domain/usecases/share_export_use_case.dart, lib/features/transfer/domain/usecases/count_export_cards_use_case.dart, lib/features/transfer/presentation/controllers/card_export_controller.dart, lib/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** backend xong ở BE-B3; sheet export là FE-B3 ([spec card transfer](../../../superpowers/specs/2026-09-26-card-transfer-design.md)).
+**Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](../../../superpowers/specs/2026-09-26-card-transfer-design.md), [màn 12](../../../shared/ui/screen-handoff/12-card-export.md)).
 
 **Actor:** Người dùng
 **Trigger:** Chọn `Export cards` trong overflow menu của card list, hoặc

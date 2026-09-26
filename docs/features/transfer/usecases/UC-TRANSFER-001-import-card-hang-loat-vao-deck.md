@@ -7,7 +7,7 @@ code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** backend xong ở BE-B3; màn hình là FE-B3 ([spec card transfer](../../../superpowers/specs/2026-09-26-card-transfer-design.md)).
+**Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../../../superpowers/specs/2026-09-26-card-transfer-design.md), [màn 11](../../../shared/ui/screen-handoff/11-card-import.md)).
 
 **Actor:** Người dùng
 **Trigger:** Chọn "Import cards" từ card list của một deck loại card, từ empty
