@@ -18,6 +18,9 @@ const _readsTombstones = <String, String>{
       "D10: a subtree's height counts the tombstones that move with it",
   'lib/features/deck/data/datasources/deck_dao.dart#moveSubtree':
       'D10: the tombstones of a subtree move with it (BR-TRASH-007)',
+  'lib/features/deck/data/datasources/deck_dao.dart#rowInAnyState':
+      "a restore checks its item against the item's own root, which may be "
+      'in the Trash too (BR-TRASH-006)',
   'lib/features/search/data/datasources/search_dao.dart#_cardHits':
       "filtered by `_live`, the search's one predicate (Search spec D8), "
       'which the scan cannot read through',

@@ -5,13 +5,14 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/deck/data/datasources/deck_dao.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
+import 'package:memox/features/deck/data/mappers/deck_mapper.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
-import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
@@ -25,10 +26,12 @@ import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 final class DeckRepositoryImpl implements DeckRepository {
   DeckRepositoryImpl(this._db, {DateTime Function()? now})
     : _dao = DeckDao(_db),
+      _tree = DeckTreeDataSource(_db),
       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final DeckDao _dao;
+  final DeckTreeDataSource _tree;
   final DateTime Function() _now;
 
   @override
@@ -58,7 +61,7 @@ final class DeckRepositoryImpl implements DeckRepository {
           updatedAt: at,
         ),
       );
-      return Ok(_toEntity((await _dao.findRow(id))!));
+      return Ok(deckEntityOf((await _dao.findRow(id))!));
     });
   }
 
@@ -95,8 +98,8 @@ final class DeckRepositoryImpl implements DeckRepository {
           updatedAt: at,
         ),
       );
-      await _refreshContentType(parentId, at);
-      return Ok(_toEntity((await _dao.findRow(id))!));
+      await _tree.refreshContentType(parentId, at);
+      return Ok(deckEntityOf((await _dao.findRow(id))!));
     });
   }
 
@@ -120,38 +123,18 @@ final class DeckRepositoryImpl implements DeckRepository {
       if (oldParentId == newParentId) {
         return const Rejected(DeckRejection.sameParent);
       }
-      final movingRoot = await _dao.findRow(moving.rootId);
-      final targetRoot = await _dao.findRow(target.rootId);
-      if (movingRoot == null || targetRoot == null) {
-        return const Rejected(DeckRejection.notFound);
+      if (await _tree.refusalUnder(target, moving) case final reason?) {
+        return Rejected(reason);
       }
-      final rule = DeckEntity.checkMove(
-        movingId: deckId,
-        targetParentId: newParentId,
-        targetAncestorIds: await _dao.ancestorIds(newParentId),
-        targetDepth: target.depth,
-        subtreeHeight: await _dao.subtreeHeight(
-          deckId,
-          cap: DeckEntity.maxDepth,
-        ),
-        targetContentType: DeckContentType.values.byName(target.contentType),
-        movingRootScheduler: _schedulerOf(movingRoot),
-        movingRootGeneration: movingRoot.generation,
-        targetRootScheduler: _schedulerOf(targetRoot),
-        targetRootGeneration: targetRoot.generation,
-      );
-      if (_refusal(rule) case final reason?) return Rejected(reason);
 
-      await _dao.moveSubtree(
-        deckId,
-        parentId: newParentId,
-        rootId: target.rootId,
-        depthShift: target.depth + 1 - moving.depth,
+      await _tree.moveUnder(
+        target,
+        moving,
         siblingPosition: await _dao.nextSiblingPosition(newParentId),
-        now: at,
+        at: at,
       );
-      await _refreshContentType(oldParentId, at);
-      await _refreshContentType(newParentId, at);
+      await _tree.refreshContentType(oldParentId, at);
+      await _tree.refreshContentType(newParentId, at);
       return const Ok(null);
     });
   }
@@ -239,7 +222,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       await _dao.insertBatch(batchId, deckId, at);
       await _dao.markSubtree(deckId, batchId);
       if (deck.parentId case final parentId?) {
-        await _refreshContentType(parentId, at);
+        await _tree.refreshContentType(parentId, at);
       }
       await _dao.closeSessionsTouching(batchId, at);
       return Ok(batchId);
@@ -247,9 +230,93 @@ final class DeckRepositoryImpl implements DeckRepository {
   }
 
   @override
+  Future<Outcome<void, DeckRejection>> restoreDecks({
+    required Set<String> batchIds,
+    required String? parentId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final items = <String, Deck>{};
+      for (final batchId in batchIds) {
+        final item = await _dao.itemRootOf(batchId);
+        if (item == null) return const Rejected(DeckRejection.notFound);
+        items[batchId] = item;
+      }
+      if (parentId == null) {
+        if (items.values.any((item) => item.parentId != null)) {
+          return const Rejected(DeckRejection.subDeckNeedsParent);
+        }
+        for (final MapEntry(key: batchId, value: item) in items.entries) {
+          await _dao.restoreBatch(batchId);
+          final position = await _dao.nextSiblingPosition(null);
+          await _dao.setSiblingPosition(item.id, position, at);
+        }
+        return const Ok(null);
+      }
+      if (items.values.any((item) => item.parentId == null)) {
+        return const Rejected(DeckRejection.rootRestoresToTopLevel);
+      }
+      final target = await _dao.findRow(parentId);
+      if (target == null) return Rejected(await _tree.missingTarget(parentId));
+      for (final item in items.values) {
+        if (await _tree.refusalUnder(target, item) case final reason?) {
+          return Rejected(reason);
+        }
+      }
+      for (final MapEntry(key: batchId, value: item) in items.entries) {
+        await _dao.restoreBatch(batchId);
+        // Read again: an item restored before it may have carried it along,
+        // when this batch lies inside that one (D10).
+        await _tree.moveUnder(
+          target,
+          (await _dao.findRow(item.id))!,
+          siblingPosition: await _dao.nextSiblingPosition(target.id),
+          at: at,
+        );
+      }
+      await _tree.refreshContentType(target.id, at);
+      return const Ok(null);
+    });
+  }
+
+  @override
+  Future<Outcome<void, DeckRejection>> undoDeckDeletion({
+    required String batchId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final item = await _dao.itemRootOf(batchId);
+      if (item == null) return const Rejected(DeckRejection.notFound);
+      final parentId = item.parentId;
+      if (parentId == null) {
+        await _dao.restoreBatch(batchId);
+        return const Ok(null);
+      }
+      final target = await _dao.findRow(parentId);
+      if (target == null) return Rejected(await _tree.missingTarget(parentId));
+      if (await _tree.refusalUnder(target, item) case final reason?) {
+        return Rejected(reason);
+      }
+      await _dao.restoreBatch(batchId);
+      // Its old place: nothing took that position, since a new sibling's
+      // position counts the tombstones (trash spec D9).
+      await _tree.moveUnder(
+        target,
+        item,
+        siblingPosition: item.siblingPosition,
+        at: at,
+      );
+      await _tree.refreshContentType(target.id, at);
+      return const Ok(null);
+    });
+  }
+
+  @override
   Future<DeckEntity?> findById(String id) => _mapped(() async {
     final row = await _dao.findRow(id);
-    return row == null ? null : _toEntity(row);
+    return row == null ? null : deckEntityOf(row);
   });
 
   @override
@@ -259,19 +326,19 @@ final class DeckRepositoryImpl implements DeckRepository {
     required DateTime startOfToday,
   }) => _dao
       .watchLevel(parentId: parentId, now: now, startOfToday: startOfToday)
-      .map((rows) => [for (final row in rows) _toTile(row, startOfToday)])
+      .map((rows) => [for (final row in rows) deckTileOf(row, startOfToday)])
       .mapDatabaseErrors();
 
   @override
   Stream<DeckView?> watchDeck(String deckId) =>
-      _dao.watchDeckAndAncestors(deckId).map(_toView).mapDatabaseErrors();
+      _dao.watchDeckAndAncestors(deckId).map(deckViewOf).mapDatabaseErrors();
 
   @override
   Stream<List<DeckMoveTarget>> watchMoveTargets(String deckId) => _dao
       .watchMoveTargetRows(deckId, maxDepth: DeckEntity.maxDepth)
       .map(
         (rows) => candidatesInTreeOrder(
-          [for (final row in rows) _nodeOf(row)],
+          [for (final row in rows) deckTreeNodeOf(row)],
           (node, path) =>
               DeckMoveTarget(id: node.id, name: node.name, path: path),
         ),
@@ -287,7 +354,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       .map(
         (rows) => [
           for (final hit in candidatesInTreeOrder(
-            [for (final row in rows) _nodeOf(row)],
+            [for (final row in rows) deckTreeNodeOf(row)],
             (node, path) => DeckSearchHit(
               id: node.id,
               name: node.name,
@@ -299,16 +366,6 @@ final class DeckRepositoryImpl implements DeckRepository {
         ],
       )
       .mapDatabaseErrors();
-
-  /// A sub-deck's content type follows what it holds (BR-DECK-006..008,
-  /// BR-DECK-015); a root is always a deck of decks (BR-DECK-004).
-  Future<void> _refreshContentType(String deckId, DateTime at) async {
-    final deck = await _dao.findRow(deckId);
-    if (deck == null || deck.parentId == null) return;
-    final contentType = await _dao.contentTypeFromChildren(deckId);
-    if (contentType == deck.contentType) return;
-    await _dao.setContentType(deckId, contentType, at);
-  }
 
   /// One transaction; see [_mapped] for what leaves it on an error.
   Future<T> _write<T>(Future<T> Function() body) =>
@@ -329,62 +386,3 @@ DeckRejection? _refusal(Outcome<void, DeckRejection> check) => switch (check) {
   Ok() => null,
   Rejected(:final reason) => reason,
 };
-
-SchedulerType? _schedulerOf(Deck row) => switch (row.schedulerType) {
-  final String code => SchedulerType.fromCode(code),
-  null => null,
-};
-
-DeckEntity _toEntity(Deck row) => DeckEntity(
-  id: row.id,
-  name: row.name,
-  parentId: row.parentId,
-  rootId: row.rootId,
-  depth: row.depth,
-  contentType: DeckContentType.values.byName(row.contentType),
-  schedulerType: _schedulerOf(row),
-  generation: row.generation,
-  firstAnsweredAt: row.firstAnsweredAt,
-  siblingPosition: row.siblingPosition,
-  createdAt: row.createdAt,
-  updatedAt: row.updatedAt,
-);
-
-DeckTile _toTile(DeckTileRow row, DateTime startOfToday) => DeckTile(
-  id: row.id,
-  name: row.name,
-  siblingPosition: row.siblingPosition,
-  createdAt: row.createdAt,
-  schedulerType: SchedulerType.fromCode(row.schedulerType!),
-  subDeckCount: row.subDeckCount,
-  cardCount: row.cardCount,
-  newCount: row.newCount,
-  overdueCount: row.overdueCount,
-  dueTodayCount: row.dueTodayCount,
-  oldestDueAt: row.oldestDueAt,
-  startOfToday: startOfToday,
-);
-
-/// [rows] run from the root down to the open deck.
-DeckView? _toView(List<Deck> rows) {
-  if (rows.isEmpty) return null;
-  final root = rows.first;
-  return DeckView(
-    deck: _toEntity(rows.last),
-    schedulerType: _schedulerOf(root)!,
-    isSchedulerLocked: root.firstAnsweredAt != null,
-    breadcrumb: [
-      for (final row in rows.take(rows.length - 1))
-        DeckPathEntry(id: row.id, name: row.name),
-    ],
-  );
-}
-
-DeckTreeNode _nodeOf(DeckForestRow row) => DeckTreeNode(
-  id: row.id,
-  name: row.name,
-  parentId: row.parentId,
-  siblingPosition: row.siblingPosition,
-  isCandidate: row.isCandidate,
-  contentType: DeckContentType.values.byName(row.contentType),
-);

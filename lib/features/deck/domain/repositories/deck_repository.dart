@@ -60,6 +60,24 @@ abstract interface class DeckRepository {
     DateTime? now,
   });
 
+  /// UC-TRASH-001 steps 5-7: the decks of [batchIds] come back under
+  /// [parentId], or to the top level when it is null, each last among its
+  /// new siblings, in the order given, all or none. A root deck goes back to
+  /// the top level only, a sub-deck under a deck only, and each passes the
+  /// rules of a move (BR-TRASH-006, BR-TRASH-007).
+  Future<Outcome<void, DeckRejection>> restoreDecks({
+    required Set<String> batchIds,
+    required String? parentId,
+    DateTime? now,
+  });
+
+  /// BR-TRASH-008: the deck of [batchId] goes back where it was, at its old
+  /// position; refused, typed, when that place no longer takes it.
+  Future<Outcome<void, DeckRejection>> undoDeckDeletion({
+    required String batchId,
+    DateTime? now,
+  });
+
   Future<DeckEntity?> findById(String id);
 
   /// UC-DECK-003: the decks under [parentId], the roots when it is null, in

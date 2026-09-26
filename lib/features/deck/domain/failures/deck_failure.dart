@@ -18,4 +18,17 @@ enum DeckRejection {
 
   /// A move to the parent the deck already has.
   sameParent,
+
+  /// BR-TRASH-006: the deck a restore is aimed at no longer exists.
+  targetNotFound,
+
+  /// BR-TRASH-006, BR-TRASH-008: the deck a restore or an Undo is aimed at
+  /// is in the Trash itself.
+  targetInTrash,
+
+  /// BR-TRASH-006: a root deck goes back to the top level only.
+  rootRestoresToTopLevel,
+
+  /// BR-TRASH-006: a sub-deck goes back under a deck only.
+  subDeckNeedsParent,
 }

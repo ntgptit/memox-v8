@@ -200,6 +200,22 @@
   "@deckRejectionSameParent": {
     "description": "Why a deck write was refused: same parent."
   },
+  "deckRejectionTargetNotFound": "That deck no longer exists.",
+  "@deckRejectionTargetNotFound": {
+    "description": "Why a deck restore was refused: the chosen deck is gone."
+  },
+  "deckRejectionTargetInTrash": "That deck is in the Trash too.",
+  "@deckRejectionTargetInTrash": {
+    "description": "Why a deck restore or Undo was refused: the deck it goes to is in the Trash."
+  },
+  "deckRejectionRootRestoresToTopLevel": "A top-level deck goes back to the top level.",
+  "@deckRejectionRootRestoresToTopLevel": {
+    "description": "Why a deck restore was refused: a root deck was aimed under a deck."
+  },
+  "deckRejectionSubDeckNeedsParent": "Choose a deck to put it in.",
+  "@deckRejectionSubDeckNeedsParent": {
+    "description": "Why a deck restore was refused: a sub-deck was aimed at the top level."
+  },
   "failureConstraint": "Nothing was saved: the change breaks a data rule.",
   "@failureConstraint": {
     "description": "A write was refused by a data rule; nothing was saved."
