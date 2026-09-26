@@ -142,6 +142,7 @@
   "tagRejectionControlCharacter": "Nhãn không được chứa ký tự đó.",
   "tagRejectionTooManyTags": "Mỗi thẻ có tối đa 10 nhãn.",
   "tagRejectionNotFound": "Một thẻ hoặc nhãn không còn nữa.",
+  "tagRejectionMergeNotConfirmed": "Một nhãn khác vừa có tên này. Hãy xem lại việc gộp rồi xác nhận lại.",
   "cardAddTitle": "Thẻ mới",
   "cardEditTitle": "Sửa thẻ",
   "cardEditCrumb": "Sửa",

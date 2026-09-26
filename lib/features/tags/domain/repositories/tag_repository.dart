@@ -1,6 +1,7 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
+import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 
 /// The one implementation is `TagRepositoryImpl` (data layer). The contract
 /// exists for ADR-010's reason: domain stays framework-free and tests
@@ -43,5 +44,27 @@ abstract interface class TagRepository {
   Stream<List<TagCount>> watchTagCounts({
     String? deckId,
     String searchTerm = '',
+  });
+
+  /// UC-TAG-001 step 4 and A1: what renaming [tagId] to [name] would do, read
+  /// in one transaction: nothing, a rename, or a merge into the tag that
+  /// folds alike, with its counts. Refuses a bad name (BR-TAG-001), then a
+  /// tag that is gone (tag management spec §6).
+  Future<Outcome<TagRenamePlan, TagRejection>> planRename({
+    required String tagId,
+    required String name,
+  });
+
+  /// UC-TAG-001 step 4 and A1: renames [tagId] to [name], keeping its id and
+  /// links (BR-TAG-006), or merges it into the tag that folds alike when
+  /// that tag is [mergeIntoTagId] (BR-TAG-007); a merge into any other tag
+  /// is `mergeNotConfirmed` and writes nothing. With no tag to merge into,
+  /// [mergeIntoTagId] is ignored (spec D8). The checks of [planRename] run
+  /// first, in its order; only `tags` and `card_tags` are written
+  /// (BR-TAG-009).
+  Future<Outcome<void, TagRejection>> renameTag({
+    required String tagId,
+    required String name,
+    String? mergeIntoTagId,
   });
 }

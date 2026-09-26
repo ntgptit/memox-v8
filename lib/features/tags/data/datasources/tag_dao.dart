@@ -18,9 +18,11 @@ final class TagDao {
           ))
           .getSingleOrNull();
 
-  Future<Tag?> findById(String id) => (_db.select(
-    _db.tags,
-  )..where((tag) => tag.id.equals(id))).getSingleOrNull();
+  /// The local profile's tag [id] (tag management spec D13).
+  Future<Tag?> findById(String id) =>
+      (_db.select(_db.tags)
+            ..where((tag) => tag.ownerId.isNull() & tag.id.equals(id)))
+          .getSingleOrNull();
 
   Future<void> insertTag(TagsCompanion row) => _db.into(_db.tags).insert(row);
 
@@ -99,4 +101,57 @@ final class TagDao {
   /// cards: a card entering the Trash or moving decks changes a count.
   Stream<void> countChanges() =>
       tableChanges(_db, [_db.tags, _db.cardTags, _db.card]);
+
+  /// The distinct active cards carrying any of [tagIds]: a card in the Trash
+  /// is not counted (BR-TAG-010).
+  Future<int> activeCardCount(Set<String> tagIds) async {
+    final count = _db.cardTags.cardId.count(distinct: true);
+    final query =
+        _db.selectOnly(_db.cardTags).join([
+            innerJoin(
+              _db.card,
+              _db.card.id.equalsExp(_db.cardTags.cardId),
+              useColumns: false,
+            ),
+          ])
+          ..addColumns([count])
+          ..where(
+            _db.cardTags.tagId.isIn(tagIds) & _db.card.deleteBatchId.isNull(),
+          );
+    return (await query.getSingle()).read(count)!;
+  }
+
+  /// Renames [tagId] in place: its id and links stay (BR-TAG-006).
+  Future<void> rename(
+    String tagId, {
+    required String name,
+    required String nameFolded,
+  }) => (_db.update(_db.tags)..where((tag) => tag.id.equals(tagId))).write(
+    TagsCompanion(name: Value(name), nameFolded: Value(nameFolded)),
+  );
+
+  /// Links every card of [sourceId], in the Trash or not, to [targetId],
+  /// then deletes [sourceId] (BR-TAG-007, BR-TAG-010). A card carrying both
+  /// keeps the target once: `OR IGNORE` skips the link it has.
+  Future<void> merge({
+    required String sourceId,
+    required String targetId,
+  }) async {
+    await _db.customInsert(
+      'INSERT OR IGNORE INTO card_tags (card_id, tag_id) '
+      'SELECT card_id, ? FROM card_tags WHERE tag_id = ?',
+      variables: [Variable<String>(targetId), Variable<String>(sourceId)],
+      updates: {_db.cardTags},
+    );
+    await deleteTag(sourceId);
+  }
+
+  /// Deletes [tagId]. Its links go by the cascade of `card_tags`, and drift's
+  /// update rule for that key tells the watchers of `card_tags` as well.
+  Future<void> deleteTag(String tagId) => _db.customUpdate(
+    'DELETE FROM tags WHERE id = ?',
+    variables: [Variable<String>(tagId)],
+    updates: {_db.tags},
+    updateKind: UpdateKind.delete,
+  );
 }
