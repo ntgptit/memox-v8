@@ -394,6 +394,8 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 
 ## IT-DISC-006 — Tìm deck trong đúng phạm vi subtree
 
+> **V8:** search covers the whole library (ruling P2-L9, UI-base §9 row 74); tested on screen 04 in `test/features/search/presentation/library_search_screen_test.dart` (FE-A10 spec D17).
+
 > **Tách thành** — `IT-DISC-006` (`HOST-WIDGET`) · `IT-DISC-006F` (`HOST-FLOW`). Lý do và ranh giới ở
 > [`testing-pyramid-audit.md`](../../shared/testing/testing-pyramid-audit.md) mục C.
 
@@ -408,6 +410,8 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 | 4 | Xoá nội dung tìm kiếm | Quay về danh sách level bình thường |
 
 ## IT-DISC-007 — Tìm kiếm không khớp có thông tin phạm vi và lối xoá
+
+> **V8:** search covers the whole library (ruling P2-L9, UI-base §9 row 74); tested on screen 04 in `test/features/search/presentation/library_search_screen_test.dart` (FE-A10 spec D17).
 
 - **Ưu tiên:** P1
 - **Tiền điều kiện:** Đang ở một level có dữ liệu.
