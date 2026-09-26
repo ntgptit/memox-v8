@@ -34,7 +34,7 @@ class LanguageScreen extends ConsumerStatefulWidget {
 class _LanguageScreenState extends ConsumerState<LanguageScreen> {
   static const int _skeletonRows = 3;
 
-  /// The choice last tapped, so its toast reads in that language.
+  /// The choice last written, so its toast reads in that language.
   LanguageChoice? _chosen;
 
   /// The language `system` resolves to: the phone's when the app has it,
@@ -48,6 +48,13 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
   }
 
   void _choose(LanguageChoice language) {
+    // A tap while a switch runs (A4), or on the stored choice, writes
+    // nothing, so it must not change the language the toast names.
+    final isRunning = ref
+        .read(settingsControllerProvider)
+        .isBusy(SettingsSubmit.language);
+    if (isRunning) return;
+    if (language == ref.read(appSettingsProvider).value?.language) return;
     _chosen = language;
     ref.read(settingsControllerProvider.notifier).chooseLanguage(language);
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -57,6 +59,36 @@ void main() {
     expect(
       _row(tester, _en.languageVietnamese).description,
       _en.settingsLanguageVietnameseName,
+    );
+  });
+
+  libraryTest('a second tap while a switch runs changes neither the store '
+      'nor the language the toast names (A4)', (tester, env) async {
+    final gate = Completer<void>();
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..hold = gate;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const LanguageScreen(),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(find.text(_en.languageEnglish));
+    await tester.pump();
+    await tester.tap(find.text(_en.languageVietnamese));
+    await tester.pump();
+
+    store.hold = null;
+    gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(store.writes, 1);
+    expect(find.text(_en.settingsLanguageSwitched), findsOneWidget);
+    expect(
+      find.text(
+        lookupAppLocalizations(const Locale('vi')).settingsLanguageSwitched,
+      ),
+      findsNothing,
     );
   });
 
