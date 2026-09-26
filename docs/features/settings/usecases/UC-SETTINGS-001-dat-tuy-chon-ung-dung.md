@@ -44,7 +44,9 @@ code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l
   đang để một giá trị tường minh thì app không đổi (BR-SETTINGS-005, BR-SETTINGS-006).
 - **A3 — Reset về mặc định:** người dùng chọn `Reset to defaults`, hệ thống hỏi
   xác nhận và nói rõ hành động này **không** đụng tiến độ học. Xác nhận đưa cả
-  bốn giá trị về mặc định trong một transaction (BR-SETTINGS-008).
+  sáu giá trị về mặc định trong một transaction: bốn tuỳ chọn học và trình bày,
+  cùng công tắc và giờ của nhắc học hằng ngày (BR-SETTINGS-008). Lần gửi nhắc
+  gần nhất là bookkeeping, không đổi.
 - **A4 — Bấm lưu lần thứ hai khi lần đầu chưa xong:** hệ thống bỏ qua lần bấm
   sau; không có hai transaction nào chạy cho một lần đổi (BR-SETTINGS-007).
 

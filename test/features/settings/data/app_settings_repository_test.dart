@@ -138,16 +138,16 @@ void main() {
     expect(await _rootStudyConfig(db), _rootOverride);
   });
 
-  test('reset to defaults returns the four values and writes nothing else: '
-      'not the reminder columns, not a root override '
-      '(UC-SETTINGS-001 A3, BR-SETTINGS-008)', () async {
+  test('reset to defaults returns the six values in one write and nothing '
+      'else: not the last delivery, not a root override '
+      '(UC-SETTINGS-001 A3, BR-SETTINGS-008, reminders spec D3)', () async {
     await _insertRootWithOverride(db);
     await settings.saveStudyDefaults(options: _sevenRandom);
     await settings.setTheme(theme: ThemeChoice.light);
     await settings.setLanguage(language: LanguageChoice.en);
     await db.customStatement(
-      'UPDATE app_settings SET reminder_enabled = 1, reminder_minute_of_day = 480 '
-      'WHERE id = 1',
+      'UPDATE app_settings SET reminder_enabled = 1, reminder_minute_of_day = 480, '
+      'reminder_last_delivered_at = 1790000000 WHERE id = 1',
     );
 
     final before = await totalChanges(db);
@@ -165,9 +165,12 @@ void main() {
     expect(current.studyDefaults.newCardOrder, NewCardOrder.created);
     expect(current.theme, ThemeChoice.system);
     expect(current.language, LanguageChoice.system);
+    expect(current.reminder.isEnabled, isFalse);
+    expect(current.reminder.minuteOfDay, 1200);
     final row = await settingsRow(db);
-    expect(row['reminder_enabled'], 1);
-    expect(row['reminder_minute_of_day'], 480);
+    expect(row['reminder_enabled'], 0);
+    expect(row['reminder_minute_of_day'], 1200);
+    expect(row['reminder_last_delivered_at'], 1790000000);
   });
 
   test('a settings row that is gone is a read failure, never made-up values '

@@ -13,6 +13,11 @@ final class SettingsDao {
     _db.appSettings,
   )..where((row) => row.id.equals(appSettingsRowId))).watchSingle();
 
+  /// [watchRow] read once.
+  Future<AppSetting> row() => (_db.select(
+    _db.appSettings,
+  )..where((row) => row.id.equals(appSettingsRowId))).getSingle();
+
   Future<void> updateRow(AppSettingsCompanion values) => (_db.update(
     _db.appSettings,
   )..where((row) => row.id.equals(appSettingsRowId))).write(values);
