@@ -97,8 +97,13 @@ List<Override> _backend(LibraryEnv env) => [
 
 /// A provider container over [env]'s backend, for a test that drives
 /// providers without a widget tree. Disposed when the test ends.
-ProviderContainer libraryContainer(LibraryEnv env) {
-  final container = ProviderContainer(overrides: _backend(env));
+ProviderContainer libraryContainer(
+  LibraryEnv env, {
+  List<Override> overrides = const [],
+}) {
+  final container = ProviderContainer(
+    overrides: [..._backend(env), ...overrides],
+  );
   addTearDown(container.dispose);
   return container;
 }
