@@ -5,6 +5,7 @@ import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/tags/data/datasources/tag_dao.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
 /// Every method checks its rules on rows read inside its transaction, and
@@ -104,6 +105,28 @@ final class TagRepositoryImpl implements TagRepository {
       }
       return const Ok(null);
     });
+  }
+
+  @override
+  Stream<List<TagCount>> watchTagCounts({
+    String? deckId,
+    String searchTerm = '',
+  }) {
+    final term = TagEntity.fold(searchTerm);
+    return _dao
+        .countChanges()
+        .asyncMap((_) => _dao.countRows(deckId: deckId, foldedTerm: term))
+        .map(
+          (rows) => [
+            for (final row in rows)
+              TagCount(
+                id: row.read<String>('id'),
+                name: row.read<String>('name'),
+                cardCount: row.read<int>('card_count'),
+              ),
+          ],
+        )
+        .mapDatabaseErrors();
   }
 
   Future<String> _createTag(String name, DateTime at) async {

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/table_changes.dart';
 
 /// Row access for `tags` and `card_tags`, plus the existence check of `card`
 /// rows. It returns Drift rows, never domain entities, and runs inside the
@@ -72,4 +73,30 @@ final class TagDao {
             (link) => link.cardId.isIn(cardIds) & link.tagId.equals(tagId),
           ))
           .go();
+
+  /// Every tag of the local profile whose folded name holds [foldedTerm],
+  /// with the active cards carrying it, in [deckId] when given; by folded
+  /// name then id. One statement (tag management spec §5); `instr` finds an
+  /// empty term everywhere.
+  Future<List<QueryRow>> countRows({
+    String? deckId,
+    required String foldedTerm,
+  }) => _db
+      .customSelect(
+        'SELECT t.id, t.name, ('
+        'SELECT COUNT(*) FROM card_tags ct JOIN card c ON c.id = ct.card_id'
+        ' WHERE ct.tag_id = t.id AND c.delete_batch_id IS NULL'
+        ' AND (?1 IS NULL OR c.deck_id = ?1)'
+        ') AS card_count FROM tags t'
+        ' WHERE t.owner_id IS NULL AND instr(t.name_folded, ?2) > 0'
+        ' ORDER BY t.name_folded, t.id',
+        variables: [Variable<String>(deckId), Variable<String>(foldedTerm)],
+        readsFrom: {_db.tags, _db.cardTags, _db.card},
+      )
+      .get();
+
+  /// Fires once, then after every write to the tags, their links or the
+  /// cards: a card entering the Trash or moving decks changes a count.
+  Stream<void> countChanges() =>
+      tableChanges(_db, [_db.tags, _db.cardTags, _db.card]);
 }
