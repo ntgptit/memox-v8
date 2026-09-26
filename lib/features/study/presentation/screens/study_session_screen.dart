@@ -18,10 +18,10 @@ import 'package:memox/features/study/presentation/states/session_ending_state.da
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_fill_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_match_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
-import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_session_error_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
@@ -126,15 +126,6 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     _controller.release();
   }
 
-  void _reveal(StudyItem item, int remainingMs) =>
-      unawaited(_controller.revealRecall(item, remainingMs));
-
-  void _saveTime(StudyItem item, int remainingMs) =>
-      unawaited(_controller.saveRecallTime(item, remainingMs));
-
-  void _recall(StudyItem item, RecallOutcome outcome) =>
-      unawaited(_controller.answer(item, RecallAnswer(outcome)));
-
   /// The clock ran out: a wrong turn, held until Continue (R2, D5).
   void _timeUp(StudyItem item) => unawaited(
     _controller.answer(
@@ -142,6 +133,12 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       const RecallAnswer(RecallOutcome.timedOut),
       shouldHoldFeedback: true,
     ),
+  );
+
+  /// A Fill answer is held: a right one is released at once, a wrong one
+  /// on Continue (F3, D5).
+  void _check(StudyItem item, String typed) => unawaited(
+    _controller.answer(item, FillAnswer(typed), shouldHoldFeedback: true),
   );
 
   void _grade(StudyItem item, Sm2Action action) =>
@@ -374,12 +371,21 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       item: item,
       result: _heldResultOf(turn, item),
       isBusy: turn.isBusy,
-      onReveal: (remainingMs) => _reveal(item, remainingMs),
-      onSaveTime: (remainingMs) => _saveTime(item, remainingMs),
-      onAnswer: (outcome) => _recall(item, outcome),
+      onReveal: (ms) => unawaited(_controller.revealRecall(item, ms)),
+      onSaveTime: (ms) => unawaited(_controller.saveRecallTime(item, ms)),
+      onAnswer: (outcome) =>
+          unawaited(_controller.answer(item, RecallAnswer(outcome))),
       onTimeUp: () => _timeUp(item),
       onContinue: _release,
     ),
-    StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
+    StudyMode.fill => StudyFillWidget(
+      key: ValueKey('fill#${item.cardId}#${item.answersInSession}'),
+      item: item,
+      result: _heldResultOf(turn, item),
+      isBusy: turn.isBusy,
+      onCheck: (typed) => _check(item, typed),
+      onShowHint: () => unawaited(_controller.showFillHint(item)),
+      onContinue: _release,
+    ),
   };
 }
