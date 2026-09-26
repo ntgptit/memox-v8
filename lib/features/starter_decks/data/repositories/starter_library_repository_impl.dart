@@ -9,11 +9,12 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/data/datasources/starter_dao.dart';
 import 'package:memox/features/starter_decks/domain/failures/starter_failure.dart';
 import 'package:memox/features/starter_decks/domain/models/added_starter_deck_model.dart';
+import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_template_model.dart';
 import 'package:memox/features/starter_decks/domain/repositories/starter_library_repository.dart';
 
-/// The Starter library over the bundled templates (starter decks spec §7). A
-/// copy is written by the features that own each table, through their
+/// The Starter library over the bundled templates (starter decks spec §6,
+/// §7). A copy is written by the features that own each table, through their
 /// contracts, inside one transaction (spec D2).
 final class StarterLibraryRepositoryImpl implements StarterLibraryRepository {
   StarterLibraryRepositoryImpl(
@@ -32,6 +33,23 @@ final class StarterLibraryRepositoryImpl implements StarterLibraryRepository {
 
   /// The templates, read once for the life of the repository (spec §5.3).
   late final Future<List<StarterTemplate>> _templates = _loadTemplates();
+
+  @override
+  Stream<List<StarterLibraryEntry>> watchLibrary() =>
+      _dao.copyChanges().asyncMap((_) async {
+        final templates = await _templates;
+        final copies = await _dao.copies();
+        return [
+          for (final template in templates)
+            StarterLibraryEntry.of(
+              template,
+              isInLibrary: copies.contains((
+                template.templateId,
+                template.version,
+              )),
+            ),
+        ];
+      }).mapDatabaseErrors();
 
   @override
   Future<Outcome<AddedStarterDeck, StarterRejection>> addStarterDeck({
