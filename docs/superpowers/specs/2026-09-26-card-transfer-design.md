@@ -1,6 +1,6 @@
 # MemoX V8 — Card transfer: import and export (BE-B3, FE-B3)
 
-Status: draft 2026-09-26, awaiting the owner's review · Path: architectural
+Status: approved 2026-09-26 · kit rulings added after the Impeccable critique (§8.1, §8.2) · Path: architectural
 
 ## 1. Intent
 
@@ -216,8 +216,8 @@ a refusal → `rejects`; an error → `failed`.
 ## 8. The screens
 
 - **Entry points.** The card list's ⋮ `deckActions` gains Import and Export (export only
-  when the deck has cards); the empty card list gains Import; the selection bar gains
-  Export selected; the create sheet of an `unset` deck gains Import.
+  when the deck has cards); the empty card list gains Import; the bulk bar gains Export;
+  the create sheet of an `unset` deck gains Import (§8.1 ruling 3).
 - **Import** is a pushed full-screen route (D8) with one controller holding the step, the
   source, the mapping and the preview as an immutable sealed state; Back steps back one
   step, and at Source acts as Close (IT-NAV-012).
@@ -226,15 +226,40 @@ a refusal → `rejects`; an error → `failed`.
   A widget the kit needs and the library lacks goes through the admission rule of
   `flutter-theme-design`.
 
-### 8.1 Kit gaps to settle in the Impeccable critique
+### 8.1 Rulings on the kit (Impeccable critique 2026-09-26, owner 2026-09-26)
 
-1. The kit's `none` result has no named flow in UC-TRANSFER-001. §5.4 gives it one: the
-   commit found only duplicates. The UC gains it as an error flow.
-2. UC-TRANSFER-001 A2 (choosing another sheet of an XLSX) has no kit state.
-3. The UC names "the overflow menu" and "the empty state" as entry points; the kit shows
-   `deckActions` under ⋮. §8 treats them as the same thing.
+The pre-plan critique is `.impeccable/critique/2026-09-26T03-27-35Z__transfer-kit.md`
+(31/40). The owner ruled:
 
-Each ruling is recorded in the screens' detail files (`CLAUDE.md`, UI source of truth).
+1. **`none` stays.** It is a commit-time outcome: the duplicate re-check inside the
+   transaction finds nothing to write (§5.4). It differs from E3, which locks Continue at
+   preview. UC-TRANSFER-001 gains it as an error flow; the kit's copy and neutral tone stay,
+   with one exit back to the deck.
+2. **The XLSX sheet choice (A2) is not a state.** A "Sheet: <name> (n of m)" row on the file
+   chip, shown only for a workbook with several sheets; changing it reruns mapping and
+   preview like changing the file. One golden covers it as a variant of the file-chosen and
+   mapping states.
+3. **The entry points already match.** Import: the ⋮ `deckActions` sheet, the empty card
+   list, and the third option of an empty deck. Export: `deckActions` and the bulk bar's
+   Export (Move · Flag · Tag · Export · Trash). The one change: `deckActions` hides Export on
+   an empty deck (UC-TRANSFER-002 E5 beats the kit).
+4. **The tracker keeps the kit's four steps** (Source · Columns · Preview · Import).
+   UC-TRANSFER-001's "three steps" wording changes to match; mapping is a decision of its
+   own.
+
+### 8.2 Deviations from the kit (P1 and P2 of the critique)
+
+Recorded in the detail files of screens 11 and 12 when they are written:
+
+| # | Kit | Built | Why |
+|---|---|---|---|
+| K1 | "1 · Choose a source" stays above mapping, preview and the commit | Once a source is read, Step 1 collapses to the file chip with its change action | P1: the buttons push the table and the commit down at every step |
+| K2 | The preview table renders every row | The first rows, and a caption "Showing first N of M rows" tied to the summary counts | P1: UC-TRANSFER-001 step 5 already says "the first rows"; a 1,500-row file |
+| K3 | Row status by icon colour; an unmapped column by a red border; cells ellipsize | Each status icon has a semantic label; the mapping error sits on its own row; cells wrap to two lines | P2: TalkBack and large text scale |
+| K4 | The result screen hand-builds a tinted hero per outcome | The existing Mx empty-state and error-state components with their tones | P2: one component per contract |
+
+The critique's P3 items (one vocabulary for the fields, an "Import another file" exit, a
+waiting line for large imports) go to the UI-base debt register, not into this build.
 
 ## 9. Tests
 
@@ -256,8 +281,10 @@ with fakes. No test logs content.
 
 In the same commits as the code:
 
-- UC-TRANSFER-001 and UC-TRANSFER-002: Given/When/Then acceptance criteria replace the OPEN
-  QUESTION; `code:` lists the files; UC-TRANSFER-001 gains the `none` error flow (§8.1).
+- UC-TRANSFER-001 and UC-TRANSFER-002: Given/When/Then acceptance criteria replace the
+  missing ones; `code:` lists the files; UC-TRANSFER-001 gains the `none` error flow and
+  its steps read as four (§8.1).
+- The UI-base debt register (spec 2026-09-23 §9): the critique's P3 items (§8.2).
 - `docs/features/transfer/README.md`: `code:` filled; the stale "repo has no `lib/`" note
   and the "sub-project later" lines go.
 - `docs/features/transfer/it-scenarios.md`: IT-NAV-012's URL (D8).
@@ -287,5 +314,4 @@ In the same commits as the code:
 | The whole feature must go | No schema change: it writes the existing `card`, schedule and tag tables | Remove the route, the entry points, the feature folder, the three repository methods and the four packages |
 
 Plan slices, in order: codecs → `importCards`, `foldedPairs` and the preview → import
-screen → `exportSnapshot` and sharing → export sheet. The Impeccable critique against the
-kit (§8.1) runs before the plan is written.
+screen → `exportSnapshot` and sharing → export sheet.
