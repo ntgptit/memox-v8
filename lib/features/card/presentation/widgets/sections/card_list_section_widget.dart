@@ -159,6 +159,16 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (await write && mounted) _selection().clear();
   }
 
+  /// The one selected card's text, when its row is loaded (kit 07).
+  CardTrashPreview? _previewOf(Set<String> selected) {
+    if (selected.length != 1) return null;
+    final id = selected.single;
+    for (final item in _lastView?.items ?? const <CardListItem>[]) {
+      if (item.id == id) return (front: item.front, back: item.back);
+    }
+    return null;
+  }
+
   /// The bulk bar's commands over [selected]: Move, Flag, Tag, Export,
   /// Delete (kit 07). Select all is in the app bar (spec A14).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
@@ -200,7 +210,13 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         icon: AppIcons.delete,
         label: l10n.cardDelete,
         onTap: () => unawaited(
-          _clearAfter(showDeleteCardsDialog(context, cardIds: selected)),
+          _clearAfter(
+            showDeleteCardsDialog(
+              context,
+              cardIds: selected,
+              preview: _previewOf(selected),
+            ),
+          ),
         ),
       ),
     ];

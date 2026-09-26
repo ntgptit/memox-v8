@@ -507,9 +507,9 @@
   "@cardMove": {
     "description": "Bulk bar action."
   },
-  "cardDelete": "Delete",
+  "cardDelete": "Trash",
   "@cardDelete": {
-    "description": "Bulk bar action and delete confirm."
+    "description": "Bulk bar command that moves the selected cards to the Trash (FE-B1, kit 07)."
   },
   "cardFlagSet": "Flag cards",
   "@cardFlagSet": {
@@ -589,27 +589,54 @@
     },
     "description": "Snackbar after a move; deck is the target's name."
   },
-  "cardDeleteTitle": "{count, plural, =1{Delete 1 card?} other{Delete {count} cards?}}",
+  "cardDeleteTitle": "{count, plural, =1{Move this card to Trash?} other{Move {count} cards to Trash?}}",
   "@cardDeleteTitle": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Delete dialog title."
+    "description": "Move to Trash dialog title (kit 07)."
   },
-  "cardDeleteBody": "The cards and their learning history are deleted for good. This can't be undone.",
-  "@cardDeleteBody": {
-    "description": "Delete dialog body."
-  },
-  "cardDeletedToast": "{count, plural, =1{1 card deleted} other{{count} cards deleted}}",
-  "@cardDeletedToast": {
+  "cardDeleteNote": "{count, plural, =1{Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected.} other{Recoverable from Trash for 30 days, with their schedule and history. Other cards are unaffected.}}",
+  "@cardDeleteNote": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Snackbar after a delete."
+    "description": "Move to Trash dialog note (kit 07)."
+  },
+  "cardMoveToTrash": "Move to Trash",
+  "@cardMoveToTrash": {
+    "description": "The Move to Trash dialog's confirm (kit 07, 09)."
+  },
+  "cardTrashedToast": "“{front}” moved to Trash",
+  "@cardTrashedToast": {
+    "placeholders": {
+      "front": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after one card moves to the Trash, with Undo (FE-B1 D3); front is the card's front."
+  },
+  "cardsTrashedToast": "{count, plural, =1{1 card moved to Trash} other{{count} cards moved to Trash}}",
+  "@cardsTrashedToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after cards move to the Trash (FE-B1 D4)."
+  },
+  "cardUndoRefused": "Can't undo. {reason} Restore it from Trash and choose a deck.",
+  "@cardUndoRefused": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar when Undo of a card is refused; reason is the rejection sentence (UC-TRASH-001 E3)."
   },
   "cardRejectionBlankContent": "Enter both the front and the back.",
   "@cardRejectionBlankContent": {
