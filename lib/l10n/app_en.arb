@@ -3916,6 +3916,135 @@
   "@studyMatchAnnounceRight": {
     "description": "Screen handoff 17 (FE-A6 P3): announced when a right pair commits."
   },
+  "studyRecallCaptionCounting": "Time to recall",
+  "@studyRecallCaptionCounting": {
+    "description": "Screen handoff 19 (FE-A6 P4): the clock caption while it counts down."
+  },
+  "studyRecallCaptionRevealed": "Revealed with time left",
+  "@studyRecallCaptionRevealed": {
+    "description": "Screen handoff 19 (FE-A6 P4): the clock caption once the meaning is revealed."
+  },
+  "studyRecallCaptionTimedOut": "Time is up",
+  "@studyRecallCaptionTimedOut": {
+    "description": "Screen handoff 19 (FE-A6 P4): the clock caption once the time ran out."
+  },
+  "studyRecallClock": "{seconds}s / {total}s",
+  "@studyRecallClock": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 19 (FE-A6 P4): the clock's seconds left of the turn's total."
+  },
+  "studyRecallClockValue": "{seconds, plural, =1{1 second left} other{{seconds} seconds left}}",
+  "@studyRecallClockValue": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 19 (FE-A6 P4): TalkBack value of the clock."
+  },
+  "studyRecallShowMeaning": "Show the meaning",
+  "@studyRecallShowMeaning": {
+    "description": "Screen handoff 19 (FE-A6 P4): reveals the meaning; records nothing."
+  },
+  "studyRecallForgot": "Forgot",
+  "@studyRecallForgot": {
+    "description": "Screen handoff 19 (FE-A6 P4): self-check after reveal: forgot."
+  },
+  "studyRecallRemembered": "Remembered",
+  "@studyRecallRemembered": {
+    "description": "Screen handoff 19 (FE-A6 P4): self-check after reveal: remembered."
+  },
+  "studyContinue": "Continue",
+  "@studyContinue": {
+    "description": "Screen handoff 19, 20 (FE-A6 P4): moves past a held outcome; records nothing."
+  },
+  "studyRecallTagTimedOut": "Counted as forgot",
+  "@studyRecallTagTimedOut": {
+    "description": "Screen handoff 19 (FE-A6 P4): tag under the meaning when the time ran out; upper-cased by the widget."
+  },
+  "studyRecallHintCounting": "Recall the meaning before the time runs out",
+  "@studyRecallHintCounting": {
+    "description": "Screen handoff 19 (FE-A6 P4): footer hint while counting down."
+  },
+  "studyRecallHintRevealed": "Be honest — the next card follows automatically",
+  "@studyRecallHintRevealed": {
+    "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed."
+  },
+  "studyRecallHintTimedOut": "This card comes back in a later round",
+  "@studyRecallHintTimedOut": {
+    "description": "Screen handoff 19 (FE-A6 P4): footer hint once timed out."
+  },
+  "studyRecallAnnounceTimedOut": "Time is up. Counted as forgot. The meaning is {meaning}.",
+  "@studyRecallAnnounceTimedOut": {
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 19 (FE-A6 P4): announced when the timeout commits."
+  },
+  "studyFillField": "Your answer",
+  "@studyFillField": {
+    "description": "Screen handoff 20 (FE-A6 P4): TalkBack name of the answer field."
+  },
+  "studyFillShowHint": "Show hint",
+  "@studyFillShowHint": {
+    "description": "Screen handoff 20 (FE-A6 P4): shows the card's hint; noted, changes nothing."
+  },
+  "studyFillCheck": "Check",
+  "@studyFillCheck": {
+    "description": "Screen handoff 20 (FE-A6 P4): submits the typed answer."
+  },
+  "studyFillHintRow": "Hint: {hint}",
+  "@studyFillHintRow": {
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 20 (FE-A6 P4): TalkBack label of the hint row."
+  },
+  "studyFillTagWrong": "Wrong · comes back next round",
+  "@studyFillTagWrong": {
+    "description": "Screen handoff 20 (FE-A6 P4): tag under a wrong answer; upper-cased by the widget (kit said 'this round', BR-STUDY-059)."
+  },
+  "studyFillTyped": "You typed {typed}",
+  "@studyFillTyped": {
+    "placeholders": {
+      "typed": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 20 (FE-A6 P4): TalkBack label of the struck-through wrong answer."
+  },
+  "studyFillHintInput": "Type the term for this meaning, then check",
+  "@studyFillHintInput": {
+    "description": "Screen handoff 20 (FE-A6 P4): footer hint while typing."
+  },
+  "studyFillHintUsed": "Using the hint is noted; it changes nothing",
+  "@studyFillHintUsed": {
+    "description": "Screen handoff 20 (FE-A6 P4): footer hint once the hint is shown."
+  },
+  "studyFillHintWrong": "Case and spaces are ignored, accents are not",
+  "@studyFillHintWrong": {
+    "description": "Screen handoff 20 (FE-A6 P4): footer hint on a wrong answer (BR-STUDY-026)."
+  },
+  "studyFillAnnounceWrong": "Wrong. The answer is {term}.",
+  "@studyFillAnnounceWrong": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 20 (FE-A6 P4): announced when a wrong answer commits."
+  },
   "summaryAppBar": "Session summary",
   "@summaryAppBar": {
     "description": "Screen handoff 21 (FE-A6 P1c): the app bar title."
