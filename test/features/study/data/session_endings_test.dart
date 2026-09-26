@@ -230,21 +230,22 @@ void main() {
     expect(session.data['end_reason'], isNull);
   });
 
-  test('Continue or leaving a session whose deck was deleted is notFound: '
-      'the session went with the deck (IT-CONT-007)', () async {
+  test('Continue or leaving a session whose deck went to the Trash is '
+      'sessionClosed: the delete ended it as content_deleted (IT-CONT-007, '
+      'BR-TRASH-004)', () async {
     final (leaf, id) = await learning(['c1']);
     expect(
       await decks.deleteDeck(deckId: leaf.id),
-      isA<Ok<void, DeckRejection>>(),
+      isA<Ok<String, DeckRejection>>(),
     );
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
     expect(
       await sessions.abandonSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
   });
 

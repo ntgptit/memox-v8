@@ -2,7 +2,7 @@
 id: UC-DECK-002
 title: Sửa và xoá deck
 status: ready
-rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016]
+rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008]
 code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features/deck/domain/usecases/change_deck_scheduler_use_case.dart, lib/features/deck/domain/usecases/get_deck_deletion_summary_use_case.dart, lib/features/deck/domain/usecases/delete_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -30,13 +30,16 @@ code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features
    phiên đang mở của cây — trong một transaction (BR-SRS-004, BR-STUDY-016).
 
 **Main flow (xoá):**
-1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ bị xoá vĩnh viễn
+1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck
    (BR-DECK-023).
 2. Người dùng xác nhận.
-3. Hệ thống xoá cứng deck cùng toàn bộ descendant, card, study state, study
-   answers và study session của nó, trong một transaction (BR-DECK-022). Khi
-   sub-project Trash triển khai, bước này đổi thành soft-delete có Undo và
-   khôi phục — xem UC-TRASH-001.
+3. Hệ thống chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash,
+   thành **một** batch, trong một transaction (BR-DECK-022, BR-TRASH-001,
+   BR-TRASH-003). Tombstone đã có sẵn bên trong giữ batch cũ của nó. Phiên
+   `in_progress` chạm tới batch kết thúc trong cùng transaction với
+   `content_deleted` (BR-TRASH-004).
+4. Người dùng có thể Undo ngay tại chỗ (BR-TRASH-008) hoặc khôi phục về sau từ
+   Trash (UC-TRASH-001).
 
 ## Alternative / Error flow
 
@@ -74,12 +77,14 @@ code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features
 - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại,
   `generation` **không đổi** (chưa có gì để reset), `first_answered_at`
   vẫn NULL, và không còn phiên `in_progress` nào của cây (BR-STUDY-016).
-- Sau xoá: deck và mọi descendant của nó không còn tồn tại — cascade đã xoá
-  cứng card, study state, study answers và study session của chúng (BR-DECK-022);
-  không bề mặt active nào còn hiện chúng.
-- Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con cuối
-  cùng, `content_type` của nó tự về `unset` trong cùng transaction (BR-DECK-015).
-  Deck cha là root thì giữ `deck` (BR-DECK-004).
+- Sau xoá: deck và mọi descendant active của nó nằm trong Trash, cùng một batch
+  và một `deleted_at` (BR-DECK-022, BR-TRASH-001); không bề mặt active nào còn
+  hiện chúng (BR-TRASH-002). Nội dung, study state, study answers, id và chỗ cũ
+  của từng hàng giữ nguyên tới khi purge (BR-TRASH-004); chỉ purge mới xoá hẳn,
+  theo cascade (BR-TRASH-010).
+- Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con
+  active cuối cùng, `content_type` của nó tự về `unset` trong cùng transaction
+  (BR-DECK-015, BR-TRASH-005). Deck cha là root thì giữ `deck` (BR-DECK-004).
 
 ## API
 

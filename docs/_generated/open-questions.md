@@ -20,7 +20,7 @@
 
 ## [features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md)
 
-- L90: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
 

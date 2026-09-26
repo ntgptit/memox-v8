@@ -52,7 +52,13 @@ abstract interface class DeckRepository {
     DateTime? now,
   });
 
-  Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId});
+  /// UC-DECK-002: [deckId] and every active deck and card under it go to the
+  /// Trash as one batch, whose id comes back for an Undo (BR-DECK-022,
+  /// BR-TRASH-001). The sessions it touches end (BR-TRASH-004).
+  Future<Outcome<String, DeckRejection>> deleteDeck({
+    required String deckId,
+    DateTime? now,
+  });
 
   Future<DeckEntity?> findById(String id);
 

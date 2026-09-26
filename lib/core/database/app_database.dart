@@ -14,6 +14,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/trash.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
+    'package:memox/core/database/queries/trash_queries.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {

@@ -260,8 +260,8 @@ void main() {
     expect(settled.currentMode, StudyMode.match);
   });
 
-  test('once its deck is deleted the session is notFound, and the watch '
-      'says so (UC-STUDY-001 A5, E5; IT-CONT-007)', () async {
+  test('once its deck goes to the Trash the session is notFound, and the '
+      'watch says so (UC-STUDY-001 A5; IT-CONT-007; BR-TRASH-002)', () async {
     final (_, leaf) = await tree();
     await insertCard(db, id: 'c1', deckId: leaf.id);
     final id = await learning(leaf);
@@ -279,7 +279,7 @@ void main() {
     );
     expect(
       await decks.deleteDeck(deckId: leaf.id),
-      isA<Ok<void, DeckRejection>>(),
+      isA<Ok<String, DeckRejection>>(),
     );
     await gone;
   });

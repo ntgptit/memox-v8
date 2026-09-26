@@ -55,14 +55,15 @@ final class StudyViewDao {
   final AppDatabase _db;
 
   /// [sessionId]'s row, with its deck's name and its root's scheduler; null
-  /// once the session is gone. Emits again on every write the session
-  /// screen can see: the session, its queue, its decks, cards, schedules and
-  /// logs.
+  /// once the session is gone or its deck or root is in the Trash
+  /// (BR-TRASH-002). Emits again on every write the session screen can see:
+  /// the session, its queue, its decks, cards, schedules and logs.
   Stream<SessionViewRow?> watchSessionRow(String sessionId) => _db
       .customSelect(
         'SELECT s.*, d.name AS deck_name, r.scheduler_type AS root_scheduler'
         ' FROM study_session s JOIN deck d ON d.id = s.deck_id'
-        ' JOIN deck r ON r.id = s.root_id WHERE s.id = ?',
+        ' JOIN deck r ON r.id = s.root_id WHERE s.id = ?'
+        ' AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL',
         variables: [Variable<String>(sessionId)],
         readsFrom: {
           _db.studySession,
@@ -218,7 +219,9 @@ final class StudyViewDao {
   }
 
   /// The options of [cardId]'s question in [round] of `guess`, in the order
-  /// shown (graded modes spec §9).
+  /// shown (graded modes spec §9). A card in the Trash is left out
+  /// (BR-TRASH-002), which blocks the question as a deleted card does; a
+  /// delete closes such a session anyway (trash spec D7).
   Future<List<OptionRecord>> guessOptions(
     String sessionId,
     int round,
@@ -229,7 +232,7 @@ final class StudyViewDao {
           'SELECT o.option_card_id, c.back FROM study_guess_options o'
           ' JOIN card c ON c.id = o.option_card_id'
           ' WHERE o.session_id = ? AND o.round = ? AND o.card_id = ?'
-          ' ORDER BY o.slot',
+          ' AND c.delete_batch_id IS NULL ORDER BY o.slot',
           variables: [
             Variable<String>(sessionId),
             Variable<int>(round),

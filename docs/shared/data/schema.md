@@ -357,7 +357,7 @@ bảng đầu tiên cần nhìn khi bàn về kích thước DB.
 | `session_kind` | TEXT NOT NULL | `learning` \| `reviewing` (BR-STUDY-051) |
 | `current_mode` | TEXT NOT NULL | stage đang chạy: `browse` \| `self_assess` \| `match` \| `guess` \| `recall` \| `fill` (BR-MODE-002, BR-MODE-008). Phiên `reviewing` chỉ có một giá trị suốt phiên |
 | `status` | TEXT NOT NULL | `in_progress` \| `completed` \| `abandoned` \| `invalidated` \| `failed` (BR-STUDY-010) |
-| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-012, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` là sub-project sau — Trash |
+| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-012, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` có từ schema v3 (Trash, BE-B1) |
 | `cursor` | INTEGER NOT NULL DEFAULT 0 | số lượt đã phục vụ trong phiên; nền của BR-STUDY-005 |
 | `card_limit` | INTEGER NOT NULL | số thẻ tối đa của phiên, chốt lúc mở (BR-STUDY-003, BR-STUDY-024). Mặc định 20 |
 | `direction` | TEXT NULL | `korean_to_meaning` \| `meaning_to_korean` \| `mixed` (BR-MODE-013, BR-MODE-015). Chốt lúc mở và khoá suốt phiên (BR-MODE-017). NULL ở mọi phiên ngoài BR-MODE-013 |

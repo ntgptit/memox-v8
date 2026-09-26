@@ -76,8 +76,37 @@ final class DeckDao {
 
   Future<void> insert(DeckCompanion row) => _db.into(_db.deck).insert(row);
 
-  Future<void> delete(String id) =>
-      (_db.delete(_db.deck)..where((deck) => deck.id.equals(id))).go();
+  /// The batch of one deletion, with [id] as its item root (BR-TRASH-001).
+  Future<void> insertBatch(String batchId, String id, DateTime now) =>
+      _db.insertDeleteBatch(batchId, 'deck', id, now);
+
+  /// Puts [id] and every active deck under it in the batch [batchId], then
+  /// every active card of those decks (BR-TRASH-001). A tombstone inside
+  /// keeps its older batch (BR-TRASH-003). The walk is cycle-safe and never
+  /// capped.
+  Future<void> markSubtree(String id, String batchId) async {
+    await _db.customUpdate(
+      'WITH RECURSIVE subtree(id) AS ('
+      ' SELECT ? UNION SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id'
+      ' WHERE d.delete_batch_id IS NULL'
+      ') UPDATE deck SET delete_batch_id = ? WHERE id IN (SELECT id FROM subtree)',
+      variables: [Variable<String>(id), Variable<String>(batchId)],
+      updates: {_db.deck},
+      updateKind: UpdateKind.update,
+    );
+    await _db.customUpdate(
+      'UPDATE card SET delete_batch_id = ? WHERE delete_batch_id IS NULL'
+      ' AND deck_id IN (SELECT id FROM deck WHERE delete_batch_id = ?)',
+      variables: [Variable<String>(batchId), Variable<String>(batchId)],
+      updates: {_db.card},
+      updateKind: UpdateKind.update,
+    );
+  }
+
+  /// The open sessions [batchId] touches end (BR-TRASH-004;
+  /// `trash_queries.drift`).
+  Future<void> closeSessionsTouching(String batchId, DateTime now) =>
+      _db.closeSessionsTouchingBatch(now, batchId);
 
   Future<void> setContentType(String id, String contentType, DateTime now) =>
       (_db.update(_db.deck)..where((deck) => deck.id.equals(id))).write(

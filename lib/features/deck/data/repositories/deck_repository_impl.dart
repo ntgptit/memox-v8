@@ -225,18 +225,24 @@ final class DeckRepositoryImpl implements DeckRepository {
   });
 
   @override
-  Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId}) {
-    final at = _now();
+  Future<Outcome<String, DeckRejection>> deleteDeck({
+    required String deckId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
     return _write(() async {
       final deck = await _dao.findRow(deckId);
       if (deck == null) return const Rejected(DeckRejection.notFound);
-      // Sub-decks, cards, schedule rows, review logs and sessions go with it
-      // by cascade (BR-DECK-022).
-      await _dao.delete(deckId);
+      // The rows stay where they are, marked: only a purge deletes them, by
+      // cascade (BR-DECK-022, BR-TRASH-010).
+      final batchId = newId();
+      await _dao.insertBatch(batchId, deckId, at);
+      await _dao.markSubtree(deckId, batchId);
       if (deck.parentId case final parentId?) {
         await _refreshContentType(parentId, at);
       }
-      return const Ok(null);
+      await _dao.closeSessionsTouching(batchId, at);
+      return Ok(batchId);
     });
   }
 
