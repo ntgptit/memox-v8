@@ -6,6 +6,12 @@ abstract final class AppRoutes {
   static const String progress = '/progress';
   static const String settings = '/settings';
 
+  /// The path parameter that names a study session.
+  static const String sessionIdParam = 'sessionId';
+
+  /// A study session, full screen on the root navigator (FE-A6 D2).
+  static const String studySessionPath = '$study/session/:$sessionIdParam';
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 
@@ -43,6 +49,9 @@ abstract final class AppRoutes {
 
   /// Screen 14 for [deckId].
   static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
+
+  /// The session [sessionId], its summary once it has ended.
+  static String studySession(String sessionId) => '$study/session/$sessionId';
 
   /// The card editor adding cards to [deckId].
   static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';

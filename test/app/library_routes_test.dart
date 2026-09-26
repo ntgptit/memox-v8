@@ -1,3 +1,13 @@
+import '../support/study_fixtures.dart';
+
+import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/app/router/app_routes.dart';
+import 'package:go_router/go_router.dart';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
@@ -374,5 +384,35 @@ void main() {
         .customSelect('SELECT COUNT(*) AS n FROM study_session')
         .getSingle();
     expect(sessions.read<int>('n'), 0);
+  });
+
+  libraryTest('a session is a full-screen route with no tab bar; ✕ shows '
+      'its summary and Done returns to its deck (FE-A6 D2)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final lesson = await env.decks.sub(korean.id, 'Lesson');
+    await insertCard(env.db, id: 'n1', deckId: lesson.id);
+    final opened = await studyEntryRepository(
+      env.db,
+      env.clock.now,
+    ).openLearningSession(deckId: lesson.id);
+    final id = (opened as Ok<String, StudyRejection>).value;
+    await pumpMemoxApp(tester, env);
+
+    unawaited(
+      GoRouter.of(tester.element(find.byType(MxBottomNav)))
+          .push(AppRoutes.studySession(id)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(StudySessionScreen), findsOneWidget);
+    expect(find.byType(MxBottomNav), findsNothing);
+
+    await _tap(tester, find.byTooltip(_en.studySessionClose));
+    await _tap(tester, find.text(_en.summaryDone));
+
+    expect(find.byType(StudySessionScreen), findsNothing);
+    expect(_barTitle('Lesson'), findsOneWidget);
   });
 }

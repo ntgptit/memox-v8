@@ -42,12 +42,17 @@ final class LibraryEnv {
         db,
         ScheduleRepositoryImpl(db),
         TagRepositoryImpl(db),
-      );
+      ),
+      sessions = LockableSessions(studySessionRepository(db, clock.now));
 
   final AppDatabase db;
   final FakeDayClock clock;
   final DeckRepository decks;
   final CardRepository cards;
+
+  /// The app's session repository, on the fake day; a test locks it to
+  /// find the database busy (UC-STUDY-001 E2).
+  final LockableSessions sessions;
 }
 
 /// A widget test over [LibraryEnv]. The widget tree is torn down before the
@@ -73,9 +78,7 @@ List<Override> _backend(LibraryEnv env) => [
   dayClockProvider.overrideWithValue(env.clock),
   // The app's session repository reads the wall clock; the harness runs it
   // on the fake day, so a session opened in a test is today's.
-  studySessionRepositoryProvider.overrideWithValue(
-    studySessionRepository(env.db, env.clock.now),
-  ),
+  studySessionRepositoryProvider.overrideWithValue(env.sessions),
 ];
 
 /// A provider container over [env]'s backend, for a test that drives
