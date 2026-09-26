@@ -100,4 +100,40 @@ void main() {
   test('a negative count asserts', () {
     expect(() => _line(overdue: -1), throwsAssertionError);
   });
+
+  testWidgets('a fourth, muted Scheduled term follows New when a label is '
+      'given, and only then (BR-STUDY-068, FE-A8 S1)', (tester) async {
+    await pumpMx(
+      tester,
+      MxWorkloadBreakdownLine(
+        overdueCount: 3,
+        todayCount: 5,
+        newCount: 2,
+        scheduledCount: 4,
+        overdueLabel: (n) => '$n overdue',
+        todayLabel: (n) => '$n today',
+        newLabel: (n) => '$n new',
+        scheduledLabel: (n) => '$n scheduled',
+        fallback: 'Nothing due',
+      ),
+    );
+
+    expect(_plain(tester), '3 overdue · 5 today · 2 new · 4 scheduled');
+    expect(_termStyle(tester, '4 scheduled')!.color, scheme.onSurfaceVariant);
+
+    await pumpMx(
+      tester,
+      MxWorkloadBreakdownLine(
+        overdueCount: 3,
+        todayCount: 5,
+        newCount: 2,
+        scheduledCount: 4,
+        overdueLabel: (n) => '$n overdue',
+        todayLabel: (n) => '$n today',
+        newLabel: (n) => '$n new',
+        fallback: 'Nothing due',
+      ),
+    );
+    expect(_plain(tester), '3 overdue · 5 today · 2 new');
+  });
 }
