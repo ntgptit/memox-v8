@@ -53,9 +53,20 @@ final class CardDao {
         _contentOf(draft).copyWith(updatedAt: Value(now)),
       );
 
-  /// Their schedule rows, review logs and tag links go with them by cascade.
-  Future<void> deleteCards(Set<String> ids) =>
-      (_db.delete(_db.card)..where((card) => card.id.isIn(ids))).go();
+  /// [id] goes to the Trash as the item root of the batch [batchId]
+  /// (BR-TRASH-001). The row stays as it is otherwise; only a purge deletes
+  /// it, and its schedule, logs and tag links with it.
+  Future<void> moveToTrash(String id, String batchId, DateTime now) async {
+    await _db.insertDeleteBatch(batchId, 'card', id, now);
+    await (_db.update(_db.card)..where((card) => card.id.equals(id))).write(
+      CardCompanion(deleteBatchId: Value(batchId)),
+    );
+  }
+
+  /// The open sessions [batchId] touches end (BR-TRASH-004;
+  /// `trash_queries.drift`).
+  Future<void> closeSessionsTouching(String batchId, DateTime now) =>
+      _db.closeSessionsTouchingBatch(now, batchId);
 
   Future<void> moveCards(Set<String> ids, String deckId, DateTime now) =>
       (_db.update(_db.card)..where((card) => card.id.isIn(ids))).write(

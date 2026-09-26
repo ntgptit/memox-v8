@@ -167,7 +167,7 @@ void main() {
   });
 
   group('deleteCards (BR-CARD-011)', () {
-    test('deletes the batch with its schedule rows and tag links; an emptied deck is unset', () async {
+    test('moves the cards to the Trash with their schedule rows and tag links; an emptied deck is unset', () async {
       final a = await cards.card(
         nouns.id,
         const CardDraft(front: 'a', back: 'a', tagNames: ['t']),
@@ -177,14 +177,14 @@ void main() {
 
       final result = await cards.deleteCards(cardIds: {a.id, b.id});
 
-      expect(result, isA<Ok<void, CardRejection>>());
+      expect(result, isA<Ok<List<String>, CardRejection>>());
       expect(
         (
           await count('card'),
           await count('card_schedule'),
           await count('card_tags'),
         ),
-        (1, 1, 0),
+        (3, 3, 1),
       );
       expect(await contentTypeOf(nouns.id), DeckContentType.unset);
       expect(await contentTypeOf(verbs.id), DeckContentType.card);
@@ -341,7 +341,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {}),
-        isA<Ok<void, CardRejection>>(),
+        isA<Ok<List<String>, CardRejection>>(),
       );
       expect(
         await cards.moveCards(cardIds: {}, targetDeckId: empty.id),
@@ -436,7 +436,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {cardId}),
-        isA<Ok<void, CardRejection>>(),
+        isA<Ok<List<String>, CardRejection>>(),
       );
       expect(await deckRow(trashed.id), before);
     });

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:drift/drift.dart' show QueryRow, Variable;
+import 'package:drift/drift.dart' show QueryRow, UpdateKind, Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -328,3 +328,25 @@ Future<String> _otherPair(
             )
             .getSingle())
         .read<String>('card_id');
+
+/// Deletes [cardIds] for good, the way a build before the Trash (schema v2)
+/// did: their open sessions stayed open without them, and spec D12's settle
+/// is for those sessions. A sub-deck left with no active card goes back to
+/// unset, as that delete did. A delete today closes such a session instead
+/// (BR-TRASH-004).
+Future<void> hardDeleteCards(AppDatabase db, Set<String> cardIds) async {
+  final marks = List.filled(cardIds.length, '?').join(', ');
+  await db.customUpdate(
+    'DELETE FROM card WHERE id IN ($marks)',
+    variables: [for (final id in cardIds) Variable<String>(id)],
+    updates: {db.card},
+    updateKind: UpdateKind.delete,
+  );
+  await db.customUpdate(
+    "UPDATE deck SET content_type = 'unset' WHERE parent_id IS NOT NULL"
+    " AND content_type = 'card' AND NOT EXISTS (SELECT 1 FROM card c"
+    ' WHERE c.deck_id = deck.id AND c.delete_batch_id IS NULL)',
+    updates: {db.deck},
+    updateKind: UpdateKind.update,
+  );
+}

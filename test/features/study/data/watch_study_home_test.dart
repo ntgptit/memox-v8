@@ -256,9 +256,9 @@ void main() {
     },
   );
 
-  test('a session whose cards left in its round were deleted is still '
-      'offered, with no progress until Continue settles it (BR-STUDY-075, '
-      'spec D3)', () async {
+  test('a session whose cards left in its round were deleted by a build '
+      'before the Trash is still offered, with no progress until Continue '
+      'settles it (BR-STUDY-075, spec D3)', () async {
     final root = await decks.root('Korean');
     final lesson = await decks.sub(root.id, 'Lesson');
     await insertCard(db, id: 'c1', deckId: lesson.id, back: 'one');
@@ -266,12 +266,7 @@ void main() {
     final id = opened(await entries.openLearningSession(deckId: lesson.id));
     final first = (await servedCard(db, id))!;
     await answerServed(db, sessions, id, right: true);
-    expect(
-      await cardRepository().deleteCards(
-        cardIds: {first == 'c1' ? 'c2' : 'c1'},
-      ),
-      isA<Ok<void, CardRejection>>(),
-    );
+    await hardDeleteCards(db, {first == 'c1' ? 'c2' : 'c1'});
 
     final resumable = (await homeAt()).resumable;
 

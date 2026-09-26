@@ -32,10 +32,13 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
-  /// Their schedule rows, logs and tag links go with them; a deck left with
-  /// no card is unset again (BR-DECK-015).
-  Future<Outcome<void, CardRejection>> deleteCards({
+  /// UC-CARD-001 A2: each card goes to the Trash as a batch of its own, all
+  /// at one time, and the batch ids come back in the order of [cardIds]
+  /// (BR-TRASH-001). A deck left with no active card is unset again
+  /// (BR-TRASH-005); the sessions they touch end (BR-TRASH-004).
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
+    DateTime? now,
   });
 
   /// BR-CARD-010: only `deck_id` and `updated_at` change.

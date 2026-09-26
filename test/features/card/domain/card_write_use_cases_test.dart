@@ -85,7 +85,10 @@ void main() {
       await DeleteCardsUseCase(cards)(cardIds: {apple.id});
 
       final rows = await db
-          .customSelect('SELECT id, deck_id, back, is_flagged FROM card')
+          .customSelect(
+            'SELECT id, deck_id, back, is_flagged FROM card'
+            ' WHERE delete_batch_id IS NULL',
+          )
           .get();
       expect(
         [

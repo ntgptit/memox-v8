@@ -93,19 +93,30 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
-  Future<Outcome<void, CardRejection>> deleteCards({
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
+    DateTime? now,
   }) {
-    final at = _now();
+    final at = now ?? _now();
     return _write(() async {
-      if (cardIds.isEmpty) return const Ok(null);
+      if (cardIds.isEmpty) return const Ok([]);
       final rows = await _dao.liveRows(cardIds);
       if (rows.length != cardIds.length) {
         return const Rejected(CardRejection.notFound);
       }
-      await _dao.deleteCards(cardIds);
+      // One batch per card, all at one time: each card is an item the person
+      // can restore on its own (BR-TRASH-001).
+      final batchIds = <String>[];
+      for (final cardId in cardIds) {
+        final batchId = newId();
+        await _dao.moveToTrash(cardId, batchId, at);
+        batchIds.add(batchId);
+      }
       await _unsetEmptied({for (final row in rows) row.deckId}, at);
-      return const Ok(null);
+      for (final batchId in batchIds) {
+        await _dao.closeSessionsTouching(batchId, at);
+      }
+      return Ok(batchIds);
     });
   }
 
