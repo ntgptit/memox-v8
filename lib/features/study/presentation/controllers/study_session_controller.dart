@@ -23,11 +23,13 @@ class StudySessionController extends _$StudySessionController {
   /// until [release] (D5). A busy database keeps the answer for [retry]
   /// (E2); any other failure has already failed the session, whose summary
   /// the stream shows (E3, spec D6). Dropped while a write runs
-  /// (BR-STUDY-004).
+  /// (BR-STUDY-004). [cardId] names another card than [item]'s: a `match`
+  /// answer on any pending pair of the board (BR-STUDY-049).
   Future<void> answer(
     StudyItem item,
     StudyAnswer answer, {
     bool shouldHoldFeedback = false,
+    String? cardId,
   }) async {
     if (state.isBusy) return;
     state = const StudyTurnState(isBusy: true);
@@ -35,11 +37,12 @@ class StudySessionController extends _$StudySessionController {
       item,
       answer,
       shouldHoldFeedback: shouldHoldFeedback,
+      cardId: cardId ?? item.cardId,
     );
     try {
       final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
         sessionId: sessionId,
-        cardId: item.cardId,
+        cardId: pending.cardId,
         answer: answer,
       );
       if (!ref.mounted) return;
@@ -68,6 +71,7 @@ class StudySessionController extends _$StudySessionController {
       pending.item,
       pending.answer,
       shouldHoldFeedback: pending.shouldHoldFeedback,
+      cardId: pending.cardId,
     );
   }
 
