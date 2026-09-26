@@ -1,7 +1,9 @@
 # MemoX V8 — Trash backend design (package 7)
 
 Status: approved 2026-09-25 (design section by section in conversation, then this
-written spec) · Path: architectural
+written spec); amended 2026-09-26 with the clarifications of its plan
+([`2026-09-26-trash-backend.md`](../plans/2026-09-26-trash-backend.md)) · Path:
+architectural
 
 ## 1. Intent
 
@@ -112,7 +114,7 @@ Success means:
 | D6 | Batches | One batch per item root. Deleting n cards writes n batches with one `deleted_at`. `deleted_at` lives on the batch only: marking a row changes no content and no `updated_at` | BR-TRASH-001, BR-TRASH-004; `trash/data.md` |
 | D7 | Sessions closed | An `in_progress` session closes as `invalidated`/`content_deleted` when its deck is marked, when its queue holds a marked card, **or when a stored guess question uses a marked card as an option**. The options read gains the tombstone filter too | BR-TRASH-004, BR-TRASH-002; Owner, 2026-09-25 |
 | D8 | One set of rules | A deck restore and a deck Undo call `DeckEntity.checkMove`. `CardEntity.checkMove` splits into `checkTarget` and the move-only `sameDeck`; a card restore and a card Undo call `checkTarget`. `sameParent` and `sameDeck` stay a move's: the place an item was is a valid target. The target queries of a move gain a restore mode rather than a second query | BR-TRASH-006; Owner, 2026-09-25 |
-| D9 | Positions | A restore puts a deck last among its new siblings, as a move does, and sets a card's `deck_id` and `updated_at`, as a move does. An Undo keeps a deck's `sibling_position` and a card's `updated_at`: nothing else took that place, since a new sibling's position counts tombstones | BR-TRASH-007, BR-TRASH-008 |
+| D9 | Positions | A restore puts a deck last among its new siblings, as a move does, and sets a card's `deck_id` and `updated_at`, as a move does. An Undo keeps a deck's `sibling_position` and a card's `updated_at`: no new sibling, move or restore takes that place, since the next position counts tombstones. A reorder renumbers the active siblings from 0 (§2), so an Undo after one can share a position with a sibling; the tie falls to `id`, and the next reorder renumbers them apart | BR-TRASH-007, BR-TRASH-008 |
 | D10 | Tombstones travel | A tombstone inside a subtree moves with it: `moveSubtree` rewrites its `root_id` and `depth`, and a subtree's height counts it, as they do today. A move can never push a tombstone past depth 10 | BR-TRASH-007, BR-DECK-001, BR-DECK-018 |
 | D11 | Reset and the Trash | Unchanged: a reset or a scheduler change rewrites the schedules of the tree's tombstones too, so a restored card is at its root's generation and invariant 9 holds for every row | BR-SRS-023, invariant 9 |
 | D12 | Purge | One transaction a call. A manual purge takes the chosen batches and every expired one; the auto-purge takes the expired ones. Batches go in ascending `deleted_at`, in passes, until a pass purges nothing; a batch whose subtree still holds a row of another batch or an active row is skipped whole and reported with the batches that block it | BR-TRASH-009, BR-TRASH-010; Owner, 2026-09-25 |
@@ -186,7 +188,7 @@ CREATE TABLE delete_batches (
   root_item_id TEXT NOT NULL,   -- no FK: two target tables (trash/data.md)
   deleted_at DATETIME NOT NULL,
   owner_id TEXT                 -- NULL = local profile
-) AS DeleteBatchRow;
+) AS DeleteBatch;              -- every row class is its singular noun
 
 CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id);
 ```
@@ -268,8 +270,9 @@ set writes nothing and returns none.
 ### 6.3 The sessions it closes
 
 `trash_queries.drift` holds one statement for both features: every `in_progress`
-session whose deck took the batch, whose queue holds a card that took it, or whose
-stored guess options use such a card, becomes `invalidated` with
+session whose deck took the batch, whose root took it (a session keeps its root when
+its deck moves to another tree, IT-CONT-006), whose queue holds a card that took it,
+or whose stored guess options use such a card, becomes `invalidated` with
 `end_reason = 'content_deleted'` and `ended_at = now` (D7). The reason is stored, never
 inferred (BR-TRASH-004).
 
@@ -298,7 +301,9 @@ One transaction. Every check runs before any write; one refusal refuses all.
   1. the rows of its batch, decks and cards, lose their mark;
   2. a sub-deck moves under the target by `moveSubtree`, last among its siblings,
      `root_id` and `depth` rewritten for the whole subtree, tombstones inside
-     included (BR-TRASH-007); a root deck takes the next position among the roots;
+     included (BR-TRASH-007), from its row read again: an item restored before it
+     may have carried it along (D10); a root deck takes the next position among the
+     roots;
   3. an `unset` target becomes `deck`;
   4. the batch row is deleted, after the marks are gone: the key would otherwise
      cascade.
@@ -319,7 +324,8 @@ The target is where the item was, read from its row: a root deck's top level, a
 sub-deck's `parent_id`, a card's `deck_id`. The checks are §7.1's and §7.2's, against
 that place, so a refusal is typed: `targetInTrash` when the old parent is in the Trash
 too (the kit's `undoRefused`), `notADeckContainer` or `targetHoldsDecks` when it holds
-the other kind now, `depthExceeded`. The writes are §7.1's and §7.2's but keep a deck's
+the other kind now (`depthExceeded` cannot happen: the subtree's height counts its
+tombstones, D10). The writes are §7.1's and §7.2's but keep a deck's
 `sibling_position` and a card's `updated_at` (D9). The store sets no time limit: the
 snackbar decides how long an Undo is offered, and offers it for a single item only
 (BR-TRASH-008, "Enforced by: store + UI").
@@ -427,9 +433,10 @@ nothing and purges nothing (D13).
   `_db.deck`.
 - **The rule.** A statement that reads `card` or `deck` (`FROM`, `JOIN`, `UPDATE`
   or `DELETE FROM` followed by the bare table name, so `card_schedule` and
-  `card_tags` do not count) names `delete_batch_id`, or `deleteBatchId` in the query
-  builder. Otherwise the allowlist of the test names it, as `file#member` or
-  `file#query`, with its reason.
+  `card_tags` do not count) names `delete_batch_id` for each of its aliases
+  (`c.delete_batch_id` for `card c`; any `delete_batch_id` for a bare name), or
+  `deleteBatchId` in the query builder. Otherwise the allowlist of the test names it,
+  as `file#member` or `file#query`, with its reason.
 - **The allowlist** holds the statements that read tombstones on purpose: a reset's
   rewrite of the whole tree (D11), `moveSubtree` and `subtreeHeight` (D10),
   `nextSiblingPosition` (D9), the trash reads and the purge. The plan fixes the list
