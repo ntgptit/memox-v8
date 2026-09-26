@@ -38,6 +38,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig
 |---|---|---|
 | "Appearance", and a "THEME" overline | "Theme", with no overline: the title already names it | D7 (owner) |
 | "Tokyo Pure", "Tokyo Nebula" | "Always light", "Always dark" | D7 (owner) |
+| Three cards side by side at any size | One card per line when a word of a name or hint would not fit its third (large text, Vietnamese) | Build audit 2026-09-26; the tray's rule, UI-base row 123 |
 
 ## Copy
 

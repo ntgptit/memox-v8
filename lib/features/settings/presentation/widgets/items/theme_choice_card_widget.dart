@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
@@ -27,6 +29,47 @@ class ThemeChoiceCardWidget extends StatelessWidget {
   final VoidCallback onSelected;
 
   static const double _padding = AppSpacing.control;
+
+  /// The narrowest card that keeps every word whole: the longest word of a
+  /// name beside the check, or of a hint, plus the padding. Narrower, the
+  /// cards stack (UI-base row 123's rule, for the theme cards).
+  static double minWidth(BuildContext context) {
+    final l10n = context.l10n;
+    final styles = context.textStyles;
+    final textScaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    double widest(String text, TextStyle style) {
+      var width = 0.0;
+      for (final word in text.split(' ')) {
+        final painter = TextPainter(
+          text: TextSpan(text: word, style: style),
+          textDirection: direction,
+          textScaler: textScaler,
+          maxLines: 1,
+        )..layout();
+        width = math.max(width, painter.width);
+        painter.dispose();
+      }
+      return width;
+    }
+
+    final names = [
+      l10n.settingsThemeSystem,
+      l10n.settingsThemeLight,
+      l10n.settingsThemeDark,
+    ];
+    final hints = [
+      l10n.settingsThemeSystemHint,
+      l10n.settingsThemeLightHint,
+      l10n.settingsThemeDarkHint,
+    ];
+    final check = textScaler.scale(AppIconSize.compact) + AppSpacing.micro;
+    final text = [
+      for (final name in names) widest(name, styles.rowTitle) + check,
+      for (final hint in hints) widest(hint, styles.rowSubtitle),
+    ].reduce(math.max);
+    return text + _padding * 2;
+  }
 
   @override
   Widget build(BuildContext context) {

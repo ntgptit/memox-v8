@@ -62,6 +62,37 @@ void main() {
     handle.dispose();
   });
 
+  libraryTest('at large text in Vietnamese the cards stack, so no word '
+      'breaks inside itself', (tester, env) async {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const ThemeScreen(),
+      textScale: 2,
+      locale: const Locale('vi'),
+    );
+
+    expect(
+      tester.getTopLeft(find.text(vi.settingsThemeLight)).dy,
+      greaterThan(tester.getBottomLeft(find.text(vi.settingsThemeSystem)).dy),
+    );
+    expect(
+      tester.getSize(find.text(vi.settingsThemeSystem)).height,
+      lessThan(tester.getSize(find.text(vi.settingsThemeSystem)).width),
+    );
+  });
+
+  libraryTest('at 1x the three cards sit side by side, as the kit draws '
+      'them', (tester, env) async {
+    await pumpLibraryScreen(tester, env, const ThemeScreen());
+
+    expect(
+      tester.getTopLeft(find.text(_en.settingsThemeLight)).dy,
+      tester.getTopLeft(find.text(_en.settingsThemeSystem)).dy,
+    );
+  });
+
   libraryTest('a failed read shows the error with Retry and no invented '
       'choice (E3)', (tester, env) async {
     await pumpLibraryScreen(

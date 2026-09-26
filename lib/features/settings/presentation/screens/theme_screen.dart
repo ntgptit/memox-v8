@@ -62,21 +62,31 @@ class ThemeScreen extends ConsumerWidget {
         AsyncData(:final value) => MxScreenScroll(
           children: [
             const SizedBox(height: AppSpacing.control),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.control,
-              children: [
-                for (final theme in ThemeChoice.values)
-                  Expanded(
-                    child: ThemeChoiceCardWidget(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final cards = [
+                  for (final theme in ThemeChoice.values)
+                    ThemeChoiceCardWidget(
                       theme: theme,
                       isSelected: value.theme == theme,
                       onSelected: () => ref
                           .read(settingsControllerProvider.notifier)
                           .chooseTheme(theme),
                     ),
-                  ),
-              ],
+                ];
+                final share =
+                    (constraints.maxWidth - AppSpacing.control * 2) /
+                    cards.length;
+                // Large text or long words: one card per line, whole words.
+                if (share < ThemeChoiceCardWidget.minWidth(context)) {
+                  return Column(spacing: AppSpacing.control, children: cards);
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.control,
+                  children: [for (final card in cards) Expanded(child: card)],
+                );
+              },
             ),
             const SizedBox(height: AppSpacing.gutter),
             Text(
