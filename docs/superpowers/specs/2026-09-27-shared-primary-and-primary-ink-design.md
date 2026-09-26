@@ -68,9 +68,9 @@ The unit test computes both on the real `onSurface` values.
 **→ `primaryInk` (text, icon, focus ring, spinner off a fill):**
 
 - **`mx_text_styles.dart`:** `navLabel` (selected), `disclosureLabel`,
-  `rowTitleMatch`, `requiredMarker`, `removableTagLabel`. `MxTextStyles` gets the
-  derived colours it needs, or the call sites pass the ink; the plan decides which,
-  following how the status inks reach styles today.
+  `rowTitleMatch`, `requiredMarker`, `removableTagLabel`. `MxTextStyles` holds only a
+  `ColorScheme`, so `MxDerivedColors` exposes a static `primaryInkOf(ColorScheme)`.
+  Both the `primaryInk` field and these styles call it, so there is one source.
 - **`app_component_themes.dart`:** the outlined and text button inks; the focus
   colours and the focused field edge.
 - **`mx_button.dart`:** the outline ink and `focusColor`.
