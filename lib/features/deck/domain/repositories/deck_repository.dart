@@ -6,6 +6,7 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
+import 'package:memox/features/deck/domain/models/deck_source_template_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -13,9 +14,12 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 /// contract exists so `domain/` stays framework-free and tests substitute a
 /// fake — see ADR-010's "concrete architectural reason" note.
 abstract interface class DeckRepository {
+  /// A [sourceTemplate] marks the root as a starter template's copy
+  /// (BR-STARTER-004); a deck made by hand has none.
   Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({
     required String name,
     required SchedulerType schedulerType,
+    DeckSourceTemplate? sourceTemplate,
     DateTime? now,
   });
 
