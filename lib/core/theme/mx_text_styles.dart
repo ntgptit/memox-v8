@@ -25,6 +25,7 @@ final class MxTextStyles {
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
   static const double _overlineSize = 13;
+  static const double _compactOverlineSize = 12;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -270,6 +271,12 @@ final class MxTextStyles {
         fontFeatures: _tabular,
         color: _scheme.onSurface,
       );
+
+  /// The overline at 12, for a label inside a card that 13 would wrap on a
+  /// phone: the deck summary's progress line (owner 2026-09-26, register
+  /// row 117).
+  TextStyle get compactOverline =>
+      overline.copyWith(fontSize: _compactOverlineSize);
 
   /// A stat's figure (StatTile): the headline role at 700, tabular, tight
   /// line box, in the ink the tile's emphasis picks (FE-A6 D17).

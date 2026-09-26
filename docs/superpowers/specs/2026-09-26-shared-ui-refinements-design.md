@@ -48,6 +48,7 @@ Traced from FE-B1's `trash_selection_light.png` golden and the code on `master`:
 | D4 | A selecting row's checkbox is vertically centred on the row | Owner, 2026-09-26 |
 | D5 | `overline` becomes 13/700 in `onSurface`, still upper-cased with 0.6 tracking. It is one role, so every overline follows, including the card editor's field labels and the sort sheet header | Owner, 2026-09-26 |
 | D6 | `warningInk` is not changed. It already passes AA, and nine call sites paint it, some on a warning fill | Owner, 2026-09-26 |
+| D7 | The deck summary's progress label (card list) keeps the 12 overline as `compactOverline`: at 13, "DECK PROGRESS · EIGHT BOXES" wraps on a 360 phone (register row 117) | Owner, 2026-09-26 |
 
 ## 4. Design
 

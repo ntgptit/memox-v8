@@ -251,6 +251,16 @@ void main() {
     );
   });
 
+  test('compactOverline is the overline at 12, for a label inside a card', () {
+    expectStyle(
+      styles.compactOverline,
+      size: 12,
+      weight: FontWeight.w700,
+      tracking: 0.6,
+      color: scheme.onSurface,
+    );
+  });
+
   test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {
     final badge = styles.badgeLabel(scheme.primary);
     expectStyle(
