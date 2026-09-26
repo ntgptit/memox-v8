@@ -117,13 +117,17 @@ SELECT * FROM deck WHERE id IN (SELECT id FROM up) ORDER BY depth;
 -- for the subtree's height (BR-DECK-001). The current parent comes back with
 -- is_candidate false: it is only a step of the other paths. No row for a
 -- root, a missing deck or a deck in the Trash.
-deckMoveTargets(:deck_id AS TEXT, :max_depth AS INTEGER) AS DeckForestRow:
+-- With :restoring, :deck_id is the item root of a batch in the Trash and its
+-- current parent is a candidate like any other (BR-TRASH-006); its own root
+-- may be in the Trash too, and the subtree's height counts its tombstones.
+deckMoveTargets(:deck_id AS TEXT, :max_depth AS INTEGER,
+  :restoring AS BOOLEAN) AS DeckForestRow:
 WITH RECURSIVE
   moving AS (
     SELECT d.id, d.parent_id, r.scheduler_type, r.generation
     FROM deck d JOIN deck r ON r.id = d.root_id
     WHERE d.id = :deck_id AND d.parent_id IS NOT NULL
-      AND d.delete_batch_id IS NULL
+      AND (d.delete_batch_id IS NOT NULL) = :restoring
   ),
   subtree(id, height) AS (
     SELECT id, 1 FROM moving
@@ -133,7 +137,7 @@ WITH RECURSIVE
     WHERE subtree.height < :max_depth
   )
 SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
-  d.id <> m.parent_id AS is_candidate
+  (:restoring OR d.id <> m.parent_id) AS is_candidate
 FROM deck d
 JOIN deck r ON r.id = d.root_id AND r.delete_batch_id IS NULL
 JOIN moving m

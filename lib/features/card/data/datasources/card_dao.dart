@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 
@@ -86,6 +87,12 @@ final class CardDao {
     )..where((deck) => deck.id.isIn(deckIds))).get())
       deck.rootId,
   };
+
+  /// Fires once, then after every write to the decks, the cards or the
+  /// batches: where the cards of a Trash selection may go follows all three
+  /// (E2).
+  Stream<void> restoreTargetChanges() =>
+      tableChanges(_db, [_db.deck, _db.card, _db.deleteBatches]);
 
   /// Whether [deckId] is a deck in the Trash, which a restore refuses as its
   /// target (BR-TRASH-006; `trash_queries.drift`).

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/table_changes.dart';
 
 /// Row access for `deck`. It returns Drift rows, never domain entities, and
 /// runs inside the caller's transaction: `DeckRepositoryImpl` owns that.
@@ -62,7 +63,19 @@ final class DeckDao {
   Stream<List<DeckForestRow>> watchMoveTargetRows(
     String id, {
     required int maxDepth,
-  }) => _db.deckMoveTargets(id, maxDepth).watch();
+  }) => _db.deckMoveTargets(id, false, maxDepth).watch();
+
+  /// The decks a restore of [itemId], the item root of a batch, may pick,
+  /// and the decks on their paths (BR-TRASH-006).
+  Future<List<DeckForestRow>> restoreTargetRows(
+    String itemId, {
+    required int maxDepth,
+  }) => _db.deckMoveTargets(itemId, true, maxDepth).get();
+
+  /// Fires once, then after every write to the decks or the batches: where
+  /// the decks of a Trash selection may go follows both (E2).
+  Stream<void> restoreTargetChanges() =>
+      tableChanges(_db, [_db.deck, _db.deleteBatches]);
 
   /// The decks a search inside [scopeId] looks through, every active deck
   /// when it is null, and the decks on their paths.

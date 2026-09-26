@@ -343,14 +343,29 @@ final class CardRepositoryImpl implements CardRepository {
   Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId) =>
       _detailDao
           .watchMoveTargetRows(sourceDeckId)
-          .map(
-            (rows) => candidatesInTreeOrder(
-              [for (final row in rows) deckTreeNodeOf(row)],
-              (node, path) =>
-                  CardMoveTarget(id: node.id, name: node.name, path: path),
-            ),
-          )
+          .map(_moveTargetsOf)
           .mapDatabaseErrors();
+
+  @override
+  Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds) => _dao
+      .restoreTargetChanges()
+      .asyncMap((_) => _db.transaction(() => _restoreTargets(batchIds)))
+      .mapDatabaseErrors();
+
+  /// Where the cards of [batchIds] may go back: the decks of their one root
+  /// that hold cards or nothing; none when they come from two roots, or a
+  /// batch is gone (BR-TRASH-006).
+  Future<List<CardMoveTarget>> _restoreTargets(Set<String> batchIds) async {
+    final deckIds = <String>{};
+    for (final batchId in batchIds) {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const [];
+      deckIds.add(card.deckId);
+    }
+    final roots = await _dao.rootIdsOf(deckIds);
+    if (roots.length != 1) return const [];
+    return _moveTargetsOf(await _detailDao.restoreTargetRows(roots.single));
+  }
 
   /// The draft passed [CardDraft.check], which holds the tag rules, so a
   /// refusal here is a bug: throwing rolls the whole write back.
@@ -428,3 +443,9 @@ final class CardRepositoryImpl implements CardRepository {
     }
   }
 }
+
+List<CardMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>
+    candidatesInTreeOrder(
+      [for (final row in rows) deckTreeNodeOf(row)],
+      (node, path) => CardMoveTarget(id: node.id, name: node.name, path: path),
+    );

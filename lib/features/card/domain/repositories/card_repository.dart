@@ -106,4 +106,9 @@ abstract interface class CardRepository {
 
   /// BR-CARD-010: where the cards of [sourceDeckId] may move, in tree order.
   Stream<List<CardMoveTarget>> watchMoveTargets(String sourceDeckId);
+
+  /// UC-TRASH-001 step 5: where the cards of [batchIds] may go back, again
+  /// on every change of the decks, the cards or the batches: the decks of
+  /// their one root that hold cards or nothing (BR-TRASH-006, E1, E2).
+  Stream<List<CardMoveTarget>> watchRestoreTargets(Set<String> batchIds);
 }

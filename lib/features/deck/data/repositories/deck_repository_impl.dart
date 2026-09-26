@@ -14,6 +14,7 @@ import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.da
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
+import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
 import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
@@ -336,13 +337,13 @@ final class DeckRepositoryImpl implements DeckRepository {
   @override
   Stream<List<DeckMoveTarget>> watchMoveTargets(String deckId) => _dao
       .watchMoveTargetRows(deckId, maxDepth: DeckEntity.maxDepth)
-      .map(
-        (rows) => candidatesInTreeOrder(
-          [for (final row in rows) deckTreeNodeOf(row)],
-          (node, path) =>
-              DeckMoveTarget(id: node.id, name: node.name, path: path),
-        ),
-      )
+      .map(_moveTargetsOf)
+      .mapDatabaseErrors();
+
+  @override
+  Stream<DeckRestoreTargets> watchRestoreTargets(Set<String> batchIds) => _dao
+      .restoreTargetChanges()
+      .asyncMap((_) => _db.transaction(() => _restoreTargets(batchIds)))
       .mapDatabaseErrors();
 
   @override
@@ -367,6 +368,37 @@ final class DeckRepositoryImpl implements DeckRepository {
       )
       .mapDatabaseErrors();
 
+  /// Where the decks of [batchIds] may go back: the top level for roots,
+  /// the decks that take every sub-deck otherwise (BR-TRASH-006).
+  Future<DeckRestoreTargets> _restoreTargets(Set<String> batchIds) async {
+    final items = <Deck>[];
+    for (final batchId in batchIds) {
+      final item = await _dao.itemRootOf(batchId);
+      if (item == null) return const DeckRestoreUnder([]);
+      items.add(item);
+    }
+    if (items.isEmpty) return const DeckRestoreUnder([]);
+    final roots = items.where((item) => item.parentId == null).length;
+    if (roots == items.length) return const DeckRestoreTopLevel();
+    if (roots > 0) return const DeckRestoreUnder([]);
+    var common = await _restoreTargetsOf(items.first);
+    for (final item in items.skip(1)) {
+      final ids = {
+        for (final target in await _restoreTargetsOf(item)) target.id,
+      };
+      common = [
+        for (final target in common)
+          if (ids.contains(target.id)) target,
+      ];
+    }
+    return DeckRestoreUnder(common);
+  }
+
+  Future<List<DeckMoveTarget>> _restoreTargetsOf(Deck item) async =>
+      _moveTargetsOf(
+        await _dao.restoreTargetRows(item.id, maxDepth: DeckEntity.maxDepth),
+      );
+
   /// One transaction; see [_mapped] for what leaves it on an error.
   Future<T> _write<T>(Future<T> Function() body) =>
       _mapped(() => _db.transaction(body));
@@ -381,6 +413,12 @@ final class DeckRepositoryImpl implements DeckRepository {
     }
   }
 }
+
+List<DeckMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>
+    candidatesInTreeOrder(
+      [for (final row in rows) deckTreeNodeOf(row)],
+      (node, path) => DeckMoveTarget(id: node.id, name: node.name, path: path),
+    );
 
 DeckRejection? _refusal(Outcome<void, DeckRejection> check) => switch (check) {
   Ok() => null,
