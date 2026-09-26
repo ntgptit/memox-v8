@@ -78,11 +78,19 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
 Not captured: the swipe-back preview of an earlier card in the round
 (BR-STUDY-048) is an interaction inside `default`, not a separate state.
 
+**Built (FE-A6 P1c):** `StudyBrowseWidget` inside `StudySessionScreen`. Looking back shows a neutral
+"Looking back" badge on the card (BR-STUDY-048: the screen says it is looking back) and reads the
+round's trail from the session read model, so it survives a resume; the counter does not move. The
+look-back order is the order served, which the stage shuffles (BR-STUDY-022). Goldens
+`test/features/study/presentation/goldens/study_browse{,_looking_back}_*`.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
 | Icons carry an inline colour prop | Colour comes from the shared icon-tinting mechanism | Guard: no `Icon(color:)` in feature code |
+| The card tilts as it is dragged | It follows the finger without a tilt, and stays still with reduced motion | No shared motion for it; the decision is the swipe's, not the drawing's |
+| Pronunciation in a monospace face | The detail role of the body face | V8's typography has one family |
 
 Recall and Fill tint `MxStudyTopBar`'s accent with the mastery colour, while
 Match and Guess keep primary: the kit's choice stands, since no BR/UC speaks to it
