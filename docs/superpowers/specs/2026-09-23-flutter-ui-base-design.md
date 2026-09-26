@@ -487,12 +487,12 @@ item names where it comes from.
 | 84 | A top-level deck holds sub-decks only, so its empty state offers New sub-deck alone, with its own copy; New card shows where the deck's create options include cards | library phase 4a (Task 4 ruling) |
 | 85 | The card detail follows the V3 kit (10) over library spec §6.6: a schedule card with the eight-box ramp or the SM-2 facts, history grouped by cycle, Load older history, and an end-of-history line | library phase 4b P4b-L1 |
 | 86 | History events show the absolute date and time only, with no timeline rail or dots and no "Finished learning" note; cycle headers carry no reset date, which the backend does not store | library phase 4b P4b-L3, P4b-L4 |
-| 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash | library phase 4b P4b-L5 |
+| 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash — closed by FE-B1 (D11) | library phase 4b P4b-L5 |
 | 88 | The card detail's deck path includes the destination line of the editor's header, which the kit's detail does not show | library phase 4b P4b-L8 |
 | 89 | The card detail puts the status badge and flag above the front, not beside it, so a long front keeps the full width | library phase 4b (Task 5 golden review) |
 | 90 | A history event's badge carries the kind only (Learning, Review, Repeat) and the action is text beside it: `MxBadge` never wraps, so the kit's "kind · action" pill overflowed at text scale 2 | library deferred minors |
 | 91 | On the empty Library, "Browse starter decks" is disabled without the spec A4 "not available yet" hint: `MxEmptyState` has no slot for a hint on its secondary action. Every other waiting control on screen 01 carries it — superseded by row 92: the button is gone | Impeccable review (critique + audit) |
-| 92 | Controls whose feature does not exist yet are hidden, not drawn disabled as the kit draws them. The Library root's "Coming soon" app-bar action opens a sheet naming each: Study, Study options, Sort by progress, Tags, Starter decks, Trash, Import and export (library alignment spec A4, amended 2026-09-25) | owner decision after the Impeccable critique |
+| 92 | Controls whose feature does not exist yet are hidden, not drawn disabled as the kit draws them. The Library root's "Coming soon" app-bar action opens a sheet naming each: Study, Study options, Sort by progress, Tags, Starter decks, Trash, Import and export (library alignment spec A4, amended 2026-09-25) — Trash left the sheet for its own app-bar icon with FE-B1 (D1) | owner decision after the Impeccable critique |
 | 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
 | 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
 | 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D — closed by library alignment phase D | library alignment phase C (C-L3) |
@@ -513,6 +513,8 @@ item names where it comes from.
 | 108 | The Move to Trash dialogs (screens 01, 07, 09) draw no trash glyph over or beside their title: `MxDialog` has no glyph slot | FE-B1 plan 1 |
 | 109 | A refused Undo reads "Can't undo. {reason} Restore it from Trash and choose a deck." where the item was deleted, not screen 06's "Can't undo — “{deck}” is in Trash too. Restore it from here…": the rejection carries no deck name | FE-B1 D7 |
 | 110 | Move to Trash names no counts the dialog cannot read: the card note says "with its schedule and history", not "with its 7 answers of history", and the editor's "More" card says "Leaves this deck", not the deck's name, which the path above it shows | FE-B1 plan 1 |
+| 111 | A Trash restore target reads as its path, without the kit's card count or "where it was": `CardMoveTarget` and `DeckMoveTarget` carry no counts, as in the move sheets | FE-B1 plan 2 |
+| 112 | Screen 06's kind tile is the tinted `MxIconTile`, not the kit's grey one, and "Was in" has no corner glyph; "Select" is a compact secondary `MxButton` (ruling E-L3); "Delete for good" is a filled destructive `MxButton`, not a red outline | FE-B1 plan 2 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

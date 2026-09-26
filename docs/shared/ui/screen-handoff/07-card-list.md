@@ -41,7 +41,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
 | delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | One selected card, as drawn, without the glyph. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | As screen 01 deckDelete. |
-| trashed | ![](img/07-card-list/trashed-light.png) | ![](img/07-card-list/trashed-dark.png) | One card: as drawn, Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash", no Undo (D4); FE-B1 plan 2 adds Open Trash. |
+| trashed | ![](img/07-card-list/trashed-light.png) | ![](img/07-card-list/trashed-dark.png) | One card: as drawn, Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
 editor (screen 09) moves its card to the Trash from its "More" card with the same dialog

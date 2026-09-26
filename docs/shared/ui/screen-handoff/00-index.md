@@ -35,7 +35,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 03 | Starter decks | 10 | FE-B4 | out of V8 | — |
 | 04 | Library search | 5 | FE-A1, FE-A10 | aligned | [04-library-search.md](04-library-search.md) |
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |
-| 06 | Trash | 15 | FE-B1 | not built | — (FE-B1 plan 2) |
+| 06 | Trash | 15 | FE-B1 | aligned | [06-trash.md](06-trash.md) |
 | 07 | Card list | 15 | FE-A2 | aligned | [07-card-list.md](07-card-list.md) |
 | 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
 | 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84; Move to Trash in [07-card-list.md](07-card-list.md)) |
