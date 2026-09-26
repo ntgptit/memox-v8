@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
@@ -13,6 +14,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -166,6 +168,44 @@ void main() {
     expect(find.textContaining(RegExp(r'\d')), findsNothing);
   });
 
+  libraryTest('a deck row states its three counts even at zero, each with its '
+      'glyph; a deck with no card says so (BR-STUDY-076, BR-STUDY-077)', (
+    tester,
+    env,
+  ) async {
+    await _newRoot(env, 'Spanish', 2);
+    await env.decks.root('Empty');
+    await pumpLibraryScreen(tester, env, _screen(_Taps()));
+    await _settle(tester);
+
+    Finder lineOf(String deck) => find.descendant(
+      of: find.widgetWithText(MxListRow, deck),
+      matching: find.byType(MxWorkloadBreakdownLine),
+    );
+    // What a reader hears: the words, not the decorative glyphs.
+    String? statementOf(String deck) {
+      final semantics = find.descendant(
+        of: lineOf(deck),
+        matching: find.byType(Semantics),
+      );
+      if (semantics.evaluate().isNotEmpty) {
+        return tester.widget<Semantics>(semantics.first).properties.label;
+      }
+      return tester
+          .widget<Text>(
+            find.descendant(of: lineOf(deck), matching: find.byType(Text)),
+          )
+          .data;
+    }
+
+    expect(
+      statementOf('Spanish'),
+      '${_en.workloadOverdue(0)} · ${_en.workloadToday(0)} · '
+      '${_en.workloadNew(2)}',
+    );
+    expect(statementOf('Empty'), _en.workloadNoCards);
+  });
+
   libraryTest('a deck with no card is disabled; a deck row opens its entry; '
       'Library opens the Library (S4, H3)', (tester, env) async {
     final handle = tester.ensureSemantics();
@@ -231,8 +271,11 @@ void main() {
     expect(find.text(_en.studyHomeResumeRefused), findsOneWidget);
   });
 
-  libraryTest('at twice the text size nothing overflows and each row is at '
-      'least 48 tall', (tester, env) async {
+  libraryTest('at twice the text size nothing overflows, each row is at '
+      'least 48 tall, and no row cuts a count (BR-STUDY-076)', (
+    tester,
+    env,
+  ) async {
     await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
     await _newRoot(env, 'Spanish', 2);
     await pumpLibraryScreen(tester, env, _screen(_Taps()), textScale: 2);
@@ -244,6 +287,18 @@ void main() {
         tester.getSize(find.byWidget(row.widget)).height,
         greaterThanOrEqualTo(48),
       );
+    }
+    final lines = find.descendant(
+      of: find.byType(MxListRow),
+      matching: find.descendant(
+        of: find.byType(MxWorkloadBreakdownLine),
+        matching: find.byType(RichText),
+      ),
+    );
+    expect(lines, findsWidgets);
+    for (final line in lines.evaluate()) {
+      final paragraph = line.renderObject! as RenderParagraph;
+      expect(paragraph.didExceedMaxLines, isFalse);
     }
   });
 

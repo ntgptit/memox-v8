@@ -84,9 +84,13 @@ class _Row extends StatelessWidget {
         overdueLabel: l10n.workloadOverdue,
         todayLabel: l10n.workloadToday,
         newLabel: l10n.workloadNew,
-        fallback: deck.canStudy
-            ? l10n.workloadNothingDue(deck.cardCount)
-            : l10n.workloadNoCards,
+        // A deck with cards states all three counts, even at zero, each with
+        // its glyph, and wraps rather than cut one; a deck with none has no
+        // workload to state (BR-STUDY-076, BR-STUDY-077).
+        shouldKeepZeroTerms: deck.canStudy,
+        hasIcons: true,
+        canWrap: true,
+        fallback: l10n.workloadNoCards,
       ),
       trailing: due > 0 ? MxBadge(label: l10n.studyHomeRowDue(due)) : null,
       hasChevron: due == 0 && deck.canStudy,
