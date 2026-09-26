@@ -160,10 +160,10 @@ decided here and implemented as described; say so if one is wrong.
    on an in-memory database, one transaction: 1,500 rows took 539 ms without tags and
    1,631 ms with two tags a row; 10,000 rows took 1,244 ms and 8,148 ms. The per-card
    tag write dominates. Ruling: no batch tag API in 9a (spec §12): a list of a thousand
-   rows, the README's case, stays under two seconds here even with tags. FE-B3 shows the
-   submitting state for as long as the transaction runs; a batch tag write comes when a
-   measurement on a device asks for it. The 1,500-row test pins the order, not the time: a
-   time bound would fail on a slow machine.
+   rows, the README's case, stays under two seconds here even with tags. FE-B3 shows
+   the submitting state for as long as the transaction runs; a batch tag write comes
+   when a measurement on a device asks for it. The 1,500-row test pins the order, not
+   the time: a time bound would fail on a slow machine.
 5. **The snapshot reads whole card rows** (Task 5; spec §8.1). drift's `select(card)`
    reads every column of the deck's active cards, a superset of "`id` and the six
    content columns"; the file carries only the six.
@@ -206,7 +206,7 @@ task that owns the code:
 2. **Excel's "CSV UTF-8" from a locale with a decimal comma**, as Vietnamese is: a BOM,
    `;` between fields, CRLF, `1,5` unquoted, and a tags cell quoted because it holds
    `;`. Three columns, the decimal comma in its cell, the tags cell whole — Task 4,
-   "Excel's \"CSV UTF-8\" from a locale with a decimal comma".
+   `Excel's "CSV UTF-8" from a locale with a decimal comma`.
 3. **Text copied from a spreadsheet**: tabs, CRLF, a cell of two lines in quotes, and a
    line break at the end. One row a record, the cell's line break kept, no blank row at
    the end — Task 4, "text copied from a spreadsheet".
