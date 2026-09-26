@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
@@ -247,5 +248,23 @@ void main() {
     await _settle(tester);
     expect(tester.takeException(), isNull);
     expect(find.text(_en.studyRecallRemembered).hitTestable(), findsOneWidget);
+  });
+
+  libraryTest('the self-check labels show whole at normal size (Impeccable '
+      'after P4)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    for (final label in [_en.studyRecallForgot, _en.studyRecallRemembered]) {
+      final paragraph = tester.renderObject<RenderParagraph>(find.text(label));
+      expect(paragraph.didExceedMaxLines, isFalse, reason: label);
+      expect(
+        paragraph.size.width,
+        greaterThanOrEqualTo(paragraph.getMaxIntrinsicWidth(double.infinity)),
+        reason: label,
+      );
+    }
   });
 }

@@ -203,4 +203,29 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text(_en.studyFillCheck).hitTestable(), findsOneWidget);
   });
+
+  libraryTest('a wrong answer the busy database refused shows what was typed '
+      'once Retry commits it (UC-STUDY-001 E2; P4 final review)', (
+    tester,
+    env,
+  ) async {
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await _type(tester, 'term 9');
+
+    env.sessions.isLocked = true;
+    await tester.tap(find.text(_en.studyFillCheck));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
+    await _settle(tester);
+    expect(find.text(_en.studyAnswerBusyTitle), findsOneWidget);
+
+    env.sessions.isLocked = false;
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+
+    final struck = tester.widget<Text>(find.text('term 9'));
+    expect(struck.style!.decoration, TextDecoration.lineThrough);
+    expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
+  });
 }

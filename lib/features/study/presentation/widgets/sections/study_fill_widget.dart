@@ -49,7 +49,8 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
   final _answer = TextEditingController();
   final _focus = FocusNode();
 
-  /// The answer as it was checked.
+  /// The answer as it was last checked: what a wrong result strikes
+  /// through, even when a busy database made it wait for Retry (E2).
   String? _typed;
 
   bool get _isWrong => widget.result?.isCorrect == false;
@@ -57,7 +58,6 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
   bool get _canCheck =>
       !widget.isBusy &&
       widget.result == null &&
-      _typed == null &&
       _answer.text.trim().isNotEmpty;
 
   @override
@@ -73,8 +73,6 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
   void didUpdateWidget(StudyFillWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     final result = widget.result;
-    // A write the database refused leaves the answer to check again.
-    if (oldWidget.isBusy && !widget.isBusy && result == null) _typed = null;
     if (oldWidget.result != null || result == null) return;
     if (result.isCorrect == true) {
       // No feedback frame: the next turn follows (F3). After the frame, as

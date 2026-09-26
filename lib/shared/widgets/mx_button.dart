@@ -75,7 +75,11 @@ class MxButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paint = _paintFor(context);
-    final geometry = _geometryFor(size, hasIcon: icon != null);
+    final geometry = _geometryFor(
+      size,
+      hasIcon: icon != null,
+      isBlock: isBlock,
+    );
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
       style: appButtonStyle(
@@ -149,44 +153,50 @@ class MxButton extends StatelessWidget {
     };
   }
 
-  static _Geometry _geometryFor(MxButtonSize size, {required bool hasIcon}) =>
-      switch (size) {
-        MxButtonSize.regular => (
-          height: AppSize.buttonRegular,
-          radius: AppRadius.md,
-          padding: AppSpacing.gutter,
-          isSmallType: false,
-          canWrap: true,
-        ),
-        MxButtonSize.small => (
-          height: AppSize.buttonSmall,
-          radius: AppRadius.md,
-          padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
-          isSmallType: false,
-          canWrap: false,
-        ),
-        MxButtonSize.compact => (
-          height: AppSize.buttonCompact,
-          radius: AppRadius.sm,
-          padding: AppSpacing.grouped,
-          isSmallType: true,
-          canWrap: false,
-        ),
-        MxButtonSize.chip => (
-          height: AppSize.chip,
-          radius: AppRadius.full,
-          padding: AppSpacing.control,
-          isSmallType: true,
-          canWrap: false,
-        ),
-        MxButtonSize.study => (
-          height: AppSize.buttonRegular,
-          radius: AppRadius.full,
-          padding: _studyPadding,
-          isSmallType: false,
-          canWrap: false,
-        ),
-      };
+  static _Geometry _geometryFor(
+    MxButtonSize size, {
+    required bool hasIcon,
+    required bool isBlock,
+  }) => switch (size) {
+    MxButtonSize.regular => (
+      height: AppSize.buttonRegular,
+      radius: AppRadius.md,
+      padding: AppSpacing.gutter,
+      isSmallType: false,
+      canWrap: true,
+    ),
+    MxButtonSize.small => (
+      height: AppSize.buttonSmall,
+      radius: AppRadius.md,
+      padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
+      isSmallType: false,
+      canWrap: false,
+    ),
+    MxButtonSize.compact => (
+      height: AppSize.buttonCompact,
+      radius: AppRadius.sm,
+      padding: AppSpacing.grouped,
+      isSmallType: true,
+      canWrap: false,
+    ),
+    MxButtonSize.chip => (
+      height: AppSize.chip,
+      radius: AppRadius.full,
+      padding: AppSpacing.control,
+      isSmallType: true,
+      canWrap: false,
+    ),
+    MxButtonSize.study => (
+      height: AppSize.buttonRegular,
+      radius: AppRadius.full,
+      // The contract's 36 sizes a pill that hugs its label; a block
+      // action is given its width by its row, and needs the room for
+      // the label (FE-A6 P4: "Remembered" in a two-up row).
+      padding: isBlock ? AppSpacing.gutter : _studyPadding,
+      isSmallType: false,
+      canWrap: false,
+    ),
+  };
 
   Widget _content(Color ink, _Geometry geometry, TextStyle detailStyle) {
     final labelText = Text(

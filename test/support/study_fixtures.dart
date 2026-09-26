@@ -380,7 +380,13 @@ final class LockableSessions implements StudySessionRepository {
     required StudyAnswer answer,
     DateTime? now,
   }) {
-    if (isLocked) throw const DatabaseLockedFailure(cause: 'test');
+    // A real lock is found after the write starts: the screen sees it busy.
+    if (isLocked) {
+      return Future.delayed(
+        Duration.zero,
+        () => throw const DatabaseLockedFailure(cause: 'test'),
+      );
+    }
     return _inner.answerTurn(
       sessionId: sessionId,
       cardId: cardId,
