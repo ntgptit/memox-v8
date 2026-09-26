@@ -25,6 +25,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_labels_w
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -256,22 +257,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SessionContextLineWidget(
-            text: switch (view.kind) {
-              SessionKind.learning => l10n.studyContextLearning(
-                view.deckName,
-                l10n.studyKindLearning,
-                view.currentStageIndex + 1,
-                view.stages.length,
-                mode,
-              ),
-              SessionKind.reviewing => l10n.studyContextReview(
-                view.deckName,
-                l10n.studyKindReview,
-                mode,
-              ),
-            },
-          ),
+          SessionContextLineWidget(text: _contextOf(l10n, view, mode)),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -297,6 +283,39 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ],
       ),
     );
+  }
+
+  /// The context line: deck, kind and mode (a learning session adds its
+  /// stage); a round-based stage adds its round, Guess its first-pick rule
+  /// and Match the board's pairs left (handoffs 17, 18; FE-A6 P3 M3).
+  String _contextOf(AppLocalizations l10n, StudySessionView view, String mode) {
+    final base = switch (view.kind) {
+      SessionKind.learning => l10n.studyContextLearning(
+        view.deckName,
+        l10n.studyKindLearning,
+        view.currentStageIndex + 1,
+        view.stages.length,
+        mode,
+      ),
+      SessionKind.reviewing => l10n.studyContextReview(
+        view.deckName,
+        l10n.studyKindReview,
+        mode,
+      ),
+    };
+    if (!view.currentMode.handler.usesRounds) return base;
+    final round = l10n.studyContextRound(base, view.currentRound ?? 1);
+    return switch (view.currentMode) {
+      StudyMode.guess => l10n.studyContextFirstPick(round),
+      StudyMode.match => l10n.studyContextPairsLeft(
+        round,
+        view.board?.terms.where((tile) => !tile.isMatched).length ?? 0,
+      ),
+      StudyMode.browse ||
+      StudyMode.selfAssess ||
+      StudyMode.recall ||
+      StudyMode.fill => round,
+    };
   }
 
   /// One body per mode (D3): a seventh mode is a compile error here.

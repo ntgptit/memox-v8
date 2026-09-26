@@ -189,4 +189,30 @@ void main() {
         .reduce((a, b) => a < b ? a : b);
     expect(lastTerm, lessThan(firstMeaning));
   });
+
+  libraryTest('the context line names the round and the pairs left, which '
+      'count down (M3)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    String line(int left) => _en.studyContextPairsLeft(
+      _en.studyContextRound(
+        _en.studyContextReview(
+          'Lesson',
+          _en.studyKindReview,
+          _en.cardModeMatch,
+        ),
+        1,
+      ),
+      left,
+    );
+
+    expect(find.bySemanticsLabel(line(5)), findsOneWidget);
+
+    await _pair(tester, 'term 1', 'apple');
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel(line(4)), findsOneWidget);
+    handle.dispose();
+  });
 }

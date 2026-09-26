@@ -204,4 +204,28 @@ void main() {
       await env.db.close();
     }
   });
+
+  libraryTest('the context line names the round and the first-pick rule '
+      '(M3)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await _guess(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    expect(
+      find.bySemanticsLabel(
+        _en.studyContextFirstPick(
+          _en.studyContextRound(
+            _en.studyContextReview(
+              'Lesson',
+              _en.studyKindReview,
+              _en.cardModeGuess,
+            ),
+            1,
+          ),
+        ),
+      ),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
 }
