@@ -2,7 +2,7 @@
 id: UC-CARD-001
 title: Quản lý card trong deck
 status: ready
-rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD-006, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-CARD-020, BR-DECK-009, BR-DECK-015, BR-DECK-022, BR-DECK-023, BR-TAG-001, BR-TAG-002, BR-TAG-004]
+rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD-006, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-CARD-020, BR-DECK-009, BR-DECK-015, BR-DECK-022, BR-DECK-023, BR-TAG-001, BR-TAG-002, BR-TAG-004, BR-TRASH-001, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008]
 code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/features/card/domain/usecases/select_all_card_ids_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart, lib/features/card/domain/usecases/edit_card_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/move_cards_use_case.dart, lib/features/card/domain/usecases/watch_card_move_targets_use_case.dart, lib/features/card/domain/usecases/set_cards_flagged_use_case.dart, lib/features/card/domain/usecases/add_tag_to_cards_use_case.dart, lib/features/card/domain/usecases/remove_tag_from_cards_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -29,12 +29,15 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
 
 **Alternative flows:**
 - **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD-005).
-- **A2 — Xoá card:** hỏi xác nhận, nêu rõ nội dung sẽ mất (BR-DECK-023); xác nhận thì
-  xoá cứng card cùng study state và history của nó, trong một transaction
-  (BR-DECK-022). Khi sub-project Trash triển khai, thao tác này đổi thành soft-delete
-  có Undo và khôi phục — xem UC-TRASH-001. Nếu đó là card **cuối cùng** đang active,
+- **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một
+  transaction, mỗi card là **một** batch của riêng nó, cùng một `deleted_at`
+  (BR-TRASH-001). Nội dung, study state và history giữ nguyên tới khi purge
+  (BR-TRASH-004); phiên `in_progress` có card trong hàng đợi hoặc dùng card làm
+  lựa chọn của câu `guess` kết thúc với `content_deleted`. Xoá **một** card thì có
+  Undo ngay tại chỗ (BR-TRASH-008); khôi phục về sau qua Trash (UC-TRASH-001).
+  Nếu đó là card **cuối cùng** đang active,
   deck atomically trở về `content_type = unset` trong cùng transaction
-  (BR-DECK-015); sau đó người dùng quay về màn hình deck và
+  (BR-DECK-015, BR-TRASH-005); sau đó người dùng quay về màn hình deck và
   lại chọn được tạo card hay tạo sub-deck. "Deck `card` rỗng" không còn là một
   trạng thái ổn định của hệ thống.
 - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ

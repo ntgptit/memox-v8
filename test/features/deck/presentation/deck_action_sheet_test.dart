@@ -22,8 +22,12 @@ Future<void> _choose(WidgetTester tester, String command) async {
   await tester.pumpAndSettle();
 }
 
-Future<int> _deckCount(LibraryEnv env) async =>
-    (await env.db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle())
+Future<int> _activeDeckCount(LibraryEnv env) async =>
+    (await env.db
+            .customSelect(
+              'SELECT COUNT(*) AS n FROM deck WHERE delete_batch_id IS NULL',
+            )
+            .getSingle())
         .read<int>('n');
 
 Future<String?> _parentOf(LibraryEnv env, String id) async =>
@@ -83,10 +87,8 @@ void main() {
     expect(find.text('Hàn Quốc'), findsNWidgets(2));
   });
 
-  libraryTest('Delete says what goes with the deck, then deletes it', (
-    tester,
-    env,
-  ) async {
+  libraryTest('Delete says what goes with the deck, then sends it to the '
+      'Trash', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     final verbs = await env.decks.sub(words.id, 'Verbs');
@@ -103,7 +105,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(await _deckCount(env), 1);
+    expect(await _activeDeckCount(env), 1);
     expect(find.text(_en.deckDeletedToast), findsOneWidget);
   });
 

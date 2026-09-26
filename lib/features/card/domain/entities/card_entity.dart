@@ -39,12 +39,30 @@ final class CardEntity {
     required Set<String> sourceDeckIds,
     required Set<String> sourceRootIds,
   }) {
+    if (sourceDeckIds.contains(targetDeckId)) {
+      return const Rejected(CardRejection.sameDeck);
+    }
+    return checkTarget(
+      targetRootId: targetRootId,
+      targetIsRoot: targetIsRoot,
+      targetContentType: targetContentType,
+      sourceRootIds: sourceRootIds,
+    );
+  }
+
+  /// BR-CARD-010, BR-TRASH-006: whether a deck can hold cards of
+  /// [sourceRootIds]: a sub-deck of their root that holds cards or nothing.
+  /// A move and a restore both ask it; only a move refuses the deck a card is
+  /// in, since a restore may put a card back where it was.
+  static Outcome<void, CardRejection> checkTarget({
+    required String targetRootId,
+    required bool targetIsRoot,
+    required DeckContentType targetContentType,
+    required Set<String> sourceRootIds,
+  }) {
     if (targetIsRoot) return const Rejected(CardRejection.targetIsRoot);
     if (targetContentType == DeckContentType.deck) {
       return const Rejected(CardRejection.targetHoldsDecks);
-    }
-    if (sourceDeckIds.contains(targetDeckId)) {
-      return const Rejected(CardRejection.sameDeck);
     }
     if (sourceRootIds.any((rootId) => rootId != targetRootId)) {
       return const Rejected(CardRejection.crossRootMove);

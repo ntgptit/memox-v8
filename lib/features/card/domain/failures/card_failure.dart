@@ -38,4 +38,8 @@ enum CardRejection {
 
   /// BR-CARD-010: a card and the move target belong to different roots.
   crossRootMove,
+
+  /// BR-TRASH-006, BR-TRASH-008: the deck a restore or an Undo is aimed at
+  /// is in the Trash itself.
+  targetInTrash,
 }

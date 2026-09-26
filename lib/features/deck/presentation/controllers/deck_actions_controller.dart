@@ -44,7 +44,7 @@ class DeckActionsController extends _$DeckActionsController {
     required String name,
   }) => ref.read(renameDeckUseCaseProvider)(deckId: deckId, name: name);
 
-  Future<Outcome<void, DeckRejection>> deleteDeck({required String deckId}) =>
+  Future<Outcome<String, DeckRejection>> deleteDeck({required String deckId}) =>
       ref.read(deleteDeckUseCaseProvider)(deckId: deckId);
 
   Future<Outcome<void, DeckRejection>> moveDeck({

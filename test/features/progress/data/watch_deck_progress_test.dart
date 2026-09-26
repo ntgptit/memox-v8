@@ -17,6 +17,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/progress_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-PROGRESS-002 steps 5 and 6, A1 and E2: `/progress/:deckId`, a deck's
 // level (Progress spec §5.2, §6.2).
@@ -126,10 +127,7 @@ void main() {
       await decks.deleteDeck(deckId: deleted.id),
       isA<Ok<void, DeckRejection>>(),
     );
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
 
     expect(await read(deleted.id), isA<ProgressDeckMissing>());
     expect(await read(trashed.id), isA<ProgressDeckMissing>());
@@ -183,12 +181,8 @@ void main() {
       learnedAt: DateTime(2026, 9, 1),
       dueAt: DateTime(2026, 9, 30),
       box: 2,
-      deleteBatchId: 'batch',
     );
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
     await lockScheduler(db, korean.id);
     await answer(db, 'k1', hanoi(9, 25, 9));
     await answer(db, 't1', hanoi(9, 25, 9));

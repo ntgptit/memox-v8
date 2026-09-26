@@ -16,6 +16,7 @@ import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 
 import '../../../support/srs_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-SRS-001: reset learning progress, and what its confirmation shows.
 
@@ -303,9 +304,7 @@ void main() {
       "generation, current_box, learned_at) VALUES ('r-trashed', 'eight_box', "
       '1, 1, 2, 0)',
     );
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = 'r-trashed'",
-    );
+    await trashCardRow(db, 'r-trashed');
     for (final id in [cardId, deepCardId]) {
       await repo.completeLearning(cardId: id, generation: 1);
     }
@@ -360,9 +359,7 @@ void main() {
       await repo.resetSummary(rootDeckId: 'missing'),
       _refusedWith<ResetLearningSummary>(SrsRejection.notFound),
     );
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE root_id = 'r'",
-    );
+    await trashDeckRows(db, 'r');
     expect(
       await repo.resetSummary(rootDeckId: 'r'),
       _refusedWith<ResetLearningSummary>(SrsRejection.notFound),

@@ -2,8 +2,6 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -16,7 +14,6 @@ import 'package:memox/features/study/data/repositories/study_session_repository_
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -87,19 +84,8 @@ void main() {
       row.data,
   ];
 
-  Future<void> deleteCards(Set<String> cardIds) async {
-    final schedules = ScheduleRepositoryImpl(db, now: () => clock);
-    final cards = CardRepositoryImpl(
-      db,
-      schedules,
-      TagRepositoryImpl(db, now: () => clock),
-      now: () => clock,
-    );
-    expect(
-      await cards.deleteCards(cardIds: cardIds),
-      isA<Ok<void, CardRejection>>(),
-    );
-  }
+  /// Spec D12 settles the sessions a build before the Trash left open.
+  Future<void> deleteCards(Set<String> cardIds) => hardDeleteCards(db, cardIds);
 
   test('leaving ends the session as user_exit and keeps its turns; a '
       'session that has ended cannot be left again (BR-STUDY-014, '
@@ -230,21 +216,22 @@ void main() {
     expect(session.data['end_reason'], isNull);
   });
 
-  test('Continue or leaving a session whose deck was deleted is notFound: '
-      'the session went with the deck (IT-CONT-007)', () async {
+  test('Continue or leaving a session whose deck went to the Trash is '
+      'sessionClosed: the delete ended it as content_deleted (IT-CONT-007, '
+      'BR-TRASH-004)', () async {
     final (leaf, id) = await learning(['c1']);
     expect(
       await decks.deleteDeck(deckId: leaf.id),
-      isA<Ok<void, DeckRejection>>(),
+      isA<Ok<String, DeckRejection>>(),
     );
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
     expect(
       await sessions.abandonSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
   });
 

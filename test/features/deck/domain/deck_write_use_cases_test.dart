@@ -14,6 +14,7 @@ import 'package:memox/features/deck/domain/usecases/get_deck_deletion_summary_us
 import 'package:memox/features/deck/domain/usecases/move_deck_use_case.dart';
 import 'package:memox/features/deck/domain/usecases/rename_deck_use_case.dart';
 import 'package:memox/features/deck/domain/usecases/reorder_deck_use_case.dart';
+import 'package:memox/features/deck/domain/usecases/undo_deck_deletion_use_case.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -86,6 +87,25 @@ void main() {
 
       expect(result, isA<Ok<void, SrsRejection>>());
       expect((await decks.findById(root.id))!.schedulerType, SchedulerType.sm2);
+    },
+  );
+
+  test(
+    'Undo right after a delete brings the deck back (BR-TRASH-008)',
+    () async {
+      final root = _value<DeckEntity>(
+        await CreateRootDeckUseCase(decks)(
+          name: 'Korean',
+          schedulerType: SchedulerType.eightBox,
+        ),
+      );
+      final batchId = _value(await DeleteDeckUseCase(decks)(deckId: root.id));
+
+      expect(
+        await UndoDeckDeletionUseCase(decks)(batchId: batchId),
+        isA<Ok<void, DeckRejection>>(),
+      );
+      expect(await decks.findById(root.id), isNotNull);
     },
   );
 }

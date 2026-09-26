@@ -94,7 +94,7 @@ deck_templates (sub-project sau — Starter decks; asset JSON)
 | `first_answered_at` | DATETIME NULL | NULL = chưa thẻ nào hoàn tất chuỗi học mới ở generation hiện tại → scheduler mở khoá (BR-SRS-002). Được đặt bởi chính lần hoàn tất đầu tiên, cùng transaction (BR-SRS-003, BR-STUDY-053); chỉ Reset đưa về NULL (BR-SRS-024) |
 | `source_template_id` | TEXT NULL | NULL = deck tự tạo (BR-STARTER-004). **Phạm vi:** sub-project sau — Starter decks |
 | `source_template_version` | INTEGER NULL | version tại thời điểm sao chép. **Phạm vi:** sub-project sau — Starter decks |
-| `delete_batch_id` | TEXT NULL | NULL = deck đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE. **Phạm vi:** sub-project sau — Trash |
+| `delete_batch_id` | TEXT NULL | NULL = deck đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_deck_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
 | `sibling_position` | INTEGER NOT NULL | Thứ tự manual trong nhóm cùng `parent_id`; tie-break bằng `id` (BR-SRS-007) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
@@ -135,7 +135,10 @@ phải root. Với cây một cấp nó đúng — và đó chính là điều k
 Cái giá: di chuyển subtree phải cập nhật `root_id` **và** `depth` cho toàn bộ
 subtree trong một transaction, bằng recursive CTE (BR-DECK-018). Bỏ sót một node tạo
 ra descendant trỏ sai root hoặc sai độ sâu — dữ liệu hỏng im lặng, vì query vẫn
-chạy và chỉ trả về kết quả thiếu.
+chạy và chỉ trả về kết quả thiếu. Tombstone bên trong subtree đi cùng nó: phép di
+chuyển viết lại `root_id` và `depth` của tombstone, và chiều cao của subtree tính cả
+tombstone, nên một phép di chuyển không bao giờ đẩy tombstone quá cấp 10 (BR-TRASH-007,
+spec Trash D10).
 
 ### `content_type` — bao gồm cả root
 
@@ -185,7 +188,7 @@ trả lời được mọi lookup cũ, giữ cả hai chỉ khiến mỗi insert
 | `example` | TEXT NULL | Tuỳ chọn (BR-CARD-003) |
 | `hint` | TEXT NULL | Tuỳ chọn (BR-CARD-003) |
 | `pronunciation` | TEXT NULL | Tuỳ chọn (BR-CARD-003) |
-| `delete_batch_id` | TEXT NULL | NULL = card đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE. **Phạm vi:** sub-project sau — Trash |
+| `delete_batch_id` | TEXT NULL | NULL = card đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_card_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
 
@@ -357,7 +360,7 @@ bảng đầu tiên cần nhìn khi bàn về kích thước DB.
 | `session_kind` | TEXT NOT NULL | `learning` \| `reviewing` (BR-STUDY-051) |
 | `current_mode` | TEXT NOT NULL | stage đang chạy: `browse` \| `self_assess` \| `match` \| `guess` \| `recall` \| `fill` (BR-MODE-002, BR-MODE-008). Phiên `reviewing` chỉ có một giá trị suốt phiên |
 | `status` | TEXT NOT NULL | `in_progress` \| `completed` \| `abandoned` \| `invalidated` \| `failed` (BR-STUDY-010) |
-| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-012, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` là sub-project sau — Trash |
+| `end_reason` | TEXT NULL | `user_exit` \| `scheduler_reset` \| `scheduler_changed` \| `stale_generation` \| `persistence_error` \| `interrupted` \| `content_deleted` (BR-STUDY-012, BR-TRASH-004, BR-STUDY-016). NULL khi `in_progress` hoặc `completed`. **Phạm vi:** `content_deleted` có từ schema v3 (Trash, BE-B1) |
 | `cursor` | INTEGER NOT NULL DEFAULT 0 | số lượt đã phục vụ trong phiên; nền của BR-STUDY-005 |
 | `card_limit` | INTEGER NOT NULL | số thẻ tối đa của phiên, chốt lúc mở (BR-STUDY-003, BR-STUDY-024). Mặc định 20 |
 | `direction` | TEXT NULL | `korean_to_meaning` \| `meaning_to_korean` \| `mixed` (BR-MODE-013, BR-MODE-015). Chốt lúc mở và khoá suốt phiên (BR-MODE-017). NULL ở mọi phiên ngoài BR-MODE-013 |
@@ -838,8 +841,7 @@ SELECT session_id FROM study_guess_options
 GROUP BY session_id, round, card_id
 HAVING COUNT(*) > 5 OR SUM(option_card_id = card_id) <> 1;
 
--- Bất biến 33-37: Phạm vi sub-project sau — Trash. Giữ số và nghĩa, có hiệu
--- lực từ khi delete_batches triển khai.
+-- Bất biến 33-37: Trash, có hiệu lực từ schema v3 (BE-B1).
 
 -- 33. Card đang active nằm trong một deck đã xoá (BR-TRASH-001, BR-TRASH-003)
 --     Xoá một deck đánh dấu mọi descendant đang active, và restore luôn gắn
@@ -945,8 +947,15 @@ Khoá chính: [ADR-007](../decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md
 ## Foreign keys
 
 `PRAGMA foreign_keys = ON` trong `beforeOpen`. Không có nó, `ON DELETE CASCADE`
-chỉ là chú thích. Cần test: xoá root deck → toàn bộ cây deck con, card, study
-state, study answers và study session đều biến mất (BR-DECK-022).
+chỉ là chú thích. Cần test: xoá cứng root deck → toàn bộ cây deck con, card, study
+state, study answers và study session đều biến mất. Từ v3 chỉ purge xoá cứng
+(BR-DECK-022, BR-TRASH-010).
+
+Từ v3, `deck.delete_batch_id` và `card.delete_batch_id` trỏ tới
+`delete_batches(id)`, `ON DELETE CASCADE`: xoá một batch xoá hàng của nó, và các
+cascade sẵn có dọn study state, lịch sử, hàng đợi và quan hệ tag (BR-TRASH-010).
+Cần test: xoá một batch không làm mất hàng nào của batch khác, kể cả sau khi
+nâng cấp từ v1 hay v2.
 
 ## Chưa mô hình hoá
 

@@ -403,7 +403,7 @@ void main() {
     expect(
       ((await repo.deleteDeck(
         deckId: 'missing',
-      )) as Rejected<void, DeckRejection>).reason,
+      )) as Rejected<String, DeckRejection>).reason,
       DeckRejection.notFound,
     );
     expect(

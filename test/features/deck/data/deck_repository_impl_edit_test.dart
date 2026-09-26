@@ -9,6 +9,7 @@ import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The edits stage 2 adds to the deck repository: rename, reorder, a move to
 // the parent a deck already has, the deletion summary, and decks in the Trash.
@@ -40,6 +41,9 @@ void main() {
   }
 
   Future<void> insertCard(String id, String deckId, {String? batch}) async {
+    if (batch != null) {
+      await insertDeleteBatch(db, batch, itemType: 'card', rootItemId: id);
+    }
     await db.customStatement(
       "UPDATE deck SET content_type = 'card' WHERE id = ?",
       [deckId],
@@ -235,10 +239,7 @@ void main() {
       final trashed = await repo.sub(r.id, 'trashed');
       await insertCard('c1', kept.id);
       await insertCard('gone', kept.id, batch: 'batch');
-      await db.customStatement(
-        "UPDATE deck SET delete_batch_id = 'batch' WHERE id = ?",
-        [trashed.id],
-      );
+      await trashDeckRows(db, trashed.id);
 
       expect(await repo.findById(trashed.id), isNull);
       final reorder = await repo.reorderDeck(

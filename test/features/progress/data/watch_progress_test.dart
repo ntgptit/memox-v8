@@ -12,6 +12,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/progress_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-PROGRESS-001 and UC-PROGRESS-002 at the library level: what one
 // snapshot of `/progress` says (Progress spec §5, §6).
@@ -213,12 +214,8 @@ void main() {
       learnedAt: DateTime(2026, 9, 1),
       dueAt: DateTime(2026, 9, 30),
       box: 2,
-      deleteBatchId: 'batch',
     );
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
     await lockScheduler(db, korean.id);
     await answer(db, 'browsed', hanoi(9, 25, 9), mode: 'browse');
     await answer(db, 'gone', hanoi(9, 25, 9));
