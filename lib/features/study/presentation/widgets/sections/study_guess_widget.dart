@@ -94,12 +94,9 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
   String _announcement() {
     final l10n = context.l10n;
     if (widget.result?.isCorrect ?? false) return l10n.studyGuessAnnounceRight;
-    return l10n.studyGuessAnnounceWrong(_rightMeaning());
+    // The right option is the served card's own meaning (BR-STUDY-041).
+    return l10n.studyGuessAnnounceWrong(widget.item.back);
   }
-
-  String _rightMeaning() => widget.item.guess!.options
-      .firstWhere((option) => option.cardId == widget.item.cardId)
-      .meaning;
 
   void _continue() {
     _timer?.cancel();
