@@ -116,16 +116,107 @@ void main() {
       },
     );
 
+    test('a .csv file whose records each hold ";" as often is split on ";", as '
+        'Excel saves CSV where the decimal mark is a comma (D9)', () async {
+      final table = await _table(
+        FileSource(
+          bytes: _utf8('front;back\r\nmenu;thực đơn\r\n'),
+          format: TransferFormat.csv,
+        ),
+      );
+
+      expect(table.rows, [
+        ['front', 'back'],
+        ['menu', 'thực đơn'],
+      ]);
+    });
+
     test(
-      'pasted text is tab-separated when its first line has a tab (A1)',
+      'a headerless ";" file whose first row holds a comma in a cell stays '
+      '";", and a "," file whose first row holds ";" in a cell stays "," (D9)',
       () async {
-        expect((await _table(const PastedSource('a\tb,c\nd\te'))).rows, [
-          ['a', 'b,c'],
-          ['d', 'e'],
+        final semicolons = await _table(
+          FileSource(
+            bytes: _utf8('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'),
+            format: TransferFormat.csv,
+          ),
+        );
+        final commas = await _table(
+          FileSource(
+            bytes: _utf8('tip,a;b\nbill,c\n'),
+            format: TransferFormat.csv,
+          ),
+        );
+
+        expect(semicolons.rows, [
+          ['tip', 'tiền boa, phí phục vụ'],
+          ['bill', 'hóa đơn'],
         ]);
-        expect((await _table(const PastedSource('a,b\nc,d'))).rows.last, [
-          'c',
-          'd',
+        expect(commas.rows, [
+          ['tip', 'a;b'],
+          ['bill', 'c'],
+        ]);
+      },
+    );
+
+    test('a delimiter inside quotes does not count (D9)', () async {
+      final table = await _table(
+        FileSource(
+          bytes: _utf8('"a,b";c\n"d,e";f\n'),
+          format: TransferFormat.csv,
+        ),
+      );
+
+      expect(table.rows, [
+        ['a,b', 'c'],
+        ['d,e', 'f'],
+      ]);
+    });
+
+    test(
+      'the delimiter is judged on the first 20 records that hold text (D9)',
+      () async {
+        Future<List<List<String>>> rows(String text) async => (await _table(
+          FileSource(bytes: _utf8(text), format: TransferFormat.csv),
+        )).rows;
+
+        // The 20th record counts: without it both ";" and "," would be steady.
+        expect((await rows('${'a;b,c\n' * 19}d;e\n')).last, ['d', 'e']);
+        // The 21st does not: with it "," would stop being steady.
+        expect((await rows('${'a;b,c\n' * 20}d;e\n')).last, ['d;e']);
+        // Blank records are not counted, and still stay rows.
+        expect(await rows('\n\na;b\nc;d\n'), [
+          [''],
+          [''],
+          ['a', 'b'],
+          ['c', 'd'],
+        ]);
+      },
+    );
+
+    test('pasted text is tab-separated when its first line that holds text has '
+        'a tab (A1)', () async {
+      expect((await _table(const PastedSource('a\tb,c\nd\te'))).rows, [
+        ['a', 'b,c'],
+        ['d', 'e'],
+      ]);
+      expect((await _table(const PastedSource('\na\tb,c\nd\te'))).rows, [
+        [''],
+        ['a', 'b,c'],
+        ['d', 'e'],
+      ]);
+      expect((await _table(const PastedSource('a,b\nc,d'))).rows.last, [
+        'c',
+        'd',
+      ]);
+    });
+
+    test(
+      'pasted text without a tab reads as a .csv file, ";" included (A1)',
+      () async {
+        expect((await _table(const PastedSource('a;b\nc;d'))).rows, [
+          ['a', 'b'],
+          ['c', 'd'],
         ]);
       },
     );

@@ -1,6 +1,6 @@
 # MemoX V8 — Card transfer: import and export (BE-B3, FE-B3)
 
-Status: approved 2026-09-26 · kit rulings added after the Impeccable critique (§8.1, §8.2) · Path: architectural
+Status: approved 2026-09-26 · kit rulings added after the Impeccable critique (§8.1, §8.2) · D9 added by the owner after the merge (2026-09-26) · Path: architectural
 
 ## 1. Intent
 
@@ -95,6 +95,7 @@ Success means:
 | D6 | Who writes cards | The card feature, through its own contract `CardTransferRepository` (`foldedPairs`, `importCards`, `countCards`, `exportSnapshot`; split from `CardRepository` when the Trash backend grew it past the size budget); transfer never writes or reads the `card` table itself | ADR-011 D2/D3, this spec |
 | D7 | Parsing off the UI thread | Parse and preview run in `Isolate.run`; the kit's sample is a 1,500-row file | this spec |
 | D8 | Import route | `AppRoutes.deckChild` + `cards/import` → `/decks/deck/<id>/cards/import`, on the root navigator so the wizard covers the shell. IT-NAV-012 writes `/decks/<id>/cards/import`; it follows the real route shape and the scenario is corrected in the same commit | IT-NAV-012, this spec |
+| D9 | CSV delimiter | A `.csv` file splits on `,` or `;` (Excel saves CSV with `;` where the decimal mark is a comma): the one that each of its first 20 records that hold text holds as often, at least once, counting only what lies outside quotes; when both or neither do, `;` if the first of those records holds `;` and no `,`, else `,`. Pasted text is TSV when its first record that holds text has a tab outside quotes, else it reads as a `.csv` file. `.tsv` stays tab, and export keeps `,`. The `csv` package's own detection is not used: it counts inside quotes and scores frequency over 10 lines, so a `;` file with commas in its cells reads as `,` | owner, 2026-09-26, after the merge (package 9a's D5, which did not merge) |
 
 ## 4. Structure
 
@@ -127,8 +128,9 @@ feature's entry in the import map is added in the commit that creates the folder
   never carries the file name; the wizard shows it on the source chip while it is open
   (screen 11), and it is never logged or stored.
 - `.csv` and `.tsv` and pasted text: strip a UTF-8 BOM, then strict UTF-8 decode; failure →
-  `badEncoding` with the guidance "Save the file as UTF-8 and try again". Pasted text
-  splits on tab when its first line contains a tab, else on comma.
+  `badEncoding` with the guidance "Save the file as UTF-8 and try again". A `.csv` file
+  splits on `,` or `;`, and pasted text on tab when its first record that holds text has
+  one, else as a `.csv` file (D9).
 - `.xlsx`: the workbook's sheet names are listed; the first non-empty sheet is chosen by
   default (UC-TRANSFER-001 A2). Every cell reads as text: numbers keep their written form,
   dates their ISO date. A protected or unreadable workbook → `unreadableFile`.
@@ -266,7 +268,7 @@ waiting line for large imports) go to the UI-base debt register, not into this b
 
 | Layer | What |
 |---|---|
-| Codec unit | CSV/TSV quotes, embedded newlines and delimiters, BOM; UTF-16 and Latin-1 refused; XLSX several sheets, empty sheet, number and date cells as text; encoder headers, empty cells, BOM, text cells |
+| Codec unit | CSV/TSV quotes, embedded newlines and delimiters, BOM; the `,`/`;` choice of D9 (a comma inside a `;` file's cells, quotes, the 20-record window, blank records) and pasted text's tab; UTF-16 and Latin-1 refused; XLSX several sheets, empty sheet, number and date cells as text; encoder headers, empty cells, BOM, text cells |
 | Round trip | export → import yields the same six fields and tags for every card, CSV, TSV and XLSX |
 | Determinism | the same snapshot encodes to identical CSV/TSV bytes and identical XLSX cell values |
 | Preview unit | header auto-map by fold, `front`/`back` missing, one column mapped twice, each row status, the first reason wins, Include duplicates |
