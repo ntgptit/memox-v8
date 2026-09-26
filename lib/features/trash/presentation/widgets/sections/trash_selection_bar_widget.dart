@@ -37,7 +37,7 @@ class TrashSelectionBarWidget extends StatelessWidget {
           onPressed: hasPick ? onRestore : null,
         ),
         trailing: MxButton(
-          label: l10n.trashPurgeSelected,
+          label: l10n.trashPurgeSelected(count),
           icon: AppIcons.delete,
           tone: MxButtonTone.destructive,
           isBlock: true,

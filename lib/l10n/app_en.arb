@@ -1649,15 +1649,11 @@
   "@trashSelectionClose": {
     "description": "Screen 06: the close control while selecting."
   },
-  "trashCardsOnly": "Only cards are selectable while cards are selected — a selection never mixes cards and decks.",
-  "@trashCardsOnly": {
-    "description": "Screen 06: why decks cannot be picked (BR-TRASH-011)."
+  "trashKindLock": "Cards and decks can't be selected together.",
+  "@trashKindLock": {
+    "description": "Screen 06: one line under the list while selecting, why the other kind is dimmed (BR-TRASH-011)."
   },
-  "trashDecksOnly": "Only decks are selectable while decks are selected — a selection never mixes cards and decks.",
-  "@trashDecksOnly": {
-    "description": "Screen 06: why cards cannot be picked (BR-TRASH-011)."
-  },
-  "trashRestoreSelected": "Restore {count}…",
+  "trashRestoreSelected": "Restore ({count})",
   "@trashRestoreSelected": {
     "placeholders": {
       "count": {
@@ -1666,9 +1662,14 @@
     },
     "description": "Screen 06 selection bar: restores the selection after asking for a target."
   },
-  "trashPurgeSelected": "Delete for good",
+  "trashPurgeSelected": "Delete ({count})",
   "@trashPurgeSelected": {
-    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010)."
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010); the destructive tone and the dialog say it is permanent."
   },
   "trashPurgeCardsTitle": "{count, plural, =1{Delete 1 card permanently?} other{Delete {count} cards permanently?}}",
   "@trashPurgeCardsTitle": {
