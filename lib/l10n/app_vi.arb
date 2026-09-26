@@ -480,6 +480,8 @@
   "galleryDSurfacesRowsContent": "D · Bề mặt, hàng và nội dung",
   "galleryHeroCard": "Thẻ nổi bật",
   "galleryWarningCard": "Thẻ cảnh báo",
+  "gallerySuccessCard": "Thẻ thành công",
+  "galleryDangerCard": "Thẻ lỗi",
   "gallerySelectedCard": "Thẻ đã chọn",
   "galleryKanjiN5": "Kanji N5",
   "gallery42Cards12Due": "42 thẻ · 12 đến hạn",

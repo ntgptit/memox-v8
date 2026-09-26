@@ -49,6 +49,14 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         child: MxListSectionHeader(label: context.l10n.galleryWarningCard),
       ),
       MxCard(
+        isSuccess: true,
+        child: MxListSectionHeader(label: context.l10n.gallerySuccessCard),
+      ),
+      MxCard(
+        isDanger: true,
+        child: MxListSectionHeader(label: context.l10n.galleryDangerCard),
+      ),
+      MxCard(
         isSelected: true,
         child: MxListSectionHeader(label: context.l10n.gallerySelectedCard),
       ),
@@ -74,6 +82,26 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             icon: AppIcons.lock,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.warning,
+          ),
+        ],
+      ),
+      const Row(
+        spacing: AppSpacing.grouped,
+        children: [
+          MxIconTile(
+            icon: AppIcons.check,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.success,
+          ),
+          MxIconTile(
+            icon: AppIcons.resetProgress,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.caution,
+          ),
+          MxIconTile(
+            icon: AppIcons.alert,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.danger,
           ),
         ],
       ),

@@ -9,8 +9,9 @@ enum MxIconTileSize { small, medium, large }
 
 /// The fill: the primary or seed tint (default), or a solid primary or
 /// warning square whose glyph takes the matching on-colour (screen 02's lock
-/// strip, owner decision D-O1).
-enum MxIconTileTone { tinted, primary, warning }
+/// strip, owner decision D-O1). [success], [caution] and [danger] are soft
+/// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
+enum MxIconTileTone { tinted, primary, warning, success, caution, danger }
 
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
@@ -66,6 +67,18 @@ class MxIconTile extends StatelessWidget {
       MxIconTileTone.warning => (
         context.semanticColors.warning,
         context.semanticColors.onWarning,
+      ),
+      MxIconTileTone.success => (
+        context.derivedColors.successSoft,
+        context.derivedColors.successInk,
+      ),
+      MxIconTileTone.caution => (
+        context.derivedColors.warningSoft,
+        context.derivedColors.warningInk,
+      ),
+      MxIconTileTone.danger => (
+        context.derivedColors.dangerSoft,
+        context.colors.error,
       ),
     };
     return SizedBox.square(

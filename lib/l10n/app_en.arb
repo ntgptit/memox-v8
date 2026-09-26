@@ -2367,6 +2367,14 @@
   "@galleryWarningCard": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "gallerySuccessCard": "Success card",
+  "@gallerySuccessCard": {
+    "description": "Debug gallery: the success card sample (FE-A6 D14)."
+  },
+  "galleryDangerCard": "Danger card",
+  "@galleryDangerCard": {
+    "description": "Debug gallery: the danger card sample (FE-A6 D14)."
+  },
   "gallerySelectedCard": "Selected card",
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
