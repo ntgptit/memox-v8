@@ -11,17 +11,19 @@ import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 /// next due date.
 StudyHome studyHomeOf({
   required List<DeckTileRow> roots,
-  required ResumableRow? resumable,
-  required RoundCounts? round,
+  required ResumableSession? resumable,
   required DateTime? nextDueAt,
 }) => StudyHome(
-  resumable: resumable == null ? null : _resumableOf(resumable, round),
+  resumable: resumable,
   content: studyHomeContentOf([
     for (final row in roots) _deckOf(row),
   ], nextDueAt: nextDueAt),
 );
 
-ResumableSession _resumableOf(ResumableRow row, RoundCounts? round) =>
+/// The session Continue can take up, with the counts of the round it
+/// serves (spec D3): the Study tab's Resume card and the Study Entry's
+/// resume banner (FE-A6 D15).
+ResumableSession resumableSessionOf(ResumableRow row, RoundCounts? round) =>
     ResumableSession(
       sessionId: row.session.id,
       deckName: row.deckName,

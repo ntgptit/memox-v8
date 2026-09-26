@@ -104,34 +104,21 @@ final class StudyViewDao {
       .watchSingleOrNull()
       .map((row) => row == null ? null : _db.deck.map(row.data));
 
-  /// The newest open session of [deckId] that Continue can take up
-  /// (BR-STUDY-075), by the conditions the Study tab's Resume card uses.
-  Future<String?> resumableSessionId(
-    String deckId, {
+  /// The newest open session Continue can take up (BR-STUDY-075): of
+  /// [deckId] when given, of any deck otherwise (the Study tab's Resume
+  /// card); null when none may be taken up.
+  Future<ResumableRow?> resumableSessionRow({
+    String? deckId,
     required DateTime startOfToday,
   }) async {
+    final byDeck = deckId == null ? '' : ' AND s.deck_id = ?';
     final row = await _db
         .customSelect(
-          'SELECT s.id$_resumable AND s.deck_id = ?$_newestFirst',
+          'SELECT s.*, d.name AS deck_name$_resumable$byDeck$_newestFirst',
           variables: [
             Variable<DateTime>(startOfToday),
-            Variable<String>(deckId),
+            if (deckId != null) Variable<String>(deckId),
           ],
-          readsFrom: {_db.studySession, _db.deck, _db.studyQueueItems},
-        )
-        .getSingleOrNull();
-    return row?.read<String>('id');
-  }
-
-  /// The session the Study tab's Resume card offers, of any deck
-  /// (BR-STUDY-075); null when none may be taken up.
-  Future<ResumableRow?> resumableSessionRow({
-    required DateTime startOfToday,
-  }) async {
-    final row = await _db
-        .customSelect(
-          'SELECT s.*, d.name AS deck_name$_resumable$_newestFirst',
-          variables: [Variable<DateTime>(startOfToday)],
           readsFrom: {_db.studySession, _db.deck, _db.studyQueueItems},
         )
         .getSingleOrNull();
