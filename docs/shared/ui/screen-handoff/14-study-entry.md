@@ -45,6 +45,15 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 
 Not captured: none — all nine kit states are V8-supported.
 
+**Built so far (FE-A6 P1b):** `sm2`, `eightBox`, `onlyNew`, `nothing` and `loading`,
+read-only: no study mode has its screen yet, so the Learn row and every runnable
+review mode show a neutral "Coming soon" badge instead of their action, and the
+footer is not drawn (spec §3: an unbuilt stage is never offered). `resume`,
+`starting`, `refused` and `startFailed` need a session to open and come with the
+session screens (P1c, P2). A deck deleted while its entry is open leaves with the
+toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
+`test/features/study/presentation/goldens/study_entry_*`.
+
 ## Accessibility
 
 - TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n}", "Due: {n}" — each stat tile is one node), the overdue note, then the rows and the footer. The resume banner's pulse dot is decorative.

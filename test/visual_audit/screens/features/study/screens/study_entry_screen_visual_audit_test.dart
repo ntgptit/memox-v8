@@ -1,4 +1,3 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 
@@ -9,10 +8,7 @@ import '../../../../screen_audit.dart';
 
 StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
   deckId: deckId,
-  title: DeckStudyHeaderWidget(
-    deckId: deckId,
-    part: DeckStudyHeaderPart.title,
-  ),
+  title: DeckStudyHeaderWidget(deckId: deckId, part: DeckStudyHeaderPart.title),
   breadcrumb: DeckStudyHeaderWidget(
     deckId: deckId,
     part: DeckStudyHeaderPart.breadcrumb,

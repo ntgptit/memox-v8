@@ -12,7 +12,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮`. Selecting: close, "{n} selected", "Select all {count}". |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
-| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck" waits under Coming soon (spec A4). Hidden while selecting. |
+| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting. |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
@@ -21,14 +21,14 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 
 ## Deck action sheet (`⋮`)
 
-Rename · Move to another deck · Delete. Study, Import and Export wait under Coming soon
-(spec A4; FE-A6, FE-B3).
+Study · Rename · Move to another deck · Delete. Study opens the Study Entry, screen 14
+(FE-A6 D10); Import and Export wait under Coming soon (spec A4; FE-B3).
 
 ## States
 
 | State | Light | Dark | V8 |
 |---|---|---|---|
-| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn, without Study and the Tags chip (Coming soon). |
+| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn, without the Tags chip (Coming soon). |
 | empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | The deck is unset again (E-L1): screen 01's unset state. |
 | searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
@@ -50,7 +50,7 @@ detail: a tap opens it (#35).
 | Artifact | V8 | Wins |
 |---|---|---|
 | Move to Trash with Undo, for cards and for the deck | Permanent delete with a count, no Undo | BR-DECK-022, BR-DECK-023, UC-CARD-002 |
-| Tags filter, Import, Export, Study | Hidden; named under Coming soon | Spec A4 (amended) |
+| Tags filter, Import, Export | Hidden; named under Coming soon | Spec A4 (amended) |
 | An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
 | The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
 | "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |

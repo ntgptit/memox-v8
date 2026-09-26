@@ -1,6 +1,6 @@
 ---
 feature: study
-code: [lib/features/study/domain, lib/features/study/data, lib/features/study/di]
+code: [lib/features/study/domain, lib/features/study/data, lib/features/study/di, lib/features/study/presentation]
 depends_on: [card, deck, srs, study-mode]
 ---
 ## Phạm vi
