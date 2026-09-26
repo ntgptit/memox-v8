@@ -29,6 +29,8 @@ void main() {
         children: [
           MxCard(child: SizedBox(height: 56)),
           MxCard(isHero: true, child: SizedBox(height: 56)),
+          MxCard(isSuccess: true, child: SizedBox(height: 56)),
+          MxCard(isDanger: true, child: SizedBox(height: 56)),
           Row(
             spacing: 12,
             children: [
@@ -36,6 +38,26 @@ void main() {
               MxIconTile(icon: AppIcons.reminder, size: MxIconTileSize.medium),
               MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
               MxIconTile(icon: AppIcons.folder, seed: Color(0xFF0E9F6E)),
+            ],
+          ),
+          Row(
+            spacing: 12,
+            children: [
+              MxIconTile(
+                icon: AppIcons.check,
+                size: MxIconTileSize.large,
+                tone: MxIconTileTone.success,
+              ),
+              MxIconTile(
+                icon: AppIcons.resetProgress,
+                size: MxIconTileSize.large,
+                tone: MxIconTileTone.caution,
+              ),
+              MxIconTile(
+                icon: AppIcons.alert,
+                size: MxIconTileSize.large,
+                tone: MxIconTileTone.danger,
+              ),
             ],
           ),
         ],

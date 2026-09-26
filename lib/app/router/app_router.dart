@@ -18,6 +18,8 @@ import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.d
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
+import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -51,6 +53,12 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                       builder: (context, state) => CardEditorScreen.create(
                         deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                         deckContext: _deckContext,
+                      ),
+                    ),
+                    GoRoute(
+                      path: AppRoutes.studyChild,
+                      builder: (context, state) => _studyEntry(
+                        state.pathParameters[AppRoutes.deckIdParam]!,
                       ),
                     ),
                     GoRoute(
@@ -120,6 +128,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
 /// so Back climbs one level (library spec §4).
 DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
   void addCard(String id) => unawaited(context.push(AppRoutes.newCard(id)));
+  void study(String id) => unawaited(context.push(AppRoutes.studyEntry(id)));
   return DeckLevelScreen(
     deckId: deckId,
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
@@ -127,6 +136,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onSearch: () => context.push(AppRoutes.deckSearch),
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
+    onOpenStudy: study,
     onAddCard: addCard,
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
@@ -137,10 +147,22 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       algorithm: context.l10n.cardScheduler(view.schedulerType),
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
+      onStudy: () => study(view.deck.id),
     ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );
 }
+
+/// Screen 14 with the deck's name and path from the deck feature, which
+/// the study feature may not read (FE-A6 D16).
+StudyEntryScreen _studyEntry(String deckId) => StudyEntryScreen(
+  deckId: deckId,
+  title: DeckStudyHeaderWidget(deckId: deckId, part: DeckStudyHeaderPart.title),
+  breadcrumb: DeckStudyHeaderWidget(
+    deckId: deckId,
+    part: DeckStudyHeaderPart.breadcrumb,
+  ),
+);
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>

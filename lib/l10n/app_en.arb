@@ -1829,14 +1829,6 @@
   "@comingSoonTrashBody": {
     "description": "Coming soon: what the trash does."
   },
-  "comingSoonStudy": "Study",
-  "@comingSoonStudy": {
-    "description": "Coming soon: the study feature's name."
-  },
-  "comingSoonStudyBody": "Study a deck's due cards.",
-  "@comingSoonStudyBody": {
-    "description": "Coming soon: what studying a deck does."
-  },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {
     "description": "Coming soon: what study options do."
@@ -2343,6 +2335,22 @@
   "@galleryNew": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryDue": "Due",
+  "@galleryDue": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryReviewed": "Reviewed",
+  "@galleryReviewed": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryAnswered": "Answered",
+  "@galleryAnswered": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
+  "galleryWrong": "Wrong",
+  "@galleryWrong": {
+    "description": "Debug gallery: an MxStatTile label sample (FE-A6 D17)."
+  },
   "galleryLearning": "Learning",
   "@galleryLearning": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -2390,6 +2398,14 @@
   "galleryWarningCard": "Warning card",
   "@galleryWarningCard": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "gallerySuccessCard": "Success card",
+  "@gallerySuccessCard": {
+    "description": "Debug gallery: the success card sample (FE-A6 D14)."
+  },
+  "galleryDangerCard": "Danger card",
+  "@galleryDangerCard": {
+    "description": "Debug gallery: the danger card sample (FE-A6 D14)."
   },
   "gallerySelectedCard": "Selected card",
   "@gallerySelectedCard": {
@@ -2516,5 +2532,169 @@
   "galleryN5": "N5",
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "studyEntryOverline": "{algorithm} · cards per session {limit}",
+  "@studyEntryOverline": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the hero's overline, the deck's algorithm and the session limit (BR-STUDY-024)."
+  },
+  "studyEntryNew": "New",
+  "@studyEntryNew": {
+    "description": "Screen handoff 14 (FE-A6): the hero's New stat label."
+  },
+  "studyEntryDue": "Due",
+  "@studyEntryDue": {
+    "description": "Screen handoff 14 (FE-A6): the hero's Due stat label."
+  },
+  "studyEntryOverdue": "{count} of the due cards are overdue",
+  "@studyEntryOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the hero's note on due cards from before today."
+  },
+  "studyEntryNothingTitle": "Nothing to do right now",
+  "@studyEntryNothingTitle": {
+    "description": "Screen handoff 14 (FE-A6): the nothing-due state's title (BR-STUDY-008)."
+  },
+  "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
+  "@studyEntryNothingBody": {
+    "description": "Screen handoff 14 (FE-A6): the nothing-due state's body."
+  },
+  "studyEntryLearnTitle": "Learn new cards",
+  "@studyEntryLearnTitle": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's title."
+  },
+  "studyEntryLearnStagesSm2": "Browse, then self-assess",
+  "@studyEntryLearnStagesSm2": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's stage line for SM-2."
+  },
+  "studyEntryLearnStagesEightBox": "Browse → match → guess → recall → fill",
+  "@studyEntryLearnStagesEightBox": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's stage line for Eight boxes."
+  },
+  "studyEntryLearnCount": "{shown} of {total} new · in creation order",
+  "@studyEntryLearnCount": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): how many new cards a learning session takes (BR-STUDY-056)."
+  },
+  "studyEntryLearnLine": "{stages} · {count}",
+  "@studyEntryLearnLine": {
+    "placeholders": {
+      "stages": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): the Learn row's subtitle: the stage line, then the count line."
+  },
+  "studyEntryLearn": "Learn",
+  "@studyEntryLearn": {
+    "description": "Screen handoff 14 (FE-A6): the Learn row's button."
+  },
+  "studyEntryReviewHeader": "Review · choose how cards are asked",
+  "@studyEntryReviewHeader": {
+    "description": "Screen handoff 14 (FE-A6): the review modes' section header."
+  },
+  "studyEntryModeMatchBody": "Pair terms with meanings, up to 5 at a time",
+  "@studyEntryModeMatchBody": {
+    "description": "Screen handoff 14 (FE-A6): the Match mode's description."
+  },
+  "studyEntryModeGuessBody": "Pick the meaning out of five",
+  "@studyEntryModeGuessBody": {
+    "description": "Screen handoff 14 (FE-A6): the Guess mode's description."
+  },
+  "studyEntryModeRecallBody": "Recall the meaning within 20 seconds",
+  "@studyEntryModeRecallBody": {
+    "description": "Screen handoff 14 (FE-A6): the Recall mode's description."
+  },
+  "studyEntryModeFillBody": "Type the term for the meaning",
+  "@studyEntryModeFillBody": {
+    "description": "Screen handoff 14 (FE-A6): the Fill mode's description."
+  },
+  "studyEntryModeCards": "{count} cards",
+  "@studyEntryModeCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): a review mode's badge, how many cards it would ask."
+  },
+  "studyEntryNotAvailable": "Not available",
+  "@studyEntryNotAvailable": {
+    "description": "Screen handoff 14 (FE-A6): the badge of a review mode the cards cannot run (BR-STUDY-044)."
+  },
+  "studyEntryUnavailableNote": "A mode that is not available lacks suitable cards for this review — it comes back when the cards qualify.",
+  "@studyEntryUnavailableNote": {
+    "description": "Screen handoff 14 (FE-A6): the note under the review modes when one is not available."
+  },
+  "studyEntryReasonNoExample": "Needs an example on the due cards",
+  "@studyEntryReasonNoExample": {
+    "description": "Screen handoff 14 (FE-A6): why Fill is not available (BR-MODE-009)."
+  },
+  "studyEntryReasonTooFewPairs": "Needs at least two due cards",
+  "@studyEntryReasonTooFewPairs": {
+    "description": "Screen handoff 14 (FE-A6): why Match is not available (BR-MODE-009)."
+  },
+  "studyEntryReasonTooFewMeanings": "Needs five different meanings among the due cards",
+  "@studyEntryReasonTooFewMeanings": {
+    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009)."
+  },
+  "studyComingSoon": "Coming soon",
+  "@studyComingSoon": {
+    "description": "Screen handoff 14 (FE-A6): the badge of a study mode the app has not built yet (FE-A6 spec §3)."
+  },
+  "studyEntryDeckGone": "This deck no longer exists",
+  "@studyEntryDeckGone": {
+    "description": "Screen handoff 14 (FE-A6): the toast when the deck is deleted while its entry is open (UC-STUDY-001 E1)."
+  },
+  "studyEntryErrorTitle": "Couldn't read this deck",
+  "@studyEntryErrorTitle": {
+    "description": "Screen handoff 14 (FE-A6): the error state's title."
+  },
+  "studyEntryErrorBody": "Your cards are safe on this device. Try again in a moment.",
+  "@studyEntryErrorBody": {
+    "description": "Screen handoff 14 (FE-A6): the error state's body."
+  },
+  "studyCount": "{count}",
+  "@studyCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6): a stat tile's figure."
+  },
+  "studyThisDeckDue": "Study this deck · {due} due",
+  "@studyThisDeckDue": {
+    "placeholders": {
+      "due": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry while cards are due."
+  },
+  "studyThisDeck": "Study this deck",
+  "@studyThisDeck": {
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
   }
 }

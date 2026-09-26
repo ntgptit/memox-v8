@@ -13,6 +13,7 @@ import 'package:memox/features/study/data/repositories/study_entry_repository_im
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
@@ -140,6 +141,21 @@ void main() {
     expect(option.isDirectionRequired, isTrue);
   });
 
+  test('the entry counts the due cards that fell due before today as '
+      'overdue: a card due earlier today is due, not overdue '
+      '(FE-A6 D15, the BR-STUDY-068 boundary)', () async {
+    final root = await decks.root('Korean');
+    final leaf = await decks.sub(root.id, 'Lesson');
+    await learned(leaf.id, 'yesterday', DateTime(2026, 9, 23, 20));
+    await learned(leaf.id, 'early', DateTime(2026, 9, 24, 7));
+    await learned(leaf.id, 'later', DateTime(2026, 9, 24, 18));
+    await lockScheduler(db, root.id);
+
+    final entry = await entryOf(leaf.id);
+
+    expect((entry.dueCardCount, entry.overdueCardCount), (2, 1));
+  });
+
   test("Continue is offered for this deck's open session only while it is "
       "today's and at the root's generation (BR-STUDY-075, BR-STUDY-072; "
       'UC-STUDY-001 A3b)', () async {
@@ -150,14 +166,19 @@ void main() {
     final opened = await entries.openLearningSession(deckId: leaf.id);
     final id = (opened as Ok<String, StudyRejection>).value;
 
-    expect((await entryOf(leaf.id)).resumableSessionId, id);
+    final resumable = (await entryOf(leaf.id)).resumable!;
+    expect(resumable.sessionId, id);
+    expect(resumable.deckName, 'Lesson');
+    expect(resumable.kind, SessionKind.learning);
+    expect(resumable.mode, StudyMode.browse);
+    expect((resumable.progress!.completed, resumable.progress!.total), (0, 2));
     expect(
-      (await entryOf(root.id)).resumableSessionId,
+      (await entryOf(root.id)).resumable,
       isNull,
       reason: 'the session of another deck',
     );
     expect(
-      (await entryOf(leaf.id, DateTime(2026, 9, 25, 8))).resumableSessionId,
+      (await entryOf(leaf.id, DateTime(2026, 9, 25, 8))).resumable,
       isNull,
       reason: 'a session of an earlier day',
     );
@@ -167,7 +188,7 @@ void main() {
     ]);
     await db.customStatement('UPDATE card_schedule SET generation = 2');
     expect(
-      (await entryOf(leaf.id)).resumableSessionId,
+      (await entryOf(leaf.id)).resumable,
       isNull,
       reason: 'a session from before a reset',
     );
@@ -192,7 +213,7 @@ void main() {
       isA<Ok<void, CardRejection>>(),
     );
 
-    expect((await entryOf(leaf.id)).resumableSessionId, isNull);
+    expect((await entryOf(leaf.id)).resumable, isNull);
   });
 
   test('the entry emits again when the options change and when a review '
@@ -225,7 +246,7 @@ void main() {
 
     final entry = await entryOf(leaf.id);
     expect(entry.dueCardCount, 2);
-    expect(entry.resumableSessionId, isNull);
+    expect(entry.resumable, isNull);
   });
 
   test('a deck that is gone is null (UC-STUDY-001 E1)', () async {

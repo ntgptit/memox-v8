@@ -171,6 +171,8 @@ final class SessionSummary {
     required this.cardCount,
     required this.learnedCardCount,
     required this.wrongTurnCount,
+    required this.answeredCardCount,
+    required this.turnCount,
   });
 
   /// The distinct cards of the queue.
@@ -182,4 +184,14 @@ final class SessionSummary {
 
   /// The session's turns whose action was a lapse (BR-SRS-018).
   final int wrongTurnCount;
+
+  /// The distinct cards with a graded turn; a Browse advance is no turn
+  /// (BR-MODE-006; FE-A6 D11).
+  final int answeredCardCount;
+
+  /// The session's graded turns, its `review_log` rows (FE-A6 D11).
+  final int turnCount;
+
+  /// Nothing was answered: the summary shows no stats (FE-A6 D18).
+  bool get hasAnswers => turnCount > 0;
 }

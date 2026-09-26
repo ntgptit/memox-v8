@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
+import 'package:memox/features/deck/presentation/widgets/overlays/deck_coming_soon_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -300,13 +301,20 @@ void main() {
       _en.libraryStarterDecks,
       _en.libraryTags,
       _en.libraryTrash,
-      _en.comingSoonStudy,
       _en.deckStudyOptions,
       _en.comingSoonProgressSort,
       _en.comingSoonTransfer,
     ]) {
       expect(find.text(feature), findsOneWidget, reason: feature);
     }
+    // Study is live (FE-A6 D10); only Study options still waits.
+    expect(
+      find.descendant(
+        of: find.byType(DeckComingSoonSheetWidget),
+        matching: find.text(_en.studyThisDeck),
+      ),
+      findsNothing,
+    );
   });
 
   libraryTest('the search field opens the search', (tester, env) async {

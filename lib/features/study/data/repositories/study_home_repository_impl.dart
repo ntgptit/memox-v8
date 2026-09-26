@@ -1,5 +1,6 @@
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/study/data/datasources/resumable_session_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
 import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/data/mappers/study_home_mapper.dart';
@@ -10,13 +11,20 @@ import 'package:memox/features/study/domain/repositories/study_home_repository.d
 /// transaction, once when listened to and again after every write the tab
 /// can see.
 final class StudyHomeRepositoryImpl implements StudyHomeRepository {
-  StudyHomeRepositoryImpl(this._db)
-    : _queue = StudyQueueDao(_db),
-      _views = StudyViewDao(_db);
+  factory StudyHomeRepositoryImpl(AppDatabase db) {
+    final views = StudyViewDao(db);
+    return StudyHomeRepositoryImpl._(
+      db,
+      views,
+      ResumableSessionDataSource(views, StudyQueueDao(db)),
+    );
+  }
+
+  StudyHomeRepositoryImpl._(this._db, this._views, this._resumable);
 
   final AppDatabase _db;
-  final StudyQueueDao _queue;
   final StudyViewDao _views;
+  final ResumableSessionDataSource _resumable;
 
   @override
   Stream<StudyHome> watchHome({
@@ -42,26 +50,10 @@ final class StudyHomeRepositoryImpl implements StudyHomeRepository {
       now: now,
       startOfToday: startOfToday,
     );
-    final resumable = await _views.resumableSessionRow(
-      startOfToday: startOfToday,
-    );
     return studyHomeOf(
       roots: roots,
-      resumable: resumable,
-      round: resumable == null ? null : await _roundOf(resumable.session),
+      resumable: await _resumable.read(startOfToday: startOfToday),
       nextDueAt: await _views.nextDueAt(now: now),
     );
-  }
-
-  /// The counts of the round [session] serves, read as the session screen
-  /// reads them (spec D3); null while it serves nothing.
-  Future<RoundCounts?> _roundOf(StudySession session) async {
-    final head = await _queue.headRow(
-      session.id,
-      session.currentMode,
-      session.cursor,
-    );
-    if (head == null) return null;
-    return _views.roundCounts(session.id, head.mode, head.round);
   }
 }

@@ -21,6 +21,9 @@ abstract final class AppRoutes {
   /// A root deck's review algorithm (screen 02), relative to [deckChild].
   static const String algorithmChild = 'algorithm';
 
+  /// A deck's Study Entry (screen 14), relative to [deckChild] (FE-A6 D1).
+  static const String studyChild = 'study';
+
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
@@ -37,6 +40,9 @@ abstract final class AppRoutes {
   /// Screen 02 for the root [deckId].
   static String deckAlgorithm(String deckId) =>
       '${deck(deckId)}/$algorithmChild';
+
+  /// Screen 14 for [deckId].
+  static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
 
   /// The card editor adding cards to [deckId].
   static String newCard(String deckId) => '${deck(deckId)}/$cardNewChild';

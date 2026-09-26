@@ -6,7 +6,12 @@ import 'package:memox/features/study/domain/models/session_status_model.dart';
 typedef StudyCardRow = ({String cardId, bool hasExample});
 
 /// The new and the due cards of a subtree, and the next due date.
-typedef SubtreeCounts = ({int newCount, int dueCount, DateTime? nextDueAt});
+typedef SubtreeCounts = ({
+  int newCount,
+  int dueCount,
+  int overdueCount,
+  DateTime? nextDueAt,
+});
 
 /// The active decks of the subtree of the first variable, walked through
 /// `parent_id` (schema.md "Duyệt cây").
@@ -76,15 +81,23 @@ final class StudySessionDao {
     ];
   }
 
-  /// The new and the due cards of [deckId]'s subtree at [now], and the
-  /// earliest `due_at` after [now] (BR-STUDY-051, BR-STUDY-008).
-  Future<SubtreeCounts> subtreeCounts(String deckId, DateTime now) async {
+  /// The new and the due cards of [deckId]'s subtree at [now], the due ones
+  /// that fell due before [startOfToday] (BR-STUDY-068's boundary; FE-A6
+  /// D15), and the earliest `due_at` after [now] (BR-STUDY-051,
+  /// BR-STUDY-008).
+  Future<SubtreeCounts> subtreeCounts(
+    String deckId,
+    DateTime now, {
+    required DateTime startOfToday,
+  }) async {
     final row = await _db
         .customSelect(
           '$_subtree SELECT'
           ' COUNT(CASE WHEN cs.learned_at IS NULL THEN 1 END) AS new_count,'
           ' COUNT(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at <= ?'
           '  THEN 1 END) AS due_count,'
+          ' COUNT(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at < ?'
+          '  THEN 1 END) AS overdue_count,'
           ' MIN(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at > ?'
           '  THEN cs.due_at END) AS next_due_at'
           ' FROM card c JOIN card_schedule cs ON cs.card_id = c.id'
@@ -93,6 +106,7 @@ final class StudySessionDao {
           variables: [
             Variable<String>(deckId),
             Variable<DateTime>(now),
+            Variable<DateTime>(startOfToday),
             Variable<DateTime>(now),
           ],
           readsFrom: {_db.deck, _db.card, _db.cardSchedule},
@@ -101,6 +115,7 @@ final class StudySessionDao {
     return (
       newCount: row.read<int>('new_count'),
       dueCount: row.read<int>('due_count'),
+      overdueCount: row.read<int>('overdue_count'),
       nextDueAt: row.read<DateTime?>('next_due_at'),
     );
   }

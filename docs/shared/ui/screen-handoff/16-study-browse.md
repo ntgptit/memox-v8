@@ -62,6 +62,13 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   forbids that in feature code; each screen's icons take their colour from
   the shared icon-tinting mechanism instead. Not repeated per screen below.
 
+## Accessibility
+
+- TalkBack reads the top bar (close, mode, "{done} of {total}"), the context line, then the card: term label and term, pronunciation, meaning label and meaning, example. The footer hint is read last.
+- Card faces wrap and never ellipsize; Korean and Vietnamese with stacked marks render whole (UI-base §9 row 102). Touch targets are at least 48 × 48.
+- Swipes have accessible actions on the card: "Next card" and, when an earlier card exists, "Previous card".
+- Edges (FE-A6 spec D20): the hint does not change; a right swipe on the round's first card does nothing; a left swipe on the stage's last card answers it and the session moves on.
+
 ## States
 
 | State | Light | Dark | V8 |

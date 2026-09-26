@@ -46,6 +46,7 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.algorithm,
     required this.onAddCard,
     required this.onOpenCard,
+    this.onStudy,
   });
 
   final String deckId;
@@ -58,6 +59,9 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
 
   /// A row tap outside selection: the router opens the card's detail.
   final ValueChanged<String> onOpenCard;
+
+  /// The summary's Study this deck: the router opens the Study Entry.
+  final VoidCallback? onStudy;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -312,7 +316,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           ),
         ),
       if (!isSelecting) ...[
-        CardDeckSummaryWidget(view: view, algorithm: widget.algorithm),
+        CardDeckSummaryWidget(
+          view: view,
+          algorithm: widget.algorithm,
+          onStudy: widget.onStudy,
+        ),
         CardListToolbarWidget(
           request: request,
           counts: view.counts,

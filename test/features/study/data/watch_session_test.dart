@@ -191,8 +191,14 @@ void main() {
       expect(view.isStalled, isFalse);
       final summary = view.summary!;
       expect(
-        (summary.cardCount, summary.learnedCardCount, summary.wrongTurnCount),
-        (2, 2, 1),
+        (
+          summary.cardCount,
+          summary.learnedCardCount,
+          summary.wrongTurnCount,
+          summary.answeredCardCount,
+          summary.turnCount,
+        ),
+        (2, 2, 1, 2, 3),
       );
     },
   );
@@ -223,8 +229,35 @@ void main() {
     final summary = (await viewOf(id)).summary!;
 
     expect(
-      (summary.cardCount, summary.learnedCardCount, summary.wrongTurnCount),
-      (2, null, 1),
+      (
+        summary.cardCount,
+        summary.learnedCardCount,
+        summary.wrongTurnCount,
+        summary.answeredCardCount,
+        summary.turnCount,
+      ),
+      (2, null, 1, 2, 3),
+    );
+  });
+
+  test('a session left in Browse has answered nothing: no turn is counted '
+      'for an advance (FE-A6 D18, BR-MODE-006)', () async {
+    final (_, leaf) = await tree(SchedulerType.sm2);
+    for (final id in ['c1', 'c2']) {
+      await insertCard(db, id: id, deckId: leaf.id);
+    }
+    final id = await learning(leaf);
+    await answer(id, const AdvanceAnswer());
+    expect(
+      await sessions.abandonSession(sessionId: id),
+      isA<Ok<void, StudyRejection>>(),
+    );
+
+    final summary = (await viewOf(id)).summary!;
+
+    expect(
+      (summary.answeredCardCount, summary.turnCount, summary.hasAnswers),
+      (0, 0, false),
     );
   });
 

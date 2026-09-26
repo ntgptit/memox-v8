@@ -355,6 +355,6 @@ void main() {
       _refusedWith(StudyRejection.sessionClosed),
     );
     final entry = await entries.watchEntry(deckId: leaf.id, now: clock).first;
-    expect(entry!.resumableSessionId, isNull);
+    expect(entry!.resumable, isNull);
   });
 }

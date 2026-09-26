@@ -15,7 +15,16 @@ class MxCard extends StatelessWidget {
     this.isHero = false,
     this.isWarning = false,
     this.isSelected = false,
-  }) : assert(!(isHero && isWarning), 'a hero or a warning card');
+    this.isSuccess = false,
+    this.isDanger = false,
+  }) : assert(
+         (isHero ? 1 : 0) +
+                 (isWarning ? 1 : 0) +
+                 (isSuccess ? 1 : 0) +
+                 (isDanger ? 1 : 0) <=
+             1,
+         'one tone at most',
+       );
 
   final Widget child;
 
@@ -34,14 +43,30 @@ class MxCard extends StatelessWidget {
   /// picked row of a selection (screen 07).
   final bool isSelected;
 
+  /// The success-soft ground with the success border: a finished session
+  /// (FE-A6 D14).
+  final bool isSuccess;
+
+  /// The danger-soft ground with the destructive border: a session stopped
+  /// by an error (FE-A6 D14).
+  final bool isDanger;
+
   @override
   Widget build(BuildContext context) {
-    final surface = switch ((isHero, isWarning)) {
-      (true, _) => AppDecorations.heroCard(
+    final surface = switch ((isHero, isWarning, isSuccess, isDanger)) {
+      (true, _, _, _) => AppDecorations.heroCard(
         context.colors,
         context.derivedColors,
       ),
-      (_, true) => AppDecorations.warningCard(
+      (_, true, _, _) => AppDecorations.warningCard(
+        context.colors,
+        context.derivedColors,
+      ),
+      (_, _, true, _) => AppDecorations.successCard(
+        context.colors,
+        context.derivedColors,
+      ),
+      (_, _, _, true) => AppDecorations.dangerCard(
         context.colors,
         context.derivedColors,
       ),

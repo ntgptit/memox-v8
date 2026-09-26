@@ -420,4 +420,13 @@ void main() {
     expect(styles.fieldCount(isOver: false).letterSpacing, 0.2);
     expect(styles.fieldCount(isOver: true).letterSpacing, 0.2);
   });
+
+  test('statValue is tabular in the ink given; statLabel is the overline '
+      '(FE-A6 D17)', () {
+    final value = styles.statValue(const Color(0xFF123456));
+
+    expect(value.color, const Color(0xFF123456));
+    expect(value.fontFeatures, contains(const FontFeature.tabularFigures()));
+    expect(styles.statLabel, styles.overline);
+  });
 }

@@ -134,4 +134,22 @@ void main() {
       0.38,
     );
   });
+
+  testWidgets('a row not selectable yet can keep full contrast: isDimmed '
+      'false (FE-A6 spec §3)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxOptionRow(
+        title: 'Recall',
+        isSelected: false,
+        onSelected: null,
+        isDimmed: false,
+      ),
+    );
+
+    expect(
+      find.ancestor(of: find.text('Recall'), matching: find.byType(Opacity)),
+      findsNothing,
+    );
+  });
 }

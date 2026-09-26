@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
@@ -343,5 +345,34 @@ void main() {
 
     expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
     expect(find.text('cooked rice'), findsOneWidget);
+  });
+
+  libraryTest('Study from a deck opens its entry; Back returns to that deck '
+      'and no session is made (IT-NAV-008, FE-A6 D1, D10)', (
+    tester,
+    env,
+  ) async {
+    await _seed(env);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.byTooltip(_en.deckActions));
+    // The sheet's row, not the bottom nav's Study tab.
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(MxActionSheetCommandRow),
+        matching: find.text(_en.studyThisDeck),
+      ),
+    );
+
+    expect(find.byType(StudyEntryScreen), findsOneWidget);
+    expect(_barTitle('Korean'), findsOneWidget);
+    await _back(tester);
+    expect(find.byType(StudyEntryScreen), findsNothing);
+    expect(_barTitle('Korean'), findsOneWidget);
+    final sessions = await env.db
+        .customSelect('SELECT COUNT(*) AS n FROM study_session')
+        .getSingle();
+    expect(sessions.read<int>('n'), 0);
   });
 }
