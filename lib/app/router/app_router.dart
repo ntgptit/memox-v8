@@ -9,6 +9,7 @@ import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
@@ -61,6 +62,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                         builder: (context, state) => CardEditorScreen.create(
                           deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                           deckContext: _deckContext,
+                          onOpenTrash: _openTrash(context),
                         ),
                       ),
                       // A full-screen task above the shell: no bottom bar
@@ -91,6 +93,13 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       ),
                     ],
                   ),
+                  // A full-screen task above the shell: no bottom bar
+                  // (FE-B1 D2).
+                  GoRoute(
+                    path: AppRoutes.trashChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const TrashScreen(),
+                  ),
                   GoRoute(
                     path: AppRoutes.searchChild,
                     builder: (context, state) => LibrarySearchScreen(
@@ -103,8 +112,8 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     builder: (context, state) => CardDetailScreen(
                       cardId: state.pathParameters[AppRoutes.cardIdParam]!,
                       deckContext: _deckContext,
-                      onEdit: (id) =>
-                          unawaited(context.push(AppRoutes.editCard(id))),
+                      onEdit: (id) => unawaited(_editCard(context, id)),
+                      onOpenTrash: _openTrash(context),
                     ),
                     routes: [
                       GoRoute(
@@ -112,6 +121,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                         builder: (context, state) => CardEditorScreen.edit(
                           cardId: state.pathParameters[AppRoutes.cardIdParam]!,
                           deckContext: _deckContext,
+                          onOpenTrash: _openTrash(context),
                         ),
                       ),
                     ],
@@ -164,6 +174,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
 DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
   void addCard(String id) => unawaited(context.push(AppRoutes.newCard(id)));
   void study(String id) => unawaited(context.push(AppRoutes.studyEntry(id)));
+  final openTrash = _openTrash(context);
   return DeckLevelScreen(
     deckId: deckId,
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
@@ -177,6 +188,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onExportCards: (deck) => unawaited(
       showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
     ),
+    onOpenTrash: openTrash,
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
     cardBreadcrumb: (id, child) =>
@@ -187,6 +199,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
       onStudy: () => study(view.deck.id),
+      onOpenTrash: openTrash,
       onExport: (ids) => unawaited(
         showCardExportSheet(
           context,
@@ -214,6 +227,21 @@ StudyEntryScreen _studyEntry(BuildContext context, String deckId) =>
       onOpenSession: (sessionId) =>
           context.go(AppRoutes.studySession(sessionId)),
     );
+
+/// Opens the Trash on the root navigator (FE-B1 D2). The router pushes it,
+/// not the page's context: a toast's action can outlive its page.
+VoidCallback _openTrash(BuildContext context) {
+  final router = GoRouter.of(context);
+  return () => unawaited(router.push(AppRoutes.trash));
+}
+
+/// Opens the editor over the card detail. The editor closes with true when
+/// it moved the card to the Trash; the detail, whose card is gone, closes
+/// with it (FE-B1 D13).
+Future<void> _editCard(BuildContext context, String cardId) async {
+  final isTrashed = await context.push<bool>(AppRoutes.editCard(cardId));
+  if (isTrashed == true && context.mounted) context.pop();
+}
 
 /// The deck path over the card editor (ruling P4a-L7, spec D8).
 Widget _deckContext(String deckId, String currentLabel) =>

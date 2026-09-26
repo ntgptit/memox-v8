@@ -126,7 +126,9 @@ void main() {
     await _tap(tester, find.text(_en.deckDelete));
 
     expect(_barTitle('Words'), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    // The toast with Undo survives the step back (FE-B1 D3).
+    expect(find.text(_en.deckTrashedToast('Verbs', 0, 0)), findsOneWidget);
+    expect(find.text(_en.commonUndo), findsOneWidget);
   });
 
   libraryTest('Review algorithm pushes screen 02; Back returns to the deck', (

@@ -48,6 +48,7 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.onOpenCard,
     this.onExport,
     this.onStudy,
+    this.onOpenTrash,
   });
 
   final String deckId;
@@ -67,6 +68,10 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
 
   /// The summary's Study this deck: the router opens the Study Entry.
   final VoidCallback? onStudy;
+
+  /// Opens the Trash (screen 06), for the toasts and the gone state
+  /// (FE-B1). Hidden without it.
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -159,6 +164,16 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (await write && mounted) _selection().clear();
   }
 
+  /// The one selected card's text, when its row is loaded (kit 07).
+  CardTrashPreview? _previewOf(Set<String> selected) {
+    if (selected.length != 1) return null;
+    final id = selected.single;
+    for (final item in _lastView?.items ?? const <CardListItem>[]) {
+      if (item.id == id) return (front: item.front, back: item.back);
+    }
+    return null;
+  }
+
   /// The bulk bar's commands over [selected]: Move, Flag, Tag, Export,
   /// Delete (kit 07). Select all is in the app bar (spec A14).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
@@ -200,7 +215,14 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         icon: AppIcons.delete,
         label: l10n.cardDelete,
         onTap: () => unawaited(
-          _clearAfter(showDeleteCardsDialog(context, cardIds: selected)),
+          _clearAfter(
+            showDeleteCardsDialog(
+              context,
+              cardIds: selected,
+              preview: _previewOf(selected),
+              onOpenTrash: widget.onOpenTrash,
+            ),
+          ),
         ),
       ),
     ];

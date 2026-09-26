@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -158,18 +159,22 @@ void main() {
     expect(find.text('Hàn Quốc'), findsNWidgets(2));
   });
 
-  libraryTest('Delete says what goes with the deck, then sends it to the '
-      'Trash', (tester, env) async {
+  libraryTest('Move to Trash says what goes with the deck, then offers '
+      'Undo (FE-B1)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     final verbs = await env.decks.sub(words.id, 'Verbs');
     await insertCard(env.db, id: 'one', deckId: verbs.id);
     await insertCard(env.db, id: 'two', deckId: verbs.id);
     await pumpLibraryScreen(tester, env, deckScreen(deckId: words.id));
-    await _choose(tester, _en.deckDelete);
+    await _openSheet(tester);
+    expect(find.text(_en.deckDeleteHint), findsOneWidget);
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
 
-    expect(find.text(_en.deckDeleteTitle('Words')), findsOneWidget);
-    expect(find.text(_en.deckDeleteSummary(1, 2)), findsOneWidget);
+    expect(find.text(_en.deckDeleteTitle), findsOneWidget);
+    expect(find.text(_en.deckDeleteSummary('Words', 1, 2)), findsOneWidget);
+    expect(find.text(_en.deckDeleteNote), findsOneWidget);
     await tester.tap(find.text(_en.deckDelete));
     // The screen is the test's only route: nothing to pop back to.
     await tester.pump();
@@ -177,7 +182,77 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(await _activeDeckCount(env), 1);
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    expect(find.text(_en.deckTrashedToast('Words', 1, 2)), findsOneWidget);
+    expect(find.text(_en.commonUndo), findsOneWidget);
+  });
+
+  libraryTest('Undo puts the deck back where it was (UC-TRASH-001 A1)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await env.decks.sub(words.id, 'Verbs');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Words')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
+    expect(await _activeDeckCount(env), 1);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+    expect(await _activeDeckCount(env), 3);
+    expect(await _parentOf(env, words.id), korean.id);
+    expect(find.text('Words'), findsOneWidget);
+  });
+
+  libraryTest('a refused Undo says why; the deck stays in the Trash '
+      '(UC-TRASH-001 E3)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final verbs = await env.decks.sub(words.id, 'Verbs');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: words.id));
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Verbs')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
+    // Meanwhile the deck it was in goes to the Trash as well.
+    await env.decks.deleteDeck(deckId: words.id);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(_en.deckUndoRefused(_en.deckRejectionTargetInTrash)),
+      findsOneWidget,
+    );
+    expect(await _activeDeckCount(env), 1);
+    expect(await _parentOf(env, verbs.id), words.id);
+  });
+
+  libraryTest('Move to Trash spins while the deck moves, and moves once '
+      '(FE-B1 D15)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await env.decks.sub(korean.id, 'Words');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Words')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDelete));
+    await tester.pump();
+    expect(find.byType(MxSpinner), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    final batches = await env.db
+        .customSelect('SELECT COUNT(*) AS n FROM delete_batches')
+        .getSingle();
+    expect(batches.read<int>('n'), 1);
+    expect(find.text(_en.deckRejectionNotFound), findsNothing);
   });
 
   libraryTest('Move lists targets by path and moves there', (
@@ -314,6 +389,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckOpen), findsNothing);
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    expect(find.text(_en.deckGoneTitle), findsOneWidget);
   });
 }

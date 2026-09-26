@@ -27,6 +27,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     required this.onSearch,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenTrash,
   });
 
   final ValueChanged<String> onOpenDeck;
@@ -35,6 +36,9 @@ class DeckLibraryRootWidget extends ConsumerWidget {
 
   /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Opens the Trash (screen 06) from the app bar (FE-B1 D1).
+  final VoidCallback onOpenTrash;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,6 +68,11 @@ class DeckLibraryRootWidget extends ConsumerWidget {
             ? const [DeckReorderDoneWidget(parentId: null)]
             // Features that wait are named in one place (spec A4, amended).
             : [
+                MxIconButton(
+                  icon: AppIcons.delete,
+                  semanticLabel: l10n.libraryTrash,
+                  onPressed: onOpenTrash,
+                ),
                 MxIconButton(
                   icon: AppIcons.upcoming,
                   semanticLabel: l10n.libraryComingSoon,
@@ -99,6 +108,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               onOpenDeck: onOpenDeck,
               onOpenAlgorithm: onOpenAlgorithm,
               onOpenStudy: onOpenStudy,
+              onOpenTrash: onOpenTrash,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(

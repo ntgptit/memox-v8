@@ -224,26 +224,30 @@ void main() {
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
   });
 
-  libraryTest('a deck deleted while open says it is no longer here (A8)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a deck deleted while open says it is no longer here and leads '
+      'back or to the Trash (A8, FE-B1 D11)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     String? ancestor = 'unset';
+    var trashOpened = 0;
     await pumpLibraryScreen(
       tester,
       env,
-      deckScreen(deckId: words.id, onOpenAncestor: (id) => ancestor = id),
+      deckScreen(
+        deckId: words.id,
+        onOpenAncestor: (id) => ancestor = id,
+        onOpenTrash: () => trashOpened++,
+      ),
     );
 
     await env.decks.deleteDeck(deckId: words.id);
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsNothing);
-    // Trash waits under Coming soon (spec A4, amended): Back is the one way.
-    expect(find.byType(MxButton), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+    expect(find.byType(MxButton), findsNWidgets(2));
+    await tester.tap(find.text(_en.commonOpenTrash));
+    expect(trashOpened, 1);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
   });
