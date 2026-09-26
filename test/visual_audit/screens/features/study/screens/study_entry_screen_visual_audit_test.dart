@@ -1,10 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../../../support/card_fixtures.dart';
 import '../../../../../support/deck_fixtures.dart';
 import '../../../../../support/library_harness.dart';
+import '../../../../../support/study_entry_fixtures.dart';
 import '../../../../screen_audit.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
 
 StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
   deckId: deckId,
@@ -70,6 +76,70 @@ void main() {
         brightness: brightness,
         textScale: scale,
       ),
+    );
+  });
+
+  libraryTest("screen 14, today's session to continue", (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+    await auditProductionScreen(
+      tester,
+      screen: StudyEntryScreen,
+      pump: (brightness, scale) async {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(leaf),
+          brightness: brightness,
+          textScale: scale,
+        );
+        expect(find.text(_en.studyEntryContinue), findsOneWidget);
+      },
+    );
+  });
+
+  libraryTest('screen 14, a start that failed', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    env.entries.isFailing = true;
+    await auditProductionScreen(
+      tester,
+      screen: StudyEntryScreen,
+      pump: (brightness, scale) async {
+        // A fresh tree: the start and the reveal live in widget state.
+        await tester.pumpWidget(const SizedBox());
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(leaf),
+          brightness: brightness,
+          textScale: scale,
+        );
+        await tester.tap(find.text(_en.studyEntryLearnCta(2)));
+        await tester.pumpAndSettle();
+        expect(find.text(_en.studyEntryStartFailedTitle), findsOneWidget);
+      },
+    );
+  });
+
+  libraryTest('screen 14, the direction sheet (FE-A7)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, dueCards: 3);
+    await auditProductionScreen(
+      tester,
+      screen: StudyEntryScreen,
+      pump: (brightness, scale) async {
+        // A fresh tree: the start and the reveal live in widget state.
+        await tester.pumpWidget(const SizedBox());
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(leaf),
+          brightness: brightness,
+          textScale: scale,
+        );
+        await tester.tap(find.text(_en.studyEntryReviewCta(3)));
+        await tester.pumpAndSettle();
+        expect(find.text(_en.studyDirectionStart), findsOneWidget);
+      },
     );
   });
 }

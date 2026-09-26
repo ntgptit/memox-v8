@@ -182,6 +182,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  libraryTest('at twice the text size a face label never covers the face '
+      '(FE-A6 D19)', (tester, env) async {
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    const long = 'to eat and drink, or to share a meal with friends';
+    await env.db.customStatement(
+      "UPDATE card SET back = '$long' WHERE id = 'R1'",
+    );
+    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+    await _reveal(tester);
+
+    final term = find.text(_en.studyBrowseTerm.toUpperCase());
+    final meaning = find.text(_en.studyBrowseMeaning.toUpperCase());
+    expect(
+      tester.getRect(term).bottom,
+      lessThanOrEqualTo(tester.getRect(find.text('term 1')).top),
+    );
+    expect(
+      tester.getRect(meaning).bottom,
+      lessThanOrEqualTo(tester.getRect(find.text(long)).top),
+    );
+  });
+
   libraryTest('with Remove animations on, the answer appears at once', (
     tester,
     env,

@@ -8,6 +8,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../../../support/card_fixtures.dart';
 import '../../../../../support/deck_fixtures.dart';
 import '../../../../../support/library_harness.dart';
+import '../../../../../support/study_entry_fixtures.dart';
 import '../../../../../support/study_fixtures.dart';
 import '../../../../screen_audit.dart';
 
@@ -75,6 +76,32 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+      },
+    );
+  });
+
+  libraryTest('screen 16a, Self-assess revealed with its intervals', (
+    tester,
+    env,
+  ) async {
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    await auditProductionScreen(
+      tester,
+      screen: StudySessionScreen,
+      pump: (brightness, scale) async {
+        // A fresh tree: the start and the reveal live in widget state.
+        await tester.pumpWidget(const SizedBox());
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(id),
+          brightness: brightness,
+          textScale: scale,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(_en.studySelfAssessShowAnswer));
+        await tester.pumpAndSettle();
+        expect(find.text(_en.cardActionGood), findsOneWidget);
       },
     );
   });

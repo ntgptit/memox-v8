@@ -56,10 +56,12 @@ class StudyEntryResumeWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                l10n.studyEntryResumeOverline.toUpperCase(),
-                semanticsLabel: l10n.studyEntryResumeOverline,
-                style: styles.overline,
+              Flexible(
+                child: Text(
+                  l10n.studyEntryResumeOverline.toUpperCase(),
+                  semanticsLabel: l10n.studyEntryResumeOverline,
+                  style: styles.overline,
+                ),
               ),
             ],
           ),

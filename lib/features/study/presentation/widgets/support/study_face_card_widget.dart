@@ -3,8 +3,8 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
-/// One face of the card under study (kit StudyFaceCard): the label in the
-/// corner, the content centred, and a recessed ground when it is the answer.
+/// One face of the card under study (kit StudyFaceCard): the label at the
+/// top, the content centred below it, and a recessed ground when it is the answer.
 /// It shows the whole face: it scrolls, never ellipsizes (FE-A6 D19). A tap
 /// on it is a shortcut only; the screen's button is the accessible path.
 class StudyFaceCardWidget extends StatelessWidget {
@@ -26,26 +26,30 @@ class StudyFaceCardWidget extends StatelessWidget {
     final card = MxCard(
       isFullBleed: true,
       isRecessed: isAnswer,
-      child: Stack(
+      // The label runs in flow above the face (kit labelPlacement flow), so
+      // a face that grows with large text never slides under it.
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned(
-            top: AppSpacing.gutter,
-            left: AppSpacing.card,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.card,
+              AppSpacing.gutter,
+              AppSpacing.card,
+              0,
+            ),
             child: Text(
               label.toUpperCase(),
               semanticsLabel: label,
               style: context.textStyles.overline,
             ),
           ),
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.major,
-                AppSpacing.gutter,
-                AppSpacing.gutter,
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.gutter),
+                child: child,
               ),
-              child: child,
             ),
           ),
         ],
