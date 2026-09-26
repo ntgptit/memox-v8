@@ -11,7 +11,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
-import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
@@ -201,22 +201,28 @@ void main() {
     expect(find.text(_en.summaryReset), findsNothing);
   });
 
-  libraryTest('a stage not built yet says so; the top bar stays '
-      '(spec §3; Recall until P4)', (tester, env) async {
+  libraryTest('past Browse and Match, a learning session asks in Recall with '
+      'its clock; the top bar stays (FE-A6 P4, BR-MODE-004)', (
+    tester,
+    env,
+  ) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
     await _swipeLeft(tester);
     await _swipeLeft(tester);
 
-    // Browse is done, then Match (P3); Guess sits out with two meanings
-    // (BR-MODE-009), and Recall has no screen yet.
+    // Browse is done, then Match; Guess sits out with two meanings
+    // (BR-MODE-009). Recall's clock would run out under pumpAndSettle.
     for (final id in ['a', 'b']) {
       await tester.tap(find.text('front $id'));
       await tester.pump();
       await tester.tap(find.text('back $id'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump();
+      await tester.pump();
     }
-    expect(find.byType(StudyModeNotBuiltWidget), findsOneWidget);
+    expect(find.byType(StudyRecallWidget), findsOneWidget);
+    expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
   });
 

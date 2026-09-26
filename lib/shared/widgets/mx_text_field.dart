@@ -23,6 +23,11 @@ enum MxTextFieldVariant {
   /// A card's term (kit Front): 24/700, 18/700 past 30 characters, wraps
   /// from 66; Enter still moves on.
   term,
+
+  /// A typed study answer (kit Fill): bare — no fill, no edge in any state —
+  /// one centred line in the study term role, inside the answer face that
+  /// frames it (FE-A6 P4 F1).
+  study,
 }
 
 typedef _Geometry = ({
@@ -123,6 +128,13 @@ class MxTextField extends StatelessWidget {
       radius: AppRadius.xl,
       isMultiline: true,
     ),
+    MxTextFieldVariant.study => (
+      floor: AppSize.touchTarget,
+      horizontal: 0,
+      vertical: 0,
+      radius: AppRadius.md,
+      isMultiline: false,
+    ),
     MxTextFieldVariant.term => (
       floor: _termFloor,
       horizontal: AppSpacing.gutter,
@@ -136,6 +148,7 @@ class MxTextField extends StatelessWidget {
     final styles = context.textStyles;
     return switch (variant) {
       MxTextFieldVariant.form => context.texts.bodyMedium!,
+      MxTextFieldVariant.study => styles.studyTerm,
       MxTextFieldVariant.detail => styles.fieldDetail,
       MxTextFieldVariant.meaning => styles.fieldMeaning,
       MxTextFieldVariant.term
@@ -233,6 +246,7 @@ class MxTextField extends StatelessWidget {
         ? context.textStyles.fieldTermHint
         : context.fieldHint;
     final isForm = variant == MxTextFieldVariant.form;
+    final isBare = variant == MxTextFieldVariant.study;
     final field = TextField(
       controller: controller,
       focusNode: focusNode,
@@ -248,54 +262,80 @@ class MxTextField extends StatelessWidget {
         _ => TextInputType.text,
       },
       style: textStyle,
+      textAlign: isBare ? TextAlign.center : TextAlign.start,
       cursorColor: colors.primary,
       textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: hintStyle,
-        // The editor's boxes sit white on the page; a form field keeps the
-        // theme's fill, which lightens on focus.
-        fillColor: isForm ? null : colors.surfaceContainerLowest,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: geometry.horizontal,
-          vertical: _verticalPadding(context, width, textStyle, hintStyle),
-        ),
-        prefixIcon: leading == null
-            ? null
-            : Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: AppSpacing.grouped,
-                  end: AppSpacing.control,
+      decoration: isBare
+          ? const InputDecoration(
+              filled: false,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+            )
+          : InputDecoration(
+              hintText: hintText,
+              hintStyle: hintStyle,
+              // The editor's boxes sit white on the page; a form field keeps the
+              // theme's fill, which lightens on focus.
+              fillColor: isForm ? null : colors.surfaceContainerLowest,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: geometry.horizontal,
+                vertical: _verticalPadding(
+                  context,
+                  width,
+                  textStyle,
+                  hintStyle,
                 ),
-                child: leading,
               ),
-        prefixIconConstraints: const BoxConstraints(),
-        suffixIcon: trailing == null
-            ? null
-            : Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: AppSpacing.control,
-                  end: AppSpacing.grouped,
-                ),
-                child: trailing,
+              prefixIcon: leading == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        start: AppSpacing.grouped,
+                        end: AppSpacing.control,
+                      ),
+                      child: leading,
+                    ),
+              prefixIconConstraints: const BoxConstraints(),
+              suffixIcon: trailing == null
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsetsDirectional.only(
+                        start: AppSpacing.control,
+                        end: AppSpacing.grouped,
+                      ),
+                      child: trailing,
+                    ),
+              suffixIconConstraints: const BoxConstraints(),
+              border: restingEdge,
+              enabledBorder: restingEdge,
+              disabledBorder: edge(fields.disabledBorder),
+              focusedBorder: edge(
+                hasError ? fields.focusedErrorBorder : fields.focusedBorder,
               ),
-        suffixIconConstraints: const BoxConstraints(),
-        border: restingEdge,
-        enabledBorder: restingEdge,
-        disabledBorder: edge(fields.disabledBorder),
-        focusedBorder: edge(
-          hasError ? fields.focusedErrorBorder : fields.focusedBorder,
-        ),
-      ),
+            ),
     );
+    // A bare field has no padded box to reach its floor with: the floor
+    // holds the 48 touch target around its one line.
+    final target = isBare
+        ? ConstrainedBox(
+            constraints: BoxConstraints(minHeight: geometry.floor),
+            child: field,
+          )
+        : field;
     final column = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (label case final name?)
-          Semantics(label: name, child: field)
+          Semantics(label: name, child: target)
         else
-          field,
+          target,
         if (errorText case final message?) MxFieldMessage(message: message),
       ],
     );

@@ -163,4 +163,65 @@ void main() {
       },
     );
   });
+
+  libraryTest('screen 19, Recall revealed', (tester, env) async {
+    final id = await openFiveDueReview(
+      env.db,
+      env.decks,
+      libraryToday,
+      StudyMode.recall,
+    );
+    await auditProductionScreen(
+      tester,
+      screen: StudySessionScreen,
+      pump: (brightness, scale) async {
+        // A fresh tree; never pumpAndSettle while the clock runs.
+        await tester.pumpWidget(const SizedBox());
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(id),
+          brightness: brightness,
+          textScale: scale,
+        );
+        // The reveal is stored: later variants open revealed.
+        final show = find.text(_en.studyRecallShowMeaning);
+        if (show.evaluate().isNotEmpty) {
+          await tester.tap(show);
+          await tester.pump();
+          await tester.pump();
+        }
+        expect(find.text(_en.studyRecallRemembered), findsOneWidget);
+      },
+    );
+  });
+
+  libraryTest('screen 20, Fill answered wrong', (tester, env) async {
+    final id = await openFiveDueReview(
+      env.db,
+      env.decks,
+      libraryToday,
+      StudyMode.fill,
+    );
+    await auditProductionScreen(
+      tester,
+      screen: StudySessionScreen,
+      pump: (brightness, scale) async {
+        await tester.pumpWidget(const SizedBox());
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _screen(id),
+          brightness: brightness,
+          textScale: scale,
+        );
+        await tester.enterText(find.byType(TextField), 'term 9');
+        await tester.pump();
+        await tester.tap(find.text(_en.studyFillCheck));
+        await tester.pump();
+        await tester.pump();
+        expect(find.text(_en.studyFillHintWrong), findsOneWidget);
+      },
+    );
+  });
 }
