@@ -38,6 +38,15 @@ final class MxTextStyles {
   static const double _termHeight = 1.25;
   static const double _termLongSize = 18;
   static const double _fieldBodyHeight = 1.45;
+  static const double _studyTermSize = 32;
+  static const double _studyTermTracking = -0.5;
+  static const double _studyTermHeight = 1.15;
+  static const double _studyMeaningSize = 24;
+  static const double _studyMeaningTracking = -0.3;
+  static const double _hintTracking = 0.3;
+  static const double _summaryTitleSize = 24;
+  static const double _summaryTitleTracking = -0.4;
+  static const double _factValueSize = 16;
   static const double _statValueHeight = 1.1;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
@@ -274,6 +283,59 @@ final class MxTextStyles {
   /// overdue note in the warning ink (screen 14): the note role at 600.
   TextStyle statusNote(Color ink) =>
       AppTypography.withWeight(noteText, FontWeight.w600).copyWith(color: ink);
+
+  /// A study card's term (kit Browse): 32/700 at 1.15, -0.5 tracking. It
+  /// wraps and never ellipsizes (FE-A6 D19).
+  TextStyle get studyTerm =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _studyTermSize),
+        FontWeight.w700,
+      ).copyWith(
+        height: _studyTermHeight,
+        letterSpacing: _studyTermTracking,
+        color: _scheme.onSurface,
+      );
+
+  /// A study card's meaning (kit Browse): 24/600, -0.3 tracking.
+  TextStyle get studyMeaning => AppTypography.withWeight(
+    _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
+    FontWeight.w600,
+  ).copyWith(letterSpacing: _studyMeaningTracking, color: _scheme.onSurface);
+
+  /// A study card's pronunciation and example: 14/400 at 1.5, variant ink.
+  TextStyle get studyDetail => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w400,
+  ).copyWith(height: _noteHeight, color: _scheme.onSurfaceVariant);
+
+  /// A session's footer hint (kit SessionFooterHint): 12/400, 0.3 tracking.
+  TextStyle get sessionHint => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w400,
+  ).copyWith(letterSpacing: _hintTracking, color: _scheme.onSurfaceVariant);
+
+  /// The session summary's title (kit SessionStatusHero): 24/700 at 1.15.
+  TextStyle get summaryTitle =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _summaryTitleSize),
+        FontWeight.w700,
+      ).copyWith(
+        height: _studyTermHeight,
+        letterSpacing: _summaryTitleTracking,
+        color: _scheme.onSurface,
+      );
+
+  /// The bold run of the summary's body, such as "20 cards" (kit).
+  TextStyle get summaryBodyStrong => AppTypography.withWeight(
+    emptyBody,
+    FontWeight.w700,
+  ).copyWith(color: _scheme.onSurface);
+
+  /// A summary fact's value (kit ResultRow): 16/700 tabular, in [ink].
+  TextStyle factValue(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _factValueSize),
+    FontWeight.w700,
+  ).copyWith(fontFeatures: _tabular, color: ink);
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.
