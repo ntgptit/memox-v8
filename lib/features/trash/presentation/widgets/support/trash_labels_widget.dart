@@ -8,6 +8,9 @@ const String trashPathSeparator = ' › ';
 /// Between a card's front and back in its name (kit 06).
 const String trashSidesSeparator = ' · ';
 
+/// Between the names of the entries a blocked purge still holds.
+const String trashNamesSeparator = ', ';
+
 /// Under this much time left, the row says so in the warning ink (kit 06).
 const Duration trashExpiringSoon = Duration(days: 3);
 

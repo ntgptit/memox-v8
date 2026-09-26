@@ -102,6 +102,27 @@ void main() {
     );
   });
 
+  testWidgets('isAutofocused takes the focus when it shows', (tester) async {
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MxButton(label: 'Delete', onPressed: () {}),
+          MxButton(label: 'Keep', onPressed: () {}, isAutofocused: true),
+        ],
+      ),
+    );
+    await tester.pump();
+
+    final focused = FocusManager.instance.primaryFocus!.context!;
+    expect(
+      find.ancestor(of: find.text('Keep'), matching: find.byType(TextButton)),
+      findsOneWidget,
+    );
+    expect(focused.findAncestorWidgetOfExactType<MxButton>()?.label, 'Keep');
+  });
+
   testWidgets('a tap calls onPressed', (tester) async {
     var taps = 0;
     await pumpMx(tester, MxButton(label: 'Go', onPressed: () => taps++));

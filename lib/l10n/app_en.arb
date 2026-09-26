@@ -1595,6 +1595,147 @@
     },
     "description": "Snackbar after several entries are restored."
   },
+  "trashSelectTitle": "Select entries",
+  "@trashSelectTitle": {
+    "description": "Screen 06 app bar while selecting, before anything is chosen."
+  },
+  "trashCardsSelected": "{count, plural, =1{1 card selected} other{{count} cards selected}}",
+  "@trashCardsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 app bar while cards are selected (kit 06 selection)."
+  },
+  "trashDecksSelected": "{count, plural, =1{1 deck selected} other{{count} decks selected}}",
+  "@trashDecksSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 app bar while decks are selected."
+  },
+  "trashSelectedOfCards": "{count} of {total} cards",
+  "@trashSelectedOfCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 list header while cards are selected."
+  },
+  "trashSelectedOfDecks": "{count} of {total} decks",
+  "@trashSelectedOfDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 list header while decks are selected."
+  },
+  "trashSelectionClose": "Clear selection",
+  "@trashSelectionClose": {
+    "description": "Screen 06: the close control while selecting."
+  },
+  "trashCardsOnly": "Only cards are selectable while cards are selected — a selection never mixes cards and decks.",
+  "@trashCardsOnly": {
+    "description": "Screen 06: why decks cannot be picked (BR-TRASH-011)."
+  },
+  "trashDecksOnly": "Only decks are selectable while decks are selected — a selection never mixes cards and decks.",
+  "@trashDecksOnly": {
+    "description": "Screen 06: why cards cannot be picked (BR-TRASH-011)."
+  },
+  "trashRestoreSelected": "Restore {count}…",
+  "@trashRestoreSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 selection bar: restores the selection after asking for a target."
+  },
+  "trashPurgeSelected": "Delete for good",
+  "@trashPurgeSelected": {
+    "description": "Screen 06 selection bar: purges the selection after the dialog (BR-TRASH-010)."
+  },
+  "trashPurgeCardsTitle": "{count, plural, =1{Delete 1 card permanently?} other{Delete {count} cards permanently?}}",
+  "@trashPurgeCardsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog title for cards (BR-TRASH-011: the exact count)."
+  },
+  "trashPurgeDecksTitle": "{count, plural, =1{Delete 1 deck permanently?} other{Delete {count} decks permanently?}}",
+  "@trashPurgeDecksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog title for decks."
+  },
+  "trashPurgeBody": "{count, plural, =1{It disappears for good, together with its study history. This cannot be undone.} other{They disappear for good, together with their study history. This cannot be undone.}}",
+  "@trashPurgeBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body (BR-TRASH-011: history is lost)."
+  },
+  "trashPurgeKeep": "Keep in Trash",
+  "@trashPurgeKeep": {
+    "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
+  },
+  "trashPurgeConfirm": "Delete {count}",
+  "@trashPurgeConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog: the destructive confirm."
+  },
+  "trashPurgedCards": "{count, plural, =1{1 card deleted permanently} other{{count} cards deleted permanently}}",
+  "@trashPurgedCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a purge of cards (kit 06 purged)."
+  },
+  "trashPurgedDecks": "{count, plural, =1{1 deck deleted permanently} other{{count} decks deleted permanently}}",
+  "@trashPurgedDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a purge of decks."
+  },
+  "trashPurgeBlocked": "“{deck}” still contains an entry deleted earlier (“{entries}”). It can be removed for good once that entry is gone.",
+  "@trashPurgeBlocked": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "entries": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06: a purge the store skipped (spec D6; the kit's youngerInside says 'later', invariant 36 allows only 'earlier')."
+  },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
     "placeholders": {

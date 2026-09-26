@@ -38,6 +38,7 @@ class MxButton extends StatelessWidget {
     this.icon,
     this.isBlock = false,
     this.isLoading = false,
+    this.isAutofocused = false,
   });
 
   final String label;
@@ -54,6 +55,10 @@ class MxButton extends StatelessWidget {
   /// Replaces the label with a spinner, keeps the width and blocks presses.
   final bool isLoading;
 
+  /// Takes the focus when it first shows: the safe choice of a destructive
+  /// dialog (BR-TRASH-011).
+  final bool isAutofocused;
+
   /// A caller-constrained label wraps to at most this many lines.
   static const int _maxWrappedLines = 2;
 
@@ -66,6 +71,7 @@ class MxButton extends StatelessWidget {
     final geometry = _geometryFor(size, hasIcon: icon != null);
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
+      autofocus: isAutofocused,
       style: appButtonStyle(
         fill: paint.fill,
         ink: paint.ink,

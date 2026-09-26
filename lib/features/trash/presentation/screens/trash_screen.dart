@@ -12,6 +12,11 @@ import 'package:memox/features/trash/presentation/states/trash_state.dart';
 import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_entry_actions_sheet_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_restore_sheet_widget.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/sections/trash_selection_bar_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/overlays/trash_purge_dialog_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -50,7 +55,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
       case TrashEntryAction.restore:
         await showTrashRestoreSheet(context, entries: [entry]);
       case TrashEntryAction.purge:
-        break;
+        await showTrashPurgeDialog(context, entries: [entry]);
     }
   }
 
@@ -58,8 +63,75 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final entries = ref.watch(trashEntriesProvider);
-    return MxAppShell(
-      appBar: MxAppBar(
+    final state = ref.watch(trashControllerProvider);
+    final loaded = entries.value ?? const <TrashEntry>[];
+    final selected = [
+      for (final entry in loaded)
+        if (state.selected.contains(entry.batchId)) entry,
+    ];
+    // Back leaves selection before it leaves the Trash.
+    return PopScope(
+      canPop: !state.isSelecting,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _trash().stopSelecting();
+      },
+      child: MxAppShell(
+        appBar: _appBar(l10n, state, loaded),
+        footer: state.isSelecting
+            ? TrashSelectionBarWidget(
+                count: selected.length,
+                onRestore: () => unawaited(
+                  showTrashRestoreSheet(context, entries: selected),
+                ),
+                onPurge: () =>
+                    unawaited(showTrashPurgeDialog(context, entries: selected)),
+              )
+            : null,
+        body: switch (entries) {
+          AsyncData(:final value) when value.isEmpty => MxScreenScroll(
+            children: [
+              MxEmptyState(
+                icon: AppIcons.delete,
+                title: l10n.trashEmptyTitle,
+                body: l10n.trashEmptyBody,
+              ),
+            ],
+          ),
+          AsyncData(:final value) => MxScreenScroll(
+            children: _list(l10n, value),
+          ),
+          AsyncError() => MxScreenScroll(
+            children: [
+              MxErrorState(
+                title: l10n.trashLoadErrorTitle,
+                body: l10n.libraryLoadErrorBody,
+                retryLabel: l10n.commonRetry,
+                onRetry: () => ref.invalidate(trashEntriesProvider),
+              ),
+            ],
+          ),
+          _ => MxScreenScroll(
+            children: [
+              MxSkeletonList(
+                semanticLabel: l10n.commonLoading,
+                rows: _skeletonRows,
+              ),
+            ],
+          ),
+        },
+      ),
+    );
+  }
+
+  /// Back, "Trash" and Select; while selecting, close and the count of the
+  /// kind picked (kit 06 selection).
+  MxAppBar _appBar(
+    AppLocalizations l10n,
+    TrashState state,
+    List<TrashEntry> entries,
+  ) {
+    if (!state.isSelecting) {
+      return MxAppBar(
         title: l10n.libraryTrash,
         density: MxAppBarDensity.content,
         leading: MxIconButton(
@@ -67,67 +139,123 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
-      ),
-      body: switch (entries) {
-        AsyncData(:final value) when value.isEmpty => MxScreenScroll(
-          children: [
-            MxEmptyState(
-              icon: AppIcons.delete,
-              title: l10n.trashEmptyTitle,
-              body: l10n.trashEmptyBody,
+        actions: [
+          if (entries.isNotEmpty)
+            MxButton(
+              label: l10n.trashSelect,
+              size: MxButtonSize.compact,
+              tone: MxButtonTone.secondary,
+              onPressed: _trash().startSelecting,
             ),
-          ],
-        ),
-        AsyncData(:final value) => MxScreenScroll(children: _list(l10n, value)),
-        AsyncError() => MxScreenScroll(
-          children: [
-            MxErrorState(
-              title: l10n.trashLoadErrorTitle,
-              body: l10n.libraryLoadErrorBody,
-              retryLabel: l10n.commonRetry,
-              onRetry: () => ref.invalidate(trashEntriesProvider),
-            ),
-          ],
-        ),
-        _ => MxScreenScroll(
-          children: [
-            MxSkeletonList(
-              semanticLabel: l10n.commonLoading,
-              rows: _skeletonRows,
-            ),
-          ],
-        ),
+        ],
+      );
+    }
+    final count = state.selected.length;
+    return MxAppBar(
+      title: switch (state.kindIn(entries)) {
+        null => l10n.trashSelectTitle,
+        TrashKind.card => l10n.trashCardsSelected(count),
+        TrashKind.deck => l10n.trashDecksSelected(count),
       },
+      density: MxAppBarDensity.content,
+      leading: MxIconButton(
+        icon: AppIcons.close,
+        semanticLabel: l10n.trashSelectionClose,
+        onPressed: _trash().stopSelecting,
+      ),
     );
   }
 
-  /// The note, the filters with their counts (A6), the header, the rows.
+  /// The note, the filters with their counts (A6, none while selecting),
+  /// the header, the rows, then why the other kind waits and what a purge
+  /// skipped (spec D6).
   List<Widget> _list(AppLocalizations l10n, List<TrashEntry> entries) {
     final state = ref.watch(trashControllerProvider);
     final now = ref.watch(dayClockProvider).now();
     final shown = entries.where(state.filter.accepts).toList();
+    final kind = state.kindIn(entries);
     return [
       const SizedBox(height: AppSpacing.control),
       MxNote(icon: AppIcons.history, text: l10n.trashNote),
       const SizedBox(height: AppSpacing.grouped),
-      _Filters(
-        selected: state.filter,
-        entries: entries,
-        onSelected: _trash().chooseFilter,
-      ),
+      if (!state.isSelecting)
+        _Filters(
+          selected: state.filter,
+          entries: entries,
+          onSelected: _trash().chooseFilter,
+        ),
       MxListSectionHeader(
-        label: l10n.trashEntriesHeader(shown.length),
-        isAfterFilterBand: true,
+        label: _header(l10n, state, shown, kind),
+        isAfterFilterBand: !state.isSelecting,
       ),
       for (final entry in shown)
         TrashEntryRowWidget(
           key: ValueKey(entry.batchId),
           entry: entry,
           now: now,
-          onTap: () => unawaited(_openActions(entry)),
+          isSelecting: state.isSelecting,
+          isSelected: state.selected.contains(entry.batchId),
+          onTap: switch (state.isSelecting) {
+            false => () => unawaited(_openActions(entry)),
+            // The other kind cannot be picked (BR-TRASH-011).
+            true when kind != null && kind != TrashKind.of(entry) => null,
+            true => () => _trash().toggle(entry, entries),
+          },
+          onLongPress: state.isSelecting
+              ? null
+              : () => _trash().toggle(entry, entries),
           onActions: () => unawaited(_openActions(entry)),
         ),
+      if (kind != null)
+        MxNote(
+          text: kind == TrashKind.card
+              ? l10n.trashCardsOnly
+              : l10n.trashDecksOnly,
+        ),
+      for (final note in _blockedNotes(l10n, state, entries))
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.control),
+          child: MxInlineBanner(tone: MxBannerTone.warning, message: note),
+        ),
     ];
+  }
+
+  String _header(
+    AppLocalizations l10n,
+    TrashState state,
+    List<TrashEntry> shown,
+    TrashKind? kind,
+  ) {
+    int total(TrashKind of) =>
+        shown.where((entry) => TrashKind.of(entry) == of).length;
+    final count = state.selected.length;
+    return switch (kind) {
+      TrashKind.card => l10n.trashSelectedOfCards(count, total(TrashKind.card)),
+      TrashKind.deck => l10n.trashSelectedOfDecks(count, total(TrashKind.deck)),
+      null => l10n.trashEntriesHeader(shown.length),
+    };
+  }
+
+  /// One sentence per batch the last purge skipped and still in the Trash,
+  /// naming what it still holds (spec D6).
+  Iterable<String> _blockedNotes(
+    AppLocalizations l10n,
+    TrashState state,
+    List<TrashEntry> entries,
+  ) sync* {
+    final byBatch = {for (final entry in entries) entry.batchId: entry};
+    for (final MapEntry(key: batchId, value: inner) in state.blocked.entries) {
+      final blocked = byBatch[batchId];
+      final names = [
+        for (final id in inner)
+          if (byBatch[id] case final entry?) trashEntryName(entry),
+      ];
+      if (blocked == null || names.isEmpty) continue;
+      yield l10n.trashPurgeBlocked(
+        trashEntryName(blocked),
+        names.join(trashNamesSeparator),
+      );
+    }
   }
 }
 
