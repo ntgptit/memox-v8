@@ -17,6 +17,8 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
+import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
@@ -68,6 +70,7 @@ void libraryTest(
 List<Override> _backend(LibraryEnv env) => [
   databaseProvider.overrideWithValue(env.db),
   dayClockProvider.overrideWithValue(env.clock),
+  _inlineTransferFiles,
 ];
 
 /// A provider container over [env]'s backend, for a test that drives
@@ -241,3 +244,12 @@ Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
 
 /// As `main.dart`: no hidden retry loop, so a failure shows as a failure.
 Duration? _noRetry(int retryCount, Object error) => null;
+
+/// Card transfer's file codecs without a background isolate, which a widget
+/// test's fake clock never lets finish.
+final Override _inlineTransferFiles = transferFileRepositoryProvider
+    .overrideWithValue(
+      TransferFileRepositoryImpl(
+        run: <Q, R>(callback, message) async => callback(message),
+      ),
+    );

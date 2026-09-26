@@ -1751,13 +1751,13 @@
   "@comingSoonProgressSortBody": {
     "description": "Coming soon: what the progress sort does."
   },
-  "comingSoonTransfer": "Import and export",
+  "comingSoonTransfer": "Export cards",
   "@comingSoonTransfer": {
-    "description": "Coming soon: the import and export feature's name."
+    "description": "Coming soon: the export feature's name (import shipped, FE-B3)."
   },
-  "comingSoonTransferBody": "Cards from and to files.",
+  "comingSoonTransferBody": "Cards to a file, for a spreadsheet or another app.",
   "@comingSoonTransferBody": {
-    "description": "Coming soon: what import and export do."
+    "description": "Coming soon: what export does."
   },
   "cardDeckProgress": "Deck progress · {algorithm}",
   "@cardDeckProgress": {
@@ -2418,5 +2418,543 @@
   "galleryN5": "N5",
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "importTitle": "Import cards",
+  "@importTitle": {
+    "description": "Import screen: the app bar title while importing."
+  },
+  "importResultsTitle": "Import results",
+  "@importResultsTitle": {
+    "description": "Import screen: the app bar title on a result."
+  },
+  "importBreadcrumb": "Import",
+  "@importBreadcrumb": {
+    "description": "Import screen: the last breadcrumb segment."
+  },
+  "importClose": "Close import",
+  "@importClose": {
+    "description": "Import screen: the close button's accessible label."
+  },
+  "importStepSource": "Source",
+  "@importStepSource": {
+    "description": "Import step tracker: step 1."
+  },
+  "importStepColumns": "Columns",
+  "@importStepColumns": {
+    "description": "Import step tracker: step 2."
+  },
+  "importStepPreview": "Preview",
+  "@importStepPreview": {
+    "description": "Import step tracker: step 3."
+  },
+  "importStepImport": "Import",
+  "@importStepImport": {
+    "description": "Import step tracker: step 4."
+  },
+  "importStepNumber": "{step}",
+  "@importStepNumber": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    },
+    "description": "Import step tracker: the number on a step's dot."
+  },
+  "importResultCount": "{count}",
+  "@importResultCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import result: the count at the end of an added or skipped row."
+  },
+  "importStepLabel": "Step {step} of 4: {name}",
+  "@importStepLabel": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Import step tracker: the accessible label of the current step."
+  },
+  "importSectionSource": "1 · Choose a source",
+  "@importSectionSource": {
+    "description": "Import: the source section header."
+  },
+  "importSectionColumns": "2 · Map columns",
+  "@importSectionColumns": {
+    "description": "Import: the mapping section header."
+  },
+  "importSectionPreview": "3 · Preview",
+  "@importSectionPreview": {
+    "description": "Import: the preview section header."
+  },
+  "importSourceFile": "Choose a file",
+  "@importSourceFile": {
+    "description": "Import source card: a file."
+  },
+  "importSourceFileHint": "CSV, TSV or XLSX · UTF-8",
+  "@importSourceFileHint": {
+    "description": "Import source card: what a file may be."
+  },
+  "importSourcePaste": "Paste text",
+  "@importSourcePaste": {
+    "description": "Import source card: pasted text."
+  },
+  "importSourcePasteHint": "Tab- or comma-separated rows",
+  "@importSourcePasteHint": {
+    "description": "Import source card: what pasted text may be."
+  },
+  "importPickTitle": "Pick a spreadsheet or text file",
+  "@importPickTitle": {
+    "description": "Import: the empty file picker card title."
+  },
+  "importPickBody": ".csv, .tsv or .xlsx · UTF-8 · nothing is added until you confirm",
+  "@importPickBody": {
+    "description": "Import: the empty file picker card body."
+  },
+  "importPickAction": "Choose file",
+  "@importPickAction": {
+    "description": "Import: opens the system file picker."
+  },
+  "importPasteHint": "Paste rows here",
+  "@importPasteHint": {
+    "description": "Import: the pasted text field's hint."
+  },
+  "importPastedLines": "{count, plural, =1{1 line} other{{count} lines}}",
+  "@importPastedLines": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import: how many lines were pasted."
+  },
+  "importHelperTitle": "Each row makes one card",
+  "@importHelperTitle": {
+    "description": "Import helper banner title."
+  },
+  "importHelperBody": "You will map columns to term, meaning, example, hint, pronunciation and tags next. Several tags in one cell are separated by “;”.",
+  "@importHelperBody": {
+    "description": "Import helper banner body."
+  },
+  "importRemoveSource": "Remove the file",
+  "@importRemoveSource": {
+    "description": "Import file chip: the remove button's accessible label."
+  },
+  "importFileReady": "{format} · UTF-8 · ready to read",
+  "@importFileReady": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    },
+    "description": "Import file chip before reading."
+  },
+  "importFileRead": "{format} · {rows, plural, =1{1 row} other{{rows} rows}} · {columns, plural, =1{1 column} other{{columns} columns}}",
+  "@importFileRead": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      },
+      "rows": {
+        "type": "int"
+      },
+      "columns": {
+        "type": "int"
+      }
+    },
+    "description": "Import file chip after reading."
+  },
+  "importPastedFormat": "Text",
+  "@importPastedFormat": {
+    "description": "Import file chip: the format of pasted text."
+  },
+  "importSheet": "Sheet: {name} ({index} of {count})",
+  "@importSheet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import file chip: the chosen sheet of a workbook (A2)."
+  },
+  "importSheetPickerTitle": "Choose a sheet",
+  "@importSheetPickerTitle": {
+    "description": "Import: the sheet picker sheet title."
+  },
+  "importReading": "Reading your file…",
+  "@importReading": {
+    "description": "Import: shown while the source is read."
+  },
+  "importHeaderToggle": "First row is a header",
+  "@importHeaderToggle": {
+    "description": "Import mapping: the header row toggle."
+  },
+  "importColumnName": "Column {letter}",
+  "@importColumnName": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    },
+    "description": "Import mapping: a column by its position."
+  },
+  "importFieldNone": "Not imported",
+  "@importFieldNone": {
+    "description": "Import mapping: a column that feeds no field."
+  },
+  "importFieldFront": "Term (front)",
+  "@importFieldFront": {
+    "description": "Import mapping: the front field."
+  },
+  "importFieldBack": "Meaning (back)",
+  "@importFieldBack": {
+    "description": "Import mapping: the back field."
+  },
+  "importFieldExample": "Example",
+  "@importFieldExample": {
+    "description": "Import mapping: the example field."
+  },
+  "importFieldHint": "Hint",
+  "@importFieldHint": {
+    "description": "Import mapping: the hint field."
+  },
+  "importFieldPronunciation": "Pronunciation",
+  "@importFieldPronunciation": {
+    "description": "Import mapping: the pronunciation field."
+  },
+  "importFieldTags": "Tags",
+  "@importFieldTags": {
+    "description": "Import mapping: the tags field."
+  },
+  "importFieldPickerTitle": "Column {letter} goes to",
+  "@importFieldPickerTitle": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    },
+    "description": "Import mapping: the field picker sheet title."
+  },
+  "importMappingNote": "Known header names were mapped for you. Term and meaning are required; the rest is optional.",
+  "@importMappingNote": {
+    "description": "Import mapping: the note under the columns."
+  },
+  "importMappingIncomplete": "Map one column to Term and one to Meaning. Both are required.",
+  "@importMappingIncomplete": {
+    "description": "Import mapping: front or back is not mapped (BR-TRANSFER-002)."
+  },
+  "importPreviewReady": "{ready} of {total} rows ready",
+  "@importPreviewReady": {
+    "placeholders": {
+      "ready": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview: the ready count."
+  },
+  "importBadgeReady": "Ready · {count}",
+  "@importBadgeReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview summary badge."
+  },
+  "importBadgeInvalid": "Invalid · {count}",
+  "@importBadgeInvalid": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview summary badge."
+  },
+  "importBadgeDuplicate": "Duplicate · {count}",
+  "@importBadgeDuplicate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview summary badge."
+  },
+  "importBadgeBlank": "Blank · {count}",
+  "@importBadgeBlank": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview summary badge."
+  },
+  "importRowReady": "Ready",
+  "@importRowReady": {
+    "description": "Import preview row: the ready status's accessible label."
+  },
+  "importRowNumber": "Row {row}",
+  "@importRowNumber": {
+    "placeholders": {
+      "row": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview row: the row number's accessible label."
+  },
+  "importRowEmptyCell": "(empty)",
+  "@importRowEmptyCell": {
+    "description": "Import preview row: an empty cell."
+  },
+  "importRowBlank": "Blank row · ignored",
+  "@importRowBlank": {
+    "description": "Import preview row: a blank row."
+  },
+  "importRowDuplicateInDeck": "Already in this deck",
+  "@importRowDuplicateInDeck": {
+    "description": "Import preview row: a duplicate of a card in the deck."
+  },
+  "importRowDuplicateInSource": "Repeated in the file (row {row})",
+  "@importRowDuplicateInSource": {
+    "placeholders": {
+      "row": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview row: a duplicate of an earlier row."
+  },
+  "importRowFrontEmpty": "Term is empty",
+  "@importRowFrontEmpty": {
+    "description": "Import preview row: the front is blank."
+  },
+  "importRowBackEmpty": "Meaning is empty",
+  "@importRowBackEmpty": {
+    "description": "Import preview row: the back is blank."
+  },
+  "importRowFrontTooLong": "Term over 60 characters",
+  "@importRowFrontTooLong": {
+    "description": "Import preview row: BR-CARD-002."
+  },
+  "importRowBackTooLong": "Meaning over 240 characters",
+  "@importRowBackTooLong": {
+    "description": "Import preview row: BR-CARD-002."
+  },
+  "importRowOptionalTooLong": "A field over 240 characters",
+  "@importRowOptionalTooLong": {
+    "description": "Import preview row: BR-CARD-003."
+  },
+  "importRowInvalidTag": "A tag name is not allowed",
+  "@importRowInvalidTag": {
+    "description": "Import preview row: BR-TAG-001."
+  },
+  "importRowTooManyTags": "More than 10 tags",
+  "@importRowTooManyTags": {
+    "description": "Import preview row: BR-TAG-002."
+  },
+  "importShowingFirst": "Showing the first {shown} of {total} rows",
+  "@importShowingFirst": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Import preview: the table shows only the first rows (kit deviation K2)."
+  },
+  "importIncludeDuplicates": "Include duplicates",
+  "@importIncludeDuplicates": {
+    "description": "Import preview: the duplicate policy toggle (A4)."
+  },
+  "importIncludeDuplicatesBody": "Off: rows already in the deck or repeated in the file are skipped.",
+  "@importIncludeDuplicatesBody": {
+    "description": "Import preview: what the duplicate toggle does."
+  },
+  "importReadAction": "Read and map columns",
+  "@importReadAction": {
+    "description": "Import commit bar: step 1 → 2."
+  },
+  "importPreviewAction": "Preview rows",
+  "@importPreviewAction": {
+    "description": "Import commit bar: step 2 → 3."
+  },
+  "importCommitAction": "{count, plural, =1{Import 1 card} other{Import {count} cards}}",
+  "@importCommitAction": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import commit bar: step 3 → 4."
+  },
+  "importCommitting": "Importing…",
+  "@importCommitting": {
+    "description": "Import commit bar while writing."
+  },
+  "importCaptionSource": "Pick a file or paste text to continue.",
+  "@importCaptionSource": {
+    "description": "Import commit bar caption with no source."
+  },
+  "importCaptionPrivate": "Your file is read on this device only.",
+  "@importCaptionPrivate": {
+    "description": "Import commit bar caption with a source (BR-TRANSFER-006)."
+  },
+  "importCaptionColumns": "Next you’ll preview every row before anything is imported.",
+  "@importCaptionColumns": {
+    "description": "Import commit bar caption at step 2."
+  },
+  "importCaptionPreview": "{count, plural, =0{No row will be imported.} =1{1 row will become a new card.} other{{count} rows will become new cards.}}",
+  "@importCaptionPreview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import commit bar caption at step 3 (E3 when 0)."
+  },
+  "importImportingTitle": "{count, plural, =1{Adding 1 card…} other{Adding {count} cards…}}",
+  "@importImportingTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import: the commit is running."
+  },
+  "importImportingBody": "Written in one step — either every card is added or none is.",
+  "@importImportingBody": {
+    "description": "Import: the commit is all or nothing (BR-TRANSFER-004)."
+  },
+  "importProblemEncodingTitle": "This file is not UTF-8",
+  "@importProblemEncodingTitle": {
+    "description": "Import problem: BR-TRANSFER-006."
+  },
+  "importProblemEncodingBody": "Save it again as UTF-8 (CSV UTF-8 in Excel or Sheets) and choose it once more. Nothing was read.",
+  "@importProblemEncodingBody": {
+    "description": "Import problem: how to fix the encoding."
+  },
+  "importProblemUnreadableTitle": "This file can’t be read",
+  "@importProblemUnreadableTitle": {
+    "description": "Import problem: E1."
+  },
+  "importProblemUnreadableBody": "Choose a CSV, TSV or XLSX file that is not protected. Nothing was read.",
+  "@importProblemUnreadableBody": {
+    "description": "Import problem: how to fix an unreadable file."
+  },
+  "importProblemEmptyTitle": "There are no rows to import",
+  "@importProblemEmptyTitle": {
+    "description": "Import problem: E2."
+  },
+  "importProblemEmptyBody": "The file, sheet or text has no row with anything in it.",
+  "@importProblemEmptyBody": {
+    "description": "Import problem: an empty source."
+  },
+  "importChooseAnother": "Choose another file",
+  "@importChooseAnother": {
+    "description": "Import problem: pick a file again."
+  },
+  "importDoneTitle": "Imported",
+  "@importDoneTitle": {
+    "description": "Import result: success."
+  },
+  "importDoneBody": "{count, plural, =1{Added 1 new card. It enters learning on your next session.} other{Added {count} new cards. They enter learning on your next session.}}",
+  "@importDoneBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import result: success body."
+  },
+  "importPartialTitle": "Imported with skips",
+  "@importPartialTitle": {
+    "description": "Import result: partial."
+  },
+  "importPartialBody": "Some rows were skipped; the rest are new cards.",
+  "@importPartialBody": {
+    "description": "Import result: partial body."
+  },
+  "importNoneTitle": "Nothing added",
+  "@importNoneTitle": {
+    "description": "Import result: none (spec §8.1 ruling 1)."
+  },
+  "importNoneBody": "Every row already exists in this deck, so no card was created. The deck is unchanged.",
+  "@importNoneBody": {
+    "description": "Import result: none body."
+  },
+  "importFailedTitle": "Import didn’t finish",
+  "@importFailedTitle": {
+    "description": "Import result: E5."
+  },
+  "importFailedBody": "No cards were added — an import is all or nothing. Your file and your deck are unchanged.",
+  "@importFailedBody": {
+    "description": "Import result: E5 body."
+  },
+  "importRejectsTitle": "This deck no longer accepts cards",
+  "@importRejectsTitle": {
+    "description": "Import result: E4."
+  },
+  "importRejectsBody": "It now holds sub-decks. No cards were added. Pick a deck that holds cards or is empty and import again.",
+  "@importRejectsBody": {
+    "description": "Import result: E4 body."
+  },
+  "importCountAdded": "Added as new cards",
+  "@importCountAdded": {
+    "description": "Import result count row."
+  },
+  "importCountDuplicates": "Skipped — duplicates",
+  "@importCountDuplicates": {
+    "description": "Import result count row."
+  },
+  "importCountInvalid": "Skipped — invalid rows",
+  "@importCountInvalid": {
+    "description": "Import result count row."
+  },
+  "importSkipNote": "Fix the invalid rows in your source and import again; duplicates are skipped by the case-insensitive term + meaning.",
+  "@importSkipNote": {
+    "description": "Import result: how skips work."
+  },
+  "importViewCards": "View the cards",
+  "@importViewCards": {
+    "description": "Import result: back to the card list."
+  },
+  "importAnother": "Import another file",
+  "@importAnother": {
+    "description": "Import result: a fresh import into the same deck (UC-TRANSFER-001 step 8)."
+  },
+  "importBackToDeck": "Back to deck",
+  "@importBackToDeck": {
+    "description": "Import result: none, back to the deck."
+  },
+  "importCloseAction": "Close",
+  "@importCloseAction": {
+    "description": "Import result: close the import."
+  },
+  "importTryAgain": "Try again",
+  "@importTryAgain": {
+    "description": "Import result: commit the same preview again (E5)."
+  },
+  "deckActionImport": "Import cards",
+  "@deckActionImport": {
+    "description": "Deck action sheet: opens the import (UC-TRANSFER-001)."
+  },
+  "deckUnsetImport": "Import cards from a file",
+  "@deckUnsetImport": {
+    "description": "An empty deck's third option: opens the import."
   }
 }

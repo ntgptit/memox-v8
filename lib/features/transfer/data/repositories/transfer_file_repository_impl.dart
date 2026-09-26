@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show compute;
@@ -10,23 +11,35 @@ import 'package:memox/features/transfer/domain/models/transfer_format_model.dart
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 
+/// Runs [callback] on [message]: off the UI isolate by default.
+typedef TransferRunner = Future<R> Function<Q, R>(
+  FutureOr<R> Function(Q) callback,
+  Q message,
+);
+
 /// Reading and writing run off the UI isolate through [compute], which runs
-/// them inline on the web build E2E uses (spec D7, ADR-001).
+/// them inline on the web build E2E uses (spec D7, ADR-001). A widget test,
+/// whose clock is fake, passes a runner that calls inline.
 final class TransferFileRepositoryImpl implements TransferFileRepository {
-  const TransferFileRepositoryImpl();
+  const TransferFileRepositoryImpl({this._run = _compute});
+
+  final TransferRunner _run;
 
   @override
   Future<Outcome<SourceTable, TransferRejection>> read(
     TransferSource source, {
     int? sheetIndex,
-  }) => compute(_read, (source, sheetIndex));
+  }) => _run(_read, (source, sheetIndex));
 
   @override
   Future<Outcome<Uint8List, TransferRejection>> write(
     List<List<String>> rows,
     TransferFormat format,
-  ) => compute(_write, (rows, format));
+  ) => _run(_write, (rows, format));
 }
+
+Future<R> _compute<Q, R>(FutureOr<R> Function(Q) callback, Q message) =>
+    compute(callback, message);
 
 const _delimited = DelimitedTextDataSource();
 const _xlsx = XlsxDataSource();

@@ -60,6 +60,14 @@ abstract final class AppIcons {
   static const IconData transfer = Icons.import_export; // arrow-up-down
   static const IconData dueNow = Icons.bolt_outlined; // zap
   static const IconData cardDeck = Icons.copy_all_outlined; // copy
+  // Card import (kit 11).
+  static const IconData fileUp = Icons.upload_file_outlined; // file-up
+  static const IconData clipboard = Icons.content_paste; // clipboard
+  static const IconData fileText = Icons.description_outlined; // file-text
+  static const IconData folderOpen = Icons.folder_open_outlined; // folder-open
+  static const IconData arrowRight = Icons.arrow_forward; // arrow-right
+  static const IconData preview = Icons.visibility_outlined; // eye
+  static const IconData download = Icons.download; // download
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;
