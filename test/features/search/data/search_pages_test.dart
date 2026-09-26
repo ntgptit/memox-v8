@@ -16,6 +16,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-SEARCH-001 A1, A3: pages across the two groups, what a write changes,
 // and what one emission reads (Search spec §5.4, §6.3, §6.4).
@@ -153,10 +154,7 @@ void main() {
       for (var n = 1; n <= searchPageSize; n++) {
         await insertCard(db, id: 'g$n', deckId: gone.id, front: 'học a$n');
       }
-      await db.customStatement(
-        'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-        ['batch', gone.id],
-      );
+      await trashDeckRows(db, gone.id);
       await insertCard(db, id: 'kept', deckId: lessonId, front: 'học b');
 
       expect(ids(await read('học')), ['kept']);

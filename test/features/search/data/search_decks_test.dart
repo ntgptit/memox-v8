@@ -15,6 +15,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-SEARCH-001: the deck group of the library search, its pages and its
 // updates (Search spec §5, §6).
@@ -100,10 +101,7 @@ void main() {
     final kept = await decks.sub(root.id, 'Học kept');
     final trashed = await decks.sub(root.id, 'Học trashed');
     final deleted = await decks.sub(root.id, 'Học deleted');
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
     expect(
       await decks.deleteDeck(deckId: deleted.id),
       isA<Ok<void, DeckRejection>>(),

@@ -4,7 +4,7 @@ Bảng riêng của feature. Bảng dùng chung và mọi invariant nằm ở [`
 
 ## `delete_batches`
 
-**Phạm vi:** sub-project sau — Trash.
+**Phạm vi:** Trash (BE-B1), từ schema v3.
 
 Một hàng cho mỗi **lần xoá** của người dùng (BR-TRASH-001). Hàng của `deck`/`card`
 không bị chép đi đâu cả — chúng chỉ nhận `delete_batch_id`.

@@ -14,6 +14,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 /// A path as a person reads it, so two paths compare by their names.
 String _shown(List<DeckPathEntry> path) =>
@@ -28,10 +29,7 @@ void main() {
   });
   tearDown(() => db.close());
 
-  Future<void> trash(String deckId) => db.customStatement(
-    "UPDATE deck SET delete_batch_id = 'batch' WHERE id = ?",
-    [deckId],
-  );
+  Future<void> trash(String deckId) => trashDeckRows(db, deckId);
 
   group('watchDeck', () {
     test('gives the deck, the root scheduler, the lock, the options and the breadcrumb', () async {

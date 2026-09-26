@@ -15,6 +15,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-SEARCH-001: what the card group finds and how it ranks it (Search spec
 // §5.2, §5.3, §6.2).
@@ -163,17 +164,8 @@ void main() {
       deleteBatchId: 'batch',
     );
     final gone = await decks.sub(koreanId, 'Gone');
-    await insertCard(
-      db,
-      id: 'inGoneDeck',
-      deckId: gone.id,
-      front: 'học',
-      deleteBatchId: 'batch',
-    );
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', gone.id],
-    );
+    await insertCard(db, id: 'inGoneDeck', deckId: gone.id, front: 'học');
+    await trashDeckRows(db, gone.id);
 
     expect(ids(await read('học')), ['kept']);
   });

@@ -11,6 +11,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/srs.drift',
     'package:memox/core/database/tables/study.drift',
     'package:memox/core/database/tables/settings.drift',
+    'package:memox/core/database/tables/trash.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
   },
@@ -22,7 +23,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -44,6 +45,17 @@ class AppDatabase extends _$AppDatabase {
         );
         await m.createTable(schema.studyGuessOptions);
         await m.createIndex(schema.idxStudyGuessOptionsOption);
+      },
+      from2To3: (m, schema) async {
+        // Package 7: the Trash. delete_batch_id becomes a key to the batch,
+        // which SQLite adds only by rebuilding deck and card; no row changes,
+        // since no build before v3 writes the column (trash spec §5.2).
+        await m.createTable(schema.deleteBatches);
+        await m.createIndex(schema.idxDeleteBatchesDeleted);
+        await m.alterTable(TableMigration(schema.deck));
+        await m.alterTable(TableMigration(schema.card));
+        await m.createIndex(schema.idxDeckDeleteBatch);
+        await m.createIndex(schema.idxCardDeleteBatch);
       },
     ),
     beforeOpen: (details) async {

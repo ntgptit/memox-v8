@@ -14,6 +14,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The card writes stage 2 adds: edit, and the batches of BR-CARD-011, each
 // all or nothing in one transaction.
@@ -359,14 +360,8 @@ void main() {
     final card = await cards.card(nouns.id);
     final trashedCard = await cards.card(nouns.id);
     final trashedDeck = await decks.sub(root.id, 'Trashed');
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = ?",
-      [trashedCard.id],
-    );
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
-      [trashedDeck.id],
-    );
+    await trashCardRow(db, trashedCard.id);
+    await trashDeckRows(db, trashedDeck.id);
     final before = await totalChanges(db);
     const draft = CardDraft(front: 'f', back: 'b');
 
@@ -415,6 +410,12 @@ void main() {
     setUp(() async {
       trashed = await decks.sub(root.id, 'Trashed');
       cardId = (await cards.card(trashed.id)).id;
+      await insertDeleteBatch(
+        db,
+        'b',
+        itemType: 'deck',
+        rootItemId: trashed.id,
+      );
       await db.customStatement(
         "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
         [trashed.id],

@@ -1,4 +1,5 @@
 import 'deck.drift';
+import 'trash.drift';
 
 CREATE TABLE card (
   id TEXT NOT NULL PRIMARY KEY,
@@ -11,10 +12,12 @@ CREATE TABLE card (
   example TEXT,
   hint TEXT,
   pronunciation TEXT,
-  -- Scope: sub-project sau (Trash). No FK yet: delete_batches does not exist.
-  delete_batch_id TEXT,
+  -- NULL = active; otherwise a tombstone of that batch (BR-TRASH-001,
+  -- BR-TRASH-003). Purging the batch deletes the row.
+  delete_batch_id TEXT REFERENCES delete_batches (id) ON DELETE CASCADE,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 ) AS CardRow;
 
 CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id);
+CREATE INDEX idx_card_delete_batch ON card (delete_batch_id);

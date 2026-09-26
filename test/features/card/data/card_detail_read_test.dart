@@ -16,6 +16,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 void main() {
   late SelectCounter counter;
@@ -133,10 +134,7 @@ void main() {
     test('emits null once the card is deleted, and a card in the Trash is not shown (BR-CARD-019)', () async {
       final card = await cards.card(leaf.id);
       final trashed = await cards.card(leaf.id);
-      await db.customStatement(
-        "UPDATE card SET delete_batch_id = 'b' WHERE id = ?",
-        [trashed.id],
-      );
+      await trashCardRow(db, trashed.id);
       final details = <CardDetail?>[];
       final subscription = cards.watchDetail(card.id).listen(details.add);
       await pumpEventQueue();
@@ -294,10 +292,7 @@ void main() {
     await cards.card(particles.id);
     await cards.card(leaf.id);
     final trashed = await decks.sub(root.id, 'Trashed');
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
-      [trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
     final other = await decks.root('Twin');
     await decks.sub(other.id, 'Twin leaf');
 
