@@ -2655,10 +2655,6 @@
   "@studyEntryReasonTooFewMeanings": {
     "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009)."
   },
-  "studyComingSoon": "Coming soon",
-  "@studyComingSoon": {
-    "description": "Screen handoff 14 (FE-A6): the badge of a study mode the app has not built yet (FE-A6 spec §3)."
-  },
   "studyEntryDeckGone": "This deck no longer exists",
   "@studyEntryDeckGone": {
     "description": "Screen handoff 14 (FE-A6): the toast when the deck is deleted while its entry is open (UC-STUDY-001 E1)."
@@ -3628,19 +3624,6 @@
   "studyBrowsePrevious": "Previous card",
   "@studyBrowsePrevious": {
     "description": "Screen handoff 16 (FE-A6 P1c): the card's screen-reader action to look back."
-  },
-  "studyModeNotBuiltTitle": "{mode} is coming soon",
-  "@studyModeNotBuiltTitle": {
-    "placeholders": {
-      "mode": {
-        "type": "String"
-      }
-    },
-    "description": "Study session shell (FE-A6 P1c): a stage whose screen is not built yet (spec §3)."
-  },
-  "studyModeNotBuiltBody": "Close the session; every answer so far is kept.",
-  "@studyModeNotBuiltBody": {
-    "description": "Study session shell (FE-A6 P1c): the body under a stage not built yet."
   },
   "studyAnswerBusyTitle": "Couldn't save that answer",
   "@studyAnswerBusyTitle": {

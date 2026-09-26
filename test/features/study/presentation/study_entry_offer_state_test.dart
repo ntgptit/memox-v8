@@ -32,8 +32,8 @@ ReviewModeOption _mode(StudyMode mode, {ModeUnavailableReason? reason}) =>
     );
 
 void main() {
-  test('with nothing built, nothing is offered: Learn and every runnable '
-      'mode are coming soon, an unrunnable mode keeps its reason', () {
+  test('a mode the cards can run is available; one they cannot keeps its '
+      'reason (BR-STUDY-044); nothing resumable, nothing to continue', () {
     final offer = studyEntryOfferOf(
       _entry(
         reviews: [
@@ -41,50 +41,18 @@ void main() {
           _mode(StudyMode.fill, reason: ModeUnavailableReason.noExample),
         ],
       ),
-      built: const {},
     );
 
-    expect(offer.canLearn, isFalse);
-    expect(offer.isLearnComingSoon, isTrue);
     expect(offer.canContinue, isFalse);
     expect(
       [for (final review in offer.reviews) review.status],
-      [ReviewOfferStatus.comingSoon, ReviewOfferStatus.unavailable],
+      [ReviewOfferStatus.available, ReviewOfferStatus.unavailable],
     );
   });
 
-  test('Learn is offered only when every stage of the sequence is built '
-      '(BR-MODE-004)', () {
-    final sequence = stageSequenceOf(SchedulerType.sm2).toSet();
-
-    expect(
-      studyEntryOfferOf(
-        _entry(type: SchedulerType.sm2),
-        built: sequence,
-      ).canLearn,
-      isTrue,
-    );
-    expect(
-      studyEntryOfferOf(
-        _entry(type: SchedulerType.sm2),
-        built: {StudyMode.browse},
-      ).canLearn,
-      isFalse,
-    );
-  });
-
-  test('a built runnable mode is available', () {
-    final offer = studyEntryOfferOf(
-      _entry(reviews: [_mode(StudyMode.recall)]),
-      built: {StudyMode.recall},
-    );
-
-    expect(offer.reviews.single.status, ReviewOfferStatus.available);
-  });
-
-  test('no new card: Learn is neither offered nor coming soon; its count '
-      'is capped by the session limit', () {
-    expect(studyEntryOfferOf(_entry(fresh: 0)).isLearnComingSoon, isFalse);
+  test('no new card: Learn is not offered; its count is capped by the '
+      'session limit', () {
+    expect(studyEntryOfferOf(_entry(fresh: 0)).canLearn, isFalse);
     expect(studyEntryOfferOf(_entry(fresh: 5)).learnShown, 2);
   });
 
@@ -117,14 +85,14 @@ void main() {
     expect(entryFooterActionOf(nothing), isNull);
   });
 
-  test('eight_box reviews in its built modes; Learn waits for recall and '
-      'fill (P3)', () {
+  test('eight_box reviews first in the first available mode, and offers '
+      'Learn too (P4)', () {
     final offer = studyEntryOfferOf(
       _entry(reviews: [_mode(StudyMode.recall), _mode(StudyMode.match)]),
     );
 
-    expect(offer.reviewTarget?.mode, StudyMode.match);
-    expect(offer.isLearnComingSoon, isTrue);
+    expect(offer.reviewTarget?.mode, StudyMode.recall);
+    expect(offer.canLearn, isTrue);
     expect(entryFooterActionOf(offer), EntryFooterAction.review);
   });
 
@@ -133,18 +101,10 @@ void main() {
     final entry = _entry(
       reviews: [_mode(StudyMode.match), _mode(StudyMode.guess)],
     );
-    const built = {StudyMode.match, StudyMode.guess};
 
+    expect(studyEntryOfferOf(entry).reviewTarget?.mode, StudyMode.match);
     expect(
-      studyEntryOfferOf(entry, built: built).reviewTarget?.mode,
-      StudyMode.match,
-    );
-    expect(
-      studyEntryOfferOf(
-        entry,
-        built: built,
-        picked: StudyMode.guess,
-      ).reviewTarget?.mode,
+      studyEntryOfferOf(entry, picked: StudyMode.guess).reviewTarget?.mode,
       StudyMode.guess,
     );
   });
@@ -159,17 +119,9 @@ void main() {
     );
 
     expect(
-      studyEntryOfferOf(
-        entry,
-        built: const {StudyMode.match, StudyMode.guess},
-        picked: StudyMode.guess,
-      ).reviewTarget?.mode,
+      studyEntryOfferOf(entry, picked: StudyMode.guess).reviewTarget?.mode,
       StudyMode.match,
     );
-  });
-
-  test('P3 builds Match and Guess', () {
-    expect(builtStudyModes, containsAll({StudyMode.match, StudyMode.guess}));
   });
 
   test('an unavailable self-assess review is no target', () {
@@ -207,5 +159,13 @@ void main() {
 
     expect(offer.reviewTarget, isNull);
     expect(entryFooterActionOf(offer), EntryFooterAction.learn);
+  });
+
+  test('eight_box offers Learn now that every stage is built (P4, '
+      'BR-MODE-004)', () {
+    final offer = studyEntryOfferOf(_entry(reviews: [_mode(StudyMode.recall)]));
+
+    expect(offer.canLearn, isTrue);
+    expect(offer.reviewTarget?.mode, StudyMode.recall);
   });
 }

@@ -5,7 +5,6 @@ import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
@@ -49,18 +48,13 @@ class StudyEntryLearnWidget extends StatelessWidget {
 
   Widget? _trailing(BuildContext context) {
     final l10n = context.l10n;
-    if (offer.canLearn) {
-      return MxButton(
-        label: l10n.studyEntryLearn,
-        icon: AppIcons.starterDecks,
-        size: MxButtonSize.compact,
-        tone: MxButtonTone.secondary,
-        onPressed: onLearn,
-      );
-    }
-    if (offer.isLearnComingSoon) {
-      return MxBadge(label: l10n.studyComingSoon, tone: MxBadgeTone.neutral);
-    }
-    return null;
+    if (!offer.canLearn) return null;
+    return MxButton(
+      label: l10n.studyEntryLearn,
+      icon: AppIcons.starterDecks,
+      size: MxButtonSize.compact,
+      tone: MxButtonTone.secondary,
+      onPressed: onLearn,
+    );
   }
 }

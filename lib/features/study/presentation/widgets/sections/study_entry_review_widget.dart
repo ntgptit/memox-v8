@@ -91,9 +91,5 @@ class StudyEntryReviewWidget extends StatelessWidget {
           label: l10n.studyEntryNotAvailable,
           tone: MxBadgeTone.neutral,
         ),
-        ReviewOfferStatus.comingSoon => MxBadge(
-          label: l10n.studyComingSoon,
-          tone: MxBadgeTone.neutral,
-        ),
       };
 }
