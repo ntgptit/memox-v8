@@ -46,6 +46,15 @@ final class CardDao {
     };
   }
 
+  /// How many live cards [deckId] holds.
+  Future<int> liveCount(String deckId) {
+    final count = _db.card.id.count();
+    final query = _db.selectOnly(_db.card)
+      ..addColumns([count])
+      ..where(_db.card.deckId.equals(deckId) & _db.card.deleteBatchId.isNull());
+    return query.map((row) => row.read(count)!).getSingle();
+  }
+
   /// The live cards of [deckId], or those among [ids], by `created_at`, then
   /// `id` (BR-TRANSFER-010).
   Future<List<CardRow>> exportRows(String deckId, Set<String>? ids) =>

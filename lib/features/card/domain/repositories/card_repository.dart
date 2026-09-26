@@ -108,6 +108,11 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
+  /// UC-TRANSFER-002 step 1: how many live cards [deckId] holds, the count a
+  /// whole-deck export names before its sheet opens; 0 for a deck that is
+  /// gone.
+  Future<int> countCards(String deckId);
+
   /// UC-TRANSFER-002 step 4: the deck's name and its live cards, or those of
   /// [cardIds], in one read that writes nothing (BR-TRANSFER-010,
   /// BR-TRANSFER-011). A missing deck, or an id that is gone or in another

@@ -354,6 +354,10 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
+  Future<int> countCards(String deckId) =>
+      _mapped(() => _dao.liveCount(deckId));
+
+  @override
   Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
     required String deckId,
     Set<String>? cardIds,
