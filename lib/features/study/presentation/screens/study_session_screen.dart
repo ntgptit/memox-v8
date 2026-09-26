@@ -16,6 +16,7 @@ import 'package:memox/features/study/presentation/states/session_ending_state.da
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
@@ -80,6 +81,26 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
 
   void _advance(StudyItem item) =>
       unawaited(_controller.answer(item, const AdvanceAnswer()));
+
+  /// The Guess option picked for the turn on screen (G1).
+  String? _chosenCardId;
+
+  void _pick(StudyItem item, String optionCardId) {
+    setState(() => _chosenCardId = optionCardId);
+    unawaited(
+      _controller.answer(
+        item,
+        GuessAnswer(optionCardId),
+        shouldHoldFeedback: true,
+      ),
+    );
+  }
+
+  /// The held turn met its continue condition (D5): the next one follows.
+  void _release() {
+    _chosenCardId = null;
+    _controller.release();
+  }
 
   void _grade(StudyItem item, Sm2Action action) =>
       unawaited(_controller.answer(item, SelfAssessAnswer(action)));
@@ -280,8 +301,17 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       isBusy: turn.isBusy,
       onGrade: (action) => _grade(item, action),
     ),
+    StudyMode.guess => StudyGuessWidget(
+      key: ValueKey('guess#${item.cardId}#${item.round}'),
+      item: item,
+      chosenCardId: _chosenCardId,
+      result: turn.held?.item.cardId == item.cardId ? turn.held?.result : null,
+      isBusy: turn.isBusy,
+      onPick: (optionCardId) => _pick(item, optionCardId),
+      onContinue: _release,
+      onClose: _abandon,
+    ),
     StudyMode.match ||
-    StudyMode.guess ||
     StudyMode.recall ||
     StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
   };
