@@ -8,10 +8,12 @@ import 'package:memox/features/study_mode/domain/models/session_kind_model.dart'
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 /// Screen 14's resume banner (UC-STUDY-001 A3b, BR-STUDY-072): today's open
-/// session of this deck, and the choice to take it up. The dot is
-/// decorative, in the primary ink (UI-base ledger row 28: no streak tone).
+/// session of this deck, its progress as text and track (FE-A8 H2), and the
+/// choice to take it up. The dot is static and decorative, in the primary
+/// ink (UI-base ledger row 28: no streak tone; FE-A8 S3: no pulse).
 class StudyEntryResumeWidget extends StatelessWidget {
   const StudyEntryResumeWidget({
     super.key,
@@ -77,6 +79,10 @@ class StudyEntryResumeWidget extends StatelessWidget {
                   ),
             style: styles.rowTitle,
           ),
+          if (progress != null && progress.total > 0) ...[
+            const SizedBox(height: AppSpacing.control),
+            MxLinearProgress(value: progress.completed / progress.total),
+          ],
           const SizedBox(height: AppSpacing.micro),
           Text(l10n.studyEntryResumeBody, style: styles.noteText),
           const SizedBox(height: AppSpacing.grouped),

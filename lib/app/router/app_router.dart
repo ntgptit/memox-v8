@@ -21,6 +21,7 @@ import 'package:memox/features/search/presentation/screens/library_search_screen
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
@@ -130,7 +131,22 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
               ),
             ],
           ),
-          _branch(AppRoutes.study, (context) => context.l10n.navStudy),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.study,
+                // Screen 13 (FE-A8): a deck and the Library open in the
+                // Library branch, as the summary's "Study this deck" does.
+                builder: (context, state) => StudyHomeScreen(
+                  onOpenSession: (sessionId) =>
+                      context.go(AppRoutes.studySession(sessionId)),
+                  onOpenDeck: (deckId) =>
+                      context.go(AppRoutes.studyEntry(deckId)),
+                  onOpenLibrary: () => context.go(AppRoutes.decks),
+                ),
+              ),
+            ],
+          ),
           _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
           StatefulShellBranch(
             routes: [
