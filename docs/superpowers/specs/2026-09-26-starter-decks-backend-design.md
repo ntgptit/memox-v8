@@ -1,6 +1,6 @@
 # MemoX V8 — Starter decks backend design (package 10)
 
-Status: draft for the owner's review 2026-09-26 · Path: architectural
+Status: approved 2026-09-26 · Path: architectural
 
 ## 1. Intent
 
