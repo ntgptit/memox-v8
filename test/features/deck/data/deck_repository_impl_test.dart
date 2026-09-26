@@ -6,6 +6,7 @@ import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart'
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/models/deck_source_template_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/test_database.dart';
@@ -33,6 +34,39 @@ void main() {
       expect(deck.depth, 1);
     },
   );
+
+  test('createRootDeck records the starter template a root is copied from, and '
+      'nothing for a deck made by hand (BR-STARTER-004)', () async {
+    final copy = ((await repo.createRootDeck(
+      name: 'Everyday',
+      schedulerType: SchedulerType.eightBox,
+      sourceTemplate: const DeckSourceTemplate(
+        templateId: 'fixture.everyday-en-vi',
+        version: 2,
+      ),
+    )) as Ok<DeckEntity, DeckRejection>).value;
+    final own = ((await repo.createRootDeck(
+      name: 'Mine',
+      schedulerType: SchedulerType.sm2,
+    )) as Ok<DeckEntity, DeckRejection>).value;
+
+    Future<(String?, int?)> sourceOf(String id) async {
+      final row = await db
+          .customSelect(
+            'SELECT source_template_id, source_template_version FROM deck '
+            'WHERE id = ?',
+            variables: [Variable.withString(id)],
+          )
+          .getSingle();
+      return (
+        row.read<String?>('source_template_id'),
+        row.read<int?>('source_template_version'),
+      );
+    }
+
+    expect(await sourceOf(copy.id), ('fixture.everyday-en-vi', 2));
+    expect(await sourceOf(own.id), (null, null));
+  });
 
   test('createRootDeck rejects a blank name and writes nothing', () async {
     final result = await repo.createRootDeck(

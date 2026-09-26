@@ -6,6 +6,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_source_template_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/deck/domain/usecases/create_root_deck_use_case.dart';
 import 'package:memox/features/deck/presentation/providers/create_root_deck_use_case_provider.dart';
@@ -43,6 +44,7 @@ final class _FailingDecks implements DeckRepository {
   Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({
     required String name,
     required SchedulerType schedulerType,
+    DeckSourceTemplate? sourceTemplate,
     DateTime? now,
   }) => Future.error(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
 
@@ -64,6 +66,7 @@ final class _SlowDecks implements DeckRepository {
   Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({
     required String name,
     required SchedulerType schedulerType,
+    DeckSourceTemplate? sourceTemplate,
     DateTime? now,
   }) async {
     calls++;
@@ -71,6 +74,7 @@ final class _SlowDecks implements DeckRepository {
     return _real.createRootDeck(
       name: name,
       schedulerType: schedulerType,
+      sourceTemplate: sourceTemplate,
       now: now,
     );
   }

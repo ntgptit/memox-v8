@@ -66,17 +66,9 @@
 
 - L82: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/starter-decks/README.md](../features/starter-decks/README.md)
-
-- L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
 ## [features/starter-decks/ui.md](../features/starter-decks/ui.md)
 
 - L11: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
-
-## [features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md](../features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md)
-
-- L79: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
 

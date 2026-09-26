@@ -21,7 +21,12 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
    bốn bước Source → Columns → Preview → Import (spec card transfer §8.1).
 2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV.
 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — không
-   ghi gì vào database.
+   ghi gì vào database. File TSV phân cách bằng tab. File CSV phân cách bằng `,` hoặc `;`
+   (cách Excel lưu CSV ở locale dùng dấu phẩy thập phân): tính phần nằm ngoài dấu nháy
+   kép, hệ thống chọn dấu xuất hiện cùng số lần, ít nhất một, ở mọi hàng trong tối đa 20
+   hàng không trống đầu tiên; khi cả hai dấu hoặc không dấu nào như vậy, file phân cách
+   bằng `;` nếu hàng không trống đầu tiên có `;` mà không có `,`, còn lại bằng `,` (spec
+   card transfer D9).
 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên
    (front, back, example, hint, pronunciation, tags — không phân biệt hoa
    thường); người dùng chỉnh mapping nếu cần. `front` và `back` bắt buộc phải
@@ -41,7 +46,9 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 
 **Alternative flows:**
 - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô
-  nhập; parse chỉ chạy khi bấm Preview, và văn bản giữ nguyên khi parse lỗi.
+  nhập; parse chỉ chạy khi bấm Preview, và văn bản giữ nguyên khi parse lỗi. Văn bản là
+  TSV khi hàng không trống đầu tiên có tab nằm ngoài dấu nháy kép; nếu không, nó được
+  đọc như một file CSV, kể cả phân cách `;` của bước 3.
 - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên
   và cho người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
 - **A3 — Không có header:** người dùng tắt "First row contains headers"; các

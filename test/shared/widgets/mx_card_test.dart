@@ -188,6 +188,32 @@ void main() {
     ]);
   });
 
+  testWidgets('recessed: the answer face of a study card, container-low, '
+      'the ghost edge in both themes, flat (FE-A6 P2)', (tester) async {
+    for (final brightness in Brightness.values) {
+      final scheme = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      final derived = MxDerivedColors.resolve(
+        scheme,
+        brightness == Brightness.light
+            ? MxSemanticColors.light
+            : MxSemanticColors.dark,
+      );
+      await pumpMx(
+        tester,
+        const MxCard(isRecessed: true, child: SizedBox(height: 40)),
+        brightness: brightness,
+      );
+      // The theme animates from the previous brightness.
+      await tester.pumpAndSettle();
+
+      expect(_surface(tester).color, scheme.surfaceContainerLow);
+      expect(_shape(tester).side, BorderSide(color: derived.ghostBorder));
+      expect(_shadow(tester), isEmpty);
+    }
+  });
+
   test('a card takes one tone at most', () {
     expect(
       () => MxCard(isHero: true, isSuccess: true, child: const SizedBox()),
@@ -195,6 +221,10 @@ void main() {
     );
     expect(
       () => MxCard(isWarning: true, isDanger: true, child: const SizedBox()),
+      throwsAssertionError,
+    );
+    expect(
+      () => MxCard(isHero: true, isRecessed: true, child: const SizedBox()),
       throwsAssertionError,
     );
   });

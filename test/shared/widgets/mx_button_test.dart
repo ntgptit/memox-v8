@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -65,6 +66,80 @@ void main() {
       expect(material.textStyle!.color, ink, reason: '$tone');
       expect((material.shape! as RoundedRectangleBorder).side, edge);
     }
+  });
+
+  testWidgets('dangerSoft paints the soft danger tint with the error ink '
+      '(FE-A6 P2, screen 16a)', (tester) async {
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    await pumpMx(
+      tester,
+      MxButton(label: 'Again', tone: MxButtonTone.dangerSoft, onPressed: () {}),
+    );
+    final material = _material(tester);
+
+    expect(material.color, derived.dangerSoft);
+    expect(material.textStyle!.color, scheme.error);
+    expect(
+      (material.shape! as RoundedRectangleBorder).side,
+      BorderSide(color: derived.dangerBorder),
+    );
+  });
+
+  testWidgets('a detail line sits under the label in the button ink '
+      '(FE-A6 P2, screen 16a)', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(
+        label: 'Good',
+        detail: '6d',
+        tone: MxButtonTone.secondary,
+        onPressed: () {},
+      ),
+    );
+    final context = tester.element(find.text('6d'));
+
+    expect(
+      tester.getRect(find.text('6d')).top,
+      greaterThanOrEqualTo(tester.getRect(find.text('Good')).bottom),
+    );
+    expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
+    expect(
+      tester.widget<Text>(find.text('6d')).style,
+      context.textStyles.buttonDetail,
+    );
+  });
+
+  testWidgets('a detail line grows the box at 2x text instead of clipping', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 80,
+        child: MxButton(
+          label: 'Good',
+          detail: '6d',
+          isBlock: true,
+          onPressed: () {},
+        ),
+      ),
+      textScale: 2,
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(_painted.first).height, greaterThan(48));
+  });
+
+  test('a detail line needs a size with room for it', () {
+    expect(
+      () => MxButton(
+        label: 'Go',
+        detail: '6d',
+        size: MxButtonSize.compact,
+        onPressed: () {},
+      ),
+      throwsAssertionError,
+    );
   });
 
   testWidgets('outline tone has no fill, primary ink, 1px outlineVariant', (

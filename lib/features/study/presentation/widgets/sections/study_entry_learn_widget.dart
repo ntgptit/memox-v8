@@ -25,7 +25,7 @@ class StudyEntryLearnWidget extends StatelessWidget {
   final StudyEntry entry;
   final StudyEntryOffer offer;
 
-  /// Opens a learning session; wired once the session screens exist.
+  /// Opens a learning session; null while a start runs (BR-STUDY-004).
   final VoidCallback? onLearn;
 
   @override

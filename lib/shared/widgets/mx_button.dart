@@ -9,8 +9,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
-/// Colour role of a button: the contract's four shipped tones.
-enum MxButtonTone { primary, secondary, outline, destructive }
+/// Colour role of a button: the contract's four shipped tones, and the soft
+/// danger tint of a grade that marks a lapse (screen 16a).
+enum MxButtonTone { primary, secondary, outline, destructive, dangerSoft }
 
 /// Painted geometry. [chip] and [study] are the contract's geometry variants;
 /// the touch area is 48 for every size.
@@ -39,7 +40,14 @@ class MxButton extends StatelessWidget {
     this.isBlock = false,
     this.isLoading = false,
     this.isAutofocused = false,
-  });
+    this.detail,
+  }) : assert(
+         detail == null ||
+             size == MxButtonSize.regular ||
+             size == MxButtonSize.small ||
+             size == MxButtonSize.study,
+         'a detail line needs a regular, small or study button',
+       );
 
   final String label;
 
@@ -58,6 +66,10 @@ class MxButton extends StatelessWidget {
   /// Takes the focus when it first shows: the safe choice of a destructive
   /// dialog (BR-TRASH-011).
   final bool isAutofocused;
+
+  /// A second line under the label, in the button ink, such as the interval
+  /// a grade gives (screen 16a). It grows the button instead of clipping.
+  final String? detail;
 
   /// A caller-constrained label wraps to at most this many lines.
   static const int _maxWrappedLines = 2;
@@ -84,7 +96,7 @@ class MxButton extends StatelessWidget {
             ? context.textStyles.buttonLabelSmall
             : context.textStyles.buttonLabel,
       ),
-      child: _content(paint.ink, geometry),
+      child: _content(paint.ink, geometry, context.textStyles.buttonDetail),
     );
     final sized = isBlock
         ? SizedBox(width: double.infinity, child: button)
@@ -130,6 +142,16 @@ class MxButton extends StatelessWidget {
         ink: context.semanticColors.onErrorFill,
         edge: BorderSide.none,
       ),
+      // The soft danger tint MxInlineBanner and MxCard.isDanger draw
+      // (FE-A6 D14); the solid pair above stays the destructive action's.
+      MxButtonTone.dangerSoft => (
+        fill: context.derivedColors.dangerSoft,
+        ink: colors.error,
+        edge: BorderSide(
+          color: context.derivedColors.dangerBorder,
+          width: AppStroke.hairline,
+        ),
+      ),
     };
   }
 
@@ -172,13 +194,23 @@ class MxButton extends StatelessWidget {
         ),
       };
 
-  Widget _content(Color ink, _Geometry geometry) {
-    final text = Text(
+  Widget _content(Color ink, _Geometry geometry, TextStyle detailStyle) {
+    final labelText = Text(
       label,
       textAlign: TextAlign.center,
       maxLines: geometry.canWrap ? _maxWrappedLines : 1,
       softWrap: geometry.canWrap,
     );
+    final detail = this.detail;
+    final text = detail == null
+        ? labelText
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              labelText,
+              Text(detail, textAlign: TextAlign.center, style: detailStyle),
+            ],
+          );
     final body = icon == null
         ? text
         : Row(

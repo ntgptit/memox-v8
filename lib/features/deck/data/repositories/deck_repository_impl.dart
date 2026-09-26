@@ -14,6 +14,7 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_move_target_model.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
+import 'package:memox/features/deck/domain/models/deck_source_template_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
@@ -37,6 +38,7 @@ final class DeckRepositoryImpl implements DeckRepository {
   Future<Outcome<DeckEntity, DeckRejection>> createRootDeck({
     required String name,
     required SchedulerType schedulerType,
+    DeckSourceTemplate? sourceTemplate,
     DateTime? now,
   }) {
     final at = now ?? _now();
@@ -55,6 +57,8 @@ final class DeckRepositoryImpl implements DeckRepository {
           schedulerType: Value(schedulerType.code),
           schedulerVersion: Value(schedulerFor(schedulerType).version),
           generation: const Value(1),
+          sourceTemplateId: Value(sourceTemplate?.templateId),
+          sourceTemplateVersion: Value(sourceTemplate?.version),
           siblingPosition: await _dao.nextSiblingPosition(null),
           createdAt: at,
           updatedAt: at,

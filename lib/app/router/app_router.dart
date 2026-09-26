@@ -80,6 +80,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       GoRoute(
                         path: AppRoutes.studyChild,
                         builder: (context, state) => _studyEntry(
+                          context,
                           state.pathParameters[AppRoutes.deckIdParam]!,
                         ),
                       ),
@@ -212,14 +213,20 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
 
 /// Screen 14 with the deck's name and path from the deck feature, which
 /// the study feature may not read (FE-A6 D16).
-StudyEntryScreen _studyEntry(String deckId) => StudyEntryScreen(
-  deckId: deckId,
-  title: DeckStudyHeaderWidget(deckId: deckId, part: DeckStudyHeaderPart.title),
-  breadcrumb: DeckStudyHeaderWidget(
-    deckId: deckId,
-    part: DeckStudyHeaderPart.breadcrumb,
-  ),
-);
+StudyEntryScreen _studyEntry(BuildContext context, String deckId) =>
+    StudyEntryScreen(
+      deckId: deckId,
+      title: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.title,
+      ),
+      breadcrumb: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.breadcrumb,
+      ),
+      onOpenSession: (sessionId) =>
+          context.go(AppRoutes.studySession(sessionId)),
+    );
 
 /// Opens the Trash on the root navigator (FE-B1 D2). The router pushes it,
 /// not the page's context: a toast's action can outlive its page.

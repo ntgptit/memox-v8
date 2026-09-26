@@ -50,6 +50,12 @@ class GalleryActionsSection extends StatelessWidget {
             size: MxButtonSize.study,
             onPressed: () {},
           ),
+          MxButton(
+            label: context.l10n.cardActionGood,
+            detail: context.l10n.studyIntervalDays(6),
+            tone: MxButtonTone.secondary,
+            onPressed: () {},
+          ),
         ],
       ),
       Wrap(

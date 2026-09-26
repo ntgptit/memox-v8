@@ -17,11 +17,13 @@ class MxCard extends StatelessWidget {
     this.isSelected = false,
     this.isSuccess = false,
     this.isDanger = false,
+    this.isRecessed = false,
   }) : assert(
          (isHero ? 1 : 0) +
                  (isWarning ? 1 : 0) +
                  (isSuccess ? 1 : 0) +
-                 (isDanger ? 1 : 0) <=
+                 (isDanger ? 1 : 0) +
+                 (isRecessed ? 1 : 0) <=
              1,
          'one tone at most',
        );
@@ -51,22 +53,36 @@ class MxCard extends StatelessWidget {
   /// by an error (FE-A6 D14).
   final bool isDanger;
 
+  /// The container-low ground, flat, with the ghost edge: the answer face of
+  /// a study card (kit StudyFaceCard, screen 16a).
+  final bool isRecessed;
+
   @override
   Widget build(BuildContext context) {
-    final surface = switch ((isHero, isWarning, isSuccess, isDanger)) {
-      (true, _, _, _) => AppDecorations.heroCard(
+    final surface = switch ((
+      isHero,
+      isWarning,
+      isSuccess,
+      isDanger,
+      isRecessed,
+    )) {
+      (true, _, _, _, _) => AppDecorations.heroCard(
         context.colors,
         context.derivedColors,
       ),
-      (_, true, _, _) => AppDecorations.warningCard(
+      (_, true, _, _, _) => AppDecorations.warningCard(
         context.colors,
         context.derivedColors,
       ),
-      (_, _, true, _) => AppDecorations.successCard(
+      (_, _, true, _, _) => AppDecorations.successCard(
         context.colors,
         context.derivedColors,
       ),
-      (_, _, _, true) => AppDecorations.dangerCard(
+      (_, _, _, true, _) => AppDecorations.dangerCard(
+        context.colors,
+        context.derivedColors,
+      ),
+      (_, _, _, _, true) => AppDecorations.recessedCard(
         context.colors,
         context.derivedColors,
       ),

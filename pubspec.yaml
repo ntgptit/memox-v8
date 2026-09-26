@@ -40,6 +40,10 @@ flutter:
   assets:
     # Shipped for the licence page (font_license.dart), as the OFL requires.
     - assets/fonts/OFL.txt
+    # The starter templates (starter decks spec §5); Flutter reads a folder's
+    # files, not its subfolders, so each folder is listed.
+    - assets/templates/
+    - assets/templates/en/
   fonts:
     # Variable font (wght axis). Weights are set through
     # AppTypography.withWeight, which moves the axis with fontWeight.
