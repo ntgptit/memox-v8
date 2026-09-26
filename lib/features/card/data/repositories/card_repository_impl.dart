@@ -121,6 +121,40 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
+  Future<Outcome<void, CardRejection>> restoreCards({
+    required Set<String> batchIds,
+    required String deckId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      if (batchIds.isEmpty) return const Ok(null);
+      final cards = <String, CardRow>{};
+      for (final batchId in batchIds) {
+        final card = await _dao.itemOf(batchId);
+        if (card == null) return const Rejected(CardRejection.notFound);
+        cards[batchId] = card;
+      }
+      return _restoreInto(deckId, cards, updatedAt: at, at: at);
+    });
+  }
+
+  @override
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+    DateTime? now,
+  }) {
+    final at = now ?? _now();
+    return _write(() async {
+      final card = await _dao.itemOf(batchId);
+      if (card == null) return const Rejected(CardRejection.notFound);
+      // Back into its own deck with its own updated_at: an Undo is not a
+      // move (trash spec D9).
+      return _restoreInto(card.deckId, {batchId: card}, at: at);
+    });
+  }
+
+  @override
   Future<Outcome<void, CardRejection>> moveCards({
     required Set<String> cardIds,
     required String targetDeckId,
@@ -329,6 +363,47 @@ final class CardRepositoryImpl implements CardRepository {
     if (result case Rejected(:final reason)) {
       throw StateError('tags refused a checked draft: $reason');
     }
+  }
+
+  /// [cards], by batch, come back into [deckId] when it takes them
+  /// (BR-TRASH-006, BR-TRASH-007); [updatedAt] stamps them as a move does.
+  /// An unset deck becomes a deck of cards (BR-DECK-008).
+  Future<Outcome<void, CardRejection>> _restoreInto(
+    String deckId,
+    Map<String, CardRow> cards, {
+    DateTime? updatedAt,
+    required DateTime at,
+  }) async {
+    final target = await _dao.deckRow(deckId);
+    if (target == null) {
+      return Rejected(
+        await _dao.isDeckInTrash(deckId)
+            ? CardRejection.targetInTrash
+            : CardRejection.targetNotFound,
+      );
+    }
+    final targetContentType = DeckContentType.values.byName(target.contentType);
+    final rule = CardEntity.checkTarget(
+      targetRootId: target.rootId,
+      targetIsRoot: target.parentId == null,
+      targetContentType: targetContentType,
+      sourceRootIds: await _dao.rootIdsOf({
+        for (final card in cards.values) card.deckId,
+      }),
+    );
+    if (rule case Rejected(:final reason)) return Rejected(reason);
+    for (final MapEntry(key: batchId, value: card) in cards.entries) {
+      await _dao.restoreFromBatch(
+        batchId,
+        card.id,
+        deckId: deckId,
+        updatedAt: updatedAt,
+      );
+    }
+    if (targetContentType == DeckContentType.unset) {
+      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
+    }
+    return const Ok(null);
   }
 
   /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).

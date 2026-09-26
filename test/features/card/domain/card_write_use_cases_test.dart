@@ -13,11 +13,13 @@ import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/domain/usecases/move_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/remove_tag_from_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
+import 'package:memox/features/card/domain/usecases/undo_card_deletion_use_case.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
+import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
@@ -116,6 +118,30 @@ void main() {
         (await decks.findById(verbs.id))!.contentType,
         DeckContentType.card,
       );
+    },
+  );
+
+  test(
+    'Undo right after a delete brings the card back (BR-TRASH-008)',
+    () async {
+      DateTime now() => DateTime(2026, 9, 23);
+      final decks = DeckRepositoryImpl(db, now: now);
+      final cards = CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db, now: now),
+        TagRepositoryImpl(db, now: now),
+        now: now,
+      );
+      final lesson = await decks.sub((await decks.root('Korean')).id, 'Lesson');
+      await insertCard(db, id: 'c1', deckId: lesson.id);
+      final deleted = await DeleteCardsUseCase(cards)(cardIds: {'c1'});
+      final [batchId] = (deleted as Ok<List<String>, CardRejection>).value;
+
+      expect(
+        await UndoCardDeletionUseCase(cards)(batchId: batchId),
+        isA<Ok<void, CardRejection>>(),
+      );
+      expect(await cards.watchDetail('c1').first, isNotNull);
     },
   );
 }

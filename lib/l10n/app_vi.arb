@@ -140,6 +140,7 @@
   "cardRejectionTargetHoldsDecks": "Bộ thẻ đó chứa bộ thẻ con nên không chứa thẻ.",
   "cardRejectionSameDeck": "Các thẻ đã ở đó rồi.",
   "cardRejectionCrossRootMove": "Thẻ chỉ di chuyển được trong cùng một bộ thẻ cấp cao nhất.",
+  "cardRejectionTargetInTrash": "Bộ thẻ đó đang ở Thùng rác.",
   "tagRejectionBlankName": "Hãy nhập tên nhãn.",
   "tagRejectionNameTooLong": "Nhãn tối đa 50 ký tự.",
   "tagRejectionControlCharacter": "Nhãn không được chứa ký tự đó.",

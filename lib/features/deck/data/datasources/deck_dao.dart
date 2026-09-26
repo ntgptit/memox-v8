@@ -125,18 +125,8 @@ final class DeckDao {
   )..where((deck) => deck.id.equals(id))).getSingleOrNull();
 
   /// Whether [id] is a deck in the Trash, which a restore refuses as its
-  /// target (BR-TRASH-006).
-  Future<bool> isInTrash(String id) async {
-    final row = await _db
-        .customSelect(
-          'SELECT EXISTS (SELECT 1 FROM deck WHERE id = ?'
-          ' AND delete_batch_id IS NOT NULL) AS in_trash',
-          variables: [Variable<String>(id)],
-          readsFrom: {_db.deck},
-        )
-        .getSingle();
-    return row.read<bool>('in_trash');
-  }
+  /// target (BR-TRASH-006; `trash_queries.drift`).
+  Future<bool> isInTrash(String id) => _db.deckIsInTrash(id).getSingle();
 
   /// The rows of [batchId], decks and cards, lose their mark; then the batch
   /// row goes, which the key would otherwise cascade (BR-TRASH-007).

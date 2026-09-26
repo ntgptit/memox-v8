@@ -11,6 +11,9 @@ const _readsTombstones = <String, String>{
   'lib/core/database/tables/srs.drift#review_log_no_delete':
       'asks whether the card row is still there, tombstone or not: only a '
       "purge's cascade may delete a review log",
+  'lib/features/card/data/datasources/card_dao.dart#rootIdsOf':
+      'a restore checks a card against the root of its deck, which may be in '
+      'the Trash (BR-TRASH-006)',
   'lib/features/deck/data/datasources/deck_dao.dart#nextSiblingPosition':
       "D9: a new sibling's position counts the tombstones, so an Undo finds "
       'its place free',

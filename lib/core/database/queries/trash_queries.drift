@@ -10,6 +10,13 @@ insertDeleteBatch(:id AS TEXT, :item_type AS TEXT, :root_item_id AS TEXT,
 INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at)
 VALUES (:id, :item_type, :root_item_id, :deleted_at);
 
+-- BR-TRASH-006: whether :deck_id is a deck in the Trash, which a restore
+-- refuses as its target (targetInTrash) rather than as gone.
+deckIsInTrash(:deck_id AS TEXT):
+SELECT EXISTS (
+  SELECT 1 FROM deck WHERE id = :deck_id AND delete_batch_id IS NOT NULL
+);
+
 -- BR-TRASH-004: every open session the batch touches closes, in the
 -- transaction of the delete: opened on one of its decks or in the tree of
 -- one (a deck may leave its tree mid-session, IT-CONT-006), holding one of

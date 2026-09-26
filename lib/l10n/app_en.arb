@@ -654,6 +654,10 @@
   "@cardRejectionCrossRootMove": {
     "description": "Card move refusal: another root."
   },
+  "cardRejectionTargetInTrash": "That deck is in the Trash.",
+  "@cardRejectionTargetInTrash": {
+    "description": "Card restore or Undo refusal: the deck it goes to is in the Trash."
+  },
   "tagRejectionBlankName": "Enter a tag name.",
   "@tagRejectionBlankName": {
     "description": "Tag refusal: blank name."

@@ -41,6 +41,23 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
+  /// UC-TRASH-001 steps 5-7: the cards of [batchIds] come back into
+  /// [deckId], a sub-deck of their root that holds cards or nothing, all or
+  /// none; `deck_id` and `updated_at` change as in a move (BR-TRASH-006,
+  /// BR-TRASH-007).
+  Future<Outcome<void, CardRejection>> restoreCards({
+    required Set<String> batchIds,
+    required String deckId,
+    DateTime? now,
+  });
+
+  /// BR-TRASH-008: the card of [batchId] goes back into its deck with its
+  /// `updated_at` kept; refused, typed, when that deck no longer takes it.
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+    DateTime? now,
+  });
+
   /// BR-CARD-010: only `deck_id` and `updated_at` change.
   Future<Outcome<void, CardRejection>> moveCards({
     required Set<String> cardIds,

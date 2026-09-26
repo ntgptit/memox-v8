@@ -63,6 +63,57 @@ final class CardDao {
     );
   }
 
+  /// The card of [batchId] when the batch holds one: the card the person
+  /// deleted, still marked with that batch (BR-TRASH-001). Null when the
+  /// batch is gone or holds a deck.
+  Future<CardRow?> itemOf(String batchId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT c.* FROM delete_batches b JOIN card c ON c.id = b.root_item_id'
+          " AND c.delete_batch_id = b.id WHERE b.id = ? AND b.item_type = 'card'",
+          variables: [Variable<String>(batchId)],
+          readsFrom: {_db.deleteBatches, _db.card},
+        )
+        .getSingleOrNull();
+    return row == null ? null : _db.card.map(row.data);
+  }
+
+  /// The roots of [deckIds], active or in the Trash: a restore checks a card
+  /// against the root of its deck, which may be in the Trash (BR-TRASH-006).
+  Future<Set<String>> rootIdsOf(Set<String> deckIds) async => {
+    for (final deck in await (_db.select(
+      _db.deck,
+    )..where((deck) => deck.id.isIn(deckIds))).get())
+      deck.rootId,
+  };
+
+  /// Whether [deckId] is a deck in the Trash, which a restore refuses as its
+  /// target (BR-TRASH-006; `trash_queries.drift`).
+  Future<bool> isDeckInTrash(String deckId) =>
+      _db.deckIsInTrash(deckId).getSingle();
+
+  /// [cardId] comes back from the batch [batchId] into [deckId], then the
+  /// batch row goes, which the key would otherwise cascade (BR-TRASH-007).
+  /// A restore stamps [updatedAt], as a move does; an Undo passes none and
+  /// the card keeps its own (trash spec D9).
+  Future<void> restoreFromBatch(
+    String batchId,
+    String cardId, {
+    required String deckId,
+    DateTime? updatedAt,
+  }) async {
+    await (_db.update(_db.card)..where((card) => card.id.equals(cardId))).write(
+      CardCompanion(
+        deleteBatchId: const Value(null),
+        deckId: Value(deckId),
+        updatedAt: updatedAt == null ? const Value.absent() : Value(updatedAt),
+      ),
+    );
+    await (_db.delete(
+      _db.deleteBatches,
+    )..where((batch) => batch.id.equals(batchId))).go();
+  }
+
   /// The open sessions [batchId] touches end (BR-TRASH-004;
   /// `trash_queries.drift`).
   Future<void> closeSessionsTouching(String batchId, DateTime now) =>
