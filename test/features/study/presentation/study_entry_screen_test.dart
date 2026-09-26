@@ -108,7 +108,8 @@ void main() {
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
       'or its reason; every mode the cards can run is tappable '
-      '(IT-STUDY-004, spec §3, P4)', (tester, env) async {
+      '(IT-STUDY-004, IT-MODE-012: no Self-assess on Eight boxes; spec §3, '
+      'P4)', (tester, env) async {
     final root = await env.decks.root('Korean');
     for (final id in ['a', 'b', 'c']) {
       await _learned(env, root.id, id, DateTime(2026, 9, 20));
@@ -131,6 +132,8 @@ void main() {
       [true, false, true, false],
     );
     expect(rows.first.isSelected, isTrue);
+    // Self-assess is sm2's; Eight boxes asks in its four graded modes.
+    expect(find.text(_en.cardModeSelfAssess), findsNothing);
     // Only a mode the cards cannot run is dimmed (kit eightBox).
     expect([for (final row in rows) row.isDimmed], [false, true, false, true]);
     expect(

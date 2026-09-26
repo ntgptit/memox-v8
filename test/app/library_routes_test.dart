@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_resume_widget.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -434,6 +436,44 @@ void main() {
         .customSelect('SELECT COUNT(*) AS n FROM study_session')
         .getSingle();
     expect(sessions.read<int>('n'), 0);
+  });
+
+  libraryTest('Back from the Study Entry and its review pick makes no '
+      'session and returns to the source deck; the next visit has no '
+      'Continue (IT-NAV-009, BR-STUDY-020, FE-A6 P3 E1)', (tester, env) async {
+    await insertFiveDue(env.db, env.decks);
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.text('Lesson'));
+
+    Future<void> openEntry() async {
+      await _tap(tester, find.byTooltip(_en.deckActions));
+      await _tap(
+        tester,
+        find.descendant(
+          of: find.byType(MxActionSheetCommandRow),
+          matching: find.text(_en.studyThisDeck),
+        ),
+      );
+    }
+
+    await openEntry();
+    expect(find.byType(StudyEntryScreen), findsOneWidget);
+    final modes = tester.widgetList<MxOptionRow>(find.byType(MxOptionRow));
+    expect(modes.first.title, _en.cardModeMatch);
+    expect(modes.first.isSelected, isTrue);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyEntryScreen), findsNothing);
+    expect(_barTitle('Lesson'), findsOneWidget);
+    final sessions = await env.db
+        .customSelect('SELECT COUNT(*) AS n FROM study_session')
+        .getSingle();
+    expect(sessions.read<int>('n'), 0);
+
+    await openEntry();
+    expect(find.byType(StudyEntryResumeWidget), findsNothing);
   });
 
   libraryTest('a session is a full-screen route with no tab bar; ✕ shows '
