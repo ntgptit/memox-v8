@@ -46,6 +46,12 @@ class MxStudyTopBar extends StatelessWidget {
   static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
 
+  /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
+  static const double _badgeShare = 0.4;
+
+  /// The share the counter may take before it shrinks (P3 final review).
+  static const double _counterShare = 0.25;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -63,57 +69,77 @@ class MxStudyTopBar extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: AppSize.appBar),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
-            child: Row(
-              spacing: AppSpacing.control,
-              children: [
-                MxIconButton(
-                  icon: AppIcons.close,
-                  semanticLabel: closeLabel,
-                  onPressed: onClose,
-                ),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: _badgeTint),
-                    borderRadius: BorderRadius.circular(AppRadius.full),
+            // The chip is capped so a long mode name at large text ellipsizes
+            // instead of squeezing the track away (FE-A6 P3 ruling T1).
+            child: LayoutBuilder(
+              builder: (context, constraints) => Row(
+                spacing: AppSpacing.control,
+                children: [
+                  MxIconButton(
+                    icon: AppIcons.close,
+                    semanticLabel: closeLabel,
+                    onPressed: onClose,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.control,
-                      vertical: AppSpacing.micro,
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth * _badgeShare,
                     ),
-                    child: Text(
-                      modeLabel.toUpperCase(),
-                      style: styles.studyBadge(accentColor),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: _badgeTint),
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.control,
+                          vertical: AppSpacing.micro,
+                        ),
+                        child: Text(
+                          modeLabel.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: styles.studyBadge(accentColor),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.full),
-                    child: SizedBox(
-                      height: _trackHeight,
-                      child: ColoredBox(
-                        color: MasteryRamp.track(colors),
-                        child: Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: TweenAnimationBuilder<double>(
-                            tween: Tween(end: current / total),
-                            duration: duration,
-                            curve: Easing.standard,
-                            builder: (context, fraction, _) =>
-                                FractionallySizedBox(
-                                  widthFactor: fraction,
-                                  heightFactor: 1,
-                                  child: ColoredBox(color: accentColor),
-                                ),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                      child: SizedBox(
+                        height: _trackHeight,
+                        child: ColoredBox(
+                          color: MasteryRamp.track(colors),
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween(end: current / total),
+                              duration: duration,
+                              curve: Easing.standard,
+                              builder: (context, fraction, _) =>
+                                  FractionallySizedBox(
+                                    widthFactor: fraction,
+                                    heightFactor: 1,
+                                    child: ColoredBox(color: accentColor),
+                                  ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Text(counterLabel, style: styles.counter),
-              ],
+                  // A wide counter shrinks rather than squeeze the track.
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth * _counterShare,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(counterLabel, style: styles.counter),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

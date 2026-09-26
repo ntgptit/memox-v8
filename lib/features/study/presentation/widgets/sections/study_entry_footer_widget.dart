@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -43,7 +45,10 @@ class StudyEntryFooterWidget extends ConsumerWidget {
         ),
       );
     }
-    final offer = studyEntryOfferOf(entry);
+    final offer = studyEntryOfferOf(
+      entry,
+      picked: ref.watch(reviewModePickControllerProvider(deckId)),
+    );
     final target = offer.reviewTarget;
     final (label, icon, caption, onPressed) = switch (entryFooterActionOf(
       offer,
@@ -53,7 +58,13 @@ class StudyEntryFooterWidget extends ConsumerWidget {
             ? l10n.studyEntryReviewCta(target.cardCount)
             : l10n.studyEntryReviewInstead,
         AppIcons.play,
-        l10n.studyEntryReviewCaption(target.cardCount, entry.dueCardCount),
+        // SM-2 asks its direction next; Eight boxes names the mode (E1).
+        target.isDirectionRequired
+            ? l10n.studyEntryReviewCaption(target.cardCount, entry.dueCardCount)
+            : l10n.studyEntryModeCaption(
+                l10n.studyMode(target.mode),
+                target.cardCount,
+              ),
         onReview,
       ),
       EntryFooterAction.learn => (

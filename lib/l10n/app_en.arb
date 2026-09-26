@@ -2799,6 +2799,18 @@
   "@studyEntryStartFailedBody": {
     "description": "Screen handoff 14 (FE-A6 P2): startFailed banner body."
   },
+  "studyEntryModeCaption": "{mode} · {count, plural, =1{1 due card} other{{count} due cards}} · oldest first",
+  "@studyEntryModeCaption": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review."
+  },
   "studyDirectionTitle": "Review · question direction",
   "@studyDirectionTitle": {
     "description": "Screen handoff 14 (FE-A6 P2): direction sheet title (FE-A7)."
@@ -3746,6 +3758,163 @@
       }
     },
     "description": "Screen handoff 16a (FE-A6 P2): what TalkBack reads for a grade with its interval."
+  },
+  "studyContextRound": "{context} · round {round}",
+  "@studyContextRound": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "round": {
+        "type": "int"
+      }
+    },
+    "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
+  },
+  "studyContextPairsLeft": "{context} · {count, plural, =1{1 pair left} other{{count} pairs left}}",
+  "@studyContextPairsLeft": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): the context line with the board's pairs left."
+  },
+  "studyContextFirstPick": "{context} · first pick counts",
+  "@studyContextFirstPick": {
+    "placeholders": {
+      "context": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the context line of a guess stage."
+  },
+  "studyGuessPrompt": "What is this?",
+  "@studyGuessPrompt": {
+    "description": "Screen handoff 18 (FE-A6 P3): the prompt face overline."
+  },
+  "studyGuessHintIdle": "Only your first pick counts",
+  "@studyGuessHintIdle": {
+    "description": "Screen handoff 18 (FE-A6 P3): footer hint before the pick."
+  },
+  "studyGuessHintAnswered": "Answer shown — the correct option is highlighted",
+  "@studyGuessHintAnswered": {
+    "description": "Screen handoff 18 (FE-A6 P3): footer hint after the pick."
+  },
+  "studyGuessNext": "Next",
+  "@studyGuessNext": {
+    "description": "Screen handoff 18 (FE-A6 P3): the Next button shown with TalkBack on."
+  },
+  "studyGuessOption": "Option {letter}: {meaning}",
+  "@studyGuessOption": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      },
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): an option's TalkBack label."
+  },
+  "studyGuessOptionRight": "{option}, correct",
+  "@studyGuessOptionRight": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the right option's TalkBack label once answered."
+  },
+  "studyGuessOptionWrong": "{option}, your pick, wrong",
+  "@studyGuessOptionWrong": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): the wrong pick's TalkBack label."
+  },
+  "studyGuessAnnounceRight": "Correct",
+  "@studyGuessAnnounceRight": {
+    "description": "Screen handoff 18 (FE-A6 P3): announced when a right pick commits."
+  },
+  "studyGuessAnnounceWrong": "Wrong. The answer is {meaning}.",
+  "@studyGuessAnnounceWrong": {
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 18 (FE-A6 P3): announced when a wrong pick commits."
+  },
+  "studyGuessBlockedTitle": "This question can't be shown",
+  "@studyGuessBlockedTitle": {
+    "description": "Screen handoff 18 (FE-A6 P3): a blocked question (BR-STUDY-040)."
+  },
+  "studyGuessBlockedBody": "Its options could not be built. Close the session; every answer so far is kept.",
+  "@studyGuessBlockedBody": {
+    "description": "Screen handoff 18 (FE-A6 P3): a blocked question body."
+  },
+  "studyMatchHint": "Tap a term, then its meaning to match",
+  "@studyMatchHint": {
+    "description": "Screen handoff 17 (FE-A6 P3): footer hint."
+  },
+  "studyMatchHintWrong": "Not a match — this pair comes back next round",
+  "@studyMatchHintWrong": {
+    "description": "Screen handoff 17 (FE-A6 P3): footer hint and announcement after a wrong pair."
+  },
+  "studyMatchTerm": "Term: {text}",
+  "@studyMatchTerm": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a term tile's TalkBack label."
+  },
+  "studyMatchMeaning": "Meaning: {text}",
+  "@studyMatchMeaning": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a meaning tile's TalkBack label."
+  },
+  "studyMatchTileSelected": "{tile}, selected",
+  "@studyMatchTileSelected": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a selected tile's label."
+  },
+  "studyMatchTileMatched": "{tile}, matched",
+  "@studyMatchTileMatched": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a matched tile's label."
+  },
+  "studyMatchTileWrong": "{tile}, not a match",
+  "@studyMatchTileWrong": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a tile of a wrong pair, during its flash."
+  },
+  "studyMatchAnnounceRight": "Matched",
+  "@studyMatchAnnounceRight": {
+    "description": "Screen handoff 17 (FE-A6 P3): announced when a right pair commits."
   },
   "summaryAppBar": "Session summary",
   "@summaryAppBar": {

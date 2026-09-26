@@ -125,3 +125,19 @@ final class FailingEntries implements StudyEntryRepository {
     required DateTime now,
   }) => _inner.watchEntry(deckId: deckId, now: now);
 }
+
+/// A review in [mode] of the five due cards of [insertFiveDue] (`ST-01`…
+/// `ST-05`, backs apple … elder), opened at [now]. Returns the session id.
+Future<String> openFiveDueReview(
+  AppDatabase db,
+  DeckRepository decks,
+  DateTime now,
+  StudyMode mode,
+) async {
+  final leaf = await insertFiveDue(db, decks);
+  final opened = await studyEntryRepository(
+    db,
+    () => now,
+  ).openReviewSession(deckId: leaf.id, mode: mode);
+  return (opened as Ok<String, StudyRejection>).value;
+}

@@ -28,14 +28,31 @@ Not captured: the tile's `idle`/`selected`/`matched` micro-states and the
 wrong-pair flash are interactions inside `default`, not separate screen
 states.
 
+**Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the board's
+terms on the left and its meanings on the right, in their stored order, as
+`StudyChoiceWidget` tiles. Tap a term, then a meaning; the pair is answered on that term
+through the session controller, on any pending pair of the board (BR-STUDY-049). Goldens:
+`test/features/study/presentation/goldens/study_match_{board,wrong,large_text}_*`.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
+| A matched tile in the kit's `mastery` green | The `success` semantic | FE-A6 spec D14 (P3 ruling C1) |
+| The footer hint never changes | During a wrong pair's flash it reads "Not a match — this pair comes back next round" | P3 ruling C7 |
 | Only `idle`/`selected`/`matched` tile states are drawn; no feedback for a wrong pair | V8 adds a brief error-tone flash on both tiles after the write commits, then both settle back to `idle` and stay pending on the board | BR-STUDY-063 (paint an outcome only after commit), BR-STUDY-070 (a non-correct outcome must read as wrong) |
 | — | A wrong pair keeps its row `pending` for this board **and** is guaranteed one slot in the next round, even if it is matched correctly later in this same round | BR-STUDY-060, BR-STUDY-062 |
+
+## Accessibility
+
+- TalkBack reads the terms first, then the meanings (P3 ruling C8); each tile reads "Term: {text}" or "Meaning: {text}", with ", selected", ", matched" or, during a wrong pair's flash, ", not a match".
+- Each outcome is announced when its write commits: "Matched", or the wrong-pair line (C3).
+- The board scrolls once it outgrows the screen at large text, and a soft fade over its bottom edge says more is below; each tile is at least 48 tall (C4).
+- A word too wide for its tile is drawn just small enough to stay whole; tiles wrap between words and never ellipsize (FE-A6 D19).
+- A tile eases into its tone, surface and ink together (standard duration; at once under Remove animations).
 
 ## Copy
 
 - Context line: "{deck} · {Learning/Review} · Match · round {n} · {n} pairs left".
-- Footer hint: "Tap a term, then its meaning to match".
+- Footer hint: "Tap a term, then its meaning to match" · "Not a match — this pair comes back next round" (during a wrong pair's flash).
+- TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, matched" · "{tile}, not a match" · "Matched".

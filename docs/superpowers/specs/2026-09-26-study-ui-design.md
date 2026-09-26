@@ -42,7 +42,7 @@ not part of it.
 |---|---|---|
 | P1 | Theme tones and `MxStatTile` (D14, D17); the entry read model (D15); routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a and D18; entry points (D10); stale-session sweep (D9); the session read model carries Browse's trail of the round's shown cards, for looking back (BR-STUDY-048). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
 | P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003); the Study entry's actions (Learn, Review, Continue; starting, refused, startFailed; resume), which P1 left read-only. | `sm2` decks: learning (browse → self_assess) and review. |
-| P3 | Guess 18, Match 17. | Those stages. |
+| P3 | Guess 18, Match 17; the Study entry's pick among `eight_box` review modes; the top bar keeps its track at large text. | `eight_box` reviews in Match and Guess. |
 | P4 | Recall 19 (D12), Fill 20. | `eight_box` decks end to end. |
 | P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong. | The IT set is closed. |
 

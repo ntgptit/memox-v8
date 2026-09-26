@@ -107,8 +107,8 @@ void main() {
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
-      'or its reason, none tappable before it is built (IT-STUDY-004, '
-      'spec §3)', (tester, env) async {
+      'or its reason; only a built mode the cards can run is tappable '
+      '(IT-STUDY-004, spec §3, P3)', (tester, env) async {
     final root = await env.decks.root('Korean');
     for (final id in ['a', 'b', 'c']) {
       await _learned(env, root.id, id, DateTime(2026, 9, 20));
@@ -126,7 +126,11 @@ void main() {
         _en.cardModeFill,
       ],
     );
-    expect(rows.every((row) => row.onSelected == null), isTrue);
+    expect(
+      [for (final row in rows) row.onSelected != null],
+      [true, false, false, false],
+    );
+    expect(rows.first.isSelected, isTrue);
     // Only a mode the cards cannot run is dimmed (kit eightBox).
     expect([for (final row in rows) row.isDimmed], [false, true, false, true]);
     expect(
@@ -142,9 +146,9 @@ void main() {
       find.widgetWithText(MxBadge, _en.studyEntryNotAvailable),
       findsNWidgets(2),
     );
-    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsNWidgets(2));
+    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsOneWidget);
     expect(find.text(_en.studyEntryUnavailableNote), findsOneWidget);
-    expect(find.byType(MxFooterBar), findsNothing);
+    expect(find.byType(MxFooterBar), findsOneWidget);
   });
 
   libraryTest('SM-2 lists no review modes on the entry; Learn is offered '

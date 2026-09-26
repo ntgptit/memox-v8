@@ -32,9 +32,13 @@ final class PendingAnswer {
     this.item,
     this.answer, {
     required this.shouldHoldFeedback,
+    required this.cardId,
   });
 
   final StudyItem item;
   final StudyAnswer answer;
   final bool shouldHoldFeedback;
+
+  /// The card answered: [item]'s, or another pending pair's (BR-STUDY-049).
+  final String cardId;
 }

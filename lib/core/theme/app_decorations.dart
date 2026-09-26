@@ -88,4 +88,48 @@ abstract final class AppDecorations {
       ),
     );
   }
+
+  /// The toned surface of a guess option and a match tile (screens 17 and
+  /// 18): idle on the raised fill with the ghost edge, selected in primary,
+  /// right in the success tint and wrong in the danger tint (FE-A6 P3; a
+  /// right outcome is success, never mastery — spec D14).
+  static BoxDecoration studyChoice(
+    ColorScheme scheme,
+    MxDerivedColors derived,
+    StudyChoiceTone tone,
+  ) {
+    final raised = scheme.surfaceContainerLowest;
+    final (Color fill, Color edge) = switch (tone) {
+      StudyChoiceTone.idle => (raised, derived.ghostBorder),
+      StudyChoiceTone.selected => (scheme.primary, scheme.primary),
+      StudyChoiceTone.right => (
+        Color.alphaBlend(derived.successSoft, raised),
+        derived.successBorder,
+      ),
+      StudyChoiceTone.wrong => (
+        Color.alphaBlend(derived.dangerSoft, raised),
+        derived.dangerBorder,
+      ),
+    };
+    return BoxDecoration(
+      color: fill,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      border: Border.all(color: edge, width: AppStroke.hairline),
+    );
+  }
+
+  /// The ink on a [studyChoice] surface.
+  static Color studyChoiceInk(
+    ColorScheme scheme,
+    MxDerivedColors derived,
+    StudyChoiceTone tone,
+  ) => switch (tone) {
+    StudyChoiceTone.idle => scheme.onSurface,
+    StudyChoiceTone.selected => scheme.onPrimary,
+    StudyChoiceTone.right => derived.successInk,
+    StudyChoiceTone.wrong => scheme.error,
+  };
 }
+
+/// The states of a study choice surface (screens 17 and 18).
+enum StudyChoiceTone { idle, selected, right, wrong }
