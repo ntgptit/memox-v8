@@ -128,6 +128,14 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         incrementLabel: context.l10n.galleryMoreCards,
         onDecrement: _cards > _minCards ? () => setState(() => _cards--) : null,
         onIncrement: _cards < _maxCards ? () => setState(() => _cards++) : null,
+        valueLabel: context.l10n.galleryCardsPerSession,
+        editHint: context.l10n.commonEdit,
+        onValueSubmitted: (text) => setState(
+          () => _cards = (int.tryParse(text) ?? _cards).clamp(
+            _minCards,
+            _maxCards,
+          ),
+        ),
       ),
     ],
   );

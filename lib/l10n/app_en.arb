@@ -48,6 +48,10 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "commonEdit": "Edit",
+  "@commonEdit": {
+    "description": "Generic action to change a value; TalkBack names it on a typeable number."
+  },
   "commonLoading": "Loading",
   "@commonLoading": {
     "description": "What a screen reader hears while a list or a value loads."
