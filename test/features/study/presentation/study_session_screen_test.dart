@@ -11,7 +11,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
-import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
@@ -94,6 +94,25 @@ Future<void> _swipeLeft(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// Steps 3–4 of IT-CONT-004 and IT-NAV-010: the turn taken before leaving
+/// stays recorded, and the deck's entry offers no Continue.
+Future<void> _expectLeftForGood(LibraryEnv env, String id) async {
+  final done = await env.db
+      .customSelect(
+        "SELECT COUNT(*) AS n FROM study_queue_items "
+        "WHERE session_id = ? AND status = 'completed'",
+        variables: [Variable(id)],
+      )
+      .getSingle();
+  expect(done.read<int>('n'), greaterThanOrEqualTo(1));
+  final deckId = (await sessionOf(env.db, id)).read<String>('deck_id');
+  final entry = await studyEntryRepository(
+    env.db,
+    env.clock.now,
+  ).watchEntry(deckId: deckId, now: env.clock.now()).first;
+  expect(entry!.resumable, isNull);
+}
+
 void main() {
   libraryTest('the shell names the mode, the round and the stage '
       '(handoff 16; BR-STUDY-049)', (tester, env) async {
@@ -121,9 +140,14 @@ void main() {
   });
 
   libraryTest('✕ abandons at once and the same screen shows "You left '
-      'early" (owner ruling on D8; UC-STUDY-001 A3)', (tester, env) async {
+      'early"; the turn taken stays, and the entry offers no Continue '
+      '(IT-CONT-004; owner ruling on D8; UC-STUDY-001 A3)', (
+    tester,
+    env,
+  ) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
+    await _swipeLeft(tester);
 
     await tester.tap(find.byTooltip(_en.studySessionClose));
     await tester.pumpAndSettle();
@@ -131,17 +155,21 @@ void main() {
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     final session = await sessionOf(env.db, id);
     expect(session.read<String>('end_reason'), 'user_exit');
+    await _expectLeftForGood(env, id);
   });
 
-  libraryTest('system Back mid-session abandons too; Back on the summary '
-      'is Done, never a return to a closed session', (tester, env) async {
-    final id = await _session(env, ['a']);
+  libraryTest('system Back mid-session keeps the ✕ contract: it abandons, '
+      'the turn taken stays, no Continue; Back on the summary is Done, '
+      'never a return to a closed session (IT-NAV-010)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
     final done = <String>[];
     await _pumpScreen(tester, env, id, onDone: done.add);
+    await _swipeLeft(tester);
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+    await _expectLeftForGood(env, id);
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
@@ -201,22 +229,28 @@ void main() {
     expect(find.text(_en.summaryReset), findsNothing);
   });
 
-  libraryTest('a stage not built yet says so; the top bar stays '
-      '(spec §3; Recall until P4)', (tester, env) async {
+  libraryTest('past Browse and Match, a learning session asks in Recall with '
+      'its clock; the top bar stays (FE-A6 P4, BR-MODE-004)', (
+    tester,
+    env,
+  ) async {
     final id = await _session(env, ['a', 'b']);
     await _pumpScreen(tester, env, id);
     await _swipeLeft(tester);
     await _swipeLeft(tester);
 
-    // Browse is done, then Match (P3); Guess sits out with two meanings
-    // (BR-MODE-009), and Recall has no screen yet.
+    // Browse is done, then Match; Guess sits out with two meanings
+    // (BR-MODE-009). Recall's clock would run out under pumpAndSettle.
     for (final id in ['a', 'b']) {
       await tester.tap(find.text('front $id'));
       await tester.pump();
       await tester.tap(find.text('back $id'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump();
+      await tester.pump();
     }
-    expect(find.byType(StudyModeNotBuiltWidget), findsOneWidget);
+    expect(find.byType(StudyRecallWidget), findsOneWidget);
+    expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.byType(MxStudyTopBar), findsOneWidget);
   });
 

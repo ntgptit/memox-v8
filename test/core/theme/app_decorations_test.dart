@@ -17,7 +17,7 @@ void main() {
     );
 
     expect(card.color, scheme.surfaceContainerLowest);
-    expect(card.borderRadius, BorderRadius.circular(20));
+    expect(card.borderRadius, BorderRadius.circular(12));
     expect(card.boxShadow, AppShadows.whisper(scheme));
     expect(card.border, isNull);
   });
@@ -41,7 +41,7 @@ void main() {
 
       expect(hero.color, derived.surfaceHero);
       expect(hero.border, Border.all(color: derived.ghostBorder));
-      expect(hero.borderRadius, BorderRadius.circular(20));
+      expect(hero.borderRadius, BorderRadius.circular(12));
       expect(hero.boxShadow, AppShadows.whisper(scheme));
     }
   });

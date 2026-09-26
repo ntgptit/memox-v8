@@ -51,10 +51,11 @@ opens the Direction sheet, then the review; Continue takes up today's session.
 While a session opens, the footer spins with "Starting…" in its caption and the
 Learn button and Continue lock (BR-STUDY-004); a refusal shows the warning
 banner and a failed write the danger banner, whose footer is "Try again"
-(repeating the same start, direction included). `eight_box` reviews in its built modes
-(Match and Guess, FE-A6 P3): the available rows are a pick, the first available one
-picked at first, and the footer reviews the picked mode with the caption "{mode} · {n}
-due cards · oldest first"; Recall and Fill say "Coming soon" until P4, as does Learn. A deck deleted while its entry is open leaves with
+(repeating the same start, direction included). `eight_box` reviews in any mode its
+cards can run (FE-A6 P3; Recall and Fill since P4): the available rows are a pick, the
+first available one picked at first, and the footer reviews the picked mode with the
+caption "{mode} · {n} due cards · oldest first". Every mode has its screen since P4, so
+Learn is offered whenever new cards exist and nothing says "Coming soon". A deck deleted while its entry is open leaves with
 the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 `test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
 
@@ -71,6 +72,8 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 | SM-2's direction choice as inline `MxOptionRow`s on the entry screen itself | A separate `MxBottomSheet` opened by the footer's Review action, with the same three choices and a locked "Start review" action; the space the rows took stays empty above the pinned footer, as the kit's own `onlyNew` frame draws it | UC-STUDY-003 (the documented flow is a sheet, opened after Review, not an inline section) |
 | App bar's trailing "Study options" icon | Hidden; named under Coming soon | Spec A4 row 92 (amended 2026-09-25) names "Study options" explicitly; no screen or UC defines its destination yet |
 | Resume banner's pulse dot in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: no `streak` tone exists |
+| The resume dot pulses | Static and decorative | FE-A8 ruling S3: one treatment for 13 and 14 |
+| The resume banner states its progress as text only | A `MxLinearProgress` track under the line too, as 13's Resume card draws it | FE-A8 H2: the shared track has two callers |
 | The `resume` frame draws the SM-2 direction rows inline under the Continue banner | The rows are not drawn; the direction is chosen in the Direction sheet, as in every other state | The sheet deviation above (UC-STUDY-003); FE-A6 spec D19 notes |
 | `refused` draws the footer disabled | The footer is rebuilt from the counts, already up to date when the banner shows, and stays usable; the banner stays until the next start | A disabled footer strands the person when the action still exists (FE-A6 P2 plan R5) |
 | `starting` shows a spinner and "Starting…" inside the button | The button spins (`MxButton.isLoading`) and "Starting…" is the footer's caption | `MxButton` draws its spinner in place of the label; both the glyph and the words stay (plan R6) |

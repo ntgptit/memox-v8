@@ -7,13 +7,15 @@ abstract final class AppRadius {
   /// 28 icon tile, compact button.
   static const double sm = 8;
 
-  /// Button, input, note, snackbar, 36–44 icon tile, small controls.
+  /// Card, button, input, note, banner, snackbar, 36–44 icon tile, small
+  /// controls: the one radius of in-flow surfaces (spec 2026-09-26 D2).
   static const double md = 12;
 
   /// FAB, bottom-nav bar.
   static const double lg = 16;
 
-  /// Card, dialog, bottom-sheet top corners, 64 empty-state tile.
+  /// Dialog, bottom-sheet top corners, 64 empty-state tile, the meaning and
+  /// term text fields: surfaces that float above the content.
   static const double xl = 20;
 
   /// Pill: chip, badge, toggle track, sheet grabber, progress track.

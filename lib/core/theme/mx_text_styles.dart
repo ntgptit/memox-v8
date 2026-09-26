@@ -24,6 +24,8 @@ final class MxTextStyles {
   static const double _rowTitleTracking = -0.1;
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
+  static const double _overlineSize = 13;
+  static const double _compactOverlineSize = 12;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -52,6 +54,7 @@ final class MxTextStyles {
   static const double _optionSize = 16;
   static const double _optionTracking = -0.1;
   static const double _choiceHeight = 1.25;
+  static const double _studyPassageHeight = 1.55;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -257,15 +260,23 @@ final class MxTextStyles {
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Overline (Section, ListSectionHeader): 12/700, 0.6 tracking,
-  /// onSurfaceVariant. Tabular, so a trailing static count lines up. The
-  /// widget upper-cases the text.
+  /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
+  /// tracking, onSurface, so a group title reads as a boundary (spec
+  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
+  /// a trailing static count lines up. The widget upper-cases the text.
   TextStyle get overline =>
       AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        fontSize: _overlineSize,
         letterSpacing: _overlineTracking,
         fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
+        color: _scheme.onSurface,
       );
+
+  /// The overline at 12, for a label inside a card that 13 would wrap on a
+  /// phone: the deck summary's progress line (owner 2026-09-26, register
+  /// row 119).
+  TextStyle get compactOverline =>
+      overline.copyWith(fontSize: _compactOverlineSize);
 
   /// A stat's figure (StatTile): the headline role at 700, tabular, tight
   /// line box, in the ink the tile's emphasis picks (FE-A6 D17).
@@ -395,6 +406,27 @@ final class MxTextStyles {
     _texts.bodyMedium!,
     FontWeight.w600,
   ).copyWith(height: _choiceHeight, letterSpacing: 0, color: ink);
+
+  /// A study face's running text (kit Recall's meaning, Fill's prompt):
+  /// 16/400 at 1.55. One role for both; the kit's 14 on Fill is ruled up to
+  /// 16 for legibility (FE-A6 P4).
+  TextStyle get studyPassage => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
+    FontWeight.w400,
+  ).copyWith(height: _studyPassageHeight, color: _scheme.onSurface);
+
+  /// A checked Fill answer (kit Fill `wrong`): 24/700 at -0.3, in [ink];
+  /// the typed answer is struck through in its own ink when [isStruck].
+  TextStyle fillAnswer(Color ink, {required bool isStruck}) =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
+        FontWeight.w700,
+      ).copyWith(
+        letterSpacing: _studyMeaningTracking,
+        color: ink,
+        decoration: isStruck ? TextDecoration.lineThrough : null,
+        decorationColor: isStruck ? ink : null,
+      );
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.

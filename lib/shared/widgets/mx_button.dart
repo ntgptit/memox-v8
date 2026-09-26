@@ -39,6 +39,8 @@ class MxButton extends StatelessWidget {
     this.icon,
     this.isBlock = false,
     this.isLoading = false,
+    this.isAutofocused = false,
+    this.isSingleLine = false,
     this.detail,
   }) : assert(
          detail == null ||
@@ -62,9 +64,17 @@ class MxButton extends StatelessWidget {
   /// Replaces the label with a spinner, keeps the width and blocks presses.
   final bool isLoading;
 
+  /// Takes the focus when it first shows: the safe choice of a destructive
+  /// dialog (BR-TRASH-011).
+  final bool isAutofocused;
+
   /// A second line under the label, in the button ink, such as the interval
   /// a grade gives (screen 16a). It grows the button instead of clipping.
   final String? detail;
+
+  /// Keeps the label on one line whatever the size: a caller that has
+  /// checked [naturalWidth] (MxActionPair) never lets it wrap.
+  final bool isSingleLine;
 
   /// A caller-constrained label wraps to at most this many lines.
   static const int _maxWrappedLines = 2;
@@ -75,9 +85,14 @@ class MxButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paint = _paintFor(context);
-    final geometry = _geometryFor(size, hasIcon: icon != null);
+    final geometry = _geometryFor(
+      size,
+      hasIcon: icon != null,
+      isBlock: isBlock,
+    );
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
+      autofocus: isAutofocused,
       style: appButtonStyle(
         fill: paint.fill,
         ink: paint.ink,
@@ -97,6 +112,30 @@ class MxButton extends StatelessWidget {
         : button;
     if (onPressed != null) return sized;
     return Opacity(opacity: AppOpacity.disabled, child: sized);
+  }
+
+  /// The width this button needs to show its label on one line: the label at
+  /// its style and the context's text scale, the icon and its gap, and the
+  /// horizontal padding on both sides.
+  double naturalWidth(BuildContext context) {
+    final geometry = _geometryFor(
+      size,
+      hasIcon: icon != null,
+      isBlock: isBlock,
+    );
+    final style = geometry.isSmallType
+        ? context.textStyles.buttonLabelSmall
+        : context.textStyles.buttonLabel;
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final iconWidth = icon == null ? 0 : AppIconSize.inline + AppSpacing.micro;
+    final width = painter.width + iconWidth + geometry.padding * 2;
+    painter.dispose();
+    return width.ceilToDouble();
   }
 
   _Paint _paintFor(BuildContext context) {
@@ -149,51 +188,58 @@ class MxButton extends StatelessWidget {
     };
   }
 
-  static _Geometry _geometryFor(MxButtonSize size, {required bool hasIcon}) =>
-      switch (size) {
-        MxButtonSize.regular => (
-          height: AppSize.buttonRegular,
-          radius: AppRadius.md,
-          padding: AppSpacing.gutter,
-          isSmallType: false,
-          canWrap: true,
-        ),
-        MxButtonSize.small => (
-          height: AppSize.buttonSmall,
-          radius: AppRadius.md,
-          padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
-          isSmallType: false,
-          canWrap: false,
-        ),
-        MxButtonSize.compact => (
-          height: AppSize.buttonCompact,
-          radius: AppRadius.sm,
-          padding: AppSpacing.grouped,
-          isSmallType: true,
-          canWrap: false,
-        ),
-        MxButtonSize.chip => (
-          height: AppSize.chip,
-          radius: AppRadius.full,
-          padding: AppSpacing.control,
-          isSmallType: true,
-          canWrap: false,
-        ),
-        MxButtonSize.study => (
-          height: AppSize.buttonRegular,
-          radius: AppRadius.full,
-          padding: _studyPadding,
-          isSmallType: false,
-          canWrap: false,
-        ),
-      };
+  static _Geometry _geometryFor(
+    MxButtonSize size, {
+    required bool hasIcon,
+    required bool isBlock,
+  }) => switch (size) {
+    MxButtonSize.regular => (
+      height: AppSize.buttonRegular,
+      radius: AppRadius.md,
+      padding: AppSpacing.gutter,
+      isSmallType: false,
+      canWrap: true,
+    ),
+    MxButtonSize.small => (
+      height: AppSize.buttonSmall,
+      radius: AppRadius.md,
+      padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
+      isSmallType: false,
+      canWrap: false,
+    ),
+    MxButtonSize.compact => (
+      height: AppSize.buttonCompact,
+      radius: AppRadius.sm,
+      padding: AppSpacing.grouped,
+      isSmallType: true,
+      canWrap: false,
+    ),
+    MxButtonSize.chip => (
+      height: AppSize.chip,
+      radius: AppRadius.full,
+      padding: AppSpacing.control,
+      isSmallType: true,
+      canWrap: false,
+    ),
+    MxButtonSize.study => (
+      height: AppSize.buttonRegular,
+      radius: AppRadius.full,
+      // The contract's 36 sizes a pill that hugs its label; a block
+      // action is given its width by its row, and needs the room for
+      // the label (FE-A6 P4: "Remembered" in a two-up row).
+      padding: isBlock ? AppSpacing.gutter : _studyPadding,
+      isSmallType: false,
+      canWrap: false,
+    ),
+  };
 
   Widget _content(Color ink, _Geometry geometry, TextStyle detailStyle) {
+    final canWrap = geometry.canWrap && !isSingleLine;
     final labelText = Text(
       label,
       textAlign: TextAlign.center,
-      maxLines: geometry.canWrap ? _maxWrappedLines : 1,
-      softWrap: geometry.canWrap,
+      maxLines: canWrap ? _maxWrappedLines : 1,
+      softWrap: canWrap,
     );
     final detail = this.detail;
     final text = detail == null

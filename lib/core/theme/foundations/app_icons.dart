@@ -47,6 +47,7 @@ abstract final class AppIcons {
   static const IconData repeat = Icons.repeat; // repeat
   static const IconData lapses = Icons.replay; // rotate-ccw
   static const IconData resetProgress = Icons.replay; // rotate-ccw
+  static const IconData restore = Icons.replay; // rotate-ccw
   static const IconData lock = Icons.lock_outline; // lock
   static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off
@@ -61,6 +62,10 @@ abstract final class AppIcons {
   static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
   static const IconData upcoming = Icons.upcoming_outlined; // calendar-plus
   static const IconData dueNow = Icons.bolt_outlined; // zap
+  // Workload terms (BR-STUDY-076: each count has its own glyph); Due today
+  // is [dueNow].
+  static const IconData overdue = Icons.history; // history
+  static const IconData newCards = Icons.auto_awesome_outlined; // sparkles
   static const IconData cardDeck = Icons.copy_all_outlined; // copy
   // Card import (kit 11).
   static const IconData fileUp = Icons.upload_file_outlined; // file-up

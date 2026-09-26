@@ -13,8 +13,8 @@
 - **Phụ thuộc:** [`_generated/traceability.md`](_generated/traceability.md),
   [`shared/testing/host-coverage-map.md`](shared/testing/host-coverage-map.md),
   README của từng feature.
-- **Ngữ cảnh bằng chứng:** `master` tại `f28bdfd` (PR #26), worktree sạch, ngày
-  2026-09-24.
+- **Ngữ cảnh bằng chứng:** tạo từ `master` tại `f28bdfd` (PR #26) ngày 2026-09-24;
+  trạng thái rà lại trên `master` tại `7de0101` (PR #78) ngày 2026-09-26.
 
 ## Phạm vi và tài liệu tham chiếu
 
@@ -85,7 +85,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | FE-B3 dựng màn 11 và sheet 12 trên năm use case này |
+| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | — |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
 | BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn); quyết cách giữ hoà giải và lần gửi nền không chồng lên thao tác của người dùng ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14) |
@@ -182,7 +182,7 @@ Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
   kịch bản, trong đó 93 mang profile `HOST-FLOW`. Đây là phần backend chứng minh bằng
   store và SQLite in-memory thật. Mỗi hạng mục đóng các kịch bản `HOST-FLOW` truy vết
   về UC của nó.
-  - Test hiện có nhắc tới 63 ID: IT-CONT (12), IT-DISC (4), IT-LEARN (10), IT-MODE (12), IT-NAV (2), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
+  - Test hiện có nhắc tới 68 ID: IT-CARD (1), IT-CONT (12), IT-DISC (5), IT-LEARN (10), IT-MODE (13), IT-NAV (4), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
 - **Chưa chạy:** kịch bản `DEVICE-E2E` (cần emulator hoặc thiết bị), thuộc
@@ -219,6 +219,8 @@ Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
 - **Cập nhật ngày 2026-09-26:** BE-B4 xong trong gói 10: thư viện starter với hai
   fixture, sao chép trong một transaction qua repository của deck và card; không đổi
   schema. Thêm lại BE-C5 (Unicode NFC), dòng gói 9a đã thêm nhưng không merge.
+- **Cập nhật ngày 2026-09-26:** rà lại trên `master` tại `7de0101` sau #78 (FE-B1): BE-B3
+  không còn việc tiếp theo vì FE-B3 đã xong; đếm lại ID kịch bản IT trong test (68).
 - **Cập nhật ngày 2026-09-26:** chủ dự án tách BE-B5 thành BE-B5a và BE-B5b. BE-B5a xong
   trong gói 11a: toàn bộ logic của nhắc học sau một port tới nền tảng, với adapter
   "không hỗ trợ"; không đổi schema, không thêm dependency. Điểm chặn BR-SETTINGS-008 đóng:

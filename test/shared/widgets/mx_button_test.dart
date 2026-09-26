@@ -177,6 +177,27 @@ void main() {
     );
   });
 
+  testWidgets('isAutofocused takes the focus when it shows', (tester) async {
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MxButton(label: 'Delete', onPressed: () {}),
+          MxButton(label: 'Keep', onPressed: () {}, isAutofocused: true),
+        ],
+      ),
+    );
+    await tester.pump();
+
+    final focused = FocusManager.instance.primaryFocus!.context!;
+    expect(
+      find.ancestor(of: find.text('Keep'), matching: find.byType(TextButton)),
+      findsOneWidget,
+    );
+    expect(focused.findAncestorWidgetOfExactType<MxButton>()?.label, 'Keep');
+  });
+
   testWidgets('a tap calls onPressed', (tester) async {
     var taps = 0;
     await pumpMx(tester, MxButton(label: 'Go', onPressed: () => taps++));
@@ -306,5 +327,99 @@ void main() {
 
     expect(find.bySemanticsLabel('Save'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('isSingleLine keeps a long label on one line', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 120,
+        child: MxButton(
+          label: 'Delete for good forever',
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: () {},
+        ),
+      ),
+    );
+    final text = tester.widget<Text>(find.text('Delete for good forever'));
+    expect(text.maxLines, 1);
+    expect(text.softWrap, isFalse);
+  });
+
+  testWidgets('naturalWidth is the one-line label plus icon and padding', (
+    tester,
+  ) async {
+    late double measured;
+    const button = MxButton(
+      label: 'Restore',
+      icon: Icons.restore,
+      onPressed: null,
+    );
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          measured = button.naturalWidth(context);
+          return const UnconstrainedBox(child: button);
+        },
+      ),
+    );
+    // Unconstrained, the button lays out at its natural width.
+    expect(
+      measured,
+      tester.getSize(find.byType(TextButton)).width.ceilToDouble(),
+    );
+  });
+
+  testWidgets('naturalWidth grows with the text scale', (tester) async {
+    late double atOne;
+    late double atTwo;
+    final button = MxButton(label: 'Restore', onPressed: () {});
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          atOne = button.naturalWidth(context);
+          return button;
+        },
+      ),
+    );
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          atTwo = button.naturalWidth(context);
+          return button;
+        },
+      ),
+      textScale: 2,
+    );
+    expect(atTwo, greaterThan(atOne));
+  });
+
+  testWidgets('naturalWidth of a loading button still measures its label', (
+    tester,
+  ) async {
+    late double idle;
+    late double loading;
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          idle = MxButton(
+            label: 'Save',
+            onPressed: () {},
+          ).naturalWidth(context);
+          loading = MxButton(
+            label: 'Save',
+            isLoading: true,
+            onPressed: () {},
+          ).naturalWidth(context);
+          return const SizedBox();
+        },
+      ),
+    );
+    expect(loading, idle);
   });
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_editor_form_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -73,6 +74,39 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/card_editor_errors_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('card editor, Move to Trash, $theme', (tester, env) async {
+      final deckId = await _words(env);
+      final card = await env.cards.card(
+        deckId,
+        const CardDraft(front: 'gamsahamnida', back: 'thank you'),
+      );
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.edit(cardId: card.id, deckContext: _context),
+          brightness,
+        );
+        await tester.pumpAndSettle();
+        // The More card is the form's last block (kit 09).
+        await tester.drag(
+          find.byType(CardEditorFormWidget),
+          const Offset(0, -2000),
+        );
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_more_$theme.png',
+        );
+        await tester.tap(find.text(_en.cardMoveToTrash));
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_trash_dialog_$theme.png',
         );
       });
     });

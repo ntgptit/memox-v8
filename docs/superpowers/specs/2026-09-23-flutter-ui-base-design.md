@@ -482,21 +482,21 @@ item names where it comes from.
 | 79 | The card editor follows the V3 kit (08, 09) over library spec §6.5: live validation with Save disabled until valid, failures inside the form (inline banner, warning banner, gone state), and a discard confirm | library phase 4a P4a-L1…L5 |
 | 80 | A new card has no flag control; the flag toggles from the edit app bar, and its glyph changes but does not recolour (`Icon(color:)` is banned) | library phase 4a P4a-L6 |
 | 81 | The editor's deck context drops the kit's pill border, and Add tag is an outline chip, not dashed: no `BorderSide`, and no dashed-border token | library phase 4a P4a-L7, P4a-L8 |
-| 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b | library phase 4a P4a-L10 |
+| 82 | The editor offers no Move to Trash or Import cards; the edit summary's Details goes back, since the detail is the page under the editor from phase 4b — Move to Trash closed by FE-B1 (D13): a "More" card at the foot of the edit form | library phase 4a P4a-L10 |
 | 83 | The edit mode is built and tested in phase 4a but has no route until phase 4b adds the card detail, which opens it — closed by library phase 4b | library phase 4a split |
 | 84 | A top-level deck holds sub-decks only, so its empty state offers New sub-deck alone, with its own copy; New card shows where the deck's create options include cards | library phase 4a (Task 4 ruling) |
 | 85 | The card detail follows the V3 kit (10) over library spec §6.6: a schedule card with the eight-box ramp or the SM-2 facts, history grouped by cycle, Load older history, and an end-of-history line | library phase 4b P4b-L1 |
 | 86 | History events show the absolute date and time only, with no timeline rail or dots and no "Finished learning" note; cycle headers carry no reset date, which the backend does not store | library phase 4b P4b-L3, P4b-L4 |
-| 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash | library phase 4b P4b-L5 |
+| 87 | The card detail's gone state offers Back to deck only; Open Trash waits for Trash — closed by FE-B1 (D11) | library phase 4b P4b-L5 |
 | 88 | The card detail's deck path includes the destination line of the editor's header, which the kit's detail does not show | library phase 4b P4b-L8 |
 | 89 | The card detail puts the status badge and flag above the front, not beside it, so a long front keeps the full width | library phase 4b (Task 5 golden review) |
 | 90 | A history event's badge carries the kind only (Learning, Review, Repeat) and the action is text beside it: `MxBadge` never wraps, so the kit's "kind · action" pill overflowed at text scale 2 | library deferred minors |
 | 91 | On the empty Library, "Browse starter decks" is disabled without the spec A4 "not available yet" hint: `MxEmptyState` has no slot for a hint on its secondary action. Every other waiting control on screen 01 carries it — superseded by row 92: the button is gone | Impeccable review (critique + audit) |
-| 92 | Controls whose feature does not exist yet are hidden, not drawn disabled as the kit draws them. The Library root's "Coming soon" app-bar action opens a sheet naming each: Study, Study options, Sort by progress, Tags, Starter decks, Trash, Import and export (library alignment spec A4, amended 2026-09-25) | owner decision after the Impeccable critique |
+| 92 | Controls whose feature does not exist yet are hidden, not drawn disabled as the kit draws them. The Library root's "Coming soon" app-bar action opens a sheet naming each: Study, Study options, Sort by progress, Tags, Starter decks, Trash, Import and export (library alignment spec A4, amended 2026-09-25) — Trash left the sheet for its own app-bar icon with FE-B1 (D1) | owner decision after the Impeccable critique |
 | 91 | A deck row's meta and the due strip's tile carry no coloured glyph: the guard bans `Icon(color:)` in feature code | library alignment phase C (C-L1) |
 | 92 | The deck row's name is `rowTitle` (14/600), not the kit's 14/700, and the search match is a named role (`rowTitleMatch`) drawn by `MxListRow.titleMatch`, with no tinted mark: no per-site text styling | library alignment phase C (C-L2, C-O7) |
 | 93 | "Review algorithm" opens the scheduler sheet, not screen 02, until phase D — closed by library alignment phase D | library alignment phase C (C-L3) |
-| 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back with "Deck deleted" | library alignment phase C (C-L5) |
+| 94 | A deck deleted while open shows the "This deck is no longer here" empty state, superseding P2-L7's snackbar and pop; deleting the open deck from its own sheet still steps back, now with the Move to Trash toast and its Undo (FE-B1 D3) | library alignment phase C (C-L5) |
 | 95 | The level-10 banner over sub-decks at level 10 is absent; only the header names the level | library alignment phase C (C-O6) |
 | 96 | A card row's flag is drawn in the warning colour, not the kit's streak colour: the theme has no streak token | library alignment phase E (E-L2) |
 | 97 | The selection header's "Select all {n}" is a compact secondary `MxButton`, not the kit's text link: no bare-text button in the widget set | library alignment phase E (E-L3) |
@@ -510,7 +510,19 @@ item names where it comes from.
 | 105 | Success, caution and danger glyphs and success text use inks pulled toward `onSurface` (`successInk`, `warningInk`, `error`): the kit's pure green and amber fail 3:1 (glyph) and 4.5:1 (text) on their soft tints; the fills keep the kit's hues | FE-A6 D14 |
 | 106 | Card import names the fields two ways: "Term (front)" / "Meaning (back)" on the mapping, "term" and "meaning" in its notes and row reasons. One vocabulary waits for a copy pass over screens 08–12 | critique 2026-09-26 P3 (transfer) |
 | 107 | Card import shows one spinner card while a large import writes, with no progress or waiting line | critique 2026-09-26 P3 (transfer) |
-| 108 | "Reset app options" also turns the daily reminder off and puts it back at 20:00 (BR-SETTINGS-008): the kit's confirmation body ("Theme, language, cards per session and new-card order go back to their defaults.") and the row's sub-line ("Theme, language, study defaults") leave it out, and FE-A3 names it in both | reminders spec D3, D4 |
+| 108 | The Move to Trash dialogs (screens 01, 07, 09) draw no trash glyph over or beside their title: `MxDialog` has no glyph slot | FE-B1 plan 1 |
+| 109 | A refused Undo reads "Can't undo. {reason} Restore it from Trash and choose a deck." where the item was deleted, not screen 06's "Can't undo — “{deck}” is in Trash too. Restore it from here…": the rejection carries no deck name | FE-B1 D7 |
+| 110 | Move to Trash names no counts the dialog cannot read: the card note says "with its schedule and history", not "with its 7 answers of history", and the editor's "More" card says "Leaves this deck", not the deck's name, which the path above it shows | FE-B1 plan 1 |
+| 111 | A Trash restore target reads as its path, without the kit's card count or "where it was": `CardMoveTarget` and `DeckMoveTarget` carry no counts, as in the move sheets | FE-B1 plan 2 |
+| 112 | Screen 06's kind tile is the tinted `MxIconTile`, not the kit's grey one, and "Was in" has no corner glyph; "Select" is a compact secondary `MxButton` (ruling E-L3); "Delete for good" is a filled destructive `MxButton`, not a red outline | FE-B1 plan 2 |
+| 113 | Match's and Guess's widget-local geometry constants (`_badgeTint` 0.10, the letter ring `_ring` 1.5, `_columnOrder`) are named in the widget but are not theme tokens | FE-A6 P3 final review |
+| 114 | Screen 14 offers Learn twice when nothing is due: the Learn row's button and the footer both start the same learning session, as the kit draws them | FE-A6 P2 final review |
+| 115 | `MxCard` and every card surface use radius 12 (kit: 20), the one radius of in-flow surfaces with banners, notes and buttons; dialogs and sheets keep 20 | owner 2026-09-26, spec shared-ui-refinements D2 |
+| 116 | `overline` is 13/700 in `onSurface` (kit: 12/700 `onSurfaceVariant`), so a group title reads as a boundary | owner 2026-09-26, D5 |
+| 117 | A selecting row's checkbox is centred vertically on the row (kit: top-aligned with the title) | owner 2026-09-26, D4 |
+| 118 | A footer pair stacks full width when a label cannot fit its share on one line (kit: always side by side, labels wrap) | owner 2026-09-26, D3 |
+| 119 | The deck summary's progress label keeps the 12 overline (`compactOverline`), onSurface, so it stays on one line on a 360 phone; every other overline is 13 (row 116) | owner 2026-09-26 |
+| 120 | "Reset app options" also turns the daily reminder off and puts it back at 20:00 (BR-SETTINGS-008): the kit's confirmation body ("Theme, language, cards per session and new-card order go back to their defaults.") and the row's sub-line ("Theme, language, study defaults") leave it out, and FE-A3 names it in both | reminders spec D3, D4 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

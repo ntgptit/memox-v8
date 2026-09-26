@@ -39,7 +39,7 @@ The overline, the banner and the note line up with the title (20 dp).
 | shareClosed | ![](img/12-card-export/shareClosed-light.png) | ![](img/12-card-export/shareClosed-dark.png) | **Deviation:** the export sheet stays open, as it was. |
 | failed | ![](img/12-card-export/failed-light.png) | ![](img/12-card-export/failed-dark.png) | For a read or encode failure. A share failure has its own copy, also with Try again. |
 | noShareTarget | ![](img/12-card-export/noShareTarget-light.png) | ![](img/12-card-export/noShareTarget-dark.png) | As drawn; the banner shows the warning glyph. |
-| staleSelection | ![](img/12-card-export/staleSelection-light.png) | ![](img/12-card-export/staleSelection-dark.png) | "Moved or deleted", not "sent to Trash": V8.0 has no Trash. |
+| staleSelection | ![](img/12-card-export/staleSelection-light.png) | ![](img/12-card-export/staleSelection-dark.png) | As drawn (FE-B1 D12 closes X11). |
 | nothingToExport | ![](img/12-card-export/nothingToExport-light.png) | ![](img/12-card-export/nothingToExport-dark.png) | Reached only by a deck emptied between the count and the export, or by a count of 0. |
 
 Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}_{light,dark}.png`.
@@ -56,7 +56,6 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 | "Export and share" | "Export {n} cards" | UC-TRANSFER-002 step 3 (owner 2026-09-26) |
 | A file name folded to ASCII (`nha-hang-…`) | The deck's own letters (`Nhà-hàng-2026-09-26.csv`) | BR-TRANSFER-013, backend plan C5 |
 | A glyph per banner (share, copy) | The banner's tone glyph | `MxInlineBanner` has no glyph slot |
-| "Moved or sent to Trash" | "Moved or deleted" | V8.0 has no Trash (BR-DECK-022) |
 
 ## Copy
 

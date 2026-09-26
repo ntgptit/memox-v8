@@ -8,6 +8,7 @@ import 'package:memox/features/transfer/presentation/providers/import_file_picke
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -200,4 +201,21 @@ void main() {
       expect(find.text(_en.importCommitAction(1)), findsOneWidget);
     },
   );
+
+  libraryTest('the results footer is one MxActionPair, outline first', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    await _tap(tester, _en.importPreviewAction);
+    await _tap(tester, _en.importCommitAction(1));
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leading!.tone, MxButtonTone.outline);
+    expect(pair.leading!.label, _en.importAnother);
+  });
 }

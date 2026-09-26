@@ -4,38 +4,34 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
+import 'package:memox/features/study/presentation/states/session_context_state.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_fill_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_match_widget.dart';
-import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_session_error_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
-import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 /// The session route (spec D2): the open session's stage in its shell, and
@@ -76,8 +72,17 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// round (spec D5).
   StudySessionView? _lastOpenView;
 
-  StudySessionController get _controller =>
-      ref.read(studySessionControllerProvider(widget.sessionId).notifier);
+  /// Read once: a mode body's dispose (Recall's time save) calls it while
+  /// the tree is being torn down, when no ancestor can be looked up.
+  late final StudySessionController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ref.read(
+      studySessionControllerProvider(widget.sessionId).notifier,
+    );
+  }
 
   void _abandon() => unawaited(_controller.abandon());
 
@@ -119,6 +124,21 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     _heldPair = null;
     _controller.release();
   }
+
+  /// The clock ran out: a wrong turn, held until Continue (R2, D5).
+  void _timeUp(StudyItem item) => unawaited(
+    _controller.answer(
+      item,
+      const RecallAnswer(RecallOutcome.timedOut),
+      shouldHoldFeedback: true,
+    ),
+  );
+
+  /// A Fill answer is held: a right one is released at once, a wrong one
+  /// on Continue (F3, D5).
+  void _check(StudyItem item, String typed) => unawaited(
+    _controller.answer(item, FillAnswer(typed), shouldHoldFeedback: true),
+  );
 
   void _grade(StudyItem item, Sm2Action action) =>
       unawaited(_controller.answer(item, SelfAssessAnswer(action)));
@@ -201,8 +221,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
       // The deck is gone: the listener leaves.
       AsyncData() => const MxAppShell(body: SizedBox.shrink()),
-      AsyncError() => _errorPage(context),
-      _ => const _LoadingPage(),
+      AsyncError() => StudySessionErrorWidget(
+        onClose: () => widget.onLeave(null),
+        onRetry: _reload,
+      ),
+      _ => const StudySessionLoadingWidget(),
     };
     return PopScope(canPop: false, onPopInvokedWithResult: _onPop, child: page);
   }
@@ -248,7 +271,9 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     // A held turn stays on screen until its mode releases it (D5).
     final item = turn.held?.item ?? view.currentItem;
     // Stalled: the listener settles it.
-    if (progress == null || item == null) return const _LoadingPage();
+    if (progress == null || item == null) {
+      return const StudySessionLoadingWidget();
+    }
     final mode = l10n.studyMode(view.currentMode);
     return MxAppShell(
       appBar: MxStudyTopBar(
@@ -261,11 +286,16 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ),
         closeLabel: l10n.studySessionClose,
         onClose: _abandon,
+        // Recall and Fill carry the mastery accent (kit; FE-A6 P4 R3).
+        accent: switch (view.currentMode) {
+          StudyMode.recall || StudyMode.fill => context.semanticColors.mastery,
+          _ => null,
+        },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SessionContextLineWidget(text: _contextOf(l10n, view, mode)),
+          SessionContextLineWidget(text: sessionContextOf(l10n, view, mode)),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -293,39 +323,6 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
-  /// The context line: deck, kind and mode (a learning session adds its
-  /// stage); a round-based stage adds its round, Guess its first-pick rule
-  /// and Match the board's pairs left (handoffs 17, 18; FE-A6 P3 M3).
-  String _contextOf(AppLocalizations l10n, StudySessionView view, String mode) {
-    final base = switch (view.kind) {
-      SessionKind.learning => l10n.studyContextLearning(
-        view.deckName,
-        l10n.studyKindLearning,
-        view.currentStageIndex + 1,
-        view.stages.length,
-        mode,
-      ),
-      SessionKind.reviewing => l10n.studyContextReview(
-        view.deckName,
-        l10n.studyKindReview,
-        mode,
-      ),
-    };
-    if (!view.currentMode.handler.usesRounds) return base;
-    final round = l10n.studyContextRound(base, view.currentRound ?? 1);
-    return switch (view.currentMode) {
-      StudyMode.guess => l10n.studyContextFirstPick(round),
-      StudyMode.match => l10n.studyContextPairsLeft(
-        round,
-        view.board?.terms.where((tile) => !tile.isMatched).length ?? 0,
-      ),
-      StudyMode.browse ||
-      StudyMode.selfAssess ||
-      StudyMode.recall ||
-      StudyMode.fill => round,
-    };
-  }
-
   /// One body per mode (D3): a seventh mode is a compile error here.
   Widget _modeBody(
     StudySessionView view,
@@ -349,7 +346,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       key: ValueKey('guess#${item.cardId}#${item.round}'),
       item: item,
       chosenCardId: _chosenCardId,
-      result: turn.held?.item.cardId == item.cardId ? turn.held?.result : null,
+      result: turn.held?.result,
       isBusy: turn.isBusy,
       onPick: (optionCardId) => _pick(item, optionCardId),
       onContinue: _release,
@@ -364,45 +361,26 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       onPair: (term, meaning) => _pair(item, term, meaning),
       onSettled: _release,
     ),
-    StudyMode.recall ||
-    StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
+    StudyMode.recall => StudyRecallWidget(
+      key: ValueKey('recall#${item.cardId}#${item.answersInSession}'),
+      item: item,
+      result: turn.held?.result,
+      isBusy: turn.isBusy,
+      onReveal: (ms) => unawaited(_controller.revealRecall(item, ms)),
+      onSaveTime: (ms) => unawaited(_controller.saveRecallTime(item, ms)),
+      onAnswer: (outcome) =>
+          unawaited(_controller.answer(item, RecallAnswer(outcome))),
+      onTimeUp: () => _timeUp(item),
+      onContinue: _release,
+    ),
+    StudyMode.fill => StudyFillWidget(
+      key: ValueKey('fill#${item.cardId}#${item.answersInSession}'),
+      item: item,
+      result: turn.held?.result,
+      isBusy: turn.isBusy,
+      onCheck: (typed) => _check(item, typed),
+      onShowHint: () => unawaited(_controller.showFillHint(item)),
+      onContinue: _release,
+    ),
   };
-
-  /// The session could not be read (E5): retry, or close.
-  Widget _errorPage(BuildContext context) {
-    final l10n = context.l10n;
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.navStudy,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.close,
-          semanticLabel: l10n.studySessionClose,
-          onPressed: () => widget.onLeave(null),
-        ),
-      ),
-      body: MxScreenScroll(
-        children: [
-          MxErrorState(
-            title: l10n.studySessionErrorTitle,
-            body: l10n.studySessionErrorBody,
-            retryLabel: l10n.commonRetry,
-            onRetry: _reload,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Before the session's first view: nothing to show but the wait. The
-/// summary arrives with the session's view, so it has no loading of its
-/// own (D2).
-class _LoadingPage extends StatelessWidget {
-  const _LoadingPage();
-
-  @override
-  Widget build(BuildContext context) => MxAppShell(
-    body: Center(child: MxSpinner(semanticLabel: context.l10n.commonLoading)),
-  );
 }

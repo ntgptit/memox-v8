@@ -279,19 +279,24 @@ void main() {
     expect(find.text(_vi.libraryDecksCount(2).toUpperCase()), findsOneWidget);
   });
 
-  libraryTest('the root app bar holds Coming soon, which lists what waits', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, deckScreen());
+  libraryTest('the root app bar holds Trash and Coming soon, which lists what '
+      'waits (FE-B1 D1)', (tester, env) async {
+    var trashOpened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(onOpenTrash: () => trashOpened++),
+    );
+    await tester.tap(find.byTooltip(_en.libraryTrash));
+    expect(trashOpened, 1);
 
-    // Reorder moved to a row's sheet (ruling C-L4): one action only.
+    // Reorder moved to a row's sheet (ruling C-L4): Trash and Coming soon.
     expect(
       find.descendant(
         of: find.byType(MxAppBar),
         matching: find.byType(MxIconButton),
       ),
-      findsOneWidget,
+      findsNWidgets(2),
     );
     await tester.tap(find.byTooltip(_en.libraryComingSoon));
     await tester.pumpAndSettle();
@@ -300,7 +305,6 @@ void main() {
     for (final feature in [
       _en.libraryStarterDecks,
       _en.libraryTags,
-      _en.libraryTrash,
       _en.deckStudyOptions,
       _en.comingSoonProgressSort,
     ]) {

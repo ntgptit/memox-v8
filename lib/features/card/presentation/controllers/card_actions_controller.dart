@@ -10,6 +10,7 @@ import 'package:memox/features/card/presentation/providers/edit_card_use_case_pr
 import 'package:memox/features/card/presentation/providers/move_cards_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/select_all_card_ids_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
+import 'package:memox/features/card/presentation/providers/undo_card_deletion_use_case_provider.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -54,9 +55,15 @@ class CardActionsController extends _$CardActionsController {
     targetDeckId: targetDeckId,
   );
 
+  /// Moves the cards to the Trash; its value is one batch per card, which
+  /// an Undo names.
   Future<Outcome<List<String>, CardRejection>> deleteCards({
     required Set<String> cardIds,
   }) => ref.read(deleteCardsUseCaseProvider)(cardIds: cardIds);
+
+  Future<Outcome<void, CardRejection>> undoCardDeletion({
+    required String batchId,
+  }) => ref.read(undoCardDeletionUseCaseProvider)(batchId: batchId);
 
   Future<Outcome<CardEntity, CardRejection>> createCard({
     required String deckId,

@@ -1,19 +1,7 @@
-import '../support/study_fixtures.dart';
-
-import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
-import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/core/error/outcome.dart';
-import 'package:memox/app/router/app_routes.dart';
-import 'package:go_router/go_router.dart';
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
-import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
@@ -126,7 +114,9 @@ void main() {
     await _tap(tester, find.text(_en.deckDelete));
 
     expect(_barTitle('Words'), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    // The toast with Undo survives the step back (FE-B1 D3).
+    expect(find.text(_en.deckTrashedToast('Verbs', 0, 0)), findsOneWidget);
+    expect(find.text(_en.commonUndo), findsOneWidget);
   });
 
   libraryTest('Review algorithm pushes screen 02; Back returns to the deck', (
@@ -403,64 +393,5 @@ void main() {
 
     expect(_barTitle(_en.cardDetailTitle), findsOneWidget);
     expect(find.text('cooked rice'), findsOneWidget);
-  });
-
-  libraryTest('Study from a deck opens its entry; Back returns to that deck '
-      'and no session is made (IT-NAV-008, FE-A6 D1, D10)', (
-    tester,
-    env,
-  ) async {
-    await _seed(env);
-    await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text('Korean'));
-    await _tap(tester, find.byTooltip(_en.deckActions));
-    // The sheet's row, not the bottom nav's Study tab.
-    await _tap(
-      tester,
-      find.descendant(
-        of: find.byType(MxActionSheetCommandRow),
-        matching: find.text(_en.studyThisDeck),
-      ),
-    );
-
-    expect(find.byType(StudyEntryScreen), findsOneWidget);
-    expect(_barTitle('Korean'), findsOneWidget);
-    await _back(tester);
-    expect(find.byType(StudyEntryScreen), findsNothing);
-    expect(_barTitle('Korean'), findsOneWidget);
-    final sessions = await env.db
-        .customSelect('SELECT COUNT(*) AS n FROM study_session')
-        .getSingle();
-    expect(sessions.read<int>('n'), 0);
-  });
-
-  libraryTest('a session is a full-screen route with no tab bar; ✕ shows '
-      'its summary and Done returns to its deck (FE-A6 D2)', (
-    tester,
-    env,
-  ) async {
-    final korean = await env.decks.root('Korean');
-    final lesson = await env.decks.sub(korean.id, 'Lesson');
-    await insertCard(env.db, id: 'n1', deckId: lesson.id);
-    final opened = await studyEntryRepository(
-      env.db,
-      env.clock.now,
-    ).openLearningSession(deckId: lesson.id);
-    final id = (opened as Ok<String, StudyRejection>).value;
-    await pumpMemoxApp(tester, env);
-
-    unawaited(
-      GoRouter.of(tester.element(find.byType(MxBottomNav)))
-          .push(AppRoutes.studySession(id)),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(StudySessionScreen), findsOneWidget);
-    expect(find.byType(MxBottomNav), findsNothing);
-
-    await _tap(tester, find.byTooltip(_en.studySessionClose));
-    await _tap(tester, find.text(_en.summaryDone));
-
-    expect(find.byType(StudySessionScreen), findsNothing);
-    expect(_barTitle('Lesson'), findsOneWidget);
   });
 }

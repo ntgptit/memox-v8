@@ -156,10 +156,11 @@ class DeckActionSheetWidget extends StatelessWidget {
           subtitle: l10n.deckReorderHint,
           onTap: () => choose(DeckAction.reorder),
         ),
+      // Recoverable, so not destructive (FE-B1, kit 01).
       MxActionSheetCommandRow(
         icon: AppIcons.delete,
         label: l10n.deckDelete,
-        isDestructive: true,
+        subtitle: l10n.deckDeleteHint,
         onTap: () => choose(DeckAction.delete),
       ),
     ];

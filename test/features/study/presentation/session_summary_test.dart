@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
@@ -192,5 +193,18 @@ void main() {
       textScale: 2,
     );
     expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the footer is one MxActionPair: Study this deck 5, Done 6', (
+    tester,
+    env,
+  ) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, 5);
+    expect(pair.trailingFlex, 6);
+    expect(pair.leading!.label, _en.studyThisDeck);
+    expect(pair.leading!.isSingleLine, isTrue);
   });
 }

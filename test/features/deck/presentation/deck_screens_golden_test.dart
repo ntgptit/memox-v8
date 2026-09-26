@@ -140,6 +140,28 @@ void main() {
       });
     });
 
+    libraryTest('moved to Trash with Undo, $theme', (tester, env) async {
+      final ids = await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          deckScreen(deckId: ids.words),
+          brightness,
+        );
+        await tester.tap(find.byTooltip(_en.deckActions));
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckDelete));
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckDelete));
+        await _settleOverlay(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_deck_trashed_$theme.png',
+        );
+      });
+    });
+
     libraryTest('Library at text scale 2, $theme', (tester, env) async {
       await _seed(env);
       await withRealShadows(() async {

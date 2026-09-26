@@ -10,6 +10,7 @@ import 'package:memox/features/srs/di/reset_learning_progress_use_case_provider.
 import 'package:memox/features/deck/presentation/providers/move_deck_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/delete_deck_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/rename_deck_use_case_provider.dart';
+import 'package:memox/features/deck/presentation/providers/undo_deck_deletion_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/providers/create_sub_deck_use_case_provider.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
@@ -44,8 +45,13 @@ class DeckActionsController extends _$DeckActionsController {
     required String name,
   }) => ref.read(renameDeckUseCaseProvider)(deckId: deckId, name: name);
 
+  /// Moves the deck to the Trash; its value is the batch an Undo names.
   Future<Outcome<String, DeckRejection>> deleteDeck({required String deckId}) =>
       ref.read(deleteDeckUseCaseProvider)(deckId: deckId);
+
+  Future<Outcome<void, DeckRejection>> undoDeckDeletion({
+    required String batchId,
+  }) => ref.read(undoDeckDeletionUseCaseProvider)(batchId: batchId);
 
   Future<Outcome<void, DeckRejection>> moveDeck({
     required String deckId,

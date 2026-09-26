@@ -174,4 +174,28 @@ void main() {
     expect(find.byType(MxButton), findsOneWidget);
     expect(find.text('Cancel'), findsNothing);
   });
+
+  testWidgets('labels too long for their shares stack the pair', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Giữ lại tất cả',
+          onCancel: () {},
+          confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
+          confirmIcon: Icons.delete,
+          isDestructive: true,
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final cancel = tester.getRect(_button('Giữ lại tất cả'));
+    final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
+
+    expect(confirm.top, greaterThan(cancel.bottom));
+    expect(cancel.width, confirm.width);
+    expect(tester.takeException(), isNull);
+  });
 }

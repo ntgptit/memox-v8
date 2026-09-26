@@ -226,4 +226,85 @@ void main() {
       isTrue,
     );
   });
+
+  /// Two due eight_box cards with an example and a hint, reviewed in [mode].
+  Future<String> graded(StudyMode mode) async {
+    final (root, leaf) = await tree();
+    for (final id in ['a', 'b']) {
+      await insertCard(
+        db,
+        id: id,
+        deckId: leaf,
+        example: 'example $id',
+        hint: 'hint $id',
+        learnedAt: DateTime(2026, 9, 1),
+        dueAt: DateTime(2026, 9, 24, 8),
+        box: 2,
+      );
+    }
+    await lockScheduler(db, root);
+    final opened = await studyEntryRepository(
+      db,
+      () => _now,
+    ).openReviewSession(deckId: leaf, mode: mode);
+    return (opened as Ok<String, StudyRejection>).value;
+  }
+
+  test('revealing a recall answer keeps its time left and shows it '
+      'revealed (FE-A6 P4 R1, BR-STUDY-065)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+
+    await controller.revealRecall(await servedOf(id), 12000);
+
+    final after = await servedOf(id);
+    expect(after.isRevealed, isTrue);
+    expect(after.remainingMs, 12000);
+    expect(container.read(studySessionControllerProvider(id)).isBusy, isFalse);
+  });
+
+  test('a second reveal while the first writes is dropped '
+      '(BR-STUDY-004)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+    final item = await servedOf(id);
+
+    await Future.wait([
+      controller.revealRecall(item, 12000),
+      controller.revealRecall(item, 5000),
+    ]);
+
+    expect((await servedOf(id)).remainingMs, 12000);
+  });
+
+  test('saving recall time keeps it and never marks a write running '
+      '(spec D12)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+
+    final saving = controller.saveRecallTime(await servedOf(id), 15000);
+    expect(container.read(studySessionControllerProvider(id)).isBusy, isFalse);
+    await saving;
+
+    expect((await servedOf(id)).remainingMs, 15000);
+  });
+
+  test('a time outside the turn is clamped, never thrown (R1)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+
+    await controller.saveRecallTime(await servedOf(id), -5);
+
+    expect((await servedOf(id)).remainingMs, 0);
+  });
+
+  test('showing a fill hint marks it shown (BR-STUDY-028)', () async {
+    final id = await graded(StudyMode.fill);
+    final controller = await controllerOf(id);
+
+    await controller.showFillHint(await servedOf(id));
+
+    expect((await servedOf(id)).isHintShown, isTrue);
+    expect(container.read(studySessionControllerProvider(id)).isBusy, isFalse);
+  });
 }

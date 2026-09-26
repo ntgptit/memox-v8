@@ -113,4 +113,25 @@ void main() {
       color: ink,
     );
   });
+
+  test('recall and fill: the passage is 16/400 at 1.55, the fill answer '
+      '24/700 at -0.3, struck through when wrong (FE-A6 P4)', () {
+    expectStyle(
+      styles.studyPassage,
+      size: 16,
+      weight: FontWeight.w400,
+      color: scheme.onSurface,
+    );
+    expect(styles.studyPassage.height, 1.55);
+    final ink = scheme.error;
+    final struck = styles.fillAnswer(ink, isStruck: true);
+    expectStyle(struck, size: 24, weight: FontWeight.w700, tracking: -0.3);
+    expect(struck.color, ink);
+    expect(struck.decoration, TextDecoration.lineThrough);
+    expect(struck.decorationColor, ink);
+    expect(
+      styles.fillAnswer(ink, isStruck: false).decoration,
+      isNot(TextDecoration.lineThrough),
+    );
+  });
 }

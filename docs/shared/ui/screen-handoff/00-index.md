@@ -17,6 +17,9 @@ The screens of the V3 handoff. The generated handoff next to this folder
 - **Images:** `img/<screen>/<state>-{light,dark}.png`, 390 px, only the states V8
   supports, captured with `node tools/design/capture_screens.mjs --html <artifact.html>`
   (states listed in `tools/design/screen_states.json`).
+- **State checklist:** every state of every kit screen, and whether it is built, is in
+  [../screen-state-checklist.md](../screen-state-checklist.md). This index tracks screens;
+  the checklist tracks states.
 
 ## Status values
 
@@ -35,23 +38,23 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 03 | Starter decks | 10 | FE-B4 | out of V8 | — |
 | 04 | Library search | 5 | FE-A1, FE-A10 | aligned | [04-library-search.md](04-library-search.md) |
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |
-| 06 | Trash | 15 | FE-B1 | out of V8 | — |
+| 06 | Trash | 15 | FE-B1 | aligned | [06-trash.md](06-trash.md) |
 | 07 | Card list | 15 | FE-A2 | aligned | [07-card-list.md](07-card-list.md) |
 | 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
-| 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
+| 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84; Move to Trash in [07-card-list.md](07-card-list.md)) |
 | 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
-| 13 | Study home | 7 | FE-A8 | not built | [13-study-home.md](13-study-home.md) |
-| 14 | Study entry | 9 | FE-A6, FE-A7 | built (P2) | [14-study-entry.md](14-study-entry.md) |
+| 13 | Study home | 7 | FE-A8 | built (P6) | [13-study-home.md](13-study-home.md) |
+| 14 | Study entry | 9 | FE-A6, FE-A7 | aligned | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | not built | — |
-| 16 | Study · Browse | 1 | FE-A6 | built (P1c) | [16-study-browse.md](16-study-browse.md) |
-| 16a | Study · Self-check (`self_assess`; not in the kit) | — | FE-A6 | built (P2) | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
-| 17 | Study · Match | 1 | FE-A6 | built (P3) | [17-study-match.md](17-study-match.md) |
-| 18 | Study · Guess | 1 | FE-A6 | built (P3) | [18-study-guess.md](18-study-guess.md) |
-| 19 | Study · Recall | 3 | FE-A6 | not built | [19-study-recall.md](19-study-recall.md) |
-| 20 | Study · Fill | 3 | FE-A6 | not built | [20-study-fill.md](20-study-fill.md) |
-| 21 | Session summary | 10 | FE-A6 | built (P1c) | [21-session-summary.md](21-session-summary.md) |
+| 16 | Study · Browse | 1 | FE-A6 | aligned | [16-study-browse.md](16-study-browse.md) |
+| 16a | Study · Self-check (`self_assess`; not in the kit) | — | FE-A6 | aligned | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
+| 17 | Study · Match | 1 | FE-A6 | aligned | [17-study-match.md](17-study-match.md) |
+| 18 | Study · Guess | 1 | FE-A6 | aligned | [18-study-guess.md](18-study-guess.md) |
+| 19 | Study · Recall | 3 | FE-A6 | aligned | [19-study-recall.md](19-study-recall.md) |
+| 20 | Study · Fill | 3 | FE-A6 | aligned | [20-study-fill.md](20-study-fill.md) |
+| 21 | Session summary | 10 | FE-A6 | aligned | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 8 | FE-A9 | not built | — |
 | 23 | Settings | 8 | FE-A3 | not built | — |
 | 24 | Daily reminder | 9 | FE-B5 | out of V8 | — |
@@ -64,7 +67,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
   sheet names each such feature (spec A4, amended 2026-09-25).
 - **Data displays without their data** are hidden, never drawn empty: an empty mastery
   bar would claim 0 % (spec A5).
-- **Delete is permanent in V8.0** (BR-DECK-022, BR-DECK-023). Every "Move to Trash",
-  "Recoverable for 30 days" and "Undo" of the artifact becomes a permanent delete with
-  a count, until the Trash sub-project (UC-TRASH-001).
+- **Delete moves to the Trash** (UC-TRASH-001). "Move to Trash", "Recoverable for 30
+  days" and "Undo" are built as the artifact draws them: Undo after one item, for 8
+  seconds and until acted on under TalkBack (FE-B1 D3, D14).
 - **Copy** is the artifact's English; Vietnamese is added to the ARB with the screen.
