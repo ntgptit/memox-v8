@@ -14,7 +14,7 @@ snapshot. UC-STUDY-002.
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
-| Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0 — BR-STUDY-076); trailing `MxBadge` "{n} due" when due > 0, else a chevron. A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
+| Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); trailing `MxBadge` "{n} due" when due > 0, else a chevron. A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
 
 ## States
 
@@ -55,16 +55,17 @@ Not captured: none — all seven kit states are V8-supported.
 | The zero card's check tile in the mastery green | The `success` tone | FE-A6 spec D14: green is mastery's alone |
 | Resume in the soft-primary pill | `MxButton` primary, block, with the play glyph | FE-A8 ruling S9: `primary-soft` is PRESERVE_ONLY in the theme binding |
 | "Library" as a text link with a chevron | A compact secondary `MxButton` | Ruling E-L3, as the handoff's layout names it |
-| The hero's breakdown in one line | It wraps, so "across {n} decks" is never cut; rows keep one line | Kit hero style (`whiteSpace: normal`) |
+| The hero's breakdown in one line; a row's breakdown on one fixed ellipsized band | Both wrap, between whole terms only, so "across {n} decks" and every row count are never cut | Kit hero style (`whiteSpace: normal`); BR-STUDY-076 for rows (after P6) |
 | Loading: a three-line hero skeleton, a section-header bar and a trailing pill on each row | A two-bar hero skeleton and the standard `MxSkeletonList` rows | UI-base ruling O3: one list skeleton shape app-wide; no BR calls for a bespoke one (Impeccable after P6) |
+| A deck row drops a zero term ("2 new"), falls back to "{n} cards · nothing due" when all three are zero, and draws no glyph | A deck with cards always states "0 overdue · 0 today · 2 new", a zero term muted; each term leads with its glyph (history, zap, sparkles) in its ink; a deck with no card still reads "No cards yet" | BR-STUDY-076 (three counts always shown, each with its own icon and label); BR-STUDY-077 (no workload stated for an empty deck). Fixed after P6 (Codex review on #85) |
 | The empty states' "Go to Library" carries a layers glyph | No glyph | `MxEmptyState`'s action takes no icon (a shared-widget trait on every screen; Impeccable after P6) |
 
 ## Accessibility
 
-- The dot and the glyphs are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
+- The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
 - A deck with no card is shown dimmed and read as a disabled button (S4); every row is at least 48 tall.
 - The hero title, "across {n} decks" and "{n} due" are plurals (S5).
-- At 2x a row's breakdown stays on one line and ellipsizes; its first term always shows (S6). The hero's breakdown wraps.
+- A row's breakdown wraps between whole terms (glyph, count, word and dot stay together) instead of ellipsizing, so all three counts show at any text size (BR-STUDY-076; replaces S6's one-line ellipsis). The hero's breakdown wraps the same way.
 
 ## Copy
 
