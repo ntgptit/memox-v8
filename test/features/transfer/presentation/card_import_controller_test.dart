@@ -142,6 +142,34 @@ void main() {
     },
   );
 
+  test(
+    'a second tap while the picker is open does not open it again',
+    () async {
+      final pending = Completer<ImportPickedFile?>();
+      var opened = 0;
+      final c = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          importFilePickerProvider.overrideWithValue(() {
+            opened++;
+            return pending.future;
+          }),
+        ],
+      );
+      addTearDown(c.dispose);
+      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+
+      final first = wizard.chooseFile();
+      final second = wizard.chooseFile();
+      pending.complete(picked);
+      await Future.wait([first, second]);
+
+      expect(opened, 1);
+      expect((draftOf(c).fileName, draftOf(c).isBusy), ('vocab.csv', false));
+    },
+  );
+
   test('a cancelled picker keeps the source chosen before (A5)', () async {
     final c = container();
     final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);

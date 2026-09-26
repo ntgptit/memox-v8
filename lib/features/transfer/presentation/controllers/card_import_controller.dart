@@ -31,6 +31,8 @@ class CardImportController extends _$CardImportController {
   Future<void> chooseFile() async {
     final draft = _draft;
     if (draft == null || draft.isBusy) return;
+    // Busy while the picker is open, so a second tap does not open it again.
+    state = draft.copyWith(isBusy: true);
     final ImportPickedFile? picked;
     try {
       picked = await ref.read(importFilePickerProvider)();
@@ -40,7 +42,11 @@ class CardImportController extends _$CardImportController {
       state = draft.copyWith(problem: TransferRejection.unreadableFile);
       return;
     }
-    if (!ref.mounted || picked == null) return;
+    if (!ref.mounted) return;
+    if (picked == null) {
+      state = draft;
+      return;
+    }
     final format = TransferFormat.ofFileName(picked.name);
     if (format == null) {
       state = CardImportDraft(
