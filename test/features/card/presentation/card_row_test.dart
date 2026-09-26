@@ -7,6 +7,7 @@ import 'package:memox/features/card/presentation/widgets/items/card_row_widget.d
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
@@ -169,5 +170,35 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('while selecting, the checkbox is centred on a tall row', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(
+            back: 'a back long enough to need its full line in the row',
+            isFlagged: true,
+            tags: ['hay nham', 'TOPIK I', 'dong tu'],
+          ),
+          isSelecting: true,
+          isSelected: false,
+        ),
+      ]),
+    );
+    final box = tester.getRect(find.byType(MxSelectionCheckbox));
+    final card = tester.getRect(
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.byType(MxCard),
+      ),
+    );
+
+    expect(box.center.dy, closeTo(card.center.dy, 0.5));
   });
 }

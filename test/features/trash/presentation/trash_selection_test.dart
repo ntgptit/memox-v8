@@ -9,6 +9,9 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
+import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
+import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -237,5 +240,27 @@ void main() {
     );
     expect(pair.leading!.label, _en.trashPurgeKeep);
     expect(pair.leading!.isAutofocused, isTrue);
+  });
+
+  libraryTest('while selecting, each checkbox is centred on its row', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _tap(tester, _button(_en.trashSelect));
+
+    final rows = find.byType(TrashEntryRowWidget);
+    expect(rows, findsWidgets);
+    for (var i = 0; i < tester.widgetList(rows).length; i++) {
+      final row = rows.at(i);
+      final box = tester.getRect(
+        find.descendant(of: row, matching: find.byType(MxSelectionCheckbox)),
+      );
+      final card = tester.getRect(
+        find.descendant(of: row, matching: find.byType(MxCard)),
+      );
+      expect(box.center.dy, closeTo(card.center.dy, 0.5));
+    }
   });
 }
