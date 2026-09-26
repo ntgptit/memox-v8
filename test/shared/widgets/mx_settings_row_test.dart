@@ -127,6 +127,27 @@ void main() {
     );
   });
 
+  testWidgets('with a wide control the tile sits at the top, beside the '
+      'label, as in kit 23', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Cards per session',
+          subtitle: '1 to 200 · default 20',
+          icon: AppIcons.library,
+          wideControl: SizedBox(key: _controlKey, width: 120, height: 36),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxIconTile)).dy -
+          tester.getTopLeft(find.byType(MxSettingsRow)).dy,
+      12,
+    );
+  });
+
   testWidgets('dimmed at 0.38 while unavailable', (tester) async {
     var taps = 0;
     await pumpMx(

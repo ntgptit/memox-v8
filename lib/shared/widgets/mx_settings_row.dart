@@ -59,13 +59,25 @@ class MxSettingsRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
           child: Row(
             spacing: AppSpacing.gutter,
+            // Kit 23: beside a wide control the tile stays with the label.
+            crossAxisAlignment: wideControl == null
+                ? CrossAxisAlignment.center
+                : CrossAxisAlignment.start,
             children: [
               if (icon case final glyph?)
-                SizedBox(
-                  width: _leadColumn,
-                  child: Center(
-                    heightFactor: 1,
-                    child: MxIconTile(icon: glyph, size: MxIconTileSize.medium),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: wideControl == null ? 0 : AppSpacing.grouped,
+                  ),
+                  child: SizedBox(
+                    width: _leadColumn,
+                    child: Center(
+                      heightFactor: 1,
+                      child: MxIconTile(
+                        icon: glyph,
+                        size: MxIconTileSize.medium,
+                      ),
+                    ),
                   ),
                 ),
               // As in MxListRow, only the text carries the 12/12 inset, so a
