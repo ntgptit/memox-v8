@@ -25,7 +25,7 @@ snapshot. UC-STUDY-002.
 | zero | ![](img/13-study-home/zero-light.png) | ![](img/13-study-home/zero-dark.png) | As drawn: every root deck holds cards but nothing is due; rows still list every deck with 0/0/0 (BR-STUDY-008, BR-STUDY-077). |
 | noDecks | ![](img/13-study-home/noDecks-light.png) | ![](img/13-study-home/noDecks-dark.png) | **Deviation:** "Browse starter decks" is hidden; "Go to Library" is the only action. |
 | noCards | ![](img/13-study-home/noCards-light.png) | ![](img/13-study-home/noCards-dark.png) | As drawn: root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
-| loading | ![](img/13-study-home/loading-light.png) | ![](img/13-study-home/loading-dark.png) | As drawn (skeletons in the hero and row shapes). |
+| loading | ![](img/13-study-home/loading-light.png) | ![](img/13-study-home/loading-dark.png) | Skeletons in the hero and row shapes; simplified — see Deviations. |
 | error | ![](img/13-study-home/error-light.png) | ![](img/13-study-home/error-dark.png) | As drawn (`MxErrorState`, retry; no table/query names — BR-STUDY-077). |
 
 Not captured: none — all seven kit states are V8-supported.
@@ -56,6 +56,8 @@ Not captured: none — all seven kit states are V8-supported.
 | Resume in the soft-primary pill | `MxButton` primary, block, with the play glyph | FE-A8 ruling S9: `primary-soft` is PRESERVE_ONLY in the theme binding |
 | "Library" as a text link with a chevron | A compact secondary `MxButton` | Ruling E-L3, as the handoff's layout names it |
 | The hero's breakdown in one line | It wraps, so "across {n} decks" is never cut; rows keep one line | Kit hero style (`whiteSpace: normal`) |
+| Loading: a three-line hero skeleton, a section-header bar and a trailing pill on each row | A two-bar hero skeleton and the standard `MxSkeletonList` rows | UI-base ruling O3: one list skeleton shape app-wide; no BR calls for a bespoke one (Impeccable after P6) |
+| The empty states' "Go to Library" carries a layers glyph | No glyph | `MxEmptyState`'s action takes no icon (a shared-widget trait on every screen; Impeccable after P6) |
 
 ## Accessibility
 
