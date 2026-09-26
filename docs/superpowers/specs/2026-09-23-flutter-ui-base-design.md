@@ -506,6 +506,7 @@ item names where it comes from.
 | 101 | "Add details" is 48 tall (the touch minimum), not the kit's 42, with a solid `outlineVariant` edge instead of dashed: there is no dashed-border token (row 81); its field list is 12/600, not 12/500 | card editor fields (audit 2026-09-25) |
 | 102 | Single-line user text sits at line-height 1.5, not the kit's values (screen title 1.2, list row title 1.35, row sub-line and tag 1.4), so an ellipsized name keeps its stacked marks. A ListRow with a sub-line is about 4 px taller, and the screen title grows the app bar sooner under text scaling. The editor term (1.25) wraps instead of clipping and keeps the kit's value; a card row's back (`rowDescription`, 1.45) was measured holding the marks and keeps its value, pinned by the same golden | FE-C2 |
 | 103 | The detail field (kit OptionalField) grows from 48, the touch minimum, not the kit's 40: its whole box is the tap target, and the screen 09 visual audit failed Android's 48 dp guideline at 40 | FE-D2 visual audit |
+| 104 | P3 accessibility (open): `MxListSectionHeader` and its trailing `MxBadge` are two TalkBack nodes, so a group reads "Decks", then a bare "2"; screens 04 and 07. Merge the header's semantics in the shared widget in a later UI-base debt batch | FE-A10 spec D25 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

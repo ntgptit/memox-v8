@@ -16,7 +16,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
-import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
+import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -64,8 +64,9 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                 ),
                 GoRoute(
                   path: AppRoutes.searchChild,
-                  builder: (context, state) => DeckSearchScreen(
+                  builder: (context, state) => LibrarySearchScreen(
                     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
+                    onOpenCard: (id) => context.push(AppRoutes.card(id)),
                   ),
                 ),
                 GoRoute(

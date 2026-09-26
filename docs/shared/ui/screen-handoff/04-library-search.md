@@ -2,48 +2,46 @@
 
 # 04 · Library search
 
-`/decks/search`. UC-SEARCH-001, decks only until FE-A10 moves the screen to
-`SearchLibraryUseCase` (the backend, BE-A8, is done).
+`/decks/search`. UC-SEARCH-001 on `SearchLibraryUseCase`: deck names, both card faces
+and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-search-ui-design.md)).
 
 ## Layout
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` with its title-widget slot | Back, then `MxSearchField` (focused on entry). No title. |
-| Empty query | label, `MxCard` of `MxListRow`s, `MxNote` | No query runs (BR-SEARCH-003). "SEARCH FINDS"; one hint row "a deck name" / "TOPIK, Học qua phim"; note "Case does not matter, accents do: “hoc” will not find “học”." |
-| Searching | label, `MxSkeleton` | "Searching for “{query}”…", skeleton rows. |
-| Results | label, group header, `MxCard` of `MxListRow`s | "Results for “{query}”"; group **Decks** (layers glyph, primary title, count pill); each row: tile by content type, name with the match emphasised, "{path} · holds cards" or "· holds sub-decks", chevron. |
-| No results | `MxEmptyState` (neutral, compact) | "No matches for “{query}”" / "Accents matter — “hoc” does not find “học”. Search covers deck names." |
+| App bar | `MxAppBar` with its title-widget slot | Back, then `MxSearchField` (focused on entry), hint "Search decks, cards, tags". No title. |
+| Empty query | label, `MxCard` of `MxListRow`s, `MxNote` | No query runs (BR-SEARCH-003). "SEARCH FINDS"; three read-only hint rows: "a deck name" / "TOPIK, Học qua phim", "a card term or meaning" / "학생, học sinh, homework", "a tag name" / "verb, Học"; note "Case does not matter, accents do: “hoc” will not find “học”. Examples, hints and pronunciation are not searched." |
+| Searching | label, skeleton groups | "Searching for “{query}”…", then two groups, each a short header bar and three skeleton rows inside an `MxCard`. |
+| Results | label, group headers, `MxCard`s of `MxListRow`s | "Results for “{query}”"; group **Decks** then group **Cards** (BR-SEARCH-005), a group with no row has no header; each header counts the rows loaded, "{n}+" on the last group while another page follows. Deck row: tile by content type, name with the match emphasised, "{path} · holds cards / sub-decks / empty", chevron. Card row: card tile, "{front} · {back}" with the match emphasised in the face that holds it, a sub-line with the matched tag's `MxTagChip` when the card was found by a tag only, then the deck path; chevron; opens the card detail. |
+| More | `MxButton` (secondary, block) | "Load more results" while another page follows (BR-SEARCH-007), busy while it reads. |
+| Footer | caption | "Decks first, then cards · case-insensitive, accents matter". |
+| No results | `MxEmptyState` (neutral, compact) | Search-off glyph; "No matches for “{query}”" / "Accents matter — “hoc” does not find “học”. Search covers deck names, card terms and meanings, and tag names." |
 | Error | `MxErrorState` | "Search didn't run" / "Your library is safe on this device. Try again in a moment." |
+| Load more failed | `MxInlineBanner` (danger) + Retry | The rows stay; the end of the list says "Couldn't load more results. What is shown is still correct." (UC-SEARCH-001 E2). |
 
 ## States
 
 | State | Light | Dark | V8 |
 |---|---|---|---|
-| emptyQuery | ![](img/04-library-search/emptyQuery-light.png) | ![](img/04-library-search/emptyQuery-dark.png) | Only the deck hint row; the note names deck names only. |
-| loading | ![](img/04-library-search/loading-light.png) | ![](img/04-library-search/loading-dark.png) | One skeleton group. |
-| results | ![](img/04-library-search/results-light.png) | ![](img/04-library-search/results-dark.png) | The Decks group only. |
-| noResults | ![](img/04-library-search/noResults-light.png) | ![](img/04-library-search/noResults-dark.png) | Body names deck names only. |
+| emptyQuery | ![](img/04-library-search/emptyQuery-light.png) | ![](img/04-library-search/emptyQuery-dark.png) | As drawn, without the fill arrows. |
+| loading | ![](img/04-library-search/loading-light.png) | ![](img/04-library-search/loading-dark.png) | As drawn. |
+| results | ![](img/04-library-search/results-light.png) | ![](img/04-library-search/results-dark.png) | As drawn, colours per the deviations. |
+| noResults | ![](img/04-library-search/noResults-light.png) | ![](img/04-library-search/noResults-dark.png) | As drawn. |
 | error | ![](img/04-library-search/error-light.png) | ![](img/04-library-search/error-dark.png) | As drawn. |
+| loadMoreFailed | — (not in the kit) | — | Extrapolated from `MxInlineBanner` (spec D24); golden `test/features/search/presentation/goldens/search_load_more_failed_{light,dark}.png`. |
 
 ## Pending
 
-| Element | Shown as | Waits for |
-|---|---|---|
-| Cards group, tag names on card rows | absent | FE-A10 |
-| "Load more results" | absent | FE-A10 (BR-SEARCH-007) |
-| Hint rows "a card term or meaning", "a tag name" | absent | FE-A10 |
-| Footer "Decks first, then cards · case-insensitive, accents matter" | absent | FE-A10 |
-
-A search hint must not promise a match the screen cannot make, so these are absent
-rather than disabled.
+Nothing pending since FE-A10.
 
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| Searches decks, cards and tags | Decks only | Spec A11; UI-base debt row 74 |
+| Hint rows with a fill arrow | Read-only rows, no arrow: a row with two examples cannot say which one a tap would fill | Owner, 2026-09-26 (spec D9) |
+| Card tiles green, tag tile and tag chip glyph orange | Every tile tinted primary; the matched tag is the neutral `MxTagChip` with no glyph | Green means mastery, amber is the warning tone (spec D19) |
 | Match emphasised in primary 700 with a tinted mark | `rowTitleMatch` (primary, 700), no background mark | Guard: no per-site decoration of text |
+| A card's title shows the match wherever it lies | One line with a trailing ellipsis: a match in a long card's back can be clipped; the row's screen-reader label names both faces, the tag and the path | `MxListRow` keeps every row one height (spec D22) |
 | A 40-tall field in the app bar | `MxSearchField` at its 52 input floor inside the 56 bar | The shared field's touch floor |
-| Group label with a tinted glyph and a small count beside it | `MxListSectionHeader` "DECKS" with a neutral `MxBadge` count at the end | Guard: no `Icon(color:)` in feature code; the shared header's anatomy |
+| Group label and the "SEARCH FINDS" label with a tinted glyph, a small count beside the group label | `MxListSectionHeader` with no glyph; the count is a neutral `MxBadge` at the end | Guard: no `Icon(color:)` in feature code; the shared header's anatomy (spec D26) |
 | Subtitle and hint lines in plain 12/500 | The caption role, tracked 1.2 | Guard: no per-site text styling |

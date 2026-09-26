@@ -1,17 +1,17 @@
 import 'package:flutter/widgets.dart';
+import 'package:memox/core/text/path_label.dart';
+import 'package:memox/core/text/search_match.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
-import 'package:memox/features/deck/domain/models/deck_search_hit_model.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_path_label_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_search_match_widget.dart';
+import 'package:memox/features/search/domain/models/search_hit_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
-/// One deck found by the search (screen 04): its tile, its name with the
-/// match marked (owner decision C-O7), where it sits and what it holds.
-class DeckSearchHitRowWidget extends StatelessWidget {
-  const DeckSearchHitRowWidget({
+/// A deck found by the search (screen 04): its tile, its name with the match
+/// marked, where it sits and what it holds (spec D11).
+class SearchDeckHitRowWidget extends StatelessWidget {
+  const SearchDeckHitRowWidget({
     super.key,
     required this.hit,
     required this.term,
@@ -19,7 +19,7 @@ class DeckSearchHitRowWidget extends StatelessWidget {
     required this.hasDivider,
   });
 
-  final DeckSearchHit hit;
+  final SearchDeckHit hit;
   final String term;
   final VoidCallback onTap;
   final bool hasDivider;
@@ -29,10 +29,10 @@ class DeckSearchHitRowWidget extends StatelessWidget {
     final l10n = context.l10n;
     final path = hit.path.isEmpty
         ? l10n.navLibrary
-        : deckPathLabel([for (final entry in hit.path) entry.name]);
+        : pathLabel([for (final entry in hit.path) entry.name]);
     return MxListRow(
       title: hit.name,
-      titleMatch: deckSearchMatch(hit.name, term),
+      titleMatch: searchMatchRange(hit.name, term),
       subtitle: switch (hit.contentType) {
         DeckContentType.card => l10n.searchHoldsCards(path),
         DeckContentType.deck => l10n.searchHoldsDecks(path),

@@ -77,11 +77,6 @@ final class DeckDao {
   Stream<void> restoreTargetChanges() =>
       tableChanges(_db, [_db.deck, _db.deleteBatches]);
 
-  /// The decks a search inside [scopeId] looks through, every active deck
-  /// when it is null, and the decks on their paths.
-  Stream<List<DeckForestRow>> watchSearchRows(String? scopeId) =>
-      _db.deckSearchScope(scopeId).watch();
-
   /// One statement (`deck_queries.drift`); null when [id] is not an active
   /// deck.
   Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>
