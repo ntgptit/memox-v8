@@ -51,10 +51,11 @@ opens the Direction sheet, then the review; Continue takes up today's session.
 While a session opens, the footer spins with "Starting…" in its caption and the
 Learn button and Continue lock (BR-STUDY-004); a refusal shows the warning
 banner and a failed write the danger banner, whose footer is "Try again"
-(repeating the same start, direction included). `eight_box` reviews in its built modes
-(Match and Guess, FE-A6 P3): the available rows are a pick, the first available one
-picked at first, and the footer reviews the picked mode with the caption "{mode} · {n}
-due cards · oldest first"; Recall and Fill say "Coming soon" until P4, as does Learn. A deck deleted while its entry is open leaves with
+(repeating the same start, direction included). `eight_box` reviews in any mode its
+cards can run (FE-A6 P3; Recall and Fill since P4): the available rows are a pick, the
+first available one picked at first, and the footer reviews the picked mode with the
+caption "{mode} · {n} due cards · oldest first". Every mode has its screen since P4, so
+Learn is offered whenever new cards exist and nothing says "Coming soon". A deck deleted while its entry is open leaves with
 the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 `test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
 
