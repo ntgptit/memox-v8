@@ -56,3 +56,19 @@ final class TrashState {
     return null;
   }
 }
+
+/// The batches a restore sheet is for, equal by value so a provider keyed
+/// by it is found again.
+@immutable
+final class TrashBatchIds {
+  const TrashBatchIds(this.ids);
+
+  final Set<String> ids;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TrashBatchIds && setEquals(other.ids, ids);
+
+  @override
+  int get hashCode => Object.hashAllUnordered(ids);
+}

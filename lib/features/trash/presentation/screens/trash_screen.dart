@@ -11,6 +11,7 @@ import 'package:memox/features/trash/presentation/providers/trash_entries_provid
 import 'package:memox/features/trash/presentation/states/trash_state.dart';
 import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_entry_actions_sheet_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/overlays/trash_restore_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -39,11 +40,18 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   TrashController _trash() => ref.read(trashControllerProvider.notifier);
 
   Future<void> _openActions(TrashEntry entry) async {
-    await showTrashEntryActionsSheet(
+    final action = await showTrashEntryActionsSheet(
       context,
       entry: entry,
       now: ref.read(dayClockProvider).now(),
     );
+    if (action == null || !mounted) return;
+    switch (action) {
+      case TrashEntryAction.restore:
+        await showTrashRestoreSheet(context, entries: [entry]);
+      case TrashEntryAction.purge:
+        break;
+    }
   }
 
   @override

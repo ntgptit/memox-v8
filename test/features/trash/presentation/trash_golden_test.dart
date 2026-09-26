@@ -18,6 +18,13 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 400));
 }
 
+Future<void> _openRestore(WidgetTester tester, String name) async {
+  await tester.tap(find.byTooltip(_en.trashEntryActions(name)));
+  await _settle(tester);
+  await tester.tap(find.text(_en.trashRestore));
+  await _settle(tester);
+}
+
 void main() {
   for (final brightness in Brightness.values) {
     final theme = brightness.name;
@@ -37,6 +44,31 @@ void main() {
         await tester.tap(find.byTooltip(_en.trashEntryActions('meokda · eat')));
         await _settle(tester);
         await expectBoundaryGolden(tester, 'goldens/trash_actions_$theme.png');
+      });
+    });
+
+    libraryTest('trash restore target, $theme', (tester, env) async {
+      await seedTrash(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
+        await _openRestore(tester, 'meokda · eat');
+        await expectBoundaryGolden(
+          tester,
+          'goldens/trash_restore_target_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('trash no restore target, $theme', (tester, env) async {
+      final seed = await seedTrash(env);
+      await env.decks.deleteDeck(deckId: seed.words, now: libraryToday);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
+        await _openRestore(tester, 'meokda · eat');
+        await expectBoundaryGolden(
+          tester,
+          'goldens/trash_no_target_$theme.png',
+        );
       });
     });
 

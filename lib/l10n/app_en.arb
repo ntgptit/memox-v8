@@ -1515,6 +1515,86 @@
   "@trashLoadErrorTitle": {
     "description": "Screen 06: the error state title (UC-TRASH-001 E5)."
   },
+  "trashRestoreOneTitle": "Restore “{name}” to…",
+  "@trashRestoreOneTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 restore sheet title for one entry (UC-TRASH-001 step 5)."
+  },
+  "trashRestoreCardsTitle": "{count, plural, =1{Restore 1 card to…} other{Restore {count} cards to…}}",
+  "@trashRestoreCardsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 restore sheet title for selected cards."
+  },
+  "trashRestoreDecksTitle": "{count, plural, =1{Restore 1 deck to…} other{Restore {count} decks to…}}",
+  "@trashRestoreDecksTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 restore sheet title for selected decks."
+  },
+  "trashRestoreCardsRule": "Its schedule, history, flag and tags come back with it. Only decks in the same tree that hold cards or are empty are offered.",
+  "@trashRestoreCardsRule": {
+    "description": "Screen 06 restore sheet rule for cards (kit 06, BR-TRASH-006)."
+  },
+  "trashRestoreDecksRule": "Its sub-decks and cards come back with it, schedules and history included. Only decks that could take it by a move are offered.",
+  "@trashRestoreDecksRule": {
+    "description": "Screen 06 restore sheet rule for sub-decks (BR-TRASH-006; the kit draws only cards)."
+  },
+  "trashRestoreRootsRule": "A top-level deck goes back to the top level, with everything in it.",
+  "@trashRestoreRootsRule": {
+    "description": "Screen 06 restore sheet rule for top-level decks (BR-TRASH-006)."
+  },
+  "trashRestoreEmptyTitle": "Nowhere to restore right now",
+  "@trashRestoreEmptyTitle": {
+    "description": "Screen 06 restore sheet with no target (UC-TRASH-001 E1)."
+  },
+  "trashRestoreNoCardTargetBody": "No deck in “{root}” can hold cards at the moment. Create an empty sub-deck there, then restore.",
+  "@trashRestoreNoCardTargetBody": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 restore sheet with no card target (kit 06 noTarget); root is the top-level deck the cards came from."
+  },
+  "trashRestoreNoDeckTargetBody": "No deck can take it at the moment. Restore or create the deck it goes under first, then restore.",
+  "@trashRestoreNoDeckTargetBody": {
+    "description": "Screen 06 restore sheet with no deck target (UC-TRASH-001 E1)."
+  },
+  "trashRestoredOne": "“{name}” restored to {deck}",
+  "@trashRestoredOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after one entry is restored (kit 06 restored)."
+  },
+  "trashRestoredMany": "{count, plural, =1{1 entry restored to {deck}} other{{count} entries restored to {deck}}}",
+  "@trashRestoredMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar after several entries are restored."
+  },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
     "placeholders": {
