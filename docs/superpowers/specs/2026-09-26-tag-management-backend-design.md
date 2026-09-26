@@ -1,6 +1,6 @@
 # MemoX V8 — Tag Management backend design (package 8)
 
-Status: draft 2026-09-26, for the owner's review · Path: architectural
+Status: approved 2026-09-26 · Path: architectural
 
 ## 1. Intent
 
