@@ -278,6 +278,21 @@ void main() {
     });
   });
 
+  test('a failed re-read of the first page, after a write, shows no stale '
+      'rows (E1)', () {
+    _run((async, controller, state, search) {
+      controller.search('ko');
+      async.elapse(searchDebounce);
+      final watch = search.watches.single;
+      watch.controller.add(_page(decks: [_deck('a')]));
+      async.flushMicrotasks();
+      watch.controller.addError(_failure);
+      async.flushMicrotasks();
+
+      expect(state(), isA<SearchScreenFailed>());
+    });
+  });
+
   test('leaving cancels the pending read and the watch', () {
     fakeAsync((async) {
       final search = _FakeSearch();
