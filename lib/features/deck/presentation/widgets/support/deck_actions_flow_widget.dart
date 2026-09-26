@@ -46,7 +46,7 @@ Future<void> openDeckActions(
     Rejected() => null,
   };
   if (view == null) {
-    showMxSnackbar(context, message: context.l10n.deckDeletedToast);
+    showMxSnackbar(context, message: context.l10n.deckGoneTitle);
     return;
   }
   // The open deck reorders its children; a row reorders its siblings.
@@ -83,8 +83,9 @@ Future<void> openDeckActions(
   }
 }
 
-/// Deleting the open deck steps back to its parent and says so (C-L5); a
-/// row's deck just leaves its list.
+/// Moving the open deck to the Trash steps back to its parent (C-L5); a
+/// row's deck just leaves its list. The dialog has shown the toast with
+/// Undo, which lives on the root navigator and so survives the step back.
 Future<void> _deleteDeck(
   BuildContext context, {
   required DeckView view,
@@ -93,12 +94,7 @@ Future<void> _deleteDeck(
   // Taken before the dialog: once the deck is gone its screen swaps its
   // content, and [context] with it.
   final navigator = Navigator.of(context);
-  final navigatorContext = navigator.context;
   final isDeleted = await showDeleteDeckDialog(context, deck: view.deck);
-  if (!isDeleted || !isOpenDeck || !navigatorContext.mounted) return;
-  showMxSnackbar(
-    navigatorContext,
-    message: navigatorContext.l10n.deckDeletedToast,
-  );
+  if (!isDeleted || !isOpenDeck || !navigator.mounted) return;
   await navigator.maybePop();
 }

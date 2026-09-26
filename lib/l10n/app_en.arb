@@ -36,6 +36,10 @@
   "@commonCancel": {
     "description": "Generic cancel action."
   },
+  "commonUndo": "Undo",
+  "@commonUndo": {
+    "description": "Snackbar action that reverses the last move to the Trash (BR-TRASH-008)."
+  },
   "commonRetry": "Retry",
   "@commonRetry": {
     "description": "Generic retry action after a failure."
@@ -248,10 +252,6 @@
   "@deckLoadErrorTitle": {
     "description": "Error state title when an open deck fails to load."
   },
-  "deckDeletedToast": "Deck deleted",
-  "@deckDeletedToast": {
-    "description": "Snackbar after the open deck is deleted."
-  },
   "deckCreateSub": "Create sub-deck",
   "@deckCreateSub": {
     "description": "Action that creates a deck inside the open deck."
@@ -317,22 +317,24 @@
   "@deckReorder": {
     "description": "Deck action sheet command that starts drag-to-reorder."
   },
-  "deckDelete": "Delete",
+  "deckDelete": "Move to Trash",
   "@deckDelete": {
-    "description": "Deck action sheet command and delete confirm."
+    "description": "Deck action sheet command and the confirm of its dialog (FE-B1, kit 01)."
   },
-  "deckDeleteTitle": "Delete “{deck}”?",
+  "deckDeleteHint": "Recoverable for 30 days",
+  "@deckDeleteHint": {
+    "description": "Deck action sheet: the Move to Trash command's sub-line (kit 01)."
+  },
+  "deckDeleteTitle": "Move this deck to Trash?",
   "@deckDeleteTitle": {
+    "description": "Move to Trash dialog title (kit 01)."
+  },
+  "deckDeleteSummary": "“{deck}” goes to Trash with {subDeckCount, plural, =0{no sub-decks} =1{its 1 sub-deck} other{its {subDeckCount} sub-decks}} and {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}.",
+  "@deckDeleteSummary": {
     "placeholders": {
       "deck": {
         "type": "String"
-      }
-    },
-    "description": "Delete dialog title; deck is the deck's name."
-  },
-  "deckDeleteSummary": "This permanently deletes {subDeckCount, plural, =0{no sub-decks} =1{1 sub-deck} other{{subDeckCount} sub-decks}} and {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}. This can't be undone.",
-  "@deckDeleteSummary": {
-    "placeholders": {
+      },
       "subDeckCount": {
         "type": "int"
       },
@@ -340,7 +342,35 @@
         "type": "int"
       }
     },
-    "description": "Delete dialog body: what the delete takes with it."
+    "description": "Move to Trash dialog body: what goes with the deck (BR-DECK-023, kit 01)."
+  },
+  "deckDeleteNote": "Recoverable from Trash for 30 days. Any open study session on these cards ends.",
+  "@deckDeleteNote": {
+    "description": "Move to Trash dialog note (kit 01)."
+  },
+  "deckTrashedToast": "“{deck}” moved to Trash · {subDeckCount, plural, =0{no sub-decks} =1{1 sub-deck} other{{subDeckCount} sub-decks}}, {cardCount, plural, =0{no cards} =1{1 card} other{{cardCount} cards}}",
+  "@deckTrashedToast": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after a deck moves to the Trash, with Undo (FE-B1 D3, kit 01)."
+  },
+  "deckUndoRefused": "Can't undo. {reason} Restore it from Trash and choose a deck.",
+  "@deckUndoRefused": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    },
+    "description": "Snackbar when Undo of a deck is refused; reason is the rejection sentence (UC-TRASH-001 E3)."
   },
   "srsRejectionUnsupportedAction": "This answer doesn't fit the deck's scheduler.",
   "@srsRejectionUnsupportedAction": {

@@ -241,7 +241,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsNothing);
+    expect(find.byType(SnackBar), findsNothing);
     // Trash waits under Coming soon (spec A4, amended): Back is the one way.
     expect(find.byType(MxButton), findsOneWidget);
     await tester.tap(find.text(_en.deckBackToLibrary));
