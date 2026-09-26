@@ -135,7 +135,10 @@ phải root. Với cây một cấp nó đúng — và đó chính là điều k
 Cái giá: di chuyển subtree phải cập nhật `root_id` **và** `depth` cho toàn bộ
 subtree trong một transaction, bằng recursive CTE (BR-DECK-018). Bỏ sót một node tạo
 ra descendant trỏ sai root hoặc sai độ sâu — dữ liệu hỏng im lặng, vì query vẫn
-chạy và chỉ trả về kết quả thiếu.
+chạy và chỉ trả về kết quả thiếu. Tombstone bên trong subtree đi cùng nó: phép di
+chuyển viết lại `root_id` và `depth` của tombstone, và chiều cao của subtree tính cả
+tombstone, nên một phép di chuyển không bao giờ đẩy tombstone quá cấp 10 (BR-TRASH-007,
+spec Trash D10).
 
 ### `content_type` — bao gồm cả root
 
@@ -944,8 +947,9 @@ Khoá chính: [ADR-007](../decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md
 ## Foreign keys
 
 `PRAGMA foreign_keys = ON` trong `beforeOpen`. Không có nó, `ON DELETE CASCADE`
-chỉ là chú thích. Cần test: xoá root deck → toàn bộ cây deck con, card, study
-state, study answers và study session đều biến mất (BR-DECK-022).
+chỉ là chú thích. Cần test: xoá cứng root deck → toàn bộ cây deck con, card, study
+state, study answers và study session đều biến mất. Từ v3 chỉ purge xoá cứng
+(BR-DECK-022, BR-TRASH-010).
 
 Từ v3, `deck.delete_batch_id` và `card.delete_batch_id` trỏ tới
 `delete_batches(id)`, `ON DELETE CASCADE`: xoá một batch xoá hàng của nó, và các

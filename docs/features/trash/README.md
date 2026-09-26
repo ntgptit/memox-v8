@@ -1,25 +1,25 @@
 ---
 feature: trash
-code: []
+code: [lib/features/trash/domain, lib/features/trash/data, lib/features/trash/di]
 depends_on: [card, deck, srs]
 ---
 ## Phạm vi
 
-**Phạm vi:** sub-project sau — Trash (spec §2).
+**Phạm vi:** Trash, từ schema v3 (BE-B1,
+[spec](../../superpowers/specs/2026-09-25-trash-backend-design.md)).
 
-Soft-delete thay thế delete cứng cho **card và deck** — nhưng chỉ **từ khi
-sub-project này triển khai**. Trong V8.0, xoá card hoặc deck vẫn là xoá cứng
-theo cascade đúng như BR-DECK-022/BR-DECK-023 phát biểu nguyên văn; chưa rule nào dưới đây
-chi phối hành vi hiện tại. Các rule dưới đây **không** phát biểu lại BR-DECK-022/BR-DECK-023
-(xoá deck kéo theo cả cây) hay BR-DECK-015 (`content_type` tự về `unset`) — chúng
-nói phần mà tombstone thêm vào, và **khi Trash triển khai**, BR-TRASH-001… sẽ đổi
-"kéo theo cả cây" của BR-DECK-022 thành *đánh dấu* cả cây chứ không *xoá* cả cây.
+Soft-delete thay thế delete cứng cho **card và deck**: xoá đưa item vào Trash thành
+một batch (BR-DECK-022, BR-DECK-023, UC-CARD-001 A2), và chỉ purge mới xoá hẳn, theo
+cascade. Các rule dưới đây **không** phát biểu lại BR-DECK-022/BR-DECK-023 hay
+BR-DECK-015 (`content_type` tự về `unset`) — chúng nói phần mà tombstone thêm vào.
+
+Chủ của một item xoá, khôi phục và Undo nó: `deck` cho deck, `card` cho card. Feature
+`trash` giữ phần của màn Trash: danh sách batch, đích khôi phục, việc chuyển lệnh
+khôi phục về đúng chủ, và purge (spec D2).
 
 Từ vựng: **batch** là một lần xoá của người dùng, mang một id riêng; **item root**
 là chính card/deck người dùng đã chạm; **tombstone** là hàng còn nguyên trong
 `card`/`deck` nhưng mang `delete_batch_id`; **purge** là xoá cứng vĩnh viễn.
-
-> ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
 
 ## Màn hình → Use case
 
@@ -33,4 +33,5 @@ Nguồn: trigger của UC-TRASH-001.
 
 | Thứ | Vì sao |
 |---|---|
-| Hành vi xoá của V8.0 | V8.0 xoá cứng theo cascade (BR-DECK-022, BR-DECK-023, feature `deck`) |
+| Màn Trash, câu chữ của hộp thoại xoá, snackbar Undo và thời gian của nó, lúc gọi auto-purge, xác nhận purge | FE-B1 ([`wbs_FE.md`](../../wbs_FE.md)); tới lúc đó hộp thoại xoá giữ câu chữ "xoá vĩnh viễn" và chưa gì gọi auto-purge (spec D15) |
+| Đồng bộ batch giữa các thiết bị | `owner_id` luôn NULL; thuộc sub-project auth/sync sau |
