@@ -1,6 +1,6 @@
 # FE-B1: the Trash UI — design
 
-Status: draft 2026-09-26 · Path: architectural · Owner rulings 2026-09-26 (§3)
+Status: approved 2026-09-26 · Path: architectural · Owner rulings 2026-09-26 (§3), amended after the pre-plan critique (`.impeccable/critique/2026-09-26T10-32-30Z__trash-kit.md`): D6, D13–D15
 
 ## 1. Intent
 
@@ -48,7 +48,8 @@ Success means three things:
   - screen 01: rootOverflow, rootDelete, rootTrashed, deckDelete, deckTrashed,
     deckNotFound;
   - screen 07: delCard, trashed, delDeck;
-  - screen 09 notFound and screen 10 notFound, each with "Open Trash";
+  - screen 09 delConfirm and notFound, and screen 10 notFound, each gone state with
+    "Open Trash" (captured by plan 1);
   - screen 12 staleSelection.
 
 ## 3. Decisions
@@ -60,12 +61,15 @@ Success means three things:
 | D3 | Undo | A snackbar after moving **one** deck or **one** card to the Trash, for **8 seconds**, with the action "Undo" | Owner 2026-09-26; BR-TRASH-008 |
 | D4 | Several cards | The snackbar "{n} cards moved to Trash" with the action "Open Trash", and no Undo | Owner 2026-09-26; BR-TRASH-008 |
 | D5 | Auto-purge | `app/` calls `PurgeExpiredTrashUseCase` once at start and on every resume (`AppLifecycleListener`). The Trash screen calls it when it opens. Nothing covers the Trash when it would regain focus, because only its own sheets and dialogs cover it and the resume call covers a return from another app. The list is a stream, so a purged row leaves in place | Backend spec §10; UC A4 |
-| D6 | A purge the store blocks | The report's `blocked` batches stay. The screen names each: "“{deck}” still contains an entry deleted earlier (“{entry}”). It can be removed for good once that entry is gone." The kit's `youngerInside` says "deleted later"; invariant 36 allows only the reverse | Backend spec §8; invariant 36 |
+| D6 | A purge the store blocks | The report's `blocked` batches stay. A note at the foot of the list, where the kit draws it, gives one sentence per blocked batch: "“{deck}” still contains an entry deleted earlier (“{entry}”). It can be removed for good once that entry is gone." It uses the warning tone, unlike the policy note, and it goes when the list next changes. The kit's `youngerInside` says "deleted later"; invariant 36 allows only the reverse | Backend spec §8; invariant 36; owner after the critique |
 | D7 | Rejection copy | The five D16 values keep their strings: `targetNotFound`, `targetInTrash`, `rootRestoresToTopLevel` and `subDeckNeedsParent` for decks, and `targetInTrash` for cards. Where the kit draws a refusal it names the deck; our values carry no name, so the message wraps the value's string (§5) | Backend spec D16 |
 | D8 | Selection | "Select" in the app bar, or a long-press on a row. The first pick locks the kind: the other kind's rows cannot be picked, and the kit's note says why | BR-TRASH-011 |
 | D9 | Delete for good | The kit's dialog: its count, the lost study history, "Keep in Trash" as the default focus, and the destructive tone only on "Delete {n}" | BR-TRASH-011, UC A3 |
 | D10 | Plans | One spec, two plans. Plan 1 covers the delete flows, Undo and the copy, because the app misleads today. Plan 2 covers screen 06 and every way into it: the Library icon, the Open Trash actions and the auto-purge | Owner 2026-09-26 |
 | D11 | Gone states | The deck, card editor and card detail "no longer here" states take the kit's copy and gain "Open Trash" beside their back action. The card create state for a gone deck takes the deck's wording | Kit 01, 09, 10 |
+| D13 | Move to Trash from the card editor | Kit 09's "More" card at the foot of the edit form: "Move this card to Trash", "Leaves {deck} and can be restored from Trash for 30 days, schedule and history included.", and an outline "Move to Trash". It opens the one-card dialog of §5. On Ok the editor closes to the card list, which shows the Undo snackbar. Closes UI-base row 82 | Kit 09; owner after the critique |
+| D14 | Undo under TalkBack | A snackbar with an action stays until it is acted on or replaced while `MediaQuery.accessibleNavigation` is on (WCAG 2.2.1). Otherwise it times out after 8 seconds (D3). `showMxSnackbar` replaces the snackbar on screen instead of queueing behind it, so a snackbar that stays never blocks the next | Critique P1; owner after the critique |
+| D15 | Busy confirms and full labels | Move to Trash, Restore and Delete {n} spin (`MxSheetActions.isConfirmLoading`) and ignore a second tap. A Trash row is one TalkBack node carrying its full name, kind, age, origin path and time left, whatever the ellipsis hides | Critique P3 |
 | D12 | Export stale copy | The export's stale-selection banner takes the kit's "moved to another deck or sent to Trash" wording. It closes FE-B3's X11, which existed only because there was no Trash | Kit 12 |
 
 ## 4. Structure
@@ -108,6 +112,9 @@ lib/features/trash/presentation/
     {n} sub-decks, {m} cards", with Undo (D3).
   - Deleting the open deck still steps back to its parent first (C-L5). The snackbar
     replaces "Deck deleted" (row 94).
+- **Card editor (D13).** The "More" card at the foot of the edit form opens the one-card
+  dialog below. On Ok the editor closes to the card list, which shows the one-card
+  snackbar with Undo.
 - **Cards,** from the bulk bar's Delete.
   - **One card:** the kit's dialog. Its title is "Move this card to Trash?", with the
     card's front over its back. Its note is "Recoverable from Trash for 30 days, with its
@@ -207,9 +214,9 @@ lib/features/trash/presentation/
 | Layer | What |
 |---|---|
 | Controller | the filter; the kind lock of the selection; restore and purge mapping every outcome (ok, each rejection, blocked, missing, a thrown `Failure`); a second tap while busy does nothing |
-| Widget, plan 1 | both delete dialogs (one card, several, a deck); Undo for a deck and a card; a refused Undo; the snackbar for several cards; the gone copy; the snackbar lasting 8 seconds |
+| Widget, plan 1 | both delete dialogs (one card, several, a deck); the editor's Move to Trash; Undo for a deck and a card; a refused Undo; the snackbar for several cards; the gone copy; the snackbar lasting 8 seconds, and staying under TalkBack; a second snackbar replacing the first; a second tap on a busy confirm |
 | Widget, plan 2 | every state of kit 06 over the real backend; the restore sheet for a card, a sub-deck, a root and no target; the purge dialog's default focus; every Open Trash |
-| Golden | 01 deckDelete and deckTrashed; 07 delCard and trashed; 06 all, selection, restoreTarget, purgeConfirm and empty — each in light and dark |
+| Golden | 01 deckDelete and deckTrashed; 07 delCard and trashed; 09 the More card and delConfirm; 06 all, selection, restoreTarget, purgeConfirm and empty — each in light and dark |
 | Route | Library → Trash → Back; Open Trash from a snackbar and from a gone state |
 | Lifecycle | a resume runs the auto-purge, and an expired row leaves the open list |
 | Audit | the `TrashScreen` visual audit at 1x and 2x |
@@ -221,7 +228,7 @@ lib/features/trash/presentation/
   - The detail files of 01 and 07 get the move-to-Trash and Undo states.
   - The shared rule changes (§5).
 - **UI-base debt register.**
-  - Row 87 is closed by FE-B1.
+  - Rows 82 (D13) and 87 are closed by FE-B1.
   - Row 94 is superseded: the open deck's toast is the D3 snackbar.
   - A row is added for each deviation this spec accepts: D6, D7's wrapped refusal, and
     the Undo refusal shown where the item was deleted.
@@ -233,8 +240,6 @@ lib/features/trash/presentation/
 ## 10. Out of scope
 
 - Starter decks and tags stay under Coming soon (FE-B4, FE-B2).
-- **Moving to the Trash from the card editor** stays out (row 82). Kit 09 draws the
-  dialog but no control that opens it. Deleting a card stays on the list's bulk bar.
 - No change to the backend, the schema or the retention (720 hours).
 
 ## 11. Risks and rollback
