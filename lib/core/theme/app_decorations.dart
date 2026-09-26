@@ -20,6 +20,18 @@ abstract final class AppDecorations {
     boxShadow: AppShadows.whisper(scheme),
   );
 
+  /// The answer face of a study card (kit StudyFaceCard role answer, screen
+  /// 16a): the container-low ground with the ghost edge in both themes, and
+  /// flat, so it reads as recessed under the raised prompt.
+  static BoxDecoration recessedCard(
+    ColorScheme scheme,
+    MxDerivedColors derived,
+  ) => raisedCard(scheme, derived).copyWith(
+    color: scheme.surfaceContainerLow,
+    border: Border.all(color: derived.ghostBorder, width: AppStroke.hairline),
+    boxShadow: const [],
+  );
+
   /// The tinted hero Card: the surface-hero fill, with the ghost edge in both
   /// themes, because a borderless hero dissolves into the light page.
   static BoxDecoration heroCard(ColorScheme scheme, MxDerivedColors derived) =>

@@ -57,6 +57,10 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         child: MxListSectionHeader(label: context.l10n.galleryDangerCard),
       ),
       MxCard(
+        isRecessed: true,
+        child: MxListSectionHeader(label: context.l10n.galleryRecessedCard),
+      ),
+      MxCard(
         isSelected: true,
         child: MxListSectionHeader(label: context.l10n.gallerySelectedCard),
       ),

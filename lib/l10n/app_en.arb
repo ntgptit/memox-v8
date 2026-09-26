@@ -2399,6 +2399,10 @@
   "@galleryDangerCard": {
     "description": "Debug gallery: the danger card sample (FE-A6 D14)."
   },
+  "galleryRecessedCard": "Recessed card",
+  "@galleryRecessedCard": {
+    "description": "Debug gallery: the recessed card sample, a study answer face (FE-A6 P2)."
+  },
   "gallerySelectedCard": "Selected card",
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
