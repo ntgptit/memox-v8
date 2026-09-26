@@ -27,6 +27,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.parentId,
     required this.onOpenDeck,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
@@ -38,6 +39,9 @@ class DeckLevelListWidget extends ConsumerWidget {
 
   /// A root's review algorithm (screen 02), from a row's action sheet.
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
+  final ValueChanged<String> onOpenStudy;
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
@@ -89,8 +93,15 @@ class DeckLevelListWidget extends ConsumerWidget {
       children: [
         // Screen 01: the strip or the summary sits close under the search
         // field or the breadcrumb, whose own inset is the gap.
-        if (schedulerType case final algorithm?) ...[
-          DeckSummaryCardWidget(level: level, schedulerType: algorithm),
+        if ((parentId, schedulerType) case (
+          final deckId?,
+          final algorithm?,
+        )) ...[
+          DeckSummaryCardWidget(
+            level: level,
+            schedulerType: algorithm,
+            onStudy: () => onOpenStudy(deckId),
+          ),
           const SizedBox(height: AppSpacing.grouped),
         ] else if (_hasCards) ...[
           DeckDueStripWidget(level: level),
@@ -126,6 +137,7 @@ class DeckLevelListWidget extends ConsumerWidget {
                       parentId: parentId,
                       onOpenDeck: onOpenDeck,
                       onOpenAlgorithm: onOpenAlgorithm,
+                      onOpenStudy: onOpenStudy,
                       isOpenDeck: false,
                     ),
                   ),

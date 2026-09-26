@@ -9,7 +9,7 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 /// What the deck action sheet can start (spec §6.2).
-enum DeckAction { open, rename, move, reviewAlgorithm, reorder, delete }
+enum DeckAction { open, study, rename, move, reviewAlgorithm, reorder, delete }
 
 /// A deck's commands (screen 01), from its row's ⋮ or the open deck's ⋮. It
 /// completes with the chosen one, which the caller then opens, or with null
@@ -67,7 +67,8 @@ class DeckActionSheetWidget extends StatelessWidget {
     );
   }
 
-  /// Study and Study options wait under Coming soon (spec A4, amended). Root
+  /// Study opens the Study Entry (FE-A6 D10); Study options waits under
+  /// Coming soon (spec A4, amended). Root
   /// decks own the algorithm and cannot move (ruling P2-L8).
   List<Widget> _rows(BuildContext context) {
     final l10n = context.l10n;
@@ -81,6 +82,12 @@ class DeckActionSheetWidget extends StatelessWidget {
           label: l10n.deckOpen,
           onTap: () => choose(DeckAction.open),
         ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.play,
+        label: l10n.deckStudy,
+        hasChevron: true,
+        onTap: () => choose(DeckAction.study),
+      ),
       MxActionSheetCommandRow(
         icon: AppIcons.edit,
         label: l10n.deckRename,

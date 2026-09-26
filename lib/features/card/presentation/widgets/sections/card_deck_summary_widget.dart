@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -6,6 +7,7 @@ import 'package:memox/features/card/domain/models/card_display_status_model.dart
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
@@ -13,19 +15,23 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 /// A card deck's progress (screen 07, spec A13): the mastery donut, the
 /// scheduler, how many cards are mastered, today's work (owner decision
-/// E-O1), then the four display states as a bar and a legend. Study waits
-/// under Coming soon (spec A4, amended).
+/// E-O1), then the four display states as a bar and a legend, and Study
+/// this deck while anything waits (FE-A6 D10).
 class CardDeckSummaryWidget extends StatelessWidget {
   const CardDeckSummaryWidget({
     super.key,
     required this.view,
     required this.algorithm,
+    this.onStudy,
   });
 
   final CardListView view;
 
   /// The deck's scheduler, named ("SM-2", "Eight boxes").
   final String algorithm;
+
+  /// Opens the deck's Study Entry; null hides the action.
+  final VoidCallback? onStudy;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +41,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
     final total = states.total;
     final workload = view.workload;
     final overline = l10n.cardDeckProgress(algorithm);
+    final due = workload.overdue + workload.today;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.grouped),
       child: MxCard(
@@ -103,6 +110,15 @@ class CardDeckSummaryWidget extends StatelessWidget {
                   ),
               ],
             ),
+            if (onStudy != null && due + workload.newCards > 0)
+              MxButton(
+                label: due > 0
+                    ? l10n.studyThisDeckDue(due)
+                    : l10n.studyThisDeck,
+                icon: AppIcons.play,
+                isBlock: true,
+                onPressed: onStudy,
+              ),
           ],
         ),
       ),

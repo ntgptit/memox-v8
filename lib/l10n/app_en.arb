@@ -1805,14 +1805,6 @@
   "@comingSoonTrashBody": {
     "description": "Coming soon: what the trash does."
   },
-  "comingSoonStudy": "Study",
-  "@comingSoonStudy": {
-    "description": "Coming soon: the study feature's name."
-  },
-  "comingSoonStudyBody": "Study a deck's due cards.",
-  "@comingSoonStudyBody": {
-    "description": "Coming soon: what studying a deck does."
-  },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {
     "description": "Coming soon: what study options do."
@@ -2672,13 +2664,17 @@
   "@deckStudy": {
     "description": "Screen handoff 01/02 (FE-A6 D10): the deck action sheet's Study row."
   },
-  "cardStudyThisDeck": "Study this deck · {due} due",
-  "@cardStudyThisDeck": {
+  "studyThisDeckDue": "Study this deck · {due} due",
+  "@studyThisDeckDue": {
     "placeholders": {
       "due": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 07 (FE-A6 D10): the card list summary's button to the Study Entry."
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry while cards are due."
+  },
+  "studyThisDeck": "Study this deck",
+  "@studyThisDeck": {
+    "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
   }
 }

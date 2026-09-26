@@ -26,11 +26,15 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onSearch,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
   });
 
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
+  final ValueChanged<String> onOpenStudy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,6 +98,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               parentId: null,
               onOpenDeck: onOpenDeck,
               onOpenAlgorithm: onOpenAlgorithm,
+              onOpenStudy: onOpenStudy,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(

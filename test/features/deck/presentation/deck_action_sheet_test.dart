@@ -50,9 +50,10 @@ void main() {
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
-    // Study and Study options wait under Coming soon (spec A4, amended).
+    // Study opens the entry (FE-A6 D10); Study options waits under Coming
+    // soon (spec A4, amended).
+    expect(find.text(_en.deckStudy), findsOneWidget);
     expect(find.text(_en.deckStudyOptions), findsNothing);
-    expect(find.byIcon(AppIcons.play), findsNothing);
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (
@@ -167,6 +168,27 @@ void main() {
     await _choose(tester, _en.deckReviewAlgorithm);
 
     expect(opened, [korean.id]);
+  });
+
+  libraryTest('Study opens the Study Entry, for a root and for a sub-deck '
+      '(FE-A6 D10)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final opened = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id, onOpenStudy: opened.add),
+    );
+    await _choose(tester, _en.deckStudy);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onOpenStudy: opened.add),
+    );
+    await _choose(tester, _en.deckStudy);
+
+    expect(opened, [korean.id, words.id]);
   });
 
   libraryTest('Reorder from the sheet shows the drag handles', (

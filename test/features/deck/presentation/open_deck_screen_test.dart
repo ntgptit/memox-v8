@@ -230,10 +230,8 @@ void main() {
     expect(ancestor, isNull);
   });
 
-  libraryTest('a deck of decks leads with its summary; no Study yet', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a deck of decks leads with its summary and its Study (FE-A6 '
+      'D10)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await env.decks.sub(korean.id, 'Grammar');
@@ -244,16 +242,21 @@ void main() {
       learnedAt: DateTime(2026, 9, 1),
       dueAt: DateTime(2026, 9, 22),
     );
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    final studied = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id, onOpenStudy: studied.add),
+    );
 
     expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
     expect(
       find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
       findsOneWidget,
     );
-    // Study waits under Coming soon (spec A4, amended).
-    expect(find.byType(MxButton), findsNothing);
     expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
+    await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
+    expect(studied, [korean.id]);
   });
 
   libraryTest('the summary counts every sub-deck under the due filter', (
