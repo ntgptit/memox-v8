@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
@@ -165,6 +166,8 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('waiter'));
         await tester.pump();
+        // The tone eases in.
+        await tester.pump(AppDurations.standard);
       });
     });
 
@@ -175,7 +178,8 @@ void main() {
         await tester.tap(find.text('hóa đơn'));
         await tester.pump();
         await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
+        // Past the tone's ease, inside the 600 ms flash.
+        await tester.pump(const Duration(milliseconds: 300));
       });
     });
 

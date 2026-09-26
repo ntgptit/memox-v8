@@ -149,4 +149,27 @@ void main() {
     expect(tester.getSize(track).width, greaterThanOrEqualTo(48));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('the worst case at 2x — a long Vietnamese mode and a three-digit '
+      'counter — still leaves a 48 track (P3 final review)', (tester) async {
+    await pumpMx(
+      tester,
+      MxStudyTopBar(
+        modeLabel: 'Tự đánh giá',
+        current: 100,
+        total: 100,
+        counterLabel: '100 / 100',
+        closeLabel: 'Đóng phiên',
+        onClose: () {},
+      ),
+      textScale: 2,
+    );
+    final track = find.descendant(
+      of: find.byType(MxStudyTopBar),
+      matching: find.byType(ClipRRect),
+    );
+
+    expect(tester.getSize(track).width, greaterThanOrEqualTo(48));
+    expect(tester.takeException(), isNull);
+  });
 }

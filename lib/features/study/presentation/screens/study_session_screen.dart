@@ -209,14 +209,22 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
 
   Widget _pageOf(StudySessionView view, StudyTurnState turn) {
     final ending = sessionEndingOf(view);
-    // Only a view that serves a card can frame a held turn.
-    if (ending == null && view.progress != null && view.currentItem != null) {
+    // While a write runs or a turn is held, the screen stays on the view the
+    // answer was given in: the stream may already serve the next board or
+    // round, and a mode keyed by it would lose its hold (spec D5; P3 final
+    // review). Only a view that serves a card can frame a turn.
+    final isFrozen = turn.isBusy || turn.held != null;
+    if (!isFrozen &&
+        ending == null &&
+        view.progress != null &&
+        view.currentItem != null) {
       _lastOpenView = view;
     }
     // The held turn stays until its mode releases it, even when its answer
     // ended the session: only then does the summary show (spec D5).
-    if (turn.held != null) {
-      return _sessionPage(context, _lastOpenView ?? view, turn);
+    final frame = _lastOpenView;
+    if (turn.held != null || (turn.isBusy && frame != null)) {
+      return _sessionPage(context, frame ?? view, turn);
     }
     return switch (ending) {
       ShowSummary(:final outcome) => SessionSummaryWidget(

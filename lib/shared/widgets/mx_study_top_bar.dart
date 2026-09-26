@@ -49,6 +49,9 @@ class MxStudyTopBar extends StatelessWidget {
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
   static const double _badgeShare = 0.4;
 
+  /// The share the counter may take before it shrinks (P3 final review).
+  static const double _counterShare = 0.25;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -125,7 +128,16 @@ class MxStudyTopBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Text(counterLabel, style: styles.counter),
+                  // A wide counter shrinks rather than squeeze the track.
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: constraints.maxWidth * _counterShare,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(counterLabel, style: styles.counter),
+                    ),
+                  ),
                 ],
               ),
             ),

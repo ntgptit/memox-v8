@@ -46,13 +46,31 @@ class StudyChoiceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final derived = context.derivedColors;
+    final motion = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : AppDurations.standard;
+    // The tone eases in, surface and ink together, so the content never
+    // sits on a surface it was not drawn for (Impeccable after P3). Not an
+    // AnimatedContainer: it would inset the content by the border.
+    final ink = AppDecorations.studyChoiceInk(colors, derived, tone);
     final surface = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
-      child: DecoratedBox(
-        decoration: AppDecorations.studyChoice(colors, derived, tone),
+      child: TweenAnimationBuilder<Decoration>(
+        tween: DecorationTween(
+          end: AppDecorations.studyChoice(colors, derived, tone),
+        ),
+        duration: motion,
+        curve: Easing.standard,
+        builder: (context, decoration, child) =>
+            DecoratedBox(decoration: decoration, child: child),
         child: Padding(
           padding: padding,
-          child: builder(AppDecorations.studyChoiceInk(colors, derived, tone)),
+          child: TweenAnimationBuilder<Color?>(
+            tween: ColorTween(end: ink),
+            duration: motion,
+            curve: Easing.standard,
+            builder: (context, color, _) => builder(color ?? ink),
+          ),
         ),
       ),
     );
@@ -71,9 +89,7 @@ class StudyChoiceWidget extends StatelessWidget {
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
           opacity: isFaded ? AppOpacity.disabled : 1,
-          duration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero
-              : AppDurations.standard,
+          duration: motion,
           child: surface,
         ),
       ),

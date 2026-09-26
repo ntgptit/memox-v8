@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/core/theme/app_decorations.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../../../support/card_fixtures.dart';
+import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
@@ -217,5 +222,165 @@ void main() {
 
     expect(find.bySemanticsLabel(line(4)), findsOneWidget);
     handle.dispose();
+  });
+
+  /// Seven due cards: a board of five, then a board of two (BR-STUDY-049).
+  Future<String> sevenDue(LibraryEnv env) async {
+    final root = await env.decks.root('Korean');
+    final leaf = await env.decks.sub(root.id, 'Lesson');
+    const meanings = [..._meanings, 'fig', 'grape'];
+    for (final (index, meaning) in meanings.indexed) {
+      await insertCard(
+        env.db,
+        id: 'M${index + 1}',
+        deckId: leaf.id,
+        front: 'term ${index + 1}',
+        back: meaning,
+        learnedAt: DateTime(2026, 9, 1),
+        dueAt: DateTime(2026, 9, 10 + index),
+        box: 2,
+      );
+    }
+    await lockScheduler(env.db, root.id);
+    final opened = await studyEntryRepository(
+      env.db,
+      env.clock.now,
+    ).openReviewSession(deckId: leaf.id, mode: StudyMode.match);
+    return (opened as Ok<String, StudyRejection>).value;
+  }
+
+  libraryTest('the last right pair of a board leads to the next board, whose '
+      'tiles take taps (Review Focus 4; final review, critical)', (
+    tester,
+    env,
+  ) async {
+    final id = await sevenDue(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    for (var i = 0; i < 5; i++) {
+      await _pair(tester, _terms[i], _meanings[i]);
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('term 6'), findsOneWidget);
+
+    await tester.tap(find.text('term 6'));
+    await tester.pump();
+    expect(_tile(tester, 'term 6').tone, StudyChoiceTone.selected);
+
+    await tester.tap(find.text('fig'));
+    await tester.pumpAndSettle();
+    expect(_tile(tester, 'term 6').tone, StudyChoiceTone.right);
+  });
+
+  libraryTest('a wrong pair carried into round 2 is asked there, and the '
+      'round answers (BR-STUDY-060, BR-STUDY-062)', (tester, env) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _pair(tester, 'term 1', 'banana');
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    for (var i = 0; i < 5; i++) {
+      await _pair(tester, _terms[i], _meanings[i]);
+      await tester.pumpAndSettle();
+    }
+
+    // Round 2 holds the pair that went wrong.
+    expect(find.text('term 1'), findsOneWidget);
+    expect(find.text('term 2'), findsNothing);
+    await _pair(tester, 'term 1', 'apple');
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.summaryReviewFinished), findsOneWidget);
+  });
+
+  libraryTest('a wrong tile carries its state in its label during the flash '
+      '(C3; Impeccable after P3)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _pair(tester, 'term 1', 'banana');
+
+    expect(
+      find.bySemanticsLabel(
+        _en.studyMatchTileWrong(_en.studyMatchTerm('term 1')),
+      ),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    handle.dispose();
+  });
+
+  libraryTest('at twice the text size a long word shrinks to stay whole, a '
+      'short one does not (Impeccable after P3)', (tester, env) async {
+    final id = await _match(env);
+    await env.db.customStatement(
+      "UPDATE card SET front = 'reservationist' WHERE id = 'ST-01'",
+    );
+    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+
+    // Drawn size over laid-out size: below 1 is a shrink.
+    double drawnScaleOf(String text) =>
+        tester.getRect(find.text(text)).width /
+        tester.getSize(find.text(text)).width;
+    // Whole: the paragraph is at least as wide as its widest word.
+    bool isWhole(String text) {
+      final paragraph = tester.renderObject<RenderParagraph>(find.text(text));
+      return paragraph.getMinIntrinsicWidth(double.infinity) <=
+          paragraph.size.width + 0.01;
+    }
+
+    expect(drawnScaleOf('reservationist'), lessThan(1));
+    expect(isWhole('reservationist'), isTrue);
+    expect(drawnScaleOf('term 2'), 1);
+  });
+
+  libraryTest('at normal size no fade is drawn', (tester, env) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+  });
+
+  libraryTest('a tile eases into its tone (Impeccable after P3)', (
+    tester,
+    env,
+  ) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    final box = tester.widget<TweenAnimationBuilder<Decoration>>(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('term 1'),
+          matching: find.byType(StudyChoiceWidget),
+        ),
+        matching: find.byType(TweenAnimationBuilder<Decoration>),
+      ),
+    );
+    expect(box.duration, AppDurations.standard);
+  });
+
+  libraryTest('a tile keeps its content in place as its tone changes, and '
+      'its ink eases with its surface (Impeccable after P3)', (
+    tester,
+    env,
+  ) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    final before = tester.getRect(find.text('term 1'));
+    Color inkOf() => tester.widget<Text>(find.text('term 1')).style!.color!;
+    final idleInk = inkOf();
+
+    await tester.tap(find.text('term 1'));
+    await tester.pump();
+    await tester.pump(AppDurations.standard ~/ 2);
+    final midInk = inkOf();
+    await tester.pumpAndSettle();
+
+    expect(tester.getRect(find.text('term 1')), before);
+    expect(midInk, isNot(anyOf(idleInk, inkOf())));
   });
 }

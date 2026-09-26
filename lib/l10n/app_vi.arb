@@ -760,6 +760,7 @@
   "studyMatchMeaning": "Nghĩa: {text}",
   "studyMatchTileSelected": "{tile}, đang chọn",
   "studyMatchTileMatched": "{tile}, đã ghép",
+  "studyMatchTileWrong": "{tile}, không khớp",
   "studyMatchAnnounceRight": "Đã ghép đúng",
   "summaryAppBar": "Tổng kết phiên",
   "summaryKindLearning": "Phiên học mới",

@@ -29,8 +29,9 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   position and size, never the board's (BR-STUDY-049 says this explicitly for
   Match's boards); for Browse and `self_assess` it is the stage's whole queue,
   since neither uses rounds. The mode chip takes at most 40% of the bar and
-  ellipsizes on one line, so the track stays at least 48 wide at large text
-  (FE-A6 P3 ruling T1).
+  ellipsizes on one line, and a counter wider than a quarter of the bar
+  shrinks to fit, so the track stays at least 48 wide at large text
+  (FE-A6 P3 ruling T1 and its final review).
 - **Exit / abandon.** The kit's close icon ends the session immediately, no
   confirmation sheet. Every turn already committed stays recorded
   (BR-STUDY-004, BR-STUDY-019); the session becomes `abandoned` with

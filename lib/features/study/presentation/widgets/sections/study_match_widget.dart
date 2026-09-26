@@ -12,6 +12,8 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
 /// Screen 17, Match: the board's terms on the left and its meanings on the
@@ -116,34 +118,36 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: AppSpacing.control,
-                    children: [
-                      for (var row = 0; row < rows; row++)
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            spacing: AppSpacing.control,
-                            children: [
-                              Expanded(child: _term(context, board, row)),
-                              Expanded(child: _meaning(context, board, row)),
-                            ],
+          child: StudyScrollFadeWidget(
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.gutter,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: AppSpacing.control,
+                      children: [
+                        for (var row = 0; row < rows; row++)
+                          Expanded(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: AppSpacing.control,
+                              children: [
+                                Expanded(child: _term(context, board, row)),
+                                Expanded(child: _meaning(context, board, row)),
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         SessionFooterHintWidget(
@@ -231,7 +235,8 @@ class _Tile extends StatelessWidget {
       semanticsLabel: switch (tone) {
         StudyChoiceTone.right => l10n.studyMatchTileMatched(label),
         StudyChoiceTone.selected => l10n.studyMatchTileSelected(label),
-        StudyChoiceTone.idle || StudyChoiceTone.wrong => label,
+        StudyChoiceTone.wrong => l10n.studyMatchTileWrong(label),
+        StudyChoiceTone.idle => label,
       },
       sortKey: OrdinalSortKey(order),
       padding: const EdgeInsets.symmetric(
@@ -250,9 +255,8 @@ class _Tile extends StatelessWidget {
                 child: const Icon(AppIcons.check),
               ),
             Flexible(
-              child: Text(
+              child: StudyWholeWordTextWidget(
                 tile.text,
-                textAlign: TextAlign.center,
                 style: isTerm
                     ? styles.matchTerm(ink)
                     : styles.matchMeaning(ink),

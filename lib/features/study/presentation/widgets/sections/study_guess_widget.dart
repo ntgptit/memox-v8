@@ -13,6 +13,8 @@ import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -129,33 +131,36 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         ],
       );
     }
-    final body = CustomScrollView(
-      slivers: [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.control,
-              children: [
-                Expanded(
-                  child: StudyFaceCardWidget(
-                    label: l10n.studyGuessPrompt,
-                    child: Text(
-                      widget.item.front,
-                      textAlign: TextAlign.center,
-                      style: context.textStyles.studyTerm,
+    final body = StudyScrollFadeWidget(
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.gutter,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: AppSpacing.control,
+                children: [
+                  Expanded(
+                    child: StudyFaceCardWidget(
+                      label: l10n.studyGuessPrompt,
+                      child: StudyWholeWordTextWidget(
+                        widget.item.front,
+                        style: context.textStyles.studyTerm,
+                      ),
                     ),
                   ),
-                ),
-                for (final (index, option) in question.options.indexed)
-                  _option(context, index, option),
-              ],
+                  for (final (index, option) in question.options.indexed)
+                    _option(context, index, option),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

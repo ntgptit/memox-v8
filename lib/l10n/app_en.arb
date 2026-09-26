@@ -3903,6 +3903,15 @@
     },
     "description": "Screen handoff 17 (FE-A6 P3): a matched tile's label."
   },
+  "studyMatchTileWrong": "{tile}, not a match",
+  "@studyMatchTileWrong": {
+    "placeholders": {
+      "tile": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 17 (FE-A6 P3): a tile of a wrong pair, during its flash."
+  },
   "studyMatchAnnounceRight": "Matched",
   "@studyMatchAnnounceRight": {
     "description": "Screen handoff 17 (FE-A6 P3): announced when a right pair commits."

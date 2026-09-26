@@ -48,7 +48,9 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 
 - Each option reads "Option {letter}: {meaning}"; once answered, "…, correct" or "…, your pick, wrong".
 - The outcome is announced when its write commits: "Correct", or "Wrong. The answer is {meaning}." (P3 ruling C3).
-- The options scroll with the prompt once they outgrow the screen at large text; each is at least 48 tall (C4). A single long word may break inside itself rather than ellipsize (FE-A6 D19).
+- The options scroll with the prompt once they outgrow the screen at large text, and a soft fade over the bottom edge says more is below; each is at least 48 tall (C4).
+- A term word too wide for the prompt is drawn just small enough to stay whole; the term wraps between words and never ellipsizes (FE-A6 D19).
+- The options ease into their tones, surface and ink together (standard duration; at once under Remove animations).
 
 ## Copy
 

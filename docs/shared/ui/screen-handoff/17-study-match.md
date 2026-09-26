@@ -45,12 +45,14 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 
 ## Accessibility
 
-- TalkBack reads the terms first, then the meanings (P3 ruling C8); each tile reads "Term: {text}" or "Meaning: {text}", with ", selected" or ", matched".
+- TalkBack reads the terms first, then the meanings (P3 ruling C8); each tile reads "Term: {text}" or "Meaning: {text}", with ", selected", ", matched" or, during a wrong pair's flash, ", not a match".
 - Each outcome is announced when its write commits: "Matched", or the wrong-pair line (C3).
-- The board scrolls once it outgrows the screen at large text; each tile is at least 48 tall (C4).
+- The board scrolls once it outgrows the screen at large text, and a soft fade over its bottom edge says more is below; each tile is at least 48 tall (C4).
+- A word too wide for its tile is drawn just small enough to stay whole; tiles wrap between words and never ellipsize (FE-A6 D19).
+- A tile eases into its tone, surface and ink together (standard duration; at once under Remove animations).
 
 ## Copy
 
 - Context line: "{deck} · {Learning/Review} · Match · round {n} · {n} pairs left".
 - Footer hint: "Tap a term, then its meaning to match" · "Not a match — this pair comes back next round" (during a wrong pair's flash).
-- TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, matched" · "Matched".
+- TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, matched" · "{tile}, not a match" · "Matched".
