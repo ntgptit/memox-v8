@@ -96,7 +96,7 @@
 
 ## [features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md](../features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md)
 
-- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L97: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md](../features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md)
 

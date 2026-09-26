@@ -101,26 +101,60 @@ bool _startsWith(Uint8List bytes, List<int> prefix) {
   return true;
 }
 
-/// The delimiter of a CSV file or of pasted text (transfer spec §5.2), from
-/// the first record that holds anything but whitespace, counting only what
-/// lies outside quotes: a tab when [isTabAllowed] and the record holds one;
-/// `;` when it holds `;` and no `,`; `,` otherwise.
+/// How many records a CSV file's delimiter is judged on (transfer spec D5).
+const _sniffedRecords = 20;
+
+/// The delimiter of a CSV file or of pasted text (transfer spec §5.2, D5),
+/// from the first records that hold a character other than whitespace,
+/// counting only what lies outside quotes: a tab when [isTabAllowed] and the
+/// first record holds one; else the one of `;` and `,` that each of the
+/// first [_sniffedRecords] records holds as often, at least once; else `;`
+/// when the first record holds `;` and no `,`; `,` otherwise.
 String _delimiterOf(String text, {required bool isTabAllowed}) {
-  final (:commas, :semicolons, :tabs) = _firstRecordDelimiters(text);
-  if (isTabAllowed && tabs > 0) return _tab;
-  if (semicolons > 0 && commas == 0) return _semicolon;
+  final records = _recordDelimiters(text);
+  if (records.isEmpty) return _comma;
+  final first = records.first;
+  if (isTabAllowed && first.tabs > 0) return _tab;
+  final isSemicolonSteady = _isSteady([
+    for (final record in records) record.semicolons,
+  ]);
+  final isCommaSteady = _isSteady([
+    for (final record in records) record.commas,
+  ]);
+  if (isSemicolonSteady && !isCommaSteady) return _semicolon;
+  if (isCommaSteady && !isSemicolonSteady) return _comma;
+  if (first.semicolons > 0 && first.commas == 0) return _semicolon;
   return _comma;
 }
 
-({int commas, int semicolons, int tabs}) _firstRecordDelimiters(String text) {
+/// Every count is the same, and at least one.
+bool _isSteady(List<int> counts) =>
+    counts.first > 0 && counts.every((count) => count == counts.first);
+
+/// The delimiters outside quotes of each of the first [_sniffedRecords]
+/// records that hold a character other than whitespace.
+List<({int commas, int semicolons, int tabs})> _recordDelimiters(String text) {
+  final records = <({int commas, int semicolons, int tabs})>[];
   var commas = 0;
   var semicolons = 0;
   var tabs = 0;
   var hasText = false;
   var isQuoted = false;
   var isFieldStart = true;
+
+  void endRecord() {
+    if (hasText) {
+      records.add((commas: commas, semicolons: semicolons, tabs: tabs));
+    }
+    commas = 0;
+    semicolons = 0;
+    tabs = 0;
+    hasText = false;
+    isFieldStart = true;
+  }
+
   var index = 0;
-  while (index < text.length) {
+  while (index < text.length && records.length < _sniffedRecords) {
     final char = text[index];
     index++;
     if (isQuoted) {
@@ -133,11 +167,7 @@ String _delimiterOf(String text, {required bool isTabAllowed}) {
       continue;
     }
     if (char == _carriageReturn || char == _lineFeed) {
-      if (hasText) break;
-      commas = 0;
-      semicolons = 0;
-      tabs = 0;
-      isFieldStart = true;
+      endRecord();
       continue;
     }
     if (char == _quote && isFieldStart) {
@@ -158,7 +188,8 @@ String _delimiterOf(String text, {required bool isTabAllowed}) {
         if (char.trim().isNotEmpty) hasText = true;
     }
   }
-  return (commas: commas, semicolons: semicolons, tabs: tabs);
+  if (records.length < _sniffedRecords) endRecord();
+  return records;
 }
 
 /// The records of [text], split by [delimiter] (RFC 4180, with the

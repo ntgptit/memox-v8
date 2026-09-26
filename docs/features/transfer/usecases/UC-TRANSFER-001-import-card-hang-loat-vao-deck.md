@@ -21,9 +21,11 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và
    ba bước Source → Preview → Import.
 2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV. File CSV
-   phân cách bằng `,`, hoặc bằng `;` khi hàng không trống đầu tiên, tính phần nằm ngoài
-   dấu nháy kép, có `;` mà không có `,` — cách Excel lưu CSV ở locale dùng dấu phẩy thập
-   phân.
+   phân cách bằng `,` hoặc `;` (cách Excel lưu CSV ở locale dùng dấu phẩy thập phân). Tính
+   phần nằm ngoài dấu nháy kép, hệ thống chọn dấu xuất hiện cùng số lần, ít nhất một, ở
+   mọi hàng trong tối đa 20 hàng không trống đầu tiên; khi cả hai dấu hoặc không dấu nào
+   như vậy, file phân cách bằng `;` nếu hàng không trống đầu tiên có `;` mà không có `,`,
+   còn lại bằng `,`.
 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — không
    ghi gì vào database.
 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên

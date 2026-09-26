@@ -113,7 +113,7 @@ Success means:
 | D2 | Approach A: `transfer` owns the sources, the mapping, the row classification, the commit's orchestration and export; `card` creates the cards (`createCards`); `srs` starts their schedules (`initializeCards`). The import map gains `transfer → {card}`. | The owner, 2026-09-26. One place creates cards; one function classifies rows for the preview and the commit, so they cannot disagree. |
 | D3 | `TransferFormat` holds `csv` and `tsv`; 9b adds `xlsx`, and every exhaustive `switch` then asks for it. A `.xlsx` file is `unsupportedFormat` until 9b. | No format is offered before it works. |
 | D4 | A file is read as strict UTF-8 after an optional UTF-8 BOM. A UTF-16 or UTF-32 BOM, bytes that are not UTF-8, or a decoded U+0000 (UTF-16 without a BOM) is `notUtf8`. Nothing guesses an encoding. | BR-TRANSFER-006; the kit's `badEncoding` names UTF-16. |
-| D5 | Delimiter: `.tsv` is tab. `.csv` is `,`, unless its first non-blank record holds `;` outside quotes and no `,` outside quotes — then `;`. Pasted text is tab when its first non-blank record holds a tab outside quotes, otherwise as `.csv`. UC-TRANSFER-001's wording says so. | The owner, 2026-09-26: Excel in locales with a decimal comma, Vietnamese among them, saves CSV with `;`, even as "CSV UTF-8". |
+| D5 | Delimiter: `.tsv` is tab. `.csv` is the one of `;` and `,` that each of its first 20 non-blank records holds as often outside quotes, at least once; when both or neither do, `;` if its first non-blank record holds `;` outside quotes and no `,` outside quotes, `,` otherwise. Pasted text is tab when its first non-blank record holds a tab outside quotes, otherwise as `.csv`. UC-TRANSFER-001's wording says so. The first 20 records are the owner's ruling of 2026-09-26, after the final review: a headerless `;` file whose first row holds a comma in a cell stays `;`. | The owner, 2026-09-26: Excel in locales with a decimal comma, Vietnamese among them, saves CSV with `;`, even as "CSV UTF-8". |
 | D6 | Records follow RFC 4180, with the leniencies of §5.3; a quoted field still open at the end of the source is `unreadable`. A row's number is its record's number, from 1. | UC-TRANSFER-001 E1 ("file hỏng"); the kit numbers rows so a person can find them in the file. |
 | D7 | `ColumnMapping` gives each field at most one column and each column at most one field. The default maps the six canonical names (trimmed, any case; the first column wins) when the first row is a header, and column A → front, B → back when it is not. `front` and `back` must be mapped (`mappingIncomplete`). | UC-TRANSFER-001 step 4 and A3; BR-TRANSFER-002. The kit's synonyms go beyond the UC: FE-B3 records the deviation. |
 | D8 | One pure classification serves the preview and the commit: blank → invalid → duplicate in the deck → duplicate in the file → ready (§6.2). Only valid rows claim a key. | BR-TRANSFER-002, BR-TRANSFER-003; preview and commit cannot drift apart. |
@@ -236,12 +236,14 @@ large file does not hold the UI isolate; the result holds plain values.
 
 ### 5.2 Delimiter (D5)
 
-The first record that holds a character other than whitespace decides. Counting only the
+The records that hold a character other than whitespace decide, counting only the
 characters outside quotes:
 
 - a `.tsv` file is tab, whatever it holds;
-- a `.csv` file is `;` when that record holds `;` and no `,`; otherwise `,`;
-- pasted text is tab when that record holds a tab; otherwise as a `.csv` file.
+- a `.csv` file is `;` or `,`, whichever each of its first 20 such records holds as often,
+  at least once; when both or neither do, `;` when the first such record holds `;` and no
+  `,`, otherwise `,`;
+- pasted text is tab when the first such record holds a tab; otherwise as a `.csv` file.
 
 A source with no such record is read with `,` and yields only blank rows.
 

@@ -103,6 +103,22 @@ void main() {
     ]);
   });
 
+  test('a .csv file whose first record holds both takes the one of ";" and '
+      '"," that each of its first records holds as often: a headerless ";" '
+      'file with a comma in its first row stays ";" (D5)', () {
+    expect(
+      _rows(readDelimited(_csv('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'))),
+      [
+        ['tip', 'tiền boa, phí phục vụ'],
+        ['bill', 'hóa đơn'],
+      ],
+    );
+    expect(_rows(readDelimited(_csv('tip,a;b\nbill,c\n'))), [
+      ['tip', 'a;b'],
+      ['bill', 'c'],
+    ]);
+  });
+
   test('Excel\'s "CSV UTF-8" from a locale with a decimal comma: a BOM, ";" '
       'between fields, CRLF, a comma in an unquoted cell, and the tags '
       'quoted because they hold ";" (D5)', () {
