@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
+import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
@@ -18,6 +20,7 @@ import 'package:memox/features/study/presentation/widgets/sections/session_summa
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_match_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_mode_not_built_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_self_assess_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_session_error_widget.dart';
@@ -70,8 +73,17 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// round (spec D5).
   StudySessionView? _lastOpenView;
 
-  StudySessionController get _controller =>
-      ref.read(studySessionControllerProvider(widget.sessionId).notifier);
+  /// Read once: a mode body's dispose (Recall's time save) calls it while
+  /// the tree is being torn down, when no ancestor can be looked up.
+  late final StudySessionController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ref.read(
+      studySessionControllerProvider(widget.sessionId).notifier,
+    );
+  }
 
   void _abandon() => unawaited(_controller.abandon());
 
@@ -113,6 +125,24 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     _heldPair = null;
     _controller.release();
   }
+
+  void _reveal(StudyItem item, int remainingMs) =>
+      unawaited(_controller.revealRecall(item, remainingMs));
+
+  void _saveTime(StudyItem item, int remainingMs) =>
+      unawaited(_controller.saveRecallTime(item, remainingMs));
+
+  void _recall(StudyItem item, RecallOutcome outcome) =>
+      unawaited(_controller.answer(item, RecallAnswer(outcome)));
+
+  /// The clock ran out: a wrong turn, held until Continue (R2, D5).
+  void _timeUp(StudyItem item) => unawaited(
+    _controller.answer(
+      item,
+      const RecallAnswer(RecallOutcome.timedOut),
+      shouldHoldFeedback: true,
+    ),
+  );
 
   void _grade(StudyItem item, Sm2Action action) =>
       unawaited(_controller.answer(item, SelfAssessAnswer(action)));
@@ -260,6 +290,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ),
         closeLabel: l10n.studySessionClose,
         onClose: _abandon,
+        // Recall and Fill carry the mastery accent (kit; FE-A6 P4 R3).
+        accent: switch (view.currentMode) {
+          StudyMode.recall || StudyMode.fill => context.semanticColors.mastery,
+          _ => null,
+        },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -292,6 +327,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
+  /// The held result of [item]'s own turn, if it is the one held (D5).
+  TurnResult? _heldResultOf(StudyTurnState turn, StudyItem item) =>
+      turn.held?.item.cardId == item.cardId ? turn.held?.result : null;
+
   /// One body per mode (D3): a seventh mode is a compile error here.
   Widget _modeBody(
     StudySessionView view,
@@ -315,7 +354,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       key: ValueKey('guess#${item.cardId}#${item.round}'),
       item: item,
       chosenCardId: _chosenCardId,
-      result: turn.held?.item.cardId == item.cardId ? turn.held?.result : null,
+      result: _heldResultOf(turn, item),
       isBusy: turn.isBusy,
       onPick: (optionCardId) => _pick(item, optionCardId),
       onContinue: _release,
@@ -330,7 +369,17 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       onPair: (term, meaning) => _pair(item, term, meaning),
       onSettled: _release,
     ),
-    StudyMode.recall ||
+    StudyMode.recall => StudyRecallWidget(
+      key: ValueKey('recall#${item.cardId}#${item.answersInSession}'),
+      item: item,
+      result: _heldResultOf(turn, item),
+      isBusy: turn.isBusy,
+      onReveal: (remainingMs) => _reveal(item, remainingMs),
+      onSaveTime: (remainingMs) => _saveTime(item, remainingMs),
+      onAnswer: (outcome) => _recall(item, outcome),
+      onTimeUp: () => _timeUp(item),
+      onContinue: _release,
+    ),
     StudyMode.fill => StudyModeNotBuiltWidget(mode: view.currentMode),
   };
 }
