@@ -3,11 +3,12 @@ id: UC-STARTER-001
 title: Khởi động lần đầu và chọn starter deck
 status: ready
 rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003, BR-STARTER-004, BR-STARTER-005, BR-STARTER-006, BR-STARTER-007, BR-STARTER-008, BR-STARTER-009, BR-STARTER-010, BR-STUDY-077]
-code: []
+code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case.dart, lib/features/starter_decks/domain/usecases/add_starter_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — Starter decks (spec §2).
+**Phạm vi:** Starter library, phần store (BE-B4, [spec](../../../superpowers/specs/2026-09-26-starter-decks-backend-design.md)). Màn 03
+thuộc FE-B4.
 
 **Actor:** Người dùng mới cài app
 **Trigger:** Mở app lần đầu sau khi cài
@@ -76,4 +77,9 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** thư viện starter có template "English → Vietnamese · Everyday" và chưa có bản sao nào của nó, **when** người dùng thêm nó với SM-2, **then** có một root deck mới mang tên template, `source_template_id` và `source_template_version` của nó, `generation = 1`, `first_answered_at` NULL; bốn sub-deck theo đúng thứ tự; 40 card chưa học, mỗi card đúng một study state SM-2 (BR-STARTER-003, BR-STARTER-004).
+- [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Trash, **when** người dùng thêm lại mà không xác nhận, **then** không có gì được ghi và lý do là `alreadyInLibrary`; khi người dùng xác nhận thêm bản sao thứ hai, có một cây deck thứ hai độc lập (BR-STARTER-007, BR-STARTER-008, A2).
+- [ ] **Given** bản sao duy nhất của một template nằm trong Trash, **when** người dùng thêm template đó, **then** một bản sao mới được tạo mà không hỏi (A4).
+- [ ] **Given** bản app mới nâng version của một template đã có bản sao, **when** thư viện hiện, **then** template được coi là chưa có trong thư viện, và thêm nó không đụng bản sao của version cũ (BR-STARTER-006, A3).
+- [ ] **Given** manifest thiếu hoặc hỏng, **when** mở thư viện, **then** thư viện rỗng; **given** một file template hỏng, **then** chỉ template đó bị bỏ qua (E2, E3).
+- [ ] **Given** một lần ghi thất bại giữa chừng khi sao chép, **when** thêm template, **then** không có root, deck, card hay study state nào được ghi (BR-STARTER-009, E4).
