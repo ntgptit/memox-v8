@@ -57,7 +57,7 @@ void main() {
       find.text(_en.trashSelectedOfCards(1, 2).toUpperCase()),
       findsOneWidget,
     );
-    expect(find.text(_en.trashCardsOnly), findsOneWidget);
+    expect(find.text(_en.trashKindLock), findsOneWidget);
 
     // A deck cannot join a selection of cards.
     await _tap(tester, find.text('Basics'));
@@ -78,7 +78,7 @@ void main() {
     await tester.longPress(find.text('Places'));
     await tester.pumpAndSettle();
     expect(find.text(_en.trashDecksSelected(1)), findsOneWidget);
-    expect(find.text(_en.trashDecksOnly), findsOneWidget);
+    expect(find.text(_en.trashKindLock), findsOneWidget);
   });
 
   libraryTest('Restore 2… asks one target for both, then ends the selection '
@@ -101,7 +101,7 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
     await _selectCards(tester);
-    await _tap(tester, _button(_en.trashPurgeSelected));
+    await _tap(tester, _button(_en.trashPurgeSelected(2)));
 
     expect(find.text(_en.trashPurgeCardsTitle(2)), findsOneWidget);
     expect(find.text(_en.trashPurgeBody(2)), findsOneWidget);
@@ -114,7 +114,7 @@ void main() {
     await _tap(tester, _inDialog(_en.trashPurgeKeep));
     expect(find.text('meokda · eat'), findsOneWidget);
 
-    await _tap(tester, _button(_en.trashPurgeSelected));
+    await _tap(tester, _button(_en.trashPurgeSelected(2)));
     await tester.tap(_inDialog(_en.trashPurgeConfirm(2)));
     await tester.pump();
     expect(find.byType(MxSpinner), findsOneWidget);
@@ -192,7 +192,7 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
     await _selectCards(tester);
-    await _tap(tester, _button(_en.trashPurgeSelected));
+    await _tap(tester, _button(_en.trashPurgeSelected(2)));
     await tester.tap(_inDialog(_en.trashPurgeConfirm(2)));
     await tester.pump();
 
@@ -230,7 +230,7 @@ void main() {
     await seedTrash(env);
     await pumpLibraryScreen(tester, env, const TrashScreen());
     await _selectCards(tester);
-    await _tap(tester, _button(_en.trashPurgeSelected));
+    await _tap(tester, _button(_en.trashPurgeSelected(2)));
 
     final pair = tester.widget<MxActionPair>(
       find.descendant(
@@ -262,5 +262,49 @@ void main() {
       );
       expect(box.center.dy, closeTo(card.center.dy, 0.5));
     }
+  });
+
+  libraryTest('the bar reads Restore (2) and Delete (2), side by side', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+
+    final restore = tester.getRect(_button(_en.trashRestoreSelected(2)));
+    final purge = tester.getRect(_button(_en.trashPurgeSelected(2)));
+    expect(restore.top, purge.top);
+  });
+
+  libraryTest('while selecting, the retention note hides and one line says '
+      'why the other kind waits', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+
+    expect(find.text(_en.trashNote), findsNothing);
+    expect(find.text(_en.trashKindLock), findsOneWidget);
+  });
+
+  libraryTest('while cards are selected, a deck row is dimmed and a card row '
+      'is not', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+
+    double opacityOf(String name) {
+      final row = find.ancestor(
+        of: find.text(name),
+        matching: find.byType(TrashEntryRowWidget),
+      );
+      final dims = tester.widgetList<Opacity>(
+        find.descendant(of: row, matching: find.byType(Opacity)),
+      );
+      return dims.fold(1, (value, dim) => value * dim.opacity);
+    }
+
+    expect(opacityOf('Basics'), closeTo(0.38, 0.001));
+    expect(opacityOf('meokda · eat'), 1);
   });
 }

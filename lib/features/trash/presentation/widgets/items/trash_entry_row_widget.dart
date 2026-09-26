@@ -10,6 +10,8 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 
 /// One Trash entry (kit 06): its kind, its name and time left, what went
 /// with it and when, and where it was (information only, BR-TRASH-012).
@@ -71,55 +73,59 @@ class TrashEntryRowWidget extends StatelessWidget {
         ),
       ],
     );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.control),
-      child: MxCard(
-        isFullBleed: true,
-        isSelected: isSelected,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              // One TalkBack node with every fact, whatever the ellipsis
-              // hides (spec D15); the ⋮ stays its own control.
-              child: Semantics(
-                container: true,
-                excludeSemantics: true,
-                button: !isSelecting,
-                checked: isSelecting ? isSelected : null,
-                enabled: onTap != null,
-                label: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
-                child: GestureDetector(
-                  onLongPress: onLongPress,
-                  child: MxRowInk(
-                    onTap: onTap,
-                    child: Padding(
-                      padding: const EdgeInsets.all(_rowPadding),
-                      // The row takes a definite height while selecting, so
-                      // the checkbox centres on it (spec 2026-09-26 D4).
-                      child: isSelecting
-                          ? IntrinsicHeight(child: lines)
-                          : lines,
-                    ),
+    // While selecting, an entry of the other kind cannot be picked
+    // (BR-TRASH-011): it is dimmed under the global disabled rule.
+    final isLocked = isSelecting && onTap == null;
+    final card = MxCard(
+      isFullBleed: true,
+      isSelected: isSelected,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            // One TalkBack node with every fact, whatever the ellipsis
+            // hides (spec D15); the ⋮ stays its own control.
+            child: Semantics(
+              container: true,
+              excludeSemantics: true,
+              button: !isSelecting,
+              checked: isSelecting ? isSelected : null,
+              enabled: onTap != null,
+              label: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
+              child: GestureDetector(
+                onLongPress: onLongPress,
+                child: MxRowInk(
+                  onTap: onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.all(_rowPadding),
+                    // The row takes a definite height while selecting, so
+                    // the checkbox centres on it (spec 2026-09-26 D4).
+                    child: isSelecting ? IntrinsicHeight(child: lines) : lines,
                   ),
                 ),
               ),
             ),
-            if (onActions case final onActions? when !isSelecting)
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: AppSpacing.micro,
-                  right: AppSpacing.micro,
-                ),
-                child: MxIconButton(
-                  icon: AppIcons.more,
-                  semanticLabel: l10n.trashEntryActions(name),
-                  onPressed: onActions,
-                ),
+          ),
+          if (onActions case final onActions? when !isSelecting)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: AppSpacing.micro,
+                right: AppSpacing.micro,
               ),
-          ],
-        ),
+              child: MxIconButton(
+                icon: AppIcons.more,
+                semanticLabel: l10n.trashEntryActions(name),
+                onPressed: onActions,
+              ),
+            ),
+        ],
       ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.control),
+      child: isLocked
+          ? Opacity(opacity: AppOpacity.disabled, child: card)
+          : card,
     );
   }
 
@@ -149,15 +155,23 @@ class _Lines extends StatelessWidget {
   final String meta;
   final String origin;
 
+  /// A deck's meta may take a second line instead of losing its age.
+  static const int _metaLines = 2;
+
   @override
   Widget build(BuildContext context) {
     final styles = context.textStyles;
-    final ink = isExpiringSoon
-        ? context.derivedColors.warningInk
-        : context.colors.onSurfaceVariant;
+    // Under three days the time left is a warning pill, so it reads as a
+    // warning and not as darker text (owner 2026-09-26).
+    final timeLeftLabel = isExpiringSoon
+        ? MxBadge(label: timeLeft, tone: MxBadgeTone.warning)
+        : Text(
+            timeLeft,
+            style: styles.badgeLabel(context.colors.onSurfaceVariant),
+          );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.micro,
+      spacing: AppSpacing.control,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -172,12 +186,12 @@ class _Lines extends StatelessWidget {
                 style: styles.rowTitle,
               ),
             ),
-            Text(timeLeft, style: styles.badgeLabel(ink)),
+            timeLeftLabel,
           ],
         ),
         Text(
           meta,
-          maxLines: 1,
+          maxLines: _metaLines,
           overflow: TextOverflow.ellipsis,
           style: styles.rowDescription,
         ),
