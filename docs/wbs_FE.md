@@ -89,7 +89,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 |---|---|---|---|---|---|---|
 | FE-B1 | Trash: màn hình Trash mở từ app bar, xoá vào Trash, khôi phục (UC-TRASH-001) | chưa bắt đầu | BE-B1, FE-A1, FE-A2 | M | BE-B1 xong: hợp đồng cho UI ở §10 của [spec gói 7](superpowers/specs/2026-09-25-trash-backend-design.md); [README trash](features/trash/README.md) | Màn 06 trên 7 use case của `trash`; snackbar Undo cho xoá **một** item (`UndoDeckDeletionUseCase`, `UndoCardDeletionUseCase`) với thời gian UI chọn; gọi `PurgeExpiredTrashUseCase` lúc mở app, khi resume, khi mở Trash và khi Trash được focus lại; đổi câu chữ "xoá vĩnh viễn" của hộp thoại xoá và của quy tắc chung "Delete is permanent in V8.0" trong screen handoff; căn câu chữ của 5 lý do từ chối mới (D16) theo kit; ghi lệch với kit ở `youngerInside` (kit nói "xoá sau", bất biến 36 chỉ cho phép ngược lại). Tiếp tục hoặc rời một phiên mà nội dung vừa vào Trash nay trả `sessionClosed`; phiên có deck trong Trash thì watch trả `notFound` |
 | FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | chưa bắt đầu | BE-B2, FE-A2 | M | BE-B2 xong: hợp đồng cho UI ở §9 của [spec gói 8](superpowers/specs/2026-09-26-tag-management-backend-design.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | Màn 05 trên 5 use case của `tags`: gọi `PlanTagRenameUseCase` khi tên đổi, xác nhận gộp bằng `mergeIntoTagId`, gặp `mergeNotConfirmed` thì xem trước lại; ghi lệch với kit ở `renameMerge`: số thẻ sau gộp là hợp các thẻ (spec D6), không phải tổng `31 + 46`; overlay lọc của màn 07 đọc `WatchDeckTagCountsUseCase`, đặt `CardListQuery.tagIds` và bỏ khỏi lựa chọn tag không còn trong danh sách; hành động `Tags` trên app bar của Library; "Find cards with this tag" là tìm kiếm thư viện theo tên tag (spec D12) |
-| FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | chưa bắt đầu | BE-B3, FE-A2 | M | [README transfer](features/transfer/README.md), [kịch bản IT](features/transfer/it-scenarios.md) | Chọn file và chia sẻ file cần plugin nền tảng (xem Điểm chặn) |
+| FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | chưa bắt đầu | BE-B3, FE-A2 | M | BE-B3 gói 9a xong (CSV, TSV, văn bản dán): hợp đồng cho UI ở §9 của [spec gói 9a](superpowers/specs/2026-09-26-transfer-backend-design.md); [README transfer](features/transfer/README.md), [kịch bản IT](features/transfer/it-scenarios.md) | Màn 11 và 12 trên 4 use case của `transfer`; XLSX chờ gói 9b. Ghi lệch với kit: tự map cột chỉ theo sáu tên chuẩn, không theo từ đồng nghĩa (spec D7); cho chọn sheet theo UC-TRANSFER-001 A2, kit chỉ đọc sheet đầu; tên file giữ cách viết của tên deck, không phải slug (spec D15); nhận CSV phân cách `;` (spec D5). Chọn file và chia sẻ file cần plugin nền tảng (xem Điểm chặn) |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | chưa bắt đầu | BE-B4, FE-A1 | M | [ui.md](features/starter-decks/ui.md) | Sau BE-B4 |
 | FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | chưa bắt đầu | BE-B5, FE-A3 | S–M | [README reminders](features/reminders/README.md) | Sau BE-B5 |
 
@@ -157,8 +157,8 @@ bỏ nhánh này trước P1.
   - các kịch bản IT `HOST-WIDGET` của UC. host-coverage-map có 71 kịch bản
     `HOST-WIDGET` và 8 kịch bản `DEVICE-E2E`.
 - **Gate:** `dod_check.sh` ([`README.md` gốc](../README.md)). CI chạy nó cùng goldens
-  trên mỗi pull request, và `CI gate` phải xanh trước khi merge (BE-D2 trong
-  [`wbs_BE.md`](wbs_BE.md)).
+  (BE-D2 trong [`wbs_BE.md`](wbs_BE.md)), nhưng tạm dừng trên pull request từ 2026-09-26
+  (#67): CI chỉ chạy khi bấm tay, và pull request merge theo gate cục bộ.
 
 ## Bước tiếp theo
 
@@ -172,8 +172,9 @@ và phụ thuộc giữa các màn quyết định:
    tiết handoff của màn trước khi lập plan.
 4. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
 5. Sau V8.0: FE-B1…FE-B5 theo thứ tự các hạng mục BE-B tương ứng. BE-B1 và BE-B2 xong
-   trong gói 7 và gói 8, nên FE-B1 và FE-B2 không còn chờ backend; BE-B3…BE-B5 chưa bắt
-   đầu.
+   trong gói 7 và gói 8, nên FE-B1 và FE-B2 không còn chờ backend. BE-B3 đang làm: gói 9a
+   xong CSV, TSV và văn bản dán, nên FE-B3 dựng được trên chúng; XLSX ở gói 9b. BE-B4,
+   BE-B5 chưa bắt đầu.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 

@@ -3,11 +3,12 @@ id: UC-TRANSFER-001
 title: Import card hàng loạt vào một deck
 status: ready
 rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK-008, BR-DECK-010, BR-TAG-001, BR-TAG-002, BR-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-003, BR-TRANSFER-004, BR-TRANSFER-005, BR-TRANSFER-006, BR-TRANSFER-009]
-code: []
+code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, lib/features/transfer/domain/usecases/preview_import_use_case.dart, lib/features/transfer/domain/usecases/import_cards_use_case.dart, lib/features/card/domain/repositories/card_repository.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — Import (spec §2).
+**Phạm vi:** Card Transfer, phần store (BE-B3): CSV, TSV và văn bản dán ở gói 9a, XLSX
+ở gói 9b. Màn import (màn 11) thuộc FE-B3.
 
 **Actor:** Người dùng
 **Trigger:** Chọn "Import cards" từ card list của một deck loại card, từ empty
@@ -19,7 +20,10 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 **Main flow:**
 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và
    ba bước Source → Preview → Import.
-2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV.
+2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV. File CSV
+   phân cách bằng `,`, hoặc bằng `;` khi hàng không trống đầu tiên, tính phần nằm ngoài
+   dấu nháy kép, có `;` mà không có `,` — cách Excel lưu CSV ở locale dùng dấu phẩy thập
+   phân.
 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — không
    ghi gì vào database.
 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên
@@ -41,7 +45,9 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 
 **Alternative flows:**
 - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô
-  nhập; parse chỉ chạy khi bấm Preview, và văn bản giữ nguyên khi parse lỗi.
+  nhập; parse chỉ chạy khi bấm Preview, và văn bản giữ nguyên khi parse lỗi. Văn bản là
+  TSV khi hàng không trống đầu tiên có tab nằm ngoài dấu nháy kép; nếu không, nó được
+  đọc như một file CSV, kể cả phân cách `;` của bước 2.
 - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên
   và cho người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
 - **A3 — Không có header:** người dùng tắt "First row contains headers"; các

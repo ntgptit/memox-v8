@@ -85,7 +85,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | chưa bắt đầu | BE-04, BE-05 | M–L | Nice-to-have N1 trong [`docs/README.md`](README.md): import CSV/TSV/XLSX, export nội dung | Tuân thủ BR-CORE-001, BR-CORE-002, BR-CORE-004 |
+| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | đang làm | BE-04, BE-05 | M–L | Gói 9a xong: import và export CSV, TSV, văn bản dán ([spec](superpowers/specs/2026-09-26-transfer-backend-design.md) và [plan](superpowers/plans/2026-09-26-transfer-backend.md) gói 9a); test trong `test/features/transfer/` và `test/features/card/data/card_create_batch_test.dart` | Gói 9b: XLSX, đọc và ghi (`archive` + `xml`), cùng `encodeFailed` và `passwordProtected`, theo spec riêng |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | chưa bắt đầu | BE-03, BE-04 | M | Cột `source_template_id` và `source_template_version` đã có trong `deck` | — |
 | BE-B5 | Nhắc học hằng ngày (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012) | chưa bắt đầu | BE-03, BE-A4 | M | Các cột `reminder_*` trong `app_settings` đã có | Cần quyết định dependency thông báo cục bộ (xem Điểm chặn) |
 
@@ -95,6 +95,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 |---|---|---|---|---|---|---|
 | BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | bị chặn | — | S | `DeckLevelSort.name`; Clarification 13 của [plan backend deck/card](superpowers/plans/2026-09-23-deck-card-backend.md) | Chủ dự án quyết có thêm dependency collation hay không |
 | BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite | chưa bắt đầu | — | S | Clarification 16 của plan backend deck/card | Chia lô trong cùng transaction khi có nhu cầu thật |
+| BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng. Cùng một chữ có thể đến ở dạng dựng sẵn hoặc dạng tổ hợp (ví dụ `é` và `e` + U+0301), và `foldText` chỉ trim và hạ chữ thường, nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001) và tìm kiếm coi hai dạng là hai chuỗi khác nhau | bị chặn | — | S–M | D17 của [spec gói 9a](superpowers/specs/2026-09-26-transfer-backend-design.md): import giữ nguyên code point, vì chỉ chuẩn hoá import thì vẫn lệch với editor | Chủ dự án quyết có chuẩn hoá ở mọi đường ghi text và ở phép fold hay không; Dart không có sẵn chuẩn hoá Unicode (xem Điểm chặn) |
 
 ### Hạ tầng và tài liệu
 
@@ -144,16 +145,21 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
   [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md),
   [plan](superpowers/plans/2026-09-26-tag-management-backend.md)): gate xanh sau mỗi
   task, final review toàn nhánh trước khi mở PR.
+- **BE-B3, gói 9a** (CSV, TSV, văn bản dán;
+  [spec](superpowers/specs/2026-09-26-transfer-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-transfer-backend.md)): gate xanh sau mỗi task, final review
+  toàn nhánh trước khi mở PR.
 - **BE-D2** (gói 6, [spec](superpowers/specs/2026-09-25-ci-gate-design.md),
   [plan](superpowers/plans/2026-09-25-ci-gate.md)): gate xanh sau mỗi task, final review
   toàn nhánh trước khi mở PR. PR của gói là lần chạy đầu của CI: một commit thử làm
   `gate`, `goldens` và `CI gate` đỏ, rồi commit hoàn lại đưa cả ba về xanh trước khi merge.
-- **Traceability:** có test chứa ID cho 18/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRASH-001).
-  4 UC còn lại chưa có code.
+- **Traceability:** có test chứa ID cho 20/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
+  2 UC còn lại chưa có code: UC-REMINDER-001, UC-STARTER-001.
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 8 (BE-B2).
+BE-B3: gói 9a (CSV, TSV, văn bản dán) xong; gói 9b (XLSX) là bước tiếp theo, theo spec
+riêng.
 
 ## Điểm chặn và quyết định còn mở
 
@@ -163,18 +169,20 @@ Không có hạng mục backend nào đang làm sau gói 8 (BE-B2).
 | Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
 | BE-B5 | Cần một dependency thông báo cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5, kèm lý do và cách rollback |
 | BE-B5 | BR-SETTINGS-008 ghi `Reset to defaults` đưa toàn bộ giá trị của `app_settings` về mặc định; BE-A1 (spec D6) chỉ đưa về mặc định bốn giá trị người dùng đặt được ở V8.0, chưa đụng `reminder_enabled`, `reminder_minute_of_day` | `Reset to defaults` khi nhắc học đã có giao diện | Quyết trong spec của BE-B5; sửa câu chữ BR-SETTINGS-008 cần chủ dự án cho phép |
+| BE-C5 | Chưa chốt có chuẩn hoá Unicode (NFC) hay không, và nếu có thì bằng dependency nào | Kiểm trùng khi import, tên tag, tìm kiếm | Chủ dự án quyết; đổi phép fold là đổi dữ liệu đã lưu (`front_folded`, `back_folded`, `name_folded`), cần migration |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | Cả 22 UC | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
 
 - **Gate:** kết quả ở mục "Đã xong và đã kiểm chứng" là của cây `f28bdfd`. Gate hiện
-  hành là `dod_check.sh` trong [`README.md` gốc](../README.md). CI chạy nó trên mỗi pull
-  request, cùng job `goldens`, và `CI gate` phải xanh trước khi merge (BE-D2).
+  hành là `dod_check.sh` trong [`README.md` gốc](../README.md). CI (BE-D2) chạy nó cùng
+  job `goldens`, nhưng tạm dừng trên pull request từ 2026-09-26 (#67): CI chỉ chạy khi
+  bấm tay, và pull request merge theo gate cục bộ.
 - **Kịch bản IT:** [host-coverage-map.md](shared/testing/host-coverage-map.md) có 141
   kịch bản, trong đó 93 mang profile `HOST-FLOW`. Đây là phần backend chứng minh bằng
   store và SQLite in-memory thật. Mỗi hạng mục đóng các kịch bản `HOST-FLOW` truy vết
   về UC của nó.
-  - Test hiện có nhắc tới 63 ID: IT-CONT (12), IT-DISC (4), IT-LEARN (10), IT-MODE (12), IT-NAV (2), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
+  - Test hiện có nhắc tới 66 ID: IT-CARD (2), IT-CONT (12), IT-DISC (5), IT-LEARN (10), IT-MODE (12), IT-NAV (2), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
 - **Chưa chạy:** kịch bản `DEVICE-E2E` (cần emulator hoặc thiết bị), thuộc
@@ -182,8 +190,8 @@ Không có hạng mục backend nào đang làm sau gói 8 (BE-B2).
 
 ## Bước tiếp theo
 
-1. BE-B3…BE-B5 theo ưu tiên sản phẩm. Truy vấn mới của chúng đọc `card` hoặc `deck` sẽ
-   gặp test hình dạng của BR-TRASH-002 (spec gói 7 §11).
+1. Gói 9b của BE-B3 (XLSX), rồi BE-B4 và BE-B5 theo ưu tiên sản phẩm. Truy vấn mới của
+   chúng đọc `card` hoặc `deck` sẽ gặp test hình dạng của BR-TRASH-002 (spec gói 7 §11).
 2. BE-D5 khi thuận tiện; không hạng mục nào chờ nó.
 
 ## Ngữ cảnh cập nhật
@@ -209,6 +217,11 @@ Không có hạng mục backend nào đang làm sau gói 8 (BE-B2).
   schema v3, xoá vào Trash, khôi phục, Undo, purge.
 - **Cập nhật ngày 2026-09-26:** BE-B2 và BE-C4 xong trong gói 8: catalog tag, đổi tên có
   gộp, xoá tag, lọc card list theo tag; không đổi schema.
+- **Cập nhật ngày 2026-09-26:** gói 9a của BE-B3 xong: import (đọc nguồn, xem trước,
+  ghi trong một transaction) và export, cho CSV, TSV và văn bản dán. Bước 2 và A1 của
+  UC-TRANSFER-001 ghi thêm phân cách `;` (chủ dự án cho phép ngày 2026-09-26). Thêm BE-C5
+  cho quyết định chuẩn hoá Unicode. Sửa dòng CI theo #67, và đếm lại ID kịch bản IT
+  trong test: #68 thêm IT-DISC-007, gói 9a thêm IT-CARD-014 và IT-CARD-015.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

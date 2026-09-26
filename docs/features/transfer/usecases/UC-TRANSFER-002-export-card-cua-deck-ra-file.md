@@ -3,11 +3,12 @@ id: UC-TRANSFER-002
 title: Export card của một deck ra file
 status: ready
 rules: [BR-CARD-012, BR-DECK-015, BR-CORE-001, BR-CORE-002, BR-CORE-004, BR-TAG-001, BR-TAG-002, BR-TRANSFER-007, BR-TRANSFER-008, BR-TRANSFER-009, BR-TRANSFER-010, BR-TRANSFER-011, BR-TRANSFER-012, BR-TRANSFER-013, BR-TRANSFER-014]
-code: []
+code: [lib/features/transfer/domain/usecases/export_cards_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — Export (spec §2).
+**Phạm vi:** Card Transfer, phần store (BE-B3): CSV và TSV ở gói 9a, XLSX ở gói 9b. Màn
+export (màn 12), file trong vùng riêng của ứng dụng và share sheet thuộc FE-B3.
 
 **Actor:** Người dùng
 **Trigger:** Chọn `Export cards` trong overflow menu của card list, hoặc
