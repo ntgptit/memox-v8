@@ -5,6 +5,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
+import 'package:memox/features/tags/domain/usecases/delete_tag_use_case.dart';
 import 'package:memox/features/tags/domain/usecases/plan_tag_rename_use_case.dart';
 import 'package:memox/features/tags/domain/usecases/rename_tag_use_case.dart';
 import 'package:memox/features/tags/domain/usecases/watch_deck_tag_counts_use_case.dart';
@@ -95,5 +96,12 @@ void main() {
       isA<Ok<void, TagRejection>>(),
     );
     expect(_rows(await tags.watchTagCounts().first), [('verb', 1)]);
+  });
+
+  test('DeleteTagUseCase deletes the tag (UC-TAG-001 step 5)', () async {
+    final delete = DeleteTagUseCase(tags);
+
+    expect(await delete(tagId: 't1'), isA<Ok<void, TagRejection>>());
+    expect(_rows(await tags.watchTagCounts().first), [('verb', 0)]);
   });
 }

@@ -67,4 +67,9 @@ abstract interface class TagRepository {
     required String name,
     String? mergeIntoTagId,
   });
+
+  /// UC-TAG-001 step 5: deletes [tagId] and its links, those of cards in the
+  /// Trash included; every card stays (BR-TAG-008). Only `tags` and
+  /// `card_tags` are written (BR-TAG-009).
+  Future<Outcome<void, TagRejection>> deleteTag({required String tagId});
 }

@@ -163,6 +163,16 @@ final class TagRepositoryImpl implements TagRepository {
     }
   });
 
+  @override
+  Future<Outcome<void, TagRejection>> deleteTag({required String tagId}) =>
+      _write(() async {
+        if (await _dao.findById(tagId) == null) {
+          return const Rejected(TagRejection.notFound);
+        }
+        await _dao.deleteTag(tagId);
+        return const Ok(null);
+      });
+
   /// Tag management spec §6, on rows read in the caller's transaction: the
   /// name, the source, the stored name, then a clash. The source's own row
   /// is never a clash, so a case-only change renames (BR-TAG-006).
