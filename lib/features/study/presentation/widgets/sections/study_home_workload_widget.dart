@@ -33,7 +33,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     if (workload.isCaughtUp) return _CaughtUp(workload: workload, now: now);
     final l10n = context.l10n;
     final styles = context.textStyles;
-    final primary = context.colors.primary;
+    final ink = context.derivedColors.primaryInk;
     return MxCard(
       isHero: true,
       child: Column(
@@ -44,7 +44,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
             spacing: AppSpacing.micro,
             children: [
               IconTheme(
-                data: IconThemeData(color: primary, size: AppIconSize.inline),
+                data: IconThemeData(color: ink, size: AppIconSize.inline),
                 child: const ExcludeSemantics(child: Icon(AppIcons.dueNow)),
               ),
               Flexible(

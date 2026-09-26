@@ -156,6 +156,7 @@ void main() {
         scheme.surfaceContainerLow,
         scheme.surfaceContainer,
         scheme.surfaceContainerHigh,
+        derived.surfaceHero,
       ];
       // Primary tints sit on the page, a card or a sheet (nav pill, badge,
       // tag chip, command row), never on the higher containers.
