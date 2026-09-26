@@ -43,9 +43,13 @@ class SearchBodyWidget extends ConsumerWidget {
           const SizedBox(height: AppSpacing.control),
           MxListSectionHeader(label: l10n.searchSearching(term)),
           for (var group = 0; group < _skeletonGroups; group++) ...[
+            // The group header's place: a short bar, as the kit draws it.
             const Padding(
               padding: EdgeInsets.symmetric(vertical: AppSpacing.control),
-              child: MxSkeleton(width: _skeletonHeaderWidth),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: MxSkeleton(width: _skeletonHeaderWidth),
+              ),
             ),
             const MxCard(
               isFullBleed: true,
