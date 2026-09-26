@@ -28,12 +28,11 @@
 "Id ảnh" là id trong `tools/design/screen_states.json`, tức tên ảnh
 `screen-handoff/img/<màn>/<id>-{light,dark}.png`. "—" là state chưa được capture.
 
-Index vẫn ghi màn 14, 16–21 là `built`. Theo roadmap luồng học, P5 đổi các màn này sang
-`aligned` sau khi audit.
+Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadmap luồng học.
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **108**; một phần **6**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **73**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **115**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **67**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -50,13 +49,13 @@ Kit có **26 màn, 211 state**. Xong **108**; một phần **6**; đã dựng nh
 | 11 | Card import | FE-B3 | 16 | 16 | 0 | 0 | 0 | [11-card-import.md](screen-handoff/11-card-import.md) |
 | 12 | Card export | FE-B3 | 9 | 9 | 0 | 0 | 0 | [12-card-export.md](screen-handoff/12-card-export.md) |
 | 13 | Study home | FE-A8 | 7 | 0 | 0 | 7 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
-| 14 | Study entry | FE-A6, FE-A7 | 9 | 8 | 1 | 0 | 0 | [14-study-entry.md](screen-handoff/14-study-entry.md) |
+| 14 | Study entry | FE-A6, FE-A7 | 9 | 9 | 0 | 0 | 0 | [14-study-entry.md](screen-handoff/14-study-entry.md) |
 | 15 | Study options | FE-A3 | 7 | 0 | 0 | 7 | 0 | — |
 | 16 | Study · Browse | FE-A6 | 1 | 1 | 0 | 0 | 0 | [16-study-browse.md](screen-handoff/16-study-browse.md) |
 | 17 | Study · Match | FE-A6 | 1 | 1 | 0 | 0 | 0 | [17-study-match.md](screen-handoff/17-study-match.md) |
 | 18 | Study · Guess | FE-A6 | 1 | 1 | 0 | 0 | 0 | [18-study-guess.md](screen-handoff/18-study-guess.md) |
-| 19 | Study · Recall | FE-A6 | 3 | 0 | 0 | 3 | 0 | [19-study-recall.md](screen-handoff/19-study-recall.md) |
-| 20 | Study · Fill | FE-A6 | 3 | 0 | 0 | 3 | 0 | [20-study-fill.md](screen-handoff/20-study-fill.md) |
+| 19 | Study · Recall | FE-A6 | 3 | 3 | 0 | 0 | 0 | [19-study-recall.md](screen-handoff/19-study-recall.md) |
+| 20 | Study · Fill | FE-A6 | 3 | 3 | 0 | 0 | 0 | [20-study-fill.md](screen-handoff/20-study-fill.md) |
 | 21 | Session summary | FE-A6 | 10 | 8 | 1 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
 | 22 | Progress | FE-A9 | 8 | 0 | 0 | 8 | 0 | — |
 | 23 | Settings | FE-A3 | 8 | 0 | 0 | 8 | 0 | — |
@@ -309,7 +308,7 @@ FE-A6, FE-A7 · [14-study-entry.md](screen-handoff/14-study-entry.md)
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | [x] | SM-2 · direction | `sm2` | xong |  |
-| [~] | Eight boxes · modes | `eightBox` | một phần | Match và Guess chọn được (P3); Recall, Fill và Learn của `eight_box` là Coming soon tới P4. |
+| [x] | Eight boxes · modes | `eightBox` | xong | Match, Guess (P3), Recall và Fill (P4) chọn được; Learn của `eight_box` mở từ P4. |
 | [x] | Only new | `onlyNew` | xong |  |
 | [x] | Nothing to do | `nothing` | xong |  |
 | [x] | Session today | `resume` | xong |  |
@@ -375,9 +374,9 @@ FE-A6 · [19-study-recall.md](screen-handoff/19-study-recall.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Counting down | `countingDown` | chưa làm | Phase P4. |
-| [ ] | Revealed · self-check | `revealed` | chưa làm | Phase P4. |
-| [ ] | Timed out | `timedOut` | chưa làm | Phase P4. |
+| [x] | Counting down | `countingDown` | xong | P4. |
+| [x] | Revealed · self-check | `revealed` | xong | P4. |
+| [x] | Timed out | `timedOut` | xong | P4. |
 
 ### 20 · Study · Fill
 
@@ -385,9 +384,9 @@ FE-A6 · [20-study-fill.md](screen-handoff/20-study-fill.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Typing | `input` | chưa làm | Phase P4. |
-| [ ] | Hint shown | `hint` | chưa làm | Phase P4. |
-| [ ] | Wrong | `wrong` | chưa làm | Phase P4. |
+| [x] | Typing | `input` | xong | P4. |
+| [x] | Hint shown | `hint` | xong | P4. |
+| [x] | Wrong | `wrong` | xong | P4. |
 
 ### 21 · Session summary
 

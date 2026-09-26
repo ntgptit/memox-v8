@@ -80,7 +80,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-A3 | Cài đặt: mặc định học, theme, ngôn ngữ, reset về mặc định. Lưu theme và ngôn ngữ thay cho theme hệ thống đang cố định trong `app.dart` (UC-SETTINGS-001; BR-SETTINGS-005, BR-SETTINGS-006) | chưa bắt đầu | BE-A1 | M | `lib/app/app.dart` để `ThemeMode.system` tới khi feature settings lưu được lựa chọn; spec UI base §10 để việc lưu theme và ngôn ngữ ngoài phạm vi; [ui.md](features/settings/ui.md); backend sẵn: 8 use case trong `lib/features/settings/domain/usecases/` | Đọc màn 15, 23, 25, 26 trong kit, viết file chi tiết handoff, rồi lập plan |
 | FE-A4 | Xác nhận "Đặt lại tiến độ học" trên một root deck (UC-SRS-001) | xong | BE-A2, FE-A1 | S | [ui.md](features/srs/ui.md) | Màn 02 của screen handoff, phase D của FE-A11 (#42) |
 | FE-A5 | Thiết kế luồng học (Impeccable): mặt thẻ, lật thẻ, hàng chấm điểm, tổng kết phiên, streak, cách trình bày sáu mode | xong | FE-07 | S | File chi tiết handoff 13, 14, 16–21 kèm ảnh state ([screen handoff index](shared/ui/screen-handoff/00-index.md)); shape cho phiên `self_assess` ở `16a-study-self-assess.md` (chấm Again/Hard/Good/Easy, hiện khoảng ôn dự kiến ở lượt scheduled) | — |
-| FE-A6 | Study Entry, màn hình phiên học và ôn tập cho sáu mode, tổng kết phiên (UC-STUDY-001; BR-MODE-001…BR-MODE-019) | đang làm | FE-A5, BE-A3, BE-A4, BE-A10 | XL | Backend đã sẵn (BE-A3, BE-A4, BE-A10 xong); màn 14, 16–21 trong kit; kịch bản IT của [study](features/study/it-scenarios.md) và [study-mode](features/study-mode/it-scenarios.md); [spec study UI](superpowers/specs/2026-09-26-study-ui-design.md) (đã duyệt 2026-09-26, chia phase P1–P5; D11 thêm hai phần backend nhỏ trong P1 và P2); phase P1a (nền: tone `success`/`caution`/`danger`, `MxStatTile`, read model của entry và tổng kết): [plan](superpowers/plans/2026-09-26-study-p1a-foundations.md); phase P1b (màn 14 chỉ đọc, route, lối vào từ action sheet và summary, đóng phiên cũ khi mở app): [plan](superpowers/plans/2026-09-26-study-p1b-entry.md); phase P1c (route phiên toàn màn hình, controller, màn 16 Browse, màn 21 Summary; thoát giữa phiên hiện tổng kết theo quyết định của chủ dự án về D8): [plan](superpowers/plans/2026-09-26-study-p1c-session.md); phase P2 (màn 16a self-assess với preview khoảng cách D11b, các action của màn 14: Learn, Review, Continue, starting/refused/startFailed, sheet chọn chiều hỏi FE-A7; deck `sm2` học được trọn vẹn): [plan](superpowers/plans/2026-09-26-study-p2-self-assess.md); roadmap P3→P6 đã duyệt: [roadmap](superpowers/plans/2026-09-26-study-chain-roadmap.md); phase P3 (Guess 18, Match 17, chọn mode ôn cho eight_box, sửa `MxStudyTopBar` ở chữ 2x): [plan](superpowers/plans/2026-09-26-study-p3-guess-match.md); phase P4 (Recall 19, Fill 20; deck `eight_box` học và ôn được trọn vẹn, bỏ tập mode đã dựng): [plan](superpowers/plans/2026-09-26-study-p4-recall-fill.md) | Phase P5: kịch bản IT, đóng index và WBS |
+| FE-A6 | Study Entry, màn hình phiên học và ôn tập cho sáu mode, tổng kết phiên (UC-STUDY-001; BR-MODE-001…BR-MODE-019) | xong | FE-A5, BE-A3, BE-A4, BE-A10 | XL | Backend đã sẵn (BE-A3, BE-A4, BE-A10 xong); màn 14, 16–21 trong kit; kịch bản IT của [study](features/study/it-scenarios.md) và [study-mode](features/study-mode/it-scenarios.md); [spec study UI](superpowers/specs/2026-09-26-study-ui-design.md) (đã duyệt 2026-09-26, chia phase P1–P5; D11 thêm hai phần backend nhỏ trong P1 và P2); phase P1a (nền: tone `success`/`caution`/`danger`, `MxStatTile`, read model của entry và tổng kết): [plan](superpowers/plans/2026-09-26-study-p1a-foundations.md); phase P1b (màn 14 chỉ đọc, route, lối vào từ action sheet và summary, đóng phiên cũ khi mở app): [plan](superpowers/plans/2026-09-26-study-p1b-entry.md); phase P1c (route phiên toàn màn hình, controller, màn 16 Browse, màn 21 Summary; thoát giữa phiên hiện tổng kết theo quyết định của chủ dự án về D8): [plan](superpowers/plans/2026-09-26-study-p1c-session.md); phase P2 (màn 16a self-assess với preview khoảng cách D11b, các action của màn 14: Learn, Review, Continue, starting/refused/startFailed, sheet chọn chiều hỏi FE-A7; deck `sm2` học được trọn vẹn): [plan](superpowers/plans/2026-09-26-study-p2-self-assess.md); roadmap P3→P6 đã duyệt: [roadmap](superpowers/plans/2026-09-26-study-chain-roadmap.md); phase P3 (Guess 18, Match 17, chọn mode ôn cho eight_box, sửa `MxStudyTopBar` ở chữ 2x): [plan](superpowers/plans/2026-09-26-study-p3-guess-match.md); phase P4 (Recall 19, Fill 20; deck `eight_box` học và ôn được trọn vẹn, bỏ tập mode đã dựng): [plan](superpowers/plans/2026-09-26-study-p4-recall-fill.md); phase P5 (bộ kịch bản IT tầng host của study, index 14 và 16–21 `aligned`, đóng các minor còn hoãn): [plan](superpowers/plans/2026-09-26-study-p5-it-records.md) | — |
 | FE-A7 | Chọn chiều hỏi trước lượt đầu của phiên self-assess (UC-STUDY-003) | xong | FE-A6, BE-A5 | S | Sheet chọn chiều hỏi của màn 14, làm trong phase P2 của FE-A6: [plan](superpowers/plans/2026-09-26-study-p2-self-assess.md) | — |
 | FE-A8 | Tab Học: Study Home (UC-STUDY-002) | chưa bắt đầu | FE-A5, BE-A6 | M | Tab Học đang là placeholder; BE-A6 xong (`WatchStudyHomeUseCase`); file chi tiết [13](shared/ui/screen-handoff/13-study-home.md) có | Phase P6 của [roadmap luồng học](superpowers/plans/2026-09-26-study-chain-roadmap.md), sau P5; route của phiên và của Study entry mà Resume và chạm vào deck cần (spec study UI D1, D2) đã có từ P1 |
 | FE-A9 | Tab Tiến độ và drill-down theo deck (UC-PROGRESS-001, UC-PROGRESS-002) | chưa bắt đầu | BE-A7 | L | Tab Tiến độ đang là placeholder; nội dung theo `navigation.md`; [kịch bản IT](features/progress/it-scenarios.md); BE-A7 xong (`WatchProgressUseCase`, `WatchDeckProgressUseCase`) | Đọc màn 22 trong kit, viết file chi tiết handoff (chưa có `ui.md` của progress), rồi lập plan |
@@ -131,9 +131,8 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 ## Đang làm
 
-- **FE-A6:** phase P1 (#71, #73), P2 (#75, kèm FE-A7) và P3 (#76) đã merge. Việc tiếp theo là
-  P4 (Recall 19, Fill 20), rồi P5 và P6 (FE-A8) theo
-  [roadmap](superpowers/plans/2026-09-26-study-chain-roadmap.md) đã duyệt.
+- **FE-A8:** phase P6 của [roadmap luồng học](superpowers/plans/2026-09-26-study-chain-roadmap.md)
+  đã duyệt. FE-A6 xong: P1 (#71, #73), P2 (#75, kèm FE-A7), P3 (#76), P4 (#80) và P5.
 - **FE-A1, FE-A2:** chức năng xong; phần còn lại ở cột "Việc tiếp theo" của từng dòng.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
@@ -167,11 +166,10 @@ so nội dung.
 Mọi hạng mục FE của V8.0 đã có backend (BE-A1…BE-A10 xong). Thứ tự còn lại do thiết kế
 và phụ thuộc giữa các màn quyết định:
 
-1. FE-A6 (luồng học): P4 → P5 theo roadmap; P1–P3 và FE-A7 đã xong.
-2. FE-A8 (Study Home): phase P6 của cùng roadmap.
-3. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
+1. FE-A8 (Study Home): phase P6 của roadmap luồng học; FE-A6 và FE-A7 đã xong.
+2. FE-A3 (Cài đặt) và FE-A9 (Tiến độ), làm song song được: mỗi hạng mục viết file chi
    tiết handoff của màn trước khi lập plan.
-4. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
+3. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
 5. Sau V8.0: FE-B1 (Trash, #78) và FE-B3 (import/export, #72) đã xong. FE-B2 (tag) và
    FE-B4 (starter) không còn chờ backend vì BE-B2 và BE-B4 đã xong; FE-B5 chờ BE-B5.
 
@@ -207,6 +205,10 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
 - **Ngày 2026-09-26, sau #78:** FE-A10, FE-B1, FE-B3 và phase P1–P3 của FE-A6 đã xong.
   Còn lại của V8.0: FE-A3, FE-A6 (P4, P5), FE-A8, FE-A9; sau V8.0: FE-B2, FE-B4, FE-B5.
   Chưa ước lượng lại số giờ sau các phase này.
+- **Ngày 2026-09-26, sau P5 của FE-A6:** FE-A6 xong (P4 #80: Recall, Fill, `eight_box`
+  trọn vẹn; P5: bộ kịch bản IT tầng host). Còn lại của V8.0: FE-A3, FE-A8, FE-A9. Bốn
+  kịch bản `DEVICE-E2E` của study (`IT-CONT-008`, `IT-PLAT-002`, `IT-PLAT-003`,
+  `IT-PLAT-005`) vẫn chờ chạy trên thiết bị.
 - **Rủi ro lớn nhất:** FE-A6. Đó là luồng nhiều tương tác nhất; màn `self_assess` không
   có trong kit và dựng theo shape brief 16a.
 
@@ -235,3 +237,5 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   kiểm chứng ở mục "Trạng thái kiểm chứng".
 - **Hoãn hoặc cắt:** giữ nguyên dòng, đổi trạng thái và ghi lý do.
 - **ID hạng mục:** không đánh số lại; hạng mục mới lấy số tiếp theo trong nhóm của nó.
+- **Cập nhật ngày 2026-09-26:** FE-A6 xong sau phase P5 (#80 cho P4); "Đang làm" và
+  "Bước tiếp theo" chuyển sang FE-A8 (phase P6 của roadmap luồng học).
