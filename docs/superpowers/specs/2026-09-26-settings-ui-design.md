@@ -1,6 +1,6 @@
 # FE-A3: the Settings UI — design
 
-Status: approved in conversation 2026-09-26 (owner rulings in §3) · Path: architectural
+Status: approved 2026-09-26 · Path: architectural · Owner rulings 2026-09-26 (§3), amended after the pre-plan critique (`.impeccable/critique/2026-09-26T17-00-00Z__settings-kit.md`): D7–D9
 
 ## 1. Intent
 
@@ -79,6 +79,9 @@ Success means three things:
 | D4 | The reset copy names only what the app shows: theme, language, cards per session and new-card order. FE-B5 adds the reminder to the copy when it shows the reminder row. Until then nobody can turn the reminder on, so a reset that turns it off changes nothing a person sees. | Owner, 2026-09-26 (instead of BE-B5 D4) |
 | D5 | `main()` reads the `app_settings` row once before `runApp`, so the first frame already has the stored theme and language. `MemoxApp` then follows the stream. | Owner, 2026-09-26 |
 | D6 | Cards per session is set three ways: −/+ by one; holding −/+ repeats; tapping the number opens a numeric field. A typed number outside 1–200 shows "Enter a number from 1 to 200" under the field and is not saved. This is the kit's `invalidLimit` / `invalid` state. `MxStepper` is extended for this (§5.1). | Owner, 2026-09-26 |
+| D7 | Screen 25's title is "Theme", matching the row that opens it. The card lines read "Match phone", "Always light" and "Always dark", not the kit's palette names "Tokyo Pure" and "Tokyo Nebula". | Owner, 2026-09-26 (critique P2) |
+| D8 | Screen 26's "Follow the system" line names what `system` resolves to now: "Phone is set to English" or "Phone is set to Tiếng Việt", and "{phone language} isn't available · English" otherwise. The kit's "Phone is set to Tiếng Việt · falls back to English" contradicts BR-SETTINGS-006. Each row's sub-line names the language in the current UI language. | Critique P1 (BR beats kit) |
+| D9 | Screen 15's Save is enabled only while the draft is valid and differs from the persisted options. Its scroll view pads for the footer, so the last note stays readable. | Critique P1, P3 |
 
 ## 4. Structure
 
@@ -160,13 +163,13 @@ Success means three things:
 
 ### 5.3 Screens 25 and 26 (plan 1)
 
-- **Screen 25.** Three cards: System ("Match phone"), Light and Dark. Each card has a
+- **Screen 25** (titled "Theme", D7). Three cards: System ("Match phone"), Light ("Always light") and Dark ("Always dark"). Each card has a
   preview. The previews paint colours read from `buildLightTheme()` and
   `buildDarkTheme()` (System is split in half), with no new token. Tapping a card submits
   `SetThemeUseCase`. The app changes at once, and the page stays open. The footnote reads
   "Applies at once — no restart, and you stay where you are."
-- **Screen 26.** Three rows: "Follow the system" (whose sub-line names the phone's
-  language and says that it falls back to English), English and Tiếng Việt. Tapping a row
+- **Screen 26.** Three rows: "Follow the system" (its sub-line follows D8), English and
+  Tiếng Việt. Tapping a row
   submits `SetLanguageUseCase`. After a switch, the toast is written in the new language:
   "Switched to English" or "Đã chuyển sang Tiếng Việt".
 - **Failures on 25 and 26.** A failed save shows a toast with Retry, and the persisted
@@ -197,7 +200,8 @@ Success means three things:
 - **Save** (in the bottom bar):
   - it runs `UseAppDefaultsUseCase` when the toggle is on and the deck had an override;
   - it runs `SaveRootStudyOptionsUseCase` otherwise;
-  - it is disabled while the draft is invalid or unchanged.
+  - it is disabled while the draft is invalid or unchanged (D9); the scroll view pads for
+    the bar.
 - **Save states.**
   - *saving:* "Saving…" with a spinner.
   - *Ok:* the toast "Saved · applies to the next session".
