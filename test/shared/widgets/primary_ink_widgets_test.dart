@@ -93,7 +93,7 @@ void main() {
   ) async {
     await pumpDark(
       tester,
-      MxWorkloadBreakdownLine(
+      const MxWorkloadBreakdownLine(
         overdueCount: 0,
         todayCount: 3,
         newCount: 0,
