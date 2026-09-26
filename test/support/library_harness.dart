@@ -6,6 +6,8 @@ import 'package:memox/app/app.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/features/study/di/study_session_repository_provider.dart'
+    show studySessionRepositoryProvider;
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
@@ -25,6 +27,7 @@ import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart'
 
 import 'fake_day_clock.dart';
 import 'golden_harness.dart';
+import 'study_fixtures.dart';
 import 'test_database.dart';
 
 /// The day every Library test lives in: 2026-09-24, mid-morning local time.
@@ -68,6 +71,11 @@ void libraryTest(
 List<Override> _backend(LibraryEnv env) => [
   databaseProvider.overrideWithValue(env.db),
   dayClockProvider.overrideWithValue(env.clock),
+  // The app's session repository reads the wall clock; the harness runs it
+  // on the fake day, so a session opened in a test is today's.
+  studySessionRepositoryProvider.overrideWithValue(
+    studySessionRepository(env.db, env.clock.now),
+  ),
 ];
 
 /// A provider container over [env]'s backend, for a test that drives

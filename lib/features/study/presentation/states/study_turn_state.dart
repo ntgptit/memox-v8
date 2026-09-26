@@ -28,9 +28,13 @@ final class HeldTurn {
 
 /// An answer not yet written.
 final class PendingAnswer {
-  const PendingAnswer(this.item, this.answer, {required this.holdsFeedback});
+  const PendingAnswer(
+    this.item,
+    this.answer, {
+    required this.shouldHoldFeedback,
+  });
 
   final StudyItem item;
   final StudyAnswer answer;
-  final bool holdsFeedback;
+  final bool shouldHoldFeedback;
 }

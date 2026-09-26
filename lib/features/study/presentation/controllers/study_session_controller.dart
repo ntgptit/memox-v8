@@ -19,7 +19,7 @@ class StudySessionController extends _$StudySessionController {
   @override
   StudyTurnState build(String sessionId) => const StudyTurnState();
 
-  /// Answers [item]. [holdsFeedback] keeps it on screen with its result
+  /// Answers [item]. [shouldHoldFeedback] keeps it on screen with its result
   /// until [release] (D5). A busy database keeps the answer for [retry]
   /// (E2); any other failure has already failed the session, whose summary
   /// the stream shows (E3, spec D6). Dropped while a write runs
@@ -27,19 +27,24 @@ class StudySessionController extends _$StudySessionController {
   Future<void> answer(
     StudyItem item,
     StudyAnswer answer, {
-    bool holdsFeedback = false,
+    bool shouldHoldFeedback = false,
   }) async {
     if (state.isBusy) return;
     state = const StudyTurnState(isBusy: true);
-    final pending = PendingAnswer(item, answer, holdsFeedback: holdsFeedback);
+    final pending = PendingAnswer(
+      item,
+      answer,
+      shouldHoldFeedback: shouldHoldFeedback,
+    );
     try {
       final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
         sessionId: sessionId,
         cardId: item.cardId,
         answer: answer,
       );
+      if (!ref.mounted) return;
       state = switch (outcome) {
-        Ok(:final value) when holdsFeedback => StudyTurnState(
+        Ok(:final value) when shouldHoldFeedback => StudyTurnState(
           held: HeldTurn(item, value),
         ),
         // A refusal (the card moved on, the session closed) is the stream's
@@ -47,8 +52,10 @@ class StudySessionController extends _$StudySessionController {
         _ => const StudyTurnState(),
       };
     } on DatabaseLockedFailure {
+      if (!ref.mounted) return;
       state = StudyTurnState(unsaved: pending);
     } on Failure {
+      if (!ref.mounted) return;
       state = const StudyTurnState();
     }
   }
@@ -60,7 +67,7 @@ class StudySessionController extends _$StudySessionController {
     await answer(
       pending.item,
       pending.answer,
-      holdsFeedback: pending.holdsFeedback,
+      shouldHoldFeedback: pending.shouldHoldFeedback,
     );
   }
 
@@ -88,8 +95,8 @@ class StudySessionController extends _$StudySessionController {
       await ref.read(resumeStudySessionUseCaseProvider)(sessionId: sessionId);
     } on Failure {
       // The stream still shows the stalled session; the person can close it.
-    } finally {
-      state = const StudyTurnState();
     }
+    if (!ref.mounted) return;
+    state = const StudyTurnState();
   }
 }

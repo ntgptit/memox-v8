@@ -22,6 +22,8 @@ import '../../../support/test_database.dart';
 
 // Spec D4, D5, D12; BR-STUDY-004; UC-STUDY-001 A3, E2.
 
+final _now = DateTime(2026, 9, 24, 9);
+
 void main() {
   late AppDatabase db;
   late ProviderContainer container;
@@ -29,11 +31,11 @@ void main() {
 
   setUp(() {
     db = openTestDatabase();
-    sessions = LockableSessions(studySessionRepository(db, DateTime.now));
+    sessions = LockableSessions(studySessionRepository(db, () => _now));
     container = ProviderContainer(
       overrides: [
         databaseProvider.overrideWithValue(db),
-        dayClockProvider.overrideWithValue(FakeDayClock(DateTime.now())),
+        dayClockProvider.overrideWithValue(FakeDayClock(_now)),
         studySessionRepositoryProvider.overrideWithValue(sessions),
       ],
     );
@@ -46,7 +48,7 @@ void main() {
 
   /// A root with one sub-deck, the leaf that holds the cards (BR-DECK-004).
   Future<(String, String)> tree() async {
-    final decks = DeckRepositoryImpl(db, now: DateTime.now);
+    final decks = DeckRepositoryImpl(db, now: () => _now);
     final root = await decks.root('Korean');
     return (root.id, (await decks.sub(root.id, 'Lesson')).id);
   }
@@ -58,7 +60,7 @@ void main() {
     }
     final opened = await studyEntryRepository(
       db,
-      DateTime.now,
+      () => _now,
     ).openLearningSession(deckId: leaf);
     return (opened as Ok<String, StudyRejection>).value;
   }
@@ -115,14 +117,14 @@ void main() {
         id: id,
         deckId: leaf,
         learnedAt: DateTime(2026, 9, 1),
-        dueAt: DateTime.now().subtract(const Duration(hours: 1)),
+        dueAt: DateTime(2026, 9, 24, 8),
         box: 2,
       );
     }
     await lockScheduler(db, root);
     final opened = await studyEntryRepository(
       db,
-      DateTime.now,
+      () => _now,
     ).openReviewSession(deckId: leaf, mode: StudyMode.recall);
     final id = (opened as Ok<String, StudyRejection>).value;
     final controller = await controllerOf(id);
@@ -132,7 +134,7 @@ void main() {
       item,
       // The clock ran out: a graded, wrong turn with no reveal needed.
       const RecallAnswer(RecallOutcome.timedOut),
-      holdsFeedback: true,
+      shouldHoldFeedback: true,
     );
     final held = container.read(studySessionControllerProvider(id)).held!;
     expect(held.item.cardId, item.cardId);
