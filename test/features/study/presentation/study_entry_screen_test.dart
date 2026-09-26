@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/screens/study_entry_screen.dar
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -145,8 +146,11 @@ void main() {
     expect(find.byType(MxFooterBar), findsNothing);
   });
 
-  libraryTest('SM-2 lists no review modes on the entry; Learn is coming '
-      'soon while its stages are not built', (tester, env) async {
+  libraryTest('SM-2 lists no review modes on the entry; Learn is offered '
+      'now that Browse and Self-assess are built (FE-A6 P2)', (
+    tester,
+    env,
+  ) async {
     final root = await env.decks.root('Korean', SchedulerType.sm2);
     await insertCard(env.db, id: 'n1', deckId: root.id);
     await pumpLibraryScreen(tester, env, _screen(root.id));
@@ -155,7 +159,8 @@ void main() {
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnCount(1, 1)), findsOneWidget);
-    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsOneWidget);
+    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsOneWidget);
+    expect(find.widgetWithText(MxBadge, _en.studyComingSoon), findsNothing);
   });
 
   libraryTest('with nothing due, no review mode is listed: only the Learn '

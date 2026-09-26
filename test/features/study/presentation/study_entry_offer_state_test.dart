@@ -41,6 +41,7 @@ void main() {
           _mode(StudyMode.fill, reason: ModeUnavailableReason.noExample),
         ],
       ),
+      built: const {},
     );
 
     expect(offer.canLearn, isFalse);
@@ -91,5 +92,65 @@ void main() {
       '(BR-STUDY-008)', () {
     expect(studyEntryOfferOf(_entry(fresh: 0, due: 0)).isNothingDue, isTrue);
     expect(studyEntryOfferOf(_entry(fresh: 0, due: 1)).isNothingDue, isFalse);
+  });
+
+  test('P2 builds Browse and Self-assess: an sm2 deck offers Learn and its '
+      'one review (spec §3)', () {
+    final offer = studyEntryOfferOf(
+      _entry(type: SchedulerType.sm2, reviews: [_mode(StudyMode.selfAssess)]),
+    );
+
+    expect(offer.canLearn, isTrue);
+    expect(offer.reviewTarget?.mode, StudyMode.selfAssess);
+    expect(entryFooterActionOf(offer), EntryFooterAction.review);
+  });
+
+  test('with nothing due the footer learns; with nothing new either it is '
+      'not drawn', () {
+    final onlyNew = studyEntryOfferOf(_entry(type: SchedulerType.sm2, due: 0));
+    final nothing = studyEntryOfferOf(
+      _entry(type: SchedulerType.sm2, fresh: 0, due: 0),
+    );
+
+    expect(onlyNew.reviewTarget, isNull);
+    expect(entryFooterActionOf(onlyNew), EntryFooterAction.learn);
+    expect(entryFooterActionOf(nothing), isNull);
+  });
+
+  test('eight_box offers nothing yet: no built review mode, Learn coming '
+      'soon (plan R10)', () {
+    final offer = studyEntryOfferOf(
+      _entry(reviews: [_mode(StudyMode.match), _mode(StudyMode.recall)]),
+    );
+
+    expect(offer.reviewTarget, isNull);
+    expect(offer.isLearnComingSoon, isTrue);
+    expect(entryFooterActionOf(offer), isNull);
+  });
+
+  test('two available review modes give no single target (picking one '
+      'comes with P3)', () {
+    final offer = studyEntryOfferOf(
+      _entry(reviews: [_mode(StudyMode.match), _mode(StudyMode.recall)]),
+      built: {StudyMode.match, StudyMode.recall},
+    );
+
+    expect(offer.reviewTarget, isNull);
+  });
+
+  test('an unavailable self-assess review is no target', () {
+    final offer = studyEntryOfferOf(
+      _entry(
+        type: SchedulerType.sm2,
+        reviews: [
+          _mode(
+            StudyMode.selfAssess,
+            reason: ModeUnavailableReason.tooFewPairs,
+          ),
+        ],
+      ),
+    );
+
+    expect(offer.reviewTarget, isNull);
   });
 }
