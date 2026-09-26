@@ -20,6 +20,7 @@ import 'package:memox/features/search/presentation/screens/library_search_screen
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
@@ -134,6 +135,19 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
             ],
           ),
         ],
+      ),
+      // Full screen, no tab bar: a session is one route, its summary too
+      // (FE-A6 D2).
+      GoRoute(
+        path: AppRoutes.studySessionPath,
+        builder: (context, state) => StudySessionScreen(
+          sessionId: state.pathParameters[AppRoutes.sessionIdParam]!,
+          onDone: (deckId) => context.go(AppRoutes.deck(deckId)),
+          onStudyDeck: (deckId) => context.go(AppRoutes.studyEntry(deckId)),
+          onLeave: (deckId) => context.go(
+            deckId == null ? AppRoutes.decks : AppRoutes.deck(deckId),
+          ),
+        ),
       ),
       if (hasGallery)
         GoRoute(

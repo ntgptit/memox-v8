@@ -406,4 +406,39 @@ void main() {
     );
     expect(await queueOf(db, id, 'browse'), order);
   });
+
+  test('Browse carries the cards it already showed in the round, oldest '
+      'first, for looking back; a look back writes nothing '
+      '(BR-STUDY-048)', () async {
+    final (_, leaf) = await tree();
+    for (final id in ['a', 'b', 'c']) {
+      await insertCard(db, id: id, deckId: leaf.id, front: 'front $id');
+    }
+    final id = await learning(leaf);
+    expect((await viewOf(id)).trail, isEmpty);
+
+    final first = (await viewOf(id)).currentItem!.cardId;
+    await answer(id, const AdvanceAnswer());
+    final second = (await viewOf(id)).currentItem!.cardId;
+    await answer(id, const AdvanceAnswer());
+
+    final view = await viewOf(id);
+    expect([for (final card in view.trail) card.cardId], [first, second]);
+    expect(view.trail.first.front, 'front $first');
+    expect(view.progress!.completed, 2);
+  });
+
+  test('a graded stage carries no trail', () async {
+    final (_, leaf) = await tree();
+    for (final id in ['a', 'b']) {
+      await insertCard(db, id: id, deckId: leaf.id);
+    }
+    final id = await learning(leaf);
+    await answer(id, const AdvanceAnswer());
+    await answer(id, const AdvanceAnswer());
+
+    final view = await viewOf(id);
+    expect(view.currentMode, isNot(StudyMode.browse));
+    expect(view.trail, isEmpty);
+  });
 }

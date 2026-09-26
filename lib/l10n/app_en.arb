@@ -3383,5 +3383,320 @@
   "cardExport": "Export",
   "@cardExport": {
     "description": "Bulk bar: export the selected cards (UC-TRANSFER-002 A1)."
+  },
+  "studySessionClose": "Close the session",
+  "@studySessionClose": {
+    "description": "Study session shell (FE-A6 P1c): the top bar's close button; it ends the session (UC-STUDY-001 A3)."
+  },
+  "studySessionCounter": "{current} / {total}",
+  "@studySessionCounter": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Study session shell (FE-A6 P1c): the top bar's counter, the round's position."
+  },
+  "studyKindLearning": "Learning",
+  "@studyKindLearning": {
+    "description": "Study session shell (FE-A6 P1c): the session kind in the context line."
+  },
+  "studyContextLearning": "{deck} · {kind} · stage {stage} of {stages} · {mode}",
+  "@studyContextLearning": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "kind": {
+        "type": "String"
+      },
+      "stage": {
+        "type": "int"
+      },
+      "stages": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "Study session shell (FE-A6 P1c): the context line of a learning session (BR-MODE-004)."
+  },
+  "studyBrowseTerm": "Term",
+  "@studyBrowseTerm": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the term half's label."
+  },
+  "studyBrowseMeaning": "Meaning",
+  "@studyBrowseMeaning": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the meaning half's label."
+  },
+  "studyBrowseHint": "Swipe left for next, right to look back · nothing is graded here",
+  "@studyBrowseHint": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the footer hint (BR-MODE-005)."
+  },
+  "studyBrowseLookingBack": "Looking back",
+  "@studyBrowseLookingBack": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the badge while an earlier card of the round shows (BR-STUDY-048)."
+  },
+  "studyBrowseNext": "Next card",
+  "@studyBrowseNext": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the card's screen-reader action to go on."
+  },
+  "studyBrowsePrevious": "Previous card",
+  "@studyBrowsePrevious": {
+    "description": "Screen handoff 16 (FE-A6 P1c): the card's screen-reader action to look back."
+  },
+  "studyModeNotBuiltTitle": "{mode} is coming soon",
+  "@studyModeNotBuiltTitle": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "Study session shell (FE-A6 P1c): a stage whose screen is not built yet (spec §3)."
+  },
+  "studyModeNotBuiltBody": "Close the session; every answer so far is kept.",
+  "@studyModeNotBuiltBody": {
+    "description": "Study session shell (FE-A6 P1c): the body under a stage not built yet."
+  },
+  "studyAnswerBusyTitle": "Couldn't save that answer",
+  "@studyAnswerBusyTitle": {
+    "description": "Study session shell (FE-A6 P1c): a busy database refused the answer (UC-STUDY-001 E2)."
+  },
+  "studyAnswerBusyBody": "The device is busy. Your answer is kept — try again.",
+  "@studyAnswerBusyBody": {
+    "description": "Study session shell (FE-A6 P1c): the busy-database banner's message."
+  },
+  "studySessionErrorTitle": "Couldn't read this session",
+  "@studySessionErrorTitle": {
+    "description": "Study session shell (FE-A6 P1c): the session could not be read (UC-STUDY-001 E5)."
+  },
+  "studySessionErrorBody": "Your answers are safe on this device. Try again in a moment.",
+  "@studySessionErrorBody": {
+    "description": "Study session shell (FE-A6 P1c): the read error's body."
+  },
+  "studySessionStaleToast": "This session ended: the deck's learning progress was reset.",
+  "@studySessionStaleToast": {
+    "description": "Study session shell (FE-A6 P1c): the toast after a stale-generation write (UC-STUDY-001 E4)."
+  },
+  "summaryAppBar": "Session summary",
+  "@summaryAppBar": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the app bar title."
+  },
+  "summaryKindLearning": "Learning session",
+  "@summaryKindLearning": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the hero overline's kind."
+  },
+  "summaryKindReview": "Review session",
+  "@summaryKindReview": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the hero overline's kind."
+  },
+  "summaryOverline": "{kind} · {deck}",
+  "@summaryOverline": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): the hero overline."
+  },
+  "summaryCards": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@summaryCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): the bold count in a hero body."
+  },
+  "summaryReviewFinished": "Review finished",
+  "@summaryReviewFinished": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, a review completed."
+  },
+  "summaryReviewFinishedBody": "You reviewed {cards}. Their next due dates are set.",
+  "@summaryReviewFinishedBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, a review completed."
+  },
+  "summaryLearningFinished": "Learning finished",
+  "@summaryLearningFinished": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, a learning session completed."
+  },
+  "summaryLearningFinishedBody": "{cards} finished learning. They come back tomorrow at 00:00.",
+  "@summaryLearningFinishedBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, a learning session completed (BR-STUDY-053)."
+  },
+  "summaryLeftEarly": "You left early",
+  "@summaryLeftEarly": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, abandoned by the person (BR-STUDY-014)."
+  },
+  "summaryLeftEarlyLearningBody": "The {kept} cards you finished are kept. The other {left} stay new and will be offered again.",
+  "@summaryLeftEarlyLearningBody": {
+    "placeholders": {
+      "kept": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, a learning session left early."
+  },
+  "summaryLeftEarlyReviewBody": "The {kept} cards you reviewed are kept. The other {left} are still due.",
+  "@summaryLeftEarlyReviewBody": {
+    "placeholders": {
+      "kept": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, a review left early (a V8 addition)."
+  },
+  "summaryInterrupted": "Session interrupted",
+  "@summaryInterrupted": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, closed on a later day (BR-STUDY-072)."
+  },
+  "summaryInterruptedBody": "This session from yesterday was closed by the system and could not be resumed today. Every answer you gave is kept.",
+  "@summaryInterruptedBody": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, interrupted."
+  },
+  "summaryReset": "Ended by a reset",
+  "@summaryReset": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, scheduler reset (BR-STUDY-015)."
+  },
+  "summaryResetBody": "Learning progress of this deck was reset while you were studying, so this session could not continue. Answers given before the reset stay in the history of the earlier cycle.",
+  "@summaryResetBody": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, reset."
+  },
+  "summarySchedulerChanged": "Ended by an algorithm change",
+  "@summarySchedulerChanged": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, scheduler changed (BR-STUDY-016)."
+  },
+  "summarySchedulerChangedBody": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; start learning from the deck.",
+  "@summarySchedulerChangedBody": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, scheduler changed."
+  },
+  "summaryContentDeleted": "Ended — content moved to Trash",
+  "@summaryContentDeleted": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, content moved to the Trash (BR-TRASH-004)."
+  },
+  "summaryContentDeletedBody": "A card in this session was moved to Trash, so the session ended. Answers given before that are kept.",
+  "@summaryContentDeletedBody": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, content deleted."
+  },
+  "summarySaveError": "Stopped by a save error",
+  "@summarySaveError": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero title, a failed write (BR-STUDY-018)."
+  },
+  "summarySaveErrorBody": "An answer could not be written to this device, so the session stopped. Everything saved before that is kept; the unanswered cards are still due.",
+  "@summarySaveErrorBody": {
+    "description": "Screen handoff 21 (FE-A6 P1c): hero body, save error."
+  },
+  "summaryStatReviewed": "Reviewed",
+  "@summaryStatReviewed": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
+  },
+  "summaryStatLearned": "Learned",
+  "@summaryStatLearned": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
+  },
+  "summaryStatAnswered": "Answered",
+  "@summaryStatAnswered": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
+  },
+  "summaryStatWrong": "Wrong",
+  "@summaryStatWrong": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
+  },
+  "summaryWrongOf": "{wrong} / {total}",
+  "@summaryWrongOf": {
+    "placeholders": {
+      "wrong": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): wrong turns out of all turns."
+  },
+  "summaryFactsHeader": "This session",
+  "@summaryFactsHeader": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the facts section header."
+  },
+  "summaryFactLearned": "Cards that finished learning",
+  "@summaryFactLearned": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
+  },
+  "summaryFactLearnedSub": "Now scheduled, due tomorrow",
+  "@summaryFactLearnedSub": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
+  },
+  "summaryFactReviewed": "Cards reviewed",
+  "@summaryFactReviewed": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
+  },
+  "summaryFactReviewedSub": "Schedules updated",
+  "@summaryFactReviewedSub": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
+  },
+  "summaryFactAnswered": "Cards answered",
+  "@summaryFactAnswered": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
+  },
+  "summaryFactWrong": "Wrong turns",
+  "@summaryFactWrong": {
+    "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
+  },
+  "summaryFactWrongSub": "of {total} turns",
+  "@summaryFactWrongSub": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line."
+  },
+  "summaryFactWrongCameBack": "of {total} turns · wrong cards came back in later rounds",
+  "@summaryFactWrongCameBack": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line when any was wrong."
+  },
+  "summaryNoteHistory": "Nothing was lost — the answers are in the history.",
+  "@summaryNoteHistory": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the end note after an algorithm change."
+  },
+  "summaryNoteTrash": "Restore the card from Trash to include it in the next review.",
+  "@summaryNoteTrash": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the end note after content moved to the Trash."
+  },
+  "summaryDone": "Done",
+  "@summaryDone": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the footer's primary button."
+  },
+  "summaryDoneCaption": "Done returns you to the deck.",
+  "@summaryDoneCaption": {
+    "description": "Screen handoff 21 (FE-A6 P1c): the footer caption."
   }
 }

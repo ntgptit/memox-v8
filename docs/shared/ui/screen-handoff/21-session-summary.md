@@ -31,12 +31,16 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | saveError | ![](img/21-session-summary/saveError-light.png) | ![](img/21-session-summary/saveError-dark.png) | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
 | loading | ![](img/21-session-summary/loading-light.png) | ![](img/21-session-summary/loading-dark.png) | As drawn. |
 
-Not captured: `contentDeleted` ("Content trashed", `invalidated`/`content_deleted`). `end_reason =
-content_deleted` is reserved for content moved to Trash (`docs/features/study/data.md` row 3;
-BR-TRASH-004); V8.0 has no Trash, so a permanently deleted card just drops out of the queue and the
-session runs to `completed` instead (same file, row 1) — this state cannot occur. The
-`SessionEndReason.contentDeleted` code stays in
-`lib/features/study/domain/models/session_status_model.dart` for the later Trash sub-project only.
+`contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash backend (BE-B1,
+BR-TRASH-004) and is built with the kit's copy: "Ended — content moved to Trash", the facts, and the
+note "Restore the card from Trash to include it in the next review."
+
+**Built (FE-A6 P1c):** every state above but `large` and `loading`, drawn by `SessionSummaryWidget` on
+the session's route (spec D2); goldens `test/features/study/presentation/goldens/summary_*`. `large`
+shows the review body without "— the session limit": the session read model has no `card_limit` yet.
+`loading` is not reachable: the summary arrives with the session's view, and the route's first load
+is a spinner. A session left early from a review reads "The {n} cards you reviewed are kept. The
+other {m} are still due." (a V8 addition; the kit draws only the learning case).
 
 ## Accessibility
 
@@ -52,7 +56,9 @@ A session that ended before its first turn shows the hero without stats and no F
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| "Content trashed" state (`content_deleted`) | Not reachable; excluded from the build | BR-TRASH-004; `data.md` (no Trash in V8.0) |
+| App bar title in muted 14/600 | The content bar's title role | `MxAppBar` has no muted title; its density sets the role |
+| Hero glyph tile 60 at radius 20 | `MxIconTile` large (44) | No shared tile size is 60; the tile keeps the tone |
+| The wrong-turns sub-line in the row's subtitle | It wraps, in the note role, in `MxListRow`'s sub-line slot | The row subtitle is one line; the kit wraps it |
 | `SessionFactRows`, marked `SCREEN_LOCAL` in the kit source (deliberately not a shared row) | `MxListRow`: the shape already fits "a content row that is not a setting and not a command" | Guard: no new row widget where a shared one covers the shape |
 | Hero's three stats: finished, answered, wrong/total | As drawn: FE-A6 adds "answered" and "total turns" to `SessionSummary`, which has `cardCount`, `learnedCardCount`, `wrongTurnCount` today | The kit; no BR limits the summary |
 

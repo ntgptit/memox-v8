@@ -9,7 +9,8 @@ import 'package:memox/features/study_mode/domain/models/question_direction_model
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The row a session serves, with its card and the counts of its round;
+/// The row a session serves, with its card and the counts of its round, and
+/// in `browse` the round's trail;
 /// its question's options in `guess`, and its board in `match`.
 typedef ServedRow = ({
   StudyQueueItem row,
@@ -17,6 +18,7 @@ typedef ServedRow = ({
   RoundCounts round,
   List<OptionRecord>? options,
   List<BoardPairRecord>? board,
+  List<TrailRecord>? trail,
 });
 
 /// The stored `review_log.action` codes of [type]'s lapses (BR-SRS-018).
@@ -78,6 +80,16 @@ StudySessionView studySessionViewOf(
             answeredCardCount: counts.answeredCount,
             turnCount: counts.turnCount,
           ),
+    trail: [
+      for (final card in served?.trail ?? const <TrailRecord>[])
+        TrailCard(
+          cardId: card.cardId,
+          front: card.front,
+          back: card.back,
+          pronunciation: card.pronunciation,
+          example: card.example,
+        ),
+    ],
     board: switch (served?.board) {
       final List<BoardPairRecord> pairs => _boardOf(pairs),
       null => null,

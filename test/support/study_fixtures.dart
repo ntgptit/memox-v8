@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:drift/drift.dart' show QueryRow, UpdateKind, Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
@@ -13,8 +14,14 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/study/data/repositories/study_entry_repository_impl.dart';
 import 'package:memox/features/study/data/repositories/study_session_repository_impl.dart';
+import 'package:memox/features/study/data/repositories/study_session_view_repository_impl.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/study_session_view_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
+import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
+import 'package:memox/features/study/domain/repositories/study_session_repository.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
@@ -350,3 +357,115 @@ Future<void> hardDeleteCards(AppDatabase db, Set<String> cardIds) async {
     updateKind: UpdateKind.update,
   );
 }
+
+/// [sessionId]'s screen, read once through the real view repository.
+Future<StudySessionView> watchSessionOnce(
+  AppDatabase db,
+  String sessionId,
+) async =>
+    (await StudySessionViewRepositoryImpl(db).watchSession(sessionId).first)!;
+
+/// The real session repository, except that [answerTurn] finds the
+/// database busy while [isLocked] (UC-STUDY-001 E2).
+final class LockableSessions implements StudySessionRepository {
+  LockableSessions(this._inner);
+
+  final StudySessionRepository _inner;
+  var isLocked = false;
+
+  @override
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
+    required String sessionId,
+    required String cardId,
+    required StudyAnswer answer,
+    DateTime? now,
+  }) {
+    if (isLocked) throw const DatabaseLockedFailure(cause: 'test');
+    return _inner.answerTurn(
+      sessionId: sessionId,
+      cardId: cardId,
+      answer: answer,
+      now: now,
+    );
+  }
+
+  @override
+  Future<Outcome<void, StudyRejection>> revealRecallAnswer({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _inner.revealRecallAnswer(
+    sessionId: sessionId,
+    cardId: cardId,
+    remainingMs: remainingMs,
+    now: now,
+  );
+
+  @override
+  Future<Outcome<void, StudyRejection>> saveRecallTime({
+    required String sessionId,
+    required String cardId,
+    required int remainingMs,
+    DateTime? now,
+  }) => _inner.saveRecallTime(
+    sessionId: sessionId,
+    cardId: cardId,
+    remainingMs: remainingMs,
+    now: now,
+  );
+
+  @override
+  Future<Outcome<void, StudyRejection>> showFillHint({
+    required String sessionId,
+    required String cardId,
+    DateTime? now,
+  }) => _inner.showFillHint(sessionId: sessionId, cardId: cardId, now: now);
+
+  @override
+  Future<void> failSession({required String sessionId, DateTime? now}) =>
+      _inner.failSession(sessionId: sessionId, now: now);
+
+  @override
+  Future<Outcome<void, StudyRejection>> abandonSession({
+    required String sessionId,
+    DateTime? now,
+  }) => _inner.abandonSession(sessionId: sessionId, now: now);
+
+  @override
+  Future<Outcome<void, StudyRejection>> resumeSession({
+    required String sessionId,
+    DateTime? now,
+  }) => _inner.resumeSession(sessionId: sessionId, now: now);
+
+  @override
+  Future<void> abandonStaleSessions({DateTime? now}) =>
+      _inner.abandonStaleSessions(now: now);
+}
+
+/// An ended session's view, built by hand, for screen 21 (handoff 21).
+StudySessionView summaryView({
+  SessionKind kind = SessionKind.reviewing,
+  SessionStatus status = SessionStatus.completed,
+  SessionEndReason? reason,
+  SessionSummary summary = const SessionSummary(
+    cardCount: 20,
+    learnedCardCount: null,
+    wrongTurnCount: 3,
+    answeredCardCount: 20,
+    turnCount: 23,
+  ),
+}) => StudySessionView(
+  sessionId: 's',
+  deckId: 'd',
+  deckName: 'Nhà hàng',
+  kind: kind,
+  status: status,
+  endReason: reason,
+  currentMode: StudyMode.recall,
+  direction: null,
+  stages: const [StudyMode.recall],
+  currentItem: null,
+  progress: null,
+  summary: summary,
+);

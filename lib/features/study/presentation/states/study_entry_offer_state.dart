@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
-/// The study modes the app has a screen for. It grows each phase and goes
-/// once all six are built (FE-A6 spec §3): an unbuilt stage is never
-/// offered.
-const Set<StudyMode> builtStudyModes = <StudyMode>{};
+/// The study modes the app has a screen for: Browse (P1c); the rest arrive
+/// in P2–P4, and the set goes once all six are built (FE-A6 spec §3). An
+/// unbuilt stage is never offered.
+const Set<StudyMode> builtStudyModes = {StudyMode.browse};
 
 /// How the entry shows a review mode.
 enum ReviewOfferStatus {

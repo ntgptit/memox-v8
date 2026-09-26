@@ -73,6 +73,9 @@ final class StudySessionViewRepositoryImpl
       options: handler.asksWithOptions
           ? await _views.guessOptions(session.id, head.round, head.cardId)
           : null,
+      trail: head.mode == StudyMode.browse.code
+          ? await _views.trail(session.id, head.mode, head.round)
+          : null,
       board: handler.servesInOrder
           ? null
           : await _views.boardPairs(

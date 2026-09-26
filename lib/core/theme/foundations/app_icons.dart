@@ -40,6 +40,9 @@ abstract final class AppIcons {
   static const IconData clock = Icons.schedule; // clock
   static const IconData searchOff = Icons.search_off; // search-x
   static const IconData history = Icons.history; // history
+  static const IconData pause = Icons.pause_circle_outline; // pause-circle
+  static const IconData swipe =
+      Icons.keyboard_double_arrow_right; // chevrons-right
   static const IconData learned = Icons.check_circle_outline; // check-circle-2
   static const IconData repeat = Icons.repeat; // repeat
   static const IconData lapses = Icons.replay; // rotate-ccw
