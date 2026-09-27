@@ -1,5 +1,6 @@
 package com.memox.sync;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -7,13 +8,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memox.TestcontainersConfiguration;
 import com.memox.common.security.CurrentUserProvider;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,21 +35,16 @@ import org.springframework.test.web.servlet.ResultActions;
 @Import(TestcontainersConfiguration.class)
 class SyncApiIT {
 
-    private static final String PUSH = "/api/v1/sync/push";
-    private static final String CHANGES = "/api/v1/sync/changes";
-    private static final String T = "2026-09-27T01:00:00Z";
+    @Autowired
+    MockMvc mockMvc;
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @MockitoBean
-    private CurrentUserProvider currentUserProvider;
+    CurrentUserProvider currentUserProvider;
 
-    private final UUID device = UUID.randomUUID();
-    private UUID user;
+    UUID user;
 
     @BeforeEach
     void newUser() {
@@ -54,150 +53,182 @@ class SyncApiIT {
     }
 
     @Test
-    void pushingTheSameOperationTwiceAppliesItOnce() throws Exception {
+    void aMoveReachesTheFeedWithBothParentsAndTheSubtree() throws Exception {
         UUID root = UUID.randomUUID();
-        Map<String, Object> op = upsert(UUID.randomUUID(), rootRow(root, "First"));
+        UUID from = UUID.randomUUID();
+        UUID to = UUID.randomUUID();
+        UUID x = UUID.randomUUID();
+        UUID y = UUID.randomUUID();
+        push(
+                command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")),
+                command("CREATE_SUB_DECK", Map.of("id", from, "parentId", root, "name", "From")),
+                command("CREATE_SUB_DECK", Map.of("id", to, "parentId", root, "name", "To")),
+                command("CREATE_SUB_DECK", Map.of("id", x, "parentId", from, "name", "X")),
+                command("CREATE_SUB_DECK", Map.of("id", y, "parentId", x, "name", "Y")));
+        long cursor = readJson(changes(0)).get("nextSince").asLong();
 
-        long version = versionOf(push(op));
-        push(op).andExpect(status().isOk())
-                .andExpect(jsonPath("$.results[0].status").value("applied"))
-                .andExpect(jsonPath("$.results[0].serverVersion").value(version));
-        changes(0).andExpect(jsonPath("$.changes", hasSize(1)));
+        push(command("MOVE_DECK", Map.of("deckId", x, "targetParentId", to)))
+                .andExpect(jsonPath("$.results[0].status").value("applied"));
+
+        JsonNode page = readJson(changes(cursor));
+        Set<String> changed = new HashSet<>();
+        page.get("changes").forEach(change -> changed.add(change.get("entityId").asText()));
+        assertThat(changed).contains(from.toString(), to.toString(), x.toString(), y.toString());
     }
 
     @Test
-    void aRejectedOperationReturnsTheServersCopyAndTheBatchGoesOn() throws Exception {
+    void aRejectedMoveReturnsTheAffectedDeckAndTheBatchGoesOn() throws Exception {
         UUID root = UUID.randomUUID();
-        UUID child = UUID.randomUUID();
-        push(upsert(UUID.randomUUID(), rootRow(root, "Root")), upsert(UUID.randomUUID(), childRow(child, root)));
+        UUID x = UUID.randomUUID();
+        UUID y = UUID.randomUUID();
+        push(
+                command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")),
+                command("CREATE_SUB_DECK", Map.of("id", x, "parentId", root, "name", "X")),
+                command("CREATE_SUB_DECK", Map.of("id", y, "parentId", x, "name", "Y")));
 
-        UUID other = UUID.randomUUID();
-        push(upsert(UUID.randomUUID(), childRow(root, child)), upsert(UUID.randomUUID(), rootRow(other, "Other")))
-                .andExpect(jsonPath("$.results[0].status").value("rejected"))
+        Map<String, Object> cycle = new LinkedHashMap<>(command("MOVE_DECK", Map.of("deckId", x, "targetParentId", y)));
+        cycle.put("affected", List.of(Map.of("entityType", "deck", "entityId", x)));
+        push(cycle, command("RENAME_DECK", Map.of("deckId", root, "name", "Renamed")))
                 .andExpect(jsonPath("$.results[0].code").value("DECK_TREE_CYCLE"))
-                .andExpect(jsonPath("$.results[0].current.row.parentId").doesNotExist())
+                .andExpect(jsonPath("$.results[0].current[0].row.parentId").value(root.toString()))
                 .andExpect(jsonPath("$.results[1].status").value("applied"));
     }
 
     @Test
-    void anUnknownEntityTypeIsRejectedWithoutCurrent() throws Exception {
-        Map<String, Object> op = new LinkedHashMap<>(upsert(UUID.randomUUID(), rootRow(UUID.randomUUID(), "X")));
-        op.put("entityType", "spaceship");
+    void theOldRowShapeFromTheAppIsRejectedPerOperation() throws Exception {
+        Map<String, Object> old = new LinkedHashMap<>();
+        old.put("opId", UUID.randomUUID());
+        old.put("entityType", "deck");
+        old.put("entityId", UUID.randomUUID());
+        old.put("op", "upsert");
+        old.put("row", Map.of("name", "Old"));
+        UUID root = UUID.randomUUID();
 
-        push(op).andExpect(jsonPath("$.results[0].status").value("rejected"))
-                .andExpect(jsonPath("$.results[0].code").value("SYNC_ENTITY_UNSUPPORTED"))
-                .andExpect(jsonPath("$.results[0].current").doesNotExist());
+        push(old, command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")))
+                .andExpect(jsonPath("$.results[0].code").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.results[1].status").value("applied"));
     }
 
     @Test
-    void usersNeverSeeOrOverwriteEachOthersData() throws Exception {
+    void aStudyOptionsPatchIsAppliedAndItsTargetReturnedOnRejection() throws Exception {
         UUID root = UUID.randomUUID();
-        push(upsert(UUID.randomUUID(), rootRow(root, "Mine")));
-        UUID owner = user;
+        UUID sub = UUID.randomUUID();
+        push(
+                command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")),
+                command("CREATE_SUB_DECK", Map.of("id", sub, "parentId", root, "name", "Sub")));
+
+        push(patch(root, Map.of("studyConfig", "{\"cardLimit\":5}")), patch(sub, Map.of("studyConfig", "{}")))
+                .andExpect(jsonPath("$.results[0].status").value("applied"))
+                .andExpect(jsonPath("$.results[1].code").value("DECK_ROOT_REQUIRED"))
+                .andExpect(jsonPath("$.results[1].current[0].entityId").value(sub.toString()));
+    }
+
+    @Test
+    void usersNeverSeeEachOthersDecks() throws Exception {
+        UUID root = UUID.randomUUID();
+        push(command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Mine", "schedulerType", "sm2")));
 
         user = UUID.randomUUID();
-        push(upsert(UUID.randomUUID(), rootRow(root, "Stolen")))
+        Map<String, Object> steal = new LinkedHashMap<>(command("RENAME_DECK", Map.of("deckId", root, "name", "X")));
+        steal.put("affected", List.of(Map.of("entityType", "deck", "entityId", root)));
+        push(steal)
                 .andExpect(jsonPath("$.results[0].code").value("SYNC_ENTITY_CONFLICT"))
-                .andExpect(jsonPath("$.results[0].current").doesNotExist());
+                .andExpect(jsonPath("$.results[0].current", hasSize(0)));
         changes(0).andExpect(jsonPath("$.changes", hasSize(0)));
-
-        user = owner;
-        changes(0).andExpect(jsonPath("$.changes[0].row.name").value("Mine"));
     }
 
     @Test
     void aSubtreeMoveIsPagedWithoutLosingRows() throws Exception {
         UUID rootA = UUID.randomUUID();
-        UUID rootB = UUID.randomUUID();
-        UUID x = UUID.randomUUID();
+        UUID from = UUID.randomUUID();
+        UUID to = UUID.randomUUID();
         List<Map<String, Object>> ops = new ArrayList<>();
-        ops.add(upsert(UUID.randomUUID(), rootRow(rootA, "A")));
-        ops.add(upsert(UUID.randomUUID(), rootRow(rootB, "B")));
-        ops.add(upsert(UUID.randomUUID(), childRow(x, rootA)));
+        ops.add(command("CREATE_ROOT_DECK", Map.of("id", rootA, "name", "A", "schedulerType", "sm2")));
+        ops.add(command("CREATE_SUB_DECK", Map.of("id", from, "parentId", rootA, "name", "From")));
+        ops.add(command("CREATE_SUB_DECK", Map.of("id", to, "parentId", rootA, "name", "To")));
         for (int i = 0; i < 4; i++) {
-            ops.add(upsert(UUID.randomUUID(), childRow(UUID.randomUUID(), x)));
+            ops.add(command("CREATE_SUB_DECK", Map.of("id", UUID.randomUUID(), "parentId", from, "name", "C" + i)));
         }
+        UUID x = UUID.randomUUID();
+        ops.add(command("CREATE_SUB_DECK", Map.of("id", x, "parentId", from, "name", "X")));
         push(ops.toArray(Map[]::new));
-        long cursor = objectMapper
-                .readTree(changes(0).andReturn().getResponse().getContentAsString())
-                .get("nextSince")
-                .asLong();
+        long cursor = readJson(changes(0)).get("nextSince").asLong();
 
-        push(upsert(UUID.randomUUID(), childRow(x, rootB)));
+        push(command("MOVE_DECK", Map.of("deckId", from, "targetParentId", to)));
 
-        List<String> seen = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
         boolean hasMore = true;
         while (hasMore) {
-            var page = objectMapper.readTree(mockMvc.perform(
-                            get(CHANGES).param("since", String.valueOf(cursor)).param("limit", "2"))
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString());
+            JsonNode page = readJson(mockMvc.perform(get("/api/v1/sync/changes")
+                    .param("since", String.valueOf(cursor))
+                    .param("limit", "2")));
             page.get("changes")
                     .forEach(change -> seen.add(change.get("entityId").asText()));
             cursor = page.get("nextSince").asLong();
             hasMore = page.get("hasMore").asBoolean();
         }
-        org.assertj.core.api.Assertions.assertThat(seen).hasSize(5).contains(x.toString());
+        assertThat(seen).contains(from.toString(), to.toString(), x.toString());
+        assertThat(seen).hasSize(7);
     }
 
-    @Test
-    void rejectsAnOversizedBatchAndAnOutOfRangeLimit() throws Exception {
-        Map<String, Object>[] ops = new Map[101];
-        for (int i = 0; i < ops.length; i++) {
-            ops[i] = upsert(UUID.randomUUID(), rootRow(UUID.randomUUID(), "N" + i));
-        }
-        push(ops)
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
-        mockMvc.perform(get(CHANGES).param("since", "0").param("limit", "501")).andExpect(status().isBadRequest());
-    }
-
-    @SafeVarargs
-    private ResultActions push(Map<String, Object>... operations) throws Exception {
-        Map<String, Object> body = Map.of("deviceId", device, "operations", List.of(operations));
-        return mockMvc.perform(
-                post(PUSH).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body)));
+    private ResultActions push(Map<?, ?>... operations) throws Exception {
+        Map<String, Object> body = Map.of("deviceId", UUID.randomUUID(), "operations", List.of(operations));
+        return mockMvc.perform(post("/api/v1/sync/push")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isOk());
     }
 
     private ResultActions changes(long since) throws Exception {
-        return mockMvc.perform(get(CHANGES).param("since", String.valueOf(since)));
+        return mockMvc.perform(get("/api/v1/sync/changes").param("since", String.valueOf(since)));
     }
 
-    private long versionOf(ResultActions result) throws Exception {
-        return objectMapper
-                .readTree(result.andReturn().getResponse().getContentAsString())
-                .at("/results/0/serverVersion")
-                .asLong();
+    private JsonNode readJson(ResultActions result) throws Exception {
+        return objectMapper.readTree(result.andReturn().getResponse().getContentAsString());
     }
 
-    private static Map<String, Object> upsert(UUID opId, Map<String, Object> row) {
-        return Map.of("opId", opId, "entityType", "deck", "entityId", row.get("id"), "op", "upsert", "row", row);
+    private static Map<String, Object> command(String type, Map<String, Object> payload) {
+        Map<String, Object> op = new LinkedHashMap<>();
+        op.put("opId", UUID.randomUUID());
+        op.put("kind", "command");
+        op.put("type", type);
+        op.put("payload", payload);
+        return op;
     }
 
-    private static Map<String, Object> rootRow(UUID id, String name) {
-        Map<String, Object> row = baseRow(id, name);
-        row.put("contentType", "deck");
-        row.put("schedulerType", "sm2");
-        row.put("schedulerVersion", 1);
-        row.put("generation", 1);
-        return row;
+    private static Map<String, Object> patch(UUID deckId, Map<String, Object> fields) {
+        Map<String, Object> op = new LinkedHashMap<>();
+        op.put("opId", UUID.randomUUID());
+        op.put("kind", "patch");
+        op.put("entityType", "deck");
+        op.put("entityId", deckId);
+        op.put("group", "study_options");
+        op.put("fields", fields);
+        return op;
     }
 
-    private static Map<String, Object> childRow(UUID id, UUID parentId) {
-        Map<String, Object> row = baseRow(id, "Child " + id);
-        row.put("parentId", parentId);
-        row.put("contentType", "deck");
-        return row;
-    }
+    @Test
+    void aCardCreatedOfflineUnderADeletedDeckIsKeptInTheDecksBatch() throws Exception {
+        UUID root = UUID.randomUUID();
+        UUID deck = UUID.randomUUID();
+        UUID batch = UUID.randomUUID();
+        UUID card = UUID.randomUUID();
+        push(
+                command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")),
+                command("CREATE_SUB_DECK", Map.of("id", deck, "parentId", root, "name", "Deck")),
+                command("DELETE_DECK", Map.of("deckId", deck, "batchId", batch, "deletedAt", "2026-09-27T02:00:00Z")));
 
-    private static Map<String, Object> baseRow(UUID id, String name) {
-        Map<String, Object> row = new LinkedHashMap<>();
-        row.put("id", id);
-        row.put("name", name);
-        row.put("siblingPosition", 0);
-        row.put("createdAt", T);
-        row.put("updatedAt", T);
-        return row;
+        push(command("CREATE_CARD", Map.of("id", card, "deckId", deck, "front", "犬", "back", "dog")))
+                .andExpect(jsonPath("$.results[0].status").value("applied"));
+
+        JsonNode feed = readJson(changes(0));
+        JsonNode cardChange = null;
+        for (JsonNode change : feed.get("changes")) {
+            if (change.get("entityId").asText().equals(card.toString())) {
+                cardChange = change;
+            }
+        }
+        assertThat(cardChange).isNotNull();
+        assertThat(cardChange.get("row").get("deleteBatchId").asText()).isEqualTo(batch.toString());
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.memox.trash.mapper.DeleteBatchMapper">
+
+    <sql id="columns">
+        id, user_id, item_type, root_item_id, deleted_at, server_version, last_device_id, tombstoned_at
+    </sql>
+
+    <select id="findDeleteBatchById" resultType="com.memox.trash.model.DeleteBatch">
+        SELECT <include refid="columns"/> FROM delete_batch WHERE id = #{id}
+    </select>
+
+    <insert id="insertDeleteBatch">
+        INSERT INTO delete_batch (<include refid="columns"/>)
+        VALUES (#{id}, #{userId}, #{itemType}, #{rootItemId}, #{deletedAt}, #{serverVersion}, #{lastDeviceId}, NULL)
+    </insert>
+
+    <update id="tombstoneDeleteBatch">
+        UPDATE delete_batch
+        SET tombstoned_at = now(), server_version = #{serverVersion}, last_device_id = #{deviceId}
+        WHERE id = #{id}
+    </update>
+
+    <select id="findChangesSince" resultType="com.memox.trash.model.DeleteBatch">
+        SELECT <include refid="columns"/> FROM delete_batch
+        WHERE user_id = #{userId} AND server_version &gt; #{since}
+        ORDER BY server_version
+        LIMIT #{limit}
+    </select>
+</mapper>
