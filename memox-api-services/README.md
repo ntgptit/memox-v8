@@ -87,6 +87,25 @@ The shared code in `com.memox.common` that every feature reuses.
 - **Tests:** `./mvnw verify` runs the unit tests and the `*IT` integration
   tests against PostgreSQL 18 in Testcontainers, so Docker must be running.
 
+## Foundation
+
+Before adding anything to a feature, check the Base section above: a feature
+never re-implements paging, error bodies, exception handling, request IDs,
+type handlers or string/collection helpers (Apache Commons first). The review
+skill `spring-boot-mybatis-review` flags it.
+
+Deliberately not built yet, each with the event that triggers it:
+
+| Deferred | Trigger |
+|---|---|
+| Authentication, `CurrentUserProvider` (UUID user id, ADR-007) | the auth spec (ADR-001: one user type) |
+| Auditing columns | the first table, designed with the sync protocol: an offline-first client may own `updated_at` |
+| `commons-csv` | the `transfer` API |
+| Spring profiles, production config | the first deployment |
+| HTTP client convention | the first external integration |
+| `@IntegrationTest` meta-annotation, shared fixtures | the second integration test |
+| Revisit the single `ErrorCode` enum | about 50 constants |
+
 ## Folder contract
 
 | Folder | Responsibility | Allowed contents | Forbidden contents | Notes |
