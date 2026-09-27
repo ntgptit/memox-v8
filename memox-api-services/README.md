@@ -46,6 +46,31 @@ create every feature package up front, which is a recorded exception to the
 repo rule "No speculative structure". Delete a feature package that turns out
 to have no API.
 
+## Base
+
+The shared code in `com.memox.common` that every feature reuses.
+
+- **Errors:** throw `new BusinessException(ErrorCode.SOME_CODE)`. A feature
+  adds its codes to the `ErrorCode` enum after the generic ones, and adds
+  their client-facing text to `messages.properties` as `error.<NAME>`.
+  Every error response is RFC 9457 `application/problem+json` with a `code`
+  property; validation errors add `errors: [{field, message}]`, and a
+  database constraint violation is a 409 `CONFLICT`. `GlobalExceptionHandler`
+  never returns SQL, constraint names or stack traces.
+- **Paging:** a list endpoint takes a request that extends
+  `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
+  returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
+  sort enum maps to a whitelisted column in the feature's mapper XML.
+- **Code enums:** an enum stored as a short code implements `CodeEnum` and
+  gets a one-line `BaseEnumTypeHandler` subclass with
+  `@MappedTypes(TheEnum.class)` in `common.type_handler`, the only package
+  MyBatis scans for handlers.
+- **Columns:** primary keys are `uuid` columns mapped to `java.util.UUID`
+  (ADR-007); datetimes are `timestamptz` columns mapped to `java.time.Instant`,
+  in UTC (ADR-008). Code that needs "now" injects the `Clock` bean.
+- **Tests:** `./mvnw verify` runs the unit tests and the `*IT` integration
+  tests against PostgreSQL 18 in Testcontainers, so Docker must be running.
+
 ## Folder contract
 
 | Folder | Responsibility | Allowed contents | Forbidden contents | Notes |

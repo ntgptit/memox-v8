@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.memox.common.type_handler.BaseRoundTripMapper">
+
+	<select id="echoUuid" resultType="java.util.UUID">
+		SELECT CAST(#{value} AS uuid)
+	</select>
+
+	<select id="storedStatusCode" resultType="java.lang.String">
+		SELECT CAST(#{value} AS varchar)
+	</select>
+
+	<select id="statusFromCode" resultType="com.memox.common.type_handler.SampleStatus">
+		SELECT CAST(#{code} AS varchar)
+	</select>
+
+	<select id="echoInstant" resultType="java.time.Instant">
+		SELECT CAST(#{value} AS timestamptz)
+	</select>
+
+	<select id="instantAsUtcText" resultType="java.lang.String">
+		SELECT to_char(CAST(#{value} AS timestamptz) AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS')
+	</select>
+
+</mapper>
