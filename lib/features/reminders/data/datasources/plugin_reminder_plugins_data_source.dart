@@ -59,7 +59,9 @@ final class PluginReminderPluginsDataSource
   @override
   Future<bool> scheduleAlarm(DateTime at) async {
     await initialize();
-    await AndroidAlarmManager.cancel(reminderAlarmId);
+    // The same id replaces the pending alarm, and only once the new one is
+    // accepted: a refused schedule leaves the working alarm in place.
+    // `exact` stays false: the reminder is inexact (BR-REMINDER-009).
     return AndroidAlarmManager.oneShotAt(
       at,
       reminderAlarmId,

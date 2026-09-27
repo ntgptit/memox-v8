@@ -69,7 +69,12 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     unawaited(_closeStaleSessions());
     unawaited(_purgeExpiredTrash());
     _lifecycle = AppLifecycleListener(
-      onResume: () => unawaited(_purgeExpiredTrash()),
+      onResume: () {
+        unawaited(_purgeExpiredTrash());
+        // The local offset may have changed while the app slept
+        // (BR-REMINDER-009); Reconcile schedules from the offset now.
+        unawaited(_reconcileReminder());
+      },
     );
     _followReminderTaps();
     unawaited(_reconcileReminder());
@@ -82,7 +87,19 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     final plugins = ref.read(reminderPluginsDataSourceProvider);
     if (plugins == null) return;
     _reminderTaps = plugins.taps.listen(_openFromReminder);
-    unawaited(plugins.launchPayload().then(_openFromReminder));
+    unawaited(_openFromLaunch(plugins));
+  }
+
+  /// A plugin that cannot say what launched the app leaves it where it
+  /// opens; the reminder's taps and schedule do not depend on it.
+  Future<void> _openFromLaunch(ReminderPluginsDataSource plugins) async {
+    final String? payload;
+    try {
+      payload = await plugins.launchPayload();
+    } on Object {
+      return;
+    }
+    _openFromReminder(payload);
   }
 
   void _openFromReminder(String? payload) {

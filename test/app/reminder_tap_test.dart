@@ -10,9 +10,10 @@ import '../support/library_harness.dart';
 /// The plugins as the app sees them: taps it can send, and the payload that
 /// launched the app.
 final class _FakePlugins implements ReminderPluginsDataSource {
-  _FakePlugins({this.launch});
+  _FakePlugins({this.launch, this.launchFails = false});
 
   final String? launch;
+  final bool launchFails;
   final _taps = StreamController<String?>.broadcast();
   var initialized = 0;
 
@@ -25,7 +26,10 @@ final class _FakePlugins implements ReminderPluginsDataSource {
   Stream<String?> get taps => _taps.stream;
 
   @override
-  Future<String?> launchPayload() async => launch;
+  Future<String?> launchPayload() async {
+    if (launchFails) throw StateError('plugin not ready');
+    return launch;
+  }
 
   @override
   Future<bool?> requestNotificationPermission() async => true;
@@ -94,6 +98,23 @@ void main() {
       ..tap(null)
       ..tap('something-else');
     await tester.pumpAndSettle();
+
+    expect(find.byType(StudyHomeScreen), findsNothing);
+  });
+
+  libraryTest('a launch payload that cannot be read leaves the app running', (
+    tester,
+    env,
+  ) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        reminderPluginsDataSourceProvider.overrideWithValue(
+          _FakePlugins(launchFails: true),
+        ),
+      ],
+    );
 
     expect(find.byType(StudyHomeScreen), findsNothing);
   });

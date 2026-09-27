@@ -23,7 +23,8 @@ abstract interface class ReminderPluginsDataSource {
   Future<bool?> requestNotificationPermission();
 
   /// One inexact alarm at [at] under [reminderAlarmId], replacing any pending
-  /// one. `false` when the platform refused it.
+  /// one; a refusal leaves the pending one as it was. `false` when the
+  /// platform refused it.
   Future<bool> scheduleAlarm(DateTime at);
 
   /// Removes the pending alarm. `false` when the platform refused.
