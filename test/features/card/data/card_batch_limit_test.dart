@@ -4,6 +4,8 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
+import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -98,5 +100,28 @@ void main() {
   test('the live rows and root ids of a large set are read whole', () async {
     expect(await dao.liveRows(ids), hasLength(_many));
     expect(await dao.rootIdsOf({from, to}), hasLength(1));
+  });
+
+  test('a whole-deck and a selected export of more cards than SQLite binds '
+      'carry every card with its tags (BR-TRANSFER-010)', () async {
+    final transfer = CardTransferRepositoryImpl(db, cards);
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) "
+      "VALUES ('t', 'Noun', 'noun', 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('c32999', 't')",
+    );
+
+    for (final scope in [null, ids]) {
+      final result = await transfer.exportSnapshot(
+        deckId: from,
+        cardIds: scope,
+      );
+      final rows = (result as Ok<CardExportSnapshot, CardRejection>).value.rows;
+
+      expect(rows, hasLength(_many), reason: '$scope');
+      expect(rows.last.tagNames, ['Noun'], reason: '$scope');
+    }
   });
 }
