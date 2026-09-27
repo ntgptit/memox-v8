@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.memox.deck.mapper.DeckMapper">
+
+    <sql id="deckColumns">
+        id, user_id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version,
+        scheduler_config, study_config, generation, first_answered_at, source_template_id,
+        source_template_version, delete_batch_id, sibling_position, created_at, updated_at, server_version,
+        last_device_id, deleted_at
+    </sql>
+
+    <!-- Cycle-safe: UNION drops a revisited (id, rel) pair, and rel is capped at the depth limit. -->
+    <sql id="liveSubtree">
+        WITH RECURSIVE sub AS (
+            SELECT id, 0 AS rel FROM deck WHERE id = #{id} AND user_id = #{userId} AND deleted_at IS NULL
+            UNION
+            SELECT d.id, sub.rel + 1 FROM deck d JOIN sub ON d.parent_id = sub.id
+            WHERE d.user_id = #{userId} AND d.deleted_at IS NULL AND sub.rel &lt; 10
+        )
+    </sql>
+
+    <select id="findDeckById" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck WHERE id = #{id}
+    </select>
+
+    <select id="findLiveSubtree" resultType="com.memox.deck.model.DeckSubtreeNode">
+        <include refid="liveSubtree"/>
+        SELECT id, rel FROM sub ORDER BY rel, id
+    </select>
+
+    <insert id="insertDeck">
+        INSERT INTO deck (<include refid="deckColumns"/>)
+        VALUES (#{id}, #{userId}, #{name}, #{parentId}, #{rootId}, #{depth}, #{contentType}, #{schedulerType},
+                #{schedulerVersion}, #{schedulerConfig}, #{studyConfig}, #{generation}, #{firstAnsweredAt},
+                #{sourceTemplateId}, #{sourceTemplateVersion}, #{deleteBatchId}, #{siblingPosition}, #{createdAt},
+                #{updatedAt}, #{serverVersion}, #{lastDeviceId}, NULL)
+    </insert>
+
+    <update id="updateSubtreePlacement">
+        <include refid="liveSubtree"/>,
+        numbered AS (SELECT id, rel, ROW_NUMBER() OVER (ORDER BY rel, id) AS rn FROM sub WHERE rel &gt; 0)
+        UPDATE deck
+        SET updated_at = #{now}, root_id = #{rootId}, depth = #{depth} + numbered.rel,
+            server_version = #{firstVersion} + numbered.rn - 1, last_device_id = #{deviceId}
+        FROM numbered
+        WHERE deck.id = numbered.id
+    </update>
+
+
+    <select id="findChangesSince" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck
+        WHERE user_id = #{userId} AND server_version &gt; #{since}
+        ORDER BY server_version
+        LIMIT #{limit}
+    </select>
+    <sql id="sameParent">
+        <choose>
+            <when test="parentId == null">parent_id IS NULL</when>
+            <otherwise>parent_id = #{parentId}</otherwise>
+        </choose>
+    </sql>
+    <!-- The end of the sibling group, rows in Trash included, so an undo gets its old place back (app trash D9). -->
+    <select id="nextSiblingPosition" resultType="int">
+        SELECT COALESCE(MAX(sibling_position) + 1, 0) FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/> AND deleted_at IS NULL
+    </select>
+    <update id="updateName">
+        UPDATE deck SET name = #{name}, updated_at = #{now}, server_version = #{version}, last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <update id="updateStudyConfig">
+        UPDATE deck SET study_config = #{studyConfig}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <update id="updateContentType">
+        UPDATE deck SET content_type = #{contentType}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <select id="deriveContentType" resultType="string">
+        SELECT CASE
+            WHEN EXISTS (SELECT 1 FROM deck c WHERE c.parent_id = p.id AND c.deleted_at IS NULL
+                         AND c.delete_batch_id IS NOT DISTINCT FROM p.delete_batch_id) THEN 'deck'
+            WHEN EXISTS (SELECT 1 FROM card c WHERE c.deck_id = p.id AND c.deleted_at IS NULL
+                         AND c.delete_batch_id IS NOT DISTINCT FROM p.delete_batch_id) THEN 'card'
+            ELSE 'unset' END
+        FROM deck p WHERE p.id = #{id}
+    </select>
+    <update id="updatePlacement">
+        UPDATE deck SET parent_id = #{parentId}, root_id = #{rootId}, depth = #{depth},
+                        sibling_position = #{siblingPosition}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <select id="findActiveSiblings" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+        ORDER BY sibling_position, id
+    </select>
+    <update id="updateSiblingPositions">
+        UPDATE deck
+        SET sibling_position = v.position, server_version = v.version, updated_at = #{now},
+            last_device_id = #{deviceId}
+        FROM (VALUES
+            <foreach collection="positions" item="p" separator=",">
+                (CAST(#{p.id} AS uuid), CAST(#{p.siblingPosition} AS integer), CAST(#{p.serverVersion} AS bigint))
+            </foreach>
+        ) AS v(id, position, version)
+        WHERE deck.id = v.id AND deck.user_id = #{userId}
+    </update>
+    <!-- Active decks under #{id}: a deck in Trash keeps its own batch, and so does everything under it. -->
+    <sql id="activeSubtree">
+        WITH RECURSIVE sub AS (
+            SELECT id, 0 AS rel FROM deck
+            WHERE id = #{id} AND user_id = #{userId} AND deleted_at IS NULL AND delete_batch_id IS NULL
+            UNION
+            SELECT d.id, sub.rel + 1 FROM deck d JOIN sub ON d.parent_id = sub.id
+            WHERE d.user_id = #{userId} AND d.deleted_at IS NULL AND d.delete_batch_id IS NULL AND sub.rel &lt; 10
+        )
+    </sql>
+    <select id="findActiveSubtree" resultType="com.memox.deck.model.DeckSubtreeNode">
+        <include refid="activeSubtree"/>
+        SELECT id, rel FROM sub ORDER BY rel, id
+    </select>
+    <update id="markActiveSubtree">
+        <include refid="activeSubtree"/>,
+        numbered AS (SELECT id, ROW_NUMBER() OVER (ORDER BY rel, id) AS rn FROM sub)
+        UPDATE deck
+        SET delete_batch_id = #{batchId}, server_version = #{firstVersion} + numbered.rn - 1,
+            updated_at = #{now}, last_device_id = #{deviceId}
+        FROM numbered
+        WHERE deck.id = numbered.id
+    </update>
+    <select id="countInBatch" resultType="int">
+        SELECT count(*) FROM deck WHERE user_id = #{userId} AND delete_batch_id = #{batchId} AND deleted_at IS NULL
+    </select>
+    <update id="restoreBatch">
+        WITH numbered AS (
+            SELECT id, ROW_NUMBER() OVER (ORDER BY depth, id) AS rn FROM deck
+            WHERE user_id = #{userId} AND delete_batch_id = #{batchId} AND deleted_at IS NULL
+        )
+        UPDATE deck
+        SET delete_batch_id = NULL, server_version = #{firstVersion} + numbered.rn - 1,
+            updated_at = #{now}, last_device_id = #{deviceId}
+        FROM numbered
+        WHERE deck.id = numbered.id
+    </update>
+    <select id="findActivePage" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+        ORDER BY sibling_position, id
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="countActive" resultType="long">
+        SELECT count(*) FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+    </select>
+</mapper>

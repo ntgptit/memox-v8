@@ -112,7 +112,7 @@ như hiện nay; chỉ repository và tầng `data/` biết tới sync.
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | BE-E1 | Sync deck phía app theo mô hình hàng (ADR-013 bước 3): Drift v4 với `sync_outbox`, `sync_state`, `server_version` và trigger SQLite ghi outbox trong transaction của người ghi; `Dio` dùng chung và Retrofit `SyncApi` (ADR-012); `SyncCoordinator` push rồi pull, backoff, `connectivity_plus`; adapter cho `deck` và `delete_batches`; chỉ chạy khi có `API_BASE_URL` | xong | BE-D1, API-A1 | XL | [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [spec](superpowers/specs/2026-09-27-app-deck-sync-design.md), [plan](superpowers/plans/2026-09-27-app-deck-sync.md) | Chuyển sang lệnh ở BE-E7 |
-| BE-E7 | Chuyển sync deck của app sang mô hình lệnh (ADR-014): `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case của deck ghi lệnh deck, patch `study_options`; lệnh không gộp, patch gộp theo nhóm trường; cả lượt pull trong một transaction (#114 đang commit từng trang); áp `current` cho mọi entity trong `affected` | chưa bắt đầu | BE-E1, API-A2 | L | Spec API authority §4, §9 bước 2 | Spec của hạng mục quyết hai điểm ở mục Điểm chặn |
+| BE-E7 | Chuyển sync của app sang mô hình lệnh (ADR-014) cho deck **và card**: `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case sinh id deck, card, batch và ghi lệnh vào outbox; patch `study_options`, `content`, `flag`; lệnh không gộp, patch gộp theo nhóm trường; `current` là danh sách; adapter card, và đặt lại cursor pull khi thêm nó (coordinator hiện bỏ qua entity lạ mà vẫn nhích `since`); cả lượt pull trong một transaction | chưa bắt đầu | BE-E1, API-A2 | XL | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) §9; spec API authority §4 | Sau API-A2; spec của hạng mục chốt cách bắt thay đổi (xem Điểm chặn) |
 | BE-E2 | Card và Tags: lệnh card, tag và patch `content`/`flag` vào outbox; import và starter deck tách thành lệnh tạo; khi `TAG_NAME_TAKEN`, gộp tag bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox | chưa bắt đầu | BE-E7, API-B1, API-B2 | L | Spec API authority §5 | Sau BE-E7 |
 | BE-E3 | Trash: lệnh xoá, Undo, khôi phục và purge vào outbox; dọn Trash hết hạn chỉ ở local, không đẩy lên | chưa bắt đầu | BE-E2, API-B3 | M | Spec API authority §5 "Expired Trash purge" | Sau BE-E2 |
 | BE-E4 | SRS: phía Dart của bộ dữ liệu test dùng chung; `RECORD_REVIEW` (đủ trường của `ReviewTurn`), `COMPLETE_LEARNING`, `RESET_LEARNING_PROGRESS`, `CHANGE_DECK_SCHEDULER` vào outbox; `card_schedule` local là bản tạm, bị ghi đè khi pull; review của generation cũ bị từ chối thì xoá dòng local | chưa bắt đầu | BE-E2, API-B4, API-B5 | L | Spec API authority §6 | Làm cùng API-B4 |
@@ -208,7 +208,6 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 | BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
-| BE-E7 | Lệnh tạo bị từ chối mà server chưa từng thấy entity (`current` là `null`): xoá hàng local thì cascade mất các card chưa đẩy lên; #114 giữ hàng và ghi log, nên local lệch server mãi | Dữ liệu tạo offline dưới một cha đã bị máy khác xoá | Chốt trong spec của API-A2 và BE-E7 |
 | BE-E6 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
 
 ## Trạng thái kiểm chứng
@@ -229,7 +228,7 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 ## Bước tiếp theo
 
 1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
-2. BE-E7 song song với API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
+2. BE-E7 sau API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
    trong [`wbs_API.md`](wbs_API.md).
 
 ## Ngữ cảnh cập nhật

@@ -64,13 +64,13 @@ Quy ước:
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | API-A1 | Sync cho `deck` theo hàng (ADR-013 bước 2): Flyway `V1`, `V2`; `CurrentUserProvider` với user dev; `POST /api/v1/sync/push` idempotent theo `opId`, `GET /api/v1/sync/changes` phân trang theo `serverVersion`; cây deck do server suy ra; `SyncEntityHandler`; phần server của #114: Flyway `V3` (`delete_batch`, deck từ chối các hàng mà CHECK của app từ chối), `DeleteBatchSyncHandler` | xong | API-04, API-06 | L | [PR #110](https://github.com/ntgptit/memox-v8/pull/110), [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [plan](superpowers/plans/2026-09-27-api-deck-sync.md); `SyncApiIT`, `DeckSyncHandlerIT`, `SyncMappersIT`, `SyncOperationApplierConcurrencyIT`, `SchemaIT` | Upsert hàng của deck bị thay ở API-A2; phần hạ tầng giữ lại |
-| API-A2 | Giao thức lệnh và nghiệp vụ Deck: push nhận `command` và `patch`, trả `rejected` kèm `current` cho mọi entity trong `affected`; `SyncEntityHandler` thành handler theo lệnh; `DeckService` nhận logic cây của API-A1; lệnh `CREATE_ROOT_DECK`, `CREATE_SUB_DECK`, `RENAME_DECK`, `MOVE_DECK`, `REORDER_DECK`, `DELETE_DECK`, `UNDO_DECK_DELETION`; patch `study_options` của root; REST của deck; `Idempotency-Key` cho REST; lệnh lạ trả `VALIDATION_FAILED`; bỏ upsert hàng của deck | chưa bắt đầu | API-A1 | XL | Spec API authority §3, §4.1, §5, §8 | Brainstorm → spec → plan; song song với BE-E7 khi wire format đã chốt; chốt cách xử lý lệnh tạo bị từ chối khi `current` là `null` (xem Điểm chặn) |
+| API-A2 | Giao thức lệnh, Deck và Card: push nhận `command` và `patch`, `current` là danh sách theo `affected`; handler theo `type`, `EntityReader` theo `entityType`; `DeckService` và `CardService` (một DTO cho REST và payload); bảng `card` (Flyway `V4`); 7 lệnh deck, 4 lệnh card, patch `study_options`, `content`, `flag`; `content_type` do server suy; tạo dưới cha trong Trash thì theo cha vào batch; NFC phía server; REST ghi và bốn endpoint đọc; `Idempotency-Key`; gỡ upsert hàng của deck và `delete_batch` | xong | API-A1 | XL | [PR #118](https://github.com/ntgptit/memox-v8/pull/118); [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) | BE-E7 chuyển app sang lệnh |
 
 ### Nghiệp vụ
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| API-B1 | Card: `CREATE_CARD`, `MOVE_CARDS`, `DELETE_CARDS`, `UNDO_CARD_DELETION`; patch `content` và `flag`; REST, kể cả tạo theo lô cho import của client khác | chưa bắt đầu | API-A2 | L | Spec API authority §5 | Sau API-A2 |
+| API-B1 | Card, phần còn lại sau API-A2: tạo card theo lô cho import của client khác (REST) | chưa bắt đầu | API-A2 | S | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) §1 | Sau API-A2 |
 | API-B2 | Tags: `ADD_TAG_TO_CARDS`, `REMOVE_TAG_FROM_CARDS`, `RENAME_TAG` (kể cả gộp), `DELETE_TAG`; tên tag duy nhất trong mỗi user, bên tới sau bị từ chối với `TAG_NAME_TAKEN`; REST | chưa bắt đầu | API-B1 | M | Spec API authority §5 "Duplicate tag names" | Làm cùng hoặc ngay sau API-B1 |
 | API-B3 | Trash: `RESTORE_DECKS`, `RESTORE_CARDS`, `PURGE_TRASH`; job dọn Trash hết hạn ở server (BR-TRASH-009); REST danh sách Trash và đích khôi phục | chưa bắt đầu | API-B1, API-B2 | M | Spec API authority §5 | Sau API-C1 theo thứ tự đã chốt |
 | API-B4 | Bộ dữ liệu test SRS dùng chung: các ca JSON (scheduler, version, trạng thái đầu, sự kiện, lịch mong đợi) trích từ test Dart hiện có; test Dart và test Java cùng đọc, lệch là CI fail | chưa bắt đầu | — | M | Spec API authority §6 "Conformance dataset" | Làm trước API-B5; phần Dart thuộc BE-E3 |
@@ -102,7 +102,6 @@ Không làm trước khi có sự kiện (`CLAUDE.md`, "No speculative structure
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
 | API-C1, API-C2 | Chưa có spec auth | Không thể triển khai ra ngoài, không có client thứ hai | Chủ dự án mở spec auth sau API-B1/API-B2 |
-| API-A2 | Lệnh tạo bị từ chối mà server chưa từng thấy entity: client xoá hàng thì cascade mất card chưa đẩy lên, giữ hàng (như #114) thì lệch server mãi | Dữ liệu tạo offline dưới một cha đã bị máy khác xoá | Chốt trong spec của API-A2 và BE-E7 |
 | API-B8 | Chưa chốt server có phục vụ thư viện template hay không | Client khác không thêm được starter deck | Spec của starter decks |
 
 ## Trạng thái kiểm chứng
@@ -116,7 +115,7 @@ Không làm trước khi có sự kiện (`CLAUDE.md`, "No speculative structure
 
 Theo §9 của spec API authority:
 
-1. API-A2 (giao thức lệnh và Deck), song song với BE-E7 ở phía app.
+1. BE-E7 ở phía app (API-A2 đã xong).
 2. API-B1, API-B2.
 3. API-C1 khi có spec auth.
 4. API-B3.
@@ -131,6 +130,11 @@ Theo §9 của spec API authority:
   backend nghiệp vụ chính thức, sync đẩy lệnh). Các hạng mục sync theo bảng của bản
   đầu được thay bằng API-A2 và nhóm Nghiệp vụ. Rà lại sau khi merge `master`: API-A1
   gồm cả phần server của #114.
+- **Cập nhật ngày 2026-09-27:** API-A2 vào `đang làm` với [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md): gộp phần Card
+  cần cho luật Deck (chủ dự án chọn), nên API-B1 chỉ còn tạo card theo lô; điểm chặn
+  "lệnh tạo bị từ chối" đóng theo D4 (theo cha vào Trash).
+- **Cập nhật ngày 2026-09-27:** API-A2 xong (PR #118): giao thức lệnh, Deck, Card, REST ghi và
+  bốn endpoint đọc; `./mvnw -B verify` xanh (60 unit + 62 IT, coverage đạt).
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; `./mvnw verify` pass; có IT chứng minh
   hành vi chính, và REST với lệnh sync cho cùng kết quả.
