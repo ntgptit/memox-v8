@@ -2418,5 +2418,104 @@
   "galleryN5": "N5",
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "studyEntryHeroLine": "{algorithm} · cards per session {count}",
+  "@studyEntryHeroLine": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Study entry hero overline (BR-STUDY-024)."
+  },
+  "studyEntryNewLabel": "New",
+  "@studyEntryNewLabel": {
+    "description": "Study entry hero's new-cards tile."
+  },
+  "studyEntryDueLabel": "Due",
+  "@studyEntryDueLabel": {
+    "description": "Study entry hero's due-cards tile."
+  },
+  "studyEntryResumeOverline": "Session from today",
+  "@studyEntryResumeOverline": {
+    "description": "Resume banner overline (BR-STUDY-072)."
+  },
+  "studyEntryResumeLine": "{kind} · {mode} · {done} of {total} cards",
+  "@studyEntryResumeLine": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Resume banner's progress line."
+  },
+  "studyEntryResumeExplain": "Continue where you stopped. Starting something new ends this one and keeps its answers.",
+  "@studyEntryResumeExplain": {
+    "description": "Resume banner's explanatory line."
+  },
+  "studyEntryContinue": "Continue",
+  "@studyEntryContinue": {
+    "description": "Resume banner's action."
+  },
+  "studyEntryNothingTitle": "Nothing to do right now",
+  "@studyEntryNothingTitle": {
+    "description": "Positive empty state title (UC-STUDY-001 E1, BR-STUDY-008)."
+  },
+  "studyEntryNothingBody": "Every card is learned and resting. Cards cannot be reviewed before they are due.",
+  "@studyEntryNothingBody": {
+    "description": "Positive empty state body."
+  },
+  "studyEntryNextDue": "Next due {date}",
+  "@studyEntryNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "The nearest due date, in the empty state (E1)."
+  },
+  "studyEntryComingSoon": "Study sessions are coming soon",
+  "@studyEntryComingSoon": {
+    "description": "Study entry footer while no stage chain is built (spec §3)."
+  },
+  "studyEntryComingSoonCaption": "This deck is ready. Learning and review open in an update.",
+  "@studyEntryComingSoonCaption": {
+    "description": "Study entry footer caption while no stage chain is built."
+  },
+  "studyEntryLoadErrorTitle": "Couldn't open Study",
+  "@studyEntryLoadErrorTitle": {
+    "description": "Study entry error state title (UC-STUDY-001 E5)."
+  },
+  "studySessionKindLearning": "Learning",
+  "@studySessionKindLearning": {
+    "description": "A learning session (BR-STUDY-051)."
+  },
+  "studySessionKindReviewing": "Review",
+  "@studySessionKindReviewing": {
+    "description": "A review session (BR-STUDY-051)."
+  },
+  "studyRejectionEnded": "This session has ended.",
+  "@studyRejectionEnded": {
+    "description": "A session that can no longer be continued (BR-STUDY-072)."
+  },
+  "studyRejectionGone": "This deck is gone.",
+  "@studyRejectionGone": {
+    "description": "The deck of a study action was deleted."
+  },
+  "studyRejectionOther": "Couldn't do that. Try again.",
+  "@studyRejectionOther": {
+    "description": "Any other refused study action."
   }
 }
