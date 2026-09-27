@@ -8,12 +8,17 @@ import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
+import com.memox.deck.dto.request.ReorderDeckRequest;
 import com.memox.deck.dto.request.StudyOptionsRequest;
+import com.memox.deck.enums.DeckPlacement;
 import com.memox.deck.mapper.DeckMapper;
 import com.memox.deck.model.Deck;
 import com.memox.deck.service.DeckService;
 import com.memox.sync.service.WriteContext;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
@@ -159,6 +164,96 @@ class DeckServiceImplIT {
                 ErrorCode.DECK_ROOT_REQUIRED);
         rejects(
                 () -> deckService.updateStudyOptions(ctx, root, new StudyOptionsRequest("{not json")),
+                ErrorCode.VALIDATION_FAILED);
+    }
+
+    @Test
+    void moveRewritesTheSubtreeAndBothParentsContentType_BR_DECK_015_018() {
+        UUID rootA = root("sm2");
+        UUID oldParent = child(rootA);
+        UUID x = child(oldParent);
+        UUID y = child(x);
+        UUID newParent = child(rootA);
+        long before = deck(y).getServerVersion();
+
+        deckService.moveDeck(ctx, x, new MoveDeckRequest(newParent));
+
+        assertThat(deck(x).getParentId()).isEqualTo(newParent);
+        assertThat(deck(x).getDepth()).isEqualTo(3);
+        assertThat(deck(y).getDepth()).isEqualTo(4);
+        assertThat(deck(y).getServerVersion()).isGreaterThan(before);
+        assertThat(deck(oldParent).getContentType()).isEqualTo("unset");
+        assertThat(deck(newParent).getContentType()).isEqualTo("deck");
+    }
+
+    @Test
+    void moveRefusesACycleACardTargetAndTooDeep_BR_DECK_001_010_017() {
+        UUID root = root("sm2");
+        UUID x = child(root);
+        UUID y = child(x);
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(y)), ErrorCode.DECK_TREE_CYCLE);
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(x)), ErrorCode.DECK_TREE_CYCLE);
+
+        UUID cardDeck = child(root);
+        deckMapper.updateContentType(
+                ctx.userId(),
+                cardDeck,
+                "card",
+                999_998L,
+                ctx.deviceId(),
+                deck(root).getUpdatedAt());
+        rejects(
+                () -> deckService.moveDeck(ctx, y, new MoveDeckRequest(cardDeck)),
+                ErrorCode.DECK_CONTENT_TYPE_MISMATCH);
+
+        UUID deep = root("sm2");
+        for (int level = 2; level <= 9; level++) {
+            deep = child(deep);
+        }
+        UUID ninth = deep;
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(ninth)), ErrorCode.DECK_TREE_TOO_DEEP);
+    }
+
+    @Test
+    void moveAcrossRootsNeedsTheSameSchedulerAndGeneration_BR_SRS_006() {
+        UUID sm2 = root("sm2");
+        UUID other = root("sm2");
+        UUID eightBox = root("eight_box");
+        UUID x = child(sm2);
+
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(eightBox)), ErrorCode.DECK_SCHEDULER_MISMATCH);
+        deckService.moveDeck(ctx, x, new MoveDeckRequest(other));
+        assertThat(deck(x).getRootId()).isEqualTo(other);
+    }
+
+    @Test
+    void aRootOrASameParentMoveIsNotAMove() {
+        UUID root = root("sm2");
+        UUID x = child(root);
+        UUID target = child(root);
+        rejects(() -> deckService.moveDeck(ctx, root, new MoveDeckRequest(target)), ErrorCode.VALIDATION_FAILED);
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(root)), ErrorCode.VALIDATION_FAILED);
+    }
+
+    @Test
+    void reorderPlacesTheDeckNextToItsAnchorAndBumpsOnlyMovedRows_UC_DECK_006() {
+        UUID root = root("sm2");
+        UUID a = child(root);
+        UUID b = child(root);
+        UUID c = child(root);
+        long aVersion = deck(a).getServerVersion();
+
+        deckService.reorderDeck(ctx, c, new ReorderDeckRequest(a, DeckPlacement.BEFORE));
+
+        List<UUID> order = java.util.stream.Stream.of(a, b, c)
+                .map(this::deck)
+                .sorted(Comparator.comparing(Deck::getSiblingPosition))
+                .map(Deck::getId)
+                .toList();
+        assertThat(order).containsExactly(c, a, b);
+        assertThat(deck(a).getServerVersion()).isGreaterThan(aVersion);
+        rejects(
+                () -> deckService.reorderDeck(ctx, c, new ReorderDeckRequest(root, DeckPlacement.AFTER)),
                 ErrorCode.VALIDATION_FAILED);
     }
 }

@@ -7,17 +7,25 @@ import com.memox.common.exception.ErrorCode;
 import com.memox.common.util.TextRules;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
+import com.memox.deck.dto.request.ReorderDeckRequest;
 import com.memox.deck.dto.request.StudyOptionsRequest;
+import com.memox.deck.enums.DeckPlacement;
 import com.memox.deck.mapper.DeckMapper;
 import com.memox.deck.model.Deck;
 import com.memox.deck.model.DeckContentTypes;
+import com.memox.deck.model.DeckPosition;
+import com.memox.deck.model.DeckSubtreeNode;
 import com.memox.deck.service.DeckService;
 import com.memox.sync.service.ChangeVersions;
 import com.memox.sync.service.WriteContext;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -191,6 +199,121 @@ public class DeckServiceImpl implements DeckService {
             objectMapper.readTree(value);
         } catch (JsonProcessingException e) {
             throw new BusinessException(ErrorCode.VALIDATION_FAILED);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void moveDeck(WriteContext context, UUID deckId, MoveDeckRequest request) {
+        changeVersions.lock(context);
+        Deck moving = activeDeck(context, deckId);
+        UUID oldParentId = moving.getParentId();
+        // A root owns its scheduler: making it a child, or a child a root, is not a move (UC-DECK-005 A2).
+        if (oldParentId == null || oldParentId.equals(request.targetParentId())) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED);
+        }
+        Deck target = parentOrMissing(context, request.targetParentId());
+        List<DeckSubtreeNode> subtree = deckMapper.findLiveSubtree(context.userId(), moving.getId());
+        requireNoCycle(target.getId(), moving.getId(), subtree);
+        if (target.getDeleteBatchId() != null) {
+            throw new BusinessException(ErrorCode.DECK_IN_TRASH);
+        }
+        requirePlaceableUnder(target, moving, subtree);
+
+        int depth = target.getDepth() + 1;
+        Instant now = clock.instant();
+        deckMapper.updatePlacement(
+                context.userId(),
+                moving.getId(),
+                target.getId(),
+                target.getRootId(),
+                depth,
+                deckMapper.nextSiblingPosition(context.userId(), target.getId()),
+                changeVersions.next(context),
+                context.deviceId(),
+                now);
+        rewriteDescendants(context, moving.getId(), target.getRootId(), depth, subtree.size() - 1, now);
+        refreshContentType(context, oldParentId);
+        refreshContentType(context, target.getId());
+    }
+
+    @Override
+    @Transactional
+    public void reorderDeck(WriteContext context, UUID deckId, ReorderDeckRequest request) {
+        changeVersions.lock(context);
+        Deck deck = activeDeck(context, deckId);
+        Deck anchor = activeDeck(context, request.anchorId());
+        if (deck.getId().equals(anchor.getId()) || !Objects.equals(deck.getParentId(), anchor.getParentId())) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED);
+        }
+        List<Deck> siblings = deckMapper.findActiveSiblings(context.userId(), deck.getParentId());
+        List<UUID> order = new ArrayList<>(siblings.stream()
+                .map(Deck::getId)
+                .filter(id -> !id.equals(deckId))
+                .toList());
+        int anchorIndex = order.indexOf(anchor.getId());
+        order.add(request.placement() == DeckPlacement.BEFORE ? anchorIndex : anchorIndex + 1, deckId);
+
+        List<UUID> moved = new ArrayList<>();
+        for (int position = 0; position < order.size(); position++) {
+            UUID id = order.get(position);
+            Deck sibling = siblings.stream()
+                    .filter(s -> s.getId().equals(id))
+                    .findFirst()
+                    .orElseThrow();
+            if (sibling.getSiblingPosition() != position) {
+                moved.add(id);
+            }
+        }
+        if (moved.isEmpty()) {
+            return;
+        }
+        long firstVersion = changeVersions.block(context, moved.size());
+        List<DeckPosition> positions = new ArrayList<>();
+        for (int i = 0; i < moved.size(); i++) {
+            positions.add(new DeckPosition(moved.get(i), order.indexOf(moved.get(i)), firstVersion + i));
+        }
+        deckMapper.updateSiblingPositions(context.userId(), positions, context.deviceId(), clock.instant());
+    }
+
+    /** The UC-DECK-005 checks after the cycle check: content type, scheduler and generation, depth. */
+    private void requirePlaceableUnder(Deck target, Deck moving, List<DeckSubtreeNode> subtree) {
+        if (DeckContentTypes.CARD.equals(target.getContentType())) {
+            throw new BusinessException(ErrorCode.DECK_CONTENT_TYPE_MISMATCH);
+        }
+        Deck movingRoot = deckMapper.findDeckById(moving.getRootId());
+        Deck targetRoot = deckMapper.findDeckById(target.getRootId());
+        if (!Objects.equals(movingRoot.getSchedulerType(), targetRoot.getSchedulerType())
+                || !Objects.equals(movingRoot.getGeneration(), targetRoot.getGeneration())) {
+            throw new BusinessException(ErrorCode.DECK_SCHEDULER_MISMATCH);
+        }
+        int height = subtree.stream().mapToInt(DeckSubtreeNode::getRel).max().orElse(0) + 1;
+        if (target.getDepth() + height > MAX_DEPTH) {
+            throw new BusinessException(ErrorCode.DECK_TREE_TOO_DEEP);
+        }
+    }
+
+    /** Descendants follow their top's new root and depth, one version each, Trash included (BR-DECK-018). */
+    private void rewriteDescendants(
+            WriteContext context, UUID topId, UUID rootId, int topDepth, int descendants, Instant now) {
+        if (descendants <= 0) {
+            return;
+        }
+        deckMapper.updateSubtreePlacement(
+                context.userId(),
+                topId,
+                rootId,
+                topDepth,
+                changeVersions.block(context, descendants),
+                context.deviceId(),
+                now);
+    }
+
+    private static void requireNoCycle(UUID targetId, UUID movingId, List<DeckSubtreeNode> subtree) {
+        boolean inside = targetId.equals(movingId)
+                || subtree.stream().anyMatch(node -> node.getId().equals(targetId));
+        if (inside) {
+            throw new BusinessException(ErrorCode.DECK_TREE_CYCLE);
         }
     }
 }

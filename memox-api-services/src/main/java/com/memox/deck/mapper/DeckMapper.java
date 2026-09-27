@@ -1,6 +1,7 @@
 package com.memox.deck.mapper;
 
 import com.memox.deck.model.Deck;
+import com.memox.deck.model.DeckPosition;
 import com.memox.deck.model.DeckSubtreeNode;
 import java.time.Instant;
 import java.util.List;
@@ -26,7 +27,8 @@ public interface DeckMapper {
             @Param("rootId") UUID rootId,
             @Param("depth") int depth,
             @Param("firstVersion") long firstVersion,
-            @Param("deviceId") UUID deviceId);
+            @Param("deviceId") UUID deviceId,
+            @Param("now") Instant now);
 
     List<Deck> findChangesSince(@Param("userId") UUID userId, @Param("since") long since, @Param("limit") int limit);
 
@@ -58,4 +60,24 @@ public interface DeckMapper {
 
     /** What the deck's direct children make it: children sharing its own batch count, so Trash keeps its shape. */
     String deriveContentType(@Param("id") UUID id);
+
+    int updatePlacement(
+            @Param("userId") UUID userId,
+            @Param("id") UUID id,
+            @Param("parentId") UUID parentId,
+            @Param("rootId") UUID rootId,
+            @Param("depth") int depth,
+            @Param("siblingPosition") int siblingPosition,
+            @Param("version") long version,
+            @Param("deviceId") UUID deviceId,
+            @Param("now") Instant now);
+
+    /** Active siblings under {@code parentId} ({@code null}: the user's roots), by position then id. */
+    List<Deck> findActiveSiblings(@Param("userId") UUID userId, @Param("parentId") UUID parentId);
+
+    int updateSiblingPositions(
+            @Param("userId") UUID userId,
+            @Param("positions") List<DeckPosition> positions,
+            @Param("deviceId") UUID deviceId,
+            @Param("now") Instant now);
 }

@@ -2,7 +2,9 @@ package com.memox.deck.service.impl;
 
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
+import com.memox.deck.dto.request.ReorderDeckRequest;
 import com.memox.deck.dto.request.StudyOptionsRequest;
 import com.memox.deck.service.DeckService;
 import com.memox.sync.service.PayloadReader;
@@ -46,5 +48,21 @@ class DeckSyncCommands {
                 "study_options",
                 (context, deckId, fields) ->
                         decks.updateStudyOptions(context, deckId, payloads.read(fields, StudyOptionsRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler moveDeckCommand(DeckService decks, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "MOVE_DECK",
+                (context, payload) -> decks.moveDeck(
+                        context, payloads.id(payload, "deckId"), payloads.read(payload, MoveDeckRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler reorderDeckCommand(DeckService decks, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "REORDER_DECK",
+                (context, payload) -> decks.reorderDeck(
+                        context, payloads.id(payload, "deckId"), payloads.read(payload, ReorderDeckRequest.class)));
     }
 }

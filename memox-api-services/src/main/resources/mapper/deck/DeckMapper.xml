@@ -40,7 +40,7 @@
         <include refid="liveSubtree"/>,
         numbered AS (SELECT id, rel, ROW_NUMBER() OVER (ORDER BY rel, id) AS rn FROM sub WHERE rel &gt; 0)
         UPDATE deck
-        SET root_id = #{rootId}, depth = #{depth} + numbered.rel,
+        SET updated_at = #{now}, root_id = #{rootId}, depth = #{depth} + numbered.rel,
             server_version = #{firstVersion} + numbered.rn - 1, last_device_id = #{deviceId}
         FROM numbered
         WHERE deck.id = numbered.id
@@ -85,4 +85,27 @@
             ELSE 'unset' END
         FROM deck p WHERE p.id = #{id}
     </select>
+    <update id="updatePlacement">
+        UPDATE deck SET parent_id = #{parentId}, root_id = #{rootId}, depth = #{depth},
+                        sibling_position = #{siblingPosition}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <select id="findActiveSiblings" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+        ORDER BY sibling_position, id
+    </select>
+    <update id="updateSiblingPositions">
+        UPDATE deck
+        SET sibling_position = v.position, server_version = v.version, updated_at = #{now},
+            last_device_id = #{deviceId}
+        FROM (VALUES
+            <foreach collection="positions" item="p" separator=",">
+                (CAST(#{p.id} AS uuid), CAST(#{p.siblingPosition} AS integer), CAST(#{p.serverVersion} AS bigint))
+            </foreach>
+        ) AS v(id, position, version)
+        WHERE deck.id = v.id AND deck.user_id = #{userId}
+    </update>
 </mapper>
