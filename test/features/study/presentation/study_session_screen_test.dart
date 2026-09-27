@@ -165,6 +165,35 @@ void main() {
     expect(find.text(_en.studySessionLockedRetryTitle), findsNothing);
   });
 
+  libraryTest('any other write failure shows the save-error summary on the '
+      'same route, with nothing thrown (UC-STUDY-001 E3)', (tester, env) async {
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
+    final real = StudySessionRepositoryImpl(
+      env.db,
+      ScheduleRepositoryImpl(env.db),
+      env.cards,
+      now: env.clock.now,
+    );
+    await _openSession(
+      tester,
+      env,
+      overrides: [
+        answerStudyTurnUseCaseProvider.overrideWithValue(
+          AnswerStudyTurnUseCase(_FailsHard(real)),
+        ),
+      ],
+    );
+
+    await tester.fling(find.text('f0'), _swipeLeft, _swipeSpeed);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(StudySessionScreen), findsOneWidget);
+    expect(find.text(_en.studySummaryTitleSaveError), findsOneWidget);
+    final row = await sessionOf(env.db, 's');
+    expect(row.read<String>('status'), 'failed');
+  });
+
   libraryTest('a stale generation leaves the session with a message and '
       'records nothing (UC-STUDY-001 E4)', (tester, env) async {
     final ids = await seedBrowseSession(
@@ -234,6 +263,29 @@ final class _LockedOnce implements StudySessionRepository {
       now: now,
     );
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Every answer fails the way a broken disk does; the use case then fails
+/// the session through [real] (UC-STUDY-001 E3).
+final class _FailsHard implements StudySessionRepository {
+  _FailsHard(this.real);
+
+  final StudySessionRepository real;
+
+  @override
+  Future<Outcome<TurnResult, StudyRejection>> answerTurn({
+    required String sessionId,
+    required String cardId,
+    required StudyAnswer answer,
+    DateTime? now,
+  }) => throw const UnknownDatabaseFailure(cause: 'test');
+
+  @override
+  Future<void> failSession({required String sessionId, DateTime? now}) =>
+      real.failSession(sessionId: sessionId, now: now);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

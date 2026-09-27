@@ -92,6 +92,10 @@ class _StudyBrowseBodyWidgetState extends ConsumerState<StudyBrowseBodyWidget>
     } on DatabaseLockedFailure {
       if (!mounted) return;
       setState(() => _isLocked = true);
+    } on Failure {
+      // Any other failure has already failed the session (UC-STUDY-001 E3):
+      // its stream now carries the summary, so there is nothing to retry.
+      return;
     }
   }
 
