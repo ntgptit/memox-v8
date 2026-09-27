@@ -16,6 +16,32 @@ Future<String> studiedDeck(
 }) async {
   final root = await env.decks.root(name);
   final words = await env.decks.sub(root.id, 'Words');
+  await _study(env, root.id, words.id, days);
+  return root.id;
+}
+
+/// A sub-deck of [parentId] under the root [rootId], holding its own cards
+/// answered on [days]; returns its id.
+Future<String> studiedSubDeck(
+  LibraryEnv env,
+  String rootId,
+  String parentId,
+  String name, {
+  List<StudyDay> days = const [],
+}) async {
+  final deck = await env.decks.sub(parentId, name);
+  await _study(env, rootId, deck.id, days);
+  return deck.id;
+}
+
+/// Learned cards of [deckId], as many as the fullest of [days] needs, each
+/// answered once on each day that uses it.
+Future<void> _study(
+  LibraryEnv env,
+  String rootId,
+  String deckId,
+  List<StudyDay> days,
+) async {
   final most = days.fold(
     0,
     (most, day) => day.learning + day.reviewing > most
@@ -23,9 +49,9 @@ Future<String> studiedDeck(
         : most,
   );
   for (var i = 0; i < most; i++) {
-    await learnedCard(env.db, words.id, '${root.id}-$i');
+    await learnedCard(env.db, deckId, '$deckId-$i');
   }
-  if (most > 0) await lockScheduler(env.db, root.id);
+  if (most > 0) await lockScheduler(env.db, rootId);
   for (final day in days) {
     // Early morning of that day, before the harness's 9:00.
     final at = DateTime(
@@ -37,13 +63,12 @@ Future<String> studiedDeck(
     for (var i = 0; i < day.learning + day.reviewing; i++) {
       await answer(
         env.db,
-        '${root.id}-$i',
+        '$deckId-$i',
         at,
         kind: i < day.learning ? 'learning' : 'scheduled',
       );
     }
   }
-  return root.id;
 }
 
 /// Kit 22's library, with Latin and Vietnamese names (goldens render no

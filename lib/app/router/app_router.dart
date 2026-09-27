@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
-import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -17,6 +16,8 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/features/progress/presentation/screens/deck_progress_screen.dart';
+import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
@@ -161,7 +162,35 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
               ),
             ],
           ),
-          _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
+          // Screen 22 (FE-A9): one page per level, under the tab bar, so
+          // Back climbs one level (D5).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.progress,
+                builder: (context, state) => ProgressScreen(
+                  onOpenDeck: (id) =>
+                      unawaited(context.push(AppRoutes.progressDeck(id))),
+                  onStartStudying: () => context.go(AppRoutes.study),
+                ),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.progressDeckChild,
+                    builder: (context, state) => DeckProgressScreen(
+                      deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                      onOpenDeck: (id) =>
+                          unawaited(context.push(AppRoutes.progressDeck(id))),
+                      onOpenAncestor: (id) => _openAncestor(
+                        context,
+                        id,
+                        levelOf: AppRoutes.progressDeck,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -307,10 +336,15 @@ Future<void> _editCard(BuildContext context, String cardId) async {
 Widget _deckContext(String deckId, String currentLabel) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: currentLabel);
 
-/// Ruling P2-L5: a breadcrumb tap pops the Library stack back to [deckId],
+/// Ruling P2-L5: a breadcrumb tap pops the branch's stack back to [deckId],
 /// or to the root for null. A deck that is not on the stack (it was opened
-/// from search) is pushed over the root instead.
-void _openAncestor(BuildContext context, String? deckId) {
+/// from search) is pushed over the root instead, as its [levelOf] location:
+/// a Library level, or a Progress level (FE-A9 D5).
+void _openAncestor(
+  BuildContext context,
+  String? deckId, {
+  String Function(String deckId) levelOf = AppRoutes.deck,
+}) {
   final router = GoRouter.of(context);
   var isOnStack = false;
   Navigator.of(context).popUntil((route) {
@@ -322,18 +356,8 @@ void _openAncestor(BuildContext context, String? deckId) {
     return isOnStack || route.isFirst;
   });
   if (deckId == null || isOnStack) return;
-  unawaited(router.push(AppRoutes.deck(deckId)));
+  unawaited(router.push(levelOf(deckId)));
 }
-
-StatefulShellBranch _branch(String path, String Function(BuildContext) title) =>
-    StatefulShellBranch(
-      routes: [
-        GoRoute(
-          path: path,
-          builder: (context, state) => PlaceholderScreen(title: title(context)),
-        ),
-      ],
-    );
 
 /// The bottom nav around the current branch.
 class _TabShell extends StatelessWidget {

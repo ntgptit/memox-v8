@@ -20,14 +20,6 @@
   "@navSettings": {
     "description": "Bottom navigation: the settings tab."
   },
-  "placeholderTitle": "Coming soon",
-  "@placeholderTitle": {
-    "description": "Title on a tab whose screen is not built yet."
-  },
-  "placeholderBody": "This screen is being built.",
-  "@placeholderBody": {
-    "description": "Line under placeholderTitle."
-  },
   "openGallery": "Component gallery",
   "@openGallery": {
     "description": "Debug builds only: the Settings action that opens the component gallery."

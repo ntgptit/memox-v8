@@ -108,19 +108,17 @@ void main() {
   });
 
   libraryTest('Library opens on its screen; Study shows Study Home (FE-A8); '
-      'Progress is still a placeholder', (tester, env) async {
+      'Progress shows screen 22 (FE-A9)', (tester, env) async {
     await _pumpApp(tester, env);
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
-    expect(find.text(_en.placeholderTitle), findsNothing);
 
     await tester.tap(_tab(_en.navStudy));
     await tester.pumpAndSettle();
     expect(find.text(_en.studyHomeNoDecksTitle), findsOneWidget);
-    expect(find.text(_en.placeholderTitle), findsNothing);
 
     await tester.tap(_tab(_en.navProgress));
     await tester.pumpAndSettle();
-    expect(find.text(_en.placeholderTitle), findsOneWidget);
+    expect(find.text(_en.progressNoDecksTitle), findsOneWidget);
   });
 
   libraryTest('Vietnamese device locale gives Vietnamese tabs', (
