@@ -38,16 +38,17 @@ public class RequestIdFilter extends OncePerRequestFilter {
         long startNanos = System.nanoTime();
         MDC.put(REQUEST_ID_MDC_KEY, requestId);
         response.setHeader(REQUEST_ID_HEADER, requestId);
+        boolean escaped = false;
         try {
             chain.doFilter(request, response);
+        } catch (Throwable ex) {
+            // The container turns this into a 500 after we return; the response still says 200 here.
+            escaped = true;
+            throw ex;
         } finally {
             long durationMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
-            log.info(
-                    "{} {} -> {} in {} ms",
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    response.getStatus(),
-                    durationMillis);
+            int status = escaped ? HttpServletResponse.SC_INTERNAL_SERVER_ERROR : response.getStatus();
+            log.info("{} {} -> {} in {} ms", request.getMethod(), request.getRequestURI(), status, durationMillis);
             MDC.remove(REQUEST_ID_MDC_KEY);
         }
     }
