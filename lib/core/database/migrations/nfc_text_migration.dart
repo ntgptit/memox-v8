@@ -28,13 +28,13 @@ Future<void> _normalizeDecks(DatabaseConnectionUser db) async {
 }
 
 Future<void> _normalizeCards(DatabaseConnectionUser db) async {
-  final cards = await db
-      .customSelect(
-        'SELECT id, front, back, front_folded, back_folded, example, hint, '
-        'pronunciation FROM card',
-      )
-      .get();
-  for (final row in cards) {
+  for (final row
+      in await db
+          .customSelect(
+            'SELECT id, front, back, front_folded, back_folded, example, hint, '
+            'pronunciation FROM card',
+          )
+          .get()) {
     final front = row.read<String>('front');
     final back = row.read<String>('back');
     final before = <String?>[

@@ -8,6 +8,12 @@ import 'tombstone_rules.dart';
 /// with its reason (trash spec §11). A statement that reads active content
 /// gets the filter, not an entry.
 const _readsTombstones = <String, String>{
+  'lib/core/database/migrations/nfc_text_migration.dart#_normalizeDecks':
+      'migration v3 → v4 puts every stored name in NFC, a deck in the Trash '
+      'too, since a restore brings it back (BE-C5)',
+  'lib/core/database/migrations/nfc_text_migration.dart#_normalizeCards':
+      'migration v3 → v4 puts every stored face in NFC, a card in the Trash '
+      'too, since a restore brings it back (BE-C5)',
   'lib/core/database/queries/trash_queries.drift#trashDeckForest':
       'the origin of an entry walks decks in the Trash too (BR-TRASH-012)',
   'lib/core/database/queries/trash_queries.drift#trashBlockersOf':
