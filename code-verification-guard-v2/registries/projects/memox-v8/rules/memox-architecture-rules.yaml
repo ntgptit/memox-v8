@@ -152,15 +152,13 @@ rules:
     severity: error
     enabled: true
     message: >-
-      `dio`, `connectivity_plus` and `flutter_secure_storage` are deliberately
-      absent: V8.0 is local-only (ADR-001) and stores no credential until a
-      backend exists (ADR-002). Adding one is a documented decision, not an
-      import.
+      `flutter_secure_storage` is deliberately absent: the app stores no
+      credential until the auth spec (ADR-002). Adding it is a documented
+      decision, not an import. (`dio` and `connectivity_plus` were admitted by
+      ADR-012 and ADR-013 for the sync layer.)
     scopes:
       - dart_source
     patterns:
-      - package:dio/.*
-      - package:connectivity_plus/.*
       - package:flutter_secure_storage/.*
     tags:
       - memox

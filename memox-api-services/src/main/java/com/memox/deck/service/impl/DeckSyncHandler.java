@@ -117,8 +117,15 @@ public class DeckSyncHandler implements SyncEntityHandler {
             requireJsonOrNull(row.schedulerConfig());
             requireJsonOrNull(row.studyConfig());
             boolean rootShape = row.parentId() == null
-                    ? "deck".equals(row.contentType()) && row.schedulerType() != null
-                    : row.schedulerType() == null;
+                    ? "deck".equals(row.contentType())
+                            && row.schedulerType() != null
+                            && row.schedulerVersion() != null
+                            && row.generation() != null
+                    : row.schedulerType() == null
+                            && row.schedulerVersion() == null
+                            && row.generation() == null
+                            && row.schedulerConfig() == null
+                            && row.studyConfig() == null;
             if (!rootShape) {
                 throw new BusinessException(ErrorCode.VALIDATION_FAILED);
             }
@@ -164,54 +171,55 @@ public class DeckSyncHandler implements SyncEntityHandler {
     }
 
     private static Deck toModel(DeckSyncRow row, UUID userId, UUID deviceId, UUID rootId, int depth, long version) {
-        Deck deck = new Deck();
-        deck.setId(row.id());
-        deck.setUserId(userId);
-        deck.setName(row.name());
-        deck.setParentId(row.parentId());
-        deck.setRootId(rootId);
-        deck.setDepth(depth);
-        deck.setContentType(row.contentType());
-        deck.setSchedulerType(row.schedulerType());
-        deck.setSchedulerVersion(row.schedulerVersion());
-        deck.setSchedulerConfig(row.schedulerConfig());
-        deck.setStudyConfig(row.studyConfig());
-        deck.setGeneration(row.generation());
-        deck.setFirstAnsweredAt(row.firstAnsweredAt());
-        deck.setSourceTemplateId(row.sourceTemplateId());
-        deck.setSourceTemplateVersion(row.sourceTemplateVersion());
-        deck.setDeleteBatchId(row.deleteBatchId());
-        deck.setSiblingPosition(row.siblingPosition());
-        deck.setCreatedAt(row.createdAt());
-        deck.setUpdatedAt(row.updatedAt());
-        deck.setServerVersion(version);
-        deck.setLastDeviceId(deviceId);
-        return deck;
+        return Deck.builder()
+                .id(row.id())
+                .userId(userId)
+                .name(row.name())
+                .parentId(row.parentId())
+                .rootId(rootId)
+                .depth(depth)
+                .contentType(row.contentType())
+                .schedulerType(row.schedulerType())
+                .schedulerVersion(row.schedulerVersion())
+                .schedulerConfig(row.schedulerConfig())
+                .studyConfig(row.studyConfig())
+                .generation(row.generation())
+                .firstAnsweredAt(row.firstAnsweredAt())
+                .sourceTemplateId(row.sourceTemplateId())
+                .sourceTemplateVersion(row.sourceTemplateVersion())
+                .deleteBatchId(row.deleteBatchId())
+                .siblingPosition(row.siblingPosition())
+                .createdAt(row.createdAt())
+                .updatedAt(row.updatedAt())
+                .serverVersion(version)
+                .lastDeviceId(deviceId)
+                .build();
     }
 
     private SyncChange toChange(Deck deck) {
         boolean deleted = deck.getDeletedAt() != null;
         DeckSyncRow row = deleted
                 ? null
-                : new DeckSyncRow(
-                        deck.getId(),
-                        deck.getName(),
-                        deck.getParentId(),
-                        deck.getRootId(),
-                        deck.getDepth(),
-                        deck.getContentType(),
-                        deck.getSchedulerType(),
-                        deck.getSchedulerVersion(),
-                        deck.getSchedulerConfig(),
-                        deck.getStudyConfig(),
-                        deck.getGeneration(),
-                        deck.getFirstAnsweredAt(),
-                        deck.getSourceTemplateId(),
-                        deck.getSourceTemplateVersion(),
-                        deck.getDeleteBatchId(),
-                        deck.getSiblingPosition(),
-                        deck.getCreatedAt(),
-                        deck.getUpdatedAt());
+                : DeckSyncRow.builder()
+                        .id(deck.getId())
+                        .name(deck.getName())
+                        .parentId(deck.getParentId())
+                        .rootId(deck.getRootId())
+                        .depth(deck.getDepth())
+                        .contentType(deck.getContentType())
+                        .schedulerType(deck.getSchedulerType())
+                        .schedulerVersion(deck.getSchedulerVersion())
+                        .schedulerConfig(deck.getSchedulerConfig())
+                        .studyConfig(deck.getStudyConfig())
+                        .generation(deck.getGeneration())
+                        .firstAnsweredAt(deck.getFirstAnsweredAt())
+                        .sourceTemplateId(deck.getSourceTemplateId())
+                        .sourceTemplateVersion(deck.getSourceTemplateVersion())
+                        .deleteBatchId(deck.getDeleteBatchId())
+                        .siblingPosition(deck.getSiblingPosition())
+                        .createdAt(deck.getCreatedAt())
+                        .updatedAt(deck.getUpdatedAt())
+                        .build();
         return new SyncChange(ENTITY_TYPE, deck.getId(), deck.getServerVersion(), deleted, row);
     }
 }

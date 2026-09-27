@@ -21,6 +21,7 @@ CREATE TABLE deck (
   -- NULL = active; otherwise a tombstone of that batch (BR-TRASH-001,
   -- BR-TRASH-003). Purging the batch deletes the row.
   delete_batch_id TEXT REFERENCES delete_batches (id) ON DELETE CASCADE,
+  server_version INTEGER, -- NULL = never acknowledged by the server (ADR-013).
   sibling_position INTEGER NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
