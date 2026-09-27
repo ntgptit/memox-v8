@@ -88,14 +88,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
               runSpacing: AppSpacing.control,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                MxButton(
-                  label: entry.isInLibrary
-                      ? l10n.starterAddAnotherCopy
-                      : l10n.starterAddToLibrary,
-                  icon: AppIcons.add,
-                  size: MxButtonSize.small,
-                  onPressed: onAdd,
-                ),
+                _AddButton(entry: entry, onAdd: onAdd),
                 Text(
                   l10n.starterSuggests(
                     starterSchedulerName(l10n, entry.suggestedScheduler),
@@ -107,6 +100,36 @@ class StarterTemplateCardWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// The add at the small step while its label fits one line; at large text a
+/// label that would be cut takes the regular step, which wraps (post-build
+/// audit).
+class _AddButton extends StatelessWidget {
+  const _AddButton({required this.entry, required this.onAdd});
+
+  final StarterLibraryEntry entry;
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final label = entry.isInLibrary
+        ? l10n.starterAddAnotherCopy
+        : l10n.starterAddToLibrary;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final small = MxButton(
+          label: label,
+          icon: AppIcons.add,
+          size: MxButtonSize.small,
+          onPressed: onAdd,
+        );
+        if (small.naturalWidth(context) <= constraints.maxWidth) return small;
+        return MxButton(label: label, icon: AppIcons.add, onPressed: onAdd);
+      },
     );
   }
 }
