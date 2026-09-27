@@ -29,8 +29,10 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   position and size, never the board's (BR-STUDY-049 says this explicitly for
   Match's boards); for Browse and `self_assess` it is the stage's whole queue,
   since neither uses rounds.
-- **Exit / abandon.** The kit's close icon ends the session immediately, no
-  confirmation sheet. Every turn already committed stays recorded
+- **Exit / abandon.** The close icon and system Back open one confirm dialog
+  (a deviation from the kit, which ends the session at once; owner ruling
+  2026-09-27, IT-NAV-010, IT-CONT-004). "Keep studying" changes nothing;
+  "Stop" ends the session. Every turn already committed stays recorded
   (BR-STUDY-004, BR-STUDY-019); the session becomes `abandoned` with
   `end_reason = user_exit` (BR-STUDY-014).
 - **Round behaviour (Match, Guess, Recall, Fill only).** These four run in
@@ -75,6 +77,7 @@ Not captured: the swipe-back preview of an earlier card in the round
 
 | Artifact | V8 | Wins |
 |---|---|---|
+| The close icon ends the session at once | A confirm dialog first, from the close icon and system Back alike | Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004 |
 | Icons carry an inline colour prop | Colour comes from the shared icon-tinting mechanism | Guard: no `Icon(color:)` in feature code |
 
 Recall and Fill tint `MxStudyTopBar`'s accent with the mastery colour, while
