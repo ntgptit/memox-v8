@@ -1,0 +1,91 @@
+import 'package:drift/drift.dart';
+import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/sync/entity_sync_adapter.dart';
+
+/// Syncs `deck`. The server derives rootId and depth; the pulled values are
+/// written as they come.
+class DeckSyncAdapter implements EntitySyncAdapter {
+  DeckSyncAdapter(this._db);
+
+  static const type = 'deck';
+
+  final AppDatabase _db;
+
+  @override
+  String get entityType => type;
+
+  @override
+  Future<Map<String, Object?>?> readRow(String id) async {
+    final deck = await (_db.select(
+      _db.deck,
+    )..where((d) => d.id.equals(id))).getSingleOrNull();
+    if (deck == null) {
+      return null;
+    }
+    return {
+      'id': deck.id,
+      'name': deck.name,
+      'parentId': deck.parentId,
+      'rootId': deck.rootId,
+      'depth': deck.depth,
+      'contentType': deck.contentType,
+      'schedulerType': deck.schedulerType,
+      'schedulerVersion': deck.schedulerVersion,
+      'schedulerConfig': deck.schedulerConfig,
+      'studyConfig': deck.studyConfig,
+      'generation': deck.generation,
+      'firstAnsweredAt': _time(deck.firstAnsweredAt),
+      'sourceTemplateId': deck.sourceTemplateId,
+      'sourceTemplateVersion': deck.sourceTemplateVersion,
+      'deleteBatchId': deck.deleteBatchId,
+      'siblingPosition': deck.siblingPosition,
+      'createdAt': _time(deck.createdAt),
+      'updatedAt': _time(deck.updatedAt),
+    };
+  }
+
+  @override
+  Future<void> upsertFromServer(Map<String, dynamic> row, int serverVersion) =>
+      _db
+          .into(_db.deck)
+          .insertOnConflictUpdate(
+            DeckCompanion.insert(
+              id: row['id'] as String,
+              name: row['name'] as String,
+              parentId: Value(row['parentId'] as String?),
+              rootId: row['rootId'] as String,
+              depth: row['depth'] as int,
+              contentType: Value(row['contentType'] as String),
+              schedulerType: Value(row['schedulerType'] as String?),
+              schedulerVersion: Value(row['schedulerVersion'] as int?),
+              schedulerConfig: Value(row['schedulerConfig'] as String?),
+              studyConfig: Value(row['studyConfig'] as String?),
+              generation: Value(row['generation'] as int?),
+              firstAnsweredAt: Value(fromWireTime(row['firstAnsweredAt'])),
+              sourceTemplateId: Value(row['sourceTemplateId'] as String?),
+              sourceTemplateVersion: Value(
+                row['sourceTemplateVersion'] as int?,
+              ),
+              deleteBatchId: Value(row['deleteBatchId'] as String?),
+              siblingPosition: row['siblingPosition'] as int,
+              createdAt: fromWireTime(row['createdAt'])!,
+              updatedAt: fromWireTime(row['updatedAt'])!,
+              serverVersion: Value(serverVersion),
+            ),
+          );
+
+  @override
+  Future<void> deleteFromServer(String id) =>
+      (_db.delete(_db.deck)..where((d) => d.id.equals(id))).go();
+
+  @override
+  Future<void> markAcknowledged(String id, int serverVersion) =>
+      (_db.update(_db.deck)..where((d) => d.id.equals(id))).write(
+        DeckCompanion(serverVersion: Value(serverVersion)),
+      );
+
+  /// Drift stores whole seconds; the wire drops the fractional part so a
+  /// round-trip is exact.
+  static String? _time(DateTime? value) =>
+      toWireTime(value)?.replaceFirst(RegExp(r'\.\d+Z$'), 'Z');
+}
