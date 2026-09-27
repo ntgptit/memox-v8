@@ -8,8 +8,7 @@ import org.apache.ibatis.type.MappedTypes;
 @MappedTypes(SampleStatus.class)
 public class SampleStatusTypeHandler extends BaseEnumTypeHandler<SampleStatus> {
 
-	public SampleStatusTypeHandler() {
-		super(SampleStatus.class);
-	}
-
+    public SampleStatusTypeHandler() {
+        super(SampleStatus.class);
+    }
 }

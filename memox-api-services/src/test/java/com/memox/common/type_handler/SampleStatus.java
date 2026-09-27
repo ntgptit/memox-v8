@@ -9,11 +9,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SampleStatus implements CodeEnum {
+    ACTIVE("A"),
 
-	ACTIVE("A"),
+    INACTIVE("I");
 
-	INACTIVE("I");
-
-	private final String code;
-
+    private final String code;
 }
