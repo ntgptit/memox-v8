@@ -1,6 +1,6 @@
 # FE-B2 + FE-B4: the Tags and Starter decks UI — design
 
-Status: approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3)
+Status: approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3) · Amended after the critique (D3, D14, D15)
 
 ## 1. Intent
 
@@ -65,7 +65,7 @@ Success means four things:
 |---|---|---|---|
 | D1 | Scope | 03 and 05 with 01's `rootEmpty` and 07's `loaded`. Screen 24 waits on BE-B5b; the progress sort waits on a BR | Owner, 2026-09-27 |
 | D2 | The Library's app bar | As kit 01: Starter decks (sparkles), Tags (tag), Trash. The Coming soon sheet and its ARB keys go. The progress sort stays absent, recorded in 01's detail file | Owner, 2026-09-27 |
-| D3 | The tag filter overlay | A bottom sheet: one `MxOptionRow` checkbox per tag, "{tag} · {n}"; a search field once there are more than 8 tags; a footer of "Clear" and "Apply". Closing it without Apply keeps the applied set (A5). Shaped by Impeccable before the plan | Owner, 2026-09-27 |
+| D3 | The tag filter overlay | A bottom sheet as the shape brief draws it (critique 2026-09-27T06): one `MxListRow` per tag with a leading `MxSelectionCheckbox`, "{tag}" and its count in this deck, in the catalog's order; a search field once there are more than 8 tags; a footer of "Clear" and "Apply". Closing it without Apply discards the draft and keeps the applied set (A5) | Owner, 2026-09-27; shape brief confirmed 2026-09-27 |
 | D4 | Structure | Per feature: a provider per use case, a stream provider per read, one controller for the writes (`StarterAddController`, `TagActionsController`). Screens take callbacks; `app/` wires the routes | Owner, 2026-09-27 |
 | D5 | Routes | `/decks/starter` and `/decks/tags` on the root navigator, full screen with no bottom bar, as the kit draws them and as the Trash is (FE-B1 D2) | Owner, 2026-09-27 |
 | D6 | Starter flow | "Add to library" opens the algorithm sheet, with `suggestedScheduler` preselected. "Add another copy" first asks with a dialog, then opens the sheet, and adds with `allowSecondCopy: true`. While it adds, the sheet's controls lock and a second add is ignored. `Ok` closes the sheet and toasts "Added …" with Open. `alreadyInLibrary` toasts. `templateNotFound` or a `Failure` keeps the sheet open with an error banner and "Try again" | Owner, 2026-09-27; BE-B4 §9 |
@@ -76,6 +76,8 @@ Success means four things:
 | D11 | Find cards with this tag | Opens the Library search with the tag's name: `LibrarySearchScreen` takes an `initialQuery` (BE-B2 D12) | Owner, 2026-09-27 |
 | D12 | The card list's filter | The applied set goes into `CardListQuery.tagIds`. Applying resets the window and clears the selection (BR-TAG-005). A tag that leaves the overlay's list leaves the set. With a tag filter and no match, the empty state offers "Clear tag filter" (A7) | BE-B2 §9; UC-TAG-001 A4, A5, A7 |
 | D13 | Adding and saving | The adding button spins without "Adding…" text (`MxButton.isLoading`), as screen 15 does | FE-A3 C8 |
+| D14 | The Tags chip | `MxFilterChip` with the tag glyph, label "Tags" and count k, selected while one tag or more is applied. Its tap opens the sheet; it never toggles. The kit's ghost trigger never reads as selected (critique P1b) | Owner, 2026-09-27 |
+| D15 | The warning tone's colours | `MxButtonTone.warning` paints the `warning` role with `onWarning`, not the kit's orange and white, which is about 2.8:1 (critique P1a). `MxSheetActions` gains the tone for a dialog's confirm | Critique P1a; AA |
 
 ## 4. Structure
 
@@ -165,16 +167,21 @@ The plan settles the exact names within the guard's buckets.
 
 ### 5.3 Screen 07, the Tags filter
 
-- **The chip:** `MxChipTrigger` "Tags" after the four filters; "Tags · {k}" when
-  {k} are applied.
+- **The chip (D14):** `MxFilterChip` "Tags" after the four filters, with the tag
+  glyph; selected with count k while k tags are applied.
 - **The sheet (D3):**
-  - its title is "Filter by tags", with "{n} tags in this deck";
-  - each tag is a row "{tag} · {n in this deck}" with a checkbox, and a tag with 0
-    in this deck is still listed (BE-B2 D3);
-  - a search field appears above 8 tags;
-  - the footer has "Clear" and "Apply".
-  - Its three states (none chosen, one, several) are shaped by Impeccable before the
-    plan.
+  - its title is "Filter by tags", and its sub-line reads "Show cards with any of the
+    chosen tags" with nothing chosen, or "{k} chosen · cards with any of them";
+  - each tag is a row with a checkbox, its name (one line, ellipsis) and its count in
+    this deck as a trailing figure. A tag with 0 in this deck is still listed, at full
+    contrast (BE-B2 D3). Rows keep the catalog's order; a checked row never moves;
+  - a search field "Search tags" heads the list once there are more than 8 tags. It
+    uses the catalog's fold, and never drops a chosen tag from the draft;
+  - the footer has "Clear" (empties the draft, stays open; disabled when the draft is
+    empty) and "Apply" (closes and applies; applying none is A4);
+  - with no tag at all, the sheet shows "No tags yet. Add tags while creating or
+    editing cards." and Close only;
+  - dismissing it by the scrim, a drag or Back discards the draft (A5).
 - **Applying:** the set goes into `CardListQuery.tagIds` (OR between tags, AND with
   the status filter and the search). The window resets and the selection clears.
 - **With a tag filter and no match (A7):** `MxEmptyState` "No cards with these tags" ·
@@ -250,7 +257,9 @@ One plan of about eight tasks:
 7. The routes, the callbacks and the search's `initialQuery`.
 8. The documents.
 
-Before the plan, Impeccable critiques kits 03 and 05 and shapes the filter sheet.
+Before the plan, Impeccable critiqued kits 03 and 05 and shaped the filter sheet:
+`.impeccable/critique/2026-09-27T06-00-00Z__tags-starter-kit.md`. The plan adopts its
+P2 and P3 points.
 
 ## 10. Out of scope
 
