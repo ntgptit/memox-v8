@@ -139,7 +139,7 @@ lib/shared/widgets/**
 và exception phải có comment/rule ID.
 
 **Chỗ đặt rule trong repo này:**
-`code-verification-guard-v2/registries/projects/memox-v7/rules/memox-design-system-rules.yaml`,
+`code-verification-guard-v2/registries/projects/memox-v8/rules/memox-design-system-rules.yaml`,
 scope `presentation_files` (không phải `ui_surfaces` — `lib/shared/` là nơi
 primitives dựng raw widget hợp lệ). Ruleset `memox` cũ có rule tương tự nhưng
 scope layer-first: load lại sẽ **xanh mà không match gì** — viết rule mới, đừng

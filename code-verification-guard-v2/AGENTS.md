@@ -12,7 +12,7 @@ Keep the Python engine generic. Concrete rules belong in YAML unless a new gener
 
 This directory is **vendored into the MemoX repository and owned by it**. It is not an independent repository living inside MemoX, and it must not be treated as one:
 
-- There is one source of truth for the guard: the copy committed here, in `ntgptit/memox-v7`. Changes to the engine, the common rules, or the MemoX rulesets are made **in place**, reviewed, and committed together with the MemoX change that motivated them — the same as any other file in MemoX.
+- There is one source of truth for the guard: the copy committed here, in `ntgptit/memox-v8`. Changes to the engine, the common rules, or the MemoX rulesets are made **in place**, reviewed, and committed together with the MemoX change that motivated them — the same as any other file in MemoX.
 - Do **not** `git clone` a separate `code-verification-guard` remote over this directory. A re-clone silently discards fixes made here — for example the `common.no_commented_out_code` false-positive fix and the `DateTime.now()`-in-comment fix, both of which live only in this vendored copy and are pinned by `tests/test_memox_false_positive_regressions.py`. The historical "refresh from upstream" procedure was exactly the two-source-of-truth trap that this ownership note removes.
 - Do **not** commit nested `.git` metadata for this directory. It is tracked as ordinary files by the parent MemoX repository; there is no submodule and no inner repository.
 
