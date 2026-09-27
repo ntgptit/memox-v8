@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:memox/core/network/api_config.dart';
 import 'package:memox/core/network/request_id_interceptor.dart';
-import 'package:memox/core/sync/sync_api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'network_providers.g.dart';
@@ -28,6 +27,3 @@ Dio dio(Ref ref) {
   ref.onDispose(dio.close);
   return dio;
 }
-
-@Riverpod(keepAlive: true)
-SyncApi syncApi(Ref ref) => SyncApi(ref.watch(dioProvider));
