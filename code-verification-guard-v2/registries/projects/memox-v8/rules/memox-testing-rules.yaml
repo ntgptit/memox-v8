@@ -41,7 +41,8 @@ rules:
       - memox
       - testing
 
-  # CLAUDE.md: UI must be checked in light + dark + small screen + large text.
+  # The `flutter-testing` skill: a widget test covers dark mode and text scale
+  # as well as the states.
   # A widget test that never varies textScaler cannot catch the overflow that
   # large-text users hit first.
   - id: memox.testing.no_real_clock_in_test

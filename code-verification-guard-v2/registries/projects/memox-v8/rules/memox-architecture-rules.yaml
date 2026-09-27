@@ -1,10 +1,11 @@
 # MemoX V8 guard rules — domain: architecture
 #
-# Encodes the "Layering" non-negotiables in CLAUDE.md. The single most valuable
-# rule here is domain_no_infrastructure_import: AD-01 says a Spring Boot backend
-# arrives later and only stays cheap if domain/ never learned about Drift. That
-# property is invisible until the backend lands, which is exactly when breaking
-# it is most expensive — so it has to be machine-checked from day one.
+# Encodes the layer boundaries of ADR-010 and ADR-011. The single most
+# valuable rule here is domain_no_infrastructure_import: V8.0 is local-only
+# (ADR-001), and a backend added later stays cheap only if domain/ never learned
+# about Drift. That property is invisible until the backend lands, which is
+# exactly when breaking it is most expensive — so it has to be machine-checked
+# from day one.
 version: 1
 metadata:
   id: memox-v8-architecture
@@ -19,7 +20,7 @@ rules:
     message: >-
       `domain/` may import only Dart and other domain code — no Flutter, Drift,
       Dio or json_annotation. If a domain file needs one of these, the
-      abstraction is in the wrong place (AD-01, CLAUDE.md "Layering").
+      abstraction is in the wrong place (ADR-010).
     scopes:
       - domain_files
     patterns:
@@ -57,7 +58,8 @@ rules:
     enabled: true
     message: >-
       Drift-generated types must never appear in `domain/`. Using a Drift row
-      class as an entity is what quietly destroys AD-01's backend-readiness.
+      class as an entity is what quietly ties the domain to the local database,
+      which a later backend would have to untangle (ADR-010).
     scopes:
       - domain_files
     patterns:
@@ -90,8 +92,8 @@ rules:
     severity: error
     enabled: true
     message: >-
-      Widgets must not query the database or call a DAO. No API calls or
-      database access from a widget (CLAUDE.md "UI discipline").
+      Widgets must not read the database: no `databaseProvider`, no query, no
+      DAO call. A widget reaches data through a use case (ADR-011 D4).
     scopes:
       - widget_ui_files
     # A query on the database or a DAO, or the database provider itself, read
@@ -119,21 +121,21 @@ rules:
       - memox
       - architecture
 
-  # AD-08: exactly one place opens the database connection. More than one means
-  # two configurations, and the second one is always the one missing a PRAGMA.
+  # Exactly one place opens the database connection. More than one means two
+  # configurations, and the second one is always the one missing a PRAGMA
+  # (`schema.md`: `PRAGMA foreign_keys = ON` in `beforeOpen`).
   - id: memox.architecture.single_database_connection_site
     type: regex
     severity: error
     enabled: true
     message: >-
-      Only `lib/core/database/connection.dart` may open a database connection
-      (AD-08). A second call site means a second configuration, and it is always
+      Only `lib/core/database/connection.dart` may open a database connection.
+      A second call site means a second configuration, and it is always
       the one missing `PRAGMA foreign_keys`.
     scopes:
       - dart_lib
     exclude:
-      # Glob, not a literal path: the file arrives in M4.2, and a literal here
-      # is reported as a missing target until then.
+      # The one site, written as a glob.
       - '**/core/database/connection.dart'
     patterns:
       - \bNativeDatabase\s*[.(]
@@ -142,7 +144,8 @@ rules:
       - memox
       - architecture
 
-  # AD-05 / AD-03: dependencies deliberately absent. Catch the import before the
+  # Dependencies deliberately absent: V8.0 is local-only (ADR-001) and holds no
+  # credential until a backend exists (ADR-002). Catch the import before the
   # package sneaks into pubspec.
   - id: memox.architecture.no_deferred_dependency_import
     type: forbidden_import
@@ -150,7 +153,8 @@ rules:
     enabled: true
     message: >-
       `dio`, `connectivity_plus` and `flutter_secure_storage` are deliberately
-      deferred (AD-05, AD-03). Adding one is a documented decision, not an
+      absent: V8.0 is local-only (ADR-001) and stores no credential until a
+      backend exists (ADR-002). Adding one is a documented decision, not an
       import.
     scopes:
       - dart_source
@@ -164,17 +168,17 @@ rules:
       - dependencies
 
 
-  # AD-15: a feature's presentation/widgets is grouped into exactly four fixed
-  # buckets, one level deep — widgets/<bucket>/<file>.dart and nothing else.
-  # This is the guard's half of the enforcement; the boundary test
-  # (test/app/architecture_boundary_test.dart) owns the same shape with richer
-  # per-shape messages and the app-level proof that the rule saw files. Change
-  # the bucket list in AD-15 first, then in that test, then here.
+  # ADR-011 D8: a feature's presentation/widgets is grouped into exactly four
+  # fixed buckets, one level deep — widgets/<bucket>/<file>.dart and nothing
+  # else. This is the guard's half of the enforcement; the boundary test
+  # (test/architecture/boundaries_test.dart, with its rules in
+  # boundary_rules.dart) owns the same shape with richer per-shape messages.
+  # Change the bucket list in ADR-011 first, then in that test, then here.
   #
   # `file_path`, not `file_name`: the rule is about where a file sits, and the
   # healthy state must keep a non-empty target set or the runner's own
-  # rule_without_targets diagnostic fires — a never-matching file_name pattern
-  # over a carved include/exclude was tried first and tripped exactly that.
+  # rule_without_targets diagnostic fires; a file_name pattern over a carved
+  # include/exclude matches nothing when the tree is healthy.
   # The pattern deliberately ends in `[^/]+\.dart` rather than requiring the
   # `_widget` suffix: memox.naming.presentation_file_role_suffix already owns
   # suffixes, and one finding per defect beats two rules reporting one mistake.
@@ -188,7 +192,7 @@ rules:
       parts), overlays/ (sheets, dialogs, forms and their open functions),
       support/ (presentation mapping used across buckets). Nothing sits
       directly under widgets/, buckets never nest, and a fifth bucket is an
-      AD-15 change, not a new folder.
+      ADR-011 change, not a new folder.
     include:
       - lib/features/*/presentation/widgets/**/*.dart
     exclude:
@@ -205,9 +209,9 @@ rules:
     enabled: true
     message: >-
       StudyMode is dispatched in exactly one exhaustive switch, beside the enum
-      in study_mode.dart (AD-18). A second branch on StudyMode in domain/ or
-      data/ is where a
-      mode's policy leaks out of its handler and back into the shared flow —
+      in study_mode.dart. A second branch on StudyMode in domain/ or data/ is
+      where a mode's policy leaks out of its handler and back into the shared
+      flow —
       the thing the handler exists to prevent. A handler already knows which
       mode it is and never needs to ask.
     scopes:

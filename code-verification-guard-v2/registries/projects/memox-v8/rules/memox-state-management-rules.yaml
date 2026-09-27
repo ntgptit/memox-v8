@@ -1,8 +1,8 @@
 # MemoX V8 guard rules — domain: state_management
 #
-# This file is the replacement for riverpod_lint, which is descoped (see
-# "Deferred and descoped" in docs/wbs.md). `flutter analyze` covers NONE of
-# these, so without this file they are unguarded.
+# V8 runs no riverpod_lint: neither it nor custom_lint is in pubspec.yaml.
+# `flutter analyze` covers NONE of these, so without this file they are
+# unguarded.
 #
 # Rule ID convention: memox.<domain>.<rule_name>.
 version: 1
@@ -44,7 +44,7 @@ rules:
 
   # ---------------------------------------------------------------------------
   # Controllers holding a BuildContext outlive the widget that provided it.
-  # CLAUDE.md states this as a non-negotiable.
+  # The `flutter-state-riverpod` skill: never store a `BuildContext`.
   # ---------------------------------------------------------------------------
   - id: memox.state_management.controller_no_build_context
     type: regex
@@ -180,8 +180,8 @@ rules:
       hint: Insert `if (!ref.mounted) return;` after the await, before touching state.
 
   # ---------------------------------------------------------------------------
-  # One isLoading for every operation on a screen is the bug CLAUDE.md calls out
-  # by name under "State".
+  # One isLoading for every operation on a screen is the bug the
+  # `flutter-state-riverpod` skill calls out by name.
   # ---------------------------------------------------------------------------
   - id: memox.state_management.no_shared_is_loading_flag
     type: regex

@@ -147,7 +147,7 @@ scopes:
       - code-verification-guard-v2/**
 
   # ---- memox-v8 layer scopes ----
-  # Layer boundaries per CLAUDE.md "Layering". These three are the load-bearing
+  # Layer boundaries per ADR-010 and ADR-011. These three are the load-bearing
   # scopes: most architecture rules are just "this pattern, in this layer".
   domain_files:
     include:
@@ -170,18 +170,13 @@ scopes:
       - '**/*.freezed.dart'
 
   # Business layers that must NOT branch on StudyMode. Dispatch belongs to one
-  # exhaustive switch beside the enum, in `study_mode.dart` (AD-18); a handler
+  # exhaustive switch beside the enum, in `study_mode.dart`; a handler
   # owns its own mode, so it never needs to ask. presentation/ is deliberately
   # absent: mapping a mode to a label or an icon is presentation, not policy, and
   # forbidding it there would push that mapping somewhere worse.
   #
-  # `**/*_mode.dart` is the one exemption, and it is the only one that can be.
-  # This scope used to exempt `study_mode_resolver.dart` as well — a file that
-  # cannot exist: `memox.naming.domain_file_role_suffix` admits no `_resolver`
-  # suffix under domain/, so the two rules could never both be satisfied by that
-  # name. Dead config in a guard is worse than no config: it reads as a
-  # permission somebody relied on, and the next reader spends time looking for
-  # the file it protects.
+  # `**/*_mode.dart` is the one exemption: `study_mode.dart` holds the dispatch,
+  # and each other `*_mode.dart` is a mode's own handler.
   study_mode_non_dispatch:
     include:
       - lib/features/*/domain/**/*.dart
@@ -211,8 +206,8 @@ scopes:
     exclude:
       - '**/*_controller.dart'
       - '**/*_state.dart'
-      # `presentation/providers/` — added at M4.10 with the use-case layer. A file
-      # whose whole job is dependency wiring reads a repository *by definition*
+      # `presentation/providers/`: a file whose whole job is dependency wiring
+      # reads a repository *by definition*
       # and hands it to a use case that the widgets then reach through a
       # controller. Excluding it keeps `widget_no_repository_access` pointed at
       # the thing it is for: a widget skipping its controller.
@@ -220,9 +215,9 @@ scopes:
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 
-  # Product UI only. lib/app/** is deliberately OUT: it is the dev-channel shell
-  # (MobileFrameWidget's backdrop colour is not product UI and is documented as
-  # such), and lib/core/theme/** is where raw values are legitimately defined.
+  # Product UI only. lib/app/** is deliberately OUT: it is the composition root
+  # and the debug-only widget gallery, not product UI; and lib/core/theme/** is
+  # where raw values are legitimately defined.
   ui_surfaces:
     include:
       - lib/features/*/presentation/**/*.dart
@@ -248,12 +243,11 @@ scopes:
   #
   # `ui_surfaces` excludes `lib/core/theme/**` because a raw colour or radius
   # there IS the token — linting it would be flagging the definition as the
-  # crime. A duration is not like that. `AppDurations` declares its three rungs
-  # as *named* constants, and so does every legitimate non-motion duration in
+  # crime. A duration is not like that. `AppDurations` declares every duration
+  # as a *named* constant, and so does every legitimate non-motion duration in
   # the repo, so the theme directory has nothing that needs the exemption — and
-  # it is exactly where `Duration(milliseconds: 500)` sat anonymously inside
-  # `tooltipTheme` until M4.10ao. A rule scoped to `ui_surfaces` alone could not
-  # catch the case it was written for.
+  # a component theme is exactly where an anonymous `Duration(milliseconds: …)`
+  # hides. A rule scoped to `ui_surfaces` alone could not see it there.
   ui_and_theme_surfaces:
     include:
       - lib/features/*/presentation/**/*.dart
@@ -263,13 +257,11 @@ scopes:
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 
-  # **Typography only, plus `lib/app/`** (A20.1 P2-22). The composition root
-  # was in no typography scope, and `error_screen_widget.dart` — the one
-  # screen that must render with no `Theme` — set two literal sizes in the
-  # platform font because nothing looked. It builds from `AppTypography` now;
-  # these two scopes are what keep it there. Colour is *not* widened: the
-  # error screen's fallback palette and `MobileFrameWidget` hold literals for
-  # reasons their files state, and the colour rules keep their scopes.
+  # **Typography only, plus `lib/app/`.** The composition root and the
+  # debug-only gallery set text too (`placeholder_screen.dart`, the gallery's
+  # sections), and a text style there comes from the theme like anywhere else;
+  # these two scopes are what keep it so. Colour is *not* widened: `lib/app/`
+  # is not product UI, and the colour rules keep their scopes.
   typography_ui_surfaces:
     include:
       - lib/features/*/presentation/**/*.dart
@@ -302,11 +294,9 @@ scopes:
 
   provider_files:
     include:
-      - lib/**/controller/**/*.dart
       - lib/**/*_controller.dart
       - lib/**/*_provider.dart
       - lib/**/providers/**/*.dart
-      - lib/core/providers/**/*.dart
     exclude:
       - '**/*.g.dart'
       - '**/*.freezed.dart'

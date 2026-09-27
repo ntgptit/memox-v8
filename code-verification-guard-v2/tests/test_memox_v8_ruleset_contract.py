@@ -24,3 +24,18 @@ def _occurrences(pattern: str) -> list[str]:
 
 def test_memox_v8_names_no_v7_ruleset_rule_or_label() -> None:
     assert _occurrences(r"(?i)memox[-_ ]v7") == []
+
+
+V7_MARKERS = {
+    "the word V7": r"(?i)\bv7\b",
+    "a V7 architecture decision": r"\bAD-\d",
+    "a V7 business rule": r"\bBR-\d",
+    "V7's design-system audit": r"A20\.1|\bP[1-3]-\d\d\b",
+    "a V7 milestone": r"\bM\d+\.\d+",
+    "V7's work breakdown": r"docs/wbs\.md",
+}
+
+
+def test_memox_v8_cites_no_v7_decision_or_document() -> None:
+    found = {name: _occurrences(pattern) for name, pattern in V7_MARKERS.items()}
+    assert {name: hits for name, hits in found.items() if hits} == {}

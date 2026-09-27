@@ -9,7 +9,7 @@ version: 1
 metadata:
   id: memox-v8-data-model
   name: MemoX V8 Data Model Rules
-  description: Deck-tree, scheduler and review-history invariants (BR-xx, AD-06, AD-11).
+  description: Deck-tree, scheduler and review-history invariants of V8.
   owner: memox-v8
 rules:
   - id: memox.data_model.no_coalesce_parent_id
@@ -35,14 +35,14 @@ rules:
     fix:
       hint: Join on `deck.root_id`, which every deck carries (BR-DECK-003).
 
-  # AD-06: scheduling must be a pure function of its inputs, or the whole matrix
-  # of box x action becomes untestable.
+  # Scheduling is a pure function of its inputs, or the whole matrix of box x
+  # action becomes untestable.
   - id: memox.data_model.scheduler_no_ambient_now
     type: regex
     severity: error
     enabled: true
     message: >-
-      AD-06 — domain code must not read the ambient clock. `now` is passed in,
+      Domain code must not read the ambient clock. `now` is passed in,
       so behaviour is testable at a fixed instant; for the scheduler this is what
       makes the full 8-box x action matrix deterministic.
     scopes:
@@ -55,7 +55,7 @@ rules:
       - data-model
       - correctness
 
-  # M4.3: "due" must mean the same thing in every query, and a hardcoded
+  # "Due" must mean the same thing in every query, and a hardcoded
   # CURRENT_TIMESTAMP makes a query untestable at a fixed point in time.
   - id: memox.data_model.drift_no_current_timestamp
     type: regex

@@ -1,8 +1,8 @@
 # MemoX V8 guard rules — domain: error_handling
 #
-# CLAUDE.md "Errors" and "Control flow". A swallowed exception is the defect
-# class that costs the most to diagnose later, because the evidence is destroyed
-# at the moment the failure happens.
+# The `flutter-architecture` skill, "Control flow". A swallowed exception is
+# the defect class that costs the most to diagnose later, because the evidence
+# is destroyed at the moment the failure happens.
 version: 1
 metadata:
   id: memox-v8-error-handling

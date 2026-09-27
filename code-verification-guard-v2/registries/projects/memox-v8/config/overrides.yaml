@@ -39,12 +39,11 @@ overrides:
       count_mode: logical
     # **Logical lines, like `common.max_file_lines` above.** These two are the
     # same measurement at two severities — a warning at 400 and an error at 500
-    # — and until this line they counted in different units, so the ladder was
-    # not a ladder. Raw counting also measured the wrong thing for this
-    # codebase: `lib/core/theme/app_colors.dart` is 400 raw lines and **56
-    # logical** ones, because 86% of it is the rationale for each colour. A
-    # budget that a paragraph can exhaust teaches people to delete the
-    # paragraph, which is the opposite of what a maintainability rule is for.
+    # — and they must count in one unit, or the ladder is not a ladder. Raw
+    # counting also measures the wrong thing for this codebase, where a theme
+    # or domain file is mostly the rationale in its dartdoc. A budget that a
+    # paragraph can exhaust teaches people to delete the paragraph, which is
+    # the opposite of what a maintainability rule is for.
     #
     # `logical` drops blank lines, `//` and `///` comments, `/* */` blocks, and
     # `import` / `export` / `part` declarations — see `MaxLinesMatcher`.

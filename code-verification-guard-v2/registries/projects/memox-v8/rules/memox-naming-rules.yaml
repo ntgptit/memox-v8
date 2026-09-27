@@ -1,6 +1,7 @@
 # MemoX V8 guard rules — domain: naming
 #
-# CLAUDE.md "Naming": files are snake_case with a suffix that states the role.
+# The `flutter-architecture` skill, "Naming": files are snake_case with a
+# suffix that states the role.
 # The suffix is not decoration — check_architecture.sh and several scopes in
 # this ruleset select files BY suffix, so a mis-suffixed file silently escapes
 # the rules that were meant to cover it.
@@ -33,8 +34,8 @@ rules:
       this ruleset select files by suffix, so a mis-named file escapes the rules
       meant to cover it.
 
-      `_provider` was added at M4.10 with `presentation/providers/`: a provider
-      that only wires a use case into the graph is not a controller and must not
+      `_provider` names a file of `presentation/providers/`: a provider that
+      only wires a use case into the graph is not a controller and must not
       borrow the controller exemptions. Anything holding submit state or a
       command stays `_controller`.
     include:
