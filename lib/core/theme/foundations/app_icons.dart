@@ -66,6 +66,8 @@ abstract final class AppIcons {
   static const IconData textScale = Icons.format_size;
   // Development fixtures (screen 03, BR-STARTER-010).
   static const IconData fixture = Icons.science_outlined; // flask-conical
+  // A rename onto an existing tag merges the two (screen 05).
+  static const IconData merge = Icons.merge; // git-merge
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
   static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles

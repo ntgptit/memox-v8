@@ -67,6 +67,9 @@ final class TagRepositoryFake implements TagRepository {
   /// The catalog read fails (E1).
   bool failsReads = false;
 
+  /// Reads wait for this before they emit (`loading`).
+  Future<void>? loaded;
+
   Override get asOverride => tagRepositoryProvider.overrideWithValue(this);
 
   Future<void> _before() async {
@@ -80,9 +83,13 @@ final class TagRepositoryFake implements TagRepository {
   Stream<List<TagCount>> watchTagCounts({
     String? deckId,
     String searchTerm = '',
-  }) => failsReads
-      ? Stream.error(UnknownDatabaseFailure(cause: StateError('read failed')))
-      : _tags.watchTagCounts(deckId: deckId, searchTerm: searchTerm);
+  }) async* {
+    await loaded;
+    if (failsReads) {
+      throw UnknownDatabaseFailure(cause: StateError('read failed'));
+    }
+    yield* _tags.watchTagCounts(deckId: deckId, searchTerm: searchTerm);
+  }
 
   @override
   Future<Outcome<TagRenamePlan, TagRejection>> planRename({

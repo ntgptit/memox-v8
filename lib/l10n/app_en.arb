@@ -5597,5 +5597,248 @@
   "starterLoadErrorBody": "Your library is unaffected. Try again in a moment.",
   "@starterLoadErrorBody": {
     "description": "Screen 03: the read error body (loadFailed)."
+  },
+  "tagsTitle": "Tags",
+  "@tagsTitle": {
+    "description": "Screen 05: the app bar title."
+  },
+  "tagsSearchHint": "Search tags",
+  "@tagsSearchHint": {
+    "description": "Screen 05: the search field hint."
+  },
+  "tagsSearchClear": "Clear search",
+  "@tagsSearchClear": {
+    "description": "Screen 05: the search field's clear button label."
+  },
+  "tagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+  "@tagsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05: the header over the tags shown."
+  },
+  "tagsNone": "No tags",
+  "@tagsNone": {
+    "description": "Screen 05: the header when the library has no tag."
+  },
+  "tagsNoMatches": "No matches",
+  "@tagsNoMatches": {
+    "description": "Screen 05: the header when the search finds no tag."
+  },
+  "tagsOrder": "A→Z",
+  "@tagsOrder": {
+    "description": "Screen 05: the one order of the catalog (BR-TAG-003); static text, not a control."
+  },
+  "tagsCardCount": "{count, plural, =0{No cards} =1{1 card} other{{count} cards}}",
+  "@tagsCardCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05: the active cards carrying a tag."
+  },
+  "tagsRowActions": "Actions for {tag}",
+  "@tagsRowActions": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05: a row's more button, for TalkBack."
+  },
+  "tagsEmptyTitle": "No tags yet",
+  "@tagsEmptyTitle": {
+    "description": "Screen 05: the empty catalog title."
+  },
+  "tagsEmptyBody": "Tags appear here as you add them when creating or editing flashcards.",
+  "@tagsEmptyBody": {
+    "description": "Screen 05: the empty catalog body."
+  },
+  "tagsGoToLibrary": "Go to library",
+  "@tagsGoToLibrary": {
+    "description": "Screen 05: the empty catalog action; back to the Library."
+  },
+  "tagsSearchEmptyTitle": "No tags match “{term}”",
+  "@tagsSearchEmptyTitle": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05: the search finds no tag (UC-TAG-001 A6)."
+  },
+  "tagsSearchEmptyBody": "Try a different spelling. Tag search is case-insensitive.",
+  "@tagsSearchEmptyBody": {
+    "description": "Screen 05: the search empty body."
+  },
+  "tagsLoadErrorTitle": "Couldn't load tags",
+  "@tagsLoadErrorTitle": {
+    "description": "Screen 05: the catalog read error (UC-TAG-001 E1)."
+  },
+  "tagsActionsCaption": "Tag actions",
+  "@tagsActionsCaption": {
+    "description": "Screen 05 action sheet: the caption under the tag."
+  },
+  "tagsFindCards": "Find cards with this tag",
+  "@tagsFindCards": {
+    "description": "Screen 05 action sheet: opens the Library search with the tag."
+  },
+  "tagsFindCardsHint": "Search the library for “{tag}”",
+  "@tagsFindCardsHint": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05 action sheet: what Find cards does."
+  },
+  "tagsRename": "Rename tag",
+  "@tagsRename": {
+    "description": "Screen 05: the rename action and the rename dialog title."
+  },
+  "tagsRenameHint": "Renaming onto an existing name merges the two",
+  "@tagsRenameHint": {
+    "description": "Screen 05 action sheet: what a rename may do (A1)."
+  },
+  "tagsDelete": "Delete tag",
+  "@tagsDelete": {
+    "description": "Screen 05 action sheet: the delete action."
+  },
+  "tagsDeleteHint": "{count, plural, =0{Removes it from the catalog} =1{Removes it from 1 card · the card stays} other{Removes it from {count} cards · the cards stay}}",
+  "@tagsDeleteHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 action sheet: what a delete does (BR-TAG-008)."
+  },
+  "tagsRenameBody": "Renaming updates every card that uses “{tag}”.",
+  "@tagsRenameBody": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05 rename dialog: the body."
+  },
+  "tagsNewName": "New name",
+  "@tagsNewName": {
+    "description": "Screen 05 rename dialog: the field's overline."
+  },
+  "tagsCaseHint": "Tag names are case-insensitive.",
+  "@tagsCaseHint": {
+    "description": "Screen 05 rename dialog: the hint under the field."
+  },
+  "tagsLength": "{length} / {max}",
+  "@tagsLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 rename dialog: the name's length against the limit."
+  },
+  "tagsLengthUnique": "{length} / {max} · names are unique regardless of letter case.",
+  "@tagsLengthUnique": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 rename dialog: the count line of a merge."
+  },
+  "tagsNameTooLong": "A tag name can be at most {max} characters.",
+  "@tagsNameTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 rename dialog: the name is too long (E2)."
+  },
+  "tagsRenameConfirm": "Rename",
+  "@tagsRenameConfirm": {
+    "description": "Screen 05 rename dialog: renames the tag."
+  },
+  "tagsMergeConfirm": "Merge tags",
+  "@tagsMergeConfirm": {
+    "description": "Screen 05 rename dialog: merges into the tag that folds alike (A1)."
+  },
+  "tagsMergeNotice": "A tag called “{target}” already exists. Continuing will merge “{source}” into it — its spelling stays “{target}”.",
+  "@tagsMergeNotice": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05 rename dialog: the merge panel (A1, BR-TAG-007)."
+  },
+  "tagsMergeSafe": "No card is deleted. Cards carrying both keep one tag; no card goes over 10 tags.",
+  "@tagsMergeSafe": {
+    "description": "Screen 05 rename dialog: what a merge leaves (BR-TAG-002)."
+  },
+  "tagsDeleteTitle": "Delete this tag?",
+  "@tagsDeleteTitle": {
+    "description": "Screen 05 delete dialog: the title."
+  },
+  "tagsDeleteBody": "“{tag}” is removed from {count, plural, =0{the catalog} =1{1 card and disappears from the catalog} other{{count} cards and disappears from the catalog}}. Tags are not kept in Trash.",
+  "@tagsDeleteBody": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 delete dialog: the body (A3)."
+  },
+  "tagsDeleteSafe": "{count, plural, =0{No card is deleted, hidden or changed.} =1{No card is deleted, hidden or changed — the card stays exactly where it is.} other{No card is deleted, hidden or changed — all {count} cards stay exactly where they are.}}",
+  "@tagsDeleteSafe": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 delete dialog: the note that no card is touched (BR-TAG-008)."
+  },
+  "tagsDeleteConfirm": "{count, plural, =0{Delete tag} =1{Remove from 1 card} other{Remove from {count} cards}}",
+  "@tagsDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 05 delete dialog: the destructive confirm."
+  },
+  "tagsRenameFailed": "Couldn't rename tag. Nothing changed — try again in a moment.",
+  "@tagsRenameFailed": {
+    "description": "Screen 05: the toast of a failed rename or merge (opError, E4)."
+  },
+  "tagsDeleteFailed": "Couldn't delete tag. Nothing changed — try again in a moment.",
+  "@tagsDeleteFailed": {
+    "description": "Screen 05: the toast of a failed delete (opError, E5)."
+  },
+  "tagsGone": "“{tag}” no longer exists — it was removed a moment ago.",
+  "@tagsGone": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 05: the toast when the tag was deleted elsewhere (tagGone, E3)."
   }
 }
