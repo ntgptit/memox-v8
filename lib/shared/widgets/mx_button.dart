@@ -9,9 +9,17 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
-/// Colour role of a button: the contract's four shipped tones, and the soft
-/// danger tint of a grade that marks a lapse (screen 16a).
-enum MxButtonTone { primary, secondary, outline, destructive, dangerSoft }
+/// Colour role of a button: the contract's four shipped tones, the soft
+/// danger tint of a grade that marks a lapse (screen 16a), and the warning
+/// fill of a merge (screen 05; FE-B2 spec D15).
+enum MxButtonTone {
+  primary,
+  secondary,
+  outline,
+  destructive,
+  dangerSoft,
+  warning,
+}
 
 /// Painted geometry. [chip] and [study] are the contract's geometry variants;
 /// the touch area is 48 for every size.
@@ -184,6 +192,13 @@ class MxButton extends StatelessWidget {
           color: context.derivedColors.dangerBorder,
           width: AppStroke.hairline,
         ),
+      ),
+      // The warning role and its ink, not the kit's orange and white, which
+      // is about 2.8:1 (FE-B2 spec D15).
+      MxButtonTone.warning => (
+        fill: context.semanticColors.warning,
+        ink: context.semanticColors.onWarning,
+        edge: BorderSide.none,
       ),
     };
   }

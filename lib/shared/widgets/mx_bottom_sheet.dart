@@ -41,6 +41,7 @@ class MxBottomSheet extends StatelessWidget {
     this.header,
     this.footer,
     this.hasGrabber = true,
+    this.isHeld = false,
   });
 
   final Widget child;
@@ -51,6 +52,12 @@ class MxBottomSheet extends StatelessWidget {
 
   /// The drag affordance; off for a sheet that is not draggable.
   final bool hasGrabber;
+
+  /// The sheet stays while its work runs: Back and a scrim tap are refused,
+  /// and a drag down is absorbed. The modal route's own drag pops without
+  /// asking, so refusing the pop alone does not hold it (FE-B4 final
+  /// review).
+  final bool isHeld;
 
   static const double _maxHeightShare = 0.85;
   static const double _grabberWidth = 36;
@@ -124,9 +131,20 @@ class MxBottomSheet extends StatelessWidget {
         ),
       ),
     );
-    return Padding(
-      padding: EdgeInsets.only(bottom: inset),
-      child: sheet,
+    return PopScope(
+      canPop: !isHeld,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: inset),
+        // Inside the route's drag detector, so it wins the vertical drag.
+        child: isHeld
+            ? GestureDetector(
+                onVerticalDragStart: (_) {},
+                onVerticalDragUpdate: (_) {},
+                onVerticalDragEnd: (_) {},
+                child: sheet,
+              )
+            : sheet,
+      ),
     );
   }
 }

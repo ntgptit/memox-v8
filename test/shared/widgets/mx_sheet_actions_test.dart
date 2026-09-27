@@ -93,6 +93,45 @@ void main() {
     );
   });
 
+  testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Merge tags',
+          onConfirm: () {},
+          isWarning: true,
+        ),
+      ),
+    );
+
+    expect(
+      tester.widget<MxButton>(_button('Merge tags')).tone,
+      MxButtonTone.warning,
+    );
+  });
+
+  testWidgets('a null Cancel is disabled while the confirm runs', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: null,
+          confirmLabel: 'Add deck',
+          onConfirm: () {},
+          isConfirmLoading: true,
+        ),
+      ),
+    );
+
+    expect(tester.widget<MxButton>(_button('Cancel')).onPressed, isNull);
+  });
+
   testWidgets('a disabled confirm leaves Cancel live (RF3)', (tester) async {
     var cancels = 0;
     await pumpMx(

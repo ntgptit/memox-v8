@@ -2,6 +2,19 @@
 
 Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riêng của từng UC nằm trong file UC.
 
+## Màn hình và điều hướng
+
+| Màn | Route | Mở từ | Handoff |
+|---|---|---|---|
+| 05 · Tags | `/decks/tags`, toàn màn hình trên root navigator, không có bottom bar | Hành động Tags trên app bar của Thư viện | [05-tags.md](../../shared/ui/screen-handoff/05-tags.md) |
+| 07 · Overlay lọc theo tag | Bottom sheet trên card list | Chip Tags trên thanh filter của card list | [07-card-list.md](../../shared/ui/screen-handoff/07-card-list.md) |
+
+"Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong nhánh
+Thư viện nên Back về Thư viện. Đổi tên chạy `PlanTagRenameUseCase` sau khi tên dừng 250
+ms, xác nhận gộp bằng `mergeIntoTagId`; gặp `mergeNotConfirmed` thì mở lại hộp thoại với
+tên đã gõ. Nguồn: [spec FE-B2 + FE-B4](../../superpowers/specs/2026-09-27-tags-starter-ui-design.md)
+§3 (D3, D5, D8, D11, D12, D14), §5.2, §5.3.
+
 ## Validation
 
 | Trường | Rule | Message hiển thị | Enforced by |

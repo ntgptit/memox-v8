@@ -8,6 +8,10 @@ Conventions and the review checklist live in the repo skill
 ./mvnw verify
 ```
 
+The gate also checks the format (palantir-java-format; fix it with
+`./mvnw spotless:apply`) and line coverage of at least 80% (JaCoCo). CI runs
+it in the `api` job.
+
 ## Package layout
 
 Packages are grouped by domain first, then by layer. Each domain package has
@@ -57,6 +61,18 @@ The shared code in `com.memox.common` that every feature reuses.
   property; validation errors add `errors: [{field, message}]`, and a
   database constraint violation is a 409 `CONFLICT`. `GlobalExceptionHandler`
   never returns SQL, constraint names or stack traces.
+- **Request ID:** every request gets an `X-Request-ID` (the client's own, if
+  it matches `[A-Za-z0-9._-]{1,64}`, otherwise a new UUID). It is echoed in the
+  response header, prefixed to every log line as `[id]`, and returned as
+  `requestId` in every error body. One `INFO` line per request logs method,
+  path, status and duration.
+- **JSON contract:** Boot's defaults, pinned by `JsonContractTest`. Instants
+  are ISO-8601 UTC strings (`"2026-09-27T01:02:03Z"`), null fields are written
+  as `null`, enums by constant name (never their DB code), UUIDs as lowercase
+  strings, and unknown request properties are ignored.
+- **OpenAPI:** `/v3/api-docs` and `/swagger-ui.html` document every endpoint,
+  with the error body as each operation's `default` response. Set
+  `API_DOCS_ENABLED=false` to turn both off (production).
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
@@ -71,6 +87,29 @@ The shared code in `com.memox.common` that every feature reuses.
 - **Tests:** `./mvnw verify` runs the unit tests and the `*IT` integration
   tests against PostgreSQL 18 in Testcontainers, so Docker must be running.
 
+## Foundation
+
+Before adding anything to a feature, check the Base section above: a feature
+never re-implements paging, error bodies, exception handling, request IDs,
+type handlers or string/collection helpers (Apache Commons first). The review
+skill `spring-boot-mybatis-review` flags it.
+
+Security is open for now: `SecurityConfig` permits every request, statelessly,
+with no CSRF token and no generated user, until the auth spec replaces it.
+Never expose the API to the internet in this state.
+
+Deliberately not built yet, each with the event that triggers it:
+
+| Deferred | Trigger |
+|---|---|
+| Authentication (replaces the open `SecurityConfig`), `CurrentUserProvider` (UUID user id, ADR-007) | the auth spec (ADR-001: one user type) |
+| Auditing columns | the first table, designed with the sync protocol: an offline-first client may own `updated_at` |
+| `commons-csv` | the `transfer` API |
+| Spring profiles, production config | the first deployment |
+| HTTP client convention | the first external integration |
+| `@IntegrationTest` meta-annotation, shared fixtures | the second integration test |
+| Revisit the single `ErrorCode` enum | about 50 constants |
+
 ## Folder contract
 
 | Folder | Responsibility | Allowed contents | Forbidden contents | Notes |
@@ -84,7 +123,7 @@ The shared code in `com.memox.common` that every feature reuses.
 | `<feature>/model` | Database row shapes | plain classes mapped by MyBatis | HTTP annotations, `@Data` on sensitive fields | Not used as a request or response type. |
 | `<feature>/enums` | Finite feature values | enums with a DB `code` | magic strings | Needs a TypeHandler when the DB value differs from the name. |
 | `common` | Cross-feature building blocks | shared API error body, paging request/response | feature logic | Only what at least two features use. |
-| `common/config` | Spring and MyBatis configuration | `@Configuration`, security, OpenAPI, MyBatis settings | business logic | |
+| `common/config` | Spring and MyBatis configuration | `@Configuration`, servlet filters, security, OpenAPI, MyBatis settings | business logic | |
 | `common/exception` | Error model and mapping | business exception types, `@RestControllerAdvice` | feature logic | Never exposes stack traces or SQL. |
 | `common/type_handler` | Enum ↔ DB mapping | `BaseEnumTypeHandler` and one subclass per enum | business logic | Each handler is tested: enum→DB, DB→enum, NULL, unknown value. |
 | `common/util` | Project-specific helpers | stateless helpers with no library equivalent | wrappers around Java, Apache Commons or Spring utilities; feature logic | Check the Java standard API, then Apache Commons, then Spring first. |

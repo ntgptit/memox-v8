@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_coming_soon_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -68,17 +67,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsOneWidget);
-  });
-
-  libraryTest('first run: only Create deck, the footnote below', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, deckScreen());
-
-    // Features that wait are listed under Coming soon (spec A4, amended).
-    expect(find.byType(MxButton), findsOneWidget);
-    expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
   });
 
   libraryTest('the due strip leads; each deck carries its due badge', (
@@ -279,48 +267,67 @@ void main() {
     expect(find.text(_vi.libraryDecksCount(2).toUpperCase()), findsOneWidget);
   });
 
-  libraryTest('the root app bar holds Trash and Coming soon, which lists what '
-      'waits (FE-B1 D1)', (tester, env) async {
-    var trashOpened = 0;
+  libraryTest('the root app bar holds Starter decks, Tags and Trash, as '
+      'kit 01 draws it; nothing waits under Coming soon (spec D2)', (
+    tester,
+    env,
+  ) async {
+    final opened = <String>[];
     await pumpLibraryScreen(
       tester,
       env,
-      deckScreen(onOpenTrash: () => trashOpened++),
-    );
-    await tester.tap(find.byTooltip(_en.libraryTrash));
-    expect(trashOpened, 1);
-
-    // Reorder moved to a row's sheet (ruling C-L4): Trash and Coming soon.
-    expect(
-      find.descendant(
-        of: find.byType(MxAppBar),
-        matching: find.byType(MxIconButton),
+      deckScreen(
+        onOpenStarterDecks: () => opened.add('starter'),
+        onOpenTags: () => opened.add('tags'),
+        onOpenTrash: () => opened.add('trash'),
       ),
-      findsNWidgets(2),
     );
-    await tester.tap(find.byTooltip(_en.libraryComingSoon));
-    await tester.pumpAndSettle();
 
-    expect(find.text(_en.libraryComingSoonBody), findsOneWidget);
-    for (final feature in [
+    expect(
+      [
+        for (final button in tester.widgetList<MxIconButton>(
+          find.descendant(
+            of: find.byType(MxAppBar),
+            matching: find.byType(MxIconButton),
+          ),
+        ))
+          button.semanticLabel,
+      ],
+      [_en.libraryStarterDecks, _en.libraryTags, _en.libraryTrash],
+    );
+    for (final label in [
       _en.libraryStarterDecks,
       _en.libraryTags,
-      _en.comingSoonProgressSort,
+      _en.libraryTrash,
     ]) {
-      expect(find.text(feature), findsOneWidget, reason: feature);
+      await tester.tap(find.byTooltip(label));
     }
-    // Study options shipped (FE-A3 D3): it no longer waits here.
-    expect(find.text(_en.deckStudyOptions), findsNothing);
-    // Import and export shipped (FE-B3): neither waits here any more.
-    expect(find.text(_en.deckActionExport), findsNothing);
-    // Study is live (FE-A6 D10).
-    expect(
-      find.descendant(
-        of: find.byType(DeckComingSoonSheetWidget),
-        matching: find.text(_en.studyThisDeck),
-      ),
-      findsNothing,
+    expect(opened, ['starter', 'tags', 'trash']);
+  });
+
+  libraryTest('rootEmpty offers a starter deck beside Create deck (spec '
+      '§5.4)', (tester, env) async {
+    var starters = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(onOpenStarterDecks: () => starters++),
     );
+
+    expect(find.text(_en.libraryEmptyBody), findsOneWidget);
+    expect(
+      [
+        for (final button in tester.widgetList<MxButton>(find.byType(MxButton)))
+          (button.label, button.tone),
+      ],
+      [
+        (_en.libraryCreateDeck, MxButtonTone.primary),
+        (_en.libraryBrowseStarterDecks, MxButtonTone.secondary),
+      ],
+    );
+    expect(find.text(_en.libraryEmptyFootnote), findsOneWidget);
+    await tester.tap(find.text(_en.libraryBrowseStarterDecks));
+    expect(starters, 1);
   });
 
   libraryTest('the search field opens the search', (tester, env) async {

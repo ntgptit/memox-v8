@@ -13,7 +13,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new, the four-state bar and its legend (New · Beginning · Reviewing · Mastered). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting. |
-| Filters | `MxFilterChip` | All · Due · New · Flagged with counts; the Tags filter waits under Coming soon (FE-B2). |
+| Filters | `MxFilterChip` | All · Due · New · Flagged with counts, then Tags with the tag glyph: selected with the count of tags applied, and its tap opens the tag filter (FE-B2 D14). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
@@ -28,7 +28,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 
 | State | Light | Dark | V8 |
 |---|---|---|---|
-| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn, without the Tags chip (Coming soon). |
+| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn; the Tags chip reads as selected while tags are applied (D14; UI-base row 140). |
 | empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | The deck is unset again (E-L1): screen 01's unset state. |
 | searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
 | loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
@@ -48,13 +48,42 @@ editor (screen 09) moves its card to the Trash from its "More" card with the sam
 (FE-B1 D13):
 ![](img/09-card-edit/delConfirm-light.png)
 
+## Tag filter
+
+Not in the kit; shaped by Impeccable before the plan (FE-B2 D3,
+`.impeccable/critique/2026-09-27T06-00-00Z__tags-starter-kit.md`).
+
+- **The sheet:** `MxBottomSheet`, "Filter by tags" over "Show cards with any of the chosen
+  tags", or "{k} chosen · cards with any of them". A row per tag of the library
+  (`MxListRow` with `MxSelectionCheckbox`, one checkbox node): the name and its cards in
+  this deck, 0 included, in the catalog's order; a checked row never moves. Above eight
+  tags, "Search tags" heads the list; it never drops a chosen tag.
+- **The footer:** "Clear" (empties the choice, stays open; off when nothing is chosen) and
+  "Apply" (closes and applies). Closing it any other way keeps what was applied (A5).
+  With no tag in the library, the sheet says "No tags yet. Add tags while creating or
+  editing cards." and offers Close.
+- **Applying:** a card passes with any chosen tag (BR-TAG-004), and with the status filter
+  and the search. The list starts again from its first window, and the selection clears
+  (BR-TAG-005). A tag deleted or merged away leaves the applied set (D12).
+- **No card with these tags (A7):** "No cards with these tags" with "Clear tag filter".
+
+| State | Golden (light) | Golden (dark) |
+|---|---|---|
+| none chosen | `card_tag_filter_none_light.png` | `card_tag_filter_none_dark.png` |
+| one chosen | `card_tag_filter_one_light.png` | `card_tag_filter_one_dark.png` |
+| several chosen | `card_tag_filter_several_light.png` | `card_tag_filter_several_dark.png` |
+| applied | `card_tag_filter_applied_light.png` | `card_tag_filter_applied_dark.png` |
+| no card (A7) | `card_tag_filter_no_card_light.png` | `card_tag_filter_no_card_dark.png` |
+
+The goldens are in `test/features/card/presentation/goldens/`.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
 | A trash glyph beside the Move to Trash dialog's title | No glyph | `MxDialog` has no glyph slot |
 | "Recoverable for 30 days with its 7 answers of history" | "Recoverable from Trash for 30 days, with its schedule and history" | The dialog reads no history count |
-| Tags filter | Hidden; named under Coming soon | Spec A4 (amended) |
+| The Tags chip as a ghost trigger | A filter chip, selected while tags are applied | FE-B2 D14 (critique P1b) |
 | An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
 | The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
 | "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |
@@ -68,5 +97,6 @@ editor (screen 09) moves its card to the Trash from its "More" card with the sam
 - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
 - Search empty: "No cards match “{term}”" · "Try a different term, or clear the search to see all {n} cards."
+- Tag filter: "Tags" · "Filter by tags" · "Show cards with any of the chosen tags" · "{k} chosen · cards with any of them" · "Search tags" · "Clear" · "Apply" · "No tags yet. Add tags while creating or editing cards." · "Close" · "Couldn't load tags" · "No cards with these tags" · "Clear tag filter".
 - Error: "Couldn't open this deck" · "Your data is safe on this device. Try again in a moment."
 - Move: "Move {n} cards to…" · "Schedule, history, flags and tags travel with the cards. Decks in other trees are not offered." · no target: "Nowhere to move these cards" · "No other deck in “{root}” holds cards or is empty. Create an empty sub-deck first; cards can only move within their own tree."

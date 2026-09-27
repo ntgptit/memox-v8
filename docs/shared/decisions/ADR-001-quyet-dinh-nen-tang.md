@@ -16,6 +16,10 @@ superseded_by:
 | Authentication | **chưa có auth** | Một local profile trên thiết bị |
 | Roles & permissions | không, kể cả sau khi có auth | Chỉ một loại user khi backend xuất hiện |
 
+> Các dòng *Data posture* và *Authentication*, cùng việc Drift là source of truth,
+> đã được thay bởi [ADR-013](ADR-013-dong-bo-voi-server-offline-first.md) (2026-09-27):
+> server là dữ liệu chính thức, app offline-first và tự đồng bộ.
+
 ## Lý do và hệ quả
 
 Hệ quả quan trọng của việc Web là dev-only: nó là **công cụ test**, không phải

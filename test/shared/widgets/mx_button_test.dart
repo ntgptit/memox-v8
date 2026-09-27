@@ -85,6 +85,25 @@ void main() {
     );
   });
 
+  testWidgets('warning paints the warning role with its ink, above 4.5:1 in '
+      'both themes (spec D15)', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
+    );
+    final material = _material(tester);
+
+    expect(material.color, MxSemanticColors.light.warning);
+    expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
+    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+    for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+      expect(
+        _ratio(colors.warning, colors.onWarning),
+        greaterThanOrEqualTo(4.5),
+      );
+    }
+  });
+
   testWidgets('a detail line sits under the label in the button ink '
       '(FE-A6 P2, screen 16a)', (tester) async {
     await pumpMx(
@@ -422,4 +441,11 @@ void main() {
     );
     expect(loading, idle);
   });
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }

@@ -1,6 +1,6 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (AD-05), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive. Covers checklist phases 10 and 11.
+description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (ADR-012), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive. Covers checklist phases 10 and 11.
 ---
 
 # Data layer: networking and persistence
@@ -31,7 +31,7 @@ or `presentation/`.
 
 That means the networking half of this skill —
 `references/networking.md` — is **reference material for a later phase**, not
-something to build now. `dio` is deliberately not a dependency yet (AD-05).
+something to build now. `dio` is deliberately not a dependency yet (ADR-012).
 
 The generic reasoning below is kept because it is what makes the decision
 reviewable when the backend lands.
@@ -119,7 +119,7 @@ widget.
 
 ## Checks before the data layer is done
 
-Now (local-first, AD-05 in force):
+Now (local-first, ADR-012 in force):
 
 - [ ] Source of truth declared in `docs/architecture.md` and followed everywhere.
 - [ ] No Drift exception escapes a repository.
@@ -130,7 +130,7 @@ Now (local-first, AD-05 in force):
 - [ ] Indexes exist for the queries actually run.
 - [ ] Migration tested from every released schema version.
 
-When the backend lands (deferred with AD-05):
+When the backend lands (deferred with ADR-012):
 
 - [ ] No `DioException` escapes a repository; DTOs never reach presentation.
 - [ ] Timeouts set for connect, receive and send.

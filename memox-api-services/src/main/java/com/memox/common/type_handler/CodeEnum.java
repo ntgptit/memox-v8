@@ -6,6 +6,5 @@ package com.memox.common.type_handler;
  */
 public interface CodeEnum {
 
-	String getCode();
-
+    String getCode();
 }

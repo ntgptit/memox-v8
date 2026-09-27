@@ -134,6 +134,10 @@ Order: Java standard API → Apache Commons → Spring utilities → custom util
   409 on conflict. Never `200 OK` with an empty object for "not found".
 - `@Valid` on request DTOs; validate at the trust boundary.
 
+External configuration is read through one `@ConfigurationProperties` record per concern
+(`@ConfigurationProperties(prefix = "payment.api") record PaymentApiProperties(URI url, Duration timeout)`),
+injected where needed. Flag `@Value("${...}")` scattered across services: it is untyped and hard to test.
+
 ## 8. Logging
 
 - `@Slf4j`; never `System.out.println()`.

@@ -1,6 +1,9 @@
 spring:
   application:
     name: memox-api-services
+  autoconfigure:
+    # No generated user and password: SecurityConfig is open until the auth spec.
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   jackson:
     time-zone: UTC
   mvc:
@@ -13,3 +16,15 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
     default-statement-timeout: 30
+
+logging:
+  pattern:
+    # Boot's default console and file patterns include this slot; see RequestIdFilter.
+    correlation: "[%X{requestId:-}] "
+
+springdoc:
+  # Production sets API_DOCS_ENABLED=false.
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:true}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:true}

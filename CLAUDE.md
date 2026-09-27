@@ -124,8 +124,10 @@ API security) goes there; the Flutter app at the repo root stays the client.
   [No speculative structure](#no-speculative-structure) asks for, so it is
   not a speculative single-implementation interface.
 - **Gate:** `./mvnw verify` from `memox-api-services/` (`mvnw.cmd verify` in
-  PowerShell). The Flutter gates (`dod_check.sh`, `flutter test`) do not cover
-  it, and it does not cover the app.
+  PowerShell): tests, format (palantir-java-format; fix with
+  `./mvnw spotless:apply`) and line coverage ≥ 80%. CI runs it in the `api`
+  job. The Flutter gates (`dod_check.sh`, `flutter test`) do not cover it, and
+  it does not cover the app.
 
 ## UI source of truth
 
@@ -164,8 +166,9 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
 - **They are reference material, not process.** When one conflicts with the
   rest of this file, this file wins: Superpowers and Impeccable own the
   workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
-  (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
-  not BLoC, Dio or Freezed.
+  (ADR-010, ADR-011, ADR-012) and the guard. For example, V8 uses Riverpod
+  and Drift, not BLoC or Freezed, and calls APIs through Retrofit on one shared
+  Dio client (ADR-012), never with hand-written Dio calls.
 - **Java/Spring skills apply to `memox-api-services/` only**
   ([Backend API](#backend-api-memox-api-services)), never to the Flutter app.
   The repo's own `spring-boot-mybatis-review` skill wins over the ECC

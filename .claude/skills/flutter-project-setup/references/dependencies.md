@@ -10,7 +10,7 @@ project targets, not exact pins.
 ## Runtime
 
 **Not yet for memox:** `dio` is deliberately absent until the Spring Boot
-integration begins (AD-05 in `docs/architecture.md`) — the MVP makes no network
+integration begins (ADR-012) — the MVP makes no network
 calls, and an unused HTTP client still costs build time, still needs upgrading,
 and still suggests a network layer exists. Add it when the first real request
 does.

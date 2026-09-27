@@ -2,7 +2,6 @@ package com.memox.common.type_handler;
 
 import java.time.Instant;
 import java.util.UUID;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -12,14 +11,13 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface BaseRoundTripMapper {
 
-	UUID echoUuid(@Param("value") UUID value);
+    UUID echoUuid(@Param("value") UUID value);
 
-	String storedStatusCode(@Param("value") SampleStatus value);
+    String storedStatusCode(@Param("value") SampleStatus value);
 
-	SampleStatus statusFromCode(@Param("code") String code);
+    SampleStatus statusFromCode(@Param("code") String code);
 
-	Instant echoInstant(@Param("value") Instant value);
+    Instant echoInstant(@Param("value") Instant value);
 
-	String instantAsUtcText(@Param("value") Instant value);
-
+    String instantAsUtcText(@Param("value") Instant value);
 }
