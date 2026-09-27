@@ -51,8 +51,8 @@ exceptions to failures deserves a home of its own. It is a seam, not ceremony â€
 filter counts) is a different job from the create/edit/tag/flag writes, and
 because the repository file was outgrowing the size guard.
 
-**May:** call DAOs, combine them, translate `SqliteException` /
-`DriftWrappedException` into typed failures.
+**May:** call DAOs, combine them, turn a database exception into a typed
+failure through `mapDatabaseError`.
 
 **Must not:** hold domain rules, return Drift rows to the repository's *caller*,
 or open anything.
@@ -73,10 +73,10 @@ functions with no Drift import in their signature's *output*, which is what make
 them unit-testable and what makes the backend swap possible later.
 
 **Map exceptions here, once.** A constraint violation is not a user-facing
-message: it is a `ConflictFailure` with a reason the UI can render in its own
-words. `core/error/drift_error_mapper.dart` reads `SqliteException.resultCode` so
-that "unique constraint failed" becomes a typed failure rather than a string
-somebody parses.
+message: it is a `ConstraintFailure`, and a rule the repository checks first is
+a `Rejected` reason the UI can render in its own words. `mapDatabaseError` in
+`core/error/failure.dart` reads `SqliteException.resultCode` so that "unique
+constraint failed" becomes a typed failure rather than a string somebody parses.
 
 ## What may cross each boundary
 

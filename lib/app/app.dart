@@ -7,8 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/app_router.dart';
+import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
+import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
+import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
@@ -19,7 +23,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// The composition root: themes, localization and the router, the start-up
 /// close of an earlier day's open study session (FE-A6 D9), and the Trash's
-/// auto-purge at start and on every resume (FE-B1 D5). The theme and the
+/// auto-purge at start and on every resume (FE-B1 D5), and the daily
+/// reminder's start-up Reconcile and tap route (BE-B5b). The theme and the
 /// language follow the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
 class MemoxApp extends ConsumerStatefulWidget {
   const MemoxApp({
@@ -48,6 +53,9 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   /// A4).
   late final AppLifecycleListener _lifecycle;
 
+  /// Taps on the daily reminder while the app runs (BR-REMINDER-008).
+  StreamSubscription<String?>? _reminderTaps;
+
   @override
   void initState() {
     super.initState();
@@ -61,8 +69,53 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     unawaited(_closeStaleSessions());
     unawaited(_purgeExpiredTrash());
     _lifecycle = AppLifecycleListener(
-      onResume: () => unawaited(_purgeExpiredTrash()),
+      onResume: () {
+        unawaited(_purgeExpiredTrash());
+        // The local offset may have changed while the app slept
+        // (BR-REMINDER-009); Reconcile schedules from the offset now.
+        unawaited(_reconcileReminder());
+      },
     );
+    _followReminderTaps();
+    unawaited(_reconcileReminder());
+  }
+
+  /// A tap on the reminder opens Study Home, whether the app was running or
+  /// the tap launched it (BR-REMINDER-008). No plugins, no taps: Web and
+  /// every platform but Android.
+  void _followReminderTaps() {
+    final plugins = ref.read(reminderPluginsDataSourceProvider);
+    if (plugins == null) return;
+    _reminderTaps = plugins.taps.listen(_openFromReminder);
+    unawaited(_openFromLaunch(plugins));
+  }
+
+  /// A plugin that cannot say what launched the app leaves it where it
+  /// opens; the reminder's taps and schedule do not depend on it.
+  Future<void> _openFromLaunch(ReminderPluginsDataSource plugins) async {
+    final String? payload;
+    try {
+      payload = await plugins.launchPayload();
+    } on Object {
+      return;
+    }
+    _openFromReminder(payload);
+  }
+
+  void _openFromReminder(String? payload) {
+    if (payload != reminderTapPayload || !mounted) return;
+    _router.go(AppRoutes.study);
+  }
+
+  /// UC-REMINDER-001 step 6: the pending alarm follows the stored reminder
+  /// again, through the gate. A refusal changes nothing the person sees; the
+  /// next start tries again.
+  Future<void> _reconcileReminder() async {
+    try {
+      await ref.read(reconcileReminderProvider)();
+    } on Failure {
+      // The stored reminder could not be read; the next start retries.
+    }
   }
 
   /// BR-TRASH-009: what is past 30 days leaves for good. A failed purge
@@ -86,6 +139,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   @override
   void dispose() {
     _lifecycle.dispose();
+    unawaited(_reminderTaps?.cancel());
     _router.dispose();
     super.dispose();
   }

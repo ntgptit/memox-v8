@@ -68,10 +68,8 @@ Material(child: InkWell(onTap: t, child: DecoratedBox(decoration: d, child: body
 DecoratedBox(decoration: d, child: Material(child: InkWell(onTap: t, child: body)))
 ```
 
-`mx_card.dart` is the worked example, `deck_tile_widget.dart` the caller, and
-`deck_tile_target_test.dart` pins it by geometry — which is the only way to see
-it, since the widget tree is identical either way and only the reacting pixels
-differ.
+`lib/shared/widgets/mx_card.dart` is the worked example. Only a test of the
+reacting pixels can pin it, since the widget tree is identical either way.
 
 ## The base set
 
@@ -112,7 +110,7 @@ Before a component is done:
 - [ ] Survives 2.0× text scale without overflow.
 - [ ] Survives a 320px-wide screen.
 - [ ] Long text truncates or wraps deliberately, not by accident.
-- [ ] Golden test for light and dark (Phase 15.4).
+- [ ] Golden test for light and dark (`flutter-testing`).
 
 ## Widget composition
 
@@ -133,5 +131,4 @@ class _Header extends StatelessWidget {
 
 A `_buildX()` method looks like decomposition but is not: the returned subtree is
 part of the parent's build, so it rebuilds whenever the parent does and can never
-be `const`. Separate classes give narrower rebuild scopes for free — the same
-point Phase 17 makes about limiting rebuild range.
+be `const`. Separate classes give narrower rebuild scopes for free.

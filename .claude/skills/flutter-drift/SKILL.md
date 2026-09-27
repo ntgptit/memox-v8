@@ -15,11 +15,11 @@ and they fail in different ways.
 
 Before either, know what this project has **already settled**. Most Drift advice
 on the internet — and most generic checklists, including good ones — assumes a
-greenfield repo. This one has settled its layout (ADR-010, ADR-011: tables and
-named queries in `lib/core/database/`, DAOs in each feature's
-`data/datasources/`) and its schema (`docs/shared/data/schema.md`), and a
-well-meant "best practice" applied here is a refactor nobody asked for. Read
-those before proposing any structural change.
+greenfield repo. MemoX V8 is not greenfield, and a well-meant "best practice"
+applied here is a refactor nobody asked for. Read
+`references/project-baseline.md` before proposing any structural change; it
+lists what is fixed, why, and which generic recommendations this project has
+deliberately declined.
 
 ## The one rule everything else serves
 
@@ -35,7 +35,7 @@ the repository**. Not a row class, not a `Companion`, not a `Selectable`, not a
 `Failure`.
 
 This is not tidiness. It is the single property that lets a Spring Boot backend
-arrive later without `domain/` or `presentation/` changing (AD-01). The day a
+arrive later without `domain/` or `presentation/` changing (ADR-011). The day a
 `Card` row class reaches a widget, the backend migration becomes a rewrite of the
 UI — and the breakage will not show up until that day, which is why it has to be
 enforced now, when it is free.
@@ -65,7 +65,7 @@ reverted by a hotfix. Before writing SQL, answer:
   are derived from `current_box` / `interval_days`; storing them as a column
   would mean a migration every time the ladder moves.
 - Does the fact belong to the **scheduler** rather than the database? Box-day
-  tables and SM-2 factors stay in Dart on purpose (BR-16) — in SQL, tuning the
+  tables and SM-2 factors stay in Dart on purpose — in SQL, tuning the
   algorithm becomes a migration.
 - Is it **UI state**? A window size, a selected filter, a sort order and an
   expansion toggle are presentation state, not rows.
@@ -101,9 +101,9 @@ injection safety are all gone at once.
 
 The order matters: **index after query, never before**. Every index is paid for
 on every insert into that table, forever. An index whose query nobody can name is
-a permanent cost for a speculative benefit — and this project's own composite
-index earned its place by measurement (1193µs → 102µs, recorded in
-`cards.drift`), which is the standard to hold a new one to.
+a permanent cost for a speculative benefit. An index earns its place by a
+measurement, `EXPLAIN QUERY PLAN` and a timing before and after, which is the
+standard to hold a new one to.
 
 ### Step 3 — migrate, and prove the migration
 
@@ -189,6 +189,7 @@ Load only what the task needs.
 
 | File | Read it when |
 |---|---|
+| `references/project-baseline.md` | Before proposing any structural change, or when a generic Drift recommendation seems to conflict with this repo |
 | `references/layering.md` | Deciding where code goes — `AppDatabase` vs DAO vs data source vs repository — or reviewing a type that crossed a boundary |
 | `references/schema-conventions.md` | Adding or changing a table, column, constraint, enum or timestamp |
 | `references/query-conventions.md` | Writing or reviewing a `.drift` query, designing an index, or paginating |

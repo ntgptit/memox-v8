@@ -8,15 +8,14 @@ unreleased; afterwards it costs a migration, a snapshot, a test and a risk.
 
 | Thing | Form | Example |
 |---|---|---|
-| Table | plural `snake_case` | `decks`, `card_review_states`, `review_history` |
+| Table | `snake_case`, as `docs/shared/data/schema.md` names it | `deck`, `card_schedule`, `review_log` |
 | Column | `snake_case` | `deck_id`, `created_at`, `is_flagged` |
 | Primary key | `id` | `id TEXT NOT NULL PRIMARY KEY` |
 | Foreign key | `<entity>_id` | `deck_id`, `card_id`, `session_id` |
-| Timestamp | `<verb>_at` | `created_at`, `updated_at`, `first_review_at` |
+| Timestamp | `<verb>_at` | `created_at`, `updated_at`, `first_answered_at` |
 | Boolean | `is_` / `has_` / `can_` | `is_flagged`, `has_completed` |
-| Index | `idx_<table>_<cols>` | `idx_cards_deck_created` |
-| Unique index | `uq_<table>_<cols>` | `uq_tags_owner_folded` |
-| Named query | `lowerCamelCase` | `watchCardsByDeck`, `cardStateCountsByDeck` |
+| Index, unique or not | `idx_<table>_<cols>` | `idx_card_deck_created`, `idx_tags_owner_name_folded` |
+| Named query | `lowerCamelCase` | `cardDetail`, `cardHistoryPage` |
 
 Three naming failures that are worth catching in review because they never get
 fixed later:
@@ -64,9 +63,9 @@ four and they are not interchangeable: **not yet set**, **does not apply**,
 
 This project uses the distinction deliberately: `example`, `hint` and
 `pronunciation` are `NULL` when never filled, and the domain folds `''` to `NULL`
-so there is exactly one spelling of "empty" (BR-95). `due_at` is `NULL` for a card
-that has never been scheduled, which is why "due" is `due_at IS NULL OR due_at <=
-:now` and not just the comparison.
+so there is exactly one spelling of "empty". `due_at` is `NULL` for a card
+that is not learned yet, and a card that is not learned is new, never due
+(BR-STUDY-051): "due" is `learned_at IS NOT NULL AND due_at <= :now`.
 
 ## Constraints
 
@@ -160,7 +159,7 @@ Before adding a column, check it is not one of these:
 | Different lifetime from the rest of the row (content vs schedule vs history) | its own table |
 
 That last row is the one this schema is built around, and it is worth restating:
-`cards` holds content, `card_review_states` holds the schedule, `review_history`
-is append-only. They are separate because reset drops the schedule and keeps the
-content and the history. A column added to the wrong one of the three breaks a
-rule that no test in the feature you are working on will notice.
+`card` holds content, `card_schedule` holds the schedule, `review_log` is
+append-only. They are separate because reset starts the schedule over and keeps
+the content and the history (BR-SRS-021). A column added to the wrong one of the
+three breaks a rule that no test in the feature you are working on will notice.

@@ -5,43 +5,44 @@ description: Stands up the Flutter project skeleton and everything that is decid
 
 # Project setup and foundation
 
-Environment, dependencies, bootstrap, flavors and the error model are grouped
-because they are decided once and constrain everything after — the flavor decides the log level bootstrap
-installs, and the error model decides what the error boundary reports.
+The environment, the dependencies, bootstrap, flavors and the error model are
+grouped because they are decided once and constrain everything after — the
+flavor decides the log level bootstrap installs, and the error model decides
+what the error boundary reports.
 
-Prerequisite: the product section of `docs/README.md` and
-`docs/shared/decisions/ADR-001-quyet-dinh-nen-tang.md` answer platforms,
-online/offline and auth. Those three answers change the dependency set, so setting up before they
-are settled means redoing it.
+Prerequisite: the product section of `docs/README.md` and two ADRs in
+`docs/shared/decisions/` answer platforms (ADR-001), online/offline and
+identity (ADR-013). Those three answers change the dependency set, so setting
+up before they are settled means redoing it.
 
-## 2.1 Toolchain
+## Toolchain
 
 ```bash
 flutter --version && flutter doctor -v
 ```
 
-Use Flutter stable. Record the exact version in `docs/architecture.md` and pin
+Use Flutter stable. Record the exact version in `.fvmrc` (ADR-010) and pin
 it in CI — "works on my machine" is nearly always a toolchain drift.
 
 If `flutter` is not on PATH in this environment, say so plainly and continue
 with the work that does not need it (docs, decisions, file layout). Do not
 fabricate command output.
 
-## 2.2 Repository conventions
+## Repository conventions
 
 - `.gitignore` — start from the Flutter template, then confirm it excludes
-  generated code you do not intend to commit (`*.g.dart`, `*.freezed.dart`),
+  generated code you do not intend to commit (`*.g.dart`),
   `.env` files, signing keys, and `**/google-services.json` if it holds secrets.
 - **Generated code: commit or not?** Pick one and write it down. Committing them
   makes checkout-and-run work and makes diffs noisy; not committing them means
   CI must run `build_runner` before analyze. Not committing is the better default
-  here because CI already runs codegen as a freshness check (Phase 19.1).
+  here because CI already runs codegen as a freshness check (`flutter-ship`).
 - Conventional Commits, scoped by feature: `feat(deck):`, `fix(card):`.
 - Branch naming: `feat/<slice>`, `fix/<issue>`, `chore/<thing>`.
 - PR and issue templates in `.github/`.
 - Branch protection on the default branch; no direct pushes.
 
-## 2.3 Creating the project
+## Creating the project
 
 ```bash
 flutter create \
@@ -75,7 +76,7 @@ issue count against a Flutter-stable release, and its licence.
 Add with `flutter pub add` so constraints are written correctly, then commit
 `pubspec.lock`.
 
-## 6.1 Bootstrap
+## Bootstrap
 
 `bootstrap()` owns startup, `main()` owns nothing but calling it. The reason to
 separate them is testability and flavors — three `main_*.dart` entrypoints can
@@ -103,12 +104,14 @@ Anything that can throw during startup belongs inside a guarded zone that shows
 a real error screen. A white screen with no explanation is the worst failure
 mode available, because it is indistinguishable from a hang.
 
-## 6.2 Environments and flavors
+## Environments and flavors
 
-> **Not in V8 yet.** MemoX V8 is local-only (ADR-001): no API base URL, no
-> staging backend, no analytics. So it has no flavors, no `EnvConfig` and no
-> `app/config/` (ADR-011). The rest of this section applies once an ADR opens
-> networking.
+> **No flavors in V8 yet.** The one environment value is the API base URL: a
+> build passes `--dart-define=API_BASE_URL=…`, which
+> `lib/core/network/api_config.dart` reads, and without it sync does not run.
+> There is no staging backend and no analytics, so there are no flavors, no
+> `EnvConfig` and no `app/config/` (ADR-011). The rest of this section applies
+> when a second value appears.
 
 Three flavors: development, staging, production. Each carries app name,
 application ID suffix, API base URL, log level, feature flags and analytics
@@ -142,63 +145,43 @@ Distinct application IDs per flavor (`com.x.app.dev`) so all three install side
 by side on one device. Read `references/flavors.md` for the Android and iOS
 wiring.
 
-## 6.3 Error model
+## Error model
 
 This is the contract between layers, so get it right before any feature uses it.
 
-**Data layer throws typed exceptions.** `DioException`, `DriftWrappedException`
-and friends are caught at the *repository boundary* and never travel further.
+MemoX V8's is ADR-011 D6, in `lib/core/error/`. It has two kinds of "no":
 
-**Domain layer speaks `Failure`.** A sealed class, so `switch` over it is
-exhaustive and the compiler tells you when a new failure type needs handling:
+- **A refusal is a value.** A write the rules refuse (a blank name, a move into
+  the deck's own subtree) returns `Rejected(reason)`, an `Outcome<T, R extends
+  Enum>` (`core/error/outcome.dart`). `R` is the feature's own reason enum in
+  `domain/failures/` (`DeckRejection`, …), so `core/` names no business reason,
+  a `switch` over it stays exhaustive, and the UI maps each value to its own
+  words. A rule the repository checks first is a reason, never an exception.
+- **An unexpected error is a `Failure`.** `core/error/failure.dart` holds a
+  sealed `Failure` with a `message` safe to show and a `cause` for logs only:
+  `ConstraintFailure`, `DatabaseLockedFailure`, `UnknownDatabaseFailure`.
 
 ```dart
-sealed class Failure {
-  const Failure({required this.message, this.cause});
-  final String message;   // safe to show a user
-  final Object? cause;    // for logs only, never rendered
+sealed class Outcome<T, R extends Enum> { const Outcome(); }
+final class Ok<T, R extends Enum> extends Outcome<T, R> { … final T value; }
+final class Rejected<T, R extends Enum> extends Outcome<T, R> {
+  … final R reason;
 }
-
-final class NetworkFailure extends Failure { ... }
-final class UnauthorizedFailure extends Failure { ... }
-final class ForbiddenFailure extends Failure { ... }
-final class ValidationFailure extends Failure {
-  const ValidationFailure({required super.message, this.problems = const <Enum>{}});
-  final Set<Enum> problems;  // typed field problems; drives inline form errors
-}
-final class NotFoundFailure extends Failure { ... }
-final class ConflictFailure extends Failure { ... }
-final class DatabaseFailure extends Failure { ... }
-final class UnknownFailure extends Failure { ... }
 ```
 
-`ValidationFailure` carries a **set of typed problems** because that is what the
-UI needs to show an error under the right input. Flattened to one string, the UI has
-to guess which field is wrong.
-
-Two details memox learned the hard way, both worth copying:
-
-* a `Set`, not a single value, because a form can fail in two places at once — a
-  blank name *and* an unchosen option — and one reason means the user is sent round
-  twice;
-* `Enum` values, not `Map<String, String>`. The map's key was a repeated string
-  literal nothing checked, and its value was a message the UI is forbidden to
-  render — so presentation ignored the value and re-derived the problem from the raw
-  input, which quietly gave the validation rule a second owner. `Enum` rather than a
-  feature type because `core/` may not import a feature, and on the *base* class
-  because `Failure` is `sealed`, so a feature cannot add a subtype.
-
-**Result type or exceptions?** Either works. Pick one and hold to it —
-`Result<T>` makes failure explicit in the signature at the cost of ceremony;
-throwing `Failure` and catching in the controller is lighter but easier to
-forget. Whichever you choose, the invariant is that a `DioException` never
-reaches presentation.
+**The data layer maps once.** Drift and sqlite3 exceptions are caught at the
+repository boundary and turned into a `Failure` by `mapDatabaseError`; a watch
+does the same through `mapDatabaseErrors()`. No repository inspects a driver
+exception itself, and no driver exception reaches presentation. When networking
+lands, its failures join the sealed class and are mapped in one place the same
+way.
 
 **Messages are for users.** No URLs, SQL, stack traces or internal identifiers.
 The technical detail goes in `cause` and into logs. When mapping an unexpected
 error, log the original and show something generic — a leaked stack trace in a
 snackbar is both a bad experience and an information disclosure.
 
-Put the mapping in one place (`core/error/`) so every repository maps the same
-exception to the same failure, and test it (Phase 15.1) — error mapping is the
-code most likely to be wrong and least likely to be exercised by hand.
+Keep the mapping in one place (`core/error/`) so every repository maps the same
+exception to the same failure, and test it (`test/core/error/failure_test.dart`,
+per `flutter-testing`) — error mapping is the code most likely to be wrong and
+least likely to be exercised by hand.

@@ -1,15 +1,14 @@
 # The Linux renderer that writes this repo's goldens (spec §8.2, owner decision
 # 2026-09-25), for regenerating them from a Windows or macOS checkout. The
-# history below is inherited. The `goldens` job of `.github/workflows/ci.yml`
+# `goldens` job of `.github/workflows/ci.yml`
 # compares the pictures on `ubuntu-latest`, as described below; this image is
 # where they are written.
 #
-# **Why this file exists.** Goldens have exactly one authoring platform and
-# since M100.24 it is Linux (`dart_test.yaml` carries the reasoning). A Windows
-# checkout that runs `--update-goldens` writes PNGs CI rejects, and it does it
-# silently — the local run reports every test passing, because a platform always
-# agrees with itself. Until M100.30 the only documented answers were "use WSL"
-# or "let a cloud session do it"; this is the third, and it is reproducible.
+# **Why this file exists.** Goldens have exactly one authoring platform, Linux
+# (`dart_test.yaml` carries the reasoning). A Windows checkout that runs
+# `--update-goldens` writes PNGs CI rejects, and it does it silently — the local
+# run reports every test passing, because a platform always agrees with itself.
+# This image is the reproducible way to write them from any machine.
 #
 # **The base is Ubuntu plus the official SDK tarball, not a vendor image.** The
 # CI job is `runs-on: ubuntu-latest` with `subosito/flutter-action` reading

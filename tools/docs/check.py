@@ -438,6 +438,7 @@ V7_HISTORY = {
     "docs/superpowers/specs/2026-09-26-verification-tooling-design.md": _DATED,
     "docs/superpowers/specs/2026-09-27-guard-without-v7-design.md": _DATED,
     "docs/superpowers/specs/2026-09-27-local-backend-completion-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-skills-without-v7-design.md": _DATED,
     "docs/superpowers/plans/2026-09-23-docs-v8-reset.md": _DATED,
     "docs/superpowers/plans/2026-09-23-v8-folder-architecture.md": _DATED,
     "docs/superpowers/plans/2026-09-24-settings-reset-backend.md":
@@ -451,10 +452,13 @@ V7_HISTORY = {
         "a dated plan that quotes the WBS rows of its day",
     "docs/superpowers/plans/2026-09-27-guard-without-v7.md": _DATED,
     "docs/superpowers/plans/2026-09-27-local-backend-g3-no-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-skills-without-v7.md": _DATED,
     "docs/superpowers/plans/2026-09-27-verification-tooling.md": _DATED,
     "docs/wbs_BE.md": "its rows and log name what BE-D5, BE-D6 and BE-D7 removed",
     ".claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py":
         "asserts that Widgetbook stays out of the gate",
+    ".claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py":
+        "the V7 markers it keeps out of every repo-owned skill are its test data",
     "tools/docs/test_check.py": "the markers are this check's test data",
 }
 

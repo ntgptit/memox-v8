@@ -1,6 +1,6 @@
 ---
 feature: reminders
-code: [lib/features/reminders/domain, lib/features/reminders/data, lib/features/reminders/di]
+code: [lib/features/reminders/domain, lib/features/reminders/data, lib/features/reminders/di, lib/features/reminders/presentation]
 depends_on: [deck, settings, study]
 ---
 ## Phạm vi
@@ -12,6 +12,16 @@ Nhắc học hằng ngày (UC-REMINDER-001). Công tắc, giờ nhắc và lần
 dòng `app_settings`, do feature `settings` ghi. Feature này giữ port tới nền tảng
 (`ReminderPlatformRepository`), workload đọc lúc fire, digest và thứ tự của nó, giờ nhắc
 kế tiếp theo giờ địa phương, và sáu use case.
+
+Phần Android (BE-B5b, gói G5 của [spec hoàn tất backend local](../../superpowers/specs/2026-09-27-local-backend-completion-design.md) §8):
+`AndroidReminderPlatformRepositoryImpl` hiện thực port trên `android_alarm_manager_plus`
+(một báo thức inexact, sống qua reboot) và `flutter_local_notifications` (một thông báo
+id cố định, chạm mở Study Home). Hai plugin chỉ được gọi qua `ReminderPluginsDataSource`
+(guard `memox_v8.architecture.reminder_plugins_have_one_door`). `ReminderOperationGate`
+cho Enable, Disable và Reconcile chạy lần lượt; Deliver chạy trong isolate nền
+(`reminder_background_bindings.dart`) và đọc settings lúc fire. App chạy Reconcile khi
+khởi động. Web và mọi nền tảng khác giữ adapter "không hỗ trợ". FE-B5, nơi đầu tiên gọi
+Enable và Disable, MUST gọi chúng qua `reminderOperationGateProvider` như Reconcile.
 
 ## Màn hình → Use case
 

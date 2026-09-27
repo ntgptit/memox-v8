@@ -1,15 +1,12 @@
 """Fault-injection fixtures for `check_architecture.py`.
 
-**The debt this pays was recorded at T0.1 and is the oldest open row in the
-ledger:** *"`check_architecture.sh` chưa có test tự động — regression trong
-checker âm thầm ngừng enforce boundary"*. A guard nobody tests is a guard that
-can stop finding anything and still print a tick, which is worse than no guard
-because the tick is believed.
+A guard nobody tests is a guard that can stop finding anything and still print
+a tick, which is worse than no guard because the tick is believed.
 
-The mitigation added at M4.10b — the checker prints how many files it scanned
-and treats zero as a failure — closes the worst case, where the guard sees
-nothing at all. It does not close the case this file is for: the guard scanning
-everything and *recognising* nothing.
+The checker prints how many files it scanned and treats zero as a failure,
+which closes the worst case, where the guard sees nothing at all. It does not
+close the case this file is for: the guard scanning everything and
+*recognising* nothing.
 
 So each test builds a throwaway project, plants exactly one violation of a
 named rule, and asserts the checker fails and says which rule. The clean
@@ -228,7 +225,7 @@ class ArchitectureCheckerFixtureTest(unittest.TestCase):
             self.assertIn("zero scope: all", result.stdout)
 
     def test_a_project_with_no_lib_but_a_pubspec_fails(self) -> None:
-        # The M4.10b mitigation, pinned: a skip before the project exists is
+        # The zero-scope failure, pinned: a skip before the project exists is
         # honest, a skip after it exists is the checker reporting success for
         # having looked at nothing.
         with tempfile.TemporaryDirectory() as tmp:

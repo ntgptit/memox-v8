@@ -19,7 +19,7 @@ part 'deck_actions_controller.g.dart';
 
 /// The deck writes the Library triggers.
 ///
-/// Each command calls exactly one use case (AD-12) and hands back its
+/// Each command calls exactly one use case (ADR-011 D4) and hands back its
 /// `Outcome`, and the widget chooses the feedback. A database `Failure` is
 /// thrown through for the widget to show. The controller holds no state.
 @riverpod

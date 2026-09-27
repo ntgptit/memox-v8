@@ -1124,5 +1124,9 @@
   "cardEditedHint": "gợi ý",
   "cardEditedPronunciation": "phát âm",
   "cardEditedFlag": "cờ",
-  "cardEditedTags": "nhãn"
+  "cardEditedTags": "nhãn",
+  "reminderDueCards": "{count} thẻ đến hạn",
+  "reminderOtherDecks": "{count} deck khác có thẻ",
+  "reminderBody": "{due} trong {deck}.",
+  "reminderBodyWithOthers": "{due} trong {deck}, và {others} đang chờ."
 }

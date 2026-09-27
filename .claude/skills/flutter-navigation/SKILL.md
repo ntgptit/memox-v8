@@ -1,6 +1,6 @@
 ---
 name: flutter-navigation
-description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until auth lands, AD-03), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
+description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until login lands, ADR-013), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
 ---
 
 # Navigation
@@ -10,9 +10,10 @@ Router configuration lives in `app/router/`.
 ```
 app/router/
 ├── app_router.dart      # GoRouter instance, redirect logic
-├── route_paths.dart     # path + name constants
-└── route_guards.dart    # (not yet — auth is deferred, AD-03; add with the auth phase)
+└── app_routes.dart      # path and path-parameter constants
 ```
+
+A `route_guards.dart` comes with login, which ADR-013 leaves for later.
 
 ## Routes are declared centrally, referenced by name
 
@@ -69,8 +70,9 @@ visible and the branch's back stack is correct.
 
 ## Guards
 
-> **Deferred until auth lands (AD-03).** This section is reference material for
-> that phase — do not build an auth guard, login flow or `authStateProvider` now.
+> **Deferred until login lands (ADR-013: identity now, login later).** This
+> section is reference material for that phase — do not build an auth guard,
+> login flow or `authStateProvider` now.
 
 Put auth redirection in the router's `redirect`, not in screen `initState`. A
 guard in `initState` means the protected screen is built and briefly visible
@@ -104,11 +106,10 @@ until they navigate.
 **A redirect fires on forward navigation only — never on pop.** If a route
 redirects onward when opened (deck detail → card list when the deck holds
 cards), backing out of the target lands on the *redirect source*, which the
-user never saw on the way in. Found the hard way as IT-TREE-003: back from a
-card list dropped onto the intermediate deck level. There are two honest
+user never saw on the way in. There are two honest
 responses, and the project chose per-site: `push` the target instead of `go`
-where the source screen is a real place the user should return through
-(`deck_list_screen.dart` does this), or accept the extra back-tap and record
+where the source screen is a real place the user should return through, or
+accept the extra back-tap and record
 it — never assume the redirect will "undo" itself on the way back, and never
 compensate inside the screen's `build`. Any new redirect-onward route must
 state which of the two it picked and cover it with a router test.
@@ -148,7 +149,7 @@ Android's system back and iOS's edge swipe must both do the sensible thing.
 
 ## Checks before navigation is done
 
-- [ ] No path string outside `route_paths.dart`.
+- [ ] No path string outside `app_routes.dart`.
 - [ ] Every route reachable by name.
 - [ ] Auth guard covers all protected routes and cannot loop.
 - [ ] 404 screen offers a way back.

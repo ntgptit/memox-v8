@@ -123,15 +123,13 @@ ghi ở `README.md` ở thư mục gốc repo.
 
 - Skill `flutter-architecture` và các skill liên quan trỏ về ADR này, thay cho
   `docs/architecture.md` của V7. `feature_blueprint.md` và `project-baseline.md` trở
-  thành tài liệu tham khảo V7.
-  - Cập nhật 2026-09-27 (BE-D7): hai file này đã gỡ; bố cục thuộc ADR này và
-    ADR-010, schema thuộc `docs/shared/data/schema.md`, ví dụ mẫu là Deck và Card
-    của V8 (`docs/features/deck/`, `docs/features/card/`).
+  thành tài liệu tham khảo V7; ở BE-D7 (gói G3 và 12c), `feature_blueprint.md` bị gỡ và
+  `project-baseline.md` được viết lại cho V8.
 - Foundation plan ngày 2026-09-23 đã được sửa theo ADR này trước khi chạy Task 2.
 - Định nghĩa `depends_on` trong `docs/README.md` ghi rõ: chiều import Dart do ADR này quy
   định.
 - Việc để lại cho sau, ngoài phạm vi ADR này:
   - Các tham chiếu V7 trong skill không liên quan tới thư mục (`docs/checklist.md`,
-    `docs/wbs.md`, các số AD khác).
+    `docs/wbs.md`, các số AD khác): đã gỡ ở BE-D7 (gói G3 và 12c).
   - 13 rule `memox_v7.design_system.*` trong ruleset `memox-v8`: đã đổi thành
     `memox_v8.design_system.*` ở BE-D6 (gói 12b).

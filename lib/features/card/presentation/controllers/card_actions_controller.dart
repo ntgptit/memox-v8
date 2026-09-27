@@ -18,8 +18,9 @@ part 'card_actions_controller.g.dart';
 
 /// The card list's bulk commands (UC-CARD-001 A5–A8).
 ///
-/// Each command calls exactly one use case (AD-12) and hands back its result;
-/// the widget chooses the feedback. A database `Failure` is thrown through.
+/// Each command calls exactly one use case (ADR-011 D4) and hands back its
+/// result; the widget chooses the feedback. A database `Failure` is thrown
+/// through.
 @riverpod
 class CardActionsController extends _$CardActionsController {
   @override

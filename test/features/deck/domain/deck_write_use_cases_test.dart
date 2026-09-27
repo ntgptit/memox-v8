@@ -21,8 +21,8 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/test_database.dart';
 
-// The write use cases forward to one repository call each (AD-12). They are
-// exercised here over the real repositories, so the test asserts what a
+// The write use cases forward to one repository call each (ADR-011 D4). They
+// are exercised here over the real repositories, so the test asserts what a
 // person sees in the tree, not that a fake was called.
 
 T _value<T>(Outcome<T, DeckRejection> result) =>

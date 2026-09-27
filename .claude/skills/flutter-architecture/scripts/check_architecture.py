@@ -5,9 +5,10 @@ Import direction is an architectural property, not a lint, so it needs its own
 check — one that runs in CI, because a boundary nobody verifies is a boundary
 that has already broken.
 
-It reads every source file once, in one process. The `.sh` beside it is a thin
-wrapper, so every `bash …/check_architecture.sh` caller and every doc that names
-it works.
+**Why Python.** It reads every source file once, in one process, instead of
+forking a subprocess per file, which is slow on Windows git-bash. The `.sh`
+beside it is a thin wrapper so every `bash …/check_architecture.sh` caller and
+every doc that names it still works.
 
 Usage: check_architecture.py [--quiet]
 Exit:  0 clean, 1 violations found.
@@ -221,9 +222,9 @@ _SUFFIX_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("/domain/entities/", ("_entity.dart",)),
     ("/domain/repositories/", ("_repository.dart",)),
     ("/domain/usecases/", ("_use_case.dart",)),
-    # The domain suffix table also admits _scheduler and _mode: Study keeps its
-    # Strategy files (study_mode.dart, sm2_scheduler.dart, …) under
-    # `domain/models/`.
+    # A pure rule lives in `domain/models/` (ADR-011 D7), and a Strategy file
+    # there is named for its role: `_mode` for a study mode, `_scheduler` for
+    # a scheduler.
     ("/domain/models/", ("_model.dart", "_mode.dart", "_scheduler.dart")),
     ("/domain/failures/", ("_failure.dart",)),
     ("/data/mappers/", ("_mapper.dart",)),
@@ -320,7 +321,7 @@ def main() -> int:
             return 1
         print(
             "No lib/ directory and no pubspec.yaml — nothing to check yet\n"
-            "(expected before Phase 2.3)."
+            "(expected before the Flutter project is created)."
         )
         return 0
 

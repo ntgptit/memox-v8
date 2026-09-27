@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # The Flutter on PATH is the Flutter `.fvmrc` names.
 #
-# **The debt this closes was recorded at M2.2 and had already happened once:**
-# M2.1 ran on 3.44.8, the next session started on 3.44.6, and nothing noticed.
-# `.fvmrc` declared a version that nothing enforced, so it was documentation
-# rather than a pin.
+# **Why:** a session can start on a different Flutter than the last one, and
+# nothing else would notice. `.fvmrc` declares a version; without this check it
+# is documentation rather than a pin.
 #
 # CI closed half of it — both jobs use `flutter-version-file: .fvmrc`, so the
 # runner cannot drift. The half left open was the developer machine, which is
-# where the drift actually happened.
+# where drift happens.
 #
 # **Why this is a planned gate and not a preflight check.** `dod_check.sh`
 # stamps a successful run and short-circuits an unchanged tree in ~0.4s; its
@@ -57,10 +56,9 @@ if [[ "$have" != "$want" ]]; then
   cat >&2 <<EOF
 ✗ Flutter $have is on PATH, but .fvmrc pins $want.
 
-  This is the failure M2.2 recorded: a session ran 3.44.8, the next started on
-  3.44.6, and nothing said so. Generated code, analyzer output and golden
-  rasterisation all move between versions, so a green gate on the wrong SDK is
-  a green gate about a different project.
+  Generated code, analyzer output and golden rasterisation all move between
+  versions, so a green gate on the wrong SDK is a green gate about a different
+  project.
 
   Fix by switching the SDK (fvm use $want), not by editing .fvmrc — CI reads
   the same file through flutter-version-file, so editing it moves the runner
