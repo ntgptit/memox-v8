@@ -20,6 +20,7 @@ Widget _section(String deckId) => Scaffold(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
+    onStudy: () {},
   ),
 );
 

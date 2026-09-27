@@ -1731,14 +1731,6 @@
   "@comingSoonTrashBody": {
     "description": "Coming soon: what the trash does."
   },
-  "comingSoonStudy": "Study",
-  "@comingSoonStudy": {
-    "description": "Coming soon: the study feature's name."
-  },
-  "comingSoonStudyBody": "Study a deck's due cards.",
-  "@comingSoonStudyBody": {
-    "description": "Coming soon: what studying a deck does."
-  },
   "comingSoonStudyOptionsBody": "Session size and new-card order.",
   "@comingSoonStudyOptionsBody": {
     "description": "Coming soon: what study options do."
@@ -2734,5 +2726,13 @@
   "studySummaryDoneCaption": "Done returns you to the deck.",
   "@studySummaryDoneCaption": {
     "description": "The summary footer's caption."
+  },
+  "deckStudy": "Study",
+  "@deckStudy": {
+    "description": "Deck action sheet: open the Study entry (spec D10)."
+  },
+  "cardStudyThisDeck": "Study this deck",
+  "@cardStudyThisDeck": {
+    "description": "Card list summary: open the deck's Study entry (spec D10)."
   }
 }

@@ -27,6 +27,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.parentId,
     required this.onOpenDeck,
     required this.onOpenAlgorithm,
+    required this.onOpenStudy,
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
@@ -38,6 +39,9 @@ class DeckLevelListWidget extends ConsumerWidget {
 
   /// A root's review algorithm (screen 02), from a row's action sheet.
   final ValueChanged<String> onOpenAlgorithm;
+
+  /// Opens [String]'s Study entry (spec D10).
+  final ValueChanged<String> onOpenStudy;
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
@@ -126,6 +130,7 @@ class DeckLevelListWidget extends ConsumerWidget {
                       parentId: parentId,
                       onOpenDeck: onOpenDeck,
                       onOpenAlgorithm: onOpenAlgorithm,
+                      onOpenStudy: onOpenStudy,
                       isOpenDeck: false,
                     ),
                   ),

@@ -344,8 +344,6 @@
   "comingSoonStarterDecksBody": "Bộ thẻ có sẵn để sao chép.",
   "comingSoonTagsBody": "Gắn nhãn thẻ, lọc theo nhãn.",
   "comingSoonTrashBody": "Khôi phục bộ thẻ và thẻ đã xoá.",
-  "comingSoonStudy": "Học",
-  "comingSoonStudyBody": "Học các thẻ đến hạn của bộ thẻ.",
   "comingSoonStudyOptionsBody": "Số thẻ mỗi phiên, thứ tự thẻ mới.",
   "comingSoonProgressSort": "Sắp xếp theo độ thuộc",
   "comingSoonProgressSortBody": "Bộ thẻ thuộc ít nhất lên trước.",
@@ -551,5 +549,7 @@
   "studySummaryFactOfTurns": "trên tổng {total} lượt",
   "studySummaryEndNoteSchedulerChanged": "Không mất gì cả — các câu trả lời vẫn nằm trong lịch sử.",
   "studySummaryStudyThisDeck": "Học bộ thẻ này",
-  "studySummaryDoneCaption": "Xong sẽ đưa bạn về bộ thẻ."
+  "studySummaryDoneCaption": "Xong sẽ đưa bạn về bộ thẻ.",
+  "deckStudy": "Học",
+  "cardStudyThisDeck": "Học bộ thẻ này"
 }

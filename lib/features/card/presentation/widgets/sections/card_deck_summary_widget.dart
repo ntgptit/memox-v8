@@ -6,6 +6,7 @@ import 'package:memox/features/card/domain/models/card_display_status_model.dart
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
@@ -13,19 +14,23 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 /// A card deck's progress (screen 07, spec A13): the mastery donut, the
 /// scheduler, how many cards are mastered, today's work (owner decision
-/// E-O1), then the four display states as a bar and a legend. Study waits
-/// under Coming soon (spec A4, amended).
+/// E-O1), then the four display states as a bar and a legend, and Study
+/// this deck (spec D10).
 class CardDeckSummaryWidget extends StatelessWidget {
   const CardDeckSummaryWidget({
     super.key,
     required this.view,
     required this.algorithm,
+    required this.onStudy,
   });
 
   final CardListView view;
 
   /// The deck's scheduler, named ("SM-2", "Eight boxes").
   final String algorithm;
+
+  /// Opens the deck's Study entry (spec D10).
+  final VoidCallback onStudy;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +107,12 @@ class CardDeckSummaryWidget extends StatelessWidget {
                     ],
                   ),
               ],
+            ),
+            MxButton(
+              label: l10n.cardStudyThisDeck,
+              tone: MxButtonTone.outline,
+              isBlock: true,
+              onPressed: onStudy,
             ),
           ],
         ),

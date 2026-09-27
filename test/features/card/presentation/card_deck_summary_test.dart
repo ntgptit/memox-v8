@@ -27,7 +27,9 @@ const _view = CardListView(
 Widget _host({CardListView view = _view}) => Scaffold(
   body: ListView(
     padding: const EdgeInsets.all(16),
-    children: [CardDeckSummaryWidget(view: view, algorithm: 'SM-2')],
+    children: [
+      CardDeckSummaryWidget(view: view, algorithm: 'SM-2', onStudy: () {}),
+    ],
   ),
 );
 

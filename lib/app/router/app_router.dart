@@ -17,6 +17,8 @@ import 'package:memox/features/card/presentation/widgets/support/card_history_la
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_search_screen.dart';
+import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
+import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -58,6 +60,17 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
                       builder: (context, state) => DeckAlgorithmScreen(
                         deckId: state.pathParameters[AppRoutes.deckIdParam]!,
                         onOpenAncestor: (id) => _openAncestor(context, id),
+                      ),
+                    ),
+                    GoRoute(
+                      path: AppRoutes.studyChild,
+                      builder: (context, state) => StudyEntryScreen(
+                        deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                        deckContext: _deckContext,
+                        onBackToLibrary: () => _openAncestor(context, null),
+                        onSessionReady: (sessionId) => unawaited(
+                          context.push(AppRoutes.studySession(sessionId)),
+                        ),
                       ),
                     ),
                   ],
@@ -107,6 +120,13 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
         ),
       ],
     ),
+    // A session covers the tab bar (study spec D2).
+    GoRoute(
+      path: AppRoutes.session,
+      builder: (context, state) => StudySessionScreen(
+        sessionId: state.pathParameters[AppRoutes.sessionIdParam]!,
+      ),
+    ),
     if (hasGallery)
       GoRoute(
         path: AppRoutes.gallery,
@@ -119,6 +139,8 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) => GoRouter(
 /// so Back climbs one level (library spec §4).
 DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
   void addCard(String id) => unawaited(context.push(AppRoutes.newCard(id)));
+  void openStudy(String id) =>
+      unawaited(context.push(AppRoutes.studyEntry(id)));
   return DeckLevelScreen(
     deckId: deckId,
     onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
@@ -126,6 +148,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onSearch: () => context.push(AppRoutes.deckSearch),
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
+    onOpenStudy: openStudy,
     onAddCard: addCard,
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
@@ -136,6 +159,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       algorithm: context.l10n.cardScheduler(view.schedulerType),
       onAddCard: () => addCard(view.deck.id),
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
+      onStudy: () => openStudy(view.deck.id),
     ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );

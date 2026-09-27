@@ -300,7 +300,6 @@ void main() {
       _en.libraryStarterDecks,
       _en.libraryTags,
       _en.libraryTrash,
-      _en.comingSoonStudy,
       _en.deckStudyOptions,
       _en.comingSoonProgressSort,
       _en.comingSoonTransfer,

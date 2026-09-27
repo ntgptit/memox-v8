@@ -46,4 +46,19 @@ abstract final class AppRoutes {
 
   /// The card editor for [cardId].
   static String editCard(String cardId) => '${card(cardId)}/$cardEditChild';
+
+  /// Study entry, relative to [deckChild] (study spec D1).
+  static const String studyChild = 'study';
+
+  /// The path parameter that names a study session.
+  static const String sessionIdParam = 'sessionId';
+
+  /// A study session, on the root navigator with no tab bar (study spec D2).
+  static const String session = '/session/:$sessionIdParam';
+
+  /// The Study entry of [deckId].
+  static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
+
+  /// The session [sessionId], or its summary once it has ended.
+  static String studySession(String sessionId) => '/session/$sessionId';
 }

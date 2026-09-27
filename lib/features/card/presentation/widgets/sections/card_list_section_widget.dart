@@ -46,7 +46,11 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.algorithm,
     required this.onAddCard,
     required this.onOpenCard,
+    required this.onStudy,
   });
+
+  /// Opens the deck's Study entry (spec D10).
+  final VoidCallback onStudy;
 
   final String deckId;
 
@@ -312,7 +316,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           ),
         ),
       if (!isSelecting) ...[
-        CardDeckSummaryWidget(view: view, algorithm: widget.algorithm),
+        CardDeckSummaryWidget(
+          view: view,
+          algorithm: widget.algorithm,
+          onStudy: widget.onStudy,
+        ),
         CardListToolbarWidget(
           request: request,
           counts: view.counts,

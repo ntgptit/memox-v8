@@ -23,6 +23,7 @@ Future<void> openDeckActions(
   required String? parentId,
   required ValueChanged<String> onOpenDeck,
   required ValueChanged<String> onOpenAlgorithm,
+  required ValueChanged<String> onOpenStudy,
   required bool isOpenDeck,
 }) async {
   // A row's deck has no listener yet: keep its view alive until it emits,
@@ -57,6 +58,8 @@ Future<void> openDeckActions(
   switch (action) {
     case DeckAction.open:
       onOpenDeck(deckId);
+    case DeckAction.study:
+      onOpenStudy(deckId);
     case DeckAction.rename:
       await showRenameDeckDialog(context, deck: view.deck);
     case DeckAction.move:

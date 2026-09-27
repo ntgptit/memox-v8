@@ -28,6 +28,7 @@ Widget _screen(String deckId) => deckScreen(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
+    onStudy: () {},
   ),
   cardAppBar: (view, back, actions) =>
       CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
@@ -80,6 +81,9 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(deckId));
     expect(find.byType(MxBreadcrumb), findsOneWidget);
 
+    // The summary's Study this deck pushes the first row below the fold.
+    await tester.ensureVisible(find.text('annyeong'));
+    await tester.pumpAndSettle();
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
