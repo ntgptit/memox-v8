@@ -183,6 +183,8 @@ created_at DATETIME, attempts INTEGER)`
 - Repositories of synced features write the outbox entry in the same
   transaction as the row. Trash purge adds `delete` entries for every purged
   row before deleting them.
+- Text pushed is already NFC: migration v3 → v4 and every write normalise it
+  (BE-C5), so the server compares strings as stored.
 
 ## 9. Rollout
 
