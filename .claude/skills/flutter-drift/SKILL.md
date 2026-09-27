@@ -1,6 +1,6 @@
 ---
 name: flutter-drift
-description: Use when a task touches the database in any way — adding or changing a table, column, constraint or index; writing or editing a `.drift` query; bumping `schemaVersion` or writing a migration; adding a DAO or local data source; debugging a Drift stream that will not re-emit, a slow query, a locked database or a failing migration test; and above all when reviewing a pull request that changes anything under `lib/core/database/` or any `data/` folder. Reach for it even when the request sounds like plain feature work ("save the deck", "load cards faster", "why is this list stale") — those are database changes wearing a feature's clothes. Covers checklist phase 11 in depth; `flutter-data-layer` owns the repository/DTO boundary above it.
+description: Use when a task touches the database in any way — adding or changing a table, column, constraint or index; writing or editing a `.drift` query; bumping `schemaVersion` or writing a migration; adding a DAO or local data source; debugging a Drift stream that will not re-emit, a slow query, a locked database or a failing migration test; and above all when reviewing a pull request that changes anything under `lib/core/database/` or any `data/` folder. Reach for it even when the request sounds like plain feature work ("save the deck", "load cards faster", "why is this list stale") — those are database changes wearing a feature's clothes. `flutter-data-layer` owns the repository/DTO boundary above it.
 ---
 
 # Drift: development and review
@@ -15,7 +15,7 @@ and they fail in different ways.
 
 Before either, know what this project has **already settled**. Most Drift advice
 on the internet — and most generic checklists, including good ones — assumes a
-greenfield repo. memox-v7 is not greenfield, and a well-meant "best practice"
+greenfield repo. MemoX V8 is not greenfield, and a well-meant "best practice"
 applied here is a refactor nobody asked for. Read
 `references/project-baseline.md` before proposing any structural change; it
 lists what is fixed, why, and which generic recommendations this project has
@@ -35,7 +35,7 @@ the repository**. Not a row class, not a `Companion`, not a `Selectable`, not a
 `Failure`.
 
 This is not tidiness. It is the single property that lets a Spring Boot backend
-arrive later without `domain/` or `presentation/` changing (AD-01). The day a
+arrive later without `domain/` or `presentation/` changing (ADR-011). The day a
 `Card` row class reaches a widget, the backend migration becomes a rewrite of the
 UI — and the breakage will not show up until that day, which is why it has to be
 enforced now, when it is free.
@@ -65,7 +65,7 @@ reverted by a hotfix. Before writing SQL, answer:
   are derived from `current_box` / `interval_days`; storing them as a column
   would mean a migration every time the ladder moves.
 - Does the fact belong to the **scheduler** rather than the database? Box-day
-  tables and SM-2 factors stay in Dart on purpose (BR-16) — in SQL, tuning the
+  tables and SM-2 factors stay in Dart on purpose — in SQL, tuning the
   algorithm becomes a migration.
 - Is it **UI state**? A window size, a selected filter, a sort order and an
   expansion toggle are presentation state, not rows.

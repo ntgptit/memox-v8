@@ -24,6 +24,7 @@ SKILLS = REPO_ROOT / ".claude" / "skills"
 REPO_OWNED_SKILLS = (
     "flutter-architecture",
     "flutter-design-system",
+    "flutter-drift",
     "flutter-feature-slice",
     "flutter-workflow",
 )

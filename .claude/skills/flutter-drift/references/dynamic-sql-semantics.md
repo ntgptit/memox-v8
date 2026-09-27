@@ -385,7 +385,7 @@ sort=createdAtDesc pagination=window pageSize=50 durationMs=18 rows=50
 ```
 
 Never log the keyword itself — it is card content, and content is private at
-every level (AD-08). The fingerprint is what makes it possible to see which
+every level (ADR-002). The fingerprint is what makes it possible to see which
 combination is slow, which shape stopped using an index after a migration, and
 which criteria return far more rows than a screen can use.
 

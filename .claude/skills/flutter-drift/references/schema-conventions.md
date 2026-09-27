@@ -64,7 +64,7 @@ four and they are not interchangeable: **not yet set**, **does not apply**,
 
 This project uses the distinction deliberately: `example`, `hint` and
 `pronunciation` are `NULL` when never filled, and the domain folds `''` to `NULL`
-so there is exactly one spelling of "empty" (BR-95). `due_at` is `NULL` for a card
+so there is exactly one spelling of "empty". `due_at` is `NULL` for a card
 that has never been scheduled, which is why "due" is `due_at IS NULL OR due_at <=
 :now` and not just the comparison.
 

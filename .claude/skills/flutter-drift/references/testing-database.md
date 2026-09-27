@@ -112,7 +112,7 @@ subject rather than on collateral damage from the fixture.
 
 The fixture also has to be deep enough to be honest: this one builds a
 three-level tree, because a one-level fixture would let the root-resolution
-invariants pass even with the `COALESCE(parent_deck_id, id)` bug that BR-57
+invariants pass even with the `COALESCE(parent_id, id)` bug that BR-DECK-003
 forbids.
 
 ## Repository and provider tests

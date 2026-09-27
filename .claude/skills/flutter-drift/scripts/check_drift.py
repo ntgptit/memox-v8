@@ -111,7 +111,7 @@ def strip_sql_comments(sql: str) -> str:
 
 
 def check_presentation_free_of_drift() -> None:
-    """Drift must not be visible above the repository (AD-01).
+    """Drift must not be visible above the repository (ADR-011).
 
     A row class in a widget is invisible until the backend lands, and then it is
     a UI rewrite — which is exactly why it has to be caught while it is free.
@@ -119,7 +119,7 @@ def check_presentation_free_of_drift() -> None:
     scope = dart_files("features/*/presentation/**/*.dart", "app/**/*.dart")
     for path in scope:
         # The composition root is the one place an implementation is named
-        # outside its own layer — that is its whole job (CLAUDE.md, AD-13). It
+        # outside its own layer — that is its whole job (ADR-011). It
         # binds a DAO to a contract, so it necessarily sees both.
         if "di" in path.parts:
             continue
@@ -149,7 +149,7 @@ def check_domain_free_of_drift() -> None:
 
 
 def check_single_opener() -> None:
-    """One file opens a database (AD-08).
+    """One file opens a database (ADR-002).
 
     Two instances on one file do not share Drift's update bus, so streams from
     one go stale when the other writes.
@@ -163,7 +163,7 @@ def check_single_opener() -> None:
             report(
                 "ERROR",
                 rel(path),
-                "opens a database; only core/database/connection.dart may (AD-08)",
+                "opens a database; only core/database/connection.dart may (ADR-002)",
             )
 
 

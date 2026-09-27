@@ -50,7 +50,7 @@ exists for exactly this.
 ## Logging
 
 Card content, notes, learning history, imports, media and backups are private
-(AD-08). A database log touches all of them at once, so the rules are stricter
+(ADR-002). A database log touches all of them at once, so the rules are stricter
 here than anywhere else in the app:
 
 - **Never log row content, at any level.** Not in debug, not "temporarily".

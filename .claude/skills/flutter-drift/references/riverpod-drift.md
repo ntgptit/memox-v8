@@ -108,9 +108,11 @@ Use one when several writes form a single invariant:
 
 ```dart
 Future<void> createCard(...) => _dao.runInTransaction(() async {
-  await _dao.insertCard(card);              // content
-  await _dao.insertReviewState(state);      // BR-09: exactly one, same transaction
-  await _deckDao.lockContentType(deckId);   // BR-62: first child fixes the type
+  await _dao.insertCard(card);
+  // Exactly one schedule row per card.
+  await _dao.insertSchedule(schedule);
+  // The first child fixes the deck's content type (ADR-006).
+  await _deckDao.setContentType(deckId, 'card', now);
 });
 ```
 

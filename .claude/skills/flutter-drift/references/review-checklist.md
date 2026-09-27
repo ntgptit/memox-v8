@@ -141,9 +141,10 @@ second about the evidence.
 - [ ] `bash .claude/skills/flutter-drift/scripts/check_drift.sh` clean.
 - [ ] `dart format`, `flutter analyze` (zero errors *and* warnings),
       `flutter test` all pass.
-- [ ] Generated code regenerated and committed — no diff after a fresh
-      `build_runner build`.
-- [ ] `docs/shared/data/schema.md` and `docs/wbs.md` updated in the same commit.
+- [ ] Generated code fresh and uncommitted: `check_generated.sh` passes after a
+      clean `build_runner build`.
+- [ ] `docs/shared/data/schema.md` and `docs/wbs_BE.md` updated in the same
+      commit.
 
 ## Writing up findings
 

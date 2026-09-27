@@ -90,9 +90,9 @@ Each builder is a small pure function returning `Expression<bool>?` — null whe
 the filter is absent. Pure means: no database access, no mutation, no knowledge
 of the UI. That is what makes them unit-testable one at a time, and it is what
 lets a list and its count share one definition of "due" instead of two copies
-that drift apart. `card_list_query_mapper.dart` names each rule after the
-business rule it implements (`dueNowPredicate` — BR-22, `isNewPredicate` —
-BR-90), which is why the pill count and the list it opens can never disagree.
+that drift apart. Name each builder after the business rule it implements
+(`dueNowPredicate`, `isNewPredicate`) and cite that rule's `BR-<AREA>-NNN`
+beside it, so the pill count and the list it opens can never disagree.
 
 ## Values are bound; structure comes from an enum
 
