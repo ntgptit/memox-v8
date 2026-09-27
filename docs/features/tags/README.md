@@ -1,12 +1,13 @@
 ---
 feature: tags
-code: [lib/features/tags/domain, lib/features/tags/data, lib/features/tags/di]
+code: [lib/features/tags/domain, lib/features/tags/data, lib/features/tags/di, lib/features/tags/presentation]
 depends_on: [card]
 ---
 ## Phạm vi
 
 **Phạm vi:** Tag Management, phần store (BE-B2,
-[spec](../../superpowers/specs/2026-09-26-tag-management-backend-design.md)).
+[spec](../../superpowers/specs/2026-09-26-tag-management-backend-design.md)) và màn 05 cùng
+bộ lọc tag của card list (FE-B2): [ui.md](ui.md).
 
 Mô hình dữ liệu tag (BR-TAG-001, BR-TAG-002) và Tag Management v1: catalog, lọc theo tag, đổi tên/gộp, xoá.
 
@@ -30,4 +31,3 @@ Nguồn: trigger của UC-TAG-001.
 | Thứ | Vì sao |
 |---|---|
 | Tag phân cấp, màu tag, taxonomy chia sẻ | Ngoài phạm vi Tag Management v1 — UC-TAG-001 chốt tag là nhãn phẳng, là định danh văn bản, không phải hệ thống deck thứ hai |
-| Màn catalog (màn 05), overlay lọc của card list, hành động `Tags` trên app bar của Library | FE-B2 ([`wbs_FE.md`](../../wbs_FE.md)) |

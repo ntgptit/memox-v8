@@ -19,10 +19,15 @@ class LibrarySearchScreen extends ConsumerStatefulWidget {
     super.key,
     required this.onOpenDeck,
     required this.onOpenCard,
+    this.initialQuery = '',
   });
 
   final ValueChanged<String> onOpenDeck;
   final ValueChanged<String> onOpenCard;
+
+  /// A term searched on arrival, such as a tag's name from screen 05 (FE-B2
+  /// spec D11). Blank opens the search idle.
+  final String initialQuery;
 
   @override
   ConsumerState<LibrarySearchScreen> createState() =>
@@ -30,15 +35,17 @@ class LibrarySearchScreen extends ConsumerStatefulWidget {
 }
 
 class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
-  final _query = TextEditingController();
+  late final _query = TextEditingController(text: widget.initialQuery);
   final _focus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // The person came here to type (step 1).
+    // The person came here to type (step 1), or with a term to search.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _focus.requestFocus();
+      if (!mounted) return;
+      _focus.requestFocus();
+      if (widget.initialQuery.isNotEmpty) _search(widget.initialQuery);
     });
   }
 

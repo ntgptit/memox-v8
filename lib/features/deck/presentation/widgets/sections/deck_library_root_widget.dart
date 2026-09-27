@@ -8,7 +8,6 @@ import 'package:memox/features/deck/presentation/providers/deck_level_provider.d
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
-import 'package:memox/features/deck/presentation/widgets/overlays/deck_coming_soon_sheet_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_done_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -29,6 +28,8 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     required this.onOpenStudy,
     required this.onOpenStudyOptions,
     required this.onOpenTrash,
+    required this.onOpenStarterDecks,
+    required this.onOpenTags,
   });
 
   final ValueChanged<String> onOpenDeck;
@@ -43,6 +44,13 @@ class DeckLibraryRootWidget extends ConsumerWidget {
 
   /// Opens the Trash (screen 06) from the app bar (FE-B1 D1).
   final VoidCallback onOpenTrash;
+
+  /// Opens Starter decks (screen 03) from the app bar and the empty
+  /// Library (FE-B4 spec D2, §5.4).
+  final VoidCallback onOpenStarterDecks;
+
+  /// Opens Tags (screen 05) from the app bar (FE-B2 spec D2).
+  final VoidCallback onOpenTags;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,17 +78,22 @@ class DeckLibraryRootWidget extends ConsumerWidget {
         title: l10n.navLibrary,
         actions: isReordering
             ? const [DeckReorderDoneWidget(parentId: null)]
-            // Features that wait are named in one place (spec A4, amended).
+            // Kit 01: Starter decks, Tags, Trash (spec D2).
             : [
+                MxIconButton(
+                  icon: AppIcons.starterDecks,
+                  semanticLabel: l10n.libraryStarterDecks,
+                  onPressed: onOpenStarterDecks,
+                ),
+                MxIconButton(
+                  icon: AppIcons.tag,
+                  semanticLabel: l10n.libraryTags,
+                  onPressed: onOpenTags,
+                ),
                 MxIconButton(
                   icon: AppIcons.delete,
                   semanticLabel: l10n.libraryTrash,
                   onPressed: onOpenTrash,
-                ),
-                MxIconButton(
-                  icon: AppIcons.upcoming,
-                  semanticLabel: l10n.libraryComingSoon,
-                  onPressed: () => unawaited(showDeckComingSoonSheet(context)),
                 ),
               ],
       ),
@@ -122,6 +135,8 @@ class DeckLibraryRootWidget extends ConsumerWidget {
                 body: l10n.libraryEmptyBody,
                 actionLabel: l10n.libraryCreateDeck,
                 onAction: createDeck,
+                secondaryActionLabel: l10n.libraryBrowseStarterDecks,
+                onSecondaryAction: onOpenStarterDecks,
                 footnote: l10n.libraryEmptyFootnote,
               ),
             ),

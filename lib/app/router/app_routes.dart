@@ -34,10 +34,27 @@ abstract final class AppRoutes {
 
   static const String deckSearch = '$decks/$searchChild';
 
+  /// The search's term on arrival, as a query parameter (FE-B2 spec D11).
+  static const String searchQueryParam = 'q';
+
+  /// The search, opened on [term].
+  static String searchFor(String term) => Uri(
+    path: deckSearch,
+    queryParameters: {searchQueryParam: term},
+  ).toString();
+
   /// The Trash (screen 06), relative to [decks]: a full-screen task on the
   /// root navigator (FE-B1 D2).
   static const String trashChild = 'trash';
   static const String trash = '$decks/$trashChild';
+
+  /// Starter decks (screen 03) and Tags (screen 05), relative to [decks]:
+  /// full-screen pages on the root navigator, as the kit draws them and as
+  /// the Trash is (FE-B2 + FE-B4 spec D5).
+  static const String starterDecksChild = 'starter';
+  static const String starterDecks = '$decks/$starterDecksChild';
+  static const String tagsChild = 'tags';
+  static const String tags = '$decks/$tagsChild';
 
   /// A root deck's review algorithm (screen 02), relative to [deckChild].
   static const String algorithmChild = 'algorithm';

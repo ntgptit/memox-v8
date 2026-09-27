@@ -177,6 +177,35 @@ void main() {
     expect(find.byType(MxBottomSheet), findsNothing);
   });
 
+  testWidgets('a held sheet ignores a drag, a scrim tap and Back', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => MxButton(
+          label: 'Open',
+          onPressed: () => showMxBottomSheet<void>(
+            context,
+            builder: (_) => MxBottomSheet(isHeld: true, child: _rows(2)),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(MxBottomSheet), const Offset(0, 500));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+    await tester.tapAt(const Offset(8, 8));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+  });
+
   testWidgets('the grabber dismisses the sheet for a screen reader', (
     tester,
   ) async {

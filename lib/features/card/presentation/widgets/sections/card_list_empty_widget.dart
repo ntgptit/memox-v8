@@ -6,14 +6,16 @@ import 'package:memox/features/card/presentation/widgets/support/card_list_label
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 
-/// Why no row shows: a search or a filter with no hit. A deck left with no
-/// card is unset again (ruling E-L1), so it never reaches this section.
+/// Why no row shows: a search, the tags or a filter with no hit. A deck left
+/// with no card is unset again (ruling E-L1), so it never reaches this
+/// section.
 class CardListEmptyWidget extends StatelessWidget {
   const CardListEmptyWidget({
     super.key,
     required this.request,
     required this.total,
     required this.onShowAll,
+    required this.onClearTags,
     required this.onAddCard,
   });
 
@@ -22,6 +24,9 @@ class CardListEmptyWidget extends StatelessWidget {
   /// Every card of the deck, for the search's way back.
   final int total;
   final VoidCallback onShowAll;
+
+  /// Drops the tag filter (UC-TAG-001 A7).
+  final VoidCallback onClearTags;
   final VoidCallback onAddCard;
 
   @override
@@ -39,6 +44,16 @@ class CardListEmptyWidget extends StatelessWidget {
             : l10n.cardSearchEmptyHint,
         tone: MxEmptyStateTone.neutral,
         isCompact: true,
+      );
+    }
+    if (!request.tags.isEmpty) {
+      return MxEmptyState(
+        icon: AppIcons.tag,
+        title: l10n.cardTagFilterEmptyTitle,
+        tone: MxEmptyStateTone.neutral,
+        isCompact: true,
+        actionLabel: l10n.cardClearTagFilter,
+        onAction: onClearTags,
       );
     }
     if (request.filter != CardListFilter.all) {
