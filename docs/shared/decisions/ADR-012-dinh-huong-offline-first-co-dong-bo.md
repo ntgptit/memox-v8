@@ -16,15 +16,17 @@ có auth" cho V8.0. Ngày 2026-09-27 chủ dự án làm rõ mục tiêu dài h�
 | # | Điểm | Quyết định |
 |---|---|---|
 | 1 | Mô hình dữ liệu | **Offline-first:** Drift trên thiết bị vẫn là nơi app đọc và ghi; mọi chức năng chạy khi mất mạng. Backend là nơi đồng bộ, không phải điều kiện để app chạy |
-| 2 | Mục tiêu phần online | Backup lên cloud, sync nhiều thiết bị, chia sẻ deck |
+| 2 | Mục tiêu phần online | Backup lên cloud, sync nhiều thiết bị, chia sẻ deck. Chia sẻ deck cần nhiều người dùng nên đi sau auth (điểm 5) |
 | 3 | Phạm vi V8.0 | Không đổi: V8.0 vẫn local-only theo ADR-001. Phần online là sub-project sau V8.0 |
-| 4 | Thứ tự | Quyết định (spec sync và auth) → chuẩn bị schema phía client → backend. Không viết code backend trước khi spec sync được duyệt |
+| 4 | Thứ tự | Spec sync → chuẩn bị schema phía client → backend không login → auth → chia sẻ deck. Không viết code backend trước khi spec sync được duyệt |
+| 5 | Auth | **Hoãn**, như app hiện tại (ADR-001). Backend giai đoạn đầu phục vụ một chủ dữ liệu ngầm định (single-tenant), không có bảng user và không có login. Chủ dữ liệu do một chỗ duy nhất phía server xác định, không bao giờ lấy `owner_id` từ client; khi có auth chỉ chỗ đó đổi sang đọc từ token. Không login nhưng không để API mở: chặn người lạ bằng API key tĩnh qua HTTPS (phía app lưu trong `flutter_secure_storage`, ADR-002) hoặc chỉ chạy trong mạng riêng. Mỗi thiết bị tự sinh `device_id` UUID cho sync; đó không phải auth |
 
-Chỉ bốn điểm trên đã chốt. Mọi điểm dưới đây là đề xuất, chờ spec sync quyết.
+Chỉ năm điểm trên đã chốt. Mọi điểm dưới đây là đề xuất, chờ spec sync quyết.
 
 ## Đề xuất cho spec sync (chưa chốt)
 
-- Backup đến từ sync: server giữ bản đầy đủ, nên khôi phục là đăng nhập và pull về.
+- Backup đến từ sync: server giữ bản đầy đủ, nên khôi phục là trỏ app mới tới server
+  và pull về.
 - `deck`, `card`, `tags`, `card_tags`: last-write-wins theo hàng, kèm tombstone cho
   việc xoá.
 - `review_log` chỉ thêm, không sửa; `card_schedule` tính lại từ log thay vì đồng bộ
@@ -37,8 +39,8 @@ Chỉ bốn điểm trên đã chốt. Mọi điểm dưới đây là đề xu�
 
 ## Hệ quả
 
-- Khi sub-project bắt đầu, một ADR mới thay các hàng "Data posture" và
-  "Authentication" của ADR-001.
+- Khi sub-project bắt đầu, một ADR mới thay hàng "Data posture" của ADR-001; hàng
+  "Authentication" chỉ được thay khi làm auth (điểm 5).
 - Các hàng về backup và `review_log` của
   [ADR-002](ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md) ("chỉ tạo khi người
   dùng chủ động yêu cầu", "không gửi ra ngoài ở MVP") phải được xem lại trong spec
