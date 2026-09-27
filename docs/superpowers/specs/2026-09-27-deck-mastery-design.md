@@ -1,6 +1,6 @@
 # Deck mastery: the BR/UC, the count and screen 01 — design
 
-Status: approved in chat 2026-09-27, spec awaiting review · Path: architectural · Owner rulings 2026-09-27 (§3)
+Status: approved 2026-09-27 · Amended after the critique (R4, D13) · Path: architectural · Owner rulings 2026-09-27 (§3)
 
 ## 1. Intent
 
@@ -71,6 +71,7 @@ Owner rulings, 2026-09-27:
 | R1 | What does a deck's mastery count? | Mastered cards ÷ **every** active card of the subtree, new cards included. This matches the kit's numbers and screen 07's donut. |
 | R2 | Where does a deck with no card go under Progress? | **Last.** It has nothing to master. Ties keep the manual order. |
 | R3 | How is the 5 px bar built? | **Extend `MxLinearProgress`** with a mastery variant: the `MasteryRamp` fill at 5 px. No new shared widget. |
+| R4 | The learning band's amber is 1.73:1 on the track in light (critique P1). | **Darken it in light.** The ramp's learning band resolves to the existing `statusLearningInk`, 4.94:1 in light; in dark it equals `statusLearning`. Every ramp consumer follows, the donut on screens 01 and 07 included. It is recorded in UI-base §9 as a deviation from the kit. |
 
 Design decisions:
 
@@ -87,6 +88,7 @@ Design decisions:
 | D9 | **Deck row:** the bar sits under the meta line, 12 apart (`AppSpacing.control`, the kit's rhythm), across the text column. An empty deck draws the track. The row's semantics add "{percent}% mastered" when the deck has cards, because the bar itself is silent. |
 | D10 | **Summary card** of an open deck of decks: `MxMasteryDonut` on the start side with `semanticLabel` "Mastered", as screen 07 does. Beside it: the overline "MASTERED · {algorithm}", then the existing "N sub-decks · N cards", the breakdown and the "Study this deck" action. The doc comment loses "No mastery until BE-A7". |
 | D11 | The sort sheet gains "Progress" with the sub-line "Least mastered first", last in the list as in the kit; en and vi. The sort chip's label names it like the other sorts. |
+| D13 | **Critique adoptions** (`.impeccable/critique/2026-09-27T12-00-00Z__deck-mastery-kit.md`). **`MasteryRamp.percent(fraction)`** returns 0 only at a fraction of 0 and 100 only at exactly 1; between those it rounds and clamps to 1…99. The row's semantics and `MxMasteryDonut` use it (P2a). **The mastery fill** is at least 5 dp wide when anything is mastered, and stops at least 5 dp short of full while something is not (P2b). **The track** stays `progress-track`, not the kit's `surface-container` (P3); detail file 01 records this. |
 | D12 | Reorder mode (`DeckReorderRowWidget`) is unchanged: the kit draws no bar there, and the mode hides every view-only sort. |
 
 ## 4. Structure
@@ -99,7 +101,8 @@ Design decisions:
 | Data | `lib/features/deck/data/mappers/deck_mapper.dart` | Map the new column |
 | Domain | `lib/features/deck/domain/models/deck_level_model.dart` | `masteredCount`, `masteryFraction`, level totals (D5) |
 | Domain | `lib/features/deck/domain/models/deck_level_query_model.dart` | `DeckLevelSort.progress` (D6) |
-| Shared | `lib/shared/widgets/mx_linear_progress.dart` | Mastery variant (D8) |
+| Shared | `lib/shared/widgets/mx_linear_progress.dart` | Mastery variant (D8, D13) |
+| Theme | `lib/core/theme/mastery_ramp.dart`, `lib/shared/widgets/mx_mastery_donut.dart` | Learning band → `statusLearningInk` (R4); `MasteryRamp.percent` (D13) |
 | Presentation | `deck_row_widget.dart`, `deck_summary_card_widget.dart`, the sort sheet and its label | D9–D11 |
 | l10n | `app_en.arb`, `app_vi.arb` | Progress sort title and sub-line, the row's "{percent}% mastered", the "Mastered · {algorithm}" overline |
 
