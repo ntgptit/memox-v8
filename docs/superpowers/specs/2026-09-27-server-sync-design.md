@@ -56,6 +56,7 @@ Presentation → UseCase → Repository (domain contract)
   `memox-api-services`). Until the auth spec, it returns one fixed dev user
   whose UUID is set by the property `memox.dev-user-id`. The auth spec swaps
   in a JWT-backed implementation.
+- An id that already belongs to another user is rejected with `SYNC_ENTITY_CONFLICT`, and that user's copy is never returned.
 - Every server table has `user_id uuid NOT NULL`, and every query filters on
   it. A `user_id` sent by the client is ignored.
 - Each installation generates a `device_id` (a UUID) once, stores it in
@@ -110,6 +111,7 @@ Presentation → UseCase → Repository (domain contract)
 - `serverVersion` is a per-user sequence (`user_sync_version`, a counter
   incremented in the same transaction as the write). Every write, tombstones
   included, gets the next value.
+- **One version per changed row.** A move or delete that touches a subtree allocates a block of versions, one per row, so a page boundary never splits the rows of one version and no change is skipped.
 - Changes are ordered by `serverVersion`. The client applies each page in one
   Drift transaction and then stores `nextSince` in `sync_state`.
 - Pulled changes do not create outbox entries.
@@ -124,6 +126,7 @@ created_at DATETIME, attempts INTEGER)`
 
 - The outbox keeps at most one entry per `(entity_type, entity_id)`: a new
   write replaces the old entry's `op`, and `delete` overrides `upsert`.
+- A replaced entry keeps its original `created_at`, and push order is `created_at`. A parent created before its child is therefore always pushed first, even if the parent was edited later; otherwise the child would be rejected with `DECK_PARENT_MISSING`.
 - At push time the coordinator reads the entity's **current** row, so many
   edits are sent once.
 - An entry is removed on `applied` or `rejected`. On `applied` the entity's
@@ -139,7 +142,7 @@ created_at DATETIME, attempts INTEGER)`
 | Data | Rule |
 |---|---|
 | `deck`, `card`, `tags`, `card_tags`, account settings | Whole-row upsert; the operation the server applies **later** wins. The client's `updated_at` is stored but never compared |
-| deck tree | Before applying a deck upsert, the server checks the tree invariants of `docs/shared/data/schema.md`: no cycle, `root_id` equals the root reached through `parent_id`, and `content_type` agrees with the root. A violation is `rejected` with `DECK_TREE_CYCLE` or `DECK_TREE_INVALID` |
+| deck tree | `root_id` and `depth` are **server-derived**: the server ignores the client's values, computes them from `parent_id`, and on a move rewrites the whole live subtree in the same transaction, so a client's per-row operations may arrive in any order. It rejects a cycle (`DECK_TREE_CYCLE`), a subtree that would pass 10 levels (`DECK_TREE_TOO_DEEP`), and a missing, deleted or foreign parent (`DECK_PARENT_MISSING`). The root shape (a root holds decks and owns the scheduler) is validated as `VALIDATION_FAILED` |
 | `review_log` | Append-only. Insert-if-absent by `id`; an existing id is `applied` without change |
 | `card_schedule` | Derived (section 6) |
 | deletes and trash purge | `op: delete` sets `deleted_at` (a tombstone) and bumps `server_version`; children follow their foreign-key semantics on the server. Devices delete the row on pull. Trash `delete_batch_id` states sync as ordinary deck/card upserts |
