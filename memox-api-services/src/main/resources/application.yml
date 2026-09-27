@@ -28,3 +28,7 @@ springdoc:
     enabled: ${API_DOCS_ENABLED:true}
   swagger-ui:
     enabled: ${API_DOCS_ENABLED:true}
+
+memox:
+  # The owner of every row until the auth spec (ADR-013).
+  dev-user-id: ${MEMOX_DEV_USER_ID:00000000-0000-0000-0000-000000000001}
