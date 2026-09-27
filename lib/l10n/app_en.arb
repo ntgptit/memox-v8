@@ -1804,7 +1804,25 @@
   "deckRowEmpty": "Empty · add cards or a sub-deck",
   "@deckRowEmpty": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckRowEmpty."
+  },  "deckRowMastered": "{percent}% mastered",
+  "@deckRowMastered": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01: what a deck row's mastery bar says to TalkBack (BR-DECK-026)."
   },
+  "deckSummaryMastered": "Mastered · {algorithm}",
+  "@deckSummaryMastered": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01: the open deck's summary overline beside the mastery donut."
+  },
+
   "deckDueBadge": "{count} due",
   "@deckDueBadge": {
     "placeholders": {

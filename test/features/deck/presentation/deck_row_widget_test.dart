@@ -6,6 +6,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -18,6 +19,7 @@ DeckTile _tile({
   int cards = 1248,
   int overdue = 41,
   int today = 45,
+  int mastered = 0,
 }) => DeckTile(
   id: 'k',
   name: name,
@@ -29,7 +31,7 @@ DeckTile _tile({
   newCount: 0,
   overdueCount: overdue,
   dueTodayCount: today,
-  masteredCount: 0,
+  masteredCount: mastered,
   oldestDueAt: overdue > 0 ? DateTime(2026, 9, 20) : null,
   startOfToday: _today,
 );
@@ -87,6 +89,31 @@ void main() {
 
     expect(find.byType(MxBadge), findsNothing);
     expect(find.text(_en.deckRowEmpty), findsOneWidget);
+  });
+
+  libraryTest('the mastery bar fills to the mastered share and the row says '
+      'the percent (BR-DECK-026)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env, _tile(mastered: 204));
+
+    final bar = tester.widget<MxLinearProgress>(find.byType(MxLinearProgress));
+    expect((bar.isMastery, bar.value), (true, 204 / 1248));
+    expect(
+      find.bySemanticsLabel(RegExp(_en.deckRowMastered(16))),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
+  libraryTest('a deck with no card draws the bare track and says no percent '
+      '(BR-DECK-026)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env, _tile(subDecks: 0, cards: 0, overdue: 0, today: 0));
+
+    final bar = tester.widget<MxLinearProgress>(find.byType(MxLinearProgress));
+    expect(bar.value, 0);
+    expect(find.bySemanticsLabel(RegExp('mastered')), findsNothing);
+    handle.dispose();
   });
 
   libraryTest('⋮ is its own button, named for the deck', (tester, env) async {
