@@ -83,4 +83,14 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** Current streak, Today (kèm phân rã Learning/Reviewing) và Last 7 days hiện ra từ đúng một snapshot của đồng hồ và offset (BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016).
+- [ ] **Given** màn Progress đang mở, **when** người dùng chỉ đọc rồi rời tab hoặc bấm Retry, **then** không có hàng nào trong `card_schedule`, `review_log`, `app_settings` hay `study_session` bị ghi, và không session nào được mở, tiếp tục hay đóng (BR-PROGRESS-007, BR-PROGRESS-009).
+- [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** mở Progress, **then** Today hiện 0 và streak vẫn giữ nguyên số ngày tính tới hôm qua, với nhãn nói rõ đây là chuỗi đang giữ (BR-PROGRESS-016, A1).
+- [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** mở Progress, **then** Current streak và Today hiện dưới dạng mặt rỗng (không phải số 0 trần) kèm nút "Start studying" mở sang tab Study (BR-PROGRESS-010, A2).
+- [ ] **Given** màn Progress đang mở, **when** một answer mới được ghi ở nơi khác, **then** các con số tự cập nhật mà không hạ màn về skeleton (BR-PROGRESS-018, A3).
+- [ ] **Given** màn Progress đang mở lúc gần nửa đêm, **when** local midnight trôi qua, **then** cửa sổ bảy ngày trượt một ngày, Today về 0, streak chuyển sang nhánh "hôm qua active" khi phù hợp, và không có write nào trong database (BR-PROGRESS-013, BR-PROGRESS-018, A4).
+- [ ] **Given** đã học rồi reset learning progress ở màn khác, **when** quay lại Progress, **then** mọi con số của Progress giữ nguyên như trước reset (BR-PROGRESS-017, A5).
+- [ ] **Given** một card đã được trả lời rồi bị xoá cứng (trực tiếp hoặc theo cascade từ deck), **when** quay lại Progress, **then** hoạt động của card đó biến mất khỏi mọi ngày, kể cả ngày quá khứ (BR-PROGRESS-017, A6).
+- [ ] **Given** một phiên chỉ lướt `browse`, một card hoặc deck trong Trash, hoặc một answer có thời điểm sau ranh giới hôm nay, **when** đọc Progress, **then** các trường hợp đó không tạo card-day, không làm ngày thành active và không giữ streak (BR-PROGRESS-012, A7).
+- [ ] **Given** lần đọc lịch sử thất bại, **when** màn Progress nhận lỗi, **then** hệ thống hiện mặt lỗi chung kèm nút Retry, và Retry đọc lại (E1).
+- [ ] **Given** Retry vẫn lỗi, **when** người dùng ở lại màn lỗi, **then** hệ thống không tự thử lại theo vòng lặp và không ghi gì (BR-PROGRESS-009, E2).

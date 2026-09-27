@@ -556,4 +556,4 @@ edited by hand.
 - Persisting theme mode or locale.
 - Fixing the handoff values listed in §9.
 - A Linux CI test workflow.
-- Widgetbook or any other gallery dependency.
+- A component-catalog app or any other gallery dependency.

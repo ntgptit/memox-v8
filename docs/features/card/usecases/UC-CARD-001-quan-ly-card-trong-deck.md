@@ -88,4 +88,19 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm card, **then** card và study state mới của nó (theo scheduler và generation của root) được ghi trong một transaction, và deck thành `content_type = card` (BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004).
+- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung, cờ và tag đổi nhưng study state và `review_log` không đổi (BR-CARD-005, A1).
+- [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card vào Trash, nội dung, study state và lịch sử giữ nguyên tới khi purge, và có Undo ngay tại chỗ (BR-TRASH-001, BR-TRASH-004, BR-TRASH-008, A2).
+- [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả vào Trash cùng lúc và không có Undo (BR-TRASH-001, A2).
+- [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thành công, **then** deck về `content_type = unset` trong cùng transaction (BR-DECK-015, BR-TRASH-005, A2).
+- [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when** danh sách hiện, **then** hệ thống hiện empty state của bộ lọc (khác empty state của deck) kèm lối hiện tất cả (A3).
+- [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, các ô được xoá trống và focus về ô mặt trước để thêm card kế tiếp (A4).
+- [ ] **Given** người dùng di chuyển card sang deck khác cùng root, **when** xác nhận, **then** id, nội dung, study state, lịch sử, cờ và tag giữ nguyên, chỉ `deck_id` và `updated_at` đổi; deck nguồn rỗng thì về `unset`, deck đích `unset` thì thành `card` (BR-CARD-010, BR-DECK-015, A5).
+- [ ] **Given** bộ lọc hoặc search đang áp và mới tải một phần kết quả, **when** người dùng bấm Select all, **then** mọi id khớp filter và search hiện tại được chọn, không chỉ các hàng đã tải (BR-CARD-012, A6).
+- [ ] **Given** một hoặc nhiều card đã chọn, **when** áp Flag hoặc Remove flag, **then** `is_flagged` đúng giá trị trên mọi card, và card đã đúng giá trị không bị ghi lại (BR-CARD-009, BR-CARD-011, A7).
+- [ ] **Given** một tên tag gắn cho nhiều card, **when** attach, **then** hệ thống dùng lại tag có cùng tên đã fold hoặc tạo tag mới, và gắn cho mọi card đã chọn; gỡ tag chỉ xoá liên kết, không xoá tag (BR-TAG-001, A8).
+- [ ] **Given** card list ở chế độ thường, **when** chạm một hàng, **then** chi tiết chỉ đọc của đúng card đó mở ra; cùng cú chạm khi đang chọn nhiều chỉ đổi trạng thái chọn, không điều hướng (BR-CARD-020, A9).
+- [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** người dùng gõ, **then** lỗi hiện ngay dưới ô đó và Save bị khoá (BR-CARD-001, BR-CARD-002, E1, E2).
+- [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nội dung form được giữ, lỗi kèm Retry, và không có card nào được tạo mà thiếu study state (BR-CARD-004, E3).
+- [ ] **Given** deck đích không còn hợp lệ (mất, là root, giữ deck con, hoặc chính deck nguồn), **when** move chạy, **then** bị từ chối với lý do có kiểu và không ghi gì (BR-CARD-010, E5).
+- [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** thao tác hàng loạt chạy, **then** cả lô không ghi gì, danh sách và lựa chọn giữ nguyên, lỗi nói rõ lý do (BR-CARD-011, E6, E7).

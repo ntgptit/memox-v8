@@ -53,4 +53,11 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** hai deck cùng `parent_id` ở Manual order, **when** hệ thống gửi thao tác `before` hoặc `after` theo sibling liền kề, **then** chỉ `sibling_position` (và `updated_at` của các sibling đổi chỗ) thay đổi; `parent_id`, `root_id`, scheduler, card, study state và subtree giữ nguyên, trong một transaction (BR-SRS-007).
+- [ ] **Given** nhiều root deck, **when** sắp xếp lại, **then** chúng đổi chỗ trong đúng nhóm sibling gốc (BR-SRS-007).
+- [ ] **Given** level đang ở Manual order và chỉ có một deck, **when** mở action sheet của deck đó, **then** không có thao tác sắp xếp lại; có từ hai deck trở lên thì có.
+- [ ] **Given** level đang dùng một sort chỉ để xem (tên, ngày, due hoặc tiến độ), **when** mở action sheet của một deck, **then** thao tác sắp xếp lại bị ẩn (BR-DECK-027).
+- [ ] **Given** source và target không còn cùng `parent_id`, **when** sắp xếp lại, **then** transaction từ chối và không ghi gì.
+- [ ] **Given** deck hoặc anchor không còn, **when** sắp xếp lại, **then** thao tác bị từ chối, không ghi gì và thứ tự cũ giữ nguyên.
+- [ ] **Given** một update lỗi giữa lúc đánh số lại nhóm sibling, **when** transaction dừng, **then** toàn bộ rollback và thứ tự cũ giữ nguyên.
+- [ ] OPEN QUESTION: Trigger và UI nói action sheet có Move up và Move down, ẩn riêng ở deck đầu và deck cuối — action sheet có một mục Reorder mở chế độ kéo thả (`lib/features/deck/presentation/widgets/overlays/deck_action_sheet_widget.dart:163`), move up và move down chỉ là action của TalkBack (`test/features/deck/presentation/deck_reorder_test.dart`).

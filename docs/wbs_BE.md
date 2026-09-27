@@ -84,8 +84,8 @@ Quy ước:
 | BE-D6 | Guard và hook design token không còn gì của V7 (mở rộng theo chủ dự án): gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; `memox-v8` mang nhãn "MemoX V8" và 13 id `memox_v8.design_system.*`; sáu rule mang tên của V7 tìm tên của V8, hai id đổi theo; message, comment và lý do dẫn quyết định của V8; hook `.claude/hooks/check_design_tokens.py` nạp `memox-v8` bằng bộ nạp của guard và chạy chính rule của guard trên file vừa sửa, có test riêng và bước "hook tests" trong gate; tài liệu của guard ghi `ntgptit/memox-v8`. Giữ registry `memox` (V6) | xong | — | M | [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-guard-without-v7.md) gói 12b; `test_memox_v8_ruleset_contract.py`, `test_memox_v8_data_model_guard_rules.py` và `test_memox_v8_architecture_guard_rules.py` trong `code-verification-guard-v2/tests/`; `.claude/hooks/tests/test_check_design_tokens.py` | BE-D7 |
 | BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng: một cửa `nfc` (`unorm_dart`), `storedText` ở mọi đường ghi text, `foldText` có NFC nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001), tìm kiếm và Fill (so khớp phiên bản 2, BR-STUDY-027) coi hai dạng là một; migration v4 → v5 chuẩn hoá dữ liệu cũ và gộp tag trùng (BR-TAG-007) | xong | — | S–M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §4 và [plan G1](superpowers/plans/2026-09-27-local-backend-g1-unicode-nfc.md); test trong `test/core/text/`, `test/drift/migration_test.dart` | — |
 | BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite: `idChunks` (30 000 id một lô) trong transaction của thao tác, cho mọi tập id do người dùng chọn — đọc, đếm, gắn/gỡ tag, gắn cờ, di chuyển, export (sắp lại cả tập), purge Trash (mỗi batch một lần) | xong | — | S | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §5 và [plan G2](superpowers/plans/2026-09-27-local-backend-g2-chunked-batches.md); test `*_batch_limit_test.dart` với 33 000 id | — |
-| BE-D7 | Skill và tài liệu không còn V7 (mở rộng theo chủ dự án): 15 skill do repo sở hữu không còn dẫn V7 — quyết định `AD-nn`, luật `BR-nn`, mốc, checklist 22 phase, `docs/wbs.md`, `docs/architecture.md`, Widgetbook, tên bảng và tên file của V7 — và mọi đường dẫn chúng nêu đều có thật; gỡ `feature_blueprint.md`, `phase-index.md`, `integration-test-harness.md`, hai script gallery, `wbs_template.md` và receipt cài đặt của `project-documentation`; `project-baseline.md` và bảng dependency viết lại theo V8; error model theo ADR-011 D6; câu nào dẫn ADR-001 về local-only hay chưa có auth thì dẫn ADR-012 và ADR-013, và skill tả đúng ADR-014 cùng lát sync deck đã dựng (#114); 8 dòng AD-12/AD-15 trong `lib/` và `test/` trỏ ADR-011. Gồm BE-D3 | xong | BE-D6 | M | [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-skills-without-v7.md) gói 12c; `.claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py`, test này cũng ghim mọi thư mục skill là của repo hoặc vendored; `test_skill_dependency_table.py` ghim bảng dependency của skill với `pubspec.yaml` | FE-D4 |
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) không còn ghi "V8 chưa có test nào"; skill `flutter-workflow` đọc `docs/wbs_BE.md` và `docs/wbs_FE.md` | xong | — | S | Làm trong BE-D7 (gói 12c) | — |
+| BE-D7 | Skill và tài liệu không còn V7 (mở rộng theo chủ dự án): 15 skill do repo sở hữu không còn dẫn V7 — quyết định `AD-nn`, luật `BR-nn`, mốc, checklist 22 phase, `docs/wbs.md`, `docs/architecture.md`, Widgetbook, tên bảng và tên file của V7 — và mọi đường dẫn chúng nêu đều có thật; gỡ `feature_blueprint.md`, `phase-index.md`, `integration-test-harness.md`, hai script gallery, `wbs_template.md` và receipt cài đặt của `project-documentation`; `project-baseline.md` và bảng dependency viết lại theo V8; error model theo ADR-011 D6; câu nào dẫn ADR-001 về local-only hay chưa có auth thì dẫn ADR-012 và ADR-013, và skill tả đúng ADR-014 cùng lát sync deck đã dựng (#114); 8 dòng AD-12/AD-15 trong `lib/` và `test/` trỏ ADR-011. Gồm BE-D3 | xong | BE-D6 | M | Gói G3 (#117, [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §6, [plan](superpowers/plans/2026-09-27-local-backend-g3-no-v7.md)): `tools/docs/check.py` báo lỗi khi skill hoặc `docs/` còn nhắc Widgetbook, `docs/wbs.md`, `docs/checklist.md`, `memox-v7` hay "checklist phase" (`tools/docs/test_check.py`). Gói 12c ([spec](superpowers/specs/2026-09-27-skills-without-v7-design.md), [plan](superpowers/plans/2026-09-27-skills-without-v7.md)) mở rộng phần còn lại; `.claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py`, test này cũng ghim mọi thư mục skill là của repo hoặc vendored; `test_skill_dependency_table.py` ghim bảng dependency của skill với `pubspec.yaml` | FE-D4 |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) không còn ghi "V8 chưa có test nào"; skill `flutter-workflow` đọc `docs/wbs_BE.md` và `docs/wbs_FE.md` | xong | — | S | Làm trong BE-D7 (gói G3, #117, và gói 12c); `host-coverage-map.md` chỉ lệnh đếm kịch bản đã có test | — |
 
 ### V8.0 — còn lại
 
@@ -129,7 +129,7 @@ như hiện nay; chỉ repository và tầng `data/` biết tới sync.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
+| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | xong | — | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §7 và [plan](superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md) gói G4: 18 UC có tiêu chí Given/When/Then, mỗi tiêu chí đối chiếu với code và test; `tools/docs/check.py` báo lỗi khi một UC `ready` không có dòng Given/When/Then (`tools/docs/test_check.py`); 8 `OPEN QUESTION` ghi lệch giữa UC và code | Chủ dự án quyết 8 `OPEN QUESTION` (xem Ngữ cảnh cập nhật) |
 
 ## Đã xong và đã kiểm chứng
 
@@ -210,7 +210,6 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
 | BE-E7 | Lệnh tạo bị từ chối mà server chưa từng thấy entity (`current` là `null`): xoá hàng local thì cascade mất các card chưa đẩy lên; #114 giữ hàng và ghi log, nên local lệch server mãi | Dữ liệu tạo offline dưới một cha đã bị máy khác xoá | Chốt trong spec của API-A2 và BE-E7 |
 | BE-E6 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
-| BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
 
@@ -275,6 +274,8 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
 - **Cập nhật ngày 2026-09-27:** BE-C5 xong trong gói G1 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): text lưu và fold ở dạng NFC qua `unorm_dart`, migration v4 → v5 (chỉ đổi dữ liệu) gộp tag trùng, Fill so khớp phiên bản 2. Điểm chặn BE-C5 đóng theo quyết định của chủ dự án.
 - **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
+- **Cập nhật ngày 2026-09-27:** BE-D7 và BE-D3 xong trong gói G3 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): skill `flutter-*` và tài liệu sống không còn trỏ tới Widgetbook, `docs/wbs.md`, checklist 22 phase, baseline và blueprint của V7; `tools/docs/check.py` giữ điều đó. Số AD-xx và M-xx của V7 trong skill còn lại, ngoài phạm vi gói.
+- **Cập nhật ngày 2026-09-27:** BE-D4 xong trong gói G4 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): 18 UC `ready` có acceptance criteria; chỉ dòng giữ chỗ của mỗi UC được thay. Tám chỗ UC và code lệch nhau được ghi thành `OPEN QUESTION`, không sửa bên nào: UC-DECK-001 A1 (Cancel không hỏi xác nhận) và E3 (`eight_box` được chọn sẵn); UC-DECK-006 (một mục Reorder kéo thả, không phải Move up/Move down); UC-STUDY-001 A4 (tổng kết không nêu số thẻ còn lại) và A5 (hiện tổng kết trước khi về danh sách); UC-STUDY-002 A4 (không có lối Starter Library); UC-STUDY-003 E1 (`modeNotOffered` hiện như lần mở thất bại chung); UC-PROGRESS-002 E1 (lỗi không theo kiểu failure). Điểm chặn BE-D4 đóng.
 - **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
   (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
   trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));
@@ -283,11 +284,13 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
   app của ADR-013 và ADR-014 (outbox đẩy lệnh, server là chuẩn của SRS); BE-E1 là sync
   deck theo hàng đã merge ở #114, BE-E7 chuyển nó sang lệnh; bỏ sync và auth khỏi danh
   sách ngoài V8.
-- **Cập nhật ngày 2026-09-27:** BE-D7 xong trong gói 12c, gồm BE-D3, mở rộng theo chủ dự
-  án: skill và tài liệu không còn V7. Việc đối chiếu `flutter-theme-design` với code V8
-  tách thành FE-D4 trong [`wbs_FE.md`](wbs_FE.md). `master` nhận ADR-014 và lát sync
-  deck (#114) trong lúc gói chạy; theo quyết định của chủ dự án, skill được sửa theo
-  ngay trong gói.
+- **Cập nhật ngày 2026-09-27:** BE-D7 mở rộng trong gói 12c, gồm BE-D3, theo chủ dự án:
+  skill và tài liệu không còn V7, kể cả số AD-xx và M-xx mà G3 để lại. Việc đối chiếu
+  `flutter-theme-design` với code V8 tách thành FE-D4 trong [`wbs_FE.md`](wbs_FE.md).
+  `master` nhận ADR-014 và lát sync deck (#114) trong lúc gói chạy; theo quyết định
+  của chủ dự án, skill được sửa theo ngay trong gói. `master` cũng nhận G3 (#117);
+  chủ dự án chọn giữ phần rộng hơn của 12c, cùng check V7 của G3 trong
+  `tools/docs/check.py`.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

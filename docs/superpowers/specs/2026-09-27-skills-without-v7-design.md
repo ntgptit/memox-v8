@@ -2,7 +2,7 @@
 
 Status: approved 2026-09-27 (scope, the two V7 documents, the checklist, the pin and
 design sections 1–2 in conversation, then this spec); amended during planning (§12.1–
-§12.3) and during execution (§12.4) · Path: architectural
+§12.3) and during execution (§12.4, §12.5) · Path: architectural
 
 ## 1. Intent
 
@@ -409,3 +409,21 @@ skill names is defined in `lib/core/error/failure.dart`; the CI tooling tests ar
 A ruling from execution: `flutter-navigation`'s description deferred route guards "until
 auth lands, ADR-001", which cites the Authentication row ADR-013 replaced; it cites
 ADR-013 instead, as the skill's body does.
+
+### 12.5 `master` did BE-D7 too: package G3 (#117)
+
+Before this package's PR opened, `master` took #117 (package G3 of the local backend
+completion spec, which also claimed BE-D7 and BE-D3) and #119 (G4, BE-D4). G3 removed
+the V7 pointers the narrower BE-D7 row named, deleted `project-baseline.md` and
+`feature_checklist.md`, and added a check to `tools/docs/check.py` that fails when a
+skill or a `docs/` file names Widgetbook, `docs/wbs.md`, `docs/checklist.md`,
+`memox-v7` or "checklist phase". It left V7's AD-xx and M-xx numbers in the skills.
+
+The owner decided on 2026-09-27, through the popup, to merge and keep this package's
+wider result: its skill texts, `project-baseline.md` rewritten for V8,
+`feature_checklist.md` updated, and `wbs_template.md` removed. G3's check stays; this
+spec, its plan and `test_skills_without_v7.py` join its list of dated records, since
+they name V7 on purpose. Two texts take G3's side: `flutter-workflow`'s `SKILL.md`,
+which G3 had reduced to a router as CLAUDE.md's "Layers and authority" requires, with
+this package's pointers to the screen handoff index added; and the introduction of
+`host-coverage-map.md`, which also shows how to count the scenarios that have a test.

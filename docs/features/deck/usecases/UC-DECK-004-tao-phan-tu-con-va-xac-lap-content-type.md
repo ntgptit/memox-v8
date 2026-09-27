@@ -78,4 +78,15 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một root deck, **when** bấm Create, **then** chỉ có Create deck (BR-DECK-004, BR-DECK-005).
+- [ ] **Given** một deck con `content_type = 'unset'`, **when** bấm Create, **then** có cả Create card và Create deck (BR-DECK-007).
+- [ ] **Given** một deck con `unset`, **when** tạo deck con đầu tiên, **then** nó thành `content_type = 'deck'` trong cùng transaction với việc tạo, và deck mới có `root_id` bằng root của cha (BR-DECK-002, BR-DECK-006, BR-DECK-008, BR-DECK-019).
+- [ ] **Given** một deck con `unset`, **when** tạo card đầu tiên, **then** nó thành `content_type = 'card'`, và study state của card được tạo cùng transaction theo scheduler và `generation` của root (BR-CARD-004, BR-DECK-008).
+- [ ] **Given** một deck `content_type = 'card'`, **when** mở lựa chọn tạo hoặc gọi tạo deck con, **then** không có lựa chọn tạo deck con và lời gọi bị từ chối (BR-DECK-009, A1).
+- [ ] **Given** một deck `content_type = 'deck'`, **when** mở lựa chọn tạo hoặc gọi tạo card, **then** không có lựa chọn tạo card và lời gọi bị từ chối (BR-DECK-010, A2).
+- [ ] **Given** một deck con chỉ còn một phần tử con active, **when** phần tử đó bị xoá hoặc di chuyển đi, **then** deck con về `unset` trong cùng transaction, không cần thao tác tay (BR-DECK-015, A3).
+- [ ] **Given** dialog tạo deck con hoặc card đang mở, **when** người dùng huỷ, **then** không tạo gì và `content_type` của deck cha không đổi (BR-DECK-008, A4).
+- [ ] **Given** tên deck con rỗng hoặc card thiếu một mặt, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập, không tạo gì và `content_type` không đổi (E1).
+- [ ] **Given** ghi thất bại giữa chừng (ví dụ không ghi được study state), **when** tạo card, **then** không có card nào được ghi và `content_type` của deck cha không đổi (BR-DECK-008, E2).
+- [ ] **Given** một root deck, **when** tạo card trực tiếp trong nó, **then** thao tác bị từ chối và không tạo gì (BR-DECK-004, E3).
+- [ ] **Given** deck cha ở cấp 10, **when** tạo deck con, **then** bị chặn trước khi ghi và `content_type` của deck cha không đổi; tạo card ở cấp 10 vẫn được (BR-DECK-001, E4).

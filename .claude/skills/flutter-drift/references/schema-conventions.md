@@ -118,9 +118,10 @@ a UTC timestamp makes it shift a day for some users. Store it as `TEXT` in
 holds one and a comparison assumes the other, everything is either in 1970 or in
 55000 AD, and the query still runs.
 
-The storage-mode contract for this repo is described in `project-baseline.md` —
-read it before adding a `DATETIME` column, and write a round-trip test for any
-new timestamp column (write, read back, assert equality including UTC-ness).
+This repo keeps Drift's default storage mode (no `build.yaml`: `DATETIME` is
+epoch seconds), and every timestamp column holds UTC (`docs/shared/data/schema.md`).
+Write a round-trip test for any new timestamp column (write, read back, assert
+equality including UTC-ness).
 
 ## Enums and status codes
 

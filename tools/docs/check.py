@@ -380,6 +380,117 @@ def destination_exists(dest: str) -> bool:
     return (g.DOCS / pattern).exists()
 
 
+# ------------------------------------------------------- acceptance criteria
+
+ACCEPTANCE_SECTION = "Acceptance criteria"
+ACCEPTANCE_LINE = re.compile(r"\*\*given\*\*.*\*\*when\*\*.*\*\*then\*\*", re.IGNORECASE)
+
+
+def section_text(body: str, name: str) -> str:
+    """The unfenced lines under `## name`, up to the next `## ` heading."""
+    lines: list[str] = []
+    inside = False
+    for _, line in g.iter_unfenced(body):
+        if line.startswith("## "):
+            inside = line[3:].strip() == name
+            continue
+        if inside:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
+    """A `ready` UC is a contract; its criteria are the checkable half (BE-D4)."""
+    if doc.kind != "UC" or doc.status != "ready":
+        return
+    criteria = [
+        line
+        for line in section_text(doc.body, ACCEPTANCE_SECTION).splitlines()
+        if g.OPEN_QUESTION not in line
+    ]
+    if not any(ACCEPTANCE_LINE.search(line) for line in criteria):
+        report.error(doc.path, "ready UC has no Given/When/Then line under `## Acceptance criteria`")
+
+
+# ------------------------------------------------------------ V7 residue
+
+# V7 is a reference, not a template (CLAUDE.md). These name V7 things V8 does
+# not have: its component catalog, its progress ledger (`wbs.md` by any path;
+# V8's are `wbs_BE.md` and `wbs_FE.md`), its phase checklist, and its
+# repository (local backend spec 2026-09-27 §6, BE-D7).
+V7_MARKER = re.compile(
+    r"widgetbook|\bwbs\.md|docs/checklist\.md|memox-v7|checklist phases?\b",
+    re.IGNORECASE,
+)
+V7_SCAN = (".claude/skills", "docs")
+# Records of what was decided or done then; they name V7 on purpose. One file
+# per entry, so a new spec, plan or ADR is scanned like any live document.
+_DATED = "a dated record of the V7 removal it planned or ran"
+V7_HISTORY = {
+    "docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md":
+        "the ADR's context names the V7 pointers it left for later",
+    "docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md":
+        "the foundation decision names where V7 lives",
+    "docs/superpowers/specs/2026-09-23-build-apk-release-design.md":
+        "records the V7 workflow it took as reference",
+    "docs/superpowers/specs/2026-09-23-v8-folder-architecture-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-25-ci-gate-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-26-verification-tooling-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-guard-without-v7-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-local-backend-completion-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-skills-without-v7-design.md": _DATED,
+    "docs/superpowers/plans/2026-09-23-docs-v8-reset.md": _DATED,
+    "docs/superpowers/plans/2026-09-23-v8-folder-architecture.md": _DATED,
+    "docs/superpowers/plans/2026-09-24-settings-reset-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-24-study-session-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-25-ci-gate.md": _DATED,
+    "docs/superpowers/plans/2026-09-26-reminders-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-26-starter-decks-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-27-guard-without-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-local-backend-g3-no-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-skills-without-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-verification-tooling.md": _DATED,
+    "docs/wbs_BE.md": "its rows and log name what BE-D5, BE-D6 and BE-D7 removed",
+    ".claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py":
+        "asserts that Widgetbook stays out of the gate",
+    ".claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py":
+        "the V7 markers it keeps out of every repo-owned skill are its test data",
+    "tools/docs/test_check.py": "the markers are this check's test data",
+}
+
+
+def is_history(relative: str) -> bool:
+    return relative in V7_HISTORY
+
+
+def v7_residue(root: Path) -> list[tuple[Path, int, str]]:
+    """Every V7 marker in a text file under V7_SCAN, outside V7_HISTORY."""
+    hits: list[tuple[Path, int, str]] = []
+    for scan in V7_SCAN:
+        for path in sorted((root / scan).rglob("*")):
+            relative = path.relative_to(root).as_posix()
+            if not path.is_file() or "__pycache__" in path.parts or is_history(relative):
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue  # binary: an image, a font, a golden
+            for number, line in enumerate(text.splitlines(), start=1):
+                match = V7_MARKER.search(line)
+                if match:
+                    hits.append((path, number, match.group(0)))
+    return hits
+
+
+def check_v7_residue(report: Report) -> None:
+    for path, number, marker in v7_residue(g.ROOT):
+        report.error(f"{show(path)}:{number}", f"`{marker}` names V7; V8 does not have it (BE-D7)")
+
+
 # ------------------------------------------------------------------- main
 
 
@@ -399,12 +510,14 @@ def run(plan: Path | None) -> Report:
             check_identity(doc, report)
         check_sections(doc, report)
         check_paths(doc, report)
+        check_acceptance_criteria(doc, report)
     check_dependency_cycles(docs, report)
     by_id = check_duplicates(docs, report)
     check_references(docs, by_id, report)
     check_text(docs, report)
     check_generated(report)
     check_design_handoff(report)
+    check_v7_residue(report)
     if plan is not None:
         check_plan(plan, report)
     check_warnings(docs, report)

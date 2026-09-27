@@ -124,9 +124,10 @@ reader needs.
 
 ## Pagination
 
-This project's default is the **growing `LIMIT` window** described in
-`project-baseline.md`. Use it unless a flow seeks deep without reading what comes
-before it.
+This project's default is the **growing `LIMIT` window**: the card list re-reads
+its whole window on every change (`CardListDao.window`,
+`lib/features/card/data/datasources/card_list_dao.dart`), with no `OFFSET` and no
+cursor. Use it unless a flow seeks deep without reading what comes before it.
 
 When keyset pagination is the right answer, the shape is:
 

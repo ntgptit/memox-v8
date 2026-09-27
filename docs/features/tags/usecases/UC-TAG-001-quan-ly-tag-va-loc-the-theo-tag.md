@@ -101,4 +101,19 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag của owner hiện tại hiện kèm số card active đang mang nó, sắp theo tên đã fold rồi `id` (BR-TAG-003).
+- [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ thống dùng đúng hàm fold của danh tính tag, nên `ĐỘNG TỪ` tìm thấy `động từ` (BR-TAG-003, BR-TAG-011).
+- [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã fold không trùng tag khác, **when** xác nhận, **then** `name` và `name_folded` được ghi lên chính hàng tag đó, `id` và liên kết thẻ giữ nguyên (BR-TAG-006, A2).
+- [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** card list hiện các card mang bất kỳ tag nào đã chọn, AND với filter và search hiện tại, mỗi card đúng một lần (BR-TAG-004).
+- [ ] **Given** một tập tag lọc mới, **when** Apply, **then** cửa sổ phân trang của card list về đầu và lựa chọn đang có bị xoá (BR-TAG-005, BR-CARD-012).
+- [ ] **Given** tên mới fold trùng một tag khác, **when** xác nhận đổi tên, **then** form đã báo trước việc gộp và tên đích; xác nhận thì mọi thẻ của hai tag về chung tag đích, liên kết trùng được bỏ, tag nguồn bị xoá, tất cả trong một transaction, và không thẻ nào vượt 10 tag (BR-TAG-002, BR-TAG-007, A1).
+- [ ] **Given** người dùng chọn Delete trên một tag, **when** xác nhận, **then** liên kết `card_tags` bị gỡ và hàng `tags` bị xoá trong một transaction, không card nào bị xoá (BR-TAG-008, A3).
+- [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **then** không vị từ tag nào được áp và danh sách trở lại như trước khi lọc (BR-TAG-004, A4).
+- [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, **then** tập tag đang áp giữ nguyên và bản nháp bị bỏ (A5).
+- [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then** hệ thống nói không có tag nào khớp từ đã gõ, khác với trạng thái chưa có tag nào (BR-TAG-003, A6).
+- [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** áp, **then** card list hiện trạng thái không có kết quả kèm lối Clear để bỏ vị từ tag (BR-TAG-004, A7).
+- [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiện trạng thái lỗi kèm Retry và không ghi gì (E1).
+- [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khiển, **when** xác nhận, **then** lỗi có kiểu hiện dưới ô nhập và chữ đã gõ được giữ nguyên (BR-TAG-001, BR-TAG-006, E2).
+- [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi chạy, **then** thao tác bị từ chối với lý do tag không còn, catalog tự cập nhật, và không ghi gì (BR-TAG-003, E3).
+- [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả hai tag và mọi liên kết trở lại đúng như trước, và UI báo lỗi chứ không báo thành công (BR-TAG-007, E4).
+- [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và mọi liên kết còn nguyên, không thẻ nào bị đụng tới (BR-TAG-008, BR-TAG-009, E5).

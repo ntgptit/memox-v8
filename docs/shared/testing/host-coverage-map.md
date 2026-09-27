@@ -1,7 +1,16 @@
 # Bản đồ coverage host cho từng kịch bản
 
-Bảng dưới đây không phải giấy chứng nhận coverage — nó
-là bản đồ: mỗi kịch bản thuộc `scenario-catalog.md` nhắm tới hồ sơ thực thi
+Bảng dưới đây không phải giấy chứng nhận coverage. Test mang id kịch bản trong
+tên hoặc comment, nên kịch bản nào đã có test thì tìm bằng id của nó
+(`grep -rln "IT-CARD-001" test/`), và đếm cả bảng bằng:
+
+```bash
+for id in $(grep -oE '^\| IT-[A-Z]+-[0-9]+' docs/shared/testing/host-coverage-map.md | cut -c3-); do
+  grep -rqF "$id" test/ && echo "$id"
+done | wc -l
+```
+
+Bảng là bản đồ: mỗi kịch bản thuộc `scenario-catalog.md` nhắm tới hồ sơ thực thi
 nào (`HOST-FLOW`, `HOST-WIDGET` hay `DEVICE-E2E` — định nghĩa ở
 [`agent-execution-guide.md`](agent-execution-guide.md) mục 3) và truy
 vết tới UC/BR nào. `—` nghĩa là kịch bản không truy vết tới một UC/BR cụ thể

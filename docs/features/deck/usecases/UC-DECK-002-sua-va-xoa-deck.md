@@ -92,4 +92,19 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một tên mới hợp lệ, **when** người dùng đổi tên deck, **then** tên đã trim được lưu và `updated_at` cập nhật (BR-DECK-020).
+- [ ] **Given** một root chưa có `first_answered_at`, **when** người dùng chọn chế độ khác và xác nhận, **then** trong một transaction scheduler đổi, study state của cả cây khởi tạo lại, `generation` giữ nguyên, và mọi phiên đang mở của cây đóng với `end_reason = 'scheduler_changed'` (BR-SRS-002, BR-SRS-004, BR-STUDY-016).
+- [ ] **Given** người dùng xoá một deck có N deck con active và M card active, **when** hộp thoại xác nhận mở, **then** nó nêu đúng N và M trước khi ghi gì (BR-DECK-023).
+- [ ] **Given** người dùng đã xác nhận xoá, **when** transaction xong, **then** deck cùng mọi descendant active (deck và card) vào Trash trong cùng một batch và một `deleted_at`, và Undo hiện ngay tại chỗ (BR-DECK-022, BR-TRASH-001, BR-TRASH-008).
+- [ ] **Given** vừa xoá một deck, **when** người dùng bấm Undo, **then** deck cùng mọi phần tử của batch đó trở lại đúng vị trí cũ (BR-TRASH-008).
+- [ ] **Given** một descendant đã ở Trash từ một batch cũ hơn, **when** xoá deck cha của nó, **then** descendant đó giữ nguyên batch cũ, không bị gộp vào batch mới (BR-TRASH-003).
+- [ ] **Given** một deck cha không phải root vừa mất direct child active cuối cùng vì bị xoá, **when** transaction xoá xong, **then** `content_type` của nó về `unset` trong cùng transaction; một root vẫn giữ `deck` (BR-DECK-015, BR-TRASH-005).
+- [ ] **Given** một phiên `in_progress` chạm tới item của batch, **when** xoá xảy ra, **then** phiên đó đóng với `status = invalidated`, `end_reason = content_deleted` trong cùng transaction (BR-TRASH-004).
+- [ ] **Given** root đã có thẻ hoàn tất chuỗi học mới (`first_answered_at` khác NULL), **when** mở phần chọn chế độ, **then** phần chọn hiện ở trạng thái khoá kèm giải thích và lối tới Reset, không bị ẩn (BR-SRS-003, A1).
+- [ ] **Given** đang sửa một deck con, **when** mở phần sửa, **then** không có phần chọn chế độ ôn tập (BR-DECK-025, A2).
+- [ ] **Given** hộp thoại xác nhận xoá đang mở, **when** người dùng bấm Cancel, **then** không có gì thay đổi (A3).
+- [ ] **Given** root đang chạy chế độ X, khoá hay chưa khoá, **when** người dùng chọn lại đúng X, **then** không ghi gì, không seed lại cây và không đóng phiên đang mở (BR-SRS-002, A4).
+- [ ] **Given** deck đã bị xoá ở nơi khác, **when** người dùng đổi tên hoặc xoá nó, **then** thao tác không thành, không ghi gì, và màn hình nói deck không còn (E1).
+- [ ] **Given** đổi chế độ thất bại giữa chừng, **when** transaction dừng, **then** mọi thay đổi rollback và deck giữ scheduler cùng study state cũ (BR-SRS-002, E2).
+- [ ] **Given** xoá thất bại giữa chừng, **when** transaction dừng, **then** hệ thống báo lỗi, deck còn nguyên và `content_type` của deck cha không đổi (BR-DECK-015, E3).
+- [ ] **Given** bảng chọn chế độ đang mở trên một cây chưa khoá, **when** cây bị khoá ở nơi khác rồi người dùng xác nhận, **then** hệ thống đọc lại `first_answered_at` trong transaction, từ chối có lý do, và không đổi gì (BR-SRS-003, E4).

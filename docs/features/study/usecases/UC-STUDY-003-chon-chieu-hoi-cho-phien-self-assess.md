@@ -80,4 +80,15 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Review, **then** hệ thống bỏ qua màn chọn mode và mở sheet chọn chiều với `Term first` chọn sẵn (BR-STUDY-055, BR-MODE-013).
+- [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning first` rồi bấm Start review, **then** phiên mở với đúng chiều đó, lưu ở `study_session.direction` (BR-MODE-016, BR-MODE-017).
+- [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thống dựng hàng đợi, **then** mọi dòng có cùng chiều đó; với `Mixed`, mỗi dòng nhận một trong hai chiều, chia gần đều một lần lúc mở phiên (BR-MODE-015, BR-MODE-016).
+- [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** đề là mặt nghĩa, mặt thuật ngữ và ví dụ chỉ hiện sau khi lật, và vẫn là 4 action của `sm2` với lịch chạy như thường (BR-MODE-014, BR-MODE-019, BR-STUDY-009).
+- [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa, **then** chỉ một phiên được tạo (BR-STUDY-004).
+- [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà không bấm Start review, **then** không có gì được ghi và Study Entry giữ nguyên (BR-STUDY-020, A1).
+- [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** không có sheet chọn chiều, chỉ có màn chọn mode (BR-MODE-013, A2).
+- [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Continue, **then** phiên tiếp tục với chiều đã lưu ở `study_session.direction` và sheet chọn chiều không mở lại (BR-MODE-017, A3).
+- [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, **then** chiều của thẻ vẫn là chiều đã gán lúc mở phiên (BR-STUDY-005, BR-MODE-015, A4).
+- [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người dùng bấm Start, **then** phiên bị từ chối kèm banner cảnh báo, không ghi gì, và footer theo số mới (BR-STUDY-054, E2).
+- [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều cho một mode không dùng chiều, **when** hệ thống xử lý, **then** yêu cầu bị từ chối và không ghi gì (BR-MODE-013, BR-MODE-018, E3).
+- [ ] OPEN QUESTION: E1 nói khi `self_assess` không còn được offer lúc sheet đang mở thì sheet hiện một dòng lỗi và giữ nguyên lựa chọn, như các trường hợp "đổi giữa chừng" khác — `StudyRejection.modeNotOffered` không nằm trong `_changedMeanwhile` (`lib/features/study/presentation/controllers/study_entry_controller.dart:22-30`), nên trường hợp này hiện như một lần mở thất bại chung (BR-SRS-003, BR-STUDY-015, E1).

@@ -55,4 +55,11 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một tên hợp lệ và một chế độ ôn tập (`eight_box` hoặc `sm2`), **when** người dùng xác nhận tạo, **then** hệ thống tạo root deck với `parent_id = NULL`, `root_id = id`, `content_type = 'deck'`, `generation = 1` và chế độ đã chọn, và deck còn sau khi khởi động lại app (BR-DECK-002, BR-DECK-004, BR-SRS-001).
+- [ ] **Given** một root deck vừa tạo, **when** người dùng bấm Create bên trong nó, **then** chỉ có lựa chọn Create deck, không có Create card (BR-DECK-004, BR-DECK-005).
+- [ ] **Given** đã có một deck tên "Unit 5", **when** tạo thêm một root deck cũng tên "Unit 5", **then** hệ thống chấp nhận và không báo trùng tên (BR-DECK-021).
+- [ ] **Given** tên rỗng hoặc chỉ có khoảng trắng, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E1).
+- [ ] **Given** tên dài hơn 200 ký tự, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E2).
+- [ ] **Given** ghi database thất bại, **when** xác nhận, **then** hệ thống báo lỗi, giữ nguyên form và dữ liệu đã nhập, và không tạo deck (E4).
+- [ ] OPEN QUESTION: A1 nói huỷ khi đã nhập dữ liệu thì hỏi xác nhận trước khi bỏ — nút Cancel đóng dialog ngay, không hỏi (`lib/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart:117`) (A1).
+- [ ] OPEN QUESTION: bước 2 và E3 nói chế độ ôn tập bắt buộc chọn, không có mặc định ngầm, và chưa chọn thì báo lỗi — dialog chọn sẵn `eight_box` (`create_root_deck_dialog_widget.dart:41`), nên người dùng tạo được deck mà không chọn và E3 không xảy ra được (BR-SRS-001, E3).
