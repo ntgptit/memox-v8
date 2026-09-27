@@ -52,16 +52,27 @@ final class AndroidReminderPlatformRepositoryImpl
     return const Rejected(ReminderRejection.couldNotSchedule);
   }
 
+  /// The alarm and the notification go independently, so one refusing never
+  /// keeps the other; `Ok` only when both went.
   @override
   Future<Outcome<void, ReminderRejection>> cancel() async {
-    try {
-      final cancelled = await _plugins.cancelAlarm();
+    final alarmGone = await _succeeds(_plugins.cancelAlarm);
+    final notificationGone = await _succeeds(() async {
       await _plugins.cancelNotification();
-      if (cancelled) return const Ok(null);
+      return true;
+    });
+    return alarmGone && notificationGone
+        ? const Ok(null)
+        : const Rejected(ReminderRejection.couldNotCancel);
+  }
+
+  /// [call]'s answer, with a throw read as a refusal.
+  Future<bool> _succeeds(Future<bool> Function() call) async {
+    try {
+      return await call();
     } on Object {
-      // Falls through to the typed reason.
+      return false;
     }
-    return const Rejected(ReminderRejection.couldNotCancel);
   }
 
   @override

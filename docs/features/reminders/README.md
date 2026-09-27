@@ -20,7 +20,8 @@ id cố định, chạm mở Study Home). Hai plugin chỉ được gọi qua `R
 (guard `memox_v8.architecture.reminder_plugins_have_one_door`). `ReminderOperationGate`
 cho Enable, Disable và Reconcile chạy lần lượt; Deliver chạy trong isolate nền
 (`reminder_background_bindings.dart`) và đọc settings lúc fire. App chạy Reconcile khi
-khởi động. Web và mọi nền tảng khác giữ adapter "không hỗ trợ".
+khởi động. Web và mọi nền tảng khác giữ adapter "không hỗ trợ". FE-B5, nơi đầu tiên gọi
+Enable và Disable, MUST gọi chúng qua `reminderOperationGateProvider` như Reconcile.
 
 ## Màn hình → Use case
 

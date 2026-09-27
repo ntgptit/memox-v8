@@ -10,39 +10,48 @@ import '../../../support/fake_reminder_platform.dart';
 import '../../../support/test_database.dart';
 
 void main() {
-  test('the fire runs Deliver once, then lets its container go', () async {
+  // The production databaseProvider closes its connection in onDispose; these
+  // tests prove the fire disposes what it opened, by an onDispose of their own.
+
+  test('the fire runs Deliver once, then disposes what it opened', () async {
     final db = openTestDatabase();
     addTearDown(db.close);
+    var disposed = false;
     final platform = FakeReminderPlatform(
       capabilityValue: ReminderCapability.unsupported,
     );
     final container = ProviderContainer(
       overrides: [
-        databaseProvider.overrideWithValue(db),
+        databaseProvider.overrideWith((ref) {
+          ref.onDispose(() => disposed = true);
+          return db;
+        }),
         reminderPlatformRepositoryProvider.overrideWithValue(platform),
       ],
     );
+    // Deliver on an unsupported platform stops before the database; read it
+    // here so the fire's container holds it, as a supported fire would.
+    container.read(databaseProvider);
 
     await runReminderDelivery(container);
 
     expect(platform.calls, [PlatformCall.capability]);
-    expect(() => container.read(databaseProvider), throwsStateError);
+    expect(disposed, isTrue);
   });
 
-  test('a Deliver that throws still lets its container go', () async {
+  test('a Deliver that throws still disposes what it opened', () async {
+    var disposed = false;
     final container = ProviderContainer(
       overrides: [
-        deliverReminderUseCaseProvider.overrideWith(
-          (ref) => throw StateError('no database'),
-        ),
+        deliverReminderUseCaseProvider.overrideWith((ref) {
+          ref.onDispose(() => disposed = true);
+          throw StateError('no database');
+        }),
       ],
     );
 
     await runReminderDelivery(container);
 
-    expect(
-      () => container.read(deliverReminderUseCaseProvider),
-      throwsStateError,
-    );
+    expect(disposed, isTrue);
   });
 }

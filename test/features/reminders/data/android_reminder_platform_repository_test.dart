@@ -15,13 +15,16 @@ import 'package:memox/features/settings/domain/models/language_choice_model.dart
 final class _FakePlugins implements ReminderPluginsDataSource {
   bool fails = false;
   bool refuses = false;
+
+  /// The calls that throw on their own, whatever [fails] says.
+  final failing = <String>{};
   bool? permission = true;
   final calls = <String>[];
   final shown = <String>[];
 
   Future<T> _call<T>(String name, T value) async {
     calls.add(name);
-    if (fails) throw StateError('plugin');
+    if (fails || failing.contains(name)) throw StateError('plugin');
     return value;
   }
 
@@ -136,6 +139,20 @@ void main() {
     test('removes the alarm and the notification', () async {
       expect(await platform.cancel(), isA<Ok<void, ReminderRejection>>());
       expect(plugins.calls, containsAll(['cancelAlarm', 'cancelNotification']));
+    });
+
+    test('a notification that will not go still leaves the alarm cancelled, '
+        'and says so', () async {
+      plugins.failing.add('cancelNotification');
+      expect(await platform.cancel(), _rejected(ReminderRejection.couldNotCancel));
+      expect(plugins.calls, containsAll(['cancelAlarm', 'cancelNotification']));
+    });
+
+    test('an alarm that will not cancel still lets the notification go',
+        () async {
+      plugins.failing.add('cancelAlarm');
+      expect(await platform.cancel(), _rejected(ReminderRejection.couldNotCancel));
+      expect(plugins.calls, contains('cancelNotification'));
     });
 
     test('a refusal or a throw is couldNotCancel', () async {
