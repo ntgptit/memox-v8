@@ -38,7 +38,7 @@ Trash restore and purge (API-B3), tags (API-B2), and the SRS fields on
 | # | Topic | Decision | Why |
 |---|---|---|---|
 | D1 | Capture | Repositories write commands and patches through `SyncOutbox`, in the same transaction as the change. The six capture triggers of #114 are removed | A command carries intent (a move, a reorder, an undo) that a row trigger cannot. The risk that a write path forgets its command is closed by D2 |
-| D2 | Guard against a forgotten command | An audit test installs test-only triggers that record every changed `deck`, `card` and `delete_batches` id. It runs each write method and asserts that the outbox gained an entry, and that every changed id is covered by that entry's `affected` or patch target. Known gaps sit in an allowlist, each with its reason | Catches both "no command" and "incomplete `affected`" in CI. Production carries no runtime cost |
+| D2 | `affected`, and the guard against a forgotten command | Per-connection TEMP triggers record every changed `deck`, `card` and `delete_batches` id in a TEMP table `sync_changed`. `SyncOutbox.command` and `patch` drain it, so `affected` is exactly what the write changed, plus the command's subject. The triggers never write the outbox: intent still comes from the repository. An audit test runs each write method and asserts that it recorded an outbox entry. Known gaps sit in an allowlist, each with its reason | `affected` is complete by construction instead of 16 hand-written lists. A forgotten command fails CI (owner's ruling, 2026-09-28) |
 | D3 | Existing library | The v5 → v6 migration runs a Dart function that turns every row never acknowledged by the server into commands, in causal order | Commands queued in the migration always come before any later local write. Uploading on first sync instead would let a new card be pushed before its deck |
 | D4 | `row: null` on a rejection | The local row is deleted only when the code is `DECK_PARENT_MISSING`. For any other code the row is kept, the rejection is logged, and the entry leaves the outbox | `DECK_PARENT_MISSING` with `row: null` means another device purged the parent, which the person asked for. Any other code is a bug or a legacy row, and deleting it would cascade away cards |
 | D5 | Outbox while sync is off | The outbox is written even when the build has no `API_BASE_URL` | The app stays local-first: turning sync on later uploads everything |
@@ -52,7 +52,7 @@ Trash restore and purge (API-B3), tags (API-B2), and the SRS fields on
 | `seq` | `INTEGER PRIMARY KEY AUTOINCREMENT` | Push order |
 | `op_id` | `TEXT NOT NULL UNIQUE` | UUID; the idempotency key |
 | `kind` | `TEXT NOT NULL CHECK (kind IN ('command','patch'))` | |
-| `type` | `TEXT NULL` | Command type; `NULL` for a patch |
+| `command_type` | `TEXT NULL` | Command type; `NULL` for a patch. Not `type`, which Drift would clash with |
 | `entity_type` | `TEXT NULL` | Patch target; `NULL` for a command |
 | `entity_id` | `TEXT NULL` | Patch target |
 | `patch_group` | `TEXT NULL` | Patch field group. The name avoids `GROUP`, a reserved word |
@@ -63,7 +63,7 @@ Trash restore and purge (API-B3), tags (API-B2), and the SRS fields on
 
 - A partial unique index on `(entity_type, entity_id, patch_group) WHERE kind = 'patch'` keeps one pending patch per field group.
 - **`sync_state`** is unchanged. The `applying_remote` key is no longer used.
-- **The six sync triggers are dropped.**
+- **The six sync triggers are dropped.** The collector of D2 (`sync_changed` and its triggers) is TEMP, created on every open, and not part of the schema.
 - `deck.server_version` and `delete_batches.server_version` stay. **`card` gains `server_version INTEGER NULL`**, meaning never acknowledged.
 
 **Migration `from5To6`**, in one transaction:
@@ -80,9 +80,14 @@ A new schema snapshot and migration test follow BE-D1.
 
 ```dart
 Future<void> command(String type, Map<String, Object?> payload,
-    {required List<SyncEntityRef> affected});
-Future<void> patch(String entityType, String entityId, String group);
+    {SyncEntityRef? subject, bool drainChanges = true});
+Future<void> patch(String entityType, String entityId, String group,
+    {bool drainChanges = true});
 ```
+
+`affected` is the drained `sync_changed` ids plus `subject`. The migration's
+seed (section 4.3) passes `drainChanges: false`, since the collector does not
+exist during a migration.
 
 - Both are called inside the repository's transaction.
 - `patch` stores no field values. The coordinator reads the current fields at
@@ -170,9 +175,9 @@ it is rejected with `CONFLICT`, and `current` overwrites the local copy.
 ## 7. Testing
 
 - **Audit test** (`test/core/sync/sync_capture_audit_test.dart`):
-  - test-only triggers record changed ids;
-  - one case per row of the section 4.2 table asserts an outbox entry and full
-    coverage of changed ids;
+  - one case per row of the section 4.2 table asserts that the write recorded
+    an outbox entry, and that its `affected` covers every id the write changed
+    (read from a test-only copy of the collector);
   - the allowlist names each gap of section 8 with its reason, and fails when
     an allowlisted path starts writing commands, so the list stays current.
 - **Migration:** schema snapshot v6, the step test from v5, and a seeded
