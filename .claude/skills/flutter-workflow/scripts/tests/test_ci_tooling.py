@@ -227,8 +227,8 @@ class DodCheckStampTest(unittest.TestCase):
 
     Running the gate again before commit, again before push and again before the
     PR is one tree state asked three times. The stamp exists so the repetition
-    costs ~0.4s instead of 50-150s — and so it works without anyone having to
-    remember, which is the part that failed every time it was written down.
+    costs a fraction of a second instead of minutes, and so it works without
+    anyone having to remember.
     """
 
     SCRIPT = REPO_ROOT / ".claude/skills/flutter-workflow/scripts/dod_check.sh"
@@ -1128,85 +1128,61 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertNotIn('SKIPPED+=("test', script)
 
 
-HEADER = """# {title}
+# The fields of the verification plan (spec of package 12a, D3): the six
+# `dod_check.sh --changed` reads, and five that explain the selection.
+PLAN_FIELDS = frozenset({
+    "changed_paths",
+    "affected_features",
+    "affected_layers",
+    "reasons",
+    "unmatched_paths",
+    "test_files",
+    "local_test_targets",
+    "risk",
+    "full_suite",
+    "needs_static",
+    "needs_host_tests",
+})
 
-| | |
-|---|---|
-| **Status** | active |
-| **Purpose** | Test prompt |
-| **Scope** | Test scope |
-| **Source of truth for** | Test execution instructions |
-| **Depends on** | `AGENTS.md` |
-| **Updated by task** | TEST |
-| **Last updated** | 2026-08-13 |
 
-"""
+class GateReadsThePlanTest(unittest.TestCase):
+    """`dod_check.sh --changed` runs what `build_verification_plan.py` selects.
 
+    The gate is the planner's only caller, and it reads the plan's JSON by
+    field name: a field it reads that the plan does not write stops the run,
+    and a step it schedules for a gate V8 does not have fails every run that
+    selects it.
+    """
 
-class PromptContractTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.module = _load("check_prompt_contract")
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
 
-    def setUp(self) -> None:
-        self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
-        self.feature = self.root / "docs" / "prompt" / "sample"
-        self.feature.mkdir(parents=True)
-        self._write_valid_set()
+    def test_the_gate_reads_only_fields_the_plan_writes(self) -> None:
+        script = self._gate()
+        read = set(re.findall(r"read_plan_bool (\w+)", script))
+        read |= set(re.findall(r"p\['(\w+)'\]", script))
+        # What the gate acts on: a pattern that matched nothing would fail
+        # here instead of passing the check below.
+        self.assertLessEqual({"needs_static", "needs_host_tests", "local_test_targets"}, read)
+        self.assertEqual(set(), read - PLAN_FIELDS)
 
-    def tearDown(self) -> None:
-        self.temp.cleanup()
+    def test_the_gate_has_no_step_for_a_gate_v8_does_not_have(self) -> None:
+        """No Widgetbook smoke test (V8 has no `widgetbook/`) and no prompt
+        delivery contract (V8 has no `docs/prompt/`)."""
+        lines = self._gate().lower().splitlines()
+        for marker in ("widgetbook", "prompt_contract", "has_prompt_changes"):
+            with self.subTest(marker=marker):
+                self.assertEqual([], [line for line in lines if marker in line])
 
-    def _write_valid_set(self) -> None:
-        (self.feature / "implementation.md").write_text(
-            HEADER.format(title="Implementation")
-            + "5Why. Check the worktree. Run verification and gate. Clean stop.\n",
-            encoding="utf-8",
-        )
-        (self.feature / "recursive-architecture-logic-review.md").write_text(
-            HEADER.format(title="Architecture review")
-            + "Audit-only first. Check the worktree, business rules, architecture boundary, database persistence and failure handling. Apply fixes, test, then clean stop.\n",
-            encoding="utf-8",
-        )
-        (self.feature / "recursive-ui-ux-review.md").write_text(
-            HEADER.format(title="UI review")
-            + "Audit-only production states in the production tree. Check the worktree. Use getRect and golden comparison, list approved divergence, auto-fix, test, and clean stop.\n",
-            encoding="utf-8",
-        )
-
-    def test_valid_prompt_set_passes(self) -> None:
-        self.assertEqual([], self.module.validate_prompt_root(self.root))
-
-    def test_missing_review_file_fails(self) -> None:
-        (self.feature / "recursive-ui-ux-review.md").unlink()
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("missing prompt files" in message for message in messages))
-
-    def test_run_file_is_rejected(self) -> None:
-        (self.feature / "run.md").write_text("# Run\n", encoding="utf-8")
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("unexpected prompt files" in message for message in messages))
-
-    def test_ui_review_without_geometry_fails(self) -> None:
-        path = self.feature / "recursive-ui-ux-review.md"
-        path.write_text(
-            path.read_text(encoding="utf-8").replace("getRect", "geometry"),
-            encoding="utf-8",
-        )
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("getRect" in message for message in messages))
-
-    def test_out_of_order_header_fails(self) -> None:
-        path = self.feature / "implementation.md"
-        text = path.read_text(encoding="utf-8")
-        text = text.replace(
-            "| **Purpose** | Test prompt |\n| **Scope** | Test scope |",
-            "| **Scope** | Test scope |\n| **Purpose** | Test prompt |",
-        )
-        path.write_text(text, encoding="utf-8")
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("header fields" in message for message in messages))
+    def test_the_prompt_delivery_scripts_are_gone(self) -> None:
+        for removed in (
+            "check_prompt_contract.py",
+            "read_local_prompt_set.ps1",
+            "tests/test_local_prompt_handoff.py",
+        ):
+            with self.subTest(path=removed):
+                self.assertFalse((SCRIPTS / removed).exists())
 
 
 if __name__ == "__main__":
