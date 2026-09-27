@@ -82,6 +82,8 @@
         SELECT CASE
             WHEN EXISTS (SELECT 1 FROM deck c WHERE c.parent_id = p.id AND c.deleted_at IS NULL
                          AND c.delete_batch_id IS NOT DISTINCT FROM p.delete_batch_id) THEN 'deck'
+            WHEN EXISTS (SELECT 1 FROM card c WHERE c.deck_id = p.id AND c.deleted_at IS NULL
+                         AND c.delete_batch_id IS NOT DISTINCT FROM p.delete_batch_id) THEN 'card'
             ELSE 'unset' END
         FROM deck p WHERE p.id = #{id}
     </select>
