@@ -8,7 +8,7 @@ Each layer answers one question; none takes over another's.
 |---|---|---|
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
-| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, this file |
+| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
 | ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
@@ -101,6 +101,32 @@ names and the Flutter version follow
 Preserve V7 business behavior and required data compatibility unless an
 approved V8 specification explicitly changes them.
 
+## Backend API: memox-api-services
+
+`memox-api-services/` is the API target: the server-side sub-project of this
+monorepo. Backend work (REST endpoints, server persistence, Flyway migrations,
+API security) goes there; the Flutter app at the repo root stays the client.
+
+- **Stack**, per its `pom.xml`, which is the source of truth: Spring Boot 3
+  (3.5.x), Java 17, Maven wrapper, PostgreSQL (`compose.yaml` through
+  `spring-boot-docker-compose`) and H2, Flyway, Spring Security, Bean
+  Validation, springdoc OpenAPI 2.x, Spring REST Docs; base package
+  `com.memox`. MyBatis is not a dependency yet. Moving to Spring Boot 4 or
+  changing the stack needs an ADR.
+- **Conventions:** `spring-boot-mybatis-review` owns the layering, SQL, review
+  checklist and finding format.
+- **Package layout:** by domain, then by layer; the folder contract lives in
+  [memox-api-services/README.md](memox-api-services/README.md). Its feature
+  packages were created up front at the owner's request, an exception to
+  [No speculative structure](#no-speculative-structure).
+- **Service/ServiceImpl:** the `XxxService` interface plus `XxxServiceImpl`
+  pair is this project's convention. It is the concrete reason
+  [No speculative structure](#no-speculative-structure) asks for, so it is
+  not a speculative single-implementation interface.
+- **Gate:** `./mvnw verify` from `memox-api-services/` (`mvnw.cmd verify` in
+  PowerShell). The Flutter gates (`dod_check.sh`, `flutter test`) do not cover
+  it, and it does not cover the app.
+
 ## UI source of truth
 
 The visual authority for every V8 screen is the artifact "MemoX — Mobile UI
@@ -140,9 +166,10 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
   (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
   not BLoC, Dio or Freezed.
-- **Java/Spring skills wait for a backend.** V8.0 is local-only (ADR-001), so
-  it has no backend to use them on yet. They apply once a server-side
-  sub-project starts, under that sub-project's ADRs.
+- **Java/Spring skills apply to `memox-api-services/` only**
+  ([Backend API](#backend-api-memox-api-services)), never to the Flutter app.
+  The repo's own `spring-boot-mybatis-review` skill wins over the ECC
+  `springboot-*` and `jpa-patterns` skills.
 - **Skills only.** ECC's agents, rules, hooks, commands and memory are not
   used here. A plan task never delegates to an ECC agent; its implementer
   reads the relevant skill instead.

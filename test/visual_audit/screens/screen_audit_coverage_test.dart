@@ -46,12 +46,10 @@ void main() {
       'deck_level_screen_visual_audit_test.dart',
     );
     expect(
-      companionFor('lib/app/placeholder_screen.dart'),
-      'test/visual_audit/screens/app/placeholder_screen_visual_audit_test.dart',
-    );
-    expect(
-      screenClassOf('lib/app/placeholder_screen.dart'),
-      'PlaceholderScreen',
+      screenClassOf(
+        'lib/features/progress/presentation/screens/deck_progress_screen.dart',
+      ),
+      'DeckProgressScreen',
     );
   });
 

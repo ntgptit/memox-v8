@@ -55,7 +55,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 19 | Study · Recall | 3 | FE-A6 | aligned | [19-study-recall.md](19-study-recall.md) |
 | 20 | Study · Fill | 3 | FE-A6 | aligned | [20-study-fill.md](20-study-fill.md) |
 | 21 | Session summary | 10 | FE-A6 | aligned | [21-session-summary.md](21-session-summary.md) |
-| 22 | Progress | 8 | FE-A9 | not built | — |
+| 22 | Progress | 8 | FE-A9 | aligned | [22-progress.md](22-progress.md) |
 | 23 | Settings | 8 | FE-A3 | aligned | [23-settings.md](23-settings.md) |
 | 24 | Daily reminder | 9 | FE-B5 | out of V8 | — |
 | 25 | Theme | 3 | FE-A3 | aligned | [25-theme.md](25-theme.md) |

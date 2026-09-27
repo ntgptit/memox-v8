@@ -150,6 +150,13 @@ final class MxTextStyles {
     color: isReached ? _scheme.onSurface : _scheme.onSurfaceVariant,
   );
 
+  /// A day bar's label (kit 22): 12, onSurfaceVariant, at 700 on the current
+  /// day.
+  TextStyle dayLabel({required bool isCurrent}) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    isCurrent ? FontWeight.w700 : FontWeight.w400,
+  ).copyWith(color: _scheme.onSurfaceVariant);
+
   /// The number on an import step's dot (kit 11): the counter in [ink].
   TextStyle stepNumber(Color ink) => counter.copyWith(color: ink);
 
@@ -380,6 +387,10 @@ final class MxTextStyles {
     emptyBody,
     FontWeight.w700,
   ).copyWith(color: _scheme.onSurface);
+
+  /// A caption run in [ink], such as a Progress row's learning and
+  /// reviewing counts (kit 22): 12/600.
+  TextStyle captionIn(Color ink) => footerCaption.copyWith(color: ink);
 
   /// A summary fact's value (kit ResultRow): 16/700 tabular, in [ink].
   TextStyle factValue(Color ink) => AppTypography.withWeight(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
@@ -28,15 +27,11 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 
 /// The routes around Settings (FE-A3).
 void main() {
-  libraryTest('the Settings tab is screen 23, not a placeholder', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the Settings tab is screen 23', (tester, env) async {
     await pumpMemoxApp(tester, env);
     await _tap(tester, _tab(_en.navSettings));
 
     expect(find.byType(SettingsScreen), findsOneWidget);
-    expect(find.byType(PlaceholderScreen), findsNothing);
   });
 
   for (final (row, title) in [

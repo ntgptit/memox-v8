@@ -75,6 +75,13 @@ abstract final class AppRoutes {
   static String studyOptions(String deckId) =>
       '${deck(deckId)}/$studyOptionsChild';
 
+  /// A deck's Progress level (screen 22), relative to [progress]: one page
+  /// per level, under the tab bar (FE-A9 D5).
+  static const String progressDeckChild = ':$deckIdParam';
+
+  /// [deckId]'s Progress level.
+  static String progressDeck(String deckId) => '$progress/$deckId';
+
   /// The session [sessionId], its summary once it has ended.
   static String studySession(String sessionId) => '$study/session/$sessionId';
 
