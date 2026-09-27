@@ -226,3 +226,22 @@ rules:
       hint: >-
         Move the branch into the handler for that mode, or into a hook on
         StudyModeHandler that every mode answers.
+
+  # BE-C5: Unicode normalisation has one door, so the stored and folded
+  # forms cannot drift apart (local backend spec 2026-09-27 §4).
+  - id: memox_v8.architecture.unicode_normalisation_has_one_door
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import `unorm_dart` only in `lib/core/text/unicode_form.dart`; call
+      `nfc`, `storedText` or `foldText` instead.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/core/text/unicode_form.dart
+    patterns:
+      - "^\\s*import\\s+'package:unorm_dart/"
+    tags:
+      - memox-v8
+      - architecture
