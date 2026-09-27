@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_turn_hold_mixin.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_turn_hold_widget.dart';
 
 StudyItem _item(String cardId) => StudyItem(
   cardId: cardId,
