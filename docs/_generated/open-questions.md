@@ -2,14 +2,6 @@
 
 # Open questions
 
-## [features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md](../features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md)
-
-- L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md](../features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md)
-
-- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/deck/ui.md](../features/deck/ui.md)
 
 - L79: > ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)
@@ -46,10 +38,6 @@
 
 - L85: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md](../features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md)
-
-- L74: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md](../features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md)
 
 - L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
@@ -74,10 +62,6 @@
 
 - L83: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md)
-
-- L104: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 
 - L109: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
@@ -85,3 +69,10 @@
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+
+## [superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md](../superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md)
+
+- L24: replaced: `- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng
+- L50: 3. A `ready` UC whose section holds only OPEN QUESTION lines: the guard must
+- L203: OPEN QUESTION lines) from Step 2.
+- L227: - BE-D4 → `xong`; Bằng chứng: this plan, the guard, the count of OPEN QUESTION
