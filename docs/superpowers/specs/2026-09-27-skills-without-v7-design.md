@@ -1,7 +1,7 @@
 # MemoX V8 — The skills and documents without V7 (package 12c)
 
-Status: draft 2026-09-27 (scope, the two V7 documents, the checklist, the pin and
-design sections 1–2 approved in conversation) · Path: architectural
+Status: approved 2026-09-27 (scope, the two V7 documents, the checklist, the pin and
+design sections 1–2 in conversation, then this spec) · Path: architectural
 
 ## 1. Intent
 
