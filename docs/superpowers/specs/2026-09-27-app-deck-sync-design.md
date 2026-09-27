@@ -1,5 +1,10 @@
 # MemoX — app deck sync (rollout step 3)
 
+> **Replaced in part (2026-09-28)** by the
+> [BE-E7 design](2026-09-28-app-command-sync-design.md): §3 (capture
+> triggers, row outbox) and the push of §5 are gone; the scheduler, network
+> layer and adapters' server writes remain.
+
 Status: approved 2026-09-27 · Path: architectural · Parent:
 [server-sync design](2026-09-27-server-sync-design.md),
 [ADR-013](../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md),

@@ -191,6 +191,7 @@ trả lời được mọi lookup cũ, giữ cả hai chỉ khiến mỗi insert
 | `delete_batch_id` | TEXT NULL | NULL = card đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_card_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
+| `server_version` | INTEGER NULL | version server đã gửi về; NULL = chưa từng được xác nhận (BE-E7) |
 
 **Hai cột `_folded` tồn tại vì `lower()` của SQLite chỉ hạ hoa ASCII.** Nó không
 đụng tới `Ô`, `Ê`, `Đ`. Search từng so `instr(lower(front), :term)` với `:term`
@@ -569,28 +570,32 @@ giá trị hiệu lực là giá trị của bảng này, và việc đọc MUST
 (IT-STUDY-013). Cột chỉ đổi khi người dùng lưu tuỳ chọn của root hoặc chọn
 `Use app defaults` (UC-SETTINGS-001 A1). Khoá lạ bị bỏ qua.
 
-## `sync_outbox` và `sync_state` (ADR-013)
+## `sync_outbox` và `sync_state` (ADR-013, ADR-014)
 
-Hàng đợi đồng bộ và trạng thái sync
-([app deck-sync spec](../../superpowers/specs/2026-09-27-app-deck-sync-design.md) §3).
+Hàng đợi lệnh và patch chưa đẩy lên server, đẩy theo `seq`
+([BE-E7 spec](../../superpowers/specs/2026-09-28-app-command-sync-design.md) §3).
 
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
-| `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
-| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` |
-| `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
-| `op` | TEXT NOT NULL | `upsert` \| `delete` |
-| `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
+| `seq` | INTEGER PK AUTOINCREMENT | thứ tự push |
+| `op_id` | TEXT NOT NULL UNIQUE | UUID; idempotency key khi push |
+| `kind` | TEXT NOT NULL | `command` \| `patch` |
+| `command_type` | TEXT NULL | loại lệnh (`CREATE_ROOT_DECK`…); NULL với patch |
+| `entity_type`, `entity_id`, `patch_group` | TEXT NULL | đích của patch; unique một phần `WHERE kind = 'patch'`: một patch chờ cho mỗi nhóm trường, patch lần hai giữ `seq` cũ và nhận `op_id` mới |
+| `payload` | TEXT NULL | JSON của lệnh; patch không lưu giá trị, lúc push mới đọc |
+| `affected` | TEXT NOT NULL | JSON `[{entityType, entityId}]`: mọi id lần ghi đã đổi, cộng chủ thể của lệnh |
+| `created_at` | DATETIME NOT NULL | |
 | `attempts` | INTEGER NOT NULL | số lần push lỗi |
 
-`sync_state(name, value)` giữ `device_id`, cursor `since` và cờ tạm
-`applying_remote`.
+`sync_state(name, value)` giữ `device_id` và cursor `since`.
 
-Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck` và `delete_batches` ghi outbox
-trong cùng transaction với mọi lần ghi, kể cả CTE, cascade và purge, trừ khi có
-`applying_remote` (dữ liệu từ server). `deck.server_version` và
-`delete_batches.server_version` là version server đã xác nhận; NULL là chưa
-từng được xác nhận.
+Repository ghi lệnh hoặc patch qua `SyncOutboxWriter` trong cùng transaction với
+lần ghi. `sync_changed` là bảng TEMP, được tạo cùng các trigger của nó mỗi lần
+mở database (`lib/core/database/sync_change_collector.dart`): nó ghi lại id
+deck, card và batch Trash mà một lần ghi đổi, và `SyncOutboxWriter` rút nó ra
+làm `affected` (BE-E7 spec D2). Nó không thuộc schema snapshot.
+`deck.server_version`, `card.server_version` và `delete_batches.server_version`
+là version server đã gửi về; NULL là chưa từng được server xác nhận.
 
 ## Bất biến — phải kiểm tra được bằng query
 
