@@ -116,6 +116,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng; job `goldens` của CI so ảnh trên mỗi pull request (BE-D2) | — |
 | FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
 | FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | bị chặn | — | M | [host-coverage-map.md](shared/testing/host-coverage-map.md); §9 dòng 18: máy phát triển không có emulator | Cần môi trường có emulator hoặc thiết bị |
+| FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | chưa bắt đầu | — | M | Tách từ BE-D7 (gói 12c, [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md)), vốn chỉ gỡ phần của V7: mốc, lịch sử, câu "Đã ship" về API mà V8 không có | Làm cùng gói FE đầu tiên chạm design system |
 
 ## Đã xong và đã kiểm chứng
 
@@ -170,6 +171,7 @@ và phụ thuộc giữa các màn quyết định:
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
 3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag) và FE-B4
    (starter) đã xong. BE-B5a xong trong gói 11a; FE-B5 còn chờ BE-B5b, adapter Android.
+4. FE-D4 cùng gói FE đầu tiên chạm design system.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 

@@ -1,6 +1,6 @@
 # Bản đồ coverage host cho từng kịch bản
 
-V8 chưa có test nào. Bảng dưới đây không phải giấy chứng nhận coverage — nó
+Bảng dưới đây không phải giấy chứng nhận coverage — nó
 là bản đồ: mỗi kịch bản thuộc `scenario-catalog.md` nhắm tới hồ sơ thực thi
 nào (`HOST-FLOW`, `HOST-WIDGET` hay `DEVICE-E2E` — định nghĩa ở
 [`agent-execution-guide.md`](agent-execution-guide.md) mục 3) và truy

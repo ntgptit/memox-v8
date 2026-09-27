@@ -77,6 +77,8 @@ Quy ước:
 | BE-C4 | Lọc card list theo tag (BR-TAG-004): `CardListQuery.tagIds`, một `EXISTS` trên `card_tags` trong vị từ chung của danh sách, số đếm và Select all; số đếm trạng thái và workload vẫn tính cả deck | xong | BE-B2 | S | Spec gói 8 §8; `test/features/card/data/card_list_tag_filter_test.dart` | — |
 | BE-D5 | Công cụ kiểm chứng không còn gì của V7 (mở rộng theo chủ dự án): `build_verification_plan.py` chỉ phục vụ `dod_check.sh --changed`, plan còn 11 field, bỏ shard, `--github-output`, Widgetbook, memox-api và prompt set; `dod_check.sh` không còn bước Widgetbook và bước prompt contract, nên `--changed` hết fail trên mọi thay đổi code; lời giúp và header tả V8; gỡ `check_prompt_contract.py`, `read_local_prompt_set.ps1` và test PowerShell của nó | xong | BE-D2 | M | [spec](superpowers/specs/2026-09-26-verification-tooling-design.md) và [plan](superpowers/plans/2026-09-27-verification-tooling.md) gói 12a; `GateReadsThePlanTest` và test của planner trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | BE-D6, BE-D7 |
 | BE-D6 | Guard và hook design token không còn gì của V7 (mở rộng theo chủ dự án): gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; `memox-v8` mang nhãn "MemoX V8" và 13 id `memox_v8.design_system.*`; sáu rule mang tên của V7 tìm tên của V8, hai id đổi theo; message, comment và lý do dẫn quyết định của V8; hook `.claude/hooks/check_design_tokens.py` nạp `memox-v8` bằng bộ nạp của guard và chạy chính rule của guard trên file vừa sửa, có test riêng và bước "hook tests" trong gate; tài liệu của guard ghi `ntgptit/memox-v8`. Giữ registry `memox` (V6) | xong | — | M | [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-guard-without-v7.md) gói 12b; `test_memox_v8_ruleset_contract.py`, `test_memox_v8_data_model_guard_rules.py` và `test_memox_v8_architecture_guard_rules.py` trong `code-verification-guard-v2/tests/`; `.claude/hooks/tests/test_check_design_tokens.py` | BE-D7 |
+| BE-D7 | Skill và tài liệu không còn V7 (mở rộng theo chủ dự án): 15 skill do repo sở hữu không còn dẫn V7 — quyết định `AD-nn`, luật `BR-nn`, mốc, checklist 22 phase, `docs/wbs.md`, `docs/architecture.md`, Widgetbook, tên bảng và tên file của V7 — và mọi đường dẫn chúng nêu đều có thật; gỡ `feature_blueprint.md`, `phase-index.md`, `integration-test-harness.md`, hai script gallery, `wbs_template.md` và receipt cài đặt của `project-documentation`; `project-baseline.md` và bảng dependency viết lại theo V8; error model theo ADR-011 D6; câu nào dẫn ADR-001 về local-only hay chưa có auth thì dẫn ADR-012 và ADR-013; 8 dòng AD-12/AD-15 trong `lib/` và `test/` trỏ ADR-011. Gồm BE-D3 | xong | BE-D6 | M | [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-skills-without-v7.md) gói 12c; `.claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py`, test này cũng ghim mọi thư mục skill là của repo hoặc vendored | FE-D4 |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) không còn ghi "V8 chưa có test nào"; skill `flutter-workflow` đọc `docs/wbs_BE.md` và `docs/wbs_FE.md` | xong | — | S | Làm trong BE-D7 (gói 12c) | — |
 
 ### V8.0 — còn lại
 
@@ -104,9 +106,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Làm trong BE-D7 (gói 12c) |
 | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
-| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | chưa bắt đầu | BE-D6 | M | [Spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9 | Gói 12c: brainstorm, spec, plan |
 
 ## Đã xong và đã kiểm chứng
 
@@ -166,11 +166,15 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
   [plan](superpowers/plans/2026-09-27-guard-without-v7.md)): gate xanh sau mỗi task;
   cấu hình rule của `memox-v8` do bộ nạp của guard resolve, trước và sau gói, chỉ khác
   ở những chỗ spec liệt kê; final review toàn nhánh trước khi mở PR.
+- **BE-D7** (gói 12c, [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md),
+  [plan](superpowers/plans/2026-09-27-skills-without-v7.md)): gate xanh sau mỗi task;
+  test hợp đồng `test_skills_without_v7.py` đỏ với đúng các dấu V7 của nhóm skill mỗi
+  task nhận, rồi xanh; final review toàn nhánh trước khi mở PR.
 - **Traceability:** có test chứa ID cho 22/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
+Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -200,8 +204,7 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 ## Bước tiếp theo
 
-1. BE-D7 (gói 12c), gồm BE-D3, theo thứ tự chủ dự án chọn ngày 2026-09-26.
-2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
 
 ## Ngữ cảnh cập nhật
 
@@ -243,6 +246,9 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 - **Cập nhật ngày 2026-09-27:** BE-D6 xong trong gói 12b, mở rộng theo chủ dự án: guard
   và hook design token không còn gì của V7. Hai lệnh `--ruleset memox-v7` trong skill
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
+- **Cập nhật ngày 2026-09-27:** BE-D7 xong trong gói 12c, gồm BE-D3, mở rộng theo chủ dự
+  án: skill và tài liệu không còn V7. Việc đối chiếu `flutter-theme-design` với code V8
+  tách thành FE-D4 trong [`wbs_FE.md`](wbs_FE.md).
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.
