@@ -305,14 +305,15 @@ void main() {
     for (final feature in [
       _en.libraryStarterDecks,
       _en.libraryTags,
-      _en.deckStudyOptions,
       _en.comingSoonProgressSort,
     ]) {
       expect(find.text(feature), findsOneWidget, reason: feature);
     }
+    // Study options shipped (FE-A3 D3): it no longer waits here.
+    expect(find.text(_en.deckStudyOptions), findsNothing);
     // Import and export shipped (FE-B3): neither waits here any more.
     expect(find.text(_en.deckActionExport), findsNothing);
-    // Study is live (FE-A6 D10); only Study options still waits.
+    // Study is live (FE-A6 D10).
     expect(
       find.descendant(
         of: find.byType(DeckComingSoonSheetWidget),

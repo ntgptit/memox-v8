@@ -9,18 +9,31 @@ import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
+import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
+import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/study/presentation/providers/abandon_stale_sessions_use_case_provider.dart';
 import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// The composition root: themes, localization and the router, the start-up
 /// close of an earlier day's open study session (FE-A6 D9), and the Trash's
-/// auto-purge at start and on every resume (FE-B1 D5).
+/// auto-purge at start and on every resume (FE-B1 D5). The theme and the
+/// language follow the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
 class MemoxApp extends ConsumerStatefulWidget {
-  const MemoxApp({super.key, this.hasGallery = kDebugMode});
+  const MemoxApp({
+    super.key,
+    this.hasGallery = kDebugMode,
+    this.initialSettings,
+  });
 
   /// Registers the debug-only component gallery.
   final bool hasGallery;
+
+  /// The row `main()` read before the first frame (FE-A3 D5); null follows
+  /// the platform until the stream answers.
+  final AppSettingsEntity? initialSettings;
 
   @override
   ConsumerState<MemoxApp> createState() => _MemoxAppState();
@@ -78,16 +91,36 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
-    debugShowCheckedModeBanner: false,
-    onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-    theme: buildLightTheme(),
-    darkTheme: buildDarkTheme(),
-    // The system choice until the settings feature persists one
-    // (BR-SETTINGS-005, BR-SETTINGS-006).
-    themeMode: ThemeMode.system,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    routerConfig: _router,
-  );
+  Widget build(BuildContext context) {
+    // Only the theme and the locale follow the row: the router stays, so a
+    // change keeps the stack and the scroll position (BR-SETTINGS-005).
+    final settings =
+        ref.watch(appSettingsProvider).value ?? widget.initialSettings;
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+      theme: buildLightTheme(),
+      darkTheme: buildDarkTheme(),
+      themeMode: _themeMode(settings?.theme),
+      locale: _locale(settings?.language),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      routerConfig: _router,
+    );
+  }
 }
+
+/// `system` follows the platform's brightness as it changes.
+ThemeMode _themeMode(ThemeChoice? theme) => switch (theme) {
+  ThemeChoice.light => ThemeMode.light,
+  ThemeChoice.dark => ThemeMode.dark,
+  ThemeChoice.system || null => ThemeMode.system,
+};
+
+/// `system` is no locale: Flutter resolves the platform's on the supported
+/// locales and falls back to English, the first (BR-SETTINGS-006).
+Locale? _locale(LanguageChoice? language) => switch (language) {
+  LanguageChoice.en => const Locale('en'),
+  LanguageChoice.vi => const Locale('vi'),
+  LanguageChoice.system || null => null,
+};

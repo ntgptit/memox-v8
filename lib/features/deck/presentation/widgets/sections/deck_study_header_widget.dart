@@ -18,10 +18,15 @@ class DeckStudyHeaderWidget extends ConsumerWidget {
     super.key,
     required this.deckId,
     required this.part,
+    this.trailingLabel,
   });
 
   final String deckId;
   final DeckStudyHeaderPart part;
+
+  /// A page under the deck (screen 15's "Study options"): the breadcrumb's
+  /// last, current segment.
+  final String? trailingLabel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +52,8 @@ class DeckStudyHeaderWidget extends ConsumerWidget {
           for (final entry in view.breadcrumb)
             MxBreadcrumbSegment(label: entry.name),
           MxBreadcrumbSegment(label: view.deck.name),
+          if (trailingLabel case final label?)
+            MxBreadcrumbSegment(label: label),
         ],
       ),
     };

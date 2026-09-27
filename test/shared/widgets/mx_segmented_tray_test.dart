@@ -91,6 +91,38 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('labels too wide for one line stack, one option per line, '
+      'each a full-width target', (tester) async {
+    _Range? picked;
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 200,
+        child: MxSegmentedTray(
+          segments: const [
+            MxSegment(value: _Range.week, label: 'Theo ngày tạo'),
+            MxSegment(value: _Range.month, label: 'Ngẫu nhiên'),
+          ],
+          selected: _Range.week,
+          onSelected: (v) => picked = v,
+        ),
+      ),
+      textScale: 2,
+    );
+
+    expect(tester.takeException(), isNull);
+    final first = tester.getRect(find.text('Theo ngày tạo'));
+    final second = tester.getRect(find.text('Ngẫu nhiên'));
+    expect(second.top, greaterThan(first.bottom));
+    expect(
+      _thumb(tester, 'Theo ngày tạo').color,
+      scheme.surfaceContainerLowest,
+    );
+    await tester.tap(find.text('Ngẫu nhiên'));
+    expect(picked, _Range.month);
+    await expectAccessibleTargets(tester);
+  });
+
   test('two or three options only', () {
     expect(
       () => MxSegmentedTray(

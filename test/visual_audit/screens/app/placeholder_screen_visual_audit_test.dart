@@ -11,7 +11,7 @@ void main() {
       pump: (brightness, scale) => pumpLibraryScreen(
         tester,
         env,
-        PlaceholderScreen(title: 'Study', onOpenGallery: () {}),
+        const PlaceholderScreen(title: 'Study'),
         brightness: brightness,
         textScale: scale,
       ),

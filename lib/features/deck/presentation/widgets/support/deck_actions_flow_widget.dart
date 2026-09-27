@@ -27,6 +27,7 @@ Future<void> openDeckActions(
   required ValueChanged<String> onOpenDeck,
   required ValueChanged<String> onOpenAlgorithm,
   required ValueChanged<String> onOpenStudy,
+  required ValueChanged<String> onOpenStudyOptions,
   required bool isOpenDeck,
   VoidCallback? onImportCards,
   VoidCallback? onExportCards,
@@ -68,6 +69,8 @@ Future<void> openDeckActions(
       onOpenDeck(deckId);
     case DeckAction.study:
       onOpenStudy(deckId);
+    case DeckAction.studyOptions:
+      onOpenStudyOptions(deckId);
     case DeckAction.rename:
       await showRenameDeckDialog(context, deck: view.deck);
     case DeckAction.move:

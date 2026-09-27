@@ -97,8 +97,15 @@ Traced from FE-B1's `trash_selection_light.png` golden and the code on `master`:
 ### 4.3 Selecting row checkbox (D4)
 
 `card_row_widget.dart` and `trash_entry_row_widget.dart`: while selecting, the leading
-checkbox is centred vertically on the row. The non-selecting leading (status dot, icon
-tile) keeps its current alignment.
+checkbox is centred vertically on the row. ~~The non-selecting leading (status dot, icon
+tile) keeps its current alignment.~~
+
+**Superseded (owner, 2026-09-26, second ruling):** every leading and trailing mark of
+a row centres on the row, selecting or not: the status dot, the icon tile, the row
+number, the status mark, the due column and ⋮. The rows drop
+`CrossAxisAlignment.start`, so the checkbox no longer needs `IntrinsicHeight`. The
+guard rule `memox_v8.design_system.row_marks_centre_on_the_row` holds it. UI-base
+§9 row 117 lists the rows and the exclusions.
 
 ### 4.4 Overline (D5)
 

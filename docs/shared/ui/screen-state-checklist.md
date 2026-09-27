@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **122**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **60**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **143**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **39**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -50,7 +50,7 @@ Kit có **26 màn, 211 state**. Xong **122**; một phần **5**; đã dựng nh
 | 12 | Card export | FE-B3 | 9 | 9 | 0 | 0 | 0 | [12-card-export.md](screen-handoff/12-card-export.md) |
 | 13 | Study home | FE-A8 | 7 | 7 | 0 | 0 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
 | 14 | Study entry | FE-A6, FE-A7 | 9 | 9 | 0 | 0 | 0 | [14-study-entry.md](screen-handoff/14-study-entry.md) |
-| 15 | Study options | FE-A3 | 7 | 0 | 0 | 7 | 0 | — |
+| 15 | Study options | FE-A3 | 7 | 7 | 0 | 0 | 0 | [15-study-options.md](screen-handoff/15-study-options.md) |
 | 16 | Study · Browse | FE-A6 | 1 | 1 | 0 | 0 | 0 | [16-study-browse.md](screen-handoff/16-study-browse.md) |
 | 17 | Study · Match | FE-A6 | 1 | 1 | 0 | 0 | 0 | [17-study-match.md](screen-handoff/17-study-match.md) |
 | 18 | Study · Guess | FE-A6 | 1 | 1 | 0 | 0 | 0 | [18-study-guess.md](screen-handoff/18-study-guess.md) |
@@ -58,10 +58,10 @@ Kit có **26 màn, 211 state**. Xong **122**; một phần **5**; đã dựng nh
 | 20 | Study · Fill | FE-A6 | 3 | 3 | 0 | 0 | 0 | [20-study-fill.md](screen-handoff/20-study-fill.md) |
 | 21 | Session summary | FE-A6 | 10 | 8 | 1 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
 | 22 | Progress | FE-A9 | 8 | 0 | 0 | 8 | 0 | — |
-| 23 | Settings | FE-A3 | 8 | 0 | 0 | 8 | 0 | — |
+| 23 | Settings | FE-A3 | 8 | 8 | 0 | 0 | 0 | [23-settings.md](screen-handoff/23-settings.md) |
 | 24 | Daily reminder | FE-B5 | 9 | 0 | 0 | 9 | 0 | — |
-| 25 | Theme | FE-A3 | 3 | 0 | 0 | 3 | 0 | — |
-| 26 | Language | FE-A3 | 3 | 0 | 0 | 3 | 0 | — |
+| 25 | Theme | FE-A3 | 3 | 3 | 0 | 0 | 0 | [25-theme.md](screen-handoff/25-theme.md) |
+| 26 | Language | FE-A3 | 3 | 3 | 0 | 0 | 0 | [26-language.md](screen-handoff/26-language.md) |
 
 ## Theo màn
 
@@ -319,17 +319,17 @@ FE-A6, FE-A7 · [14-study-entry.md](screen-handoff/14-study-entry.md)
 
 ### 15 · Study options
 
-FE-A3 · chưa có detail file
+FE-A3 · [15-study-options.md](screen-handoff/15-study-options.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Deck override | — | chưa làm |  |
-| [ ] | App defaults | — | chưa làm |  |
-| [ ] | Invalid limit | — | chưa làm |  |
-| [ ] | Saving | — | chưa làm |  |
-| [ ] | Saved | — | chưa làm |  |
-| [ ] | Save failed | — | chưa làm |  |
-| [ ] | Loading | — | chưa làm |  |
+| [x] | Deck override | `override` | xong | Save chỉ bật khi có thay đổi hợp lệ (D9). |
+| [x] | App defaults | `defaults` | xong |  |
+| [x] | Invalid limit | `invalid` | xong | Thông báo nằm dưới stepper (UC E1). |
+| [x] | Saving | `saving` | xong | Nút chỉ có spinner, không có chữ "Saving…". |
+| [x] | Saved | `saved` | xong |  |
+| [x] | Save failed | `saveFailed` | xong |  |
+| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 125). |
 
 ### 16 · Study · Browse
 
@@ -422,18 +422,18 @@ FE-A9 · chưa có detail file
 
 ### 23 · Settings
 
-FE-A3 · chưa có detail file
+FE-A3 · [23-settings.md](screen-handoff/23-settings.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Loaded | — | chưa làm |  |
-| [ ] | Loading | — | chưa làm |  |
-| [ ] | Saving | — | chưa làm |  |
-| [ ] | Saved | — | chưa làm |  |
-| [ ] | Invalid limit | — | chưa làm |  |
-| [ ] | Save failed | — | chưa làm |  |
-| [ ] | Reset options | — | chưa làm |  |
-| [ ] | Options reset | — | chưa làm |  |
+| [x] | Loaded | `loaded` | xong | Theme là hàng mở màn 25 (D2); hàng Daily reminder ẩn tới FE-B5. |
+| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 125). |
+| [x] | Saving | `saving` | xong | Spinner trong stepper. |
+| [x] | Saved | `saved` | xong |  |
+| [x] | Invalid limit | `invalidLimit` | xong | Thông báo nằm dưới stepper (UC E1). |
+| [x] | Save failed | `saveFailed` | xong |  |
+| [x] | Reset options | `resetConfirm` | xong |  |
+| [x] | Options reset | `resetDone` | xong |  |
 
 ### 24 · Daily reminder
 
@@ -453,23 +453,23 @@ FE-B5 · chưa có detail file
 
 ### 25 · Theme
 
-FE-A3 · chưa có detail file
+FE-A3 · [25-theme.md](screen-handoff/25-theme.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | System | — | chưa làm |  |
-| [ ] | Light | — | chưa làm |  |
-| [ ] | Dark | — | chưa làm |  |
+| [x] | System | `system` | xong | Tiêu đề "Theme", dòng mô tả dễ hiểu (D7). |
+| [x] | Light | `light` | xong |  |
+| [x] | Dark | `dark` | xong |  |
 
 ### 26 · Language
 
-FE-A3 · chưa có detail file
+FE-A3 · [26-language.md](screen-handoff/26-language.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | English | — | chưa làm |  |
-| [ ] | Switched to Vietnamese | — | chưa làm |  |
-| [ ] | Follow system | — | chưa làm |  |
+| [x] | English | `english` | xong | Hàng radio `MxOptionRow`. |
+| [x] | Switched to Vietnamese | `vietnamese` | xong | Toast viết bằng ngôn ngữ mới. |
+| [x] | Follow system | `system` | xong | Dòng phụ nói `system` đang ra ngôn ngữ nào (D8). |
 
 ## Cập nhật
 
@@ -478,3 +478,6 @@ FE-A3 · chưa có detail file
 - **Khi kit đổi phiên bản:** so lại danh sách state với bộ chuyển state của kit, rồi
   sửa dòng "Nguồn" và `tools/design/screen_states.json`.
 - **Tạo ngày 2026-09-26** theo yêu cầu của chủ dự án, từ `master` tại `e2ad9de`.
+- **Cập nhật ngày 2026-09-26:** FE-A3 plan 1 dựng màn 23, 25 và 26; 14 state chuyển sang
+  xong.
+- **Cập nhật ngày 2026-09-27:** FE-A3 plan 2 dựng màn 15; 7 state chuyển sang xong.

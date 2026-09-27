@@ -189,6 +189,20 @@
       ]
     },
     {
+      "num": "15",
+      "dir": "15-study-options",
+      "title": "Study options",
+      "states": [
+        { "id": "override", "label": "Deck override" },
+        { "id": "defaults", "label": "App defaults" },
+        { "id": "invalid", "label": "Invalid limit" },
+        { "id": "saving", "label": "Saving" },
+        { "id": "saved", "label": "Saved" },
+        { "id": "saveFailed", "label": "Save failed" },
+        { "id": "loading", "label": "Loading" }
+      ]
+    },
+    {
       "num": "16",
       "dir": "16-study-browse",
       "title": "Study · Browse",
@@ -246,6 +260,41 @@
         { "id": "schedulerChanged", "label": "Algorithm changed" },
         { "id": "saveError", "label": "Save error" },
         { "id": "loading", "label": "Loading" }
+      ]
+    },
+    {
+      "num": "23",
+      "dir": "23-settings",
+      "title": "Settings",
+      "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "saving", "label": "Saving" },
+        { "id": "saved", "label": "Saved" },
+        { "id": "invalidLimit", "label": "Invalid limit" },
+        { "id": "saveFailed", "label": "Save failed" },
+        { "id": "resetConfirm", "label": "Reset options" },
+        { "id": "resetDone", "label": "Options reset" }
+      ]
+    },
+    {
+      "num": "25",
+      "dir": "25-theme",
+      "title": "Theme",
+      "states": [
+        { "id": "system", "label": "System" },
+        { "id": "light", "label": "Light" },
+        { "id": "dark", "label": "Dark" }
+      ]
+    },
+    {
+      "num": "26",
+      "dir": "26-language",
+      "title": "Language",
+      "states": [
+        { "id": "english", "label": "English" },
+        { "id": "vietnamese", "label": "Switched to Vietnamese" },
+        { "id": "system", "label": "Follow system" }
       ]
     }
   ]

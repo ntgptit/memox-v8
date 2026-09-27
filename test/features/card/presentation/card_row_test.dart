@@ -8,6 +8,8 @@ import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_due_chip_widget.dart';
+import 'package:memox/shared/widgets/mx_status_badge.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
@@ -200,5 +202,41 @@ void main() {
     );
 
     expect(box.center.dy, closeTo(card.center.dy, 0.5));
+  });
+
+  libraryTest('the status dot and the trailing column are centred on a tall '
+      'row (owner 2026-09-26)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(
+            back: 'a back long enough to need its full line in the row',
+            isFlagged: true,
+            tags: ['hay nham', 'TOPIK I', 'dong tu'],
+          ),
+          isSelecting: false,
+          isSelected: false,
+        ),
+      ]),
+    );
+
+    expectCentredOn(
+      tester,
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.byType(MxCard),
+      ),
+      [
+        find.byType(MxStatusBadge),
+        find
+            .ancestor(
+              of: find.byType(CardDueChipWidget),
+              matching: find.byType(Column),
+            )
+            .first,
+      ],
+    );
   });
 }

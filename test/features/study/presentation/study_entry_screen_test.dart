@@ -49,6 +49,26 @@ MxStatTile _tile(WidgetTester tester, String label) => tester
     .singleWhere((tile) => tile.label == label);
 
 void main() {
+  libraryTest('the app bar\'s Study options icon opens the deck\'s options '
+      '(FE-A3 D3, kit 14)', (tester, env) async {
+    final deck = await env.decks.root('Korean');
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      StudyEntryScreen(
+        deckId: deck.id,
+        title: const Text('Deck'),
+        breadcrumb: const SizedBox.shrink(),
+        onOpenSession: (_) {},
+        onOpenStudyOptions: () => opened++,
+      ),
+    );
+
+    await tester.tap(find.byTooltip(_en.deckStudyOptions));
+    expect(opened, 1);
+  });
+
   libraryTest('New and Due are two figures, never one sum, and the overdue '
       'note counts the due cards from before today (IT-STUDY-001)', (
     tester,

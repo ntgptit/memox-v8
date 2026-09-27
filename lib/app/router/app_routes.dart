@@ -12,6 +12,16 @@ abstract final class AppRoutes {
   /// A study session, full screen on the root navigator (FE-A6 D2).
   static const String studySessionPath = '$study/session/:$sessionIdParam';
 
+  /// The theme (screen 25), relative to [settings]: a full-screen page on
+  /// the root navigator, as the kit draws it (FE-A3 D2).
+  static const String settingsThemeChild = 'theme';
+  static const String settingsTheme = '$settings/$settingsThemeChild';
+
+  /// The language (screen 26), relative to [settings], on the root
+  /// navigator.
+  static const String settingsLanguageChild = 'language';
+  static const String settingsLanguage = '$settings/$settingsLanguageChild';
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 
@@ -35,6 +45,9 @@ abstract final class AppRoutes {
   /// A deck's Study Entry (screen 14), relative to [deckChild] (FE-A6 D1).
   static const String studyChild = 'study';
 
+  /// A deck's study options (screen 15), relative to [deckChild] (FE-A3).
+  static const String studyOptionsChild = 'options';
+
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
@@ -57,6 +70,10 @@ abstract final class AppRoutes {
 
   /// Screen 14 for [deckId].
   static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
+
+  /// Screen 15 for [deckId], whose options are its root's.
+  static String studyOptions(String deckId) =>
+      '${deck(deckId)}/$studyOptionsChild';
 
   /// The session [sessionId], its summary once it has ended.
   static String studySession(String sessionId) => '$study/session/$sessionId';

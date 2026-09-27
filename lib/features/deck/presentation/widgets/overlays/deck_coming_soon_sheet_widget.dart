@@ -21,7 +21,6 @@ class DeckComingSoonSheetWidget extends StatelessWidget {
   const DeckComingSoonSheetWidget({super.key});
 
   static List<(IconData, String, String)> _features(AppLocalizations l10n) => [
-    (AppIcons.settings, l10n.deckStudyOptions, l10n.comingSoonStudyOptionsBody),
     (
       AppIcons.progress,
       l10n.comingSoonProgressSort,

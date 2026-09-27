@@ -48,6 +48,7 @@ EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
   if (studyConfig == null) {
     return EffectiveStudyOptions(
       rootDeckId: root.id,
+      rootDeckName: root.name,
       options: appDefaults,
       source: StudyOptionsSource.appDefaults,
     );
@@ -56,12 +57,14 @@ EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
   if (override == null) {
     return EffectiveStudyOptions(
       rootDeckId: root.id,
+      rootDeckName: root.name,
       options: appDefaults,
       source: StudyOptionsSource.unreadableRootOverride,
     );
   }
   return EffectiveStudyOptions(
     rootDeckId: root.id,
+    rootDeckName: root.name,
     options: override,
     source: StudyOptionsSource.rootOverride,
   );
