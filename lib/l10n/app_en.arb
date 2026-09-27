@@ -5408,5 +5408,194 @@
   "studyOptionsSaved": "Saved · applies to the next session",
   "@studyOptionsSaved": {
     "description": "Screen handoff 15 (FE-A3 plan 2): toast after a save."
+  },
+  "starterTitle": "Starter decks",
+  "@starterTitle": {
+    "description": "Screen 03: the app bar title."
+  },
+  "starterNote": "These decks are practice fixtures for development and testing, not published course material. Anything you add is yours to edit.",
+  "@starterNote": {
+    "description": "Screen 03: the note above the templates (BR-STARTER-010)."
+  },
+  "starterInLibrary": "In library",
+  "@starterInLibrary": {
+    "description": "Screen 03: the badge of a template already in the library."
+  },
+  "starterCardCount": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@starterCardCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 03: a template's card count."
+  },
+  "starterSubDeckCount": "{count, plural, =1{1 sub-deck} other{{count} sub-decks}}",
+  "@starterSubDeckCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 03: a template's sub-deck count."
+  },
+  "starterAddToLibrary": "Add to library",
+  "@starterAddToLibrary": {
+    "description": "Screen 03: adds a template not in the library yet."
+  },
+  "starterAddAnotherCopy": "Add another copy",
+  "@starterAddAnotherCopy": {
+    "description": "Screen 03: adds a second copy of a template (BR-STARTER-008)."
+  },
+  "starterSuggests": "Suggests {algorithm}",
+  "@starterSuggests": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 03: the scheduler a template suggests (BR-STARTER-004)."
+  },
+  "starterSchedulerSm2": "SM-2",
+  "@starterSchedulerSm2": {
+    "description": "Screen 03: the SM-2 scheduler's name."
+  },
+  "starterSchedulerEightBox": "Eight boxes",
+  "@starterSchedulerEightBox": {
+    "description": "Screen 03: the Eight boxes scheduler's name."
+  },
+  "starterLanguageEnglish": "English",
+  "@starterLanguageEnglish": {
+    "description": "Screen 03: the language tag en."
+  },
+  "starterLanguageVietnamese": "Vietnamese",
+  "@starterLanguageVietnamese": {
+    "description": "Screen 03: the language tag vi."
+  },
+  "starterLanguageKorean": "Korean",
+  "@starterLanguageKorean": {
+    "description": "Screen 03: the language tag ko."
+  },
+  "starterLanguageLatin": "Latin",
+  "@starterLanguageLatin": {
+    "description": "Screen 03: a language tag in the Latin script, such as ko-Latn (spec D7)."
+  },
+  "starterSheetTitle": "Add “{title}”",
+  "@starterSheetTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 03 algorithm sheet: the title."
+  },
+  "starterSheetBody": "{cards, plural, =1{1 card} other{{cards} cards}} in {decks, plural, =1{1 sub-deck} other{{decks} sub-decks}}, as a new deck of your own.",
+  "@starterSheetBody": {
+    "placeholders": {
+      "cards": {
+        "type": "int"
+      },
+      "decks": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 03 algorithm sheet: what the copy holds."
+  },
+  "starterSheetOverline": "Review algorithm · required",
+  "@starterSheetOverline": {
+    "description": "Screen 03 algorithm sheet: the header above the two schedulers."
+  },
+  "starterSm2Description": "grade yourself, intervals adapt",
+  "@starterSm2Description": {
+    "description": "Screen 03 algorithm sheet: what SM-2 does."
+  },
+  "starterEightBoxDescription": "Boxes 1–8 · match, guess, recall, fill",
+  "@starterEightBoxDescription": {
+    "description": "Screen 03 algorithm sheet: what Eight boxes does."
+  },
+  "starterSuggested": "Suggested for this deck · {description}",
+  "@starterSuggested": {
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 03 algorithm sheet: the suggested scheduler's description."
+  },
+  "starterAddDeck": "Add deck",
+  "@starterAddDeck": {
+    "description": "Screen 03 algorithm sheet: adds the template."
+  },
+  "starterTryAgain": "Try again",
+  "@starterTryAgain": {
+    "description": "Screen 03 algorithm sheet: adds again after a failure (addFailed)."
+  },
+  "starterAddFailedTitle": "Couldn't add the deck.",
+  "@starterAddFailedTitle": {
+    "description": "Screen 03 algorithm sheet: the failure banner's lead (addFailed)."
+  },
+  "starterAddFailedBody": "Nothing was copied — try again.",
+  "@starterAddFailedBody": {
+    "description": "Screen 03 algorithm sheet: the failure banner's body (addFailed)."
+  },
+  "starterAdded": "Added “{title}” · {algorithm} · {count, plural, =1{1 new card} other{{count} new cards}}",
+  "@starterAdded": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "algorithm": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 03: the toast after an add (added)."
+  },
+  "starterOpen": "Open",
+  "@starterOpen": {
+    "description": "Screen 03: the added toast's action; opens the new deck."
+  },
+  "starterAlreadyPresent": "Already in your library — nothing was copied",
+  "@starterAlreadyPresent": {
+    "description": "Screen 03: the toast when a copy is already there (alreadyPresent)."
+  },
+  "starterSecondCopyTitle": "Add a second copy?",
+  "@starterSecondCopyTitle": {
+    "description": "Screen 03 second copy dialog: the title (BR-STARTER-008)."
+  },
+  "starterSecondCopyBody": "“{title}” is already in your library. A second copy is a separate deck with its own progress.",
+  "@starterSecondCopyBody": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 03 second copy dialog: the body."
+  },
+  "starterSecondCopyConfirm": "Add second copy",
+  "@starterSecondCopyConfirm": {
+    "description": "Screen 03 second copy dialog: confirms and opens the algorithm sheet."
+  },
+  "starterNoneTitle": "No starter decks in this build",
+  "@starterNoneTitle": {
+    "description": "Screen 03: the empty state title (none)."
+  },
+  "starterNoneBody": "This version ships without practice content. Create a deck or import cards instead.",
+  "@starterNoneBody": {
+    "description": "Screen 03: the empty state body (none)."
+  },
+  "starterCreateDeck": "Create a deck",
+  "@starterCreateDeck": {
+    "description": "Screen 03: the empty state action; back to the Library's create dialog."
+  },
+  "starterLoadErrorTitle": "Couldn't load starter decks",
+  "@starterLoadErrorTitle": {
+    "description": "Screen 03: the read error title (loadFailed)."
+  },
+  "starterLoadErrorBody": "Your library is unaffected. Try again in a moment.",
+  "@starterLoadErrorBody": {
+    "description": "Screen 03: the read error body (loadFailed)."
   }
 }

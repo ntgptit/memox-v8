@@ -64,6 +64,8 @@ abstract final class AppIcons {
       Icons.settings_backup_restore; // rotate-ccw
   static const IconData safe = Icons.verified_user_outlined; // shield-check
   static const IconData textScale = Icons.format_size;
+  // Development fixtures (screen 03, BR-STARTER-010).
+  static const IconData fixture = Icons.science_outlined; // flask-conical
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
   static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles

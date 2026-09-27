@@ -13,7 +13,7 @@ class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
     required String this.cancelLabel,
-    required VoidCallback this.onCancel,
+    required this.onCancel,
     required String this.confirmLabel,
     required this.onConfirm,
     this.confirmIcon,
@@ -41,6 +41,8 @@ class MxSheetActions extends StatelessWidget {
        isConfirmLoading = false;
 
   final String? cancelLabel;
+
+  /// Null disables Cancel, as while an add runs (screen 03 `adding`).
   final VoidCallback? onCancel;
   final String? confirmLabel;
 

@@ -72,11 +72,14 @@ final class StarterLibraryFake implements StarterLibraryRepository {
     LibraryEnv env, {
     List<StarterTemplate>? templates,
     bool failsLoad = false,
+    Future<void>? loaded,
   }) : _library = StarterLibraryRepositoryImpl(
          env.db,
          env.decks,
          env.cards,
          templates: () async {
+           // A read that never ends leaves the screen `loading`.
+           await loaded;
            if (failsLoad) {
              throw UnknownDatabaseFailure(cause: StateError('load failed'));
            }
