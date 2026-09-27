@@ -140,6 +140,10 @@
   "@deckSortDue": {
     "description": "Deck order: most due cards first."
   },
+  "deckSortProgress": "Progress",
+  "@deckSortProgress": {
+    "description": "Deck order: least mastered first (BR-DECK-027)."
+  },
   "deckCreateRootTitle": "New deck",
   "@deckCreateRootTitle": {
     "description": "Title of the new top-level deck dialog."
@@ -1847,6 +1851,10 @@
   "deckSortNameHint": "A → Z",
   "@deckSortNameHint": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortNameHint."
+  },
+  "deckSortProgressHint": "Least mastered first",
+  "@deckSortProgressHint": {
+    "description": "Screen handoff 01: the Progress sort's sub-line (BR-DECK-027)."
   },
   "deckFilterDueOnlyTitle": "Only decks with due cards",
   "@deckFilterDueOnlyTitle": {

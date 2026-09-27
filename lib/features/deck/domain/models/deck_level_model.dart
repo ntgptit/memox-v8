@@ -17,6 +17,7 @@ final class DeckTile {
     required this.newCount,
     required this.overdueCount,
     required this.dueTodayCount,
+    required this.masteredCount,
     required this.oldestDueAt,
     required this.startOfToday,
   });
@@ -36,6 +37,9 @@ final class DeckTile {
   final int overdueCount;
   final int dueTodayCount;
 
+  /// The subtree's cards whose display status is mastered (BR-DECK-026).
+  final int masteredCount;
+
   /// The `due_at` of the subtree's oldest Due card; null when none is Due.
   final DateTime? oldestDueAt;
   final DateTime startOfToday;
@@ -44,6 +48,11 @@ final class DeckTile {
 
   /// Learned cards not Due yet: the neutral set (BR-STUDY-068).
   int get scheduledCount => cardCount - newCount - dueCount;
+
+  /// Mastered over every card of the subtree (BR-DECK-026); null when the
+  /// subtree holds no card, which has nothing to master.
+  double? get masteryFraction =>
+      cardCount == 0 ? null : masteredCount / cardCount;
 
   DeckScheduleStatus get scheduleStatus =>
       DeckScheduleStatus.of(oldestDueAt, startOfToday);
@@ -64,6 +73,8 @@ final class DeckLevel {
     required this.scheduledCount,
     required this.maxOverdueDays,
     required this.deckCount,
+    required this.cardCount,
+    required this.masteredCount,
   });
 
   factory DeckLevel.of(
@@ -88,6 +99,8 @@ final class DeckLevel {
             tile.overdueDays > longest ? tile.overdueDays : longest,
       ),
       deckCount: tiles.length,
+      cardCount: sum((tile) => tile.cardCount),
+      masteredCount: sum((tile) => tile.masteredCount),
     );
   }
 
@@ -100,4 +113,13 @@ final class DeckLevel {
 
   /// Every deck of the level, whatever the filter (the open deck's summary).
   final int deckCount;
+
+  /// The cards of every deck of the level, whatever the filter.
+  final int cardCount;
+
+  /// The mastered cards among [cardCount] (BR-DECK-026).
+  final int masteredCount;
+
+  /// The level's mastery for the open deck's donut; 0 with no card.
+  double get masteryFraction => cardCount == 0 ? 0 : masteredCount / cardCount;
 }

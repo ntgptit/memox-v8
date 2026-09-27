@@ -29,6 +29,7 @@ DeckTile _tile({
   newCount: 0,
   overdueCount: overdue,
   dueTodayCount: today,
+  masteredCount: 0,
   oldestDueAt: overdue > 0 ? DateTime(2026, 9, 20) : null,
   startOfToday: _today,
 );
