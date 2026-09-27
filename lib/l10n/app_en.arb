@@ -20,14 +20,6 @@
   "@navSettings": {
     "description": "Bottom navigation: the settings tab."
   },
-  "placeholderTitle": "Coming soon",
-  "@placeholderTitle": {
-    "description": "Title on a tab whose screen is not built yet."
-  },
-  "placeholderBody": "This screen is being built.",
-  "@placeholderBody": {
-    "description": "Line under placeholderTitle."
-  },
   "openGallery": "Component gallery",
   "@openGallery": {
     "description": "Debug builds only: the Settings action that opens the component gallery."
@@ -4601,6 +4593,239 @@
       }
     },
     "description": "Screen handoff 13 (FE-A8): a deck row's badge."
+  },
+  "progressTitle": "Progress",
+  "@progressTitle": {
+    "description": "Screen handoff 22 (FE-A9): the Progress tab's app bar title."
+  },
+  "progressToday": "Today",
+  "@progressToday": {
+    "description": "Screen handoff 22 (FE-A9): the Today card's overline, and the last day bar's label."
+  },
+  "progressTodaySplit": "{learning} learning · {reviewing} reviewing · a card counts once per day",
+  "@progressTodaySplit": {
+    "placeholders": {
+      "learning": {
+        "type": "int"
+      },
+      "reviewing": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): Today's sub-line: its card-days split into learning and reviewing."
+  },
+  "progressTodayNone": "No cards studied yet today",
+  "@progressTodayNone": {
+    "description": "Screen handoff 22 (FE-A9): Today's sub-line when today has no card-day."
+  },
+  "progressNothingYet": "Nothing studied yet",
+  "@progressNothingYet": {
+    "description": "Screen handoff 22 (FE-A9): Today's sub-line when nothing was ever studied."
+  },
+  "progressLearning": "Learning",
+  "@progressLearning": {
+    "description": "Screen handoff 22 (FE-A9): the chart legend's learning series."
+  },
+  "progressReviewing": "Reviewing",
+  "@progressReviewing": {
+    "description": "Screen handoff 22 (FE-A9): the chart legend's reviewing series."
+  },
+  "progressDayBar": "{day}: {total, plural, =1{1 card} other{{total} cards}}, {learning} learning, {reviewing} reviewing",
+  "@progressDayBar": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "learning": {
+        "type": "int"
+      },
+      "reviewing": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): what TalkBack reads for one day bar; day is the weekday name."
+  },
+  "progressStreak": "Streak",
+  "@progressStreak": {
+    "description": "Screen handoff 22 (FE-A9): the Streak card's overline."
+  },
+  "progressStreakCurrent": "Current",
+  "@progressStreakCurrent": {
+    "description": "Screen handoff 22 (FE-A9): the current streak tile's label."
+  },
+  "progressStreakDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@progressStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): the current streak in days."
+  },
+  "progressStreakIncludesToday": "includes today",
+  "@progressStreakIncludesToday": {
+    "description": "Screen handoff 22 (FE-A9): the streak tile when today has activity."
+  },
+  "progressStreakHeld": "held from yesterday",
+  "@progressStreakHeld": {
+    "description": "Screen handoff 22 (FE-A9): the streak tile when only yesterday has activity."
+  },
+  "progressStreakLost": "no study yesterday",
+  "@progressStreakLost": {
+    "description": "Screen handoff 22 (FE-A9): the streak tile when the streak is lost."
+  },
+  "progressTodayCards": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@progressTodayCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): the Today tile's count."
+  },
+  "progressTodayCounted": "counted once each",
+  "@progressTodayCounted": {
+    "description": "Screen handoff 22 (FE-A9): the Today tile when today has activity."
+  },
+  "progressTodayNothing": "nothing yet",
+  "@progressTodayNothing": {
+    "description": "Screen handoff 22 (FE-A9): the Today tile when today has no activity."
+  },
+  "progressHeldNote": "Study one card today and the streak continues at {next}.",
+  "@progressHeldNote": {
+    "placeholders": {
+      "next": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): the note under a streak held from yesterday."
+  },
+  "progressLostNote": "The streak ended on {day}. It starts again with the next card you study.",
+  "@progressLostNote": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): the note under a lost streak; day is a weekday name or a short date."
+  },
+  "progressNeverChart": "Your last seven days appear here once you study. Browsing cards does not count.",
+  "@progressNeverChart": {
+    "description": "Screen handoff 22 (FE-A9): Today's placeholder when nothing was ever studied."
+  },
+  "progressNeverStreak": "A streak starts with your first study day.",
+  "@progressNeverStreak": {
+    "description": "Screen handoff 22 (FE-A9): the Streak card's placeholder when nothing was ever studied."
+  },
+  "progressStartStudying": "Start studying",
+  "@progressStartStudying": {
+    "description": "Screen handoff 22 (FE-A9): the button that opens the Study tab when nothing was ever studied (FE-A9 D1)."
+  },
+  "progressRangeWeek": "Last 7 days",
+  "@progressRangeWeek": {
+    "description": "Screen handoff 22 (FE-A9): the range tray option for seven days."
+  },
+  "progressRangeMonth": "Last 30 days",
+  "@progressRangeMonth": {
+    "description": "Screen handoff 22 (FE-A9): the range tray option for thirty days."
+  },
+  "progressByDeckWeek": "By deck · last 7 days",
+  "@progressByDeckWeek": {
+    "description": "Screen handoff 22 (FE-A9): the library level's list header at seven days."
+  },
+  "progressByDeckMonth": "By deck · last 30 days",
+  "@progressByDeckMonth": {
+    "description": "Screen handoff 22 (FE-A9): the library level's list header at thirty days."
+  },
+  "progressSubDecksWeek": "Sub-decks · last 7 days",
+  "@progressSubDecksWeek": {
+    "description": "Screen handoff 22 (FE-A9): a deck level's list header at seven days."
+  },
+  "progressSubDecksMonth": "Sub-decks · last 30 days",
+  "@progressSubDecksMonth": {
+    "description": "Screen handoff 22 (FE-A9): a deck level's list header at thirty days."
+  },
+  "progressAllDecks": "All decks",
+  "@progressAllDecks": {
+    "description": "Screen handoff 22 (FE-A9): the library level's total row (FE-A9 D2)."
+  },
+  "progressWholeDeck": "Whole deck",
+  "@progressWholeDeck": {
+    "description": "Screen handoff 22 (FE-A9): a deck level's total row (FE-A9 D2)."
+  },
+  "progressRowDays": "{count, plural, =1{1 active day} other{{count} active days}}",
+  "@progressRowDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): a row's active days in the range."
+  },
+  "progressRowLearning": "{count} learning",
+  "@progressRowLearning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): a row's learning card-days, in the learning ink."
+  },
+  "progressRowReviewing": "{count} reviewing",
+  "@progressRowReviewing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 22 (FE-A9): a row's reviewing card-days, in the primary ink."
+  },
+  "progressRowCards": "cards",
+  "@progressRowCards": {
+    "description": "Screen handoff 22 (FE-A9): the word under a row's active cards."
+  },
+  "progressNoActivity": "No activity in this range",
+  "@progressNoActivity": {
+    "description": "Screen handoff 22 (FE-A9): a row's sub-line when the deck has no activity in the range."
+  },
+  "progressQuietWeek": "Nothing studied in the last 7 days. Switch to Last 30 days to see older study.",
+  "@progressQuietWeek": {
+    "description": "Screen handoff 22 (FE-A9): the note when seven days have no activity (UC-PROGRESS-002 A3)."
+  },
+  "progressQuietMonth": "Nothing studied in the last 30 days.",
+  "@progressQuietMonth": {
+    "description": "Screen handoff 22 (FE-A9): the note when thirty days have no activity (UC-PROGRESS-002 A3)."
+  },
+  "progressNoDecksTitle": "No decks yet",
+  "@progressNoDecksTitle": {
+    "description": "Screen handoff 22 (FE-A9): the library level with no deck (UC-PROGRESS-002 A2)."
+  },
+  "progressNoDecksBody": "Create a deck in the Library and its progress appears here.",
+  "@progressNoDecksBody": {
+    "description": "Screen handoff 22 (FE-A9): the body of the library level with no deck."
+  },
+  "progressLeafNote": "This deck holds its cards directly, so the total above is all of it.",
+  "@progressLeafNote": {
+    "description": "Screen handoff 22 (FE-A9): a deck level with no sub-deck (UC-PROGRESS-002 A1)."
+  },
+  "progressFooter": "Read-only · a card studied several times in a day counts once · resets change nothing here",
+  "@progressFooter": {
+    "description": "Screen handoff 22 (FE-A9): the line at the end of every level."
+  },
+  "progressErrorTitle": "Couldn't summarise your progress",
+  "@progressErrorTitle": {
+    "description": "Screen handoff 22 (FE-A9): the error state (UC-PROGRESS-001 E1)."
+  },
+  "progressErrorBody": "Your study history is safe on this device. Try again in a moment.",
+  "@progressErrorBody": {
+    "description": "Screen handoff 22 (FE-A9): the error state's body."
+  },
+  "progressLoading": "Loading your progress",
+  "@progressLoading": {
+    "description": "Screen handoff 22 (FE-A9): what TalkBack reads while the screen loads."
   },
   "studyHomeNoDecksTitle": "Nothing to study yet",
   "@studyHomeNoDecksTitle": {

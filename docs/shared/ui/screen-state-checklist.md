@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **143**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **39**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **151**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **31**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -57,7 +57,7 @@ Kit có **26 màn, 211 state**. Xong **143**; một phần **5**; đã dựng nh
 | 19 | Study · Recall | FE-A6 | 3 | 3 | 0 | 0 | 0 | [19-study-recall.md](screen-handoff/19-study-recall.md) |
 | 20 | Study · Fill | FE-A6 | 3 | 3 | 0 | 0 | 0 | [20-study-fill.md](screen-handoff/20-study-fill.md) |
 | 21 | Session summary | FE-A6 | 10 | 8 | 1 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
-| 22 | Progress | FE-A9 | 8 | 0 | 0 | 8 | 0 | — |
+| 22 | Progress | FE-A9 | 8 | 8 | 0 | 0 | 0 | [22-progress.md](screen-handoff/22-progress.md) |
 | 23 | Settings | FE-A3 | 8 | 8 | 0 | 0 | 0 | [23-settings.md](screen-handoff/23-settings.md) |
 | 24 | Daily reminder | FE-B5 | 9 | 0 | 0 | 9 | 0 | — |
 | 25 | Theme | FE-A3 | 3 | 3 | 0 | 0 | 0 | [25-theme.md](screen-handoff/25-theme.md) |
@@ -407,18 +407,21 @@ FE-A6 · [21-session-summary.md](screen-handoff/21-session-summary.md)
 
 ### 22 · Progress
 
-FE-A9 · chưa có detail file
+FE-A9 · [22-progress.md](screen-handoff/22-progress.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Last 7 days | — | chưa làm |  |
-| [ ] | Last 30 days | — | chưa làm |  |
-| [ ] | Streak held | — | chưa làm |  |
-| [ ] | Streak lost | — | chưa làm |  |
-| [ ] | Inside a deck | — | chưa làm |  |
-| [ ] | Never studied | — | chưa làm |  |
-| [ ] | Loading | — | chưa làm |  |
-| [ ] | Error | — | chưa làm |  |
+| [x] | Last 7 days | `loaded` | xong | Bộ chọn khoảng nằm ngay trên danh sách (D10); một hàng tổng, header không ghi tổng (D2). |
+| [x] | Last 30 days | `month` | xong |  |
+| [x] | Streak held | `held` | xong |  |
+| [x] | Streak lost | `lost` | xong | Ghi chú nêu tên thứ trong 6 ngày, xa hơn thì nêu ngày. |
+| [x] | Inside a deck | `deck` | xong | Hàng tổng "Whole deck" (D2). |
+| [x] | Never studied | `never` | xong | Thêm "Start studying" sang tab Học (D1). |
+| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 125). |
+| [x] | Error | `error` | xong |  |
+
+V8 thêm bốn state kit không có: khoảng không có hoạt động (A3), chưa có deck (A2), deck
+không có deck con (A1), deck đã bị xoá (E2).
 
 ### 23 · Settings
 
