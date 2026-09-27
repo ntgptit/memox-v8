@@ -496,7 +496,7 @@ the operation's one transaction.
   - Move BE-C2 to "Đã xong" with status `xong`, this plan and its tests as
     evidence, and next step "—".
   - BE-C1: status "đóng". Evidence: "chủ dự án giữ thứ tự theo code unit
-    (2026-09-27, [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md)
+    (2026-09-27, [spec](../specs/2026-09-27-local-backend-completion-design.md)
     D3)". Next step "—". Drop its row from "Điểm chặn".
   - Add an update-log line for 2026-09-27 (G2).
 - [ ] **Step 2: Run the docs check.**
