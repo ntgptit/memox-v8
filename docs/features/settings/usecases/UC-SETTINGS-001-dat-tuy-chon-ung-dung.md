@@ -88,4 +88,18 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_settings`, **then** ba nhóm Study defaults, Appearance, Language hiện đúng giá trị đang có hiệu lực, không phải placeholder (BR-SETTINGS-001).
+- [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when** dừng thao tác 600 ms, **then** hệ thống ghi đúng một transaction với giá trị cuối cùng, dù bấm nhiều lần liên tiếp (BR-SETTINGS-002, BR-SETTINGS-007).
+- [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc gõ tay một trần thẻ hợp lệ (1–200), **when** thao tác dừng, **then** hệ thống ghi ngay không cần nút lưu, và mọi surface đang mở thấy giá trị mới qua stream (BR-SETTINGS-001, BR-SETTINGS-002).
+- [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** chạm một lựa chọn, **then** hệ thống ghi ngay trong một transaction riêng và giao diện đổi trong cùng phiên chạy, không mất navigation stack (BR-SETTINGS-005).
+- [ ] **Given** người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt`, **when** chạm một lựa chọn, **then** hệ thống ghi ngay và áp dụng ngay trong cùng phiên, cùng cơ chế như theme, và giá trị còn sau khi khởi động lại app (BR-SETTINGS-006).
+- [ ] **Given** một root deck đang có override `study_config`, **when** mặc định học toàn app đổi, **then** deck đó không đổi số nào; root không có override đọc mặc định mới ở lần đọc kế tiếp (BR-SETTINGS-003, A1).
+- [ ] **Given** một root deck đang có override, **when** người dùng bấm "Use app defaults", **then** hệ thống xoá `study_config` của root trong một transaction, deck quay về đọc mặc định toàn app, và tiến độ học cùng lịch sử không đổi (BR-SETTINGS-003, A1).
+- [ ] **Given** một deck không phải root, **when** ghi hoặc xoá override qua đường của root, **then** hệ thống từ chối có kiểu và không ghi gì (BR-SETTINGS-003, A1).
+- [ ] **Given** app đang để `System` cho theme hoặc ngôn ngữ, **when** brightness hoặc locale của hệ điều hành đổi trong lúc app chạy, **then** app đổi theo ngay; nếu đang để giá trị tường minh thì app không đổi (BR-SETTINGS-005, BR-SETTINGS-006, A2).
+- [ ] **Given** người dùng chọn "Reset to defaults" và xác nhận, **when** transaction chạy xong, **then** cả sáu giá trị của `app_settings` về mặc định trong một lần ghi, và `study_config` của mọi root có override không đổi (BR-SETTINGS-008, A3).
+- [ ] **Given** một lần ghi của một nhóm (theme, ngôn ngữ hoặc study defaults) đang chạy, **when** người dùng bấm lại cùng hành động đó, **then** lần bấm sau bị bỏ qua, không có hai transaction (BR-SETTINGS-007, A4).
+- [ ] **Given** người dùng gõ một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn 200, **when** dừng gõ, **then** hệ thống hiện lý do có kiểu ngay dưới trường, không ghi gì, và draft giữ nguyên (BR-SETTINGS-002, BR-SETTINGS-007, E1).
+- [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng thấy thông báo, **then** thông báo có kiểu, không lộ SQL hay đường dẫn file, các control khác vẫn hiện giá trị đã lưu, và Retry ghi lại đúng thay đổi đó (BR-SETTINGS-007, E2).
+- [ ] **Given** stream đọc `app_settings` lỗi, **when** màn Settings nhận lỗi, **then** hệ thống hiện trạng thái lỗi toàn màn kèm Retry, không control nào hiện giá trị bịa (BR-SETTINGS-001, E3).
+- [ ] **Given** "Use app defaults" của một deck thất bại khi ghi, **when** người dùng thấy kết quả, **then** override của root giữ nguyên như trước, lý do có kiểu, không có thay đổi một phần (BR-SETTINGS-003, E4).
