@@ -2517,5 +2517,115 @@
   "studyRejectionOther": "Couldn't do that. Try again.",
   "@studyRejectionOther": {
     "description": "Any other refused study action."
+  },
+  "studySessionContextLine": "{deck} · {kind} · stage {stage} of {total} · {mode}",
+  "@studySessionContextLine": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "kind": {
+        "type": "String"
+      },
+      "stage": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "The centred context line of a session screen (handoff 16)."
+  },
+  "studyBrowseFooterHint": "Swipe left for next, right to look back · nothing is graded here",
+  "@studyBrowseFooterHint": {
+    "description": "Browse's footer hint (BR-MODE-005, BR-STUDY-048)."
+  },
+  "studyBrowseNext": "Next card",
+  "@studyBrowseNext": {
+    "description": "Browse's accessibility action that advances (BR-MODE-005)."
+  },
+  "studyBrowseBack": "Previous card",
+  "@studyBrowseBack": {
+    "description": "Browse's accessibility action that looks back (BR-STUDY-048)."
+  },
+  "studyBrowseTermLabel": "Term",
+  "@studyBrowseTermLabel": {
+    "description": "The label over a Browse card's term half."
+  },
+  "studyBrowseMeaningLabel": "Meaning",
+  "@studyBrowseMeaningLabel": {
+    "description": "The label over a Browse card's meaning half."
+  },
+  "studySessionExitLabel": "Exit session",
+  "@studySessionExitLabel": {
+    "description": "The session top bar's close icon, for screen readers."
+  },
+  "studySessionCounterLabel": "{current} of {total}",
+  "@studySessionCounterLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "The session top bar's counter, for screen readers."
+  },
+  "studySessionLockedRetryTitle": "Couldn't save that answer",
+  "@studySessionLockedRetryTitle": {
+    "description": "A locked write, on the same card (UC-STUDY-001 E2)."
+  },
+  "studySessionLockedRetryBody": "The database is busy. Try again.",
+  "@studySessionLockedRetryBody": {
+    "description": "A locked write, the explanation."
+  },
+  "studySessionStaleSnackbar": "Progress was just reset, so this session closed.",
+  "@studySessionStaleSnackbar": {
+    "description": "A session invalidated by a reset elsewhere (UC-STUDY-001 E4)."
+  },
+  "studySessionGoneSnackbar": "This deck is gone, so the session closed.",
+  "@studySessionGoneSnackbar": {
+    "description": "A session whose deck was deleted (UC-STUDY-001 A5)."
+  },
+  "studySessionLoadErrorTitle": "Couldn't open this session",
+  "@studySessionLoadErrorTitle": {
+    "description": "The session screen could not read the session (UC-STUDY-001 E5)."
+  },
+  "studySessionComingSoonBody": "{mode} is coming in a later update.",
+  "@studySessionComingSoonBody": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    },
+    "description": "A stage whose screen is not built yet (spec §3)."
+  },
+  "studyExitTitle": "Stop this session?",
+  "@studyExitTitle": {
+    "description": "The exit confirm dialog title (spec D8)."
+  },
+  "studyExitBody": "Everything you answered is kept. Cards you haven't reached stay as they were.",
+  "@studyExitBody": {
+    "description": "The exit confirm dialog body."
+  },
+  "studyExitKeep": "Keep studying",
+  "@studyExitKeep": {
+    "description": "The exit confirm dialog: stay in the session."
+  },
+  "studyExitStop": "Stop",
+  "@studyExitStop": {
+    "description": "The exit confirm dialog: stop the session."
+  },
+  "studySummaryTitle": "Session summary",
+  "@studySummaryTitle": {
+    "description": "The summary app bar title (handoff 21)."
+  },
+  "studySummaryDone": "Done",
+  "@studySummaryDone": {
+    "description": "The summary footer's action (handoff 21)."
   }
 }
