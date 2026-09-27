@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:memox/core/sync/sync_entity_ref.dart';
+import 'package:memox/core/sync/sync_outbox.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -20,10 +22,12 @@ import 'package:memox/features/settings/domain/repositories/settings_repository.
 final class SettingsRepositoryImpl implements SettingsRepository {
   SettingsRepositoryImpl(this._db, {DateTime Function()? now})
     : _dao = SettingsDao(_db),
+      _outbox = SyncOutboxWriter(_db, now: now),
       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final SettingsDao _dao;
+  final SyncOutboxWriter _outbox;
   final DateTime Function() _now;
 
   @override
@@ -120,6 +124,11 @@ final class SettingsRepositoryImpl implements SettingsRepository {
         return const Rejected(SettingsRejection.notARootDeck);
       }
       await _dao.setStudyConfig(rootDeckId, studyConfigOf(options), at);
+      await _outbox.patch(
+        SyncEntityType.deck,
+        rootDeckId,
+        SyncPatchGroup.studyOptions,
+      );
       return const Ok(null);
     });
   }
@@ -137,6 +146,11 @@ final class SettingsRepositoryImpl implements SettingsRepository {
       }
       if (root.studyConfig == null) return const Ok(null);
       await _dao.setStudyConfig(rootDeckId, null, at);
+      await _outbox.patch(
+        SyncEntityType.deck,
+        rootDeckId,
+        SyncPatchGroup.studyOptions,
+      );
       return const Ok(null);
     });
   }

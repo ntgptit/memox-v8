@@ -197,6 +197,7 @@ void main() {
     await _insertTree(db);
     // The fixture's own rows are queued too; start from an empty outbox.
     await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement('DELETE FROM sync_changed');
     final before = await totalChanges(db);
 
     final result = await settings.saveRootStudyOptions(
@@ -208,8 +209,9 @@ void main() {
     final root = await _root(db);
     expect(root.studyConfig, '{"card_limit":30,"new_card_order":"random"}');
     expect(root.updatedAt, _t0());
-    // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
-    expect(await totalChanges(db), before + 2);
+    // The root row, the outbox patch (BE-E7), and the TEMP collector's two
+    // bookkeeping writes (the trigger's insert, the patch's drain).
+    expect(await totalChanges(db), before + 4);
     expect(await _queued(db), ['deck/r']);
   });
 
@@ -282,6 +284,7 @@ void main() {
       );
       // The fixture's own rows are queued too; start from an empty outbox.
       await db.customStatement('DELETE FROM sync_outbox');
+      await db.customStatement('DELETE FROM sync_changed');
       final before = await totalChanges(db);
 
       final cleared = await settings.clearRootStudyOptions(rootDeckId: 'r');
@@ -289,8 +292,9 @@ void main() {
       final again = await settings.clearRootStudyOptions(rootDeckId: 'r');
 
       expect(cleared, isA<Ok<void, SettingsRejection>>());
-      // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
-      expect(afterFirst, before + 2);
+      // The root row, the outbox patch (BE-E7), and the TEMP collector's two
+      // bookkeeping writes (the trigger's insert, the patch's drain).
+      expect(afterFirst, before + 4);
       expect(await _queued(db), ['deck/r']);
       expect(again, isA<Ok<void, SettingsRejection>>());
       final root = await _root(db);

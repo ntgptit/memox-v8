@@ -1,4 +1,7 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:memox/core/sync/entity_sync_adapter.dart';
+import 'package:memox/core/sync/sync_entity_ref.dart';
+import 'package:memox/core/sync/sync_outbox.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -28,11 +31,13 @@ final class DeckRepositoryImpl implements DeckRepository {
   DeckRepositoryImpl(this._db, {DateTime Function()? now})
     : _dao = DeckDao(_db),
       _tree = DeckTreeDataSource(_db),
+      _outbox = SyncOutboxWriter(_db, now: now),
       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
   final DeckDao _dao;
   final DeckTreeDataSource _tree;
+  final SyncOutboxWriter _outbox;
   final DateTime Function() _now;
 
   @override
@@ -65,6 +70,11 @@ final class DeckRepositoryImpl implements DeckRepository {
           updatedAt: at,
         ),
       );
+      await _outbox.command(SyncCommandType.createRootDeck, {
+        'id': id,
+        'name': storedText(name),
+        'schedulerType': schedulerType.code,
+      }, subject: SyncEntityRef.deck(id));
       return Ok(deckEntityOf((await _dao.findRow(id))!));
     });
   }
@@ -103,6 +113,11 @@ final class DeckRepositoryImpl implements DeckRepository {
         ),
       );
       await _tree.refreshContentType(parentId, at);
+      await _outbox.command(SyncCommandType.createSubDeck, {
+        'id': id,
+        'parentId': parentId,
+        'name': storedText(name),
+      }, subject: SyncEntityRef.deck(id));
       return Ok(deckEntityOf((await _dao.findRow(id))!));
     });
   }
@@ -139,6 +154,10 @@ final class DeckRepositoryImpl implements DeckRepository {
       );
       await _tree.refreshContentType(oldParentId, at);
       await _tree.refreshContentType(newParentId, at);
+      await _outbox.command(SyncCommandType.moveDeck, {
+        'deckId': deckId,
+        'targetParentId': newParentId,
+      }, subject: SyncEntityRef.deck(deckId));
       return const Ok(null);
     });
   }
@@ -158,6 +177,10 @@ final class DeckRepositoryImpl implements DeckRepository {
         return const Rejected(DeckRejection.notFound);
       }
       await _dao.rename(deckId, storedText(name), at);
+      await _outbox.command(SyncCommandType.renameDeck, {
+        'deckId': deckId,
+        'name': storedText(name),
+      }, subject: SyncEntityRef.deck(deckId));
       return const Ok(null);
     });
   }
@@ -193,6 +216,11 @@ final class DeckRepositoryImpl implements DeckRepository {
         if (positionOf[id] == position) continue;
         await _dao.setSiblingPosition(id, position, at);
       }
+      await _outbox.command(SyncCommandType.reorderDeck, {
+        'deckId': deckId,
+        'anchorId': anchorId,
+        'placement': placement.name,
+      }, subject: SyncEntityRef.deck(deckId));
       return const Ok(null);
     });
   }
@@ -229,6 +257,11 @@ final class DeckRepositoryImpl implements DeckRepository {
         await _tree.refreshContentType(parentId, at);
       }
       await _dao.closeSessionsTouching(batchId, at);
+      await _outbox.command(SyncCommandType.deleteDeck, {
+        'deckId': deckId,
+        'batchId': batchId,
+        'deletedAt': toWireTime(at),
+      }, subject: SyncEntityRef.deck(deckId));
       return Ok(batchId);
     });
   }
@@ -296,6 +329,9 @@ final class DeckRepositoryImpl implements DeckRepository {
       final parentId = item.parentId;
       if (parentId == null) {
         await _dao.restoreBatch(batchId);
+        await _outbox.command(SyncCommandType.undoDeckDeletion, {
+          'batchId': batchId,
+        }, subject: SyncEntityRef.deleteBatch(batchId));
         return const Ok(null);
       }
       final target = await _dao.findRow(parentId);
@@ -313,6 +349,9 @@ final class DeckRepositoryImpl implements DeckRepository {
         at: at,
       );
       await _tree.refreshContentType(target.id, at);
+      await _outbox.command(SyncCommandType.undoDeckDeletion, {
+        'batchId': batchId,
+      }, subject: SyncEntityRef.deleteBatch(batchId));
       return const Ok(null);
     });
   }
