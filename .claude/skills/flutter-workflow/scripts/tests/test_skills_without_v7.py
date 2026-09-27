@@ -14,6 +14,7 @@ tooling tests themselves assert that Widgetbook and `memox-api` are absent.
 from __future__ import annotations
 
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -26,7 +27,10 @@ REPO_OWNED_SKILLS = (
     "flutter-design-system",
     "flutter-drift",
     "flutter-feature-slice",
+    "flutter-product-spec",
+    "flutter-testing",
     "flutter-workflow",
+    "project-documentation",
 )
 
 V7_MARKERS = (
@@ -65,14 +69,16 @@ def _scanned_files(skill: Path) -> list[Path]:
     )
 
 
-def _occurrences() -> list[str]:
+def _occurrences(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_SKILLS) -> list[str]:
     found = []
-    for name in REPO_OWNED_SKILLS:
-        for path in _scanned_files(SKILLS / name):
-            text = path.read_text(encoding="utf-8")
+    for name in names:
+        for path in _scanned_files(root / ".claude" / "skills" / name):
+            # A skill may ship an image or an archive: a byte that is not UTF-8
+            # holds no citation, so it is replaced rather than fatal.
+            text = path.read_text(encoding="utf-8", errors="replace")
             for number, line in enumerate(text.splitlines(), start=1):
                 if _markers_in(line):
-                    relative = path.relative_to(REPO_ROOT).as_posix()
+                    relative = path.relative_to(root).as_posix()
                     found.append(f"{relative}:{number}: {line.strip()}")
     return found
 
@@ -113,6 +119,30 @@ class MarkersTest(unittest.TestCase):
                 self.assertEqual(_markers_in(text), [])
 
 
+class ScanTest(unittest.TestCase):
+    def test_a_skill_file_is_scanned_and_its_tests_are_not(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / ".claude" / "skills" / "flutter-example"
+            (skill / "references").mkdir(parents=True)
+            (skill / "tests").mkdir()
+            (skill / "SKILL.md").write_text("Covers ADR-011 D4.\n", encoding="utf-8")
+            (skill / "references" / "notes.md").write_text(
+                "intro\nupdate docs/wbs.md here\n", encoding="utf-8"
+            )
+            (skill / "tests" / "test_absent.py").write_text(
+                "assert 'widgetbook' not in plan\n", encoding="utf-8"
+            )
+            (skill / "logo.png").write_bytes(b"\x89PNG\r\n\x1a\n\xff\xfe")
+
+            found = _occurrences(root, ("flutter-example",))
+
+        self.assertEqual(
+            found,
+            [".claude/skills/flutter-example/references/notes.md:2: update docs/wbs.md here"],
+        )
+
+
 class RepoOwnedSkillsTest(unittest.TestCase):
     maxDiff = None
 
@@ -122,6 +152,15 @@ class RepoOwnedSkillsTest(unittest.TestCase):
 
     def test_no_repo_owned_skill_names_v7(self):
         self.assertEqual(_occurrences(), [])
+
+    def test_project_documentation_is_its_own_canonical_source(self):
+        """The install receipt named a V7 checkout as the skill's source.
+
+        Without it, `skill_distribution.py inspect` treats this copy as
+        canonical, and the payload and `skill-manifest.json` are unchanged.
+        """
+        receipt = SKILLS / "project-documentation" / ".installation.json"
+        self.assertFalse(receipt.exists())
 
 
 if __name__ == "__main__":

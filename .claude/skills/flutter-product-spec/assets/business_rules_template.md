@@ -8,7 +8,7 @@ place that depends on it.
 
 | ID | Rule | Applies to | Source |
 |---|---|---|---|
-| BR-01 | | | stakeholder / regulation / product decision |
+| BR-<DOMAIN>-001 | | | stakeholder / regulation / product decision |
 
 ## Validation rules
 

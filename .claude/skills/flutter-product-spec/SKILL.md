@@ -5,7 +5,7 @@ description: Turns a vague product idea into the written artifacts that all late
 
 # Product specification and planning
 
-Covers checklist Phases 0 and 1. Output is documents in `docs/`, not code.
+Output is documents in `docs/`, not code.
 
 The point of this phase is not paperwork. It is that every ambiguity you leave
 here becomes a rewrite later, and the rewrite costs 10–50× what settling the
@@ -48,10 +48,10 @@ Write into `docs/`. Templates are in `assets/`.
 | `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
 | `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
 | `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
-| `docs/wbs.md` | Milestones → features → tasks, the live progress ledger | `assets/wbs_template.md` |
-| `docs/architecture.md` | Layering decisions and deviations, written as they are made | — |
+| `docs/wbs_BE.md`, `docs/wbs_FE.md` | Work packages with status, dependencies and evidence, the live progress ledger; the files themselves are the format | — |
+| `docs/shared/decisions/` | Architecture and product decisions and their deviations, one ADR each, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
-| `docs/api-spec.md` | Endpoints, request/response shapes, error format, pagination — not until the backend exists (AD-05) | — |
+| `docs/features/<feature>/api.md` | Endpoints, request/response shapes, error format, pagination — from the first slice that calls the API (ADR-012) | — |
 | `docs/design-system.md` | Owned by `flutter-design-system` | — |
 | `docs/testing-strategy.md` | Owned by `flutter-testing` | — |
 | `docs/release-checklist.md` | Owned by `flutter-ship` | — |
@@ -80,7 +80,8 @@ screens or widgets. Screens come later and will change; the flow should not.
 
 A business rule is a statement that is true regardless of UI — "a card cannot be
 reviewed more than once per day", "a deleted deck stays recoverable for 30 days".
-Number them (`BR-01`) so use cases, code comments and tests can cite them.
+Number them (`BR-<DOMAIN>-NNN`, such as `BR-DECK-001`) so use cases, code
+comments and tests can cite them.
 
 For every entity, write the state machine explicitly: the states, the legal
 transitions, and what triggers each. Then use a sealed class or enum for it in
@@ -99,11 +100,12 @@ describe in one sentence is really several tasks, and it will be reported as
 Every task carries: goal, scope, output, acceptance criteria, dependencies,
 required tests. Acceptance criteria must be checkable by someone who did not
 write the task — "login works" is not checkable; "invalid credentials show the
-inline error from BR-04 and the password field is not cleared" is.
+inline error from BR-AUTH-004 and the password field is not cleared" is.
 
 Order tasks by dependency, and let vertical slices dominate: one feature working
 end to end beats four features half-built, because only the former proves the
-architecture. `docs/wbs.md` is then maintained for the life of the project as
+architecture. `docs/wbs_BE.md` and `docs/wbs_FE.md` are then maintained for the
+life of the project as
 the progress ledger — see `flutter-workflow` for the update discipline.
 
 ## When to stop

@@ -1,11 +1,9 @@
 ---
 name: flutter-testing
-description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links — no auth/network yet per AD-03/ADR-012). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances. Covers checklist phase 15.
+description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links — no login and no API call yet, per ADR-013 and ADR-012). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances.
 ---
 
 # Testing
-
-Covers checklist Phase 15.
 
 Testing strategy in one line: **test what can be wrong, at the cheapest level
 that can catch it.** A rule that can be tested as a pure function should not be
@@ -54,24 +52,22 @@ a mock proves none of that (see `flutter-feature-slice` Step 4, which owns this
 rule):
 
 ```dart
-test('deleting the last card keeps the deck card-typed (BR-63)', () async {
-  final db = createTestDatabase();          // in-memory, real schema
-  final repository = CardRepositoryImpl(db, clock: fixedClock);
-  final card = await repository.createCard(deckId: leaf.id, front: f, back: b);
+test('deleting the last card of a deck makes it unset (BR-DECK-015)', () async {
+  final card = await cards.card(nouns.id);  // real repository, in-memory schema
 
-  await repository.deleteCard(card.id);
+  final result = await cards.deleteCards(cardIds: {card.id});
 
-  final deck = await db.deckById(leaf.id).getSingle();
-  expect(deck.contentType, ContentType.card); // emptying ≠ resetting the type
+  expect(result, isA<Ok<List<String>, CardRejection>>());
+  expect(await contentTypeOf(nouns.id), DeckContentType.unset);
 });
 ```
 
 **Error mapping deserves a dedicated table-driven test** — every
 `SqliteException` code the app can hit mapped to its expected `Failure`
-(`drift_error_mapper.dart` is the unit under test). It is high-traffic code
-that manual testing almost never exercises. (When networking lands per ADR-012,
-the same table-driven treatment applies to status codes and
-`DioExceptionType`.)
+(`mapDatabaseError` in `lib/core/error/failure.dart` is the unit under test).
+It is high-traffic code that manual testing almost never exercises. When the
+app makes its first API call (ADR-012), the same table-driven treatment applies
+to HTTP status codes and `DioExceptionType`.
 
 **Migration tests** matter more than they look. Use Drift's schema fixtures to
 migrate from each released version to current, and assert the data survived. A
@@ -168,25 +164,34 @@ near zero — the whole point is to notice change.
 
 ## Integration tests
 
-`integration_test/`, driving real user actions.
+Host flows live in `test/integration/` and run with the rest of the suite. The
+canonical list is the scenario catalog
+(`docs/shared/testing/scenario-catalog.md`), and
+`docs/shared/testing/agent-execution-guide.md` holds the execution rules: each
+scenario's readiness, its profile (`HOST-FLOW`, `HOST-WIDGET`, `DEVICE-E2E`),
+its setup and its cleanup. Read both before writing, running or debugging a
+scenario.
 
-This repo has a full 60-scenario suite (`docs/shared/testing/scenario-catalog.md` ↔
-`integration_test/it_*_test.dart`) with its own harness, robot and fixture
-layer. Before writing, running or debugging any of it, read
-`references/integration-test-harness.md` — it holds the memox-specific rules
-(seams, driver anchors, fixtures, emulator setup) and points to the global
-`flutter-harness` skill's `e2e-driving.md` for the framework-generic craft
-(liveness, finders, scrolling, IME, clock ticks, classifying a red run).
+Cover what the app actually has (no login and no API call yet — ADR-013,
+ADR-012): cold start, main navigation, deck/card CRUD through the UI, restart
+with state restored, the review flows, and each deep link. The canonical list
+is the 60 scenarios in `docs/shared/testing/scenario-catalog.md` — extend that
+catalog rather than inventing parallel coverage.
 
-Cover what the app actually has (no auth — AD-03; no network — ADR-012): cold
-start, main navigation, deck/card CRUD through the UI, restart with state
-restored, the review flows, and each deep link. The canonical list is the 60
-scenarios in `docs/shared/testing/scenario-catalog.md` — extend that catalog rather than inventing
-parallel coverage.
+Three defect classes deserve a test of their own:
+
+1. **A pass-through seam that drops optional parameters** — a use case that
+   accepts a sort or a search term and forwards neither. Lock every use case
+   with optional parameters with a fake that records what it receives.
+2. **A Drift stream that misses a table it reads** — see the `riverpod-drift.md`
+   reference of `flutter-drift`: a write to that table must re-emit, and a
+   repository-level test proves it.
+3. **A scenario test that skips a documented step** — diff the test's steps
+   against the scenario's table line by line; asserting less than the document
+   is a quiet way of lowering the expected result.
 
 Deep links and cold start are the highest-value cases here, because they are the
-ones nobody exercises during development — you already have the app open and
-already logged in.
+ones nobody exercises during development — you already have the app open.
 
 Flutter Web plus Playwright is a reasonable way to run flows early and cheaply,
 but it is not a substitute: platform channels, secure storage, SQLite and deep
