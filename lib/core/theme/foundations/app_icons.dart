@@ -57,12 +57,17 @@ abstract final class AppIcons {
   static const IconData gallery = Icons.widgets_outlined;
   static const IconData themeMode = Icons.contrast;
   static const IconData theme = Icons.palette_outlined;
+  static const IconData studyOptions = Icons.tune; // sliders-horizontal
   static const IconData shuffle = Icons.shuffle; // shuffle
   static const IconData language = Icons.language; // globe
   static const IconData resetOptions =
       Icons.settings_backup_restore; // rotate-ccw
   static const IconData safe = Icons.verified_user_outlined; // shield-check
   static const IconData textScale = Icons.format_size;
+  // Development fixtures (screen 03, BR-STARTER-010).
+  static const IconData fixture = Icons.science_outlined; // flask-conical
+  // A rename onto an existing tag merges the two (screen 05).
+  static const IconData merge = Icons.merge; // git-merge
 
   // Top-level destinations (bottom nav): layers · play · bar-chart-3 · settings.
   static const IconData starterDecks = Icons.auto_awesome_outlined; // sparkles
@@ -84,6 +89,10 @@ abstract final class AppIcons {
   // Card export (kit 12).
   static const IconData share = Icons.share_outlined; // share-2
   static const IconData fileDown = Icons.file_download_outlined; // file-down
+  // Progress (kit 22).
+  static const IconData streak = Icons.local_fire_department_outlined; // flame
+  static const IconData studiedToday =
+      Icons.event_available_outlined; // calendar-check
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;

@@ -34,16 +34,36 @@ abstract final class AppRoutes {
 
   static const String deckSearch = '$decks/$searchChild';
 
+  /// The search's term on arrival, as a query parameter (FE-B2 spec D11).
+  static const String searchQueryParam = 'q';
+
+  /// The search, opened on [term].
+  static String searchFor(String term) => Uri(
+    path: deckSearch,
+    queryParameters: {searchQueryParam: term},
+  ).toString();
+
   /// The Trash (screen 06), relative to [decks]: a full-screen task on the
   /// root navigator (FE-B1 D2).
   static const String trashChild = 'trash';
   static const String trash = '$decks/$trashChild';
+
+  /// Starter decks (screen 03) and Tags (screen 05), relative to [decks]:
+  /// full-screen pages on the root navigator, as the kit draws them and as
+  /// the Trash is (FE-B2 + FE-B4 spec D5).
+  static const String starterDecksChild = 'starter';
+  static const String starterDecks = '$decks/$starterDecksChild';
+  static const String tagsChild = 'tags';
+  static const String tags = '$decks/$tagsChild';
 
   /// A root deck's review algorithm (screen 02), relative to [deckChild].
   static const String algorithmChild = 'algorithm';
 
   /// A deck's Study Entry (screen 14), relative to [deckChild] (FE-A6 D1).
   static const String studyChild = 'study';
+
+  /// A deck's study options (screen 15), relative to [deckChild] (FE-A3).
+  static const String studyOptionsChild = 'options';
 
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
@@ -67,6 +87,17 @@ abstract final class AppRoutes {
 
   /// Screen 14 for [deckId].
   static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
+
+  /// Screen 15 for [deckId], whose options are its root's.
+  static String studyOptions(String deckId) =>
+      '${deck(deckId)}/$studyOptionsChild';
+
+  /// A deck's Progress level (screen 22), relative to [progress]: one page
+  /// per level, under the tab bar (FE-A9 D5).
+  static const String progressDeckChild = ':$deckIdParam';
+
+  /// [deckId]'s Progress level.
+  static String progressDeck(String deckId) => '$progress/$deckId';
 
   /// The session [sessionId], its summary once it has ended.
   static String studySession(String sessionId) => '$study/session/$sessionId';

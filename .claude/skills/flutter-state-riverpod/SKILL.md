@@ -34,7 +34,7 @@ DeckRepository deckRepository(Ref ref) =>
 
 `autoDispose` is the default under codegen and is usually right. `keepAlive` is
 for things that are genuinely app-scoped — repositories, the database, config
-(and, when networking lands per AD-05, the HTTP client). Screen data is not app-scoped; keeping it alive is how a user
+(and, when networking lands per ADR-012, the HTTP client). Screen data is not app-scoped; keeping it alive is how a user
 sees another account's data after switching.
 
 One provider, one responsibility, in the feature that owns it. A single
@@ -165,7 +165,7 @@ state change.
 
 ## Cancellation
 
-> **Deferred until networking lands (AD-05)** — the repo has no dio and no
+> **Deferred until networking lands (ADR-012)** — the repo has no dio and no
 > remote requests today; local Drift streams cancel themselves when the
 > subscription is disposed. Reference for that phase:
 
@@ -195,5 +195,5 @@ changes, which is what you want for search-as-you-type.
 - [ ] Side effects in `ref.listen`, not `build`.
 - [ ] One-shot events consumed so they do not re-fire.
 - [ ] `select` used where only part of a state object is needed.
-- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7` clean —
+- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean —
       `flutter analyze` does not cover these rules.

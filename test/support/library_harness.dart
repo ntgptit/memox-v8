@@ -212,7 +212,10 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
   ValueChanged<String>? onOpenStudy,
+  ValueChanged<String>? onOpenStudyOptions,
   VoidCallback? onOpenTrash,
+  VoidCallback? onOpenStarterDecks,
+  VoidCallback? onOpenTags,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
@@ -220,10 +223,13 @@ DeckLevelScreen deckScreen({
   onSearch: onSearch ?? () {},
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onOpenStudy: onOpenStudy ?? (_) {},
+  onOpenStudyOptions: onOpenStudyOptions ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},
   onOpenTrash: onOpenTrash ?? () {},
+  onOpenStarterDecks: onOpenStarterDecks ?? () {},
+  onOpenTags: onOpenTags ?? () {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
@@ -272,13 +278,14 @@ Future<void> pumpMemoxApp(
   LibraryEnv env, {
   AppSettingsEntity? initialSettings,
   bool isSettled = true,
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
-      overrides: _backend(env),
+      overrides: [..._backend(env), ...overrides],
       retry: _noRetry,
       child: MemoxApp(initialSettings: initialSettings),
     ),

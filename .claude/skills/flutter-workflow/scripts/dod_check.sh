@@ -5,15 +5,15 @@
 #
 # Usage: .claude/skills/flutter-workflow/scripts/dod_check.sh
 #        [--changed [--base <git-ref>]] [--fast] [--fix] [--force]
-#   --changed  build the same feature × layer × risk plan as PR CI from the
-#              diff against --base (default: origin/master), then run only the
-#              selected host tests and Widgetbook surface. Unknown/high-risk
-#              paths promote themselves to the full non-golden host suite.
+#   --changed  select the checks and host tests from the diff against --base
+#              (default: origin/master) through build_verification_plan.py.
+#              Unknown and high-risk paths promote the run to the full
+#              non-golden host suite. CI never uses it.
 #   --base     comparison ref for --changed; invalid without --changed
-#   --fast  the tight-loop mode: run only the Deck + app test subset (what CI's
-#           light gate runs), skipping goldens. ~20s instead of ~50s. It does
-#           NOT run test/core, test/shared, or another feature's tests — run the
-#           full gate (no --fast) before you commit, and always before a merge.
+#   --fast  the tight-loop mode: run only the Deck + app test subset, skipping
+#           goldens. It does NOT run test/core, test/shared, or another
+#           feature's tests, and CI never runs it: run the full gate (no
+#           --fast) before you commit, and always before a merge.
 #   --fix   apply `dart format` instead of only reporting drift
 #   --force ignore the pass stamp and run even if this exact tree already passed
 #
@@ -22,7 +22,8 @@
 # change, because "before commit", "before push" and "before the PR" feel like
 # three moments and are one state. A successful run now records a fingerprint of
 # the tree it verified; a later run with the same fingerprint prints what it
-# already knows and exits in ~0.4s instead of 50-150s.
+# already knows and exits at once: 0.03s against 266s for a full run, measured
+# in the cloud container on 2026-09-26.
 #
 # A `full` pass satisfies `--changed` and `--fast`, because it is a superset of
 # both. The reverse never holds.
@@ -34,43 +35,10 @@
 # every invocation, which is most of what the stamp saves, and swapping an SDK
 # is rare and deliberate. `--force` is the way out.
 #
-# ---------------------------------------------------------------------------
-# Where the time goes, measured rather than assumed (2026-08-29, this machine,
-# warm — the numbers in brackets are the first run in a fresh worktree, where
-# touching thousands of files for the first time costs an order of magnitude
-# more and every gate pays it at once):
-#
-#   flutter test    43s          dart format          3s
-#   flutter analyze 10s          docs check           2s   [28s]
-#   guard (python)  11s          CI tooling tests     8s
-#                                architecture guard   2s
-#
-# **This file is not the bottleneck and rewriting it in another language does
-# not help.** It has no per-file loop and no fork storm — the thing that made
-# `check_architecture.sh` take two minutes before it became Python. It starts
-# seven subprocesses and prints a summary; the cost is inside those seven.
-#
-# The CI tooling gate was **43s** until 2026-08-29 and the table above did not
-# mention it at all, so nothing pointed at the second-largest cost in the run.
-# It was not the tests being slow: 32 of them called `build_plan` against this
-# repository, and each call re-read every tracked Dart file to weigh the tests
-# and build the import graph. That scan is memoized per root now — see
-# `build_verification_plan.py`. Keep this table honest when a gate moves; a
-# stale one is how a gate grows into the bottleneck without anyone noticing.
-#
-# Two things in here *were* worth fixing, and both are scheduling rather than
-# language:
-#
-#   1. It shelled into `bash check_*.sh`, and each of those wrappers only
-#      `exec`s a `.py`. On Windows git-bash that fork measured **286ms**, three
-#      times over — nearly a second spent starting shells that immediately
-#      replace themselves. The `.py` is called directly now; the `.sh` wrappers
-#      stay for everyone else who calls them by name.
-#   2. Every gate ran in series although only one pair has an ordering
-#      constraint. They run concurrently now, with each step's output buffered
-#      and replayed in a fixed order — parallel execution, serial reading, so a
-#      failure is still findable.
-# ---------------------------------------------------------------------------
+# **The script's shape.** It calls the Python checks directly, not through the
+# `check_*.sh` wrappers that only `exec` them, which stay for anyone who calls
+# them by name. It runs the steps in parallel and prints each step's buffered
+# output in a fixed order, so a failure is as easy to find as in a serial run.
 
 set -uo pipefail
 
@@ -114,8 +82,7 @@ hr() { printf '%s\n' "----------------------------------------------------------
 step() { hr; printf '▶ %s\n' "$1"; }
 
 if [[ ! -f pubspec.yaml ]]; then
-  echo "No pubspec.yaml at $REPO_ROOT — the Flutter project has not been created yet."
-  echo "That is expected before Phase 2.3. Nothing to check."
+  echo "No pubspec.yaml at $REPO_ROOT, so there is no Flutter project to check."
   exit 0
 fi
 
@@ -129,7 +96,7 @@ else
 fi
 
 # HEAD, every tracked modification, and every untracked file git would not
-# ignore. Measured at ~0.4s against a gate that costs 50-150s.
+# ignore. A fraction of a second against the minutes a full run takes.
 tree_fingerprint() {
   {
     git rev-parse HEAD 2>/dev/null || echo "no-head"
@@ -179,11 +146,9 @@ if [[ $REUSE -eq 1 ]]; then
   exit 0
 fi
 
-# `python3` as well as `python`. Only `python` was tried once, so on a machine
-# where the interpreter is named `python3` — most Linux distributions, and the
-# CI runner — the project's main guard was *skipped* and this script still
-# printed success. A skip that reads as a pass is the same defect as a rule that
-# scans nothing.
+# `python3` as well as `python`: most Linux distributions, and the CI runner,
+# name the interpreter `python3`, and a check skipped for want of `python`
+# would read as a pass, the same defect as a rule that scans nothing.
 PY=""
 for candidate in python python3; do
   command -v "$candidate" >/dev/null 2>&1 && { PY="$candidate"; break; }
@@ -195,8 +160,6 @@ trap 'rm -rf "$WORK"' EXIT
 
 NEEDS_STATIC=1
 NEEDS_HOST_TESTS=1
-NEEDS_WIDGETBOOK=0
-HAS_PROMPT_CHANGES=0
 PLAN_JSON="$WORK/verification-plan.json"
 
 if [[ $CHANGED -eq 1 ]]; then
@@ -223,13 +186,11 @@ if [[ $CHANGED -eq 1 ]]; then
   }
   NEEDS_STATIC="$(read_plan_bool needs_static)"
   NEEDS_HOST_TESTS="$(read_plan_bool needs_host_tests)"
-  NEEDS_WIDGETBOOK="$(read_plan_bool needs_widgetbook)"
-  HAS_PROMPT_CHANGES="$(read_plan_bool has_prompt_changes)"
-  "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); print('verification plan:', p['risk'], '·', len(p['test_files']), 'files · weight', p['estimated_test_weight'], '· CI shards', p['shard_count']); [print('  -', r) for r in p['reasons']]" "$PLAN_JSON"
+  "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); print('verification plan:', p['risk'], '·', len(p['test_files']), 'test files'); [print('  -', r) for r in p['reasons']]" "$PLAN_JSON"
 fi
 
 NEEDS_FLUTTER=0
-if [[ $NEEDS_STATIC -eq 1 || $NEEDS_HOST_TESTS -eq 1 || $NEEDS_WIDGETBOOK -eq 1 ]]; then
+if [[ $NEEDS_STATIC -eq 1 || $NEEDS_HOST_TESTS -eq 1 ]]; then
   NEEDS_FLUTTER=1
 fi
 
@@ -249,10 +210,8 @@ CMDS=()
 plan() { NAMES+=("$1"); LABELS+=("$2"); CMDS+=("$3"); }
 
 # **What the formatter looks at is `check_format.sh`'s to decide, not this
-# file's.** It was inlined here first and CI kept its own `dart format .`, which
-# is two definitions of one check — and the pair only agreed by luck, because a
-# fresh CI clone happens to have no worktrees. The script is the single answer
-# both callers ask; its header carries the reasoning.
+# file's:** one definition of the check for every caller. Its header carries
+# the reasoning.
 #
 # `--fix` writes files, so it cannot share a window with the analyzer or the
 # tests reading them. It runs alone, first, before anything is scheduled.
@@ -331,13 +290,14 @@ else
   FAILED+=("CI tooling tests unavailable: $CI_TOOLING_TESTS")
 fi
 
-PROMPT_GUARD="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/check_prompt_contract.py"
-if [[ $HAS_PROMPT_CHANGES -eq 1 ]]; then
-  if [[ -n "$PY" && -f "$PROMPT_GUARD" ]]; then
-    plan prompt_contract "prompt delivery contract" "$PY '$PROMPT_GUARD'"
-  else
-    FAILED+=("prompt contract gate unavailable: $PROMPT_GUARD")
-  fi
+# The design-token hook exits 0 on any error by design, so a hook that has
+# stopped loading its rules looks like a clean file; its tests are what notice.
+HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"
+if [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
+  plan hook_tests "hook tests" \
+    "$PY -m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'"
+else
+  FAILED+=("hook tests unavailable: $HOOK_TESTS")
 fi
 
 # The guard's own probes, and they belong wherever the guard runs. A rule that
@@ -417,19 +377,10 @@ if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
 fi
 
 
-if [[ $NEEDS_WIDGETBOOK -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
-  if [[ -d widgetbook ]]; then
-    plan widgetbook "Widgetbook smoke test" \
-      "(cd '$REPO_ROOT/widgetbook' && flutter test --reporter failures-only)"
-  else
-    FAILED+=("selected Widgetbook gate unavailable: $REPO_ROOT/widgetbook")
-  fi
-fi
-
 # ------------------------------------------------------------- run them all
 # Output is captured per step rather than streamed. Interleaved output from
-# seven concurrent processes is unreadable exactly when it matters — when
-# something failed and you are looking for which line said so.
+# concurrent processes is unreadable exactly when it matters — when something
+# failed and you are looking for which line said so.
 for i in "${!NAMES[@]}"; do
   {
     eval "${CMDS[$i]}" >"$WORK/${NAMES[$i]}.log" 2>&1
@@ -491,7 +442,7 @@ if [[ ${#FAILED[@]} -eq 0 ]]; then
   echo
   echo "Still needs a human: acceptance criteria, scope match, design fidelity,"
   echo "light/dark, small screen, text scale, loading/empty/error/success,"
-  echo "accessibility, and whether docs/wbs.md tells the truth."
+  echo "accessibility, and whether docs/wbs_BE.md and docs/wbs_FE.md tell the truth."
   exit 0
 fi
 

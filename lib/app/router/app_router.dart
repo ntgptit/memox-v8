@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
-import 'package:memox/app/placeholder_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -17,10 +16,16 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
+import 'package:memox/features/progress/presentation/screens/deck_progress_screen.dart';
+import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
+import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
+import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
+import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
@@ -88,6 +93,16 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                           state.pathParameters[AppRoutes.deckIdParam]!,
                         ),
                       ),
+                      // A full-screen task above the shell, as the kit
+                      // draws it (FE-A3 spec §4).
+                      GoRoute(
+                        path: AppRoutes.studyOptionsChild,
+                        parentNavigatorKey: rootNavigator,
+                        builder: (context, state) => _studyOptions(
+                          context,
+                          state.pathParameters[AppRoutes.deckIdParam]!,
+                        ),
+                      ),
                       GoRoute(
                         path: AppRoutes.algorithmChild,
                         builder: (context, state) => DeckAlgorithmScreen(
@@ -105,8 +120,29 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     builder: (context, state) => const TrashScreen(),
                   ),
                   GoRoute(
+                    path: AppRoutes.starterDecksChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) =>
+                        _starterDecks(context, rootNavigator),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.tagsChild,
+                    parentNavigatorKey: rootNavigator,
+                    // The search lives in the Library branch, under the
+                    // shell: Find cards goes there, and Back returns to the
+                    // Library (plan C-ruling on D11).
+                    builder: (context, state) => TagsScreen(
+                      onFindCards: (name) =>
+                          context.go(AppRoutes.searchFor(name)),
+                    ),
+                  ),
+                  GoRoute(
                     path: AppRoutes.searchChild,
                     builder: (context, state) => LibrarySearchScreen(
+                      initialQuery:
+                          state.uri.queryParameters[AppRoutes
+                              .searchQueryParam] ??
+                          '',
                       onOpenDeck: (id) => context.push(AppRoutes.deck(id)),
                       onOpenCard: (id) => context.push(AppRoutes.card(id)),
                     ),
@@ -150,7 +186,35 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
               ),
             ],
           ),
-          _branch(AppRoutes.progress, (context) => context.l10n.navProgress),
+          // Screen 22 (FE-A9): one page per level, under the tab bar, so
+          // Back climbs one level (D5).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.progress,
+                builder: (context, state) => ProgressScreen(
+                  onOpenDeck: (id) =>
+                      unawaited(context.push(AppRoutes.progressDeck(id))),
+                  onStartStudying: () => context.go(AppRoutes.study),
+                ),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.progressDeckChild,
+                    builder: (context, state) => DeckProgressScreen(
+                      deckId: state.pathParameters[AppRoutes.deckIdParam]!,
+                      onOpenDeck: (id) =>
+                          unawaited(context.push(AppRoutes.progressDeck(id))),
+                      onOpenAncestor: (id) => _openAncestor(
+                        context,
+                        id,
+                        levelOf: AppRoutes.progressDeck,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -216,12 +280,16 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onOpenStudy: study,
+    onOpenStudyOptions: (id) =>
+        unawaited(context.push(AppRoutes.studyOptions(id))),
     onAddCard: addCard,
     onImportCards: (id) => unawaited(context.push(AppRoutes.importCards(id))),
     onExportCards: (deck) => unawaited(
       showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
     ),
     onOpenTrash: openTrash,
+    onOpenStarterDecks: _opener(context, AppRoutes.starterDecks),
+    onOpenTags: _opener(context, AppRoutes.tags),
     cardAppBar: (view, back, actions) =>
         CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
     cardBreadcrumb: (id, child) =>
@@ -259,13 +327,49 @@ StudyEntryScreen _studyEntry(BuildContext context, String deckId) =>
       ),
       onOpenSession: (sessionId) =>
           context.go(AppRoutes.studySession(sessionId)),
+      onOpenStudyOptions: () =>
+          unawaited(context.push(AppRoutes.studyOptions(deckId))),
     );
 
-/// Opens the Trash on the root navigator (FE-B1 D2). The router pushes it,
-/// not the page's context: a toast's action can outlive its page.
-VoidCallback _openTrash(BuildContext context) {
+/// Screen 15 with the deck's path from the deck feature, which settings
+/// may not read (FE-A3 plan 2, C6).
+StudyOptionsScreen _studyOptions(BuildContext context, String deckId) =>
+    StudyOptionsScreen(
+      deckId: deckId,
+      breadcrumb: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.breadcrumb,
+        trailingLabel: context.l10n.deckStudyOptions,
+      ),
+    );
+
+/// Opens the Trash on the root navigator (FE-B1 D2).
+VoidCallback _openTrash(BuildContext context) =>
+    _opener(context, AppRoutes.trash);
+
+/// Pushes [location]. The router pushes it, not the page's context: a
+/// toast's action can outlive its page.
+VoidCallback _opener(BuildContext context, String location) {
   final router = GoRouter.of(context);
-  return () => unawaited(router.push(AppRoutes.trash));
+  return () => unawaited(router.push(location));
+}
+
+/// Screen 03 (FE-B4). Open goes to the new copy's root in the Library, and
+/// "Create a deck" returns to the Library and opens its create dialog
+/// (spec §5.1).
+StarterLibraryScreen _starterDecks(
+  BuildContext context,
+  GlobalKey<NavigatorState> rootNavigator,
+) {
+  final router = GoRouter.of(context);
+  return StarterLibraryScreen(
+    onOpenDeck: (id) => router.go(AppRoutes.deck(id)),
+    onCreateDeck: () {
+      router.pop();
+      final host = rootNavigator.currentState?.overlay?.context;
+      if (host != null) unawaited(showCreateRootDeckDialog(host));
+    },
+  );
 }
 
 /// Opens the editor over the card detail. The editor closes with true when
@@ -280,10 +384,15 @@ Future<void> _editCard(BuildContext context, String cardId) async {
 Widget _deckContext(String deckId, String currentLabel) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: currentLabel);
 
-/// Ruling P2-L5: a breadcrumb tap pops the Library stack back to [deckId],
+/// Ruling P2-L5: a breadcrumb tap pops the branch's stack back to [deckId],
 /// or to the root for null. A deck that is not on the stack (it was opened
-/// from search) is pushed over the root instead.
-void _openAncestor(BuildContext context, String? deckId) {
+/// from search) is pushed over the root instead, as its [levelOf] location:
+/// a Library level, or a Progress level (FE-A9 D5).
+void _openAncestor(
+  BuildContext context,
+  String? deckId, {
+  String Function(String deckId) levelOf = AppRoutes.deck,
+}) {
   final router = GoRouter.of(context);
   var isOnStack = false;
   Navigator.of(context).popUntil((route) {
@@ -295,18 +404,8 @@ void _openAncestor(BuildContext context, String? deckId) {
     return isOnStack || route.isFirst;
   });
   if (deckId == null || isOnStack) return;
-  unawaited(router.push(AppRoutes.deck(deckId)));
+  unawaited(router.push(levelOf(deckId)));
 }
-
-StatefulShellBranch _branch(String path, String Function(BuildContext) title) =>
-    StatefulShellBranch(
-      routes: [
-        GoRoute(
-          path: path,
-          builder: (context, state) => PlaceholderScreen(title: title(context)),
-        ),
-      ],
-    );
 
 /// The bottom nav around the current branch.
 class _TabShell extends StatelessWidget {

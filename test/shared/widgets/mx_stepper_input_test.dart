@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
@@ -60,6 +61,20 @@ void main() {
     await tester.pump(AppDurations.stepperRepeatDelay * 2);
     // Releasing a hold is not one more tap.
     expect(_value(tester), 24);
+  });
+
+  testWidgets('a hold that turns into a scroll never repeats', (tester) async {
+    await pumpMx(tester, const _Bounded());
+    final drag = await tester.startGesture(
+      tester.getCenter(find.byTooltip('More cards')),
+    );
+    // Past touch slop: the finger is scrolling the page, not holding +.
+    await drag.moveBy(const Offset(0, kTouchSlop * 2));
+    await tester.pump(AppDurations.stepperRepeatDelay * 2);
+    await drag.up();
+    await tester.pump();
+
+    expect(_value(tester), 20);
   });
 
   testWidgets('a hold stops at the bound the caller sets', (tester) async {

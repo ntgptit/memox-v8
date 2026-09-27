@@ -45,10 +45,11 @@ class CardDeckAppBarWidget extends ConsumerStatefulWidget {
 }
 
 class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
-  /// The last total "Select all" offered, and the filter and term it counts:
-  /// a larger window loads as a new list, and the count must not blink out
-  /// meanwhile.
-  ({CardListFilter filter, String term, int total})? _lastTotal;
+  /// The last total "Select all" offered, and the filter, term and tags it
+  /// counts: a larger window loads as a new list, and the count must not
+  /// blink out meanwhile.
+  ({CardListFilter filter, String term, CardTagFilter tags, int total})?
+  _lastTotal;
 
   String get _deckId => widget.view.deck.id;
 
@@ -83,6 +84,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
         filter: request.filter,
         sort: request.sort,
         searchTerm: request.searchTerm,
+        tags: request.tags,
         windowSize: request.windowSize,
       ),
     );
@@ -91,6 +93,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
       _lastTotal = (
         filter: request.filter,
         term: request.searchTerm,
+        tags: request.tags,
         total: counts.of(request.filter),
       );
     }
@@ -98,7 +101,8 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
     final isSameSet =
         last != null &&
         last.filter == request.filter &&
-        last.term == request.searchTerm;
+        last.term == request.searchTerm &&
+        last.tags == request.tags;
     return isSameSet ? last.total : null;
   }
 

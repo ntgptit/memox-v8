@@ -75,6 +75,8 @@ Quy ước:
 | BE-B1 | Trash, phần store (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012): schema v3 với `delete_batches` và khoá `delete_batch_id` → `delete_batches(id)` (migration v2 → v3 bằng dựng lại bảng, test nâng cấp từ v1 và v2); xoá deck và card là soft-delete theo batch, đóng phiên chạm tới batch (kể cả qua lựa chọn `guess`); khôi phục và Undo theo đúng luật di chuyển; đích khôi phục; danh sách Trash và purge theo lượt, bỏ qua trọn batch còn chứa batch khác; 11 use case; test hình dạng câu lệnh của BR-TRASH-002 với allowlist có lý do | xong | BE-02, BE-D1 | L | [spec](superpowers/specs/2026-09-25-trash-backend-design.md) và [plan](superpowers/plans/2026-09-26-trash-backend.md) gói 7; test trong `test/features/trash/`, `test/features/deck/data/deck_trash_test.dart`, `test/features/card/data/card_trash_test.dart`, `test/drift/migration_test.dart`, `test/architecture/tombstone_filter_test.dart` | FE-B1 dựng màn 06, snackbar Undo và lời gọi auto-purge trên các use case này |
 | BE-B2 | Tag Management, phần store (UC-TAG-001; BR-TAG-003…BR-TAG-011): catalog tag kèm số thẻ đang hoạt động, trong thư viện hoặc trong một deck, tìm theo đúng phép fold của BR-TAG-001; xem trước đổi tên (giữ nguyên, đổi tên, hay gộp vào tag nào và còn bao nhiêu thẻ) rồi ghi sau chốt chặn `mergeNotConfirmed`; gộp bằng `INSERT OR IGNORE` rồi xoá tag nguồn theo cascade, kể cả liên kết của thẻ trong Trash; xoá tag theo cascade; chỉ ghi `tags` và `card_tags`; 5 use case; không đổi schema | xong | BE-05 | M | [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md) và [plan](superpowers/plans/2026-09-26-tag-management-backend.md) gói 8; test trong `test/features/tags/` | FE-B2 dựng màn 05 và overlay lọc trên các use case này |
 | BE-C4 | Lọc card list theo tag (BR-TAG-004): `CardListQuery.tagIds`, một `EXISTS` trên `card_tags` trong vị từ chung của danh sách, số đếm và Select all; số đếm trạng thái và workload vẫn tính cả deck | xong | BE-B2 | S | Spec gói 8 §8; `test/features/card/data/card_list_tag_filter_test.dart` | — |
+| BE-D5 | Công cụ kiểm chứng không còn gì của V7 (mở rộng theo chủ dự án): `build_verification_plan.py` chỉ phục vụ `dod_check.sh --changed`, plan còn 11 field, bỏ shard, `--github-output`, Widgetbook, memox-api và prompt set; `dod_check.sh` không còn bước Widgetbook và bước prompt contract, nên `--changed` hết fail trên mọi thay đổi code; lời giúp và header tả V8; gỡ `check_prompt_contract.py`, `read_local_prompt_set.ps1` và test PowerShell của nó | xong | BE-D2 | M | [spec](superpowers/specs/2026-09-26-verification-tooling-design.md) và [plan](superpowers/plans/2026-09-27-verification-tooling.md) gói 12a; `GateReadsThePlanTest` và test của planner trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | BE-D6, BE-D7 |
+| BE-D6 | Guard và hook design token không còn gì của V7 (mở rộng theo chủ dự án): gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; `memox-v8` mang nhãn "MemoX V8" và 13 id `memox_v8.design_system.*`; sáu rule mang tên của V7 tìm tên của V8, hai id đổi theo; message, comment và lý do dẫn quyết định của V8; hook `.claude/hooks/check_design_tokens.py` nạp `memox-v8` bằng bộ nạp của guard và chạy chính rule của guard trên file vừa sửa, có test riêng và bước "hook tests" trong gate; tài liệu của guard ghi `ntgptit/memox-v8`. Giữ registry `memox` (V6) | xong | — | M | [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-guard-without-v7.md) gói 12b; `test_memox_v8_ruleset_contract.py`, `test_memox_v8_data_model_guard_rules.py` và `test_memox_v8_architecture_guard_rules.py` trong `code-verification-guard-v2/tests/`; `.claude/hooks/tests/test_check_design_tokens.py` | BE-D7 |
 
 ### V8.0 — còn lại
 
@@ -102,9 +104,9 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Sửa trong commit của hạng mục chạm tới phần đó (tài liệu và code cùng commit, [`docs/README.md`](README.md)) |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Làm trong BE-D7 (gói 12c) |
 | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
-| BE-D5 | Tỉa phần chỉ phục vụ CI của `build_verification_plan.py` (shard, `--github-output`, cờ Widgetbook và memox-api) cùng test của nó; sửa lời giúp của `dod_check.sh`, nơi `--changed` và `--fast` còn được tả theo CI của V7 | chưa bắt đầu | BE-D2 | M | CI của V8 chạy gate đầy đủ, không dùng planner ([spec gói 6](superpowers/specs/2026-09-25-ci-gate-design.md) D2, D11); planner vẫn phục vụ `dod_check.sh --changed` | Giữ phần `--changed` dùng, bỏ phần chỉ CI của V7 cần, kèm test |
+| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | chưa bắt đầu | BE-D6 | M | [Spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9 | Gói 12c: brainstorm, spec, plan |
 
 ## Đã xong và đã kiểm chứng
 
@@ -156,11 +158,19 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
   [plan](superpowers/plans/2026-09-25-ci-gate.md)): gate xanh sau mỗi task, final review
   toàn nhánh trước khi mở PR. PR của gói là lần chạy đầu của CI: một commit thử làm
   `gate`, `goldens` và `CI gate` đỏ, rồi commit hoàn lại đưa cả ba về xanh trước khi merge.
+- **BE-D5** (gói 12a, [spec](superpowers/specs/2026-09-26-verification-tooling-design.md),
+  [plan](superpowers/plans/2026-09-27-verification-tooling.md)): gate xanh sau mỗi task;
+  `dod_check.sh --changed --force` fail ở bước Widgetbook trước khi sửa và xanh sau đó;
+  final review toàn nhánh trước khi mở PR.
+- **BE-D6** (gói 12b, [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md),
+  [plan](superpowers/plans/2026-09-27-guard-without-v7.md)): gate xanh sau mỗi task;
+  cấu hình rule của `memox-v8` do bộ nạp của guard resolve, trước và sau gói, chỉ khác
+  ở những chỗ spec liệt kê; final review toàn nhánh trước khi mở PR.
 - **Traceability:** có test chứa ID cho 22/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
+Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 ## Điểm chặn và quyết định còn mở
 
@@ -190,8 +200,8 @@ Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
 
 ## Bước tiếp theo
 
-1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
-2. BE-D5 khi thuận tiện; không hạng mục nào chờ nó.
+1. BE-D7 (gói 12c), gồm BE-D3, theo thứ tự chủ dự án chọn ngày 2026-09-26.
+2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
 
 ## Ngữ cảnh cập nhật
 
@@ -226,6 +236,13 @@ Không có hạng mục backend nào đang làm sau gói 11a (BE-B5a).
   "không hỗ trợ"; không đổi schema, không thêm dependency. Điểm chặn BR-SETTINGS-008 đóng:
   reset đưa cả nhắc học về mặc định (quyết định của chủ dự án). Dependency notification
   chuyển sang BE-B5b.
+- **Cập nhật ngày 2026-09-27:** BE-D5 xong trong gói 12a, mở rộng theo chủ dự án: công cụ
+  kiểm chứng không còn gì của V7, và `dod_check.sh --changed` hết chọn bước Widgetbook mà
+  V8 không có. Phần V7 còn lại tách thành BE-D6 (guard và hook, gói 12b) và BE-D7 (skill
+  và tài liệu, gói 12c); BE-D3 làm trong BE-D7.
+- **Cập nhật ngày 2026-09-27:** BE-D6 xong trong gói 12b, mở rộng theo chủ dự án: guard
+  và hook design token không còn gì của V7. Hai lệnh `--ruleset memox-v7` trong skill
+  chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

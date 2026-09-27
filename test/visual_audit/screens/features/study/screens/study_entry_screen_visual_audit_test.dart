@@ -20,6 +20,8 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
     part: DeckStudyHeaderPart.breadcrumb,
   ),
   onOpenSession: (_) {},
+  // As app/ wires it: the app bar carries Study options (kit 14).
+  onOpenStudyOptions: () {},
 );
 
 void main() {

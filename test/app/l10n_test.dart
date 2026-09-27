@@ -53,13 +53,13 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
-            title = context.l10n.placeholderTitle;
+            title = context.l10n.navProgress;
             return const SizedBox.shrink();
           },
         ),
       ),
     );
 
-    expect(title, 'Sắp có');
+    expect(title, 'Tiến độ');
   });
 }

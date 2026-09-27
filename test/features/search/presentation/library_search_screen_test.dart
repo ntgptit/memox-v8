@@ -97,6 +97,29 @@ void main() {
     expect(tester.testTextInput.hasAnyClients, isTrue);
   });
 
+  libraryTest('a term given on arrival is typed and searched, as Find cards '
+      'with this tag opens it (FE-B2 spec D11)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await insertCard(env.db, id: 'hw', deckId: korean.id, front: 'homework');
+    await TagRepositoryImpl(env.db).attachByName(cardIds: {'hw'}, name: 'Học');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      LibrarySearchScreen(
+        initialQuery: 'Học',
+        onOpenDeck: (_) {},
+        onOpenCard: (_) {},
+      ),
+    );
+    await tester.pump(searchDebounce);
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.widgetWithText(MxSearchField, 'Học'), findsOneWidget);
+    expect(find.byType(SearchCardHitRowWidget), findsOneWidget);
+    expect(find.widgetWithText(MxTagChip, 'Học'), findsOneWidget);
+  });
+
   libraryTest('before a term it says what search finds (step 2)', (
     tester,
     env,

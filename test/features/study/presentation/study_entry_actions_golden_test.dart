@@ -29,6 +29,8 @@ StudyEntryScreen _screen(String deckId) => StudyEntryScreen(
     part: DeckStudyHeaderPart.breadcrumb,
   ),
   onOpenSession: (_) {},
+  // As app/ wires it: the app bar carries Study options (kit 14).
+  onOpenStudyOptions: () {},
 );
 
 /// The kit's sm2 frame without Hangul: 25 new, 4 due, two of them overdue.

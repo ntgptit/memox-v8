@@ -40,8 +40,11 @@ class MxIconTile extends StatelessWidget {
   final Color? seed;
   final MxIconTileTone tone;
 
-  static const double _smallBox = 28;
-  static const double _mediumBox = 36;
+  /// The small step's side, for a caller that sizes the row around it.
+  static const double smallBox = 28;
+
+  /// The medium step's side, for a caller that indents past it.
+  static const double mediumBox = 36;
   static const double _largeBox = 44;
   static const double _primaryTintLight = 0.10;
   static const double _primaryTintDark = 0.16;
@@ -57,8 +60,8 @@ class MxIconTile extends StatelessWidget {
       (null, Brightness.dark) => _primaryTintDark,
     };
     final (box, radius, glyph) = switch (size) {
-      MxIconTileSize.small => (_smallBox, AppRadius.sm, AppIconSize.inline),
-      MxIconTileSize.medium => (_mediumBox, AppRadius.md, AppIconSize.compact),
+      MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
+      MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
     final (fill, ink) = switch (tone) {

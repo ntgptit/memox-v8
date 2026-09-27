@@ -13,6 +13,7 @@ enum DeckAction {
   open,
   study,
   rename,
+  studyOptions,
   move,
   reviewAlgorithm,
   importCards,
@@ -91,9 +92,9 @@ class DeckActionSheetWidget extends StatelessWidget {
     );
   }
 
-  /// Study opens the Study Entry (FE-A6 D10); Study options waits under
-  /// Coming soon (spec A4, amended). Root
-  /// decks own the algorithm and cannot move (ruling P2-L8).
+  /// Study opens the Study Entry (FE-A6 D10) and Study options screen 15
+  /// (FE-A3 D3), below Rename as kit 01 draws it. Root decks own the
+  /// algorithm and cannot move (ruling P2-L8).
   List<Widget> _rows(BuildContext context) {
     final l10n = context.l10n;
     final deck = view.deck;
@@ -116,6 +117,13 @@ class DeckActionSheetWidget extends StatelessWidget {
         icon: AppIcons.edit,
         label: l10n.deckRename,
         onTap: () => choose(DeckAction.rename),
+      ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.studyOptions,
+        label: l10n.deckStudyOptions,
+        subtitle: l10n.deckStudyOptionsHint,
+        hasChevron: true,
+        onTap: () => choose(DeckAction.studyOptions),
       ),
       if (deck.isRoot) ...[
         MxActionSheetCommandRow(

@@ -5,7 +5,7 @@
 version: 1
 metadata:
   id: memox-v8-i18n
-  name: MemoX V7 Localization Rules
+  name: MemoX V8 Localization Rules
   description: User-visible strings must come from ARB, not from literals.
   owner: memox-v8
 rules:

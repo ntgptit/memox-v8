@@ -9,7 +9,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (large) | "Library". One action, "Coming soon": a sheet naming the features that wait (spec A4). |
+| App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05) and Trash (screen 06), as the kit draws them (FE-B2 + FE-B4 D2). |
 | Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today · new. Display-only until Study home (FE-A8). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
@@ -32,10 +32,12 @@ One recursive screen for the Library root (`/decks`) and any open deck
 `MxBottomSheet` with a header (tile, name, "N sub-decks · N cards · {algorithm}") and
 `MxActionSheetCommandRow`s:
 
-- **Root deck:** Open deck · Study this deck → screen 14 · Rename · Review algorithm
+- **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study options
+  ("Cards per session · new-card order") → screen 15 · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
   Move to Trash ("Recoverable for 30 days").
 - **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck → screen 14 · Rename ·
+  Study options → screen 15 (its root's options) ·
   Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
 
@@ -44,8 +46,8 @@ One recursive screen for the Library root (`/decks`) and any open deck
 One `MxBottomSheet`, "Sort & filter":
 
 - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date added
-  "Newest first" · Name "A → Z" · Most due cards. Progress waits under Coming soon
-  for a BR/UC definition (blocked in `wbs_BE.md`).
+  "Newest first" · Name "A → Z" · Most due cards. Progress is absent until a BR/UC
+  defines it (blocked in `wbs_BE.md`).
 - Toggle (`MxToggle`): "Only decks with due cards" / "Hides decks where nothing is
   waiting".
 - Button "Done".
@@ -56,10 +58,10 @@ One `MxBottomSheet`, "Sort & filter":
 |---|---|---|---|
 | rootLoaded | ![](img/01-deck-list/rootLoaded-light.png) | ![](img/01-deck-list/rootLoaded-dark.png) | As drawn, without the mastery bars (hidden). |
 | rootLoading | ![](img/01-deck-list/rootLoading-light.png) | ![](img/01-deck-list/rootLoading-dark.png) | Skeletons in the row's shape; header kept. |
-| rootEmpty | ![](img/01-deck-list/rootEmpty-light.png) | ![](img/01-deck-list/rootEmpty-dark.png) | Create deck only; starter decks wait under Coming soon. |
+| rootEmpty | ![](img/01-deck-list/rootEmpty-light.png) | ![](img/01-deck-list/rootEmpty-dark.png) | As drawn: "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
 | rootError | ![](img/01-deck-list/rootError-light.png) | ![](img/01-deck-list/rootError-dark.png) | As drawn, with Retry. |
 | rootSearch | ![](img/01-deck-list/rootSearch-light.png) | ![](img/01-deck-list/rootSearch-dark.png) | The field is a trigger: a tap opens screen 04 instead of typing here. |
-| rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | No "Progress" sort (Coming soon). |
+| rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | No "Progress" sort: it waits for a BR/UC. |
 | rootDueEmpty | ![](img/01-deck-list/rootDueEmpty-light.png) | ![](img/01-deck-list/rootDueEmpty-dark.png) | As drawn. |
 | rootOverflow | ![](img/01-deck-list/rootOverflow-light.png) | ![](img/01-deck-list/rootOverflow-dark.png) | Rows as in "Action sheet"; Reorder added. |
 | rootCreate | ![](img/01-deck-list/rootCreate-light.png) | ![](img/01-deck-list/rootCreate-dark.png) | As drawn (BR-SRS-001). |
@@ -81,7 +83,6 @@ One `MxBottomSheet`, "Sort & filter":
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| Starter decks · Tags · Trash in the root app bar | Trash · Coming soon (which names starter decks and tags) | FE-B4 and FE-B2 wait (FE-B1 D1) |
 | A trash glyph over the Move to Trash dialog's title, the deck's name in bold | No glyph; the name in quotes | `MxDialog` has no glyph slot; no per-site text styling |
 | "Can't undo — “{deck}” is in Trash too. Restore it from here and choose a deck." on screen 06 | "Can't undo. {reason} Restore it from Trash and choose a deck." where the deck was deleted | An Undo happens where the item was deleted; the rejection carries no deck name (FE-B1 D7) |
 | Mastery bar on every row, donut and "Mastered" on the summary | Hidden | Spec A5 (waits for a BR/UC definition, blocked in `wbs_BE.md`) |
@@ -94,17 +95,13 @@ One `MxBottomSheet`, "Sort & filter":
 | Row meta and the first-run footnote in plain 12/500 | The caption role (`rowSubtitle`, `noteText`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
 | Sort pill "⇅ Manual ⌄" | `MxChipTrigger`: "Manual" with the sort glyph after it | The shared chip trigger's anatomy |
 | "Create deck" and "Browse starter decks" carry glyphs | Text-only `MxEmptyState` actions | The shared empty state's anatomy |
-| First-run body offers "or copy a starter deck to begin with content" | "Create one to begin." | Starter decks wait (FE-B4); the body must not promise them |
 | Action sheet header with the deck's tile and "N sub-decks · N cards · {algorithm}"; Open and Study rows with count subtitles | The deck's name only; no count subtitles | `DeckView` carries no counts; the sheet reads only the view (ruling C-L6) |
 
 ## Pending
 
 | Element | Shown as | Waits for |
 |---|---|---|
-| Starter decks, Tags actions | under Coming soon | FE-B4, FE-B2 |
-| "Browse starter decks" | under Coming soon | FE-B4 |
-| Study options | under Coming soon | FE-A3 |
-| Sort by progress | under Coming soon | a BR/UC definition (blocked in `wbs_BE.md`) |
+| Sort by progress | absent | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Mastery bar, donut | hidden | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Due strip tap | not interactive | FE-A8 |
 | Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at level 10 | absent; the header says "· level 10" | a later phase (owner decision C-O6) |

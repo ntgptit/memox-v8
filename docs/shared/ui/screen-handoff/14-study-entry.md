@@ -9,7 +9,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16). The kit's trailing "Study options" icon is hidden — see Deviations. |
+| App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16), and the trailing "Study options" icon, which opens screen 15 (FE-A3 D3). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
 | Hero | `MxCard` (hero) + `MxStatTile` × 2 (FE-A6 spec D17) | "{algorithm} · cards per session {n}" (BR-STUDY-024); two stat tiles, New and Due: Due above zero in primary, New above zero muted, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning ink, when any are overdue. |
 | Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
@@ -70,7 +70,6 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 | Artifact | V8 | Wins |
 |---|---|---|
 | SM-2's direction choice as inline `MxOptionRow`s on the entry screen itself | A separate `MxBottomSheet` opened by the footer's Review action, with the same three choices and a locked "Start review" action; the space the rows took stays empty above the pinned footer, as the kit's own `onlyNew` frame draws it | UC-STUDY-003 (the documented flow is a sheet, opened after Review, not an inline section) |
-| App bar's trailing "Study options" icon | Hidden; named under Coming soon | Spec A4 row 92 (amended 2026-09-25) names "Study options" explicitly; no screen or UC defines its destination yet |
 | Resume banner's pulse dot in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: no `streak` tone exists |
 | The resume dot pulses | Static and decorative | FE-A8 ruling S3: one treatment for 13 and 14 |
 | The resume banner states its progress as text only | A `MxLinearProgress` track under the line too, as 13's Resume card draws it | FE-A8 H2: the shared track has two callers |

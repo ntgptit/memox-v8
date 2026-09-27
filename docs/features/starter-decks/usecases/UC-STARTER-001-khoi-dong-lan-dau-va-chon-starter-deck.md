@@ -3,7 +3,7 @@ id: UC-STARTER-001
 title: Khởi động lần đầu và chọn starter deck
 status: ready
 rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003, BR-STARTER-004, BR-STARTER-005, BR-STARTER-006, BR-STARTER-007, BR-STARTER-008, BR-STARTER-009, BR-STARTER-010, BR-STUDY-077]
-code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case.dart, lib/features/starter_decks/domain/usecases/add_starter_deck_use_case.dart]
+code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case.dart, lib/features/starter_decks/domain/usecases/add_starter_deck_use_case.dart, lib/features/starter_decks/presentation/screens/starter_library_screen.dart, lib/features/starter_decks/presentation/controllers/starter_add_controller.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

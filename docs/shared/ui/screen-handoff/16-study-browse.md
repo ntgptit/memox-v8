@@ -32,8 +32,10 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   ellipsizes on one line, and a counter wider than a quarter of the bar
   shrinks to fit, so the track stays at least 48 wide at large text
   (FE-A6 P3 ruling T1 and its final review).
-- **Exit / abandon.** The kit's close icon ends the session immediately, no
-  confirmation sheet. Every turn already committed stays recorded
+- **Exit / abandon.** The close icon, system Back and Guess's blocked-question
+  Close open one confirm dialog (a deviation from the kit, which ends the
+  session at once; owner ruling 2026-09-27). "Keep studying" changes nothing;
+  "Stop" ends the session. Every turn already committed stays recorded
   (BR-STUDY-004, BR-STUDY-019); the session becomes `abandoned` with
   `end_reason = user_exit` (BR-STUDY-014).
 - **Round behaviour (Match, Guess, Recall, Fill only).** These four run in
@@ -91,6 +93,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 
 | Artifact | V8 | Wins |
 |---|---|---|
+| The close icon ends the session at once | A confirm dialog first, from the close icon and system Back alike: Keep studying or Stop | Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004 |
 | Icons carry an inline colour prop | Colour comes from the shared icon-tinting mechanism | Guard: no `Icon(color:)` in feature code |
 | The card tilts as it is dragged | It follows the finger without a tilt, and stays still with reduced motion | No shared motion for it; the decision is the swipe's, not the drawing's |
 | Pronunciation in a monospace face | The detail role of the body face | V8's typography has one family |

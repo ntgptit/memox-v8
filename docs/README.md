@@ -33,8 +33,9 @@ Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-
 ### Phạm vi MVP
 
 Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để
-chứng minh kiến trúc local-only (không network) và cơ chế Drift migration hoạt
-động. Không phải bản đầy đủ tính năng.
+chứng minh kiến trúc offline-first (mọi thao tác chạy từ Drift, không cần mạng —
+[ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)) và cơ chế
+Drift migration hoạt động. Không phải bản đầy đủ tính năng.
 
 #### Must-have
 

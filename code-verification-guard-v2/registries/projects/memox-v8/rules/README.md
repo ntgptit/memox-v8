@@ -9,29 +9,23 @@ python code-verification-guard-v2/guard/run.py check --project . --ruleset memox
 
 ## Why this ruleset exists separately from `memox`
 
-`memox-v4`, `memox-v5` and `memox-design-jsx` were vendored beside it for other
-repositories and were removed (A20.1 P3-06): none ran here, and a reader who
-guessed the name found rules bound to paths that matched nothing. `memox` stays
-for one reason — the guard's own test-suite exercises its rule engine through
-that ruleset — and it does not fit this repository either:
+`memox` is the one other MemoX ruleset beside it. It stays for one reason — the
+guard's own test suite exercises its rule engine through that ruleset — and it
+does not fit this repository:
 
 | Ruleset | Why it does not apply |
 |---|---|
 | `memox` | Flutter, but a layer-first tree (`lib/presentation/features/**`, `lib/data/datasources/**`). memox-v8 is **feature-first**: `lib/features/<feature>/{domain,data,presentation}`. Every scope path differs, so the rules would silently match nothing. |
 
-They are deliberately **not vendored** into this repo — carrying them would make
-it easy to run the wrong one, and a ruleset that matches nothing reports a clean
-pass.
+No ruleset for another tree is vendored beside them: it would be easy to run
+the wrong one, and a ruleset that matches nothing reports a clean pass.
 
 ## What it replaces
 
-`custom_lint` and `riverpod_lint` are descoped (see `Deferred and descoped` in
-`docs/wbs.md`): no published `custom_lint` supports `analyzer >=10`, which
-`json_serializable`, `freezed` and `drift_dev` all require. Installing them
-would mean downgrading `freezed_annotation` to `^2.2.0` and `uuid` to `^3.0.6`,
-contradicting AD-03.
+V8 runs neither `custom_lint` nor `riverpod_lint`: `pubspec.yaml` has neither,
+so `flutter analyze` checks no Riverpod usage.
 
-`memox-state-management-rules.yaml` is the replacement. The rule that matters
+`memox-state-management-rules.yaml` makes those checks. The rule that matters
 most is `memox.state_management.no_ref_read_in_build`: `ref.read` inside
 `build()` reads without subscribing, so the widget silently stops updating. It
 surfaces as "the data is stale" and is very hard to trace back to that line.
@@ -40,12 +34,13 @@ surfaces as "the data is stale" and is very hard to trace back to that line.
 
 | File | Covers |
 |---|---|
-| `memox-architecture-rules.yaml` | Layer boundaries, AD-01 backend-readiness, AD-08 single connection site, deferred dependencies |
+| `memox-architecture-rules.yaml` | Layer boundaries (ADR-010, ADR-011), a domain free of infrastructure, one database connection site, deferred dependencies (ADR-001, ADR-002) |
 | `memox-state-management-rules.yaml` | Riverpod 3 usage — the riverpod_lint replacement |
 | `memox-error-handling-rules.yaml` | Swallowed exceptions, `print`, Failure mapping |
 | `memox-design-token-rules.yaml` | No raw colour / text style / spacing in product UI |
+| `memox-design-system-rules.yaml` | Features compose the Mx shared widgets; weights, text styles and colour roles go through the theme |
 | `memox-i18n-rules.yaml` | No user-visible string outside ARB |
-| `memox-data-model-rules.yaml` | BR-57 `COALESCE`, AD-06 clock injection, AD-11 stored state |
+| `memox-data-model-rules.yaml` | The root through `root_id` (BR-DECK-003), no ambient clock in domain, the schedule apart from the card (ADR-004), the stored review kind (BR-SRS-015), buttons from `supportedActions` (ADR-003) |
 | `memox-privacy-rules.yaml` | Card content never logged, no secrets, app-private storage |
 | `memox-naming-rules.yaml` | snake_case and role suffixes |
 | `memox-testing-rules.yaml` | No skipped or focused tests |
@@ -57,22 +52,16 @@ plus `lib/shared` — and deliberately **not** on:
 
 - `lib/core/theme/**`, where raw values are legitimately *defined*; linting it
   would flag the definition as the crime
-- `lib/app/**`, the dev-channel shell. `MobileFrameWidget`'s backdrop colour is
-  a raw `Color(0xFF1E1E1E)` on purpose because it is not product UI, and says so
-  in a comment.
+- `lib/app/**`, the composition root and the debug-only widget gallery, which
+  are not product UI. The typography rules still cover it
+  (`typography_ui_surfaces`).
 
-## The `rule_without_targets` warnings are correct — do not silence them
+## A `rule_without_targets` warning is a finding — do not silence it
 
-Most of `lib/` does not exist yet: `lib/features/**` arrives at M3.1,
-`lib/core/database` at M4.2, `lib/l10n` at M2.4. The engine reports every rule
-pointing at those paths as `guard.config.rule_without_targets`, because a rule
-matching no files silently checks nothing.
-
-That diagnostic is the whole point — it is the same failure mode as the
-`check_docs.sh` bug fixed in M2.1b, where a green tick covered 27 unchecked
-tasks. So the profile gates on `error` only for now and leaves those warnings
-visible as an accurate backlog. **M3.1 flips both profiles back to
-`fail_on: [error, warning]`** once the tree exists.
+A rule whose scope matches no file checks nothing and passes green. The engine
+reports it as `guard.config.rule_without_targets`, and both profiles fail on
+warnings, so it cannot pass unnoticed. A rule that waits for a layer V8 has not
+built yet says so with `targets_pending` in `config/overrides.yaml`.
 
 ## Adding a rule
 

@@ -55,10 +55,32 @@ void main() {
     expect(find.text(_en.deckDelete), findsOneWidget);
     expect(find.text(_en.deckMove), findsNothing);
     expect(find.text(_en.deckReorder), findsNothing);
-    // Study opens the entry (FE-A6 D10); Study options waits under Coming
-    // soon (spec A4, amended).
+    // Study opens the entry (FE-A6 D10); Study options opens screen 15
+    // (FE-A3 D3).
     expect(find.text(_en.studyThisDeck), findsOneWidget);
-    expect(find.text(_en.deckStudyOptions), findsNothing);
+    expect(find.text(_en.deckStudyOptions), findsOneWidget);
+    expect(find.text(_en.deckStudyOptionsHint), findsOneWidget);
+  });
+
+  libraryTest('Study options opens the deck\'s options, below Rename '
+      '(FE-A3 D3, kit 01)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final opened = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onOpenStudyOptions: opened.add),
+    );
+    await _openSheet(tester);
+
+    expect(
+      tester.getTopLeft(find.text(_en.deckStudyOptions)).dy,
+      greaterThan(tester.getTopLeft(find.text(_en.deckRename)).dy),
+    );
+    await tester.tap(find.text(_en.deckStudyOptions));
+    await tester.pumpAndSettle();
+    expect(opened, [words.id]);
   });
 
   libraryTest('a sub-deck offers move, not the scheduler; two decks reorder', (

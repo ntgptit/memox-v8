@@ -13,14 +13,16 @@ class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
     required String this.cancelLabel,
-    required VoidCallback this.onCancel,
+    required this.onCancel,
     required String this.confirmLabel,
     required this.onConfirm,
     this.confirmIcon,
     this.isDestructive = false,
+    this.isWarning = false,
     this.isInSheet = false,
     this.isConfirmLoading = false,
-  }) : children = const [];
+  }) : assert(!(isDestructive && isWarning), 'a confirm has one tone'),
+       children = const [];
 
   /// A custom footer (Trash restore / delete-forever, a single OK) in place
   /// of the pair (ruling O10).
@@ -35,9 +37,12 @@ class MxSheetActions extends StatelessWidget {
        onConfirm = null,
        confirmIcon = null,
        isDestructive = false,
+       isWarning = false,
        isConfirmLoading = false;
 
   final String? cancelLabel;
+
+  /// Null disables Cancel, as while an add runs (screen 03 `adding`).
   final VoidCallback? onCancel;
   final String? confirmLabel;
 
@@ -47,6 +52,9 @@ class MxSheetActions extends StatelessWidget {
 
   /// The destructive Button tone on the confirm.
   final bool isDestructive;
+
+  /// The warning Button tone on the confirm: a merge (FE-B2 spec D15).
+  final bool isWarning;
 
   /// The confirm's work is running: it spins and cannot be pressed; Cancel
   /// stays live.
@@ -77,9 +85,11 @@ class MxSheetActions extends StatelessWidget {
               onPressed: onConfirm,
               icon: confirmIcon,
               isLoading: isConfirmLoading,
-              tone: isDestructive
-                  ? MxButtonTone.destructive
-                  : MxButtonTone.primary,
+              tone: switch ((isDestructive, isWarning)) {
+                (true, _) => MxButtonTone.destructive,
+                (_, true) => MxButtonTone.warning,
+                _ => MxButtonTone.primary,
+              },
               isBlock: true,
               isSingleLine: true,
             ),

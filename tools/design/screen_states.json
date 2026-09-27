@@ -48,6 +48,23 @@
       ]
     },
     {
+      "num": "03",
+      "dir": "03-starter-decks",
+      "title": "Starter decks",
+      "states": [
+        { "id": "list", "label": "Templates" },
+        { "id": "choose", "label": "Choose algorithm" },
+        { "id": "adding", "label": "Adding" },
+        { "id": "added", "label": "Added" },
+        { "id": "alreadyPresent", "label": "Already present" },
+        { "id": "secondCopy", "label": "Second copy" },
+        { "id": "addFailed", "label": "Add failed" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "none", "label": "None in build" },
+        { "id": "loadFailed", "label": "Load failed" }
+      ]
+    },
+    {
       "num": "04",
       "dir": "04-library-search",
       "title": "Library search",
@@ -57,6 +74,25 @@
         { "id": "results", "label": "Results" },
         { "id": "noResults", "label": "No results" },
         { "id": "error", "label": "Error" }
+      ]
+    },
+    {
+      "num": "05",
+      "dir": "05-tags",
+      "title": "Tags",
+      "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "empty", "label": "Empty" },
+        { "id": "searchEmpty", "label": "Search empty" },
+        { "id": "sheet", "label": "Tag actions" },
+        { "id": "rename", "label": "Rename" },
+        { "id": "renameMerge", "label": "Rename → merge" },
+        { "id": "nameTooLong", "label": "Name too long" },
+        { "id": "del", "label": "Delete" },
+        { "id": "busy", "label": "Busy row" },
+        { "id": "opError", "label": "Op error" },
+        { "id": "tagGone", "label": "Tag gone" }
       ]
     },
     {
@@ -103,12 +139,35 @@
       ]
     },
     {
+      "num": "08",
+      "dir": "08-card-create",
+      "title": "Card create",
+      "states": [
+        { "id": "emptyForm", "label": "Empty" },
+        { "id": "valid", "label": "Valid" },
+        { "id": "details", "label": "Details open" },
+        { "id": "validationErr", "label": "Back empty" },
+        { "id": "frontTooLong", "label": "Front too long" },
+        { "id": "tagLimit", "label": "10 tags" },
+        { "id": "deckRejects", "label": "Deck rejects" },
+        { "id": "saving", "label": "Saving" },
+        { "id": "saveFailed", "label": "Save failed" }
+      ]
+    },
+    {
       "num": "09",
       "dir": "09-card-edit",
       "title": "Card edit",
       "states": [
-        { "id": "delConfirm", "label": "Move to Trash" },
-        { "id": "notFound", "label": "Card gone" }
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "loadError", "label": "Load error" },
+        { "id": "notFound", "label": "Card gone" },
+        { "id": "validationErr", "label": "Validation" },
+        { "id": "dirtySaving", "label": "Saving" },
+        { "id": "saveFailed", "label": "Save failed" },
+        { "id": "discard", "label": "Discard" },
+        { "id": "delConfirm", "label": "Move to Trash" }
       ]
     },
     {
@@ -116,6 +175,12 @@
       "dir": "10-card-detail",
       "title": "Card detail",
       "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loadMore", "label": "More history" },
+        { "id": "loadMoreFailed", "label": "Load more failed" },
+        { "id": "empty", "label": "No history" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" },
         { "id": "notFound", "label": "Not found" }
       ]
     },
@@ -260,6 +325,21 @@
         { "id": "schedulerChanged", "label": "Algorithm changed" },
         { "id": "saveError", "label": "Save error" },
         { "id": "loading", "label": "Loading" }
+      ]
+    },
+    {
+      "num": "22",
+      "dir": "22-progress",
+      "title": "Progress",
+      "states": [
+        { "id": "loaded", "label": "Last 7 days" },
+        { "id": "month", "label": "Last 30 days" },
+        { "id": "held", "label": "Streak held" },
+        { "id": "lost", "label": "Streak lost" },
+        { "id": "deck", "label": "Inside a deck" },
+        { "id": "never", "label": "Never studied" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" }
       ]
     },
     {
