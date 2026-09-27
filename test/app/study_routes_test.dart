@@ -144,6 +144,7 @@ void main() {
     expect(find.byType(MxBottomNav), findsNothing);
 
     await _tap(tester, find.byTooltip(_en.studySessionClose));
+    await _tap(tester, find.text(_en.studyExitStop));
     await _tap(tester, find.text(_en.summaryDone));
 
     expect(find.byType(StudySessionScreen), findsNothing);
@@ -181,7 +182,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(StudySessionScreen), findsOneWidget);
 
+    // Recall's clock ticks, so frames are pumped by hand (never settle).
     await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.text(_en.studyExitStop));
     await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
