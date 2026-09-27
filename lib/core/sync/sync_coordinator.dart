@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_api.dart';
 import 'package:memox/core/sync/sync_models.dart';
@@ -74,6 +76,12 @@ class SyncCoordinator {
             await adapter.markAcknowledged(
               entry.entityId,
               result.serverVersion!,
+            );
+          } else if (result.current == null) {
+            // The server never saw this row: keep it (and its cards) rather
+            // than delete data that exists nowhere else.
+            log(
+              'Sync rejected ${entry.entityType}/${entry.entityId}: ${result.code}',
             );
           } else {
             await _applyServerCopy(adapter, entry.entityId, result.current);

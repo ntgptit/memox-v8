@@ -51,4 +51,55 @@ void main() {
       scheduler.dispose();
     });
   });
+
+  test('a local write during backoff does not cut the backoff short', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final triggers = StreamController<void>();
+      final scheduler = SyncScheduler(
+        run: () async {
+          runs++;
+          throw StateError('offline');
+        },
+        triggers: triggers.stream,
+      )..start();
+
+      clock.elapse(Duration.zero);
+      expect(runs, 1);
+      triggers.add(null);
+      clock.elapse(const Duration(seconds: 3));
+      expect(runs, 1, reason: 'the 5 s backoff still holds');
+      clock.elapse(const Duration(seconds: 2));
+      expect(runs, 2);
+
+      scheduler.dispose();
+      triggers.close();
+    });
+  });
+
+  test('coming back online retries at once and resets the backoff', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final reconnects = StreamController<void>();
+      final scheduler = SyncScheduler(
+        run: () async {
+          runs++;
+          if (runs == 1) {
+            throw StateError('offline');
+          }
+        },
+        triggers: const Stream.empty(),
+        reconnects: reconnects.stream,
+      )..start();
+
+      clock.elapse(Duration.zero);
+      expect(runs, 1);
+      reconnects.add(null);
+      clock.elapse(Duration.zero);
+      expect(runs, 2);
+
+      scheduler.dispose();
+      reconnects.close();
+    });
+  });
 }

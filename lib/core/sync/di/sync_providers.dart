@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/di/network_providers.dart';
@@ -29,7 +28,8 @@ SyncScheduler? syncScheduler(Ref ref) {
       .map((_) {});
   final scheduler = SyncScheduler(
     run: coordinator.runOnce,
-    triggers: StreamGroup.merge([store.outboxChanges().skip(1), online]),
+    triggers: store.outboxChanges().skip(1),
+    reconnects: online,
   )..start();
   ref.onDispose(scheduler.dispose);
   return scheduler;

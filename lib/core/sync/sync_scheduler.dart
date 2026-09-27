@@ -8,6 +8,7 @@ class SyncScheduler {
   SyncScheduler({
     required this._run,
     required this._triggers,
+    this._reconnects = const Stream.empty(),
     this.debounce = const Duration(seconds: 2),
     this.minBackoff = const Duration(seconds: 5),
     this.maxBackoff = const Duration(minutes: 5),
@@ -15,24 +16,44 @@ class SyncScheduler {
 
   final Future<void> Function() _run;
   final Stream<void> _triggers;
+
+  /// The network came back: retry at once and forget the backoff.
+  final Stream<void> _reconnects;
   final Duration debounce;
   final Duration minBackoff;
   final Duration maxBackoff;
 
-  StreamSubscription<void>? _subscription;
+  final _subscriptions = <StreamSubscription<void>>[];
   Timer? _timer;
   var _running = false;
   var _rerun = false;
   var _failures = 0;
 
   void start() {
-    _subscription = _triggers.listen((_) => _schedule(debounce));
+    _subscriptions
+      ..add(
+        _triggers.listen((_) {
+          // During a backoff a local write waits for the retry: offline, a
+          // burst of edits must not hammer the server every 2 s.
+          if (_failures == 0) {
+            _schedule(debounce);
+          }
+        }),
+      )
+      ..add(
+        _reconnects.listen((_) {
+          _failures = 0;
+          _schedule(Duration.zero);
+        }),
+      );
     _schedule(Duration.zero);
   }
 
   void dispose() {
     _timer?.cancel();
-    _subscription?.cancel();
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
   }
 
   Duration backoffFor(int failures) {

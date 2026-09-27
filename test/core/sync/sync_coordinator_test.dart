@@ -141,6 +141,28 @@ void main() {
     expect(server.row('deck', 'R')!.row!['name'], 'b edit');
   });
 
+  test('a rejection of a row the server never saw keeps the local row and its cards', () async {
+    await _root(a.db, 'R', name: 'offline only');
+    await a.db.customStatement(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) "
+      "VALUES ('C', 'c', 'R', 'R', 2, 'card', 0, 0, 0)",
+    );
+    await a.db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, front_folded, back_folded, created_at, updated_at) "
+      "VALUES ('k', 'C', 'f', 'b', 'f', 'b', 0, 0)",
+    );
+    server.rejectNext['deck/R'] = 'VALIDATION_FAILED';
+    server.rejectNext['deck/C'] = 'DECK_PARENT_MISSING';
+
+    await a.coordinator.runOnce();
+
+    expect(await _name(a.db, 'R'), 'offline only');
+    final cards = await a.db
+        .customSelect("SELECT id FROM card WHERE id = 'k'")
+        .get();
+    expect(cards, hasLength(1));
+  });
+
   test('a child that arrives before its parent applies', () async {
     server.seed('deck', 'C', {...await _wireChild('C', 'R')});
     server.seed('deck', 'R', await _wireRoot('R'));

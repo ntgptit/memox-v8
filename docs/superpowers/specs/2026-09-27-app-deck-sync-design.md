@@ -108,9 +108,11 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
     - `applied` sets the row's `server_version`, and deletes the outbox
       entry **only if its `op_id` still equals the one sent**. An edit made
       during the push has replaced the `op_id`, so that entry stays pending.
-    - `rejected` applies `current` (upserts the row, or deletes it when
-      `current` is `null` or deleted), and deletes the entry on the same
-      `op_id` condition.
+    - `rejected` applies `current`: it upserts the row, or deletes it when
+      `current` is a tombstone. When `current` is `null` the server has
+      never seen the row, so the row and its cards are **kept** and the
+      rejection is logged. The entry is deleted on the same `op_id`
+      condition.
   - Repeat while entries remain.
 - **Pull:**
   - `GET /sync/changes?since=` from `sync_state.since`, paging while
@@ -123,6 +125,13 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
     and Drift's cascades remove its local descendants, matching the server's
     subtree tombstone.
   - `since` is stored in the same transaction.
+- **Known limit until card sync (rollout step 4):** pulling a deck
+  tombstone deletes the deck locally, and Drift's cascades remove its cards.
+  A tombstone comes only from a purge on another device, so this matches what
+  the person asked for. It also removes cards created on this device in that
+  deck and never uploaded.
+- **Backoff:** during a backoff, local writes wait for the retry; a
+  reconnection retries at once and resets the backoff.
 - **Errors:**
   - A network error or 5xx increments `attempts` and schedules a backoff.
   - A 4xx on push, meaning a batch the server refuses as a whole, is logged
