@@ -4,7 +4,7 @@ import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 
 import '../../support/test_database.dart';
 
-// BE-C5: the v3 → v4 step reads the library a page at a time, so a large
+// BE-C5: the v4 → v5 step reads the library a page at a time, so a large
 // library upgrades in bounded memory (PR #112 review), and every page is
 // normalised, the last partial one included.
 

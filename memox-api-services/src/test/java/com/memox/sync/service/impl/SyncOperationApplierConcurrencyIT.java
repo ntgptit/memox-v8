@@ -80,25 +80,18 @@ class SyncOperationApplierConcurrencyIT {
     }
 
     private SyncOperation upsert(UUID id, UUID parentId, String schedulerType) {
-        DeckSyncRow row = new DeckSyncRow(
-                id,
-                "Deck " + id,
-                parentId,
-                null,
-                null,
-                "deck",
-                schedulerType,
-                schedulerType == null ? null : 1,
-                null,
-                null,
-                schedulerType == null ? null : 1,
-                null,
-                null,
-                null,
-                null,
-                0,
-                T,
-                T);
+        DeckSyncRow row = DeckSyncRow.builder()
+                .id(id)
+                .name("Deck " + id)
+                .parentId(parentId)
+                .contentType("deck")
+                .schedulerType(schedulerType)
+                .schedulerVersion(schedulerType == null ? null : 1)
+                .generation(schedulerType == null ? null : 1)
+                .siblingPosition(0)
+                .createdAt(T)
+                .updatedAt(T)
+                .build();
         return new SyncOperation(
                 UUID.randomUUID(),
                 DeckSyncHandler.ENTITY_TYPE,

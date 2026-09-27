@@ -179,6 +179,8 @@ class SyncApiIT {
         Map<String, Object> row = baseRow(id, name);
         row.put("contentType", "deck");
         row.put("schedulerType", "sm2");
+        row.put("schedulerVersion", 1);
+        row.put("generation", 1);
         return row;
     }
 

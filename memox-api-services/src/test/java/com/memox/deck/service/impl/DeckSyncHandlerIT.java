@@ -204,25 +204,20 @@ class DeckSyncHandlerIT {
     /** {@code clientRootId} and {@code clientDepth} are deliberately wrong: the server must ignore them. */
     private JsonNode row(
             UUID id, UUID parentId, String contentType, String schedulerType, UUID clientRootId, int clientDepth) {
-        DeckSyncRow row = new DeckSyncRow(
-                id,
-                "Deck " + id,
-                parentId,
-                clientRootId,
-                clientDepth,
-                contentType,
-                schedulerType,
-                schedulerType == null ? null : 1,
-                null,
-                null,
-                schedulerType == null ? null : 1,
-                null,
-                null,
-                null,
-                null,
-                0,
-                T,
-                T);
+        DeckSyncRow row = DeckSyncRow.builder()
+                .id(id)
+                .name("Deck " + id)
+                .parentId(parentId)
+                .rootId(clientRootId)
+                .depth(clientDepth)
+                .contentType(contentType)
+                .schedulerType(schedulerType)
+                .schedulerVersion(schedulerType == null ? null : 1)
+                .generation(schedulerType == null ? null : 1)
+                .siblingPosition(0)
+                .createdAt(T)
+                .updatedAt(T)
+                .build();
         return objectMapper.valueToTree(row);
     }
 }

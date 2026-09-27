@@ -49,6 +49,14 @@ class DeleteBatches extends Table with TableInfo {
     requiredDuringInsert: false,
     $customConstraints: '',
   );
+  late final GeneratedColumn<int> serverVersion = GeneratedColumn<int>(
+    'server_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -56,6 +64,7 @@ class DeleteBatches extends Table with TableInfo {
     rootItemId,
     deletedAt,
     ownerId,
+    serverVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -212,6 +221,14 @@ class Deck extends Table with TableInfo {
     requiredDuringInsert: false,
     $customConstraints: 'REFERENCES delete_batches(id)ON DELETE CASCADE',
   );
+  late final GeneratedColumn<int> serverVersion = GeneratedColumn<int>(
+    'server_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
   late final GeneratedColumn<int> siblingPosition = GeneratedColumn<int>(
     'sibling_position',
     aliasedName,
@@ -254,6 +271,7 @@ class Deck extends Table with TableInfo {
     sourceTemplateId,
     sourceTemplateVersion,
     deleteBatchId,
+    serverVersion,
     siblingPosition,
     createdAt,
     updatedAt,
@@ -1350,6 +1368,142 @@ class ReviewLog extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class SyncOutbox extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SyncOutbox(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
+    'op_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> op = GeneratedColumn<String>(
+    'op',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (op IN (\'upsert\', \'delete\'))',
+  );
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    opId,
+    entityType,
+    entityId,
+    op,
+    createdAt,
+    attempts,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_outbox';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {opId};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {entityType, entityId},
+  ];
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  SyncOutbox createAlias(String alias) {
+    return SyncOutbox(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'UNIQUE(entity_type, entity_id)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SyncState extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SyncState(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [name, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_state';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {name};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  SyncState createAlias(String alias) {
+    return SyncState(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
 class AppSettings extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1479,6 +1633,32 @@ class DatabaseAtV4 extends GeneratedDatabase {
   late final Tags tags = Tags(this);
   late final CardTags cardTags = CardTags(this);
   late final ReviewLog reviewLog = ReviewLog(this);
+  late final SyncOutbox syncOutbox = SyncOutbox(this);
+  late final SyncState syncState = SyncState(this);
+  late final Trigger deckSyncInsert = Trigger(
+    'CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'deck_sync_insert',
+  );
+  late final Trigger deckSyncUpdate = Trigger(
+    'CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'deck_sync_update',
+  );
+  late final Trigger deckSyncDelete = Trigger(
+    'CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'deck_sync_delete',
+  );
+  late final Trigger deleteBatchesSyncInsert = Trigger(
+    'CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_insert',
+  );
+  late final Trigger deleteBatchesSyncUpdate = Trigger(
+    'CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_update',
+  );
+  late final Trigger deleteBatchesSyncDelete = Trigger(
+    'CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_delete',
+  );
   late final Index idxDeleteBatchesDeleted = Index(
     'idx_delete_batches_deleted',
     'CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id)',
@@ -1555,6 +1735,14 @@ class DatabaseAtV4 extends GeneratedDatabase {
     tags,
     cardTags,
     reviewLog,
+    syncOutbox,
+    syncState,
+    deckSyncInsert,
+    deckSyncUpdate,
+    deckSyncDelete,
+    deleteBatchesSyncInsert,
+    deleteBatchesSyncUpdate,
+    deleteBatchesSyncDelete,
     idxDeleteBatchesDeleted,
     appSettings,
     idxStudyQueuePending,
@@ -1664,6 +1852,48 @@ class DatabaseAtV4 extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('review_log', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'deck',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'deck',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'deck',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'delete_batches',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'delete_batches',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'delete_batches',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(

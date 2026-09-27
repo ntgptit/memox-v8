@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/core/text/stored_text.dart';
 
-// Migration v3 → v4 (BE-C5, local backend spec 2026-09-27 §4). Released
+// Migration v4 → v5 (BE-C5, local backend spec 2026-09-27 §4). Released
 // once, then never changed. Raw SQL only: a step never calls application
 // queries (.claude/skills/flutter-drift/references/migrations.md).
 

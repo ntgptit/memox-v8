@@ -29,7 +29,7 @@ Success means:
 | # | Item | Decision |
 |---|---|---|
 | D1 | Scope | The WBS backend rows only. The app-side sync slices of ADR-013 (steps 3–4 of the [sync spec](2026-09-27-server-sync-design.md) §9) get their own plan once the server fixes the wire format |
-| D2 | BE-C5 | Unicode NFC through the `unorm_dart` package (pure Dart, covers Hangul). Normalise on every text write and inside `foldText`; one migration re-folds stored text. Done **before** the sync migration |
+| D2 | BE-C5 | Unicode NFC through the `unorm_dart` package (pure Dart, covers Hangul). Normalise on every text write and inside `foldText`; one migration re-folds stored text. Done **before** the sync migration. *Outcome:* #114 (sync, v4) merged first, so G1 ships as v4 → v5; its deck-name rewrites run under the capture triggers and are queued, so the server receives NFC names |
 | D3 | BE-C1 | **Closed.** Names keep code-unit order; the WBS row records the owner's choice |
 | D4 | BE-D4 | Only the `## Acceptance criteria` section of the 18 UCs that hold the placeholder is written. Frontmatter, flows, rules and `status` are not touched |
 | D5 | BE-B5b | Included as the last package. Its Dart side is built and tested on the host. The APK build and the device check run only once an Android SDK or a device is available (the container blocks `dl.google.com`); until then the package stops at that step and says so |
