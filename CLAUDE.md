@@ -115,6 +115,10 @@ API security) goes there; the Flutter app at the repo root stays the client.
   changing the stack needs an ADR.
 - **Conventions:** `spring-boot-mybatis-review` owns the layering, SQL, review
   checklist and finding format.
+- **Package layout:** by domain, then by layer; the folder contract lives in
+  [memox-api-services/README.md](memox-api-services/README.md). Its feature
+  packages were created up front at the owner's request, an exception to
+  [No speculative structure](#no-speculative-structure).
 - **Service/ServiceImpl:** the `XxxService` interface plus `XxxServiceImpl`
   pair is this project's convention. It is the concrete reason
   [No speculative structure](#no-speculative-structure) asks for, so it is
