@@ -117,16 +117,33 @@ language sql stable set search_path = '' as $$
       'createdAt', private.wire_time(d.created_at), 'updatedAt', private.wire_time(d.updated_at)) end)
 $$;
 
+create function private.delete_batch_change(b public.delete_batch) returns jsonb
+language sql stable set search_path = '' as $$
+  select jsonb_build_object(
+    'entityType', 'delete_batch', 'entityId', b.id, 'serverVersion', b.server_version,
+    'deleted', b.tombstoned_at is not null,
+    'row', case when b.tombstoned_at is not null then null else jsonb_build_object(
+      'id', b.id, 'itemType', b.item_type, 'rootItemId', b.root_item_id,
+      'deletedAt', private.wire_time(b.deleted_at)) end)
+$$;
+
 -- The server copy of an entity for this user, or null when the server has never seen it (spec §4.1).
 create function private.current_change(p_user uuid, p_type text, p_id uuid) returns jsonb
 language plpgsql stable set search_path = '' as $$
 declare
   v_deck public.deck;
+  v_batch public.delete_batch;
 begin
   if p_type = 'deck' then
     select * into v_deck from public.deck where id = p_id and user_id = p_user;
     if found then
       return private.deck_change(v_deck);
+    end if;
+  end if;
+  if p_type = 'delete_batch' then
+    select * into v_batch from public.delete_batch where id = p_id and user_id = p_user;
+    if found then
+      return private.delete_batch_change(v_batch);
     end if;
   end if;
   return null;
@@ -266,6 +283,55 @@ begin
 end
 $$;
 
+-- Trash batches: whole-row upsert, tombstone on delete, no tree rules (app deck-sync spec §6).
+create function private.delete_batch_upsert(p_user uuid, p_device uuid, p_id uuid, r jsonb) returns bigint
+language plpgsql set search_path = '' as $$
+declare
+  v_owner uuid;
+  v_version bigint;
+begin
+  if (r->>'id')::uuid is distinct from p_id then
+    raise exception 'VALIDATION_FAILED';
+  end if;
+  select user_id into v_owner from public.delete_batch where id = p_id for update;
+  if found and v_owner <> p_user then
+    raise exception 'SYNC_ENTITY_CONFLICT';
+  end if;
+  v_version := private.allocate_versions(p_user, 1);
+  insert into public.delete_batch (id, user_id, item_type, root_item_id, deleted_at, server_version,
+    last_device_id, tombstoned_at)
+  values (p_id, p_user, r->>'itemType', (r->>'rootItemId')::uuid, (r->>'deletedAt')::timestamptz, v_version,
+    p_device, null)
+  on conflict (id) do update set
+    item_type = excluded.item_type, root_item_id = excluded.root_item_id, deleted_at = excluded.deleted_at,
+    server_version = excluded.server_version, last_device_id = excluded.last_device_id, tombstoned_at = null;
+  return v_version;
+end
+$$;
+
+create function private.delete_batch_delete(p_user uuid, p_device uuid, p_id uuid) returns bigint
+language plpgsql set search_path = '' as $$
+declare
+  v_existing public.delete_batch;
+  v_version bigint;
+begin
+  select * into v_existing from public.delete_batch where id = p_id for update;
+  if not found then
+    return private.current_version(p_user);
+  end if;
+  if v_existing.user_id <> p_user then
+    raise exception 'SYNC_ENTITY_CONFLICT';
+  end if;
+  if v_existing.tombstoned_at is not null then
+    return v_existing.server_version;
+  end if;
+  v_version := private.allocate_versions(p_user, 1);
+  update public.delete_batch set tombstoned_at = now(), server_version = v_version, last_device_id = p_device
+  where id = p_id;
+  return v_version;
+end
+$$;
+
 create function private.apply_operation(
   p_user uuid, p_device uuid, p_type text, p_kind text, p_id uuid, p_row jsonb) returns bigint
 language plpgsql set search_path = '' as $$
@@ -277,9 +343,15 @@ begin
     if p_type = 'deck' then
       return private.deck_upsert(p_user, p_device, p_id, p_row);
     end if;
+    if p_type = 'delete_batch' then
+      return private.delete_batch_upsert(p_user, p_device, p_id, p_row);
+    end if;
   elsif p_kind = 'delete' then
     if p_type = 'deck' then
       return private.deck_delete(p_user, p_device, p_id);
+    end if;
+    if p_type = 'delete_batch' then
+      return private.delete_batch_delete(p_user, p_device, p_id);
     end if;
   end if;
   raise exception 'VALIDATION_FAILED';
@@ -363,9 +435,13 @@ begin
   with page as (
     select u.entity_type, u.id, u.server_version, row_number() over (order by u.server_version) as n
     from (
-      select 'deck' as entity_type, d.id, d.server_version from public.deck d
-      where d.user_id = v_user and d.server_version > v_since
-      order by d.server_version limit v_limit + 1
+      (select 'deck' as entity_type, d.id, d.server_version from public.deck d
+       where d.user_id = v_user and d.server_version > v_since
+       order by d.server_version limit v_limit + 1)
+      union all
+      (select 'delete_batch', b.id, b.server_version from public.delete_batch b
+       where b.user_id = v_user and b.server_version > v_since
+       order by b.server_version limit v_limit + 1)
     ) u
     order by u.server_version limit v_limit + 1
   )
@@ -379,7 +455,13 @@ begin
 end
 $$;
 
+-- The keep-alive workflow calls this so a Free project is not paused (ADR-015 #9).
+create function public.ping() returns text
+language sql stable set search_path = '' as $$ select 'ok' $$;
+
 -- Clients reach data only through these functions (spec §2).
 revoke all on all functions in schema private from public, anon, authenticated;
 revoke all on function public.sync_push(jsonb), public.sync_changes(bigint, integer) from public, anon, authenticated;
 grant execute on function public.sync_push(jsonb), public.sync_changes(bigint, integer) to authenticated;
+revoke all on function public.ping() from public;
+grant execute on function public.ping() to anon, authenticated;
