@@ -100,4 +100,12 @@ public interface DeckMapper {
             @Param("firstVersion") long firstVersion,
             @Param("deviceId") UUID deviceId,
             @Param("now") Instant now);
+
+    List<Deck> findActivePage(
+            @Param("userId") UUID userId,
+            @Param("parentId") UUID parentId,
+            @Param("limit") int limit,
+            @Param("offset") long offset);
+
+    long countActive(@Param("userId") UUID userId, @Param("parentId") UUID parentId);
 }

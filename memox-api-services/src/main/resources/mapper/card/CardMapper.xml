@@ -82,4 +82,14 @@
         FROM numbered
         WHERE card.id = numbered.id
     </update>
+    <select id="findActivePage" resultType="com.memox.card.model.Card">
+        SELECT <include refid="cardColumns"/> FROM card
+        WHERE user_id = #{userId} AND deck_id = #{deckId} AND deleted_at IS NULL AND delete_batch_id IS NULL
+        ORDER BY created_at, id
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="countActive" resultType="long">
+        SELECT count(*) FROM card
+        WHERE user_id = #{userId} AND deck_id = #{deckId} AND deleted_at IS NULL AND delete_batch_id IS NULL
+    </select>
 </mapper>

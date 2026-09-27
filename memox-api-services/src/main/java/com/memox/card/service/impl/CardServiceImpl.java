@@ -2,6 +2,7 @@ package com.memox.card.service.impl;
 
 import com.memox.card.dto.request.CardContentRequest;
 import com.memox.card.dto.request.CardFlagRequest;
+import com.memox.card.dto.request.CardListQuery;
 import com.memox.card.dto.request.CreateCardRequest;
 import com.memox.card.dto.request.DeleteCardsRequest;
 import com.memox.card.dto.request.MoveCardsRequest;
@@ -9,6 +10,7 @@ import com.memox.card.dto.response.CardResponse;
 import com.memox.card.mapper.CardMapper;
 import com.memox.card.model.Card;
 import com.memox.card.service.CardService;
+import com.memox.common.PagingResponse;
 import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.common.util.TextRules;
@@ -265,5 +267,14 @@ public class CardServiceImpl implements CardService {
                 .createdAt(card.getCreatedAt())
                 .updatedAt(card.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagingResponse<CardResponse> listCards(UUID userId, UUID deckId, CardListQuery query) {
+        List<CardResponse> items = cardMapper.findActivePage(userId, deckId, query.getSize(), query.offset()).stream()
+                .map(CardServiceImpl::toResponse)
+                .toList();
+        return PagingResponse.of(items, query, cardMapper.countActive(userId, deckId));
     }
 }

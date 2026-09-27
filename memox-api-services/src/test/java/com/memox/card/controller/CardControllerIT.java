@@ -2,6 +2,7 @@ package com.memox.card.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -124,5 +125,22 @@ class CardControllerIT {
                         Map.of("id", UUID.randomUUID(), "front", "a", "back", "b")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("DECK_CONTENT_TYPE_MISMATCH"));
+    }
+
+    @Test
+    void readsPageADecksActiveCards() throws Exception {
+        UUID sub = deck(deck(null));
+        UUID first = card(sub);
+        card(sub);
+        card(sub);
+
+        mockMvc.perform(get("/api/v1/decks/{id}/cards", sub).param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()").value(2))
+                .andExpect(jsonPath("$.totalItems").value(3))
+                .andExpect(jsonPath("$.hasNext").value(true));
+        mockMvc.perform(get("/api/v1/cards/{id}", first))
+                .andExpect(jsonPath("$.back").value("dog"));
+        mockMvc.perform(get("/api/v1/cards/{id}", UUID.randomUUID())).andExpect(status().isNotFound());
     }
 }

@@ -147,4 +147,16 @@
         FROM numbered
         WHERE deck.id = numbered.id
     </update>
+    <select id="findActivePage" resultType="com.memox.deck.model.Deck">
+        SELECT <include refid="deckColumns"/> FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+        ORDER BY sibling_position, id
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="countActive" resultType="long">
+        SELECT count(*) FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/>
+          AND deleted_at IS NULL AND delete_batch_id IS NULL
+    </select>
 </mapper>

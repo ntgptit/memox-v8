@@ -1,8 +1,10 @@
 package com.memox.deck.controller;
 
+import com.memox.common.PagingResponse;
 import com.memox.common.security.CurrentUserProvider;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeckListQuery;
 import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
@@ -17,6 +19,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,5 +116,15 @@ public class DeckController {
             @RequestHeader(value = WriteContext.IDEMPOTENCY_HEADER, required = false) UUID key) {
         WriteContext context = WriteContext.rest(currentUserProvider.currentUserId(), deviceId);
         idempotencyService.runOnce(context.userId(), key, () -> deckService.deleteDeck(context, id, request));
+    }
+
+    @GetMapping
+    public PagingResponse<DeckResponse> list(@Valid DeckListQuery query) {
+        return deckService.listDecks(currentUserProvider.currentUserId(), query);
+    }
+
+    @GetMapping("/{id}")
+    public DeckResponse get(@PathVariable UUID id) {
+        return deckService.getDeck(currentUserProvider.currentUserId(), id);
     }
 }

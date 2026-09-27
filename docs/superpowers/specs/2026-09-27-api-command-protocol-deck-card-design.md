@@ -283,3 +283,7 @@ For BE-E7, the app side of this protocol:
   (D4) marks it correctly before an undo.
 - REST names its device with an optional `X-Device-Id` header; without it the
   row records `00000000-0000-0000-0000-000000000000`.
+- `POST /api/v1/cards/move` answers `204`: it changes several cards, so there
+  is no single resource to return.
+- Deck lists order by `sibling_position, id`, and card lists by
+  `created_at, id`; their sort enums have that one constant until API-B7.

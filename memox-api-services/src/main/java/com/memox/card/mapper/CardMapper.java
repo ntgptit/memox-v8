@@ -64,4 +64,12 @@ public interface CardMapper {
             @Param("firstVersion") long firstVersion,
             @Param("deviceId") UUID deviceId,
             @Param("now") Instant now);
+
+    List<Card> findActivePage(
+            @Param("userId") UUID userId,
+            @Param("deckId") UUID deckId,
+            @Param("limit") int limit,
+            @Param("offset") long offset);
+
+    long countActive(@Param("userId") UUID userId, @Param("deckId") UUID deckId);
 }

@@ -3,6 +3,7 @@ package com.memox.deck.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -163,5 +164,29 @@ class DeckControllerIT {
                         .header("X-Device-Id", device))
                 .andExpect(status().isOk());
         assertThat(deckMapper.findDeckById(root).getLastDeviceId()).isEqualTo(device);
+    }
+
+    @Test
+    void readsListALevelInOrderAndHideTrash() throws Exception {
+        UUID root = createRoot();
+        UUID a = createSub(root);
+        UUID b = createSub(root);
+        mockMvc.perform(json(
+                        delete("/api/v1/decks/{id}", b),
+                        Map.of("batchId", UUID.randomUUID(), "deletedAt", "2026-09-27T02:00:00Z")))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/v1/decks").param("parentId", root.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].id").value(a.toString()))
+                .andExpect(jsonPath("$.totalItems").value(1));
+        mockMvc.perform(get("/api/v1/decks"))
+                .andExpect(jsonPath("$.items[0].id").value(root.toString()));
+        mockMvc.perform(get("/api/v1/decks/{id}", a))
+                .andExpect(jsonPath("$.name").value("Sub"));
+        mockMvc.perform(get("/api/v1/decks/{id}", b)).andExpect(status().isNotFound());
+        user = UUID.randomUUID();
+        mockMvc.perform(get("/api/v1/decks/{id}", a)).andExpect(status().isNotFound());
     }
 }

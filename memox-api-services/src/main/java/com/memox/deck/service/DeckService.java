@@ -1,7 +1,9 @@
 package com.memox.deck.service;
 
+import com.memox.common.PagingResponse;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeckListQuery;
 import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
@@ -35,4 +37,6 @@ public interface DeckService {
 
     /** The user's active deck. */
     DeckResponse getDeck(UUID userId, UUID deckId);
+
+    PagingResponse<DeckResponse> listDecks(UUID userId, DeckListQuery query);
 }

@@ -3,11 +3,13 @@ package com.memox.deck.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memox.card.mapper.CardMapper;
+import com.memox.common.PagingResponse;
 import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.common.util.TextRules;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeckListQuery;
 import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
@@ -458,5 +460,15 @@ public class DeckServiceImpl implements DeckService {
                 .createdAt(deck.getCreatedAt())
                 .updatedAt(deck.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagingResponse<DeckResponse> listDecks(UUID userId, DeckListQuery query) {
+        List<DeckResponse> items =
+                deckMapper.findActivePage(userId, query.getParentId(), query.getSize(), query.offset()).stream()
+                        .map(DeckServiceImpl::toResponse)
+                        .toList();
+        return PagingResponse.of(items, query, deckMapper.countActive(userId, query.getParentId()));
     }
 }

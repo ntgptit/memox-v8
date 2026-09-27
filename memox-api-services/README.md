@@ -85,6 +85,11 @@ The shared code in `com.memox.common` that every feature reuses.
   and one `EntityReader`; every write takes `ChangeVersions.lock` and gives each
   changed row its own version. The owner always comes from
   `CurrentUserProvider` (a dev user until login, `MEMOX_DEV_USER_ID`).
+- **REST (ADR-014):** `/api/v1/decks`, `/api/v1/decks/{id}/cards`,
+  `/api/v1/cards` and `/api/v1/trash/batches/{id}/undo` call the same service
+  methods as the sync commands. Writes take an optional `X-Device-Id` and an
+  optional `Idempotency-Key` (a UUID; a replay writes nothing and returns the
+  current state).
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
