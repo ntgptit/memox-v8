@@ -40,9 +40,9 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 05 | Tags | 12 | FE-B2 | out of V8 | — |
 | 06 | Trash | 15 | FE-B1 | aligned | [06-trash.md](06-trash.md) |
 | 07 | Card list | 15 | FE-A2 | aligned | [07-card-list.md](07-card-list.md) |
-| 08 | Card create | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84) |
-| 09 | Card edit | 9 | FE-A2 | built | — (#33; UI-base §9 rows 79–84; Move to Trash in [07-card-list.md](07-card-list.md)) |
-| 10 | Card detail | 7 | FE-A2 | built | — (#35, #36; UI-base §9 rows 85–90) |
+| 08 | Card create | 9 | FE-A2 | aligned | [08-card-create.md](08-card-create.md) |
+| 09 | Card edit | 9 | FE-A2 | aligned | [09-card-edit.md](09-card-edit.md) |
+| 10 | Card detail | 7 | FE-A2 | aligned | [10-card-detail.md](10-card-detail.md) |
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
 | 13 | Study home | 7 | FE-A8 | built (P6) | [13-study-home.md](13-study-home.md) |

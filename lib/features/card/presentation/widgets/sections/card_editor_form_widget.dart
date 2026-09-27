@@ -15,6 +15,7 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_discard_d
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_required_legend_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
@@ -127,6 +128,23 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         !listEquals(draft.tagNames, _saved.tagNames);
   }
 
+  /// What differs from the saved card, named for the discard dialog (kit 09),
+  /// by the same comparisons as [_isDirty].
+  List<String> _editedParts(AppLocalizations l10n) {
+    final draft = _draft();
+    return [
+      if (draft.front != _saved.front) l10n.cardEditedTerm,
+      if (draft.back != _saved.back) l10n.cardEditedMeaning,
+      if (draft.example != _saved.example) l10n.cardEditedExample,
+      if (draft.hint != _saved.hint) l10n.cardEditedHint,
+      if (draft.pronunciation != _saved.pronunciation)
+        l10n.cardEditedPronunciation,
+      if (draft.isFlagged != _saved.isFlagged) l10n.cardEditedFlag,
+      if (_hasPendingTag || !listEquals(draft.tagNames, _saved.tagNames))
+        l10n.cardEditedTags,
+    ];
+  }
+
   /// Ruling P4a-L2: a blank side speaks once touched; a long one at once.
   String? _sideError(
     _Field field,
@@ -168,7 +186,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   String _caption(AppLocalizations l10n, Map<_Field, String?> errors) {
     if (_isSaving) return l10n.cardCaptionSaving;
     if (_deckRejects) return l10n.cardCaptionDeckRejects;
-    if (errors.values.any((error) => error != null)) return l10n.cardCaptionFix;
+    if (errors.values.any((error) => error != null)) {
+      // Kit 09: an edit that lost a required side asks for it by name.
+      final isMissing = _front.text.trim().isEmpty || _back.text.trim().isEmpty;
+      return !_isCreating && isMissing
+          ? l10n.cardCaptionAddMissing
+          : l10n.cardCaptionFix;
+    }
     if (_front.text.trim().isEmpty || _back.text.trim().isEmpty) {
       return l10n.cardCaptionRequired;
     }
@@ -255,7 +279,11 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   }
 
   Future<void> _confirmLeave() async {
-    final discard = await showCardDiscardDialog(context, isNew: _isCreating);
+    final discard = await showCardDiscardDialog(
+      context,
+      isNew: _isCreating,
+      edited: _isCreating ? const [] : _editedParts(context.l10n),
+    );
     if (discard && mounted) _leave();
   }
 
@@ -353,6 +381,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       ),
     if (widget.detail case final detail?)
       CardEditSummaryWidget(detail: detail, onOpenDetails: _close),
+    const CardRequiredLegendWidget(),
     CardFieldWidget(
       label: l10n.cardFieldFront,
       hint: l10n.cardFrontHint,
