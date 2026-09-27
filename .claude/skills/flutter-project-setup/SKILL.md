@@ -1,48 +1,48 @@
 ---
 name: flutter-project-setup
-description: Stands up the Flutter project skeleton and everything that is decided once and constrains the rest of the build — toolchain check, git repo conventions, `flutter create` with the right org and IDs, the dependency set and why each package is there, dev dependencies and code generation, build flavors for dev/staging/prod, the bootstrap function with error boundaries, and the Failure/error model. Use this skill when creating a new Flutter app, adding or auditing dependencies, wiring `main.dart` and bootstrap, setting up environments or flavors, configuring build_runner, or designing how errors are represented across layers. Covers checklist phases 2, 3 and 6.
+description: Stands up the Flutter project skeleton and everything that is decided once and constrains the rest of the build — toolchain check, git repo conventions, `flutter create` with the right org and IDs, the dependency set and why each package is there, dev dependencies and code generation, build flavors for dev/staging/prod, the bootstrap function with error boundaries, and the Failure/error model. Use this skill when creating a new Flutter app, adding or auditing dependencies, wiring `main.dart` and bootstrap, setting up environments or flavors, configuring build_runner, or designing how errors are represented across layers.
 ---
 
 # Project setup and foundation
 
-Covers checklist Phases 2 (environment), 3 (dependencies) and 6 (bootstrap,
-flavors, error model). These are grouped because they are decided once and
-constrain everything after — the flavor decides the log level bootstrap
-installs, and the error model decides what the error boundary reports.
+The environment, the dependencies, bootstrap, flavors and the error model are
+grouped because they are decided once and constrain everything after — the
+flavor decides the log level bootstrap installs, and the error model decides
+what the error boundary reports.
 
-Prerequisite: the product section of `docs/README.md` and
-`docs/shared/decisions/ADR-001-quyet-dinh-nen-tang.md` answer platforms,
-online/offline and auth. Those three answers change the dependency set, so setting up before they
-are settled means redoing it.
+Prerequisite: the product section of `docs/README.md` and two ADRs in
+`docs/shared/decisions/` answer platforms (ADR-001), online/offline and
+identity (ADR-013). Those three answers change the dependency set, so setting
+up before they are settled means redoing it.
 
-## 2.1 Toolchain
+## Toolchain
 
 ```bash
 flutter --version && flutter doctor -v
 ```
 
-Use Flutter stable. Record the exact version in `docs/architecture.md` and pin
+Use Flutter stable. Record the exact version in `.fvmrc` (ADR-010) and pin
 it in CI — "works on my machine" is nearly always a toolchain drift.
 
 If `flutter` is not on PATH in this environment, say so plainly and continue
 with the work that does not need it (docs, decisions, file layout). Do not
 fabricate command output.
 
-## 2.2 Repository conventions
+## Repository conventions
 
 - `.gitignore` — start from the Flutter template, then confirm it excludes
-  generated code you do not intend to commit (`*.g.dart`, `*.freezed.dart`),
+  generated code you do not intend to commit (`*.g.dart`),
   `.env` files, signing keys, and `**/google-services.json` if it holds secrets.
 - **Generated code: commit or not?** Pick one and write it down. Committing them
   makes checkout-and-run work and makes diffs noisy; not committing them means
   CI must run `build_runner` before analyze. Not committing is the better default
-  here because CI already runs codegen as a freshness check (Phase 19.1).
+  here because CI already runs codegen as a freshness check (`flutter-ship`).
 - Conventional Commits, scoped by feature: `feat(deck):`, `fix(card):`.
 - Branch naming: `feat/<slice>`, `fix/<issue>`, `chore/<thing>`.
 - PR and issue templates in `.github/`.
 - Branch protection on the default branch; no direct pushes.
 
-## 2.3 Creating the project
+## Creating the project
 
 ```bash
 flutter create \
@@ -76,7 +76,7 @@ issue count against a Flutter-stable release, and its licence.
 Add with `flutter pub add` so constraints are written correctly, then commit
 `pubspec.lock`.
 
-## 6.1 Bootstrap
+## Bootstrap
 
 `bootstrap()` owns startup, `main()` owns nothing but calling it. The reason to
 separate them is testability and flavors — three `main_*.dart` entrypoints can
@@ -104,12 +104,12 @@ Anything that can throw during startup belongs inside a guarded zone that shows
 a real error screen. A white screen with no explanation is the worst failure
 mode available, because it is indistinguishable from a hang.
 
-## 6.2 Environments and flavors
+## Environments and flavors
 
-> **Not in V8 yet.** MemoX V8 is local-only (ADR-001): no API base URL, no
+> **Not in V8 yet.** The app calls no API yet (ADR-012): no API base URL, no
 > staging backend, no analytics. So it has no flavors, no `EnvConfig` and no
-> `app/config/` (ADR-011). The rest of this section applies once an ADR opens
-> networking.
+> `app/config/` (ADR-011). The rest of this section applies from the first API
+> call, when the base URL has to come from somewhere.
 
 Three flavors: development, staging, production. Each carries app name,
 application ID suffix, API base URL, log level, feature flags and analytics
@@ -143,7 +143,7 @@ Distinct application IDs per flavor (`com.x.app.dev`) so all three install side
 by side on one device. Read `references/flavors.md` for the Android and iOS
 wiring.
 
-## 6.3 Error model
+## Error model
 
 This is the contract between layers, so get it right before any feature uses it.
 
@@ -201,5 +201,5 @@ error, log the original and show something generic — a leaked stack trace in a
 snackbar is both a bad experience and an information disclosure.
 
 Put the mapping in one place (`core/error/`) so every repository maps the same
-exception to the same failure, and test it (Phase 15.1) — error mapping is the
+exception to the same failure, and test it (`flutter-testing`) — error mapping is the
 code most likely to be wrong and least likely to be exercised by hand.

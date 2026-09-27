@@ -1,16 +1,17 @@
 ---
 name: flutter-ship
-description: Everything between "the features work" and "users are running it well" for this Flutter app — security review, performance profiling and rebuild scoping, logging abstraction and crash/analytics integration, CI pipeline with format/analyze/codegen-freshness/test/build gates, PR quality gates, signed flavored release builds, store metadata and Android/iOS submission, the pre-release checklist, and post-release monitoring. Use this skill when setting up or fixing CI, preparing a release or store submission, configuring signing or obfuscation, adding logging or analytics or crash reporting, doing a security or performance pass, or investigating crashes and metrics after a release. Covers checklist phases 16 through 22.
+description: Everything between "the features work" and "users are running it well" for this Flutter app — security review, performance profiling and rebuild scoping, logging abstraction and crash/analytics integration, CI pipeline with format/analyze/codegen-freshness/test/build gates, PR quality gates, signed flavored release builds, store metadata and Android/iOS submission, the pre-release checklist, and post-release monitoring. Use this skill when setting up or fixing CI, preparing a release or store submission, configuring signing or obfuscation, adding logging or analytics or crash reporting, doing a security or performance pass, or investigating crashes and metrics after a release.
 ---
 
 # Security, performance, observability, CI/CD and release
 
-Covers checklist Phases 16–22. They share a trigger — the project is heading
-toward release — and in practice several get touched in one session.
+Security, performance, observability, CI/CD and release share a trigger — the
+project is heading toward release — and in practice several get touched in one
+session.
 
 Read `references/ci.md` for the pipeline definition and release build commands.
 
-## 16 · Security
+## Security
 
 Do this as a deliberate pass, not opportunistically. The checks that find real
 problems:
@@ -37,7 +38,7 @@ problems:
 - **Minimum permissions.** Audit the Android manifest and iOS Info.plist — a
   plugin can add a permission you never asked for, and reviewers will ask about it.
 
-## 17 · Performance
+## Performance
 
 Measure before optimising. DevTools tells you where the time goes; intuition
 reliably does not.
@@ -64,7 +65,7 @@ Track startup time, frame rendering (jank), memory, network, database query time
 and app size, and record a baseline in `docs/` so regressions are visible rather
 than argued about.
 
-## 18 · Logging, analytics, monitoring
+## Logging, analytics, monitoring
 
 One logging abstraction in `core/logging/`, with debug/info/warning/error. Every
 layer uses it; nothing calls `print` (the architecture check enforces this).
@@ -85,7 +86,7 @@ them consistently (`deck_created`, not `DeckCreated` in one place and
 cares about, not every tap. Set an alert for a crash-rate regression — without
 one, nobody notices until reviews arrive.
 
-## 19 · CI/CD
+## CI/CD
 
 `.github/workflows/ci.yml` runs on `ubuntu-latest`, by hand while its
 `pull_request` trigger is paused (details in `references/ci.md`). The gates, in the order V8 runs them:
@@ -139,7 +140,7 @@ internal testing, Play Console warnings cleared.
 descriptions (a missing one is an automatic rejection), universal links, push,
 archive, TestFlight, App Store Connect warnings cleared.
 
-Before shipping, the Phase 21 list, of which these are the ones most often
+Before shipping, the pre-release list, of which these are the ones most often
 skipped and most damaging when wrong:
 
 - [ ] **Upgrade tested from the previous released version**, not just a fresh
@@ -152,7 +153,7 @@ skipped and most damaging when wrong:
       crash goes unreported.
 - [ ] Release notes written; rollback plan exists; stakeholder approval.
 
-## 22 · After release
+## After release
 
 Watch crash-free users, ANR rate, startup time, store reviews, API error rate
 and the conversion flows. Triage by severity, hotfix what is critical, and take
@@ -161,5 +162,6 @@ the rest into the next cycle.
 Then close the loop, which is the part usually skipped: review the KPIs against
 what you predicted, update the roadmap, **remove feature flags that have
 stabilised** (a permanent flag is permanent complexity and a permanent untested
-code path), and schedule the technical debt recorded in `docs/wbs.md` rather
+code path), and schedule the technical debt recorded in `docs/wbs_BE.md` and
+`docs/wbs_FE.md` rather
 than letting it accumulate silently.

@@ -10,47 +10,35 @@ Load `flutter-drift` for any of that. What stays here is the policy that sits
 
 ## Cache strategy
 
-**Not applicable while the project is local-first (AD-01).** There is no cache
-because there is no remote — Drift is the source of truth, and a "TTL" on the
-only copy of the data would be meaningless. This section applies from the
-Spring Boot integration onward.
+**Not for the user's data (ADR-013).** Drift is the durable store the app always
+reads, not a cache in front of the server: it is never cleared to refresh, and
+freshness comes from sync's pull, not from a TTL.
 
-When that arrives, write the table below into `docs/architecture.md` — per data
-type, not once for the whole app:
-
-| Data | Cached | TTL | Source of truth | Stale behaviour |
-|---|---|---|---|---|
-| Deck list | yes | 5 min | server | show stale + refresh indicator |
-| Deck content | yes | none | local | — |
-| User profile | yes | 1 h | server | show stale |
-| Search results | no | — | server | — |
-
-Showing stale data with a refresh indicator beats a spinner over a blank screen:
-the user sees something immediately and the update arrives behind it.
+A cache policy applies only to data the app reads from the server without
+syncing it, and there is none today. When such a read appears, decide it per
+data type in an ADR in `docs/shared/decisions/`: cached or not, the TTL, and
+what the UI shows while the copy is stale. Showing stale data with a refresh
+indicator beats a spinner over a blank screen: the user sees something
+immediately and the update arrives behind it.
 
 TTL lives in the repository. The UI never decides whether to read local or
 remote — that policy belongs in one place, or it will drift per screen.
 
 ## Sync and conflicts
 
-For offline-first, pick a conflict policy per entity and write it down:
+Decided once for every synced entity by ADR-013 and its design,
+`docs/superpowers/specs/2026-09-27-server-sync-design.md`; a feature does not
+pick its own conflict policy. What a repository has to know:
 
-- **Server wins** — simple, safe for reference data, silently discards local
-  edits. Fine for things the user does not author.
-- **Client wins** — for data only this device authors.
-- **Last-write-wins** — needs a trustworthy timestamp. Device clocks are not
-  trustworthy; use a server timestamp or a version counter.
-- **Manual merge** — the only honest option for genuinely concurrent edits to
-  the same field, and it needs UI, so only choose it where it is worth that.
-
-A workable default: a monotonic `version` per row, incremented server-side. On
-push, send the version you based the edit on; a mismatch means someone else
-changed it, and the server returns 409 → `ConflictFailure`.
-
-Sync flow: mark rows `isPendingSync` on local write → push pending rows when
-connectivity returns → on success clear the flag and store the new version → on
-conflict apply the declared policy. Keep the flag until the server confirms;
-clearing it optimistically loses the edit if the push later fails.
+- **A write queues itself.** The row and one `sync_outbox` entry go in the same
+  Drift transaction. The outbox keeps at most one entry per entity, its id is
+  the push's idempotency key, and the entry leaves only once the server has
+  answered, so a push that fails loses nothing.
+- **The server settles conflicts.** Content follows the operation the server
+  receives last, and an operation that would break the deck tree is rejected
+  and replaced by the server's copy. No device clock takes part.
+- **Sync is not a feature's code.** One `SyncCoordinator` pushes and pulls; use
+  cases and presentation never see the network.
 
 ## Secure storage
 

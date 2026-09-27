@@ -1,11 +1,11 @@
 ---
 name: flutter-state-riverpod
-description: Riverpod 3.x provider and controller design for this Flutter app — when to use @riverpod codegen, Notifier vs AsyncNotifier, family and autoDispose, how to model screen state as an immutable sealed class covering initial/loading/loaded/empty/error/refreshing/submitting, separating data from task status, and running side effects like navigation, snackbars and dialogs without firing them on rebuild. Use this skill when creating or changing a provider or controller, modelling screen state, deciding where async work belongs, fixing an infinite rebuild or a provider that refuses to dispose, or when a controller is tempted to hold a BuildContext. Covers checklist phase 9.
+description: Riverpod 3.x provider and controller design for this Flutter app — when to use @riverpod codegen, Notifier vs AsyncNotifier, family and autoDispose, how to model screen state as an immutable sealed class covering initial/loading/loaded/empty/error/refreshing/submitting, separating data from task status, and running side effects like navigation, snackbars and dialogs without firing them on rebuild. Use this skill when creating or changing a provider or controller, modelling screen state, deciding where async work belongs, fixing an infinite rebuild or a provider that refuses to dispose, or when a controller is tempted to hold a BuildContext.
 ---
 
 # State management with Riverpod
 
-Covers checklist Phase 9. Riverpod 3.x with code generation.
+Riverpod 3.x with code generation.
 
 Riverpod 3 note: the generated per-provider `Ref` subclasses from 2.x are gone.
 Write `Ref ref`, not `MyThingRef ref`. Examples found online for 2.x will not
@@ -19,9 +19,8 @@ Prefer `@riverpod` codegen — it produces the right provider type, correct
 ```dart
 @riverpod
 Stream<List<DeckListItem>> deckList(Ref ref, String? parentId) =>
-    ref.watch(watchDeckListUseCaseProvider)(parentId);   // AD-12: through the
-                                                         // use case, never the
-                                                         // repository directly
+    // ADR-011 D4: through the use case, never the repository directly.
+    ref.watch(watchDeckListUseCaseProvider)(parentId);
 
 @riverpod
 Stream<DeckDetail> deck(Ref ref, String deckId) =>
@@ -34,8 +33,9 @@ DeckRepository deckRepository(Ref ref) =>
 
 `autoDispose` is the default under codegen and is usually right. `keepAlive` is
 for things that are genuinely app-scoped — repositories, the database, config
-(and, when networking lands per ADR-012, the HTTP client). Screen data is not app-scoped; keeping it alive is how a user
-sees another account's data after switching.
+(and, when networking lands per ADR-012, the HTTP client). Screen data is not
+app-scoped; keeping it alive is how a user sees another account's data after
+switching.
 
 One provider, one responsibility, in the feature that owns it. A single
 `providers.dart` holding everything becomes a merge-conflict magnet and forces
@@ -43,15 +43,15 @@ every consumer to import the whole file.
 
 **Watch narrowly.** `ref.watch(bigProvider.select((s) => s.justThisField))`
 rebuilds only when that field changes. Watching a whole object to read one field
-rebuilds on every unrelated change — the same point Phase 17 makes about limiting
-rebuild scope.
+rebuilds on every unrelated change.
 
 `ref.watch` in build, `ref.read` in callbacks. `ref.read` inside `build` reads a
 value without subscribing, so the widget silently stops updating — a bug that
-looks like "the data is stale" and is hard to trace back. `riverpod_lint` used to
-catch this; it is descoped (`docs/wbs.md`), so the check now lives in
-**code-verification-guard** (`memox.state_management.no_ref_read_in_build`).
-Nothing in `flutter analyze` covers it.
+looks like "the data is stale" and is hard to trace back. `riverpod_lint` used
+to catch this; it is descoped (see `flutter-architecture`), so the check now
+lives in **code-verification-guard**
+(`memox.state_management.no_ref_read_in_build`). Nothing in `flutter analyze`
+covers it.
 
 ## Modelling screen state
 
@@ -66,14 +66,19 @@ while a delete is in flight", so screens that use one either block the whole UI
 during a background operation or show nothing while refreshing.
 
 ```dart
-@freezed
-sealed class DeckListState with _$DeckListState {
-  const factory DeckListState({
-    @Default(AsyncValue<List<Deck>>.loading()) AsyncValue<List<Deck>> decks,
-    @Default(false) bool isRefreshing,
-    @Default(<String>{}) Set<String> deletingIds,   // per-item, not global
-    String? actionError,
-  }) = _DeckListState;
+@immutable
+final class DeckListState {
+  const DeckListState({
+    this.decks = const AsyncValue<List<Deck>>.loading(),
+    this.isRefreshing = false,
+    this.deletingIds = const <String>{},   // per-item, not global
+    this.actionError,
+  });
+
+  final AsyncValue<List<Deck>> decks;
+  final bool isRefreshing;
+  final Set<String> deletingIds;
+  final String? actionError;
 }
 ```
 
@@ -89,9 +94,12 @@ Empty is not a separate `AsyncValue` case; it is `data` with an empty list. The
 UI decides to render `AppEmptyState` — that is a presentation decision, not a
 state-machine one.
 
-State is immutable — `freezed`, or a hand-written class with `copyWith` and
-value equality. A mutated-in-place object can compare equal to itself and the UI
-will not rebuild, which presents as "the screen doesn't update" with no error.
+State is immutable: an `@immutable` class whose every change builds a new
+object, written by hand — V8 does not use `freezed`.
+`lib/features/settings/presentation/states/settings_state.dart` is one, with an
+in-flight set in the role of `deletingIds`. A mutated-in-place object can
+compare equal to itself and the UI will not rebuild, which presents as "the
+screen doesn't update" with no error.
 
 ## Controllers
 

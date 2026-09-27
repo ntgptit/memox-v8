@@ -1,12 +1,9 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (ADR-012), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive. Covers checklist phases 10 and 11.
+description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (ADR-012), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
 ---
 
 # Data layer: networking and persistence
-
-Covers checklist Phases 10 (networking) and 11 (database, cache, secure
-storage).
 
 The repository is the boundary. Above it, domain entities and `Failure`. Below
 it, DTOs, Dio and Drift. Nothing from below crosses up — that single rule is
@@ -23,32 +20,37 @@ repository contract above it.
 
 ## Source of truth — already decided for this project
 
-**memox is local-first with no backend yet (AD-01 in `docs/architecture.md`).**
-Drift is the source of truth; reads come from `watch()` streams; there is no
-remote data source and no cache layer. The Spring Boot backend arrives later,
-and the repository contract is what lets it arrive without touching `domain/`
-or `presentation/`.
+**The server is canonical, and the app is offline-first (ADR-013).** The app
+always reads and writes Drift, online or offline: reads come from `watch()`
+streams, and a write lands locally first, so the UI never waits for the
+network. Drift is the durable store, not a cache. Sync is the data layer's own
+job, which use cases and presentation never see, and none of it is built yet:
+no feature calls the API, and the repository contract is what lets sync arrive
+without touching `domain/` or `presentation/`.
 
 That means the networking half of this skill —
-`references/networking.md` — is **reference material for a later phase**, not
-something to build now. `dio` is deliberately not a dependency yet (ADR-012).
+`references/networking.md` — is **reference material for the sync slices**, not
+something to build ahead of them. `dio` is deliberately not a dependency yet
+(ADR-012).
 
 The generic reasoning below is kept because it is what makes the decision
-reviewable when the backend lands.
+reviewable.
 
-**Offline-first** — the database is the source of truth. Reads always come from
-Drift and are exposed as a stream, so the UI updates when data changes for any
-reason. The network is a background process that fills the database. Writes go
-to the database first with a pending-sync marker, then upload. This is more work
-up front and dramatically better under bad connectivity.
+**Offline-first** — reads always come from the database and are exposed as a
+stream, so the UI updates when data changes for any reason. The network is a
+background process that fills the database. Writes go to the database first
+and are queued for upload. This is more work up front and dramatically better
+under bad connectivity, and it is what ADR-013 chose, with the server holding
+the canonical copy.
 
 **Online-first** — the network is the source of truth, the database is a cache
 with a TTL. Reads try the network, fall back to cache, and say so in the UI when
 they are showing stale data.
 
-Whichever it is, write it in `docs/architecture.md`. And the UI must never
-choose: a widget deciding "if offline read local else read remote" has pulled a
-data-layer policy into presentation, and that policy will then differ per screen.
+Whichever it is, record it in an ADR in `docs/shared/decisions/`. And the UI
+must never choose: a widget deciding "if offline read local else read remote"
+has pulled a data-layer policy into presentation, and that policy will then
+differ per screen.
 
 ## Repository shape
 
@@ -81,7 +83,7 @@ the user-facing path; the returned type is a domain entity, never a DTO.
 
 Put `mapDioException` in `core/error/` and use it from every repository, so the
 same status code cannot produce different failures in different features. Test
-it directly (Phase 15.1) — it is high-traffic code that manual testing rarely
+it directly (`flutter-testing`) — it is high-traffic code that manual testing rarely
 exercises.
 
 ## DTO and entity are different types
@@ -119,9 +121,10 @@ widget.
 
 ## Checks before the data layer is done
 
-Now (local-first, ADR-012 in force):
+Now (Drift only; no API call yet, ADR-012):
 
-- [ ] Source of truth declared in `docs/architecture.md` and followed everywhere.
+- [ ] ADR-013's source of truth followed everywhere: the app reads and writes
+      Drift, online or offline, and the server is canonical.
 - [ ] No Drift exception escapes a repository.
 - [ ] Exception→failure mapping in one place, with tests.
 - [ ] Generated row types never reach presentation.
@@ -130,7 +133,7 @@ Now (local-first, ADR-012 in force):
 - [ ] Indexes exist for the queries actually run.
 - [ ] Migration tested from every released schema version.
 
-When the backend lands (deferred with ADR-012):
+When the first API call lands (ADR-012):
 
 - [ ] No `DioException` escapes a repository; DTOs never reach presentation.
 - [ ] Timeouts set for connect, receive and send.

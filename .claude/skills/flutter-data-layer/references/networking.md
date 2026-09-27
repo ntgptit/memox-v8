@@ -155,8 +155,8 @@ most likely to be wrong and least likely to be exercised by hand.
 
 ## API contract
 
-Document in `docs/api-spec.md`: endpoints, request and response shapes, the
-error envelope, pagination style, and auth behaviour.
+Document in `docs/features/<feature>/api.md`: endpoints, request and response
+shapes, the error envelope, pagination style, and auth behaviour.
 
 **Pagination** — normalise whatever the server does into one internal shape:
 

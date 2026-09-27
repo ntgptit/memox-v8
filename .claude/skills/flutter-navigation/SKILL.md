@@ -1,17 +1,17 @@
 ---
 name: flutter-navigation
-description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until auth lands, AD-03), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour. Covers checklist phase 8.
+description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until login lands, ADR-013), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
 ---
 
 # Navigation
 
-Covers checklist Phase 8. Router configuration lives in `app/router/`.
+Router configuration lives in `app/router/`.
 
 ```
 app/router/
 ├── app_router.dart      # GoRouter instance, redirect logic
 ├── route_paths.dart     # path + name constants
-└── route_guards.dart    # (not yet — auth is deferred, AD-03; add with the auth phase)
+└── route_guards.dart    # (not yet — login comes later, ADR-013; add it with login)
 ```
 
 ## Routes are declared centrally, referenced by name
@@ -69,8 +69,9 @@ visible and the branch's back stack is correct.
 
 ## Guards
 
-> **Deferred until auth lands (AD-03).** This section is reference material for
-> that phase — do not build an auth guard, login flow or `authStateProvider` now.
+> **Deferred until login lands (ADR-013: identity now, login later).** This
+> section is reference material for that phase — do not build an auth guard,
+> login flow or `authStateProvider` now.
 
 Put auth redirection in the router's `redirect`, not in screen `initState`. A
 guard in `initState` means the protected screen is built and briefly visible

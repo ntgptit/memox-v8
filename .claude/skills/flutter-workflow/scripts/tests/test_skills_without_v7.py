@@ -24,13 +24,63 @@ SKILLS = REPO_ROOT / ".claude" / "skills"
 
 REPO_OWNED_SKILLS = (
     "flutter-architecture",
+    "flutter-data-layer",
     "flutter-design-system",
     "flutter-drift",
     "flutter-feature-slice",
+    "flutter-navigation",
     "flutter-product-spec",
+    "flutter-project-setup",
+    "flutter-ship",
+    "flutter-state-riverpod",
     "flutter-testing",
+    "flutter-theme-design",
     "flutter-workflow",
     "project-documentation",
+    "spring-boot-mybatis-review",
+)
+
+# Copied from their upstreams and not the repo's to edit (CLAUDE.md): ECC,
+# Superpowers and Impeccable. Every other skill is the repo's, and is scanned.
+VENDORED_SKILLS = (
+    # ECC
+    "android-clean-architecture",
+    "compose-multiplatform-patterns",
+    "dart-flutter-patterns",
+    "flutter-dart-code-review",
+    "foundation-models-on-device",
+    "java-coding-standards",
+    "jpa-patterns",
+    "kotlin-coroutines-flows",
+    "liquid-glass-design",
+    "react-native-patterns",
+    "security-review",
+    "springboot-patterns",
+    "springboot-security",
+    "springboot-tdd",
+    "springboot-verification",
+    "swift-actor-persistence",
+    "swift-concurrency-6-2",
+    "swift-protocol-di-testing",
+    "swiftui-patterns",
+    # Superpowers
+    "brainstorming",
+    "diagnosing-superpowers",
+    "dispatching-parallel-agents",
+    "executing-plans",
+    "finishing-a-development-branch",
+    "receiving-code-review",
+    "requesting-code-review",
+    "subagent-driven-development",
+    "systematic-debugging",
+    "test-driven-development",
+    "using-git-worktrees",
+    "using-superpowers",
+    "verification-before-completion",
+    "writing-plans",
+    "writing-skills",
+    # Impeccable
+    "impeccable",
 )
 
 V7_MARKERS = (
@@ -149,6 +199,13 @@ class RepoOwnedSkillsTest(unittest.TestCase):
     def test_every_listed_skill_exists(self):
         missing = [name for name in REPO_OWNED_SKILLS if not (SKILLS / name / "SKILL.md").is_file()]
         self.assertEqual(missing, [])
+
+    def test_every_skill_is_repo_owned_or_vendored(self):
+        """A skill missing from REPO_OWNED_SKILLS is never scanned, so every
+        directory under .claude/skills/ is named here, as one or the other."""
+        present = {path.name for path in SKILLS.iterdir() if path.is_dir()}
+        self.assertEqual(present, set(REPO_OWNED_SKILLS) | set(VENDORED_SKILLS))
+        self.assertEqual(set(REPO_OWNED_SKILLS) & set(VENDORED_SKILLS), set())
 
     def test_no_repo_owned_skill_names_v7(self):
         self.assertEqual(_occurrences(), [])
