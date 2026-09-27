@@ -27,25 +27,22 @@
 
 - L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/srs/usecases/UC-SRS-001-reset-learning-progress.md](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md)
-
-- L82: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/starter-decks/ui.md](../features/starter-decks/ui.md)
 
 - L22: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
 
 ## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
 
-- L156: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L172: - [ ] OPEN QUESTION: A5 nói xoá deck đang ôn dở thì kết thúc phiên và quay về danh sách — app hiện màn tổng kết "Ended — content moved to Trash" trước (`lib/features/study/presentation/states/session_ending_state.dart:61`, `summaryContentDeleted`) (A5).
+- L178: - [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).
 
 ## [features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md](../features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md)
 
-- L73: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L81: - [ ] OPEN QUESTION: A4 nói thư viện chưa có deck nào thì empty state dẫn tới Starter Library, lối thứ hai là về Library — màn chỉ có một lối "Go to Library" (`studyHomeGoToLibrary`), và test `study_home_screen_test.dart` 'no root deck: only "Go to Library", no starter line (H1)' ghi rõ điều đó (A4).
 
 ## [features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md](../features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md)
 
-- L83: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L94: - [ ] OPEN QUESTION: E1 nói khi `self_assess` không còn được offer lúc sheet đang mở thì sheet hiện một dòng lỗi và giữ nguyên lựa chọn, như các trường hợp "đổi giữa chừng" khác — `StudyRejection.modeNotOffered` không nằm trong `_changedMeanwhile` (`lib/features/study/presentation/controllers/study_entry_controller.dart:22-30`), nên trường hợp này hiện như một lần mở thất bại chung (BR-SRS-003, BR-STUDY-015, E1).
 
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 
