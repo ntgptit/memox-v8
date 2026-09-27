@@ -1,7 +1,7 @@
 # MemoX V8 — The guard and the design-token hook without V7 (package 12b)
 
-Status: in review 2026-09-27 (scope, the rules named after V7, the hook approach and
-design sections 1–3 approved in conversation) · Path: architectural
+Status: approved 2026-09-27 (scope, the rules named after V7, the hook approach and
+design sections 1–3 in conversation, then this spec) · Path: architectural
 
 ## 1. Intent
 
