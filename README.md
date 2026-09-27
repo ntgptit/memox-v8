@@ -49,16 +49,21 @@ Once the rule has a target file, the guard reports
 `guard.config.stale_targets_pending` and the gate fails: delete the rule's
 entry in the commit that added the file. The list is empty today.
 
-CI (`.github/workflows/ci.yml`) runs on every pull request, on Linux:
+CI (`.github/workflows/ci.yml`) runs on Linux. It is paused during active
+development (2026-09-26): it runs only by hand (Actions → CI → Run workflow),
+and pull requests are merged on the local gate. The workflow's `on:` block
+says how to resume it on every pull request.
 
 - `gate` rebuilds the generated code from scratch (`check_generated.py`),
   then runs the same gate, `dod_check.sh`, in full;
 - `goldens` runs `TZ=UTC flutter test --tags golden` against the committed
   pictures and fails if fewer than 60 ran (`count_golden_tests.py`);
-- `CI gate` is green only when every other job succeeded. It is the one check
-  to require: a pull request is merged only once it is green.
+- `CI gate` is green only when every other job succeeded. Once CI runs on
+  pull requests again, it is the one check to require: a pull request is
+  merged only once it is green.
 
-To make that a rule on GitHub, in the repository settings: Settings → Rules →
+To make that a rule on GitHub after resuming (a required check on a paused
+workflow never reports, and blocks every merge), in the repository settings: Settings → Rules →
 Rulesets → New ruleset → New branch ruleset. Target the default branch
 (`master`) with enforcement Active; under "Require status checks to pass", add
 `CI gate` and turn on "Require branches to be up to date before merging".

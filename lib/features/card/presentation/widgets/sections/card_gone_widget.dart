@@ -5,19 +5,23 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
-/// The editor once its card or deck is gone (ruling P4a-L4): it says why and
-/// that nothing was saved, and leads back to the deck.
+/// The editor or the detail once its card or deck is gone (ruling P4a-L4):
+/// it says why, and leads back to the deck or to the Trash (FE-B1 D11).
 class CardGoneWidget extends StatelessWidget {
   const CardGoneWidget({
     super.key,
     required this.title,
     required this.body,
     required this.onBack,
+    this.onOpenTrash,
   });
 
   final String title;
   final String body;
   final VoidCallback onBack;
+
+  /// Hidden without it.
+  final VoidCallback? onOpenTrash;
 
   @override
   Widget build(BuildContext context) => MxScreenScroll(
@@ -30,6 +34,10 @@ class CardGoneWidget extends StatelessWidget {
         tone: MxEmptyStateTone.neutral,
         actionLabel: context.l10n.cardBackToDeck,
         onAction: onBack,
+        secondaryActionLabel: onOpenTrash == null
+            ? null
+            : context.l10n.commonOpenTrash,
+        onSecondaryAction: onOpenTrash,
       ),
     ],
   );

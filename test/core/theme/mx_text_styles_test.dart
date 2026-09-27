@@ -125,8 +125,8 @@ void main() {
     expect(styles.counter.color, scheme.onSurfaceVariant);
   });
 
-  test('nav label is primary only when selected', () {
-    expect(styles.navLabel(isSelected: true).color, scheme.primary);
+  // The selected colour is pinned in mx_text_styles_ink_test.dart.
+  test('nav label is onSurfaceVariant when not selected', () {
     expect(styles.navLabel(isSelected: false).color, scheme.onSurfaceVariant);
     expectStyle(
       styles.navLabel(isSelected: true),
@@ -237,18 +237,20 @@ void main() {
     );
   });
 
-  test('overline 12/700 at 0.6, tabular, onSurfaceVariant', () {
+  test('overline 13/700 at 0.6, tabular, onSurface (spec 2026-09-26 D5)', () {
     expectStyle(
       styles.overline,
-      size: 12,
+      size: 13,
       weight: FontWeight.w700,
       tracking: 0.6,
-      color: scheme.onSurfaceVariant,
+      color: scheme.onSurface,
     );
     expect(
       styles.overline.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
+    // D7: the deck summary label keeps 12, otherwise the same overline.
+    expect(styles.compactOverline, styles.overline.copyWith(fontSize: 12));
   });
 
   test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {
@@ -372,11 +374,10 @@ void main() {
     );
   });
 
-  test('rowTitleMatch is the list row title, bold, in primary', () {
+  test('rowTitleMatch is the list row title, bold (ink: see _ink_test)', () {
     expect(styles.rowTitleMatch.fontSize, styles.listRowTitle.fontSize);
     expect(styles.rowTitleMatch.height, styles.listRowTitle.height);
     expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
-    expect(styles.rowTitleMatch.color, AppColorSchemes.light.primary);
   });
 
   test('card editor field roles (kit 08/09)', () {
@@ -419,5 +420,14 @@ void main() {
     expect(styles.studyBadge(scheme.primary).letterSpacing, 1.2);
     expect(styles.fieldCount(isOver: false).letterSpacing, 0.2);
     expect(styles.fieldCount(isOver: true).letterSpacing, 0.2);
+  });
+
+  test('statValue is tabular in the ink given; statLabel is the overline '
+      '(FE-A6 D17)', () {
+    final value = styles.statValue(const Color(0xFF123456));
+
+    expect(value.color, const Color(0xFF123456));
+    expect(value.fontFeatures, contains(const FontFeature.tabularFigures()));
+    expect(styles.statLabel, styles.overline);
   });
 }

@@ -1,50 +1,165 @@
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/domain/models/turn_result_model.dart';
+import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/providers/abandon_study_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/answer_study_turn_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/resume_study_session_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/reveal_recall_answer_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/save_recall_time_use_case_provider.dart';
+import 'package:memox/features/study/presentation/providers/show_fill_hint_use_case_provider.dart';
+import 'package:memox/features/study/presentation/states/study_turn_state.dart';
+import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_session_controller.g.dart';
 
-/// The session screen's one write path (spec D4): answer and abandon, both
-/// behind a single in-flight flag, so a second tap while a write runs is
-/// dropped instead of racing it (BR-STUDY-004). Reveal, recall time and
-/// fill hint join once P4 builds the modes that use them. Mode widgets never
-/// call a use case directly.
+/// The one write path of a session (spec D4): its answers, its end, and the
+/// settling of a stalled round. The session's stream shows what happened;
+/// this holds only what the stream cannot: a write running, a turn held on
+/// screen (D5), an answer a busy database refused (E2).
 @riverpod
 class StudySessionController extends _$StudySessionController {
-  bool _isInFlight = false;
-
   @override
-  void build(String sessionId) {}
+  StudyTurnState build(String sessionId) => const StudyTurnState();
 
-  /// Null when a write is already in flight: the tap is dropped, not queued.
-  Future<Outcome<TurnResult, StudyRejection>?> answer({
-    required String cardId,
-    required StudyAnswer answer,
-  }) => _guarded(
-    () => ref.read(answerStudyTurnUseCaseProvider)(
+  /// Answers [item]. [shouldHoldFeedback] keeps it on screen with its result
+  /// until [release] (D5). A busy database keeps the answer for [retry]
+  /// (E2); any other failure has already failed the session, whose summary
+  /// the stream shows (E3, spec D6). Dropped while a write runs
+  /// (BR-STUDY-004). [cardId] names another card than [item]'s: a `match`
+  /// answer on any pending pair of the board (BR-STUDY-049).
+  Future<void> answer(
+    StudyItem item,
+    StudyAnswer answer, {
+    bool shouldHoldFeedback = false,
+    String? cardId,
+  }) async {
+    if (state.isBusy) return;
+    state = const StudyTurnState(isBusy: true);
+    final pending = PendingAnswer(
+      item,
+      answer,
+      shouldHoldFeedback: shouldHoldFeedback,
+      cardId: cardId ?? item.cardId,
+    );
+    try {
+      final outcome = await ref.read(answerStudyTurnUseCaseProvider)(
+        sessionId: sessionId,
+        cardId: pending.cardId,
+        answer: answer,
+      );
+      if (!ref.mounted) return;
+      state = switch (outcome) {
+        Ok(:final value) when shouldHoldFeedback => StudyTurnState(
+          held: HeldTurn(item, value),
+        ),
+        // A refusal (the card moved on, the session closed) is the stream's
+        // to show; nothing is held.
+        _ => const StudyTurnState(),
+      };
+    } on DatabaseLockedFailure {
+      if (!ref.mounted) return;
+      state = StudyTurnState(unsaved: pending);
+    } on Failure {
+      if (!ref.mounted) return;
+      state = const StudyTurnState();
+    }
+  }
+
+  /// The answer a busy database refused, once more (E2).
+  Future<void> retry() async {
+    final pending = state.unsaved;
+    if (pending == null) return;
+    await answer(
+      pending.item,
+      pending.answer,
+      shouldHoldFeedback: pending.shouldHoldFeedback,
+      cardId: pending.cardId,
+    );
+  }
+
+  /// `recall`: shows [item]'s meaning with [remainingMs] left; records no
+  /// outcome (BR-STUDY-065, BR-STUDY-036). The stream shows it revealed. A
+  /// refusal or a failure leaves the turn as it was, to be tapped again.
+  /// Dropped while a write runs (BR-STUDY-004).
+  Future<void> revealRecall(StudyItem item, int remainingMs) => _write(
+    () => ref.read(revealRecallAnswerUseCaseProvider)(
       sessionId: sessionId,
-      cardId: cardId,
-      answer: answer,
+      cardId: item.cardId,
+      remainingMs: _turnTime(remainingMs),
     ),
   );
 
-  /// UC-STUDY-001 A3: Stop in the exit dialog calls this, from the ✕ and the
-  /// system back gesture alike (spec D8, owner ruling 2026-09-27).
-  Future<Outcome<void, StudyRejection>?> abandon() => _guarded(
-    () => ref.read(abandonStudySessionUseCaseProvider)(sessionId: sessionId),
+  /// `fill`: shows [item]'s hint; noted, it changes no result
+  /// (BR-STUDY-028). As [revealRecall] on a refusal or a failure.
+  Future<void> showFillHint(StudyItem item) => _write(
+    () => ref.read(showFillHintUseCaseProvider)(
+      sessionId: sessionId,
+      cardId: item.cardId,
+    ),
   );
 
-  Future<T?> _guarded<T>(Future<T> Function() action) async {
-    if (_isInFlight) return null;
-    _isInFlight = true;
+  /// `recall`: keeps [item]'s time left, so the turn takes it up where it
+  /// stopped (spec D12, BR-STUDY-036). A background save: it marks no write
+  /// running, is skipped while one runs, and a failure is left to the next
+  /// save or the turn's answer.
+  Future<void> saveRecallTime(StudyItem item, int remainingMs) async {
+    if (state.isBusy) return;
     try {
-      return await action();
-    } finally {
-      _isInFlight = false;
+      await ref.read(saveRecallTimeUseCaseProvider)(
+        sessionId: sessionId,
+        cardId: item.cardId,
+        remainingMs: _turnTime(remainingMs),
+      );
+    } on Failure {
+      // Superseded by the next save or the answer.
     }
+  }
+
+  /// One write with no outcome to hold: busy while it runs, then back to
+  /// idle whatever happened; the stream shows what changed.
+  Future<void> _write(Future<Object?> Function() command) async {
+    if (state.isBusy) return;
+    state = const StudyTurnState(isBusy: true);
+    try {
+      await command();
+    } on Failure {
+      // The turn stays as it was.
+    }
+    if (!ref.mounted) return;
+    state = const StudyTurnState();
+  }
+
+  static int _turnTime(int remainingMs) => remainingMs.clamp(0, recallTurnMs);
+
+  /// The held turn's mode met its continue condition (D5).
+  void release() {
+    if (state.held == null) return;
+    state = const StudyTurnState();
+  }
+
+  /// ✕ and system Back: the session ends as `user_exit`; its turns stay
+  /// (A3, BR-STUDY-014, BR-STUDY-019). The stream then shows the summary.
+  Future<void> abandon() async {
+    try {
+      await ref.read(abandonStudySessionUseCaseProvider)(sessionId: sessionId);
+    } on Failure {
+      // The session stays open; the next start closes it (BR-STUDY-072).
+    }
+  }
+
+  /// A stalled round (its cards were deleted) moves on (spec D12). Not
+  /// while a turn is held: it settles once released (D5).
+  Future<void> settle() async {
+    if (state.isBusy || state.held != null) return;
+    state = const StudyTurnState(isBusy: true);
+    try {
+      await ref.read(resumeStudySessionUseCaseProvider)(sessionId: sessionId);
+    } on Failure {
+      // The stream still shows the stalled session; the person can close it.
+    }
+    if (!ref.mounted) return;
+    state = const StudyTurnState();
   }
 }

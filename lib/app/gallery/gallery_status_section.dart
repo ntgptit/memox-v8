@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
+import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
@@ -58,6 +59,42 @@ class GalleryStatusSection extends StatelessWidget {
               label: context.l10n.galleryLost,
               body: context.l10n.gallerySchedulesAndDueDates,
               tone: MxOutcomeTone.lost,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        spacing: AppSpacing.control,
+        children: [
+          Expanded(
+            child: MxStatTile(
+              value: '0',
+              label: context.l10n.galleryNew,
+              layout: MxStatTileLayout.boxed,
+            ),
+          ),
+          Expanded(
+            child: MxStatTile(
+              value: '12',
+              label: context.l10n.galleryDue,
+              emphasis: MxStatTileEmphasis.primary,
+              layout: MxStatTileLayout.boxed,
+            ),
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: MxStatTile(value: '20', label: context.l10n.galleryReviewed),
+          ),
+          Expanded(
+            child: MxStatTile(value: '20', label: context.l10n.galleryAnswered),
+          ),
+          Expanded(
+            child: MxStatTile(
+              value: '3 / 23',
+              label: context.l10n.galleryWrong,
             ),
           ),
         ],

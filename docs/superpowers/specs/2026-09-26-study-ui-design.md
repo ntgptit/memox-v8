@@ -1,6 +1,6 @@
 # MemoX V8 — Study UI (FE-A6, FE-A7)
 
-Status: draft for owner review (2026-09-26).
+Status: approved by the owner (2026-09-26).
 
 ## 1. Intent
 
@@ -22,22 +22,29 @@ not part of it.
 | D5 | **Feedback hold.** The screen keeps the item that was answered, with its `TurnResult`, on screen until that mode's continue condition is met (an auto-advance delay, or a Continue tap). Only then does it show the stream's current item. The stream is never shown mid-feedback. | BR-STUDY-063 (result after commit) and BR-STUDY-064 (the unit stays on screen). The stream moves on at commit, so without the hold the outcome would be lost. |
 | D6 | Write failures: a `DatabaseLockedFailure` shows an inline error on the same turn with the answer kept, to retry (UC-STUDY-001 E2). Any other failure has already failed the session, and the summary's "Save error" state opens (E3; the summary is where the error shows and the way back to the deck). | Mirrors `AnswerStudyTurnUseCase`: it rethrows a lock and fails the session on any other failure. |
 | D7 | Ended sessions: `staleGeneration` pops back to the deck list with a snackbar and no summary (UC-STUDY-001 E4, ruling in handoff 21). A session whose deck was deleted (`notFound`) pops to the list (A5). Every other end reason shows the summary state of handoff 21. | UC over kit. |
-| D8 | Exit: the ✕ and system Back open the same confirm dialog (owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004). Keep studying leaves everything as it was; Stop abandons the session. The same route then shows the summary's "Left early" state, with the way back to the deck. An abandoned session is never offered to Continue; Continue is only for a session still `in_progress` today, e.g. after the OS closed the app (UC-STUDY-001 A3, A3b; BR-STUDY-072). | BR-STUDY-014, IT-NAV-010 and IT-CONT-004; the confirm is a deviation from the kit (handoff 16). Answered turns are kept. |
+| D8 | Exit: the ✕ and system Back abandon the session at once, with no confirm (handoff 16); the same route then shows the summary "You left early" (D2), whose Done returns to the deck. Back on the summary is Done. | Owner, 2026-09-26 (before P1c): an abandoned session cannot be continued (UC-STUDY-001 A3, A3b; BR-STUDY-014, BR-STUDY-072), and the kit draws `leftEarly`. Answered turns are kept. |
 | D9 | App start runs `AbandonStaleSessionsUseCase` once, before the first frame that can show a resumable session. | BR-STUDY-072: a session from an earlier day is `interrupted`, never resumed. |
 | D10 | Entry points: a real `DeckAction.study` in the deck action sheet, and the card list summary's "Study this deck". Both leave the Coming soon sheet; Study options stays there (spec A4). Study home (A8) adds its own entry later. | Handoff 07 and 14. |
 | D11 | Two backend additions, each with its own tests, in the phase that needs it. `SessionSummary` gains `answeredCardCount` and `turnCount` (P1, handoff 21). A read-only `PreviewSelfAssessIntervalsUseCase` returns the four next intervals for a scheduled `self_assess` turn and null on a relearning turn, computed by the same `Sm2Scheduler.next` the write uses (P2, handoff 16a). | The kit's summary numbers; the owner-confirmed 16a brief. |
 | D12 | Recall's clock is a widget ticker. `SaveRecallTimeUseCase` runs on `AppLifecycleState.paused` and on dispose, never per tick. At zero, the ticker answers `RecallAnswer(timedOut)`. | BR-STUDY-031, BR-STUDY-036. |
-| D13 | Layout follows the Library pattern: `lib/features/study/presentation/{providers,controllers,screens,widgets/{sections,items,overlays}}`; use-case providers one per file; `app/` composes and routes (spec A14). | ADR-010 and the Library screens. |
+| D13 | Layout follows the Library pattern: `lib/features/study/presentation/{providers,controllers,states,screens,widgets/{sections,items,overlays}}`; use-case providers one per file; `app/` composes and routes (spec A14). | ADR-010 and the Library screens. |
+| D14 | **Summary hero tones.** The theme binds the PRESERVE_ONLY `success` semantic as a field of `MxSemanticColors` (a green of its own, never `mastery`), and `MxIconTile` and the hero card gain a `success` and a `danger` tone (`danger` on the existing soft danger tint, `dangerSoft`/`dangerBorder` with the `error` glyph, as `MxInlineBanner` and `MxErrorState` draw it; the solid `errorFill`/`onErrorFill` pair stays the destructive button's). Outcome → tone: ok (`completed`) success; paused (`user_exit`, `interrupted`) tinted; ended (`scheduler_reset`, `scheduler_changed`) warning; error (`persistence_error`) danger. Built under `flutter-theme-design` (theme slot and Mx widget together). | Owner, 2026-09-26 (Impeccable critique before P1): the kit's four tones; green stays mastery-only. |
+| D15 | **Study entry read model.** `StudyEntry` gains `overdueCardCount` (the due cards whose due day is before today, same local-day boundary as BR-STUDY-068) and `resumable`, a `ResumableSession` (the Study Home shape: kind, mode, progress) replacing the bare `resumableSessionId`. Each with its own repository test, in P1. | Owner, 2026-09-26: the kit's overdue note and resume banner. |
+| D16 | **Deck context on the entry.** The deck name and breadcrumb come from the deck feature, composed by `app/` and passed to the entry screen as a widget, as the card editor's `_deckContext` does: `study` may not import `deck` (`boundary_rules.dart`). | ADR-011 D2. |
+| D17 | **`MxStatTile`.** A new shared widget: a large tabular number over a small-caps label, inked as the kit draws New and Due (Due above zero primary, New above zero muted, a zero plain), one semantics node "{label}: {value}". Callers: the entry hero (New, Due) and the summary hero (three stats). Built under `flutter-theme-design`, with its widget test and goldens. | Owner, 2026-09-26: two callers exist (14, 21). |
+| D18 | **A summary with nothing answered.** A session that ended before its first turn shows the hero without stats and no Facts card, as `schedulerChanged` does. | Owner, 2026-09-26. |
+| D19 | **Accessibility.** 14, 16 and 21 follow 16a's rules: card faces wrap and never ellipsize; single-line text keeps line-height 1.5 for stacked marks (UI-base §9 row 102); every target 48 dp; the resume pulse dot and hero glyphs are decorative (no own node); a stat tile is one node; the Browse card reads term then meaning; the feedback hold keeps focus on the card. | Owner, 2026-09-26. |
+| D20 | **Browse edges.** The footer hint does not change; a right swipe on the round's first card does nothing; a left swipe on the stage's last card answers it and the session moves on. | Owner, 2026-09-26. |
 
 ## 3. Screens by phase
 
 | Phase | Scope | Makes usable |
 |---|---|---|
-| P1 | Routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a; entry points (D10); stale-session sweep (D9). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
-| P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003). | `sm2` decks: learning (browse → self_assess) and review. |
-| P3 | Guess 18, Match 17. | Those stages. |
-| P4 | Recall 19 (D12), Fill 20. | `eight_box` decks end to end. |
-| P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong. | The IT set is closed. |
+| P1 | Theme tones and `MxStatTile` (D14, D17); the entry read model (D15); routes; the session shell (top bar, context line, exit, feedback hold, ended states); Study entry 14 without the direction sheet; Browse 16; Summary 21 with D11a and D18; entry points (D10); stale-session sweep (D9); the session read model carries Browse's trail of the round's shown cards, for looking back (BR-STUDY-048). | Screens 14, 16 and 21 end to end. A Browse-only stage can complete. |
+| P2 | Self-check 16a with D11b; the direction sheet (FE-A7, UC-STUDY-003); the Study entry's actions (Learn, Review, Continue; starting, refused, startFailed; resume), which P1 left read-only. | `sm2` decks: learning (browse → self_assess) and review. |
+| P3 | Guess 18, Match 17; the Study entry's pick among `eight_box` review modes; the top bar keeps its track at large text. | `eight_box` reviews in Match and Guess. |
+| P4 | Recall 19 (D12), Fill 20 ([plan](../plans/2026-09-26-study-p4-recall-fill.md)); the built-mode set goes. | `eight_box` decks end to end. |
+| P5 | The HOST-FLOW scenarios of `docs/features/study/it-scenarios.md` and `study-mode/it-scenarios.md` not yet covered; index rows 14 and 16–21 → built/aligned; WBS FE-A6 and FE-A7 → xong ([plan](../plans/2026-09-26-study-p5-it-records.md)). | The IT set is closed. |
 
 **Unbuilt stages are never offered.** A learning session runs its algorithm's whole stage
 sequence (BR-MODE-004), so the entry offers Learn only when every stage of that

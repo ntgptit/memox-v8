@@ -3,7 +3,7 @@ id: UC-DECK-003
 title: Xem danh sách deck với tiến độ
 status: ready
 rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-STUDY-008, BR-STUDY-051]
-code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/usecases/search_decks_use_case.dart]
+code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

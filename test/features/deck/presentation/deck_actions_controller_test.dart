@@ -40,6 +40,14 @@ void main() {
       (await db.customSelect('SELECT COUNT(*) AS n FROM deck').getSingle())
           .read<int>('n');
 
+  Future<int> activeDeckCount() async =>
+      (await db
+              .customSelect(
+                'SELECT COUNT(*) AS n FROM deck WHERE delete_batch_id IS NULL',
+              )
+              .getSingle())
+          .read<int>('n');
+
   test('createRootDeck hands back the new deck', () async {
     final outcome = await container
         .read(deckActionsControllerProvider.notifier)
@@ -108,13 +116,18 @@ void main() {
     expect((await decks().findById(korean.id))!.name, 'Hàn Quốc');
   });
 
-  test('deleteDeck takes the subtree with it', () async {
-    final korean = await decks().root('Korean');
-    await decks().sub(korean.id, 'Words');
-    await actions().deleteDeck(deckId: korean.id);
+  test(
+    'deleteDeck moves the subtree to the Trash and hands back its batch',
+    () async {
+      final korean = await decks().root('Korean');
+      await decks().sub(korean.id, 'Words');
+      final outcome = await actions().deleteDeck(deckId: korean.id);
 
-    expect(await deckCount(), 0);
-  });
+      expect(outcome, isA<Ok<String, DeckRejection>>());
+      expect(await activeDeckCount(), 0);
+      expect(await deckCount(), 2, reason: 'the rows stay, marked');
+    },
+  );
 
   test('moveDeck puts the deck under its new parent', () async {
     final korean = await decks().root('Korean');

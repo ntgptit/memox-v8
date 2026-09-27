@@ -28,9 +28,11 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenStudyOptions,
     required this.emptyState,
     required this.schedulerType,
     required this.hasDeepestSubDecks,
+    this.onOpenTrash,
   });
 
   final DeckLevel level;
@@ -40,8 +42,14 @@ class DeckLevelListWidget extends ConsumerWidget {
   /// A root's review algorithm (screen 02), from a row's action sheet.
   final ValueChanged<String> onOpenAlgorithm;
 
-  /// Opens [String]'s Study entry (spec D10).
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Screen 15 for a deck (FE-A3 D3).
+  final ValueChanged<String> onOpenStudyOptions;
+
+  /// Opens the Trash (screen 06), for a refused Undo (FE-B1).
+  final VoidCallback? onOpenTrash;
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
@@ -93,8 +101,15 @@ class DeckLevelListWidget extends ConsumerWidget {
       children: [
         // Screen 01: the strip or the summary sits close under the search
         // field or the breadcrumb, whose own inset is the gap.
-        if (schedulerType case final algorithm?) ...[
-          DeckSummaryCardWidget(level: level, schedulerType: algorithm),
+        if ((parentId, schedulerType) case (
+          final deckId?,
+          final algorithm?,
+        )) ...[
+          DeckSummaryCardWidget(
+            level: level,
+            schedulerType: algorithm,
+            onStudy: () => onOpenStudy(deckId),
+          ),
           const SizedBox(height: AppSpacing.grouped),
         ] else if (_hasCards) ...[
           DeckDueStripWidget(level: level),
@@ -131,6 +146,8 @@ class DeckLevelListWidget extends ConsumerWidget {
                       onOpenDeck: onOpenDeck,
                       onOpenAlgorithm: onOpenAlgorithm,
                       onOpenStudy: onOpenStudy,
+                      onOpenStudyOptions: onOpenStudyOptions,
+                      onOpenTrash: onOpenTrash,
                       isOpenDeck: false,
                     ),
                   ),

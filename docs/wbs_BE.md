@@ -13,8 +13,8 @@
 - **Phụ thuộc:** [`_generated/traceability.md`](_generated/traceability.md),
   [`shared/testing/host-coverage-map.md`](shared/testing/host-coverage-map.md),
   README của từng feature.
-- **Ngữ cảnh bằng chứng:** `master` tại `f28bdfd` (PR #26), worktree sạch, ngày
-  2026-09-24.
+- **Ngữ cảnh bằng chứng:** tạo từ `master` tại `f28bdfd` (PR #26) ngày 2026-09-24;
+  trạng thái rà lại trên `master` tại `7de0101` (PR #78) ngày 2026-09-26.
 
 ## Phạm vi và tài liệu tham chiếu
 
@@ -72,6 +72,10 @@ Quy ước:
 | BE-A8 | Tìm kiếm toàn thư viện, 1 use case (UC-SEARCH-001): tên deck, hai mặt card, tên tag; tên deck fold trong Dart từ một lần đọc cây deck, card khớp trong một câu lệnh (bậc khớp bằng `=` và `instr`, tag qua subquery tương quan, một kết quả mỗi card); deck trước card sau, trang 50 kết quả theo keyset với `through` và `nextThrough`; truy vấn rỗng không chạy câu lệnh nào; đọc lại sau mỗi lần ghi, không ghi gì | xong | BE-03, BE-04, BE-05 | M | [spec](superpowers/specs/2026-09-25-library-search-backend-design.md) và [plan](superpowers/plans/2026-09-25-library-search-backend.md) gói 5; test trong `test/features/search/` | FE-A10 dựng màn 04 trên use case này, rồi bỏ `SearchDecksUseCase` |
 | BE-A9 | Read của danh sách card cho screen handoff: mỗi card mang tag (một statement theo trang) và nhãn hạn (`CardDue`); view đếm 4 trạng thái hiển thị của cả deck; stream phát lại khi tag của card đổi | xong | BE-04, BE-05 | S | [spec căn Thư viện](superpowers/specs/2026-09-24-library-artifact-alignment-design.md) §5, phase B; test trong `test/features/card/` | Phase E đọc các trường này |
 | BE-D2 | CI chạy gate trên Linux cho mỗi pull request: job `gate` dựng lại code sinh từ đầu rồi chạy `dod_check.sh` đầy đủ; job `goldens` so ảnh golden và đếm số test đã chạy (sàn 60); job `CI gate` chỉ xanh khi mọi job khác thành công, là check duy nhất cần bắt buộc. Gỡ công cụ CI của V7 không còn gì dùng | xong | — | M | [spec](superpowers/specs/2026-09-25-ci-gate-design.md) và [plan](superpowers/plans/2026-09-25-ci-gate.md) gói 6; `.github/workflows/ci.yml`; test hợp đồng workflow và test đếm golden trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | Chủ dự án đặt `CI gate` làm check bắt buộc trong ruleset ([`README.md` gốc](../README.md)); BE-D5 |
+| BE-B1 | Trash, phần store (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012): schema v3 với `delete_batches` và khoá `delete_batch_id` → `delete_batches(id)` (migration v2 → v3 bằng dựng lại bảng, test nâng cấp từ v1 và v2); xoá deck và card là soft-delete theo batch, đóng phiên chạm tới batch (kể cả qua lựa chọn `guess`); khôi phục và Undo theo đúng luật di chuyển; đích khôi phục; danh sách Trash và purge theo lượt, bỏ qua trọn batch còn chứa batch khác; 11 use case; test hình dạng câu lệnh của BR-TRASH-002 với allowlist có lý do | xong | BE-02, BE-D1 | L | [spec](superpowers/specs/2026-09-25-trash-backend-design.md) và [plan](superpowers/plans/2026-09-26-trash-backend.md) gói 7; test trong `test/features/trash/`, `test/features/deck/data/deck_trash_test.dart`, `test/features/card/data/card_trash_test.dart`, `test/drift/migration_test.dart`, `test/architecture/tombstone_filter_test.dart` | FE-B1 dựng màn 06, snackbar Undo và lời gọi auto-purge trên các use case này |
+| BE-B2 | Tag Management, phần store (UC-TAG-001; BR-TAG-003…BR-TAG-011): catalog tag kèm số thẻ đang hoạt động, trong thư viện hoặc trong một deck, tìm theo đúng phép fold của BR-TAG-001; xem trước đổi tên (giữ nguyên, đổi tên, hay gộp vào tag nào và còn bao nhiêu thẻ) rồi ghi sau chốt chặn `mergeNotConfirmed`; gộp bằng `INSERT OR IGNORE` rồi xoá tag nguồn theo cascade, kể cả liên kết của thẻ trong Trash; xoá tag theo cascade; chỉ ghi `tags` và `card_tags`; 5 use case; không đổi schema | xong | BE-05 | M | [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md) và [plan](superpowers/plans/2026-09-26-tag-management-backend.md) gói 8; test trong `test/features/tags/` | FE-B2 dựng màn 05 và overlay lọc trên các use case này |
+| BE-C4 | Lọc card list theo tag (BR-TAG-004): `CardListQuery.tagIds`, một `EXISTS` trên `card_tags` trong vị từ chung của danh sách, số đếm và Select all; số đếm trạng thái và workload vẫn tính cả deck | xong | BE-B2 | S | Spec gói 8 §8; `test/features/card/data/card_list_tag_filter_test.dart` | — |
+| BE-D5 | Công cụ kiểm chứng không còn gì của V7 (mở rộng theo chủ dự án): `build_verification_plan.py` chỉ phục vụ `dod_check.sh --changed`, plan còn 11 field, bỏ shard, `--github-output`, Widgetbook, memox-api và prompt set; `dod_check.sh` không còn bước Widgetbook và bước prompt contract, nên `--changed` hết fail trên mọi thay đổi code; lời giúp và header tả V8; gỡ `check_prompt_contract.py`, `read_local_prompt_set.ps1` và test PowerShell của nó | xong | BE-D2 | M | [spec](superpowers/specs/2026-09-26-verification-tooling-design.md) và [plan](superpowers/plans/2026-09-27-verification-tooling.md) gói 12a; `GateReadsThePlanTest` và test của planner trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | BE-D6, BE-D7 |
 
 ### V8.0 — còn lại
 
@@ -82,27 +86,27 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-B1 | Trash: xoá mềm theo batch, khôi phục, purge (UC-TRASH-001; BR-TRASH-001…BR-TRASH-012) | chưa bắt đầu | BE-02, BE-D1 | L | Cột `delete_batch_id` đã có trên `deck` và `card` nhưng chưa có FK; chưa có bảng `delete_batches`; mọi query và lệnh ghi đã lọc `delete_batch_id IS NULL` | Mang migration v2 → v3 (v1 → v2 thuộc gói 2b). Đổi xoá cứng của BR-DECK-022 và BR-DECK-023 thành tombstone; bất biến 33–37 của `schema.md` bắt đầu có hiệu lực |
-| BE-B2 | Tag Management: danh mục tag, đổi tên có gộp, xoá, lọc card theo tag (UC-TAG-001; BR-TAG-003…BR-TAG-011) | chưa bắt đầu | BE-05 | M | Hàm predicate của card list đã chừa chỗ cho BR-TAG-004 (spec backend deck/card §8) | Gồm cả BE-C4 |
-| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | chưa bắt đầu | BE-04, BE-05 | M–L | Nice-to-have N1 trong [`docs/README.md`](README.md): import CSV/TSV/XLSX, export nội dung | Tuân thủ BR-CORE-001, BR-CORE-002, BR-CORE-004 |
-| BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | chưa bắt đầu | BE-03, BE-04 | M | Cột `source_template_id` và `source_template_version` đã có trong `deck` | — |
-| BE-B5 | Nhắc học hằng ngày (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012) | chưa bắt đầu | BE-03, BE-A4 | M | Các cột `reminder_*` trong `app_settings` đã có | Cần quyết định dependency thông báo cục bộ (xem Điểm chặn) |
+| BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | — |
+| BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
+| BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
+| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn); quyết cách giữ hoà giải và lần gửi nền không chồng lên thao tác của người dùng ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14) |
 
 ### Tồn đọng từ backend deck/card
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | bị chặn | — | S | `DeckLevelSort.name`; Clarification 13 của [plan backend deck/card](superpowers/plans/2026-09-23-deck-card-backend.md) | Chủ dự án quyết có thêm dependency collation hay không |
+| BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng. Cùng một chữ có thể đến ở dạng dựng sẵn hoặc dạng tổ hợp (ví dụ `é` và `e` + U+0301), và `foldText` chỉ trim và hạ chữ thường, nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001) và tìm kiếm coi hai dạng là hai chuỗi khác nhau | bị chặn | — | S–M | Quyết định D17 của gói 9a (spec trên nhánh `claude/be-transfer`, không merge vì #72 đã làm BE-B3); dòng này mất theo gói đó và được thêm lại trong gói 10 | Chủ dự án quyết có chuẩn hoá ở mọi đường ghi text và ở phép fold hay không; Dart không có sẵn chuẩn hoá Unicode (xem Điểm chặn) |
 | BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite | chưa bắt đầu | — | S | Clarification 16 của plan backend deck/card | Chia lô trong cùng transaction khi có nhu cầu thật |
-| BE-C4 | Lọc card list theo tag (BR-TAG-004) | chưa bắt đầu | BE-B2 | S | Spec backend deck/card §8 | Làm trong BE-B2 |
 
 ### Hạ tầng và tài liệu
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Sửa trong commit của hạng mục chạm tới phần đó (tài liệu và code cùng commit, [`docs/README.md`](README.md)) |
-| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở mọi UC | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
-| BE-D5 | Tỉa phần chỉ phục vụ CI của `build_verification_plan.py` (shard, `--github-output`, cờ Widgetbook và memox-api) cùng test của nó; sửa lời giúp của `dod_check.sh`, nơi `--changed` và `--fast` còn được tả theo CI của V7 | chưa bắt đầu | BE-D2 | M | CI của V8 chạy gate đầy đủ, không dùng planner ([spec gói 6](superpowers/specs/2026-09-25-ci-gate-design.md) D2, D11); planner vẫn phục vụ `dod_check.sh --changed` | Giữ phần `--changed` dùng, bỏ phần chỉ CI của V7 cần, kèm test |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Làm trong BE-D7 (gói 12c) |
+| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
+| BE-D6 | Guard và hook design token không còn V7: gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; hook `.claude/hooks/check_design_tokens.py` đọc rule của `memox-v8`; tài liệu của guard ghi `memox-v8` là nơi của nó. Giữ registry `memox` (V6) | chưa bắt đầu | — | M | Chủ dự án tách phần V7 còn lại thành hai gói ngày 2026-09-26 ([spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9) | Gói 12b: brainstorm, spec, plan |
+| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; `--ruleset memox-v7`; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | chưa bắt đầu | BE-D6 | M | [Spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9 | Gói 12c: brainstorm, spec, plan |
 
 ## Đã xong và đã kiểm chứng
 
@@ -137,26 +141,43 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 - **BE-A8** (gói 5, [spec](superpowers/specs/2026-09-25-library-search-backend-design.md),
   [plan](superpowers/plans/2026-09-25-library-search-backend.md)): gate năm lệnh xanh
   sau mỗi task, final review toàn nhánh trước khi mở PR.
+- **BE-B1** (gói 7, [spec](superpowers/specs/2026-09-25-trash-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-trash-backend.md)): gate xanh sau mỗi task, final
+  review toàn nhánh trước khi mở PR.
+- **BE-B2, BE-C4** (gói 8,
+  [spec](superpowers/specs/2026-09-26-tag-management-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-tag-management-backend.md)): gate xanh sau mỗi
+  task, final review toàn nhánh trước khi mở PR.
+- **BE-B4** (gói 10, [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-starter-decks-backend.md)): gate xanh sau mỗi task,
+  final review toàn nhánh trước khi mở PR.
+- **BE-B5a** (gói 11a, [spec](superpowers/specs/2026-09-26-reminders-backend-design.md),
+  [plan](superpowers/plans/2026-09-26-reminders-backend.md)): gate xanh sau mỗi task, final review
+  toàn nhánh trước khi mở PR.
 - **BE-D2** (gói 6, [spec](superpowers/specs/2026-09-25-ci-gate-design.md),
   [plan](superpowers/plans/2026-09-25-ci-gate.md)): gate xanh sau mỗi task, final review
   toàn nhánh trước khi mở PR. PR của gói là lần chạy đầu của CI: một commit thử làm
   `gate`, `goldens` và `CI gate` đỏ, rồi commit hoàn lại đưa cả ba về xanh trước khi merge.
-- **Traceability:** có test chứa ID cho 16/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STUDY-001…UC-STUDY-003).
-  6 UC còn lại chưa có code.
+- **BE-D5** (gói 12a, [spec](superpowers/specs/2026-09-26-verification-tooling-design.md),
+  [plan](superpowers/plans/2026-09-27-verification-tooling.md)): gate xanh sau mỗi task;
+  `dod_check.sh --changed --force` fail ở bước Widgetbook trước khi sửa và xanh sau đó;
+  final review toàn nhánh trước khi mở PR.
+- **Traceability:** có test chứa ID cho 22/22 UC (UC-CARD-001, UC-CARD-002, UC-DECK-001…UC-DECK-006, UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001, UC-SETTINGS-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001…UC-STUDY-003, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002, UC-TRASH-001).
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 6 (BE-D2).
+Không có hạng mục backend nào đang làm sau gói 12a (BE-D5).
 
 ## Điểm chặn và quyết định còn mở
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
 | BE-C1 | Chưa chốt có thêm dependency collation hay không | Thứ tự sort tên deck | Chủ dự án quyết |
+| BE-C5 | Chưa chốt có chuẩn hoá Unicode (NFC) hay không, và nếu có thì bằng dependency nào | Kiểm trùng khi import, tên tag, tìm kiếm | Chủ dự án quyết; đổi phép fold là đổi dữ liệu đã lưu (`front_folded`, `back_folded`, `name_folded`), cần migration |
 | Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
-| BE-B5 | Cần một dependency thông báo cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5, kèm lý do và cách rollback |
-| BE-B5 | BR-SETTINGS-008 ghi `Reset to defaults` đưa toàn bộ giá trị của `app_settings` về mặc định; BE-A1 (spec D6) chỉ đưa về mặc định bốn giá trị người dùng đặt được ở V8.0, chưa đụng `reminder_enabled`, `reminder_minute_of_day` | `Reset to defaults` khi nhắc học đã có giao diện | Quyết trong spec của BE-B5; sửa câu chữ BR-SETTINGS-008 cần chủ dự án cho phép |
-| BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | Cả 22 UC | Chủ dự án nêu phạm vi file được sửa |
+| BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
+| BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
+| BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
 
@@ -167,7 +188,7 @@ Không có hạng mục backend nào đang làm sau gói 6 (BE-D2).
   kịch bản, trong đó 93 mang profile `HOST-FLOW`. Đây là phần backend chứng minh bằng
   store và SQLite in-memory thật. Mỗi hạng mục đóng các kịch bản `HOST-FLOW` truy vết
   về UC của nó.
-  - Test hiện có nhắc tới 63 ID: IT-CONT (12), IT-DISC (4), IT-LEARN (10), IT-MODE (12), IT-NAV (2), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
+  - Test hiện có nhắc tới 68 ID: IT-CARD (1), IT-CONT (12), IT-DISC (5), IT-LEARN (10), IT-MODE (13), IT-NAV (4), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
 - **Chưa chạy:** kịch bản `DEVICE-E2E` (cần emulator hoặc thiết bị), thuộc
@@ -175,9 +196,8 @@ Không có hạng mục backend nào đang làm sau gói 6 (BE-D2).
 
 ## Bước tiếp theo
 
-1. Sau V8.0: BE-B1 trước (đổi hành vi xoá và mang migration v2 → v3), rồi BE-B2…BE-B5
-   theo ưu tiên sản phẩm.
-2. BE-D5 khi thuận tiện; không hạng mục nào chờ nó.
+1. BE-D6 (gói 12b), rồi BE-D7 (gói 12c), theo thứ tự chủ dự án chọn ngày 2026-09-26.
+2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
 
 ## Ngữ cảnh cập nhật
 
@@ -198,6 +218,24 @@ Không có hạng mục backend nào đang làm sau gói 6 (BE-D2).
   trong Dart, không thêm cột, không migration.
 - **Cập nhật ngày 2026-09-25:** BE-D2 xong trong gói 6: CI chạy gate và goldens trên mỗi
   pull request. Thêm BE-D5 cho phần của planner chỉ CI của V7 dùng.
+- **Cập nhật ngày 2026-09-26:** BE-B1 xong trong gói 7, hạng mục đầu của nhóm sau V8.0:
+  schema v3, xoá vào Trash, khôi phục, Undo, purge.
+- **Cập nhật ngày 2026-09-26:** BE-B2 và BE-C4 xong trong gói 8: catalog tag, đổi tên có
+  gộp, xoá tag, lọc card list theo tag; không đổi schema.
+- **Cập nhật ngày 2026-09-26:** BE-B4 xong trong gói 10: thư viện starter với hai
+  fixture, sao chép trong một transaction qua repository của deck và card; không đổi
+  schema. Thêm lại BE-C5 (Unicode NFC), dòng gói 9a đã thêm nhưng không merge.
+- **Cập nhật ngày 2026-09-26:** rà lại trên `master` tại `7de0101` sau #78 (FE-B1): BE-B3
+  không còn việc tiếp theo vì FE-B3 đã xong; đếm lại ID kịch bản IT trong test (68).
+- **Cập nhật ngày 2026-09-26:** chủ dự án tách BE-B5 thành BE-B5a và BE-B5b. BE-B5a xong
+  trong gói 11a: toàn bộ logic của nhắc học sau một port tới nền tảng, với adapter
+  "không hỗ trợ"; không đổi schema, không thêm dependency. Điểm chặn BR-SETTINGS-008 đóng:
+  reset đưa cả nhắc học về mặc định (quyết định của chủ dự án). Dependency notification
+  chuyển sang BE-B5b.
+- **Cập nhật ngày 2026-09-27:** BE-D5 xong trong gói 12a, mở rộng theo chủ dự án: công cụ
+  kiểm chứng không còn gì của V7, và `dod_check.sh --changed` hết chọn bước Widgetbook mà
+  V8 không có. Phần V7 còn lại tách thành BE-D6 (guard và hook, gói 12b) và BE-D7 (skill
+  và tài liệu, gói 12c); BE-D3 làm trong BE-D7.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

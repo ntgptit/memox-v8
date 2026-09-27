@@ -5,10 +5,11 @@ import 'package:memox/core/error/failure.dart';
 import '../support/invariant_queries.dart';
 import '../support/test_database.dart';
 
-/// Rows that satisfy every invariant in scope: three trees (eight_box, sm2,
-/// empty), learned and new cards, three sessions (completed, open,
-/// invalidated) with queue rows in five modes, a guess question with its five
-/// options, and review turns of all three kinds.
+/// Rows that satisfy every invariant: three trees (eight_box, sm2, empty),
+/// learned and new cards, three sessions (completed, open, invalidated) with
+/// queue rows in five modes, a guess question with its five options, review
+/// turns of all three kinds, and the Trash: a sub-deck in it with a card, an
+/// older card batch inside that sub-deck, and a card batch of its own.
 const _seed = <String>[
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version, generation, first_answered_at, sibling_position, created_at, updated_at) VALUES ('A', 'A', NULL, 'A', 1, 'deck', 'eight_box', 1, 1, 100, 0, 0, 0)",
   "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) VALUES ('A1', 'A1', 'A', 'A', 2, 'card', 0, 0, 0), ('A2', 'A2', 'A', 'A', 2, 'deck', 1, 0, 0), ('A2a', 'A2a', 'A2', 'A', 3, 'card', 0, 0, 0), ('A3', 'A3', 'A', 'A', 2, 'unset', 2, 0, 0)",
@@ -35,6 +36,12 @@ const _seed = <String>[
       "VALUES ('l6', 'c4', 's0', 'sm2', 1, 'scheduled', 'self_assess', 'good', 250, 2.5, 2.5, 1, 6)",
   "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t1', 'Noun', 'noun', 0)",
   "INSERT INTO card_tags (card_id, tag_id) VALUES ('c1', 't1')",
+  // The Trash (BR-TRASH-001, BR-TRASH-003): c8 went first, then the deck A4
+  // with c7, then c9 on its own.
+  "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('b0', 'card', 'c8', 50), ('b1', 'deck', 'A4', 60), ('b2', 'card', 'c9', 70)",
+  "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, delete_batch_id, sibling_position, created_at, updated_at) VALUES ('A4', 'A4', 'A', 'A', 2, 'card', 'b1', 3, 0, 0)",
+  "INSERT INTO card (id, deck_id, front, back, delete_batch_id, created_at, updated_at) VALUES ('c7', 'A4', 'f', 'b', 'b1', 0, 0), ('c8', 'A4', 'f', 'b', 'b0', 0, 0), ('c9', 'A1', 'f', 'b', 'b2', 0, 0)",
+  "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, current_box) VALUES ('c7', 'eight_box', 1, 1, 1), ('c8', 'eight_box', 1, 1, 1), ('c9', 'eight_box', 1, 1, 1)",
   // The settings row exists from the first open (BR-SETTINGS-001).
   "UPDATE app_settings SET updated_at = 0 WHERE id = 1",
 ];
@@ -101,6 +108,18 @@ const _planted = <int, List<String>>{
   32: [
     "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, direction, \"action\", answered_at, previous_box, next_box) VALUES ('bad', 'c1', 's2', 'eight_box', 1, 'scheduled', 'self_assess', 'meaning_to_korean', 'remembered', 130, 3, 4)",
   ],
+  33: ["UPDATE card SET delete_batch_id = NULL WHERE id = 'c7'"],
+  34: [
+    "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) VALUES ('bad', 'x', 'A4', 'A', 3, 'unset', 0, 0, 0)",
+  ],
+  35: [
+    "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('bad', 'card', 'c1', 80)",
+  ],
+  36: [
+    "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('b3', 'deck', 'bad', 90)",
+    "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, delete_batch_id, sibling_position, created_at, updated_at) VALUES ('bad', 'x', 'A4', 'A', 3, 'unset', 'b3', 0, 0, 0)",
+  ],
+  37: ["UPDATE delete_batches SET root_item_id = 'c1' WHERE id = 'b2'"],
 };
 
 /// Writes a CHECK must refuse, so the invariant can never be broken.
@@ -138,10 +157,10 @@ void main() {
   });
   tearDown(() => db.close());
 
-  test('schema.md states invariants 1 to 32 and 38 to 40', () {
+  test('schema.md states invariants 1 to 40', () {
     expect(
       invariantQueries.keys,
-      unorderedEquals([for (var n = 1; n <= 32; n++) n, 38, 39, 40]),
+      unorderedEquals([for (var n = 1; n <= 40; n++) n]),
     );
   });
 

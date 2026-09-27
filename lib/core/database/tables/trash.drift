@@ -1,0 +1,16 @@
+-- One row per deletion a person makes (BR-TRASH-001): the rows of deck and
+-- card are never copied anywhere, they take delete_batch_id. Purging is
+-- deleting the batch; the keys on delete_batch_id cascade (BR-TRASH-010).
+CREATE TABLE delete_batches (
+  id TEXT NOT NULL PRIMARY KEY,
+  -- The kind of the item root, the thing the person touched (BR-TRASH-011).
+  item_type TEXT NOT NULL CHECK (item_type IN ('card', 'deck')),
+  -- No FK: two target tables, and the cascade runs the other way.
+  root_item_id TEXT NOT NULL,
+  -- The only home of the deletion time: the 30-day retention counts from it
+  -- (BR-TRASH-009).
+  deleted_at DATETIME NOT NULL,
+  owner_id TEXT -- NULL = local profile. Scope: sub-project sau (auth).
+) AS DeleteBatch;
+
+CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id);

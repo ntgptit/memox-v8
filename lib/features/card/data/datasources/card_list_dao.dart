@@ -35,11 +35,12 @@ final class CardListDao {
     ];
   }
 
-  /// All, Due, New and Flagged under [searchTerm], whatever the filter, in
-  /// one statement (IT-ORG-005).
+  /// All, Due, New and Flagged under [searchTerm] and [tagIds], whatever the
+  /// filter, in one statement (IT-ORG-005, BR-TAG-004).
   Future<({int all, int due, int newCards, int flagged})> counts({
     required String deckId,
     required String searchTerm,
+    required Set<String> tagIds,
     required DateTime now,
   }) async {
     final all = countAll();
@@ -51,7 +52,7 @@ final class CardListDao {
             innerJoin(_schedule, _schedule.cardId.equalsExp(_card.id)),
           ])
           ..addColumns([all, due, newCards, flagged])
-          ..where(_inDeck(deckId, searchTerm));
+          ..where(_inDeck(deckId, searchTerm) & _tagged(tagIds));
     final row = await select.getSingle();
     return (
       all: row.read(all)!,
@@ -116,13 +117,16 @@ final class CardListDao {
   );
 
   /// The one place that says which cards a query lets through: the active
-  /// cards of [deckId], under the search, through the filter. A tag filter
-  /// (BR-TAG-004) is one more term here.
+  /// cards of [deckId], under the search, through the filter, carrying one
+  /// of the selected tags (BR-TAG-004).
   Expression<bool> _predicate({
     required String deckId,
     required CardListQuery query,
     required DateTime now,
-  }) => _inDeck(deckId, query.searchTerm) & _passes(query.filter, now);
+  }) =>
+      _inDeck(deckId, query.searchTerm) &
+      _passes(query.filter, now) &
+      _tagged(query.tagIds);
 
   /// The search matches the folded term inside a folded side with `instr`,
   /// so `%` and `_` are plain characters and nothing needs escaping.
@@ -132,6 +136,19 @@ final class CardListDao {
     if (term.isEmpty) return inDeck;
     return inDeck &
         (_holds(_card.frontFolded, term) | _holds(_card.backFolded, term));
+  }
+
+  /// BR-TAG-004: an `EXISTS` on `card_tags`, one boolean per card, never a
+  /// join that repeats a card carrying several of [tagIds]. No tag is no
+  /// term.
+  Expression<bool> _tagged(Set<String> tagIds) {
+    if (tagIds.isEmpty) return const Constant(true);
+    final links = _db.cardTags;
+    return existsQuery(
+      _db.selectOnly(links)
+        ..addColumns([links.tagId])
+        ..where(links.cardId.equalsExp(_card.id) & links.tagId.isIn(tagIds)),
+    );
   }
 
   Expression<bool> _passes(CardListFilter filter, DateTime now) =>

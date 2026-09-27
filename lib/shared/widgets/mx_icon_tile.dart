@@ -9,8 +9,9 @@ enum MxIconTileSize { small, medium, large }
 
 /// The fill: the primary or seed tint (default), or a solid primary or
 /// warning square whose glyph takes the matching on-colour (screen 02's lock
-/// strip, owner decision D-O1).
-enum MxIconTileTone { tinted, primary, warning }
+/// strip, owner decision D-O1). [success], [caution] and [danger] are soft
+/// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
+enum MxIconTileTone { tinted, primary, warning, success, caution, danger }
 
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
@@ -39,7 +40,8 @@ class MxIconTile extends StatelessWidget {
   final Color? seed;
   final MxIconTileTone tone;
 
-  static const double _smallBox = 28;
+  /// The small step's side, for a caller that sizes the row around it.
+  static const double smallBox = 28;
   static const double _mediumBox = 36;
   static const double _largeBox = 44;
   static const double _primaryTintLight = 0.10;
@@ -56,16 +58,31 @@ class MxIconTile extends StatelessWidget {
       (null, Brightness.dark) => _primaryTintDark,
     };
     final (box, radius, glyph) = switch (size) {
-      MxIconTileSize.small => (_smallBox, AppRadius.sm, AppIconSize.inline),
+      MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
       MxIconTileSize.medium => (_mediumBox, AppRadius.md, AppIconSize.compact),
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
     final (fill, ink) = switch (tone) {
-      MxIconTileTone.tinted => (tinted.withValues(alpha: tint), tinted),
+      MxIconTileTone.tinted => (
+        tinted.withValues(alpha: tint),
+        seed ?? context.derivedColors.primaryInk,
+      ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
       MxIconTileTone.warning => (
         context.semanticColors.warning,
         context.semanticColors.onWarning,
+      ),
+      MxIconTileTone.success => (
+        context.derivedColors.successSoft,
+        context.derivedColors.successInk,
+      ),
+      MxIconTileTone.caution => (
+        context.derivedColors.warningSoft,
+        context.derivedColors.warningInk,
+      ),
+      MxIconTileTone.danger => (
+        context.derivedColors.dangerSoft,
+        context.colors.error,
       ),
     };
     return SizedBox.square(

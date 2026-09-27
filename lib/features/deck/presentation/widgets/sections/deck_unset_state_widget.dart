@@ -14,6 +14,7 @@ class DeckUnsetStateWidget extends StatelessWidget {
     super.key,
     required this.onAddCard,
     required this.onCreateSubDeck,
+    this.onImportCards,
   });
 
   /// Null for a top-level deck, which holds sub-decks only (BR-DECK-005).
@@ -22,11 +23,16 @@ class DeckUnsetStateWidget extends StatelessWidget {
   /// Null at the deepest level, where no sub-deck fits (BR-DECK-001).
   final VoidCallback? onCreateSubDeck;
 
+  /// The third way to fill the deck: cards from a file (UC-TRANSFER-001).
+  /// Null where no card fits.
+  final VoidCallback? onImportCards;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final onAddCard = this.onAddCard;
     final onCreateSubDeck = this.onCreateSubDeck;
+    final onImportCards = this.onImportCards;
     final isOpen = onAddCard != null && onCreateSubDeck != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,6 +67,13 @@ class DeckUnsetStateWidget extends StatelessWidget {
                 icon: AppIcons.library,
                 tone: isOpen ? MxButtonTone.secondary : MxButtonTone.primary,
                 onPressed: onCreateSubDeck,
+              ),
+            if (onImportCards != null)
+              MxButton(
+                label: l10n.deckUnsetImport,
+                icon: AppIcons.fileUp,
+                tone: MxButtonTone.outline,
+                onPressed: onImportCards,
               ),
           ],
         ),

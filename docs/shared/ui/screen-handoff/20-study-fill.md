@@ -43,12 +43,30 @@ submits nothing (BR-STUDY-029).
 Not captured: the correct-answer path has no dedicated visual — the turn
 commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).
 
+**Built (FE-A6 P4):** `StudyFillWidget` in the session route's mode switch. The field is
+`MxTextField`'s bare `study` variant in the study term role (P4 ruling F1); it has focus
+when the turn opens, Check waits for a non-empty answer, and IME Done checks
+(BR-STUDY-029). A right answer lets the next turn follow at once; a wrong one is held
+until Continue, the typed text struck through in the error ink beside the right term
+(BR-STUDY-059, BR-STUDY-064). Show hint appears only for a card with a hint not yet shown
+(BR-STUDY-028). The typed text is never kept (BR-STUDY-027). Goldens:
+`test/features/study/presentation/goldens/study_fill_{input,hint,wrong,large_text}_*`.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
+| The struck-through answer in the kit's `rating-again` colour | The `error` ink, as Guess's wrong option | V8 has no `rating-again` token; one wrong colour across the round modes (P4 ruling V1) |
+| The wrong tag on the card reads "Wrong · comes back this round" | "Wrong · comes back next round", on the card and in copy | BR-STUDY-059, BR-STUDY-069 (P4 ruling V10) |
+| The prompt at 14, faces unlabelled | The study passage role at 16; "Meaning" and "Term" labels in flow | One passage role with Recall's meaning; every study face carries its label (P4) |
 | A pencil "edit" button sits on the prompt face | Removed | No BR/UC allows editing a card mid-session, and Recall's own kit comment already states cards are not edited mid-session |
 | `wrong` footer says "Wrong · comes back this round" | "Wrong · comes back next round" | BR-STUDY-059, BR-STUDY-069 — a wrong `fill` row leaves the current round and is enrolled exactly once in the next one, never retried within the same round |
+
+## Accessibility
+
+- The field reads "Your answer"; the hint row reads "Hint: {hint}"; the struck-through answer reads "You typed {typed}".
+- A wrong answer is announced when its write commits: "Wrong. The answer is {term}." Focus leaves the field and the keyboard closes (V7).
+- With the keyboard open the shell resizes above it, so Check and the footer stay visible; the faces scroll inside (V6). At large text the two actions stack.
 
 ## Copy
 

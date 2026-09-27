@@ -65,6 +65,23 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       });
 
   @override
+  Future<(SchedulerType, CardScheduleState)?> scheduleOf({
+    required String cardId,
+  }) async {
+    try {
+      final root = await _dao.rootOfCard(cardId);
+      final schedule = await _dao.scheduleRow(cardId);
+      if (root == null || schedule == null) return null;
+      return (
+        SchedulerType.fromCode(schedule.schedulerType),
+        _stateOf(schedule),
+      );
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
+    }
+  }
+
+  @override
   Future<Outcome<void, SrsRejection>> completeLearning({
     required String cardId,
     required int generation,

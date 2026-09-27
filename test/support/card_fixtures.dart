@@ -5,6 +5,8 @@ import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 
+import 'trash_fixtures.dart';
+
 /// A card and its schedule row written straight to the tables, in one
 /// transaction, so a read test can set any schedule state and the watchers
 /// hear of it once. The schedule row follows the root's scheduler, at the
@@ -17,6 +19,7 @@ Future<void> insertCard(
   String back = 'back',
   String? example,
   String? hint,
+  String? pronunciation,
   bool isFlagged = false,
   DateTime? learnedAt,
   DateTime? dueAt,
@@ -26,6 +29,14 @@ Future<void> insertCard(
   DateTime? createdAt,
 }) => db.transaction(() async {
   final created = createdAt ?? DateTime(2026, 9, 1);
+  if (deleteBatchId != null) {
+    await insertDeleteBatch(
+      db,
+      deleteBatchId,
+      itemType: 'card',
+      rootItemId: id,
+    );
+  }
   await db.customUpdate(
     "UPDATE deck SET content_type = 'card' "
     'WHERE id = ? AND parent_id IS NOT NULL',
@@ -34,8 +45,8 @@ Future<void> insertCard(
   );
   await db.customInsert(
     'INSERT INTO card (id, deck_id, front, back, front_folded, back_folded, '
-    'example, hint, is_flagged, delete_batch_id, created_at, updated_at) '
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'example, hint, pronunciation, is_flagged, delete_batch_id, created_at, '
+    'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     variables: [
       Variable<String>(id),
       Variable<String>(deckId),
@@ -45,6 +56,7 @@ Future<void> insertCard(
       Variable<String>(back.trim().toLowerCase()),
       Variable<String>(example),
       Variable<String>(hint),
+      Variable<String>(pronunciation),
       Variable<bool>(isFlagged),
       Variable<String>(deleteBatchId),
       Variable<DateTime>(created),

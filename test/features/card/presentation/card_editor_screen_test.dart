@@ -297,7 +297,13 @@ void main() {
 
     expect(find.text(_en.cardGoneTitle), findsOneWidget);
     expect(find.text(_en.cardBackToDeck), findsOneWidget);
-    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card'), 0);
+    expect(
+      await _count(
+        env,
+        'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+      ),
+      0,
+    );
   });
 
   libraryTest('the editor holds Hangul at 2x and meets the guidelines (RF5)', (

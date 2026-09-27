@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -67,7 +68,81 @@ void main() {
     }
   });
 
-  testWidgets('outline tone has no fill, primary ink, 1px outlineVariant', (
+  testWidgets('dangerSoft paints the soft danger tint with the error ink '
+      '(FE-A6 P2, screen 16a)', (tester) async {
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    await pumpMx(
+      tester,
+      MxButton(label: 'Again', tone: MxButtonTone.dangerSoft, onPressed: () {}),
+    );
+    final material = _material(tester);
+
+    expect(material.color, derived.dangerSoft);
+    expect(material.textStyle!.color, scheme.error);
+    expect(
+      (material.shape! as RoundedRectangleBorder).side,
+      BorderSide(color: derived.dangerBorder),
+    );
+  });
+
+  testWidgets('a detail line sits under the label in the button ink '
+      '(FE-A6 P2, screen 16a)', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(
+        label: 'Good',
+        detail: '6d',
+        tone: MxButtonTone.secondary,
+        onPressed: () {},
+      ),
+    );
+    final context = tester.element(find.text('6d'));
+
+    expect(
+      tester.getRect(find.text('6d')).top,
+      greaterThanOrEqualTo(tester.getRect(find.text('Good')).bottom),
+    );
+    expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
+    expect(
+      tester.widget<Text>(find.text('6d')).style,
+      context.textStyles.buttonDetail,
+    );
+  });
+
+  testWidgets('a detail line grows the box at 2x text instead of clipping', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 80,
+        child: MxButton(
+          label: 'Good',
+          detail: '6d',
+          isBlock: true,
+          onPressed: () {},
+        ),
+      ),
+      textScale: 2,
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(_painted.first).height, greaterThan(48));
+  });
+
+  test('a detail line needs a size with room for it', () {
+    expect(
+      () => MxButton(
+        label: 'Go',
+        detail: '6d',
+        size: MxButtonSize.compact,
+        onPressed: () {},
+      ),
+      throwsAssertionError,
+    );
+  });
+
+  testWidgets('outline tone has no fill, primaryInk, 1px outlineVariant', (
     tester,
   ) async {
     await pumpMx(
@@ -77,7 +152,7 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, scheme.primary);
+    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
     expect(
       (material.shape! as RoundedRectangleBorder).side,
       BorderSide(color: scheme.outlineVariant),
@@ -100,6 +175,27 @@ void main() {
       (material.shape! as RoundedRectangleBorder).side,
       BorderSide(color: derived.ghostBorder),
     );
+  });
+
+  testWidgets('isAutofocused takes the focus when it shows', (tester) async {
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MxButton(label: 'Delete', onPressed: () {}),
+          MxButton(label: 'Keep', onPressed: () {}, isAutofocused: true),
+        ],
+      ),
+    );
+    await tester.pump();
+
+    final focused = FocusManager.instance.primaryFocus!.context!;
+    expect(
+      find.ancestor(of: find.text('Keep'), matching: find.byType(TextButton)),
+      findsOneWidget,
+    );
+    expect(focused.findAncestorWidgetOfExactType<MxButton>()?.label, 'Keep');
   });
 
   testWidgets('a tap calls onPressed', (tester) async {
@@ -231,5 +327,99 @@ void main() {
 
     expect(find.bySemanticsLabel('Save'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('isSingleLine keeps a long label on one line', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 120,
+        child: MxButton(
+          label: 'Delete for good forever',
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: () {},
+        ),
+      ),
+    );
+    final text = tester.widget<Text>(find.text('Delete for good forever'));
+    expect(text.maxLines, 1);
+    expect(text.softWrap, isFalse);
+  });
+
+  testWidgets('naturalWidth is the one-line label plus icon and padding', (
+    tester,
+  ) async {
+    late double measured;
+    const button = MxButton(
+      label: 'Restore',
+      icon: Icons.restore,
+      onPressed: null,
+    );
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          measured = button.naturalWidth(context);
+          return const UnconstrainedBox(child: button);
+        },
+      ),
+    );
+    // Unconstrained, the button lays out at its natural width.
+    expect(
+      measured,
+      tester.getSize(find.byType(TextButton)).width.ceilToDouble(),
+    );
+  });
+
+  testWidgets('naturalWidth grows with the text scale', (tester) async {
+    late double atOne;
+    late double atTwo;
+    final button = MxButton(label: 'Restore', onPressed: () {});
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          atOne = button.naturalWidth(context);
+          return button;
+        },
+      ),
+    );
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          atTwo = button.naturalWidth(context);
+          return button;
+        },
+      ),
+      textScale: 2,
+    );
+    expect(atTwo, greaterThan(atOne));
+  });
+
+  testWidgets('naturalWidth of a loading button still measures its label', (
+    tester,
+  ) async {
+    late double idle;
+    late double loading;
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          idle = MxButton(
+            label: 'Save',
+            onPressed: () {},
+          ).naturalWidth(context);
+          loading = MxButton(
+            label: 'Save',
+            isLoading: true,
+            onPressed: () {},
+          ).naturalWidth(context);
+          return const SizedBox();
+        },
+      ),
+    );
+    expect(loading, idle);
   });
 }

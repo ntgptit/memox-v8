@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -24,6 +25,13 @@ abstract interface class ScheduleRepository {
   /// `scheduled` turn on a card still learning is a bug: it throws and
   /// writes nothing (BR-STUDY-058). Joins the caller's transaction.
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn);
+
+  /// The stored schedule of [cardId] and the scheduler it runs under, for a
+  /// read-only preview (FE-A6 D11); null when the card is gone or in the
+  /// Trash. It writes nothing.
+  Future<(SchedulerType, CardScheduleState)?> scheduleOf({
+    required String cardId,
+  });
 
   /// A card finished learning (BR-STUDY-053): its schedule starts at the
   /// lowest level, due at the next local midnight, and no `review_log` row is

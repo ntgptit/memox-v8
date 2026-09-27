@@ -1371,8 +1371,415 @@ i1.GeneratedColumn<String> _column_90(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL REFERENCES card(id)ON DELETE CASCADE',
     );
+
+final class Schema3 extends i0.VersionedSchema {
+  Schema3({required super.database}) : super(version: 3);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    deleteBatches,
+    deck,
+    card,
+    cardSchedule,
+    tags,
+    cardTags,
+    reviewLog,
+    idxDeleteBatchesDeleted,
+    appSettings,
+    studySession,
+    studyQueueItems,
+    idxStudyQueuePending,
+    studyGuessOptions,
+    idxStudyGuessOptionsOption,
+    idxCardScheduleDue,
+    idxReviewLogCard,
+    idxReviewLogSession,
+    reviewLogAppendOnly,
+    reviewLogNoDelete,
+    idxTagsOwnerNameFolded,
+    idxCardTagsTag,
+    idxCardDeckCreated,
+    idxCardDeleteBatch,
+    idxDeckParentPosition,
+    idxDeckRootPosition,
+    idxDeckDeleteBatch,
+  ];
+  late final Shape10 deleteBatches = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'delete_batches',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_91, _column_92, _column_93, _column_6],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape0 deck = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'deck',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((parent_id IS NULL)=(root_id = id))',
+        'CHECK(parent_id IS NOT NULL OR content_type = \'deck\')',
+        'CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL))',
+        'CHECK((parent_id IS NULL)=(generation IS NOT NULL))',
+        'CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL))',
+        'CHECK(parent_id IS NULL OR scheduler_config IS NULL)',
+        'CHECK(parent_id IS NULL OR study_config IS NULL)',
+        'CHECK(parent_id IS NULL OR generation IS NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_94,
+        _column_16,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 card = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'card',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_94,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 cardSchedule = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'card_schedule',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((scheduler_type = \'eight_box\')=(current_box IS NOT NULL))',
+        'CHECK((scheduler_type = \'sm2\')=(ease_factor IS NOT NULL))',
+        'CHECK((ease_factor IS NULL)=(interval_days IS NULL))',
+        'CHECK((ease_factor IS NULL)=(repetitions IS NULL))',
+        'CHECK(learned_at IS NOT NULL OR due_at IS NULL)',
+      ],
+      columns: [
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 tags = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'tags',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_1, _column_41, _column_6, _column_17],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 cardTags = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'card_tags',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(card_id, tag_id)'],
+      columns: [_column_42, _column_43],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 reviewLog = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'review_log',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK(mode = \'fill\' OR(comparison_version IS NULL AND used_hint IS NULL))',
+        'CHECK(outcome_reason IS NULL OR mode = \'recall\')',
+      ],
+      columns: [
+        _column_0,
+        _column_42,
+        _column_44,
+        _column_29,
+        _column_31,
+        _column_45,
+        _column_46,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxDeleteBatchesDeleted = i1.Index(
+    'idx_delete_batches_deleted',
+    'CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id)',
+  );
+  late final Shape6 appSettings = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'app_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 studySession = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'study_session',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((status IN (\'in_progress\', \'completed\') AND end_reason IS NULL)OR(status = \'abandoned\' AND end_reason IN (\'user_exit\', \'interrupted\'))OR(status = \'invalidated\' AND end_reason IN (\'scheduler_reset\', \'scheduler_changed\', \'stale_generation\', \'content_deleted\'))OR(status = \'failed\' AND end_reason = \'persistence_error\'))',
+        'CHECK((status = \'in_progress\')=(ended_at IS NULL))',
+        'CHECK(direction IS NULL OR(session_kind = \'reviewing\' AND current_mode = \'self_assess\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_19,
+        _column_3,
+        _column_31,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+        _column_61,
+        _column_73,
+        _column_74,
+        _column_75,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 studyQueueItems = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'study_queue_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(session_id, mode, round, card_id)',
+        'CHECK(mode <> \'self_assess\' OR answers_in_session <= 4)',
+        'CHECK(mode = \'recall\' OR(remaining_ms IS NULL AND is_revealed = 0))',
+        'CHECK(mode = \'self_assess\' OR direction IS NULL)',
+      ],
+      columns: [
+        _column_76,
+        _column_46,
+        _column_77,
+        _column_42,
+        _column_78,
+        _column_79,
+        _column_80,
+        _column_81,
+        _column_82,
+        _column_83,
+        _column_50,
+        _column_84,
+        _column_85,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxStudyQueuePending = i1.Index(
+    'idx_study_queue_pending',
+    'CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position)',
+  );
+  late final Shape9 studyGuessOptions = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'study_guess_options',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(session_id, mode, round, card_id, slot)',
+        'UNIQUE(session_id, mode, round, card_id, option_card_id)',
+        'FOREIGN KEY(session_id, mode, round, card_id)REFERENCES study_queue_items(session_id, mode, round, card_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_44,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxStudyGuessOptionsOption = i1.Index(
+    'idx_study_guess_options_option',
+    'CREATE INDEX idx_study_guess_options_option ON study_guess_options (option_card_id)',
+  );
+  final i1.Index idxCardScheduleDue = i1.Index(
+    'idx_card_schedule_due',
+    'CREATE INDEX idx_card_schedule_due ON card_schedule (due_at)',
+  );
+  final i1.Index idxReviewLogCard = i1.Index(
+    'idx_review_log_card',
+    'CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at)',
+  );
+  final i1.Index idxReviewLogSession = i1.Index(
+    'idx_review_log_session',
+    'CREATE INDEX idx_review_log_session ON review_log (session_id)',
+  );
+  final i1.Trigger reviewLogAppendOnly = i1.Trigger(
+    'CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, \'review_log is append-only\');END',
+    'review_log_append_only',
+  );
+  final i1.Trigger reviewLogNoDelete = i1.Trigger(
+    'CREATE TRIGGER review_log_no_delete BEFORE DELETE ON review_log WHEN OLD.card_id IN (SELECT id FROM card) BEGIN SELECT RAISE (ABORT, \'review_log rows are only removed by a card cascade\');END',
+    'review_log_no_delete',
+  );
+  final i1.Index idxTagsOwnerNameFolded = i1.Index(
+    'idx_tags_owner_name_folded',
+    'CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, \'\'), name_folded)',
+  );
+  final i1.Index idxCardTagsTag = i1.Index(
+    'idx_card_tags_tag',
+    'CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id)',
+  );
+  final i1.Index idxCardDeckCreated = i1.Index(
+    'idx_card_deck_created',
+    'CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id)',
+  );
+  final i1.Index idxCardDeleteBatch = i1.Index(
+    'idx_card_delete_batch',
+    'CREATE INDEX idx_card_delete_batch ON card (delete_batch_id)',
+  );
+  final i1.Index idxDeckParentPosition = i1.Index(
+    'idx_deck_parent_position',
+    'CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id)',
+  );
+  final i1.Index idxDeckRootPosition = i1.Index(
+    'idx_deck_root_position',
+    'CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id)',
+  );
+  final i1.Index idxDeckDeleteBatch = i1.Index(
+    'idx_deck_delete_batch',
+    'CREATE INDEX idx_deck_delete_batch ON deck (delete_batch_id)',
+  );
+}
+
+class Shape10 extends i0.VersionedTable {
+  Shape10({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get itemType =>
+      columnsByName['item_type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get rootItemId =>
+      columnsByName['root_item_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAt =>
+      columnsByName['deleted_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get ownerId =>
+      columnsByName['owner_id']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_91(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'item_type',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL CHECK (item_type IN (\'card\', \'deck\'))',
+    );
+i1.GeneratedColumn<String> _column_92(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'root_item_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_93(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'deleted_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_94(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'delete_batch_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'REFERENCES delete_batches(id)ON DELETE CASCADE',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -1381,6 +1788,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from1To2(migrator, schema);
         return 2;
+      case 2:
+        final schema = Schema3(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from2To3(migrator, schema);
+        return 3;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -1389,6 +1801,7 @@ i0.MigrationStepWithVersion migrationSteps({
 
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2),
+  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
 );

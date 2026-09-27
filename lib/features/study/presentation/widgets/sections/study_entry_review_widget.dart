@@ -1,0 +1,95 @@
+import 'package:memox/features/study/domain/models/study_entry_model.dart';
+import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:flutter/widgets.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
+
+/// Screen 14's review modes (UC-STUDY-001 step 4): each with its card count,
+/// or its reason when the due cards cannot run it (BR-STUDY-044,
+/// BR-MODE-009), or "Coming soon" while the app has no screen for it (FE-A6
+/// spec §3). An available mode can be picked; the footer reviews the
+/// picked one (FE-A6 P3, E1).
+class StudyEntryReviewWidget extends StatelessWidget {
+  const StudyEntryReviewWidget({
+    super.key,
+    required this.reviews,
+    required this.target,
+    required this.isLocked,
+    required this.onPick,
+  });
+
+  final List<ReviewOffer> reviews;
+
+  /// The review the footer starts; its row is the selected one.
+  final ReviewModeOption? target;
+
+  /// A start is running: the pick does not change (BR-STUDY-004).
+  final bool isLocked;
+  final ValueChanged<StudyMode> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final hasUnavailable = reviews.any(
+      (review) => review.status == ReviewOfferStatus.unavailable,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        MxListSectionHeader(label: l10n.studyEntryReviewHeader),
+        MxCard(
+          isFullBleed: true,
+          child: Column(
+            children: [
+              for (final (index, review) in reviews.indexed)
+                MxOptionRow(
+                  title: l10n.studyMode(review.option.mode),
+                  description: _description(l10n, review),
+                  isSelected: review.option.mode == target?.mode,
+                  onSelected: _onSelected(review),
+                  // Only a mode the cards cannot run dims (kit eightBox).
+                  isDimmed: review.status == ReviewOfferStatus.unavailable,
+                  trailing: _badge(l10n, review),
+                  hasDivider: index < reviews.length - 1,
+                ),
+            ],
+          ),
+        ),
+        if (hasUnavailable) ...[
+          const SizedBox(height: AppSpacing.grouped),
+          MxNote(text: l10n.studyEntryUnavailableNote),
+        ],
+      ],
+    );
+  }
+
+  VoidCallback? _onSelected(ReviewOffer review) {
+    if (review.status != ReviewOfferStatus.available || isLocked) return null;
+    return () => onPick(review.option.mode);
+  }
+
+  static String? _description(AppLocalizations l10n, ReviewOffer review) {
+    final reason = review.option.unavailableReason;
+    if (reason != null) return l10n.studyReason(reason);
+    return l10n.studyModeBody(review.option.mode);
+  }
+
+  static MxBadge _badge(AppLocalizations l10n, ReviewOffer review) =>
+      switch (review.status) {
+        ReviewOfferStatus.available => MxBadge(
+          label: l10n.studyEntryModeCards(review.option.cardCount),
+        ),
+        ReviewOfferStatus.unavailable => MxBadge(
+          label: l10n.studyEntryNotAvailable,
+          tone: MxBadgeTone.neutral,
+        ),
+      };
+}

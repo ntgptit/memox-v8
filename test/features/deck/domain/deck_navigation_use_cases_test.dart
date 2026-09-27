@@ -4,7 +4,6 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
-import 'package:memox/features/deck/domain/usecases/search_decks_use_case.dart';
 import 'package:memox/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart';
 import 'package:memox/features/deck/domain/usecases/watch_deck_use_case.dart';
 
@@ -39,21 +38,6 @@ void main() {
         DeckRejection.notFound,
       );
       await subscription.cancel();
-    },
-  );
-
-  test(
-    'SearchDecksUseCase folds the term, and a blank term finds nothing',
-    () async {
-      final root = await decks.root('Korean');
-      await decks.sub(root.id, 'Academic words');
-      final search = SearchDecksUseCase(decks);
-
-      final hits = await search(scopeDeckId: null, term: '  ACADEMIC ').first;
-      final none = await search(scopeDeckId: null, term: '   ').first;
-
-      expect([for (final hit in hits) hit.name], ['Academic words']);
-      expect(none, isEmpty);
     },
   );
 

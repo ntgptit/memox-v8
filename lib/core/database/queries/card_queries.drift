@@ -34,15 +34,18 @@ WHERE c.id = :card_id AND c.delete_batch_id IS NULL
 ORDER BY r.answered_at DESC, r.id DESC
 LIMIT :row_limit;
 
--- BR-CARD-010: the decks the cards of :source_deck_id may move to, and the
--- decks on their paths: every active deck of the source's tree.
--- is_candidate marks a sub-deck that holds cards or nothing, other than the
--- source. No row when the source is not an active deck.
-cardMoveTargets(:source_deck_id AS TEXT) AS DeckForestRow:
+-- BR-CARD-010, BR-TRASH-006: the decks cards may go to, and the decks on
+-- their paths: every active deck of one tree. A move names its source deck,
+-- whose tree it is and which is no candidate; no row when the source is not
+-- an active deck. A restore names the root of its cards and excludes
+-- nothing. is_candidate marks a sub-deck that holds cards or nothing.
+cardMoveTargets(:root_id AS TEXT OR NULL, :source_deck_id AS TEXT OR NULL)
+  AS DeckForestRow:
 SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   (d.parent_id IS NOT NULL AND d.content_type IN ('unset', 'card')
-    AND d.id <> :source_deck_id) AS is_candidate
+    AND d.id IS NOT :source_deck_id) AS is_candidate
 FROM deck d
-JOIN deck source ON source.root_id = d.root_id
-WHERE source.id = :source_deck_id AND source.delete_batch_id IS NULL
-  AND d.delete_batch_id IS NULL;
+WHERE d.delete_batch_id IS NULL AND d.root_id = COALESCE(:root_id, (
+  SELECT s.root_id FROM deck s
+  WHERE s.id = :source_deck_id AND s.delete_batch_id IS NULL
+));

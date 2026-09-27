@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
@@ -88,8 +89,9 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text(_en.deckSearchHint));
+    await _tap(tester, find.text(_en.searchFieldHint));
     await tester.enterText(find.byType(EditableText), 'verb');
+    await tester.pump(searchDebounce);
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Verbs'));
     expect(_barTitle('Verbs'), findsOneWidget);
@@ -112,7 +114,9 @@ void main() {
     await _tap(tester, find.text(_en.deckDelete));
 
     expect(_barTitle('Words'), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsOneWidget);
+    // The toast with Undo survives the step back (FE-B1 D3).
+    expect(find.text(_en.deckTrashedToast('Verbs', 0, 0)), findsOneWidget);
+    expect(find.text(_en.commonUndo), findsOneWidget);
   });
 
   libraryTest('Review algorithm pushes screen 02; Back returns to the deck', (
@@ -223,6 +227,54 @@ void main() {
     expect(find.text('bap'), findsOneWidget);
     expect(find.text('mul'), findsOneWidget);
   });
+
+  libraryTest(
+    'Import covers the shell; Close returns to the deck (IT-NAV-012)',
+    (tester, env) async {
+      await env.decks.sub((await env.decks.root('Korean')).id, 'Words');
+      await pumpMemoxApp(tester, env);
+      await _tap(tester, find.text('Korean'));
+      await _tap(tester, find.text('Words'));
+      await tester.ensureVisible(
+        find.widgetWithText(MxButton, _en.deckUnsetImport),
+      );
+      await _tap(tester, find.widgetWithText(MxButton, _en.deckUnsetImport));
+
+      expect(_barTitle(_en.importTitle), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsNothing);
+
+      await _tap(tester, find.byTooltip(_en.importClose));
+      expect(_barTitle('Words'), findsOneWidget);
+      expect(find.byType(MxBottomNav), findsOneWidget);
+    },
+  );
+
+  libraryTest(
+    'Export opens its sheet from the deck and from a selection (UC-TRANSFER-002)',
+    (tester, env) async {
+      final words = await env.decks.sub(
+        (await env.decks.root('Korean')).id,
+        'Words',
+      );
+      await insertCard(env.db, id: 'a', deckId: words.id, front: 'bap');
+      await insertCard(env.db, id: 'b', deckId: words.id, front: 'mul');
+      await pumpMemoxApp(tester, env);
+      await _tap(tester, find.text('Korean'));
+      await _tap(tester, find.text('Words'));
+
+      await _tap(tester, find.byTooltip(_en.deckActions));
+      await _tap(tester, find.text(_en.deckActionExport));
+      expect(find.text(_en.exportTitleDeck(2)), findsOneWidget);
+      await _tap(tester, find.widgetWithText(MxButton, _en.commonCancel));
+
+      await tester.longPress(find.text('bap'));
+      await tester.pumpAndSettle();
+      await _tap(tester, find.text(_en.cardExport));
+      expect(find.text(_en.exportTitleSelection(1)), findsOneWidget);
+      await _tap(tester, find.widgetWithText(MxButton, _en.commonCancel));
+      expect(_barTitle(_en.cardSelectedCount(1)), findsOneWidget);
+    },
+  );
 
   libraryTest('Close on a typed card asks; Discard leaves (RF2)', (
     tester,

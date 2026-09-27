@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -15,13 +16,13 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 /// A card deck's progress (screen 07, spec A13): the mastery donut, the
 /// scheduler, how many cards are mastered, today's work (owner decision
 /// E-O1), then the four display states as a bar and a legend, and Study
-/// this deck (spec D10).
+/// this deck while anything waits (FE-A6 D10).
 class CardDeckSummaryWidget extends StatelessWidget {
   const CardDeckSummaryWidget({
     super.key,
     required this.view,
     required this.algorithm,
-    required this.onStudy,
+    this.onStudy,
   });
 
   final CardListView view;
@@ -29,8 +30,8 @@ class CardDeckSummaryWidget extends StatelessWidget {
   /// The deck's scheduler, named ("SM-2", "Eight boxes").
   final String algorithm;
 
-  /// Opens the deck's Study entry (spec D10).
-  final VoidCallback onStudy;
+  /// Opens the deck's Study Entry; null hides the action.
+  final VoidCallback? onStudy;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
     final total = states.total;
     final workload = view.workload;
     final overline = l10n.cardDeckProgress(algorithm);
+    final due = workload.overdue + workload.today;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.grouped),
       child: MxCard(
@@ -63,7 +65,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
                       Text(
                         overline.toUpperCase(),
                         semanticsLabel: overline,
-                        style: styles.overline,
+                        style: styles.compactOverline,
                       ),
                       Text(
                         l10n.cardMasteredOf(states.mastered, total),
@@ -108,12 +110,15 @@ class CardDeckSummaryWidget extends StatelessWidget {
                   ),
               ],
             ),
-            MxButton(
-              label: l10n.cardStudyThisDeck,
-              tone: MxButtonTone.outline,
-              isBlock: true,
-              onPressed: onStudy,
-            ),
+            if (onStudy != null && due + workload.newCards > 0)
+              MxButton(
+                label: due > 0
+                    ? l10n.studyThisDeckDue(due)
+                    : l10n.studyThisDeck,
+                icon: AppIcons.play,
+                isBlock: true,
+                onPressed: onStudy,
+              ),
           ],
         ),
       ),

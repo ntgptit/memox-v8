@@ -34,7 +34,6 @@ Widget _section(String deckId) => Scaffold(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
-    onStudy: () {},
   ),
 );
 
@@ -372,7 +371,6 @@ void main() {
           algorithm: 'Eight boxes',
           onAddCard: () => adds++,
           onOpenCard: (_) {},
-          onStudy: () {},
         ),
         cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => adds++),
       ),
@@ -400,7 +398,6 @@ void main() {
             algorithm: 'Eight boxes',
             onAddCard: () {},
             onOpenCard: opened.add,
-            onStudy: () {},
           ),
         ),
       );

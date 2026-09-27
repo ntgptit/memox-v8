@@ -8,8 +8,9 @@ disagree, the file wins, and this page is corrected in the same change.
 `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py`, pins what
 the file must keep doing, and it runs inside the gate.
 
-It runs on every pull request, and by hand (`workflow_dispatch`), on
-`ubuntu-latest`, as three jobs:
+It runs by hand (`workflow_dispatch`) on `ubuntu-latest`, as three jobs. The
+`pull_request` trigger is paused during active development; the file's `on:`
+block says how to resume it.
 
 | Job | What it runs | Limit |
 |---|---|---|
@@ -21,9 +22,8 @@ Choices that are easy to get wrong:
 
 - **One definition of the gate.** CI runs the `dod_check.sh` a contributor
   runs, in full: never `--fast` or `--changed`, and no selection by the
-  planner. `build_verification_plan.py` still serves `dod_check.sh --changed`
-  on a workstation; its CI-only outputs (shards, `--github-output`) are BE-D5
-  in `docs/wbs_BE.md`.
+  planner. `build_verification_plan.py` serves `dod_check.sh --changed` on a
+  workstation and nothing else: it writes no output for CI.
 - **`CI gate` is the one required check.** It needs every other job and runs
   whatever happened to them, so a job that failed, was cancelled or was
   skipped fails it instead of passing unnoticed. A new job goes into its

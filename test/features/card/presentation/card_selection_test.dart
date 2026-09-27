@@ -18,7 +18,8 @@ Widget _section(String deckId) => Scaffold(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
-    onStudy: () {},
+    // As the router wires it: the bulk bar holds its five commands.
+    onExport: (_) {},
   ),
 );
 

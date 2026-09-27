@@ -2,8 +2,6 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -16,7 +14,6 @@ import 'package:memox/features/study/data/repositories/study_session_repository_
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -87,19 +84,8 @@ void main() {
       row.data,
   ];
 
-  Future<void> deleteCards(Set<String> cardIds) async {
-    final schedules = ScheduleRepositoryImpl(db, now: () => clock);
-    final cards = CardRepositoryImpl(
-      db,
-      schedules,
-      TagRepositoryImpl(db, now: () => clock),
-      now: () => clock,
-    );
-    expect(
-      await cards.deleteCards(cardIds: cardIds),
-      isA<Ok<void, CardRejection>>(),
-    );
-  }
+  /// Spec D12 settles the sessions a build before the Trash left open.
+  Future<void> deleteCards(Set<String> cardIds) => hardDeleteCards(db, cardIds);
 
   test('leaving ends the session as user_exit and keeps its turns; a '
       'session that has ended cannot be left again (BR-STUDY-014, '
@@ -230,21 +216,22 @@ void main() {
     expect(session.data['end_reason'], isNull);
   });
 
-  test('Continue or leaving a session whose deck was deleted is notFound: '
-      'the session went with the deck (IT-CONT-007)', () async {
+  test('Continue or leaving a session whose deck went to the Trash is '
+      'sessionClosed: the delete ended it as content_deleted (IT-CONT-007, '
+      'BR-TRASH-004)', () async {
     final (leaf, id) = await learning(['c1']);
     expect(
       await decks.deleteDeck(deckId: leaf.id),
-      isA<Ok<void, DeckRejection>>(),
+      isA<Ok<String, DeckRejection>>(),
     );
 
     expect(
       await sessions.resumeSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
     expect(
       await sessions.abandonSession(sessionId: id),
-      _refusedWith(StudyRejection.notFound),
+      _refusedWith(StudyRejection.sessionClosed),
     );
   });
 
@@ -368,6 +355,93 @@ void main() {
       _refusedWith(StudyRejection.sessionClosed),
     );
     final entry = await entries.watchEntry(deckId: leaf.id, now: clock).first;
-    expect(entry!.resumableSessionId, isNull);
+    expect(entry!.resumable, isNull);
+  });
+
+  /// Answers every turn [id] serves, right, until the session ends.
+  Future<void> finish(String id) async {
+    for (var turn = 0; turn < 1000; turn++) {
+      if ((await sessionOf(db, id)).read<String>('status') != 'in_progress') {
+        return;
+      }
+      await answerServed(db, sessions, id, right: true);
+    }
+    fail('session $id did not end');
+  }
+
+  Future<List<String>> queuedCards(String id) async => [
+    for (final row
+        in await db
+            .customSelect(
+              'SELECT DISTINCT card_id FROM study_queue_items '
+              'WHERE session_id = ?',
+              variables: [Variable(id)],
+            )
+            .get())
+      row.read<String>('card_id'),
+  ];
+
+  test('the card limit bounds each session, not the day: a second session '
+      'the same day takes the card left over (IT-LEARN-011, BR-STUDY-003, '
+      'BR-STUDY-024)', () async {
+    final ids = [for (var i = 1; i <= 21; i++) 'n$i'];
+    final (leaf, first) = await learning(ids);
+
+    expect((await sessionOf(db, first)).read<int>('card_limit'), 20);
+    expect(await queuedCards(first), hasLength(20));
+    await finish(first);
+    expect((await sessionOf(db, first)).read<String>('status'), 'completed');
+    final between = (await entries
+        .watchEntry(deckId: leaf.id, now: clock)
+        .first)!;
+    expect(between.newCardCount, 1);
+
+    final second = await entries.openLearningSession(deckId: leaf.id);
+    final secondId = (second as Ok<String, StudyRejection>).value;
+    expect(await queuedCards(secondId), hasLength(1));
+    await finish(secondId);
+
+    final after = (await entries
+        .watchEntry(deckId: leaf.id, now: clock)
+        .first)!;
+    expect(after.newCardCount, 0);
+    final ended = await db
+        .customSelect("SELECT status FROM study_session ORDER BY started_at")
+        .get();
+    expect(
+      [for (final row in ended) row.read<String>('status')],
+      ['completed', 'completed'],
+    );
+  });
+
+  test('a learning session left part way schedules nothing: every card '
+      'stays new, nothing falls due, and the next one starts from Browse '
+      '(IT-LEARN-012, BR-STUDY-014, BR-STUDY-019, BR-STUDY-053)', () async {
+    final (leaf, id) = await learning(['a', 'b', 'c', 'd', 'e']);
+    while ((await sessionOf(db, id)).read<String>('current_mode') == 'browse') {
+      await answerServed(db, sessions, id, right: true);
+    }
+    expect((await sessionOf(db, id)).read<String>('current_mode'), 'match');
+    await answerServed(db, sessions, id, right: true);
+    await answerServed(db, sessions, id, right: false);
+
+    await sessions.abandonSession(sessionId: id);
+
+    expect((await sessionOf(db, id)).read<String>('end_reason'), 'user_exit');
+    for (final card in ['a', 'b', 'c', 'd', 'e']) {
+      expect((await scheduleRowOf(db, card)).data['learned_at'], isNull);
+    }
+    final entry = (await entries
+        .watchEntry(deckId: leaf.id, now: clock)
+        .first)!;
+    expect((entry.newCardCount, entry.dueCardCount), (5, 0));
+    expect(entry.resumable, isNull);
+
+    final next = await entries.openLearningSession(deckId: leaf.id);
+    final nextId = (next as Ok<String, StudyRejection>).value;
+    expect(
+      (await sessionOf(db, nextId)).read<String>('current_mode'),
+      'browse',
+    );
   });
 }

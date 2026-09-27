@@ -8,7 +8,7 @@ Each layer answers one question; none takes over another's.
 |---|---|---|
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
-| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, this file |
+| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
 | ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
@@ -46,10 +46,35 @@ Each layer answers one question; none takes over another's.
 | Deviations from the kit or a UI spec | the screen's detail file or the UI-base register (§9) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
+| Work in flight that moves to another session | a session handoff in `.claude/handoff/`, on the branch only |
 
 Do not add another store, such as `.ecc/memory/`. Anything meant to outlive
-a session and bind the project goes into the repo through a PR. Handoff to
-another harness goes through `AGENTS.md` or `docs/`.
+a session and bind the project goes into the repo through a PR. Standing
+context for another harness goes through `AGENTS.md` or `docs/`; unfinished
+work goes through a [session handoff](#session-handoff).
+
+### Session handoff
+
+A session handoff is a short file that carries the live thread of one piece
+of unfinished work to a fresh agent. It is unrelated to the design and screen
+handoffs under `docs/shared/ui/`. Write one when the owner asks for a handoff.
+
+- **When:** only when the work moves to another harness (Claude ↔ Codex),
+  another machine or cloud container, another person, or a side task forked to
+  a second agent. When the work stays in the same harness and checkout, use
+  `/compact`.
+- **Where:** `.claude/handoff/<yyyy-mm-dd>-<topic>.md` on the working branch.
+  Commit and push it, then give the next session the branch and the path; a
+  new cloud session gets the branch as its `source_revision`. One file per
+  piece of work: a later handoff replaces the earlier one.
+- **What:** the state, the open decisions, the next step, and the skills the
+  next agent should load (the Superpowers skill for the current phase, the
+  `flutter-*` skills the task touches). Plans, specs, ADRs, PRs and commits
+  appear as paths or URLs, never copied. Label every claim this session did
+  not verify as an assumption, because the next agent takes the file as fact.
+  Leave out secrets and personal data.
+- **Lifetime:** delete the file when completing the branch, before the merge,
+  so `master` never carries a handoff.
 
 ### Hooks
 
@@ -117,7 +142,10 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   not BLoC, Dio or Freezed.
 - **Java/Spring skills wait for a backend.** V8.0 is local-only (ADR-001), so
   it has no backend to use them on yet. They apply once a server-side
-  sub-project starts, under that sub-project's ADRs.
+  sub-project starts, under that sub-project's ADRs. For Spring Boot +
+  MyBatis code, the repo's own `spring-boot-mybatis-review` skill holds the
+  conventions and review checklist; it wins over the ECC `springboot-*` and
+  `jpa-patterns` skills.
 - **Skills only.** ECC's agents, rules, hooks, commands and memory are not
   used here. A plan task never delegates to an ECC agent; its implementer
   reads the relevant skill instead.

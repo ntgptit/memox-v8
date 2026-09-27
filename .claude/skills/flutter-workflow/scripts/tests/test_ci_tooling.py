@@ -44,9 +44,9 @@ def _find_bash() -> str | None:
 
 _BASH = _find_bash()
 
-# The Flutter app does not exist until Phase 2.3; `dod_check.sh` exits early on
-# the same condition. Tests that assert facts about that tree wait for it, and
-# run again unchanged the day it is created.
+# Tests about the real tree need the Flutter app. `dod_check.sh` exits early
+# without a `pubspec.yaml` at the root, and these tests skip on the same
+# condition.
 _APP_TREE = (REPO_ROOT / "pubspec.yaml").is_file()
 requires_app_tree = unittest.skipUnless(
     _APP_TREE, "Flutter app not created yet (no pubspec.yaml at the repo root)"
@@ -79,12 +79,10 @@ def _fixture_repo(root: Path, *tests: str) -> Path:
 #
 # `build_verification_plan.py`'s classification rules are exercised here
 # against a small, self-contained ADR-010-shaped repository (feature slugs
-# from ADR-010 #1, `domain/data/presentation/di` layers from ADR-010 #2) —
-# never against the real memox-v8 tree. Before `flutter create` runs that tree
-# has no `lib/` or `test/` at all; after it runs, it will have V8 feature
-# names and layout, not V7's (`test/app/router/...`, `lib/presentation/shared/
-# ...`, a `tag` feature). A planner-logic test tied to either shape breaks the
-# other. See ADR-010 and CLAUDE.md ("V7 is a reference, not a template").
+# from ADR-010 #1, `domain/data/presentation/di` layers from ADR-010 #2),
+# never against the real memox-v8 tree: a planner test tied to the real tree
+# breaks whenever a feature or a test moves, for reasons that have nothing to
+# do with the planner.
 _ADR010_SOURCE_FILES: dict[str, str] = {
     "lib/features/card/domain/repositories/card_repository.dart": "// fixture\n",
     "lib/features/card/data/repositories/card_repository_impl.dart": "// fixture\n",
@@ -138,8 +136,7 @@ def _adr010_plan_fixture(root: Path) -> Path:
 
     Deliberately small and synthetic: enough features, layers and import
     chains to exercise every classification rule `build_verification_plan.py`
-    has, without describing the real app (which does not exist yet, and once
-    it does will not look like this fixture either).
+    has, without describing the real app.
     """
     subprocess.run(["git", "init", "-q", str(root)], check=True)
     (root / "pubspec.yaml").write_text("name: memox\n", encoding="utf-8")
@@ -159,11 +156,9 @@ def _adr010_plan_fixture(root: Path) -> Path:
 
 # A synthetic impact map, deliberately decoupled from
 # `verification_impact_map.json`: it exercises the same classification logic
-# (feature-dependency BFS, database-query ownership, shard-count thresholds)
-# without being tied to production data that other tests (`ImpactMapCoverage
-# Test`, `ImpactMapMatchesTheDocsTest`) keep in sync with `docs/features/`.
-# The shard-weight thresholds are lowered so the small fixture above still
-# exercises the 1/2/5-shard boundaries meaningfully.
+# (feature-dependency BFS, database-query ownership) without being tied to
+# production data that other tests (`ImpactMapCoverageTest`,
+# `ImpactMapMatchesTheDocsTest`) keep in sync with `docs/features/`.
 _ADR010_IMPACT_MAP_RAW: dict[str, object] = {
     "version": 1,
     "feature_dependencies": {
@@ -218,7 +213,6 @@ _ADR010_IMPACT_MAP_RAW: dict[str, object] = {
         ".github/PULL_REQUEST_TEMPLATE.md",
         "LICENSE",
     ],
-    "shard_weight_thresholds": {"one": 2, "two": 5},
 }
 
 
@@ -227,8 +221,8 @@ class DodCheckStampTest(unittest.TestCase):
 
     Running the gate again before commit, again before push and again before the
     PR is one tree state asked three times. The stamp exists so the repetition
-    costs ~0.4s instead of 50-150s — and so it works without anyone having to
-    remember, which is the part that failed every time it was written down.
+    costs a fraction of a second instead of minutes, and so it works without
+    anyone having to remember.
     """
 
     SCRIPT = REPO_ROOT / ".claude/skills/flutter-workflow/scripts/dod_check.sh"
@@ -327,12 +321,8 @@ class DodCheckStampTest(unittest.TestCase):
 class VerificationPlanBuilderTest(unittest.TestCase):
     """Planner-classification logic, against the ADR-010 fixture above.
 
-    Never against `REPO_ROOT`: before Flutter is initialised it has no
-    `lib/`/`test/`, and after it is, it will have V8's feature names and
-    layout rather than the V7 paths some of these tests used to assert
-    (`test/app/router/app_router_test.dart` importing a V7 `tag` feature,
-    etc.). The fixture makes every assertion below true regardless of what
-    the real tree currently contains.
+    Never against `REPO_ROOT`: the fixture makes every assertion below true
+    whatever the real tree contains.
     """
 
     @classmethod
@@ -359,68 +349,51 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             force_full=force_full,
         )
 
-    def test_a_shared_widget_change_selects_the_golden_job(self) -> None:
-        """#337's shape: six components relaid out, no picture redrawn.
-
-        It passed every check in `ci.yml` because nothing there compares a
-        committed PNG against a fresh render — the Windows golden job lives in
-        `ci-full.yml`, which is `workflow_dispatch:` only. 26 goldens went
-        stale on `main` and the screen gallery published a pre-#337 app.
-        """
+    def test_a_shared_widget_change_selects_the_full_host_suite(self) -> None:
+        """A path under `lib/` outside a feature and `lib/core/` has no rule to
+        narrow it, so it runs every non-golden host test."""
         plan = self._plan("lib/shared/widgets/mx_button_pair.dart")
-        self.assertTrue(plan.needs_goldens)
+        self.assertTrue(plan.full_suite)
+        self.assertTrue(plan.needs_static)
+        self.assertTrue(plan.needs_host_tests)
 
-    def test_a_change_to_the_pictures_themselves_selects_the_golden_job(self) -> None:
-        """A PR that only regenerates goldens is the one whose claim needs
-        checking most — and a PNG is not code, so `code_required` misses it."""
-        plan = self._plan("test/demo/goldens/deck_list_empty_light.png")
-        self.assertTrue(plan.needs_goldens)
+    def test_test_support_outside_the_known_folders_selects_everything(self) -> None:
+        """Only `test/features/<feature>/<layer>/`, `test/app/`, `test/core/`
+        and `test/shared/` narrow: support code anywhere else could feed any
+        test, so it runs them all."""
+        path = "test/visual_audit/support/audit_fixture.dart"
+        plan = self._plan(path)
+        self.assertTrue(plan.full_suite)
+        self.assertIn(path, plan.unmatched_paths)
 
-    def test_a_demo_test_change_selects_the_golden_job(self) -> None:
-        plan = self._plan("test/demo/deck_screens_demo_test.dart")
-        self.assertTrue(plan.needs_goldens)
-
-    def test_regenerating_pictures_runs_the_golden_job_and_nothing_else(self) -> None:
-        """The shape of a golden-regeneration PR, which is the common one.
-
-        Measured before this was classified: two of the last forty commits on
-        `main` were exactly this — 26 and 31 PNGs, no Dart — and each ran five
-        host shards, `flutter analyze` and the Widgetbook smoke test. A PNG can
-        fail none of them. It was not a decision: `require_test_path` claims a
-        code change first thing, then finds no rule for `.png` and falls
-        through to `require_full("unrecognised test support path")`.
-        """
+    def test_pictures_alone_need_no_static_check_and_no_host_test(self) -> None:
+        """A committed golden image is not code: nothing the gate runs can fail
+        on a `.png`, and CI's `goldens` job compares it against a fresh render."""
         plan = self._plan(
-            "test/demo/goldens/deck_list_empty_light.png",
-            "test/demo/goldens/card_list_dark.png",
+            "test/features/deck/presentation/goldens/deck_list_empty_light.png",
+            "test/features/card/presentation/goldens/card_list_dark.png",
         )
-        self.assertTrue(plan.needs_goldens)
-        # The assertions that would have caught it: everything the pictures
-        # cannot affect.
         self.assertFalse(plan.full_suite)
         self.assertFalse(plan.needs_static)
         self.assertFalse(plan.needs_host_tests)
-        self.assertFalse(plan.needs_widgetbook)
-        self.assertEqual(0, plan.shard_count)
+        self.assertEqual((), plan.test_files)
         self.assertEqual("pixels", plan.risk)
 
-    def test_a_picture_beside_its_widget_still_verifies_the_widget(self) -> None:
+    def test_a_picture_beside_its_widget_keeps_the_widget_selection(self) -> None:
         """The narrowing must not survive contact with a real code change."""
-        plan = self._plan(
-            "test/demo/goldens/card_list_light.png",
-            "lib/features/card/presentation/widgets/items/card_tile_widget.dart",
+        widget = "lib/features/card/presentation/widgets/items/card_tile_widget.dart"
+        alone = self._plan(widget)
+        beside = self._plan(
+            "test/features/card/presentation/goldens/card_list_light.png", widget
         )
-        self.assertTrue(plan.needs_static)
-        self.assertTrue(plan.needs_host_tests)
-        self.assertTrue(plan.needs_goldens)
+        self.assertTrue(beside.needs_static)
+        self.assertTrue(beside.needs_host_tests)
+        self.assertEqual("targeted", beside.risk)
+        self.assertEqual(alone.test_files, beside.test_files)
 
     def test_repository_furniture_verifies_nothing(self) -> None:
-        """`.gitignore` and an issue template were selecting the whole suite.
-
-        Both reached `require_full` — the first as an unclassified path, the
-        second because `.github/` is a full-scope prefix and a markdown
-        template is not a pipeline. One paragraph cost 1847s of runner time.
-        """
+        """Git plumbing, editor settings and `.github/` templates cannot change
+        what Dart compiles or what the tests run."""
         for path in (
             ".gitignore",
             ".editorconfig",
@@ -431,31 +404,29 @@ class VerificationPlanBuilderTest(unittest.TestCase):
                 plan = self._plan(path)
                 self.assertFalse(plan.full_suite)
                 self.assertFalse(plan.needs_static)
-                self.assertFalse(plan.needs_goldens)
                 self.assertFalse(plan.needs_host_tests)
 
     def test_the_workflow_itself_still_runs_everything(self) -> None:
         """Not an oversight left in place — the one case where running the
         whole suite *is* the point. Changing what verification runs is a claim
         that the new pipeline works, and only a full run tests that claim.
-        `.github/workflows/` stays full-scope; only its inert neighbours moved.
         """
         plan = self._plan(".github/workflows/ci.yml")
         self.assertTrue(plan.full_suite)
 
     def test_an_unclassified_path_still_widens_to_everything(self) -> None:
-        """The fallback is the safe default and this change does not touch it.
-
-        What was wrong was never the fallback — it was the paths reaching it
-        that should have been classified.
-        """
+        """The fallback is the safe default: a path nobody classified runs
+        everything."""
         plan = self._plan("tools/some_new_thing.py")
         self.assertTrue(plan.full_suite)
 
-    def test_a_documents_only_change_does_not_pay_for_a_windows_runner(self) -> None:
-        """The job is conditional for a reason: Windows minutes cost double."""
-        plan = self._plan("design_audit/layout_review/SUMMARY.md")
-        self.assertFalse(plan.needs_goldens)
+    def test_documents_alone_need_no_static_check_and_no_host_test(self) -> None:
+        for path in ("docs/wbs_BE.md", ".impeccable/critique/notes.md"):
+            with self.subTest(path=path):
+                plan = self._plan(path)
+                self.assertFalse(plan.needs_static)
+                self.assertFalse(plan.needs_host_tests)
+                self.assertEqual("docs", plan.risk)
 
     def test_normalization_preserves_dot_prefixed_directories(self) -> None:
         self.assertEqual(
@@ -469,26 +440,22 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         )
         self.assertFalse(plan.full_suite)
 
-    def test_prompt_only_change_uses_python_contract_path(self) -> None:
-        plan = self._plan(
-            "docs/prompt/progress-v1/implementation.md",
-            "docs/prompt/progress-v1/recursive-ui-ux-review.md",
-        )
-        self.assertTrue(plan.prompt_only)
-        self.assertTrue(plan.docs_only)
-        self.assertFalse(plan.code_required)
-        self.assertFalse(plan.needs_static)
-        self.assertFalse(plan.needs_host_tests)
-        self.assertFalse(plan.needs_widgetbook)
+    def test_a_prompt_set_is_documentation_like_any_other(self) -> None:
+        """V8 has no prompt delivery contract: `docs/prompt/` reaches the
+        `docs/` rule."""
+        plan = self._plan("docs/prompt/progress/implementation.md")
+        self.assertEqual(("documentation contract changed",), plan.reasons)
+        self.assertEqual("docs", plan.risk)
 
-    def test_prompt_plus_normative_docs_stays_flutter_free(self) -> None:
-        plan = self._plan(
-            "docs/prompt/sample/implementation.md",
-            "docs/wbs.md",
-        )
-        self.assertFalse(plan.prompt_only)
-        self.assertTrue(plan.docs_only)
-        self.assertFalse(plan.code_required)
+    def test_a_path_v8_has_no_rule_for_selects_everything(self) -> None:
+        """`widgetbook/` and `memox-api/` have no rule (spec of package 12a,
+        D6): like any unrecognised path they run the full suite, until V8's
+        API adds its own rule under its ADR."""
+        for path in ("widgetbook/lib/main.dart", "memox-api/pom.xml"):
+            with self.subTest(path=path):
+                plan = self._plan(path)
+                self.assertTrue(plan.full_suite)
+                self.assertIn(path, plan.unmatched_paths)
 
     def test_presentation_change_adds_transitive_app_consumers(self) -> None:
         plan = self._plan(
@@ -508,7 +475,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             "test/integration/widgets/navigation_widget_test.dart",
             plan.test_files,
         )
-        self.assertTrue(plan.needs_widgetbook)
 
     def test_data_change_adds_cross_feature_harness_consumers(self) -> None:
         plan = self._plan(
@@ -523,7 +489,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             "test/features/deck/data/web/deck_repository_web_test.dart",
             plan.test_files,
         )
-        self.assertFalse(plan.needs_widgetbook)
 
     def test_use_case_change_adds_data_flow_consumers(self) -> None:
         plan = self._plan(
@@ -534,7 +499,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             "test/features/study/data/study_flow_test.dart",
             plan.test_files,
         )
-        self.assertTrue(plan.needs_widgetbook)
 
     def test_public_domain_contract_expands_transitive_dependents(self) -> None:
         plan = self._plan(
@@ -545,7 +509,6 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             <= set(plan.affected_features)
         )
         self.assertEqual(("data", "domain", "presentation"), plan.affected_layers)
-        self.assertGreaterEqual(plan.shard_count, 2)
 
     def test_database_query_uses_declared_feature_owner(self) -> None:
         plan = self._plan("lib/core/database/queries/study.drift")
@@ -568,14 +531,12 @@ class VerificationPlanBuilderTest(unittest.TestCase):
     def test_schema_change_promotes_to_full_suite(self) -> None:
         plan = self._plan("lib/core/database/tables/cards.drift")
         self.assertTrue(plan.full_suite)
-        self.assertEqual(5, plan.shard_count)
-        self.assertTrue(plan.needs_widgetbook)
         self.assertEqual(("test",), plan.local_test_targets)
 
     def test_shared_theme_router_native_and_dependency_changes_are_full(self) -> None:
         for path in (
             "lib/core/theme/app_theme.dart",
-            "lib/presentation/shared/mx_card.dart",
+            "lib/shared/widgets/mx_card.dart",
             "lib/app/router/app_router.dart",
             "android/app/build.gradle.kts",
             "pubspec.yaml",
@@ -583,23 +544,22 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue(self._plan(path).full_suite)
 
-    def test_ci_tooling_change_is_full_so_the_new_gate_proves_itself(self) -> None:
-        plan = self._plan(".github/workflows/ci.yml")
+    def test_a_verification_script_change_is_full(self) -> None:
+        """Like the workflow: a change to the gate's own scripts is proved
+        only by the full run it selects."""
+        plan = self._plan(".claude/skills/flutter-workflow/scripts/dod_check.sh")
         self.assertTrue(plan.full_suite)
-        self.assertEqual(5, plan.shard_count)
 
     def test_test_only_change_runs_exact_tracked_test(self) -> None:
         path = "test/features/card/domain/card_text_test.dart"
         plan = self._plan(path)
         self.assertEqual((path,), plan.test_files)
-        self.assertEqual(1, plan.shard_count)
 
     def test_golden_only_change_uses_runnable_surrogates(self) -> None:
         path = "test/shared/widgets/mx_components_golden_test.dart"
         plan = self._plan(path)
         self.assertNotIn(path, plan.test_files)
         self.assertTrue(plan.test_files)
-        self.assertTrue(plan.needs_widgetbook)
         self.assertTrue(
             all(
                 not self.module.is_golden_only_test(self.root / test_path)
@@ -631,8 +591,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             self.assertIn("test/new_test.dart", plan.local_test_targets)
 
     def test_the_worktree_scan_is_memoized_per_root_not_globally(self) -> None:
-        """The cache that made this suite 43s → 8s must not answer for a
-        different tree.
+        """The memo must not answer for a different tree.
 
         A memo keyed by anything coarser than the resolved root would hand a
         temporary repository the main repository's file list, and every plan
@@ -649,7 +608,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             repo_second = self.module.discover_tests(repo)
 
             self.assertEqual(repo_first, repo_second)
-            self.assertEqual({"test/only_test.dart": 1}, fixture)
+            self.assertEqual({"test/only_test.dart"}, fixture)
             self.assertGreater(len(repo_first), 1)
 
     def test_a_memoized_scan_is_not_shared_mutable_state(self) -> None:
@@ -668,14 +627,7 @@ class VerificationPlanBuilderTest(unittest.TestCase):
             all(path.startswith("test/features/card/data/") for path in plan.test_files)
         )
 
-    def test_widgetbook_only_change_skips_host_tests(self) -> None:
-        plan = self._plan("widgetbook/lib/main.dart")
-        self.assertTrue(plan.code_required)
-        self.assertTrue(plan.needs_static)
-        self.assertTrue(plan.needs_widgetbook)
-        self.assertFalse(plan.needs_host_tests)
-
-    def test_new_feature_without_tests_promotes_instead_of_trusting_widgetbook(self) -> None:
+    def test_a_new_feature_without_tests_promotes_to_the_full_suite(self) -> None:
         plan = self._plan(
             "lib/features/not_yet_mapped/presentation/screens/new_screen.dart"
         )
@@ -690,30 +642,24 @@ class VerificationPlanBuilderTest(unittest.TestCase):
         self.assertTrue(empty.full_suite)
 
     def test_force_full_disables_docs_fast_path(self) -> None:
-        plan = self._plan("docs/wbs.md", force_full=True)
+        plan = self._plan("docs/wbs_BE.md", force_full=True)
         self.assertTrue(plan.full_suite)
-        self.assertTrue(plan.code_required)
+        self.assertTrue(plan.needs_static)
+        self.assertTrue(plan.needs_host_tests)
 
     def test_sealed_plan_is_immutable_and_json_is_deterministic(self) -> None:
         first = self._plan(
             "lib/features/card/data/repositories/card_repository_impl.dart",
-            "docs/wbs.md",
+            "docs/wbs_BE.md",
         )
         second = self._plan(
-            "docs/wbs.md",
+            "docs/wbs_BE.md",
             "lib/features/card/data/repositories/card_repository_impl.dart",
         )
         self.assertEqual(first, second)
         self.assertEqual(first.to_json_dict(), second.to_json_dict())
         with self.assertRaises(dataclasses.FrozenInstanceError):
             first.risk = "docs"
-
-    def test_shard_policy_is_one_two_or_five_and_never_empty(self) -> None:
-        choose = self.module.choose_shard_count
-        self.assertEqual(0, choose(0, 0, 240, 800))
-        self.assertEqual(1, choose(240, 20, 240, 800))
-        self.assertEqual(2, choose(700, 50, 240, 800))
-        self.assertEqual(5, choose(1200, 50, 240, 800))
 
     def test_local_targets_never_pull_an_unselected_test_into_scope(self) -> None:
         compress = self.module.compress_test_targets
@@ -802,8 +748,6 @@ class DependencyGraphCycleSafetyTest(unittest.TestCase):
             full_scope_files=frozenset(),
             inert_prefixes=(),
             inert_files=frozenset(),
-            one_shard_max_weight=240,
-            two_shard_max_weight=800,
         )
         with tempfile.TemporaryDirectory() as temp:
             root = _fixture_repo(Path(temp))
@@ -1045,7 +989,7 @@ class WorkflowContractTest(unittest.TestCase):
 
     def test_ci_gate_judges_every_other_job_whatever_happened_to_it(self) -> None:
         """A job that the required check does not cover can fail without
-        blocking a merge: the failure V7's wiring test caught."""
+        blocking a merge."""
         _, jobs = self._workflow()
         named = [
             key for key, block in jobs.items()
@@ -1089,13 +1033,15 @@ class WorkflowContractTest(unittest.TestCase):
                 for job, result in results.items():
                     self.assertIn(f"{job}: {result}", run.stdout)
 
-    def test_every_pull_request_runs_the_workflow_whatever_it_changes(self) -> None:
-        """A path filter would leave a required check waiting forever on a pull
-        request that touches none of its paths."""
+    def test_the_workflow_runs_by_hand_while_paused_and_has_no_path_filter(self) -> None:
+        """CI is paused (owner, 2026-09-26): only `workflow_dispatch` triggers it.
+        Resuming adds `pull_request` back to this set. A path filter would leave
+        a required check waiting forever on a pull request that touches none of
+        its paths."""
         workflow, _ = self._workflow()
         on = _top_level_block(workflow, "on")
         self.assertEqual(
-            {"pull_request", "workflow_dispatch"},
+            {"workflow_dispatch"},
             set(re.findall(r"(?m)^  ([A-Za-z_]+):", on)),
         )
         for path_filter in ("paths:", "paths-ignore:"):
@@ -1126,85 +1072,76 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertNotIn('SKIPPED+=("test', script)
 
 
-HEADER = """# {title}
+# The fields of the verification plan (spec of package 12a, D3): the six
+# `dod_check.sh --changed` reads, and five that explain the selection.
+PLAN_FIELDS = frozenset({
+    "changed_paths",
+    "affected_features",
+    "affected_layers",
+    "reasons",
+    "unmatched_paths",
+    "test_files",
+    "local_test_targets",
+    "risk",
+    "full_suite",
+    "needs_static",
+    "needs_host_tests",
+})
 
-| | |
-|---|---|
-| **Status** | active |
-| **Purpose** | Test prompt |
-| **Scope** | Test scope |
-| **Source of truth for** | Test execution instructions |
-| **Depends on** | `AGENTS.md` |
-| **Updated by task** | TEST |
-| **Last updated** | 2026-08-13 |
 
-"""
+class GateReadsThePlanTest(unittest.TestCase):
+    """`dod_check.sh --changed` runs what `build_verification_plan.py` selects.
 
+    The gate is the planner's only caller, and it reads the plan's JSON by
+    field name: a field it reads that the plan does not write stops the run,
+    and a step it schedules for a gate V8 does not have fails every run that
+    selects it.
+    """
 
-class PromptContractTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.module = _load("check_prompt_contract")
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
 
-    def setUp(self) -> None:
-        self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
-        self.feature = self.root / "docs" / "prompt" / "sample"
-        self.feature.mkdir(parents=True)
-        self._write_valid_set()
+    def test_the_gate_reads_only_fields_the_plan_writes(self) -> None:
+        script = self._gate()
+        read = set(re.findall(r"read_plan_bool (\w+)", script))
+        read |= set(re.findall(r"p\['(\w+)'\]", script))
+        # What the gate acts on: a pattern that matched nothing would fail
+        # here instead of passing the check below.
+        self.assertLessEqual({"needs_static", "needs_host_tests", "local_test_targets"}, read)
+        self.assertEqual(set(), read - PLAN_FIELDS)
 
-    def tearDown(self) -> None:
-        self.temp.cleanup()
+    def test_the_gate_has_no_step_for_a_gate_v8_does_not_have(self) -> None:
+        """No Widgetbook smoke test (V8 has no `widgetbook/`) and no prompt
+        delivery contract (V8 has no `docs/prompt/`)."""
+        lines = self._gate().lower().splitlines()
+        for marker in ("widgetbook", "prompt_contract", "has_prompt_changes"):
+            with self.subTest(marker=marker):
+                self.assertEqual([], [line for line in lines if marker in line])
 
-    def _write_valid_set(self) -> None:
-        (self.feature / "implementation.md").write_text(
-            HEADER.format(title="Implementation")
-            + "5Why. Check the worktree. Run verification and gate. Clean stop.\n",
-            encoding="utf-8",
-        )
-        (self.feature / "recursive-architecture-logic-review.md").write_text(
-            HEADER.format(title="Architecture review")
-            + "Audit-only first. Check the worktree, business rules, architecture boundary, database persistence and failure handling. Apply fixes, test, then clean stop.\n",
-            encoding="utf-8",
-        )
-        (self.feature / "recursive-ui-ux-review.md").write_text(
-            HEADER.format(title="UI review")
-            + "Audit-only production states in the production tree. Check the worktree. Use getRect and golden comparison, list approved divergence, auto-fix, test, and clean stop.\n",
-            encoding="utf-8",
-        )
+    def test_the_plan_holds_exactly_the_eleven_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = _fixture_repo(Path(temp) / "repo", "test/a_test.dart")
+            paths = Path(temp) / "paths.txt"
+            paths.write_text("test/a_test.dart\n", encoding="utf-8")
+            output = Path(temp) / "plan.json"
+            subprocess.run(
+                [sys.executable, str(SCRIPTS / "build_verification_plan.py"),
+                 "--root", str(root), "--paths-file", str(paths),
+                 "--json-output", str(output)],
+                check=True, capture_output=True, text=True,
+            )
+            written = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(sorted(PLAN_FIELDS), sorted(written))
 
-    def test_valid_prompt_set_passes(self) -> None:
-        self.assertEqual([], self.module.validate_prompt_root(self.root))
-
-    def test_missing_review_file_fails(self) -> None:
-        (self.feature / "recursive-ui-ux-review.md").unlink()
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("missing prompt files" in message for message in messages))
-
-    def test_run_file_is_rejected(self) -> None:
-        (self.feature / "run.md").write_text("# Run\n", encoding="utf-8")
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("unexpected prompt files" in message for message in messages))
-
-    def test_ui_review_without_geometry_fails(self) -> None:
-        path = self.feature / "recursive-ui-ux-review.md"
-        path.write_text(
-            path.read_text(encoding="utf-8").replace("getRect", "geometry"),
-            encoding="utf-8",
-        )
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("getRect" in message for message in messages))
-
-    def test_out_of_order_header_fails(self) -> None:
-        path = self.feature / "implementation.md"
-        text = path.read_text(encoding="utf-8")
-        text = text.replace(
-            "| **Purpose** | Test prompt |\n| **Scope** | Test scope |",
-            "| **Scope** | Test scope |\n| **Purpose** | Test prompt |",
-        )
-        path.write_text(text, encoding="utf-8")
-        messages = [problem.message for problem in self.module.validate_prompt_root(self.root)]
-        self.assertTrue(any("header fields" in message for message in messages))
+    def test_the_prompt_delivery_scripts_are_gone(self) -> None:
+        for removed in (
+            "check_prompt_contract.py",
+            "read_local_prompt_set.ps1",
+            "tests/test_local_prompt_handoff.py",
+        ):
+            with self.subTest(path=removed):
+                self.assertFalse((SCRIPTS / removed).exists())
 
 
 if __name__ == "__main__":

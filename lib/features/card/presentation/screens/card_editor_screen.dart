@@ -22,33 +22,51 @@ class CardEditorScreen extends StatelessWidget {
     super.key,
     required String this.deckId,
     required this.deckContext,
+    this.onOpenTrash,
   }) : cardId = null;
 
   const CardEditorScreen.edit({
     super.key,
     required String this.cardId,
     required this.deckContext,
+    this.onOpenTrash,
   }) : deckId = null;
 
   final String? deckId;
   final String? cardId;
   final Widget Function(String deckId, String currentLabel) deckContext;
 
+  /// Opens the Trash from a gone state and a refused Undo (FE-B1 D11).
+  final VoidCallback? onOpenTrash;
+
   @override
   Widget build(BuildContext context) {
     if (deckId case final deckId?) {
-      return CardEditorFormWidget(deckId: deckId, deckContext: deckContext);
+      return CardEditorFormWidget(
+        deckId: deckId,
+        deckContext: deckContext,
+        onOpenTrash: onOpenTrash,
+      );
     }
-    return _EditLoader(cardId: cardId!, deckContext: deckContext);
+    return _EditLoader(
+      cardId: cardId!,
+      deckContext: deckContext,
+      onOpenTrash: onOpenTrash,
+    );
   }
 }
 
 /// The card to edit while it loads, fails or is gone (ruling P4a-L4).
 class _EditLoader extends ConsumerWidget {
-  const _EditLoader({required this.cardId, required this.deckContext});
+  const _EditLoader({
+    required this.cardId,
+    required this.deckContext,
+    this.onOpenTrash,
+  });
 
   final String cardId;
   final Widget Function(String deckId, String currentLabel) deckContext;
+  final VoidCallback? onOpenTrash;
 
   static const int _skeletonRows = 4;
 
@@ -72,6 +90,7 @@ class _EditLoader extends ConsumerWidget {
         deckId: value.card.deckId,
         detail: value,
         deckContext: deckContext,
+        onOpenTrash: onOpenTrash,
       ),
       AsyncData(value: Rejected()) => MxAppShell(
         appBar: bar,
@@ -79,6 +98,7 @@ class _EditLoader extends ConsumerWidget {
           title: l10n.cardGoneTitle,
           body: l10n.cardGoneBody,
           onBack: back,
+          onOpenTrash: onOpenTrash,
         ),
       ),
       AsyncError() => MxAppShell(

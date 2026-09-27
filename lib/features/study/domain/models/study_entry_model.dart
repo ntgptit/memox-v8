@@ -1,4 +1,5 @@
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/stage_eligibility_model.dart';
@@ -12,9 +13,10 @@ final class StudyEntry {
     required this.cardLimit,
     required this.newCardCount,
     required this.dueCardCount,
+    required this.overdueCardCount,
     required this.nextDueAt,
     required this.reviewModes,
-    required this.resumableSessionId,
+    required this.resumable,
   });
 
   final SchedulerType schedulerType;
@@ -27,6 +29,10 @@ final class StudyEntry {
   final int newCardCount;
   final int dueCardCount;
 
+  /// The due cards whose due day is before today, the boundary the Library
+  /// hero counts with (BR-STUDY-068); a part of [dueCardCount] (FE-A6 D15).
+  final int overdueCardCount;
+
   /// The earliest `due_at` after now, for the empty state (E1,
   /// BR-STUDY-008); null when no learned card waits.
   final DateTime? nextDueAt;
@@ -34,8 +40,9 @@ final class StudyEntry {
   /// One per review mode of [schedulerType] (BR-STUDY-055).
   final List<ReviewModeOption> reviewModes;
 
-  /// This deck's open session, when Continue can take it up (BR-STUDY-075).
-  final String? resumableSessionId;
+  /// This deck's open session, when Continue can take it up (BR-STUDY-075),
+  /// with what the resume banner says of it (FE-A6 D15).
+  final ResumableSession? resumable;
 }
 
 /// A review mode as the Study Entry offers it (BR-STUDY-044, BR-MODE-009).

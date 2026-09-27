@@ -6,8 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'study_entry_provider.g.dart';
 
-/// The Study Entry of [deckId] (screen 14), again on every change and at
-/// local midnight; `Rejected(notFound)` once the deck is gone.
+/// [deckId]'s Study Entry, again on every change and at each local
+/// midnight; notFound once the deck is gone (UC-STUDY-001 E1).
 @riverpod
 Stream<Outcome<StudyEntry, StudyRejection>> studyEntry(
   Ref ref,

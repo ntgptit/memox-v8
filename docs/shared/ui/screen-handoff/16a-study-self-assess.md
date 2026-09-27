@@ -55,6 +55,31 @@ with the prompt, and no grade should ever be committed by accident.
 No images: the kit has no frames for this screen. Build it from 16 and 19 and this brief;
 the goldens become its record.
 
+**Built (FE-A6 P2):** `StudySelfAssessWidget` in the session route's mode switch. Two
+`StudyFaceCardWidget`s (the prompt raised, the answer on `MxCard.isRecessed`), each with
+its label in flow above the face, so a face grown by large text never slides under it.
+The two faces share the height equally, as the kit's `StudyFaceCard` owns its `flex: 1`
+growth; a short face is centred in its half.
+"Show answer" is the kit's study action (`MxButtonSize.study`); the grades are
+`StudyGradeRowWidget`: four `MxButton`s, Again in the `dangerSoft` tone and the rest
+`secondary`, each with the interval as `MxButton.detail`, one semantics node "{grade},
+next in {interval}", and a 2 × 2 grid from text scale 1.3. The preview is
+`PreviewSelfAssessIntervalsUseCase` (FE-A6 D11b): the card's stored schedule through the
+same `SrsScheduler.next` the write runs; null on a learning or relearning turn. Footer
+hints as the other session screens: "Recall the answer, then show it" / "Be honest —
+grade how well you remembered". After "Show answer" leaves, the answer face is the next
+node TalkBack reads. Goldens:
+`test/features/study/presentation/goldens/study_self_assess_{prompt,revealed,relearning,meaning_first,large_text}_*`.
+
+## Deviations
+
+| Brief | V8 | Why |
+|---|---|---|
+| Mode badge and context line "Self-check" | "Self-assess" | The kit's resume banner names the mode "Self-assess", as the card screens do; the kit beats the brief (FE-A6 P2 plan R1) |
+| The answer card hidden until revealed | The recessed answer face is always laid out, with the kit's still placeholder bar until the reveal; the answer fades in inside it | Kit 19's anatomy, which this brief builds from; the prompt never moves (plan R2) |
+| saving: "locked on the tapped grade, with no spinner under 300 ms" | The row takes no tap while the write runs and draws no change; a write slower than 300 ms shows nothing extra | A local write is well under 300 ms (plan R3) |
+| The preview read for the current turn | Read when the card is served, so the grades have it at the reveal | No placeholder needed (plan R4) |
+
 ## Accessibility
 
 - TalkBack reads the prompt, then "Show answer". After the reveal, focus moves to the answer card, then to the grades. Each grade reads "Good, next in 6 days", or just "Again" on a relearning turn.
@@ -67,12 +92,7 @@ the goldens become its record.
 - No swipe-to-grade, no auto-advance timer, and no per-answer toast or confetti.
 - No editing a card mid-session (kit 19 dropped it too).
 
-## Open for FE-A6 planning
-
-- The exact name and shape of the preview read (a use case, or a method on the turn read model). It stays pure and in `domain/`.
-- The direction sheet of UC-STUDY-003 is specified in [14](14-study-entry.md#direction-sheet-sm-2-only).
-
 ## Copy
 
-- "Self-check" · "Show answer" · "Again" · "Hard" · "Good" · "Easy" · "{n}d" · "{n}mo" · "{n}y".
+- "Self-assess" (see Deviations) · "Show answer" · "Again" · "Hard" · "Good" · "Easy" · "{n}d" · "{n}mo" · "{n}y".
 - TalkBack: "{grade}, next in {interval}".

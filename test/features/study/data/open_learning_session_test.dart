@@ -13,6 +13,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-STUDY-001 steps 3 and 5: opening a learning session.
 
@@ -334,11 +335,7 @@ void main() {
     final root = await decks.root('Korean');
     final leaf = await decks.sub(root.id, 'Lesson');
     await newCards(leaf.id, 'c', 1);
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
-      [leaf.id],
-    );
-    await db.customStatement("UPDATE card SET delete_batch_id = 'b'");
+    await trashDeckRows(db, leaf.id);
 
     expect(
       await entries.openLearningSession(deckId: 'missing'),

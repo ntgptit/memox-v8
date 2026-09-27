@@ -117,4 +117,21 @@ void main() {
       (3, 6, 6, 9, 3, false),
     );
   });
+
+  test('Scheduled is the total less New and Due, per deck, never negative '
+      '(BR-STUDY-068)', () {
+    final content = studyHomeContentOf([
+      deck('mixed', cards: 10, overdue: 2, dueToday: 3, fresh: 1),
+      deck('all-new', cards: 5, fresh: 5),
+    ], nextDueAt: null) as RootDeckWorkload;
+
+    expect(content.scheduledCount, 4);
+    expect(
+      content.overdueCount +
+          content.dueTodayCount +
+          content.newCount +
+          content.scheduledCount,
+      15,
+    );
+  });
 }

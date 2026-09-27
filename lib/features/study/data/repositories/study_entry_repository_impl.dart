@@ -9,6 +9,7 @@ import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
 import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/study/data/datasources/resumable_session_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
 import 'package:memox/features/study/data/datasources/study_round_data_source.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
@@ -44,7 +45,11 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     : _dao = StudySessionDao(_db),
       _queue = StudyQueueDao(_db),
       _views = StudyViewDao(_db),
-      _rounds = StudyRoundDataSource(_db, _random);
+      _rounds = StudyRoundDataSource(_db, _random),
+      _resumable = ResumableSessionDataSource(
+        StudyViewDao(_db),
+        StudyQueueDao(_db),
+      );
 
   final AppDatabase _db;
   final SettingsRepository _settings;
@@ -58,6 +63,9 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
 
   /// Prepares the round a new session starts in (graded modes spec §8.2).
   final StudyRoundDataSource _rounds;
+
+  /// This deck's session Continue can take up (FE-A6 D15).
+  final ResumableSessionDataSource _resumable;
 
   @override
   Future<Outcome<String, StudyRejection>> openLearningSession({
@@ -155,21 +163,27 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     final due = _factsOf(await _dao.dueCards(deckId, now))
         .take(options.cardLimit)
         .toList();
-    final counts = await _dao.subtreeCounts(deckId, now);
+    final startOfToday = startOfLocalDay(now);
+    final counts = await _dao.subtreeCounts(
+      deckId,
+      now,
+      startOfToday: startOfToday,
+    );
     return StudyEntry(
       schedulerType: type,
       cardLimit: options.cardLimit,
       newCardCount: counts.newCount,
       dueCardCount: counts.dueCount,
+      overdueCardCount: counts.overdueCount,
       nextDueAt: counts.nextDueAt,
       reviewModes: reviewModeOptions(
         type,
         due,
         distinctMeaningCount: await _meaningsOf(root, due),
       ),
-      resumableSessionId: await _views.resumableSessionId(
-        deckId,
-        startOfToday: startOfLocalDay(now),
+      resumable: await _resumable.read(
+        deckId: deckId,
+        startOfToday: startOfToday,
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_path_label_widget.dart';
+import 'package:memox/core/text/path_label.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_anchor_widget.dart';
 
 const _ids = ['a', 'b', 'c'];
@@ -33,6 +33,6 @@ void main() {
   });
 
   test('a path reads root first', () {
-    expect(deckPathLabel(['Korean', 'Words']), 'Korean › Words');
+    expect(pathLabel(['Korean', 'Words']), 'Korean › Words');
   });
 }

@@ -24,5 +24,10 @@ final class CardDetailDao {
 
   /// The decks of the source's tree, candidates marked (BR-CARD-010).
   Stream<List<DeckForestRow>> watchMoveTargetRows(String sourceDeckId) =>
-      _db.cardMoveTargets(sourceDeckId).watch();
+      _db.cardMoveTargets(sourceDeckId, null).watch();
+
+  /// The decks of [rootId]'s tree, candidates marked: where cards of that
+  /// root may go back (BR-TRASH-006).
+  Future<List<DeckForestRow>> restoreTargetRows(String rootId) =>
+      _db.cardMoveTargets(null, rootId).get();
 }

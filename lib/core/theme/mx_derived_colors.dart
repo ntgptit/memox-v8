@@ -14,6 +14,9 @@ final class MxDerivedColors {
     required this.dangerBorder,
     required this.warningSoft,
     required this.warningBorder,
+    required this.successSoft,
+    required this.successBorder,
+    required this.successInk,
     required this.surfaceHero,
     required this.chromeGlass,
     required this.ghostBorder,
@@ -22,6 +25,7 @@ final class MxDerivedColors {
     required this.statusLearningInk,
     required this.statusReviewingInk,
     required this.statusMasteredInk,
+    required this.primaryInk,
   });
 
   factory MxDerivedColors.resolve(
@@ -43,6 +47,19 @@ final class MxDerivedColors {
       // not in the derived registry. Its ratios come from that contract (O6).
       warningBorder: semantic.warning.withValues(
         alpha: isDark ? _warningBorderDark : _warningBorderLight,
+      ),
+      successSoft: semantic.success.withValues(
+        alpha: isDark ? _successSoftDark : _successSoftLight,
+      ),
+      successBorder: semantic.success.withValues(
+        alpha: isDark ? _successBorderDark : _successBorderLight,
+      ),
+      // Success TEXT and glyphs: the kit's green fails 4.5:1 on light
+      // surfaces, so it is pulled toward onSurface as the status inks are.
+      successInk: _ink(
+        semantic.success,
+        scheme,
+        isDark ? _successInkDark : _successInkLight,
       ),
       // The one derivation whose base changes with the theme.
       surfaceHero: Color.alphaBlend(
@@ -84,6 +101,7 @@ final class MxDerivedColors {
         scheme,
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
+      primaryInk: primaryInkOf(scheme),
     );
   }
 
@@ -95,8 +113,17 @@ final class MxDerivedColors {
   static const double _warningSoftDark = 0.18;
   static const double _warningBorderLight = 0.26;
   static const double _warningBorderDark = 0.32;
+  static const double _successSoftLight = 0.10;
+  static const double _successSoftDark = 0.18;
+  static const double _successBorderLight = 0.26;
+  static const double _successBorderDark = 0.32;
+  static const double _successInkLight = 0.40;
+  static const double _successInkDark = 0;
   static const double _surfaceHeroLight = 0.05;
-  static const double _surfaceHeroDark = 0.12;
+  // 18 %, not the kit's 12 %: the deeper #5265F5 needs it to lift the hero
+  // off the page and its boxed tiles as the kit's #8B9AFF did (spec
+  // 2026-09-27).
+  static const double _surfaceHeroDark = 0.18;
   static const double _ghostBorderLight = 0.14;
   static const double _ghostBorderDark = 0.16;
   static const double _newInkLight = 0.40;
@@ -107,6 +134,18 @@ final class MxDerivedColors {
   static const double _reviewingInkDark = 0.10;
   static const double _masteredInkLight = 0.25;
   static const double _masteredInkDark = 0;
+  static const double _primaryInkLight = 0.25;
+  static const double _primaryInkDark = 0.45;
+
+  /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
+  /// toward onSurface until it reads at 4.5:1 on every ground and primary
+  /// tint (spec 2026-09-27 D2). Fills, edges and tints keep primary. The
+  /// one source for MxTextStyles and the component themes too.
+  static Color primaryInkOf(ColorScheme scheme) => _ink(
+    scheme.primary,
+    scheme,
+    scheme.brightness == Brightness.dark ? _primaryInkDark : _primaryInkLight,
+  );
 
   static Color _ink(Color status, ColorScheme scheme, double mix) =>
       Color.lerp(status, scheme.onSurface, mix)!;
@@ -122,6 +161,18 @@ final class MxDerivedColors {
 
   /// InlineBanner warning edge.
   final Color warningBorder;
+
+  /// Success tint (V3 success-soft).
+  final Color successSoft;
+
+  /// Success card edge, at the warning border's ratios.
+  final Color successBorder;
+
+  /// Success TEXT and glyphs, never the success fill.
+  final Color successInk;
+
+  /// Primary text, icons and focus rings, never a fill.
+  final Color primaryInk;
 
   /// Tinted hero card fill.
   final Color surfaceHero;

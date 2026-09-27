@@ -28,14 +28,34 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 Not captured: the pre-tap idle appearance of the five options is an
 interaction inside `default`, not a separate capture.
 
+**Built (FE-A6 P3):** `StudyGuessWidget` in the session route's mode switch: the prompt
+face ("What is this?" in flow) over five `StudyChoiceWidget` rows lettered A–E. Once the
+pick's write commits, the pick and the right option (found by card id, BR-STUDY-041)
+take their tones, the rest fade, and the outcome is announced; the turn is held for
+1200 ms or until a tap. Goldens:
+`test/features/study/presentation/goldens/study_guess_{idle,wrong,right,large_text,blocked}_*`.
+
 ## Deviations
 
-None found; the kit's five-option layout, tap-to-lock behaviour and
-identity-based grading match BR-STUDY-037, BR-STUDY-039, BR-STUDY-041 and
-BR-STUDY-042 as drawn.
+| Artifact | V8 | Wins |
+|---|---|---|
+| The right option in the kit's `mastery` green | The `success` semantic (`successSoft`/`successBorder`/`successInk`) | FE-A6 spec D14: green is mastery-only (P3 ruling C1) |
+| No state for a question that cannot be built | A notice, "This question can't be shown", whose Close ends the session; nothing is written or skipped | BR-STUDY-040 (P3 ruling C2) |
+| The answered state advances by itself | With TalkBack on, a "Next" button waits instead | P3 ruling C6: an announcement is not cut short |
+| The idle footer hint is not drawn | "Only your first pick counts" before the pick | BR-STUDY-042 |
+
+## Accessibility
+
+- Each option reads "Option {letter}: {meaning}"; once answered, "…, correct" or "…, your pick, wrong".
+- The outcome is announced when its write commits: "Correct", or "Wrong. The answer is {meaning}." (P3 ruling C3).
+- The options scroll with the prompt once they outgrow the screen at large text, and a soft fade over the bottom edge says more is below; each is at least 48 tall (C4).
+- A term word too wide for the prompt is drawn just small enough to stay whole; the term wraps between words and never ellipsizes (FE-A6 D19).
+- The options ease into their tones, surface and ink together (standard duration; at once under Remove animations).
 
 ## Copy
 
 - Context line: "{deck} · Review · Guess · round {n} · first pick counts".
 - Prompt overline: "What is this?".
-- Footer hint: "Answer shown — the correct option is highlighted".
+- Footer hint: "Only your first pick counts" (before the pick) · "Answer shown — the correct option is highlighted".
+- Blocked: "This question can't be shown" · "Its options could not be built. Close the session; every answer so far is kept." · "Close the session".
+- TalkBack: "Option {letter}: {meaning}" · "Correct" · "Wrong. The answer is {meaning}." · "Next".

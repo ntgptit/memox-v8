@@ -80,3 +80,18 @@ Future<void> expectAccessibleTargets(WidgetTester tester) async {
   await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
   handle.dispose();
 }
+
+/// Every [parts] widget sits on the vertical centre of [whole]: a row's
+/// leading and trailing marks centre on the row, whatever its text height
+/// (owner 2026-09-26).
+void expectCentredOn(WidgetTester tester, Finder whole, List<Finder> parts) {
+  final centre = tester.getRect(whole).center.dy;
+  for (final part in parts) {
+    expect(part, findsOneWidget);
+    expect(
+      tester.getRect(part).center.dy,
+      closeTo(centre, 0.5),
+      reason: '$part is off the centre of $whole',
+    );
+  }
+}

@@ -61,4 +61,43 @@ void main() {
       );
     });
   });
+
+  group('checkTarget (BR-CARD-010, BR-TRASH-006)', () {
+    Outcome<void, CardRejection> check({
+      bool targetIsRoot = false,
+      DeckContentType targetContentType = DeckContentType.unset,
+      Set<String> sourceRootIds = const {'root'},
+    }) => CardEntity.checkTarget(
+      targetRootId: 'root',
+      targetIsRoot: targetIsRoot,
+      targetContentType: targetContentType,
+      sourceRootIds: sourceRootIds,
+    );
+
+    CardRejection reasonOf(Outcome<void, CardRejection> result) =>
+        (result as Rejected<void, CardRejection>).reason;
+
+    test(
+      'a sub-deck of the cards\' root holding cards or nothing takes them',
+      () {
+        expect(check(), isA<Ok<void, CardRejection>>());
+        expect(
+          check(targetContentType: DeckContentType.card),
+          isA<Ok<void, CardRejection>>(),
+        );
+      },
+    );
+
+    test('a root, a deck of decks and a deck of another root are refused', () {
+      expect(reasonOf(check(targetIsRoot: true)), CardRejection.targetIsRoot);
+      expect(
+        reasonOf(check(targetContentType: DeckContentType.deck)),
+        CardRejection.targetHoldsDecks,
+      );
+      expect(
+        reasonOf(check(sourceRootIds: {'root', 'twin'})),
+        CardRejection.crossRootMove,
+      );
+    });
+  });
 }

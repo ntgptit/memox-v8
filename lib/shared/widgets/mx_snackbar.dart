@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -9,32 +10,48 @@ const double _verticalPadding = 10;
 
 /// Shows the MemoX toast: a message and one optional action on the inverse
 /// surface, which does not flip with the theme. Tapping the action hides the
-/// toast first. How long it stays is the platform's call.
+/// toast first. It stays [duration], the platform's 4 seconds by default.
+///
+/// A new toast replaces the one on screen instead of queueing behind it, so
+/// a toast that stays for TalkBack never holds back the next (FE-B1 D14).
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showMxSnackbar(
   BuildContext context, {
   required String message,
   String? actionLabel,
   VoidCallback? onAction,
-}) => ScaffoldMessenger.of(context).showSnackBar(
-  buildMxSnackBar(
-    context,
-    message: message,
-    actionLabel: actionLabel,
-    onAction: onAction,
-  ),
-);
+  Duration duration = AppDurations.toast,
+}) {
+  final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+  return messenger.showSnackBar(
+    buildMxSnackBar(
+      context,
+      message: message,
+      actionLabel: actionLabel,
+      onAction: onAction,
+      duration: duration,
+    ),
+  );
+}
 
 /// The platform SnackBar that [showMxSnackbar] shows, configured with the
 /// contract's surface (ruling O9).
+///
+/// A toast with an action stays until it is acted on or replaced while
+/// TalkBack is on, so the action can be reached (WCAG 2.2.1, FE-B1 D14).
+/// The action is drawn by [MxSnackbarContent], not [SnackBar.action], so
+/// the platform does not do this itself.
 SnackBar buildMxSnackBar(
   BuildContext context, {
   required String message,
   String? actionLabel,
   VoidCallback? onAction,
+  Duration duration = AppDurations.toast,
 }) {
   final messenger = ScaffoldMessenger.of(context);
   // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
+    duration: duration,
+    persist: onAction != null && MediaQuery.accessibleNavigationOf(context),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
     // so the action's 48 target sits inside the 48 toast.
     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),

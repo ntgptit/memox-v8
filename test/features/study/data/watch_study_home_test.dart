@@ -20,6 +20,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // UC-STUDY-002 steps 1–3: what the Study tab's snapshot holds (Study Home
 // spec §5, §6.1).
@@ -255,9 +256,9 @@ void main() {
     },
   );
 
-  test('a session whose cards left in its round were deleted is still '
-      'offered, with no progress until Continue settles it (BR-STUDY-075, '
-      'spec D3)', () async {
+  test('a session whose cards left in its round were deleted by a build '
+      'before the Trash is still offered, with no progress until Continue '
+      'settles it (BR-STUDY-075, spec D3)', () async {
     final root = await decks.root('Korean');
     final lesson = await decks.sub(root.id, 'Lesson');
     await insertCard(db, id: 'c1', deckId: lesson.id, back: 'one');
@@ -265,12 +266,7 @@ void main() {
     final id = opened(await entries.openLearningSession(deckId: lesson.id));
     final first = (await servedCard(db, id))!;
     await answerServed(db, sessions, id, right: true);
-    expect(
-      await cardRepository().deleteCards(
-        cardIds: {first == 'c1' ? 'c2' : 'c1'},
-      ),
-      isA<Ok<void, CardRejection>>(),
-    );
+    await hardDeleteCards(db, {first == 'c1' ? 'c2' : 'c1'});
 
     final resumable = (await homeAt()).resumable;
 
@@ -327,10 +323,7 @@ void main() {
     await insertCard(db, id: 'new', deckId: trashed.id, back: 'new');
     await lockScheduler(db, root.id);
     await entries.openLearningSession(deckId: trashed.id);
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', trashed.id],
-    );
+    await trashDeckRows(db, trashed.id);
 
     final snapshot = await homeAt();
     final deck = (snapshot.content as RootDeckWorkload).decks.single;
@@ -343,17 +336,8 @@ void main() {
       '(BR-STUDY-077)', () async {
     final root = await decks.root('Korean');
     final lesson = await decks.sub(root.id, 'Lesson');
-    await insertCard(
-      db,
-      id: 'gone',
-      deckId: lesson.id,
-      back: 'gone',
-      deleteBatchId: 'batch',
-    );
-    await db.customStatement(
-      'UPDATE deck SET delete_batch_id = ? WHERE id = ?',
-      ['batch', lesson.id],
-    );
+    await insertCard(db, id: 'gone', deckId: lesson.id, back: 'gone');
+    await trashDeckRows(db, lesson.id);
 
     expect((await homeAt()).content, isA<NoCards>());
   });

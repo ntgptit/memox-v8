@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/app.dart';
+import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/features/study/di/study_entry_repository_provider.dart'
+    show studyEntryRepositoryProvider;
+import 'package:memox/features/study/di/study_session_repository_provider.dart'
+    show studySessionRepositoryProvider;
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
@@ -14,9 +19,12 @@ import 'package:memox/features/card/presentation/widgets/sections/card_deck_brea
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
+import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
+import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
@@ -25,6 +33,8 @@ import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart'
 
 import 'fake_day_clock.dart';
 import 'golden_harness.dart';
+import 'study_entry_fixtures.dart';
+import 'study_fixtures.dart';
 import 'test_database.dart';
 
 /// The day every Library test lives in: 2026-09-24, mid-morning local time.
@@ -39,12 +49,22 @@ final class LibraryEnv {
         db,
         ScheduleRepositoryImpl(db),
         TagRepositoryImpl(db),
-      );
+      ),
+      sessions = LockableSessions(studySessionRepository(db, clock.now)),
+      entries = FailingEntries(studyEntryRepository(db, clock.now));
 
   final AppDatabase db;
   final FakeDayClock clock;
   final DeckRepository decks;
   final CardRepository cards;
+
+  /// The app's session repository, on the fake day; a test locks it to
+  /// find the database busy (UC-STUDY-001 E2).
+  final LockableSessions sessions;
+
+  /// The app's entry store, on the fake day; a test fails its openings
+  /// (screen 14 startFailed).
+  final FailingEntries entries;
 }
 
 /// A widget test over [LibraryEnv]. The widget tree is torn down before the
@@ -68,12 +88,23 @@ void libraryTest(
 List<Override> _backend(LibraryEnv env) => [
   databaseProvider.overrideWithValue(env.db),
   dayClockProvider.overrideWithValue(env.clock),
+  // The app's session repository reads the wall clock; the harness runs it
+  // on the fake day, so a session opened in a test is today's.
+  studySessionRepositoryProvider.overrideWithValue(env.sessions),
+  // Openings run on the fake day, as the session store does.
+  studyEntryRepositoryProvider.overrideWithValue(env.entries),
+  _inlineTransferFiles,
 ];
 
 /// A provider container over [env]'s backend, for a test that drives
 /// providers without a widget tree. Disposed when the test ends.
-ProviderContainer libraryContainer(LibraryEnv env) {
-  final container = ProviderContainer(overrides: _backend(env));
+ProviderContainer libraryContainer(
+  LibraryEnv env, {
+  List<Override> overrides = const [],
+}) {
+  final container = ProviderContainer(
+    overrides: [..._backend(env), ...overrides],
+  );
   addTearDown(container.dispose);
   return container;
 }
@@ -97,13 +128,13 @@ Widget _app(
     locale: locale,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
-    home: Builder(
-      builder: (context) => MediaQuery(
-        data: MediaQuery.of(context)
-            .copyWith(textScaler: TextScaler.linear(textScale)),
-        child: screen,
-      ),
+    // Above the navigator, so sheets and dialogs scale with the screen.
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: TextScaler.linear(textScale)),
+      child: child!,
     ),
+    home: screen,
   ),
 );
 
@@ -178,7 +209,11 @@ DeckLevelScreen deckScreen({
   Widget Function(String deckId)? cardFab,
   VoidCallback? onSearch,
   ValueChanged<String>? onOpenAlgorithm,
+  ValueChanged<String>? onImportCards,
+  ValueChanged<DeckEntity>? onExportCards,
   ValueChanged<String>? onOpenStudy,
+  ValueChanged<String>? onOpenStudyOptions,
+  VoidCallback? onOpenTrash,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
@@ -186,7 +221,11 @@ DeckLevelScreen deckScreen({
   onSearch: onSearch ?? () {},
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onOpenStudy: onOpenStudy ?? (_) {},
+  onOpenStudyOptions: onOpenStudyOptions ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
+  onImportCards: onImportCards ?? (_) {},
+  onExportCards: onExportCards ?? (_) {},
+  onOpenTrash: onOpenTrash ?? () {},
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
@@ -208,7 +247,9 @@ DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
+    onExport: (_) {},
     onStudy: () {},
+    onOpenTrash: () {},
   ),
   cardAppBar: (view, back, actions) =>
       CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
@@ -228,7 +269,12 @@ DeckAlgorithmScreen deckAlgorithmScreen({
 
 /// The whole app over [env] on a 1080×2400 (3x) phone, settled on the
 /// Library root.
-Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
+Future<void> pumpMemoxApp(
+  WidgetTester tester,
+  LibraryEnv env, {
+  AppSettingsEntity? initialSettings,
+  bool isSettled = true,
+}) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -236,11 +282,20 @@ Future<void> pumpMemoxApp(WidgetTester tester, LibraryEnv env) async {
     ProviderScope(
       overrides: _backend(env),
       retry: _noRetry,
-      child: const MemoxApp(),
+      child: MemoxApp(initialSettings: initialSettings),
     ),
   );
-  await tester.pumpAndSettle();
+  if (isSettled) await tester.pumpAndSettle();
 }
 
 /// As `main.dart`: no hidden retry loop, so a failure shows as a failure.
 Duration? _noRetry(int retryCount, Object error) => null;
+
+/// Card transfer's file codecs without a background isolate, which a widget
+/// test's fake clock never lets finish.
+final Override _inlineTransferFiles = transferFileRepositoryProvider
+    .overrideWithValue(
+      TransferFileRepositoryImpl(
+        run: <Q, R>(callback, message) async => callback(message),
+      ),
+    );

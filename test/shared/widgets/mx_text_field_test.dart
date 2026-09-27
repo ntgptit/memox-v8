@@ -69,11 +69,14 @@ void main() {
     );
   });
 
-  testWidgets('edges: ghost at rest, primary focused', (tester) async {
+  testWidgets('edges: ghost at rest, primaryInk focused', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
 
     expect(_edge(_decoration(tester).enabledBorder), ghost);
-    expect(_edge(_decoration(tester).focusedBorder), scheme.primary);
+    expect(
+      _edge(_decoration(tester).focusedBorder),
+      MxDerivedColors.primaryInkOf(scheme),
+    );
   });
 
   testWidgets('an error colours the edge and pushes a message below', (
@@ -356,5 +359,38 @@ void main() {
 
     // 21 of text at 2x is 42: it fits the floor, so the box stays 52.
     expect(tester.getSize(find.byType(TextField)).height, 52);
+  });
+
+  testWidgets('study is bare: no fill and no edge in any state, centred, '
+      'one line, in the study term role (FE-A6 P4 F1)', (tester) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxTextField(variant: MxTextFieldVariant.study, label: 'Answer'),
+      ),
+    );
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+
+    final decoration = _decoration(tester);
+    expect(decoration.filled, isFalse);
+    for (final border in [
+      decoration.border,
+      decoration.enabledBorder,
+      decoration.focusedBorder,
+      decoration.disabledBorder,
+    ]) {
+      expect(border, InputBorder.none);
+    }
+    expect(decoration.contentPadding, EdgeInsets.zero);
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.textAlign, TextAlign.center);
+    expect(field.maxLines, 1);
+    expect(field.style!.fontSize, 32);
+    expect(
+      tester.getSize(find.byType(TextField)).height,
+      greaterThanOrEqualTo(48),
+    );
   });
 }

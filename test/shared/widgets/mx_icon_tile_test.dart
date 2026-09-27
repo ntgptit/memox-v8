@@ -4,6 +4,7 @@ import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -36,13 +37,16 @@ void main() {
     }
   });
 
-  testWidgets('default: primary at 10% light and 16% dark, primary glyph', (
+  testWidgets('default: primary at 10% light and 16% dark, primaryInk glyph', (
     tester,
   ) async {
     final light = AppColorSchemes.light.primary;
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
     expect(_tile(tester).color, light.withValues(alpha: 0.10));
-    expect(tester.widget<Icon>(find.byType(Icon)).color, light);
+    expect(
+      tester.widget<Icon>(find.byType(Icon)).color,
+      MxDerivedColors.primaryInkOf(AppColorSchemes.light),
+    );
 
     await pumpMx(
       tester,
@@ -132,4 +136,39 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  for (final brightness in Brightness.values) {
+    for (final tone in [
+      MxIconTileTone.success,
+      MxIconTileTone.caution,
+      MxIconTileTone.danger,
+    ]) {
+      testWidgets('${tone.name}, ${brightness.name}: a soft tint, and the '
+          'glyph reads 3:1 on it over the surface (FE-A6 D14)', (tester) async {
+        await pumpMx(
+          tester,
+          MxIconTile(icon: AppIcons.check, tone: tone),
+          brightness: brightness,
+        );
+        final scheme = brightness == Brightness.light
+            ? AppColorSchemes.light
+            : AppColorSchemes.dark;
+        final fill = _tile(tester).color!;
+        final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
+
+        expect(fill.a, lessThan(1), reason: 'a soft tint, not a solid fill');
+        expect(
+          _ratio(glyph, Color.alphaBlend(fill, scheme.surface)),
+          greaterThanOrEqualTo(3),
+        );
+      });
+    }
+  }
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }

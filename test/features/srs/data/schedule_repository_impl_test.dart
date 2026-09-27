@@ -7,6 +7,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/srs_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 void main() {
   late AppDatabase db;
@@ -265,12 +266,7 @@ void main() {
   test('changeScheduler and resetLearning do not reach a root in the Trash (spec §8)', () async {
     // The whole tree in one batch, as deleting a deck will leave it.
     await insertStudyTree(db, 'r');
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE root_id = 'r'",
-    );
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = 'r-card'",
-    );
+    await trashDeckRows(db, 'r');
     final before = await totalChanges(db);
     final isNotFound = isA<Rejected<void, SrsRejection>>().having(
       (rejected) => rejected.reason,

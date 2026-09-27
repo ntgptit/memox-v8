@@ -9,14 +9,14 @@ const _countKey = ValueKey('count');
 Widget _width(Widget child) => SizedBox(width: 360, child: child);
 
 void main() {
-  testWidgets('an uppercase 12/700 overline that reads the original label', (
+  testWidgets('an uppercase 13/700 overline that reads the original label', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
     await pumpMx(tester, _width(const MxListSectionHeader(label: 'Hôm nay')));
     final text = tester.widget<Text>(find.text('HÔM NAY'));
 
-    expect(text.style!.fontSize, 12);
+    expect(text.style!.fontSize, 13);
     expect(text.style!.fontWeight, FontWeight.w700);
     expect(
       tester.getSemantics(find.text('HÔM NAY')),

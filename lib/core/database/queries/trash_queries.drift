@@ -1,0 +1,75 @@
+import '../tables/trash.drift';
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/study.drift';
+
+-- BR-TRASH-001: the batch of one deletion, with its item root and the one
+-- time the retention counts from (BR-TRASH-009).
+insertDeleteBatch(:id AS TEXT, :item_type AS TEXT, :root_item_id AS TEXT,
+  :deleted_at AS DATETIME):
+INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at)
+VALUES (:id, :item_type, :root_item_id, :deleted_at);
+
+-- BR-TRASH-006: whether :deck_id is a deck in the Trash, which a restore
+-- refuses as its target (targetInTrash) rather than as gone.
+deckIsInTrash(:deck_id AS TEXT):
+SELECT EXISTS (
+  SELECT 1 FROM deck WHERE id = :deck_id AND delete_batch_id IS NOT NULL
+);
+
+-- BR-TRASH-004: every open session the batch touches closes, in the
+-- transaction of the delete: opened on one of its decks or in the tree of
+-- one (a deck may leave its tree mid-session, IT-CONT-006), holding one of
+-- its cards in the queue, or using one of its cards as a stored guess
+-- option (trash spec D7). The reason is stored, never inferred.
+closeSessionsTouchingBatch(:batch_id AS TEXT, :now AS DATETIME):
+UPDATE study_session
+SET status = 'invalidated', end_reason = 'content_deleted', ended_at = :now
+WHERE status = 'in_progress' AND (
+  deck_id IN (SELECT id FROM deck WHERE delete_batch_id = :batch_id)
+  OR root_id IN (SELECT id FROM deck WHERE delete_batch_id = :batch_id)
+  OR id IN (SELECT q.session_id FROM study_queue_items q
+    JOIN card c ON c.id = q.card_id WHERE c.delete_batch_id = :batch_id)
+  OR id IN (SELECT o.session_id FROM study_guess_options o
+    JOIN card c ON c.id = o.option_card_id WHERE c.delete_batch_id = :batch_id)
+);
+
+-- UC-TRASH-001 steps 3-4: each deck batch with its item root, and the decks
+-- and cards of the batch other than the root. An older tombstone inside is
+-- an entry of its own (BR-TRASH-003, BR-TRASH-012).
+trashDeckEntries AS TrashDeckEntryRow:
+SELECT b.id AS batch_id, b.deleted_at, d.id AS deck_id, d.name, d.parent_id,
+  (SELECT COUNT(*) FROM deck s WHERE s.delete_batch_id = b.id) - 1
+    AS sub_deck_count,
+  (SELECT COUNT(*) FROM card c WHERE c.delete_batch_id = b.id) AS card_count
+FROM delete_batches b
+JOIN deck d ON d.id = b.root_item_id AND d.delete_batch_id = b.id
+WHERE b.item_type = 'deck';
+
+-- UC-TRASH-001 steps 3-4: each card batch with its card.
+trashCardEntries AS TrashCardEntryRow:
+SELECT b.id AS batch_id, b.deleted_at, c.id AS card_id, c.front, c.back,
+  c.deck_id
+FROM delete_batches b
+JOIN card c ON c.id = b.root_item_id AND c.delete_batch_id = b.id
+WHERE b.item_type = 'card';
+
+-- UC-TRASH-001 step 4: every deck, the Trash included, from which the origin
+-- of an entry is walked (BR-TRASH-012).
+trashDeckForest AS TrashForestRow:
+SELECT id, parent_id, name FROM deck;
+
+-- BR-TRASH-010: what still sits in the decks of :batch_id and is not of that
+-- batch: another batch's id, or NULL for an active row. A purge skips a deck
+-- batch with any of them whole.
+trashBlockersOf(:batch_id AS TEXT):
+WITH RECURSIVE subtree(id) AS (
+  SELECT id FROM deck WHERE delete_batch_id = :batch_id
+  UNION
+  SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id
+)
+SELECT delete_batch_id FROM deck
+WHERE id IN (SELECT id FROM subtree) AND delete_batch_id IS NOT :batch_id
+UNION
+SELECT delete_batch_id FROM card
+WHERE deck_id IN (SELECT id FROM subtree) AND delete_batch_id IS NOT :batch_id;

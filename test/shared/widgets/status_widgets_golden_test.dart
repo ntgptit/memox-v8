@@ -4,8 +4,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
+import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
+import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
@@ -118,6 +122,94 @@ void main() {
             ],
           ),
         ],
+      ),
+    );
+  });
+
+  testWidgets('MxStatTile, boxed and inline (FE-A6 D17)', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_stat_tile',
+      const Column(
+        spacing: 16,
+        children: [
+          Row(
+            spacing: 8,
+            children: [
+              Expanded(
+                child: MxStatTile(
+                  value: '0',
+                  label: 'New',
+                  layout: MxStatTileLayout.boxed,
+                ),
+              ),
+              Expanded(
+                child: MxStatTile(
+                  value: '12',
+                  label: 'Due',
+                  emphasis: MxStatTileEmphasis.primary,
+                  layout: MxStatTileLayout.boxed,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: MxStatTile(value: '20', label: 'Reviewed'),
+              ),
+              Expanded(
+                child: MxStatTile(value: '20', label: 'Answered'),
+              ),
+              Expanded(
+                child: MxStatTile(value: '3 / 23', label: 'Wrong'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxStackedDayBars and MxDashedNote', (tester) async {
+    // Kit 22: the seven days before and with today, and the empty chart.
+    const week = [(8, 4), (18, 0), (0, 0), (16, 6), (12, 2), (9, 0), (12, 5)];
+    const labels = ['W', 'T', 'F', 'S', 'S', 'M', 'Today'];
+    await expectThemedGoldens(
+      tester,
+      'mx_day_bars',
+      Builder(
+        builder: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
+          children: [
+            MxStackedDayBars(
+              days: [
+                for (final (index, (reviewing, learning)) in week.indexed)
+                  MxDayBar(
+                    label: labels[index],
+                    base: reviewing,
+                    top: learning,
+                    semanticLabel: labels[index],
+                    isCurrent: index == week.length - 1,
+                  ),
+              ],
+              base: MxBarSeries(
+                label: 'Reviewing',
+                color: context.colors.primary,
+              ),
+              top: MxBarSeries(
+                label: 'Learning',
+                color: context.semanticColors.statusLearning,
+              ),
+            ),
+            const MxDashedNote(
+              text:
+                  'Your last seven days appear here once you study. '
+                  'Browsing cards does not count.',
+            ),
+          ],
+        ),
       ),
     );
   });

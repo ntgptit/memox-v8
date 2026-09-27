@@ -116,6 +116,32 @@ void main() {
       });
     });
 
+    libraryTest('move a card to Trash, $theme', (tester, env) async {
+      final deckId = await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          cardDeckScreen(deckId),
+          brightness,
+        );
+        await tester.longPress(find.text('sarang'));
+        await _settle(tester);
+        await tester.tap(find.text(_en.cardDelete));
+        await _settle(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_list_trash_dialog_$theme.png',
+        );
+        await tester.tap(find.text(_en.cardMoveToTrash));
+        await _settle(tester);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_list_trashed_$theme.png',
+        );
+      });
+    });
+
     libraryTest('card bulk failed, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {

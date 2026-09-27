@@ -1,0 +1,192 @@
+{
+  "templateId": "fixture.everyday-en-vi",
+  "version": 1,
+  "locale": "en",
+  "title": "English → Vietnamese · Everyday",
+  "contentSource": "Development fixture",
+  "frontLanguage": "en",
+  "backLanguage": "vi",
+  "defaultScheduler": "eight_box",
+  "decks": [
+    {
+      "name": "Greetings",
+      "cards": [
+        {
+          "front": "hello",
+          "back": "xin chào"
+        },
+        {
+          "front": "goodbye",
+          "back": "tạm biệt"
+        },
+        {
+          "front": "thank you",
+          "back": "cảm ơn"
+        },
+        {
+          "front": "sorry",
+          "back": "xin lỗi"
+        },
+        {
+          "front": "please",
+          "back": "làm ơn"
+        },
+        {
+          "front": "yes",
+          "back": "vâng"
+        },
+        {
+          "front": "no",
+          "back": "không"
+        },
+        {
+          "front": "good morning",
+          "back": "chào buổi sáng"
+        },
+        {
+          "front": "good night",
+          "back": "chúc ngủ ngon"
+        },
+        {
+          "front": "see you later",
+          "back": "hẹn gặp lại"
+        }
+      ]
+    },
+    {
+      "name": "Food & drink",
+      "cards": [
+        {
+          "front": "rice",
+          "back": "cơm"
+        },
+        {
+          "front": "water",
+          "back": "nước"
+        },
+        {
+          "front": "coffee",
+          "back": "cà phê"
+        },
+        {
+          "front": "tea",
+          "back": "trà"
+        },
+        {
+          "front": "bread",
+          "back": "bánh mì"
+        },
+        {
+          "front": "noodles",
+          "back": "mì"
+        },
+        {
+          "front": "fish",
+          "back": "cá"
+        },
+        {
+          "front": "chicken",
+          "back": "thịt gà"
+        },
+        {
+          "front": "fruit",
+          "back": "trái cây"
+        },
+        {
+          "front": "vegetables",
+          "back": "rau"
+        }
+      ]
+    },
+    {
+      "name": "Travel",
+      "cards": [
+        {
+          "front": "airport",
+          "back": "sân bay"
+        },
+        {
+          "front": "ticket",
+          "back": "vé"
+        },
+        {
+          "front": "hotel",
+          "back": "khách sạn"
+        },
+        {
+          "front": "map",
+          "back": "bản đồ"
+        },
+        {
+          "front": "train",
+          "back": "tàu hỏa"
+        },
+        {
+          "front": "bus",
+          "back": "xe buýt"
+        },
+        {
+          "front": "passport",
+          "back": "hộ chiếu"
+        },
+        {
+          "front": "luggage",
+          "back": "hành lý"
+        },
+        {
+          "front": "station",
+          "back": "nhà ga"
+        },
+        {
+          "front": "beach",
+          "back": "bãi biển"
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "cards": [
+        {
+          "front": "house",
+          "back": "ngôi nhà"
+        },
+        {
+          "front": "room",
+          "back": "căn phòng"
+        },
+        {
+          "front": "kitchen",
+          "back": "nhà bếp"
+        },
+        {
+          "front": "bed",
+          "back": "giường"
+        },
+        {
+          "front": "table",
+          "back": "cái bàn"
+        },
+        {
+          "front": "chair",
+          "back": "cái ghế"
+        },
+        {
+          "front": "door",
+          "back": "cửa ra vào"
+        },
+        {
+          "front": "window",
+          "back": "cửa sổ"
+        },
+        {
+          "front": "lamp",
+          "back": "đèn"
+        },
+        {
+          "front": "key",
+          "back": "chìa khóa"
+        }
+      ]
+    }
+  ]
+}

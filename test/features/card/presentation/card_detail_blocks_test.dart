@@ -42,6 +42,33 @@ Future<String> _words(
 }
 
 void main() {
+  libraryTest('an optional field centres its glyph on its label and value '
+      '(owner 2026-09-26)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(
+        front: 'bap',
+        back: 'rice',
+        example:
+            'Bap meogeosseoyo? A sentence long enough to wrap onto more '
+            'than one line of the card.',
+      ),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(card.id, (detail) => [CardDetailContentWidget(detail: detail)]),
+    );
+    await tester.pumpAndSettle();
+
+    final label = find.text(_en.cardFieldExample.toUpperCase());
+    final field = find.ancestor(of: label, matching: find.byType(Row)).first;
+    expectCentredOn(tester, field, [
+      find.descendant(of: field, matching: find.byType(Icon)),
+    ]);
+  });
+
   libraryTest(
     'the content shows only the fields that have a value (BR-CARD-014)',
     (tester, env) async {

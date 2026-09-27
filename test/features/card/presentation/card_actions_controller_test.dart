@@ -108,12 +108,21 @@ void main() {
     );
   });
 
-  test('deleteCards deletes every card given', () async {
-    await seed();
-    await actions().deleteCards(cardIds: {'a', 'c'});
+  test(
+    'deleteCards moves every card given to the Trash, a batch each',
+    () async {
+      await seed();
+      final outcome = await actions().deleteCards(cardIds: {'a', 'c'});
 
-    expect(await count('SELECT COUNT(*) AS n FROM card'), 2);
-  });
+      expect((outcome as Ok<List<String>, CardRejection>).value, hasLength(2));
+      expect(
+        await count(
+          'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+        ),
+        2,
+      );
+    },
+  );
 
   test('createCard saves the content, the flag and the tags', () async {
     final ids = await seed();

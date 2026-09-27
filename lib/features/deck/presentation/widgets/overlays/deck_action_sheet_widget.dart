@@ -9,7 +9,18 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 /// What the deck action sheet can start (spec §6.2).
-enum DeckAction { open, study, rename, move, reviewAlgorithm, reorder, delete }
+enum DeckAction {
+  open,
+  study,
+  rename,
+  studyOptions,
+  move,
+  reviewAlgorithm,
+  importCards,
+  exportCards,
+  reorder,
+  delete,
+}
 
 /// A deck's commands (screen 01), from its row's ⋮ or the open deck's ⋮. It
 /// completes with the chosen one, which the caller then opens, or with null
@@ -19,12 +30,16 @@ Future<DeckAction?> showDeckActionSheet(
   required DeckView view,
   required bool canReorder,
   required bool hasOpen,
+  bool canImport = false,
+  bool canExport = false,
 }) => showMxBottomSheet<DeckAction>(
   context,
   builder: (_) => DeckActionSheetWidget(
     view: view,
     canReorder: canReorder,
     hasOpen: hasOpen,
+    canImport: canImport,
+    canExport: canExport,
   ),
 );
 
@@ -34,10 +49,20 @@ class DeckActionSheetWidget extends StatelessWidget {
     required this.view,
     required this.canReorder,
     required this.hasOpen,
+    this.canImport = false,
+    this.canExport = false,
   });
 
   final DeckView view;
   final bool canReorder;
+
+  /// The deck takes cards: Import leads to the import screen (kit 07
+  /// deckActions, UC-TRANSFER-001).
+  final bool canImport;
+
+  /// The deck holds cards: Export opens the export sheet (kit 12,
+  /// UC-TRANSFER-002).
+  final bool canExport;
 
   /// From a row, the deck is not open yet; Open leads.
   final bool hasOpen;
@@ -67,9 +92,9 @@ class DeckActionSheetWidget extends StatelessWidget {
     );
   }
 
-  /// Study opens the deck's Study entry (spec D10); Study options waits
-  /// under Coming soon (spec A4, amended). Root
-  /// decks own the algorithm and cannot move (ruling P2-L8).
+  /// Study opens the Study Entry (FE-A6 D10) and Study options screen 15
+  /// (FE-A3 D3), below Rename as kit 01 draws it. Root decks own the
+  /// algorithm and cannot move (ruling P2-L8).
   List<Widget> _rows(BuildContext context) {
     final l10n = context.l10n;
     final deck = view.deck;
@@ -83,8 +108,8 @@ class DeckActionSheetWidget extends StatelessWidget {
           onTap: () => choose(DeckAction.open),
         ),
       MxActionSheetCommandRow(
-        icon: AppIcons.study,
-        label: l10n.deckStudy,
+        icon: AppIcons.play,
+        label: l10n.studyThisDeck,
         hasChevron: true,
         onTap: () => choose(DeckAction.study),
       ),
@@ -92,6 +117,13 @@ class DeckActionSheetWidget extends StatelessWidget {
         icon: AppIcons.edit,
         label: l10n.deckRename,
         onTap: () => choose(DeckAction.rename),
+      ),
+      MxActionSheetCommandRow(
+        icon: AppIcons.studyOptions,
+        label: l10n.deckStudyOptions,
+        subtitle: l10n.deckStudyOptionsHint,
+        hasChevron: true,
+        onTap: () => choose(DeckAction.studyOptions),
       ),
       if (deck.isRoot) ...[
         MxActionSheetCommandRow(
@@ -111,6 +143,20 @@ class DeckActionSheetWidget extends StatelessWidget {
           hasChevron: true,
           onTap: () => choose(DeckAction.move),
         ),
+      if (canImport)
+        MxActionSheetCommandRow(
+          icon: AppIcons.fileUp,
+          label: l10n.deckActionImport,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.importCards),
+        ),
+      if (canExport)
+        MxActionSheetCommandRow(
+          icon: AppIcons.fileDown,
+          label: l10n.deckActionExport,
+          hasChevron: true,
+          onTap: () => choose(DeckAction.exportCards),
+        ),
       if (canReorder)
         MxActionSheetCommandRow(
           icon: AppIcons.reorder,
@@ -118,10 +164,11 @@ class DeckActionSheetWidget extends StatelessWidget {
           subtitle: l10n.deckReorderHint,
           onTap: () => choose(DeckAction.reorder),
         ),
+      // Recoverable, so not destructive (FE-B1, kit 01).
       MxActionSheetCommandRow(
         icon: AppIcons.delete,
         label: l10n.deckDelete,
-        isDestructive: true,
+        subtitle: l10n.deckDeleteHint,
         onTap: () => choose(DeckAction.delete),
       ),
     ];

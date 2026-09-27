@@ -7,6 +7,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/di/schedule_repository_provider.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
@@ -62,6 +63,11 @@ final class _GatedReset implements ScheduleRepository {
   @override
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>
       _real.recordTurn(turn);
+
+  @override
+  Future<(SchedulerType, CardScheduleState)?> scheduleOf({
+    required String cardId,
+  }) => _real.scheduleOf(cardId: cardId);
 
   @override
   Future<Outcome<void, SrsRejection>> completeLearning({

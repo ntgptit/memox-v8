@@ -17,7 +17,7 @@ void main() {
     );
 
     expect(card.color, scheme.surfaceContainerLowest);
-    expect(card.borderRadius, BorderRadius.circular(20));
+    expect(card.borderRadius, BorderRadius.circular(12));
     expect(card.boxShadow, AppShadows.whisper(scheme));
     expect(card.border, isNull);
   });
@@ -41,8 +41,23 @@ void main() {
 
       expect(hero.color, derived.surfaceHero);
       expect(hero.border, Border.all(color: derived.ghostBorder));
-      expect(hero.borderRadius, BorderRadius.circular(20));
+      expect(hero.borderRadius, BorderRadius.circular(12));
       expect(hero.boxShadow, AppShadows.whisper(scheme));
     }
+  });
+
+  test('the success and danger cards blend their soft tint over the raised '
+      'fill and take their border (FE-A6 D14)', () {
+    final scheme = AppColorSchemes.light;
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final raised = AppDecorations.raisedCard(scheme, derived).color!;
+
+    final success = AppDecorations.successCard(scheme, derived);
+    final danger = AppDecorations.dangerCard(scheme, derived);
+
+    expect(success.color, Color.alphaBlend(derived.successSoft, raised));
+    expect((success.border! as Border).top.color, derived.successBorder);
+    expect(danger.color, Color.alphaBlend(derived.dangerSoft, raised));
+    expect((danger.border! as Border).top.color, derived.dangerBorder);
   });
 }

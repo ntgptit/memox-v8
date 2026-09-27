@@ -46,6 +46,29 @@ void main() {
     );
   });
 
+  testWidgets(
+    'a loading confirm spins and cannot be pressed; Cancel stays live',
+    (tester) async {
+      var cancelled = 0;
+      await pumpMx(
+        tester,
+        _width(
+          MxSheetActions(
+            cancelLabel: 'Cancel',
+            onCancel: () => cancelled++,
+            confirmLabel: 'Preparing',
+            onConfirm: () {},
+            isConfirmLoading: true,
+          ),
+        ),
+      );
+
+      expect(tester.widget<MxButton>(_button('Preparing')).isLoading, isTrue);
+      await tester.tap(_button('Cancel'));
+      expect(cancelled, 1);
+    },
+  );
+
   testWidgets('a destructive confirm, with its glyph passed through', (
     tester,
   ) async {
@@ -150,5 +173,29 @@ void main() {
 
     expect(find.byType(MxButton), findsOneWidget);
     expect(find.text('Cancel'), findsNothing);
+  });
+
+  testWidgets('labels too long for their shares stack the pair', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Giữ lại tất cả',
+          onCancel: () {},
+          confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
+          confirmIcon: Icons.delete,
+          isDestructive: true,
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final cancel = tester.getRect(_button('Giữ lại tất cả'));
+    final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
+
+    expect(confirm.top, greaterThan(cancel.bottom));
+    expect(cancel.width, confirm.width);
+    expect(tester.takeException(), isNull);
   });
 }

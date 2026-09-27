@@ -5,6 +5,8 @@ import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/tags/data/datasources/tag_dao.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_count_model.dart';
+import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
 /// Every method checks its rules on rows read inside its transaction, and
@@ -104,6 +106,100 @@ final class TagRepositoryImpl implements TagRepository {
       }
       return const Ok(null);
     });
+  }
+
+  @override
+  Stream<List<TagCount>> watchTagCounts({
+    String? deckId,
+    String searchTerm = '',
+  }) {
+    final term = TagEntity.fold(searchTerm);
+    return _dao
+        .countChanges()
+        .asyncMap((_) => _dao.countRows(deckId: deckId, foldedTerm: term))
+        .map(
+          (rows) => [
+            for (final row in rows)
+              TagCount(
+                id: row.read<String>('id'),
+                name: row.read<String>('name'),
+                cardCount: row.read<int>('card_count'),
+              ),
+          ],
+        )
+        .mapDatabaseErrors();
+  }
+
+  @override
+  Future<Outcome<TagRenamePlan, TagRejection>> planRename({
+    required String tagId,
+    required String name,
+  }) => _write(() => _planRename(tagId, name));
+
+  @override
+  Future<Outcome<void, TagRejection>> renameTag({
+    required String tagId,
+    required String name,
+    String? mergeIntoTagId,
+  }) => _write(() async {
+    switch (await _planRename(tagId, name)) {
+      case Rejected(:final reason):
+        return Rejected(reason);
+      case Ok(value: TagRenameUnchanged()):
+        return const Ok(null);
+      case Ok(value: TagRenameRename()):
+        await _dao.rename(
+          tagId,
+          name: name.trim(),
+          nameFolded: TagEntity.fold(name),
+        );
+        return const Ok(null);
+      case Ok(value: TagRenameMerge(:final target)):
+        if (target.id != mergeIntoTagId) {
+          return const Rejected(TagRejection.mergeNotConfirmed);
+        }
+        await _dao.merge(sourceId: tagId, targetId: target.id);
+        return const Ok(null);
+    }
+  });
+
+  @override
+  Future<Outcome<void, TagRejection>> deleteTag({required String tagId}) =>
+      _write(() async {
+        if (await _dao.findById(tagId) == null) {
+          return const Rejected(TagRejection.notFound);
+        }
+        await _dao.deleteTag(tagId);
+        return const Ok(null);
+      });
+
+  /// Tag management spec §6, on rows read in the caller's transaction: the
+  /// name, the source, the stored name, then a clash. The source's own row
+  /// is never a clash, so a case-only change renames (BR-TAG-006).
+  Future<Outcome<TagRenamePlan, TagRejection>> _planRename(
+    String tagId,
+    String name,
+  ) async {
+    if (TagEntity.checkName(name) case Rejected(:final reason)) {
+      return Rejected(reason);
+    }
+    final source = await _dao.findById(tagId);
+    if (source == null) return const Rejected(TagRejection.notFound);
+    if (name.trim() == source.name) return const Ok(TagRenameUnchanged());
+    final target = await _dao.findByFoldedName(TagEntity.fold(name));
+    if (target == null || target.id == tagId) {
+      return const Ok(TagRenameRename());
+    }
+    return Ok(
+      TagRenameMerge(
+        target: TagCount(
+          id: target.id,
+          name: target.name,
+          cardCount: await _dao.activeCardCount({target.id}),
+        ),
+        mergedCardCount: await _dao.activeCardCount({tagId, target.id}),
+      ),
+    );
   }
 
   Future<String> _createTag(String name, DateTime at) async {

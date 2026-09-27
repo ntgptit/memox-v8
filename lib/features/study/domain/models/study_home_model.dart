@@ -78,6 +78,10 @@ final class RootDeckWorkload extends StudyHomeContent {
   /// Overdue and Due today together (BR-STUDY-068).
   int get dueCount => overdueCount + dueTodayCount;
 
+  /// Learned cards resting until they fall due: the total less New and Due,
+  /// from the same snapshot (BR-STUDY-068). Never a headline.
+  int get scheduledCount => _sum((deck) => deck.scheduledCount);
+
   /// The decks with any workload: "across K decks".
   int get workloadDeckCount => decks.where((deck) => deck.hasWorkload).length;
 
@@ -110,6 +114,12 @@ final class StudyHomeDeck {
   final int newCount;
 
   bool get hasWorkload => overdueCount + dueTodayCount + newCount > 0;
+
+  /// Its cards resting until they fall due (BR-STUDY-068), never below 0.
+  int get scheduledCount {
+    final resting = cardCount - newCount - overdueCount - dueTodayCount;
+    return resting < 0 ? 0 : resting;
+  }
 
   /// A deck with no card gets no open action (BR-STUDY-076).
   bool get canStudy => cardCount > 0;

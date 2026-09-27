@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 
 /// Component type treatments: the overrides of the nearest V3 role that a
 /// widget contract states (spec §4.3). They live in the theme so shared
@@ -9,6 +10,9 @@ final class MxTextStyles {
   const MxTextStyles(this._texts, this._scheme);
 
   final TextTheme _texts;
+
+  /// Primary as text (spec 2026-09-27 D2): never the primary fill.
+  Color get _primaryInk => MxDerivedColors.primaryInkOf(_scheme);
   final ColorScheme _scheme;
 
   static const double _labelTracking = 0.1;
@@ -24,6 +28,8 @@ final class MxTextStyles {
   static const double _rowTitleTracking = -0.1;
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
+  static const double _overlineSize = 13;
+  static const double _compactOverlineSize = 12;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -38,6 +44,21 @@ final class MxTextStyles {
   static const double _termHeight = 1.25;
   static const double _termLongSize = 18;
   static const double _fieldBodyHeight = 1.45;
+  static const double _studyTermSize = 32;
+  static const double _studyTermTracking = -0.5;
+  static const double _studyTermHeight = 1.15;
+  static const double _studyMeaningSize = 24;
+  static const double _studyMeaningTracking = -0.3;
+  static const double _hintTracking = 0.3;
+  static const double _summaryTitleSize = 24;
+  static const double _summaryTitleTracking = -0.4;
+  static const double _factValueSize = 16;
+  static const double _statValueHeight = 1.1;
+  static const double _buttonDetailHeight = 1.2;
+  static const double _optionSize = 16;
+  static const double _optionTracking = -0.1;
+  static const double _choiceHeight = 1.25;
+  static const double _studyPassageHeight = 1.55;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -48,6 +69,23 @@ final class MxTextStyles {
   /// Button label on the compact and chip sizes: 12/600, 0.1 tracking.
   TextStyle get buttonLabelSmall =>
       _texts.labelSmall!.copyWith(letterSpacing: _labelTracking);
+
+  /// A button's second line, such as the interval a grade gives (screen
+  /// 16a): 12/500 tabular. Built without the role's colour, so the button's
+  /// ink reaches it through DefaultTextStyle.
+  TextStyle get buttonDetail {
+    final base = AppTypography.withWeight(_texts.labelSmall!, FontWeight.w500);
+    return TextStyle(
+      fontFamily: base.fontFamily,
+      fontFamilyFallback: base.fontFamilyFallback,
+      fontSize: base.fontSize,
+      fontWeight: base.fontWeight,
+      fontVariations: base.fontVariations,
+      letterSpacing: base.letterSpacing,
+      height: _buttonDetailHeight,
+      fontFeatures: _tabular,
+    );
+  }
 
   /// App-bar content title (deck and card names): 16/700, -0.3.
   TextStyle get contentTitle => AppTypography.withWeight(
@@ -91,10 +129,14 @@ final class MxTextStyles {
   ).copyWith(letterSpacing: _labelTracking, color: _scheme.onSurface);
 
   /// StudyTopBar mode badge: 12/700, 1.2 tracking, in the caller's accent.
-  TextStyle studyBadge(Color accent) => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w700,
-  ).copyWith(letterSpacing: _badgeTracking, color: accent);
+  TextStyle studyBadge(Color accent) =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        letterSpacing: _badgeTracking,
+        // It ellipsizes at large text, so it keeps the single-line height
+        // (UI-base §9 row 102; FE-A6 P3 T1).
+        height: _singleLineHeight,
+        color: accent,
+      );
 
   /// StudyTopBar n / total counter: 12/600, tabular numerals.
   TextStyle get counter => _texts.labelSmall!.copyWith(
@@ -102,9 +144,25 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
-  /// BottomNav label: 12/600, primary on the current destination.
+  /// The import step tracker's label (kit 11): 12/600, onSurface once the
+  /// step is reached, onSurfaceVariant before.
+  TextStyle stepLabel({required bool isReached}) => _texts.labelSmall!.copyWith(
+    color: isReached ? _scheme.onSurface : _scheme.onSurfaceVariant,
+  );
+
+  /// A day bar's label (kit 22): 12, onSurfaceVariant, at 700 on the current
+  /// day.
+  TextStyle dayLabel({required bool isCurrent}) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    isCurrent ? FontWeight.w700 : FontWeight.w400,
+  ).copyWith(color: _scheme.onSurfaceVariant);
+
+  /// The number on an import step's dot (kit 11): the counter in [ink].
+  TextStyle stepNumber(Color ink) => counter.copyWith(color: ink);
+
+  /// BottomNav label: 12/600, primaryInk on the current destination.
   TextStyle navLabel({required bool isSelected}) => _texts.labelSmall!.copyWith(
-    color: isSelected ? _scheme.primary : _scheme.onSurfaceVariant,
+    color: isSelected ? _primaryInk : _scheme.onSurfaceVariant,
   );
 
   /// FooterBar caption under the actions: 12, onSurfaceVariant.
@@ -143,9 +201,10 @@ final class MxTextStyles {
         color: _scheme.onSurface,
       );
 
-  /// A disclosure's label (kit card editor "Add details"): 12/600 primary.
+  /// A disclosure's label (kit card editor "Add details"): 12/600
+  /// primaryInk.
   TextStyle get disclosureLabel =>
-      _texts.labelSmall!.copyWith(color: _scheme.primary);
+      _texts.labelSmall!.copyWith(color: _primaryInk);
 
   /// The term's placeholder: 16/500, onSurfaceVariant.
   TextStyle get fieldTermHint =>
@@ -180,11 +239,11 @@ final class MxTextStyles {
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
   /// The matched part of a search hit's name (screen 04): the list row
-  /// title, bold, in primary, so it sits on the title's line unchanged.
+  /// title, bold, in primaryInk, so it sits on the title's line unchanged.
   TextStyle get rowTitleMatch => AppTypography.withWeight(
     listRowTitle,
     FontWeight.w700,
-  ).copyWith(color: _scheme.primary);
+  ).copyWith(color: _primaryInk);
 
   /// Row description (OptionRow, SettingsRow sub): the caption role at
   /// line-height 1.45 (I5, S5).
@@ -213,22 +272,40 @@ final class MxTextStyles {
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Overline (Section, ListSectionHeader): 12/700, 0.6 tracking,
-  /// onSurfaceVariant. Tabular, so a trailing static count lines up. The
-  /// widget upper-cases the text.
+  /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
+  /// tracking, onSurface, so a group title reads as a boundary (spec
+  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
+  /// a trailing static count lines up. The widget upper-cases the text.
   TextStyle get overline =>
       AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
+        fontSize: _overlineSize,
         letterSpacing: _overlineTracking,
         fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
+        color: _scheme.onSurface,
       );
+
+  /// The overline at 12, for a label inside a card that 13 would wrap on a
+  /// phone: the deck summary's progress line (owner 2026-09-26, register
+  /// row 119).
+  TextStyle get compactOverline =>
+      overline.copyWith(fontSize: _compactOverlineSize);
+
+  /// A stat's figure (StatTile): the headline role at 700, tabular, tight
+  /// line box, in the ink the tile's emphasis picks (FE-A6 D17).
+  TextStyle statValue(Color ink) => AppTypography.withWeight(
+    _texts.headlineSmall!,
+    FontWeight.w700,
+  ).copyWith(height: _statValueHeight, fontFeatures: _tabular, color: ink);
+
+  /// A stat's label: the overline. The widget upper-cases it.
+  TextStyle get statLabel => overline;
 
   /// A card row's status label (screen 07): the overline's 12/700 and 0.6
   /// tracking, in its status ink. The widget upper-cases the text.
   TextStyle statusLabel(Color ink) => overline.copyWith(color: ink);
 
   /// A card field's "Required" marker: the overline in primary (kit 08).
-  TextStyle get requiredMarker => overline.copyWith(color: _scheme.primary);
+  TextStyle get requiredMarker => overline.copyWith(color: _primaryInk);
 
   /// A card field's count (kit FieldHeader): the counter at 0.2 tracking, in
   /// error past the limit.
@@ -238,7 +315,7 @@ final class MxTextStyles {
   );
 
   /// A removable tag's label: the tag label in primary, on its tint.
-  TextStyle get removableTagLabel => tagLabel.copyWith(color: _scheme.primary);
+  TextStyle get removableTagLabel => tagLabel.copyWith(color: _primaryInk);
 
   /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
   /// label's 0.1 tracking (S4).
@@ -258,6 +335,114 @@ final class MxTextStyles {
     height: _noteHeight,
     color: _scheme.onSurfaceVariant,
   );
+
+  /// Note text carrying a status in [ink], such as the Study Entry's
+  /// overdue note in the warning ink (screen 14): the note role at 600.
+  TextStyle statusNote(Color ink) =>
+      AppTypography.withWeight(noteText, FontWeight.w600).copyWith(color: ink);
+
+  /// A study card's term (kit Browse): 32/700 at 1.15, -0.5 tracking. It
+  /// wraps and never ellipsizes (FE-A6 D19).
+  TextStyle get studyTerm =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _studyTermSize),
+        FontWeight.w700,
+      ).copyWith(
+        height: _studyTermHeight,
+        letterSpacing: _studyTermTracking,
+        color: _scheme.onSurface,
+      );
+
+  /// A study card's meaning (kit Browse): 24/600, -0.3 tracking.
+  TextStyle get studyMeaning => AppTypography.withWeight(
+    _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
+    FontWeight.w600,
+  ).copyWith(letterSpacing: _studyMeaningTracking, color: _scheme.onSurface);
+
+  /// A study card's pronunciation and example: 14/400 at 1.5, variant ink.
+  TextStyle get studyDetail => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w400,
+  ).copyWith(height: _noteHeight, color: _scheme.onSurfaceVariant);
+
+  /// A session's footer hint (kit SessionFooterHint): 12/400, 0.3 tracking.
+  TextStyle get sessionHint => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w400,
+  ).copyWith(letterSpacing: _hintTracking, color: _scheme.onSurfaceVariant);
+
+  /// The session summary's title (kit SessionStatusHero): 24/700 at 1.15.
+  TextStyle get summaryTitle =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _summaryTitleSize),
+        FontWeight.w700,
+      ).copyWith(
+        height: _studyTermHeight,
+        letterSpacing: _summaryTitleTracking,
+        color: _scheme.onSurface,
+      );
+
+  /// The bold run of the summary's body, such as "20 cards" (kit).
+  TextStyle get summaryBodyStrong => AppTypography.withWeight(
+    emptyBody,
+    FontWeight.w700,
+  ).copyWith(color: _scheme.onSurface);
+
+  /// A caption run in [ink], such as a Progress row's learning and
+  /// reviewing counts (kit 22): 12/600.
+  TextStyle captionIn(Color ink) => footerCaption.copyWith(color: ink);
+
+  /// A summary fact's value (kit ResultRow): 16/700 tabular, in [ink].
+  TextStyle factValue(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _factValueSize),
+    FontWeight.w700,
+  ).copyWith(fontFeatures: _tabular, color: ink);
+
+  /// A guess option's meaning (kit GuessScreen): 16/500 at 1.25, -0.1
+  /// tracking, in its tone's [ink] (FE-A6 P3).
+  TextStyle studyOption(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
+    FontWeight.w500,
+  ).copyWith(height: _choiceHeight, letterSpacing: _optionTracking, color: ink);
+
+  /// A guess option's letter badge: 12/700 at height 1, in [ink].
+  TextStyle studyOptionLetter(Color ink) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    FontWeight.w700,
+  ).copyWith(height: 1, letterSpacing: 0, color: ink);
+
+  /// A match term tile (kit MatchScreen): 18/700 at 1.25, -0.4, in [ink].
+  TextStyle matchTerm(Color ink) => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _termLongSize),
+    FontWeight.w700,
+  ).copyWith(height: _choiceHeight, letterSpacing: _termTracking, color: ink);
+
+  /// A match meaning tile: 14/600 at 1.25, in [ink].
+  TextStyle matchMeaning(Color ink) => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(height: _choiceHeight, letterSpacing: 0, color: ink);
+
+  /// A study face's running text (kit Recall's meaning, Fill's prompt):
+  /// 16/400 at 1.55. One role for both; the kit's 14 on Fill is ruled up to
+  /// 16 for legibility (FE-A6 P4).
+  TextStyle get studyPassage => AppTypography.withWeight(
+    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
+    FontWeight.w400,
+  ).copyWith(height: _studyPassageHeight, color: _scheme.onSurface);
+
+  /// A checked Fill answer (kit Fill `wrong`): 24/700 at -0.3, in [ink];
+  /// the typed answer is struck through in its own ink when [isStruck].
+  TextStyle fillAnswer(Color ink, {required bool isStruck}) =>
+      AppTypography.withWeight(
+        _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
+        FontWeight.w700,
+      ).copyWith(
+        letterSpacing: _studyMeaningTracking,
+        color: ink,
+        decoration: isStruck ? TextDecoration.lineThrough : null,
+        decorationColor: isStruck ? ink : null,
+      );
 
   /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
   /// tracking (S4), line-height 1.5 for the 18 band.

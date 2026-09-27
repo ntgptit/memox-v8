@@ -8,4 +8,7 @@ enum SettingsRejection {
 
   /// The deck is a sub-deck: study options live on its root (BR-STUDY-056).
   notARootDeck,
+
+  /// BR-REMINDER-002: the reminder's minute is outside 0 to 1439.
+  reminderMinuteOutOfRange,
 }

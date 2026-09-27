@@ -53,7 +53,7 @@ python -m pytest -q
 python -m compileall -q code_verification_guard
 ```
 
-The MemoX CI (`.github/workflows/ci.yml`) runs the default check and this directory's pytest suite on every pull request, through `.claude/skills/flutter-workflow/scripts/dod_check.sh`, against this vendored copy — never against an external remote.
+The MemoX CI (`.github/workflows/ci.yml`) runs the default check and this directory's pytest suite (by hand while its pull-request trigger is paused), through `.claude/skills/flutter-workflow/scripts/dod_check.sh`, against this vendored copy — never against an external remote.
 
 ## Completion Report
 

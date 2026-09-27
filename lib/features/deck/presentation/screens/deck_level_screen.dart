@@ -39,10 +39,14 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onSearch,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenStudyOptions,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
+    required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -56,8 +60,11 @@ class DeckLevelScreen extends StatelessWidget {
   /// A root's review algorithm: the router opens screen 02.
   final ValueChanged<String> onOpenAlgorithm;
 
-  /// Opens [String]'s Study entry (spec D10).
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Screen 15 for a deck (FE-A3 D3).
+  final ValueChanged<String> onOpenStudyOptions;
 
   /// What a deck of cards shows. The router passes the card feature's list
   /// section; `deck` never imports `card` (spec D8).
@@ -76,6 +83,18 @@ class DeckLevelScreen extends StatelessWidget {
   /// New card for [deckId]: the router opens the card editor.
   final ValueChanged<String> onAddCard;
 
+  /// Import cards into [deckId] (UC-TRANSFER-001): the router opens the
+  /// import screen.
+  final ValueChanged<String> onImportCards;
+
+  /// Export a deck of cards (UC-TRANSFER-002): the router opens the export
+  /// sheet over the whole deck.
+  final ValueChanged<DeckEntity> onExportCards;
+
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
+
   /// A deck of cards' FAB, from the card feature like [cardContent] (spec
   /// D8). It hides itself while cards are selected.
   final Widget Function(String deckId) cardFab;
@@ -87,6 +106,8 @@ class DeckLevelScreen extends StatelessWidget {
       onSearch: onSearch,
       onOpenAlgorithm: onOpenAlgorithm,
       onOpenStudy: onOpenStudy,
+      onOpenStudyOptions: onOpenStudyOptions,
+      onOpenTrash: onOpenTrash,
     ),
     final id => _OpenDeck(
       deckId: id,
@@ -94,10 +115,14 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenAncestor: onOpenAncestor,
       onOpenAlgorithm: onOpenAlgorithm,
       onOpenStudy: onOpenStudy,
+      onOpenStudyOptions: onOpenStudyOptions,
       cardContent: cardContent,
       cardAppBar: cardAppBar,
       cardBreadcrumb: cardBreadcrumb,
       onAddCard: onAddCard,
+      onImportCards: onImportCards,
+      onExportCards: onExportCards,
+      onOpenTrash: onOpenTrash,
       cardFab: cardFab,
     ),
   };
@@ -111,10 +136,14 @@ class _OpenDeck extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenStudyOptions,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
+    required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -123,13 +152,22 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
 
-  /// Opens [String]'s Study entry (spec D10).
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Screen 15 for a deck (FE-A3 D3).
+  final ValueChanged<String> onOpenStudyOptions;
   final Widget Function(DeckView view) cardContent;
   final Widget Function(DeckView view, Widget back, Widget deckActions)
   cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
+  final ValueChanged<String> onImportCards;
+  final ValueChanged<DeckEntity> onExportCards;
+
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
   final Widget Function(String deckId) cardFab;
 
   static const int _skeletonRows = 4;
@@ -150,10 +188,14 @@ class _OpenDeck extends ConsumerWidget {
         onOpenAncestor: onOpenAncestor,
         onOpenAlgorithm: onOpenAlgorithm,
         onOpenStudy: onOpenStudy,
+        onOpenStudyOptions: onOpenStudyOptions,
         cardContent: cardContent,
         cardAppBar: cardAppBar,
         cardBreadcrumb: cardBreadcrumb,
         onAddCard: onAddCard,
+        onImportCards: onImportCards,
+        onExportCards: onExportCards,
+        onOpenTrash: onOpenTrash,
         cardFab: cardFab,
       ),
       AsyncError() => MxAppShell(
@@ -172,7 +214,10 @@ class _OpenDeck extends ConsumerWidget {
       // Spec A8: deleted while open. Say so; the way back is the Library.
       AsyncData(value: Rejected()) => MxAppShell(
         appBar: bar,
-        body: DeckGoneStateWidget(onBackToLibrary: () => onOpenAncestor(null)),
+        body: DeckGoneStateWidget(
+          onBackToLibrary: () => onOpenAncestor(null),
+          onOpenTrash: onOpenTrash,
+        ),
       ),
       _ => MxAppShell(
         appBar: bar,
@@ -197,10 +242,14 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onOpenAncestor,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenStudyOptions,
     required this.cardContent,
     required this.cardAppBar,
     required this.cardBreadcrumb,
     required this.onAddCard,
+    required this.onImportCards,
+    required this.onExportCards,
+    required this.onOpenTrash,
     required this.cardFab,
   });
 
@@ -209,13 +258,22 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String?> onOpenAncestor;
   final ValueChanged<String> onOpenAlgorithm;
 
-  /// Opens [String]'s Study entry (spec D10).
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Screen 15 for a deck (FE-A3 D3).
+  final ValueChanged<String> onOpenStudyOptions;
   final Widget Function(DeckView view) cardContent;
   final Widget Function(DeckView view, Widget back, Widget deckActions)
   cardAppBar;
   final Widget Function(String deckId, Widget breadcrumb) cardBreadcrumb;
   final ValueChanged<String> onAddCard;
+  final ValueChanged<String> onImportCards;
+  final ValueChanged<DeckEntity> onExportCards;
+
+  /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
+  /// refused Undo (FE-B1).
+  final VoidCallback onOpenTrash;
   final Widget Function(String deckId) cardFab;
 
   @override
@@ -238,7 +296,15 @@ class _OpenDeckContent extends ConsumerWidget {
           parentId: deck.parentId,
           onOpenDeck: onOpenDeck,
           onOpenAlgorithm: onOpenAlgorithm,
+          onImportCards: canCreateCard ? () => onImportCards(deck.id) : null,
+          // A deck of cards holds at least one (E-L1); an empty one has
+          // nothing to export (UC-TRANSFER-002 E5).
+          onExportCards: deck.contentType == DeckContentType.card
+              ? () => onExportCards(deck)
+              : null,
           onOpenStudy: onOpenStudy,
+          onOpenStudyOptions: onOpenStudyOptions,
+          onOpenTrash: onOpenTrash,
           isOpenDeck: true,
         ),
       ),
@@ -293,11 +359,16 @@ class _OpenDeckContent extends ConsumerWidget {
                 onOpenDeck: onOpenDeck,
                 onOpenAlgorithm: onOpenAlgorithm,
                 onOpenStudy: onOpenStudy,
+                onOpenStudyOptions: onOpenStudyOptions,
+                onOpenTrash: onOpenTrash,
                 schedulerType: view.schedulerType,
                 // Owner decision C-O6: its sub-decks are at level 10.
                 hasDeepestSubDecks: deck.depth == DeckEntity.maxDepth - 1,
                 emptyState: DeckUnsetStateWidget(
                   onAddCard: canCreateCard ? () => onAddCard(deck.id) : null,
+                  onImportCards: canCreateCard
+                      ? () => onImportCards(deck.id)
+                      : null,
                   onCreateSubDeck: canCreateDeck ? createSubDeck : null,
                 ),
               ),

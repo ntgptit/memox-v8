@@ -8,6 +8,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // S-DUE (agent-execution-guide §6.2) at T0 = 2026-09-23 10:00, with every
 // due_at on a local midnight (BR-STUDY-074).
@@ -131,13 +132,8 @@ void main() {
       deckId: mixed.id,
       deleteBatchId: 'b',
     );
-    await db.customStatement(
-      "UPDATE deck SET delete_batch_id = 'b' WHERE id = ?",
-      [noDueGroup.id],
-    );
-    await db.customStatement(
-      "UPDATE card SET delete_batch_id = 'b' WHERE id = 'future'",
-    );
+    await trashDeckRows(db, noDueGroup.id);
+    await trashCardRow(db, 'future');
 
     final tiles = await level(library.id).first;
 

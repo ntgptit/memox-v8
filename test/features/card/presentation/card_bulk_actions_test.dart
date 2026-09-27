@@ -6,6 +6,7 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -20,7 +21,6 @@ Widget _section(String deckId) => Scaffold(
     algorithm: 'Eight boxes',
     onAddCard: () {},
     onOpenCard: (_) {},
-    onStudy: () {},
   ),
 );
 
@@ -56,6 +56,9 @@ Future<int> _count(
             .getSingle())
         .read<int>('n');
 
+Future<int> _activeCount(LibraryEnv env) =>
+    _count(env, 'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL');
+
 Future<void> _select(WidgetTester tester, List<String> fronts) async {
   await tester.longPress(find.text(fronts.first));
   await tester.pumpAndSettle();
@@ -74,6 +77,37 @@ Finder _inDialog(String text) =>
     find.descendant(of: find.byType(MxDialog), matching: find.text(text));
 
 void main() {
+  libraryTest(
+    'Export hands the selection over and keeps it (UC-TRANSFER-002 A1)',
+    (tester, env) async {
+      final ids = await _seed(env);
+      final exported = <Set<String>>[];
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: CardListSectionWidget(
+            deckId: ids.words,
+            algorithm: 'Eight boxes',
+            onAddCard: () {},
+            onOpenCard: (_) {},
+            onExport: exported.add,
+          ),
+        ),
+      );
+      await _select(tester, ['annyeong', 'mul']);
+      await _bulk(tester, _en.cardExport);
+
+      expect(exported, [
+        {'new1', 'flag1'},
+      ]);
+      final checked = find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      );
+      expect(checked, findsNWidgets(2));
+    },
+  );
+
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));
@@ -175,25 +209,89 @@ void main() {
     expect(find.text(_en.cardMovedToast(2, 'Verbs')), findsOneWidget);
   });
 
-  libraryTest('Delete asks with the count; Cancel keeps the selection', (
-    tester,
-    env,
-  ) async {
+  libraryTest('Trash asks with the count; Cancel keeps the selection; '
+      'several cards get no Undo (FE-B1 D4)', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
     await _bulk(tester, _en.cardDelete);
 
     expect(find.text(_en.cardDeleteTitle(2)), findsOneWidget);
+    expect(find.text(_en.cardDeleteNote(2)), findsOneWidget);
     await tester.tap(_inDialog(_en.commonCancel));
     await tester.pumpAndSettle();
     expect(find.text(_en.cardSelectedOf(2, 3).toUpperCase()), findsOneWidget);
 
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardDelete));
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
     await tester.pumpAndSettle();
-    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card'), 2);
-    expect(find.text(_en.cardDeletedToast(2)), findsOneWidget);
+    expect(await _activeCount(env), 2);
+    expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
+    expect(find.text(_en.commonUndo), findsNothing);
+  });
+
+  libraryTest('one card shows its text; Undo puts it back (UC-TRASH-001 '
+      'A1)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+
+    expect(find.text(_en.cardDeleteTitle(1)), findsOneWidget);
+    expect(_inDialog('annyeong'), findsOneWidget);
+    expect(_inDialog('back'), findsOneWidget);
+    expect(find.text(_en.cardDeleteNote(1)), findsOneWidget);
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.pumpAndSettle();
+    expect(await _activeCount(env), 3);
+    expect(find.text(_en.cardTrashedToast('annyeong')), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+    expect(await _activeCount(env), 4);
+    expect(find.text('annyeong'), findsOneWidget);
+  });
+
+  libraryTest('a refused Undo says why; the card stays in the Trash '
+      '(UC-TRASH-001 E3)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.pumpAndSettle();
+    // Meanwhile its deck goes to the Trash as well.
+    await env.decks.deleteDeck(deckId: ids.words);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(_en.cardUndoRefused(_en.cardRejectionTargetInTrash)),
+      findsOneWidget,
+    );
+    expect(
+      await _count(
+        env,
+        "SELECT COUNT(*) AS n FROM card WHERE id = 'new1' "
+        'AND delete_batch_id IS NULL',
+      ),
+      0,
+    );
+  });
+
+  libraryTest('Move to Trash spins while the cards move (FE-B1 D15)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.pump();
+
+    expect(find.byType(MxSpinner), findsOneWidget);
+    await tester.pumpAndSettle();
   });
 
   libraryTest('the bulk bar meets the target guidelines', (tester, env) async {

@@ -4,7 +4,7 @@
 
 ## [features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md](../features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md)
 
-- L88: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md](../features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md)
 
@@ -20,7 +20,7 @@
 
 ## [features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md)
 
-- L90: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
 
@@ -46,37 +46,21 @@
 
 - L85: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/reminders/README.md](../features/reminders/README.md)
-
-- L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-## [features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md](../features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md)
-
-- L98: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
 ## [features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md](../features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md)
 
 - L74: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md](../features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md)
 
-- L85: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L91: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/srs/usecases/UC-SRS-001-reset-learning-progress.md](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md)
 
 - L82: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
-## [features/starter-decks/README.md](../features/starter-decks/README.md)
-
-- L12: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
 ## [features/starter-decks/ui.md](../features/starter-decks/ui.md)
 
 - L11: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
-
-## [features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md](../features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md)
-
-- L79: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
 
@@ -92,23 +76,7 @@
 
 ## [features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md)
 
-- L103: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/transfer/README.md](../features/transfer/README.md)
-
-- L21: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
-
-## [features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md](../features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md)
-
-- L89: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md](../features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md)
-
-- L97: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/trash/README.md](../features/trash/README.md)
-
-- L22: > ⚠️ OPEN QUESTION: repo chưa có code ứng dụng (không có `lib/`), nên `code` của feature và mọi UC là `[]`.
+- L104: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md](../features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md)
 

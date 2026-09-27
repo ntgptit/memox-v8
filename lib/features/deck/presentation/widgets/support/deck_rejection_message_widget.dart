@@ -18,5 +18,9 @@ extension DeckRejectionMessage on AppLocalizations {
     DeckRejection.notFound => deckRejectionNotFound,
     DeckRejection.notSiblings => deckRejectionNotSiblings,
     DeckRejection.sameParent => deckRejectionSameParent,
+    DeckRejection.targetNotFound => deckRejectionTargetNotFound,
+    DeckRejection.targetInTrash => deckRejectionTargetInTrash,
+    DeckRejection.rootRestoresToTopLevel => deckRejectionRootRestoresToTopLevel,
+    DeckRejection.subDeckNeedsParent => deckRejectionSubDeckNeedsParent,
   };
 }

@@ -123,6 +123,24 @@ void main() {
     expect(find.text('Verbs'), findsOneWidget);
   });
 
+  libraryTest('an empty sub-deck imports cards from a file (UC-TRANSFER-001)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    final imported = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onImportCards: imported.add),
+    );
+
+    await tester.ensureVisible(_unsetButton(_en.deckUnsetImport));
+    await tester.tap(_unsetButton(_en.deckUnsetImport));
+    expect(imported, [words.id]);
+  });
+
   libraryTest('a top-level deck offers sub-decks only (BR-DECK-005)', (
     tester,
     env,
@@ -206,34 +224,36 @@ void main() {
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
   });
 
-  libraryTest('a deck deleted while open says it is no longer here (A8)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a deck deleted while open says it is no longer here and leads '
+      'back or to the Trash (A8, FE-B1 D11)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     String? ancestor = 'unset';
+    var trashOpened = 0;
     await pumpLibraryScreen(
       tester,
       env,
-      deckScreen(deckId: words.id, onOpenAncestor: (id) => ancestor = id),
+      deckScreen(
+        deckId: words.id,
+        onOpenAncestor: (id) => ancestor = id,
+        onOpenTrash: () => trashOpened++,
+      ),
     );
 
     await env.decks.deleteDeck(deckId: words.id);
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
-    expect(find.text(_en.deckDeletedToast), findsNothing);
-    // Trash waits under Coming soon (spec A4, amended): Back is the one way.
-    expect(find.byType(MxButton), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+    expect(find.byType(MxButton), findsNWidgets(2));
+    await tester.tap(find.text(_en.commonOpenTrash));
+    expect(trashOpened, 1);
     await tester.tap(find.text(_en.deckBackToLibrary));
     expect(ancestor, isNull);
   });
 
-  libraryTest('a deck of decks leads with its summary; no Study yet', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a deck of decks leads with its summary and its Study (FE-A6 '
+      'D10)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await env.decks.sub(korean.id, 'Grammar');
@@ -244,16 +264,21 @@ void main() {
       learnedAt: DateTime(2026, 9, 1),
       dueAt: DateTime(2026, 9, 22),
     );
-    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    final studied = <String>[];
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id, onOpenStudy: studied.add),
+    );
 
     expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
     expect(
       find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
       findsOneWidget,
     );
-    // Study waits under Coming soon (spec A4, amended).
-    expect(find.byType(MxButton), findsNothing);
     expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
+    await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
+    expect(studied, [korean.id]);
   });
 
   libraryTest('the summary counts every sub-deck under the due filter', (

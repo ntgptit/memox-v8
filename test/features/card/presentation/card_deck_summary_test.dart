@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
@@ -24,13 +25,21 @@ const _view = CardListView(
   workload: CardWorkload(overdue: 20, today: 20, newCards: 100),
 );
 
-Widget _host({CardListView view = _view}) => Scaffold(
+Widget _host({CardListView view = _view, VoidCallback? onStudy}) => Scaffold(
   body: ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      CardDeckSummaryWidget(view: view, algorithm: 'SM-2', onStudy: () {}),
+      CardDeckSummaryWidget(view: view, algorithm: 'SM-2', onStudy: onStudy),
     ],
   ),
+);
+
+CardListView _workload(CardWorkload workload) => CardListView(
+  items: const [],
+  hasMore: false,
+  counts: _view.counts,
+  statusCounts: _view.statusCounts,
+  workload: workload,
 );
 
 void main() {
@@ -68,6 +77,41 @@ void main() {
         reason: label,
       );
     }
+  });
+
+  libraryTest('Study this deck names the due cards and opens the entry '
+      '(FE-A6 D10)', (tester, env) async {
+    var studied = 0;
+    await pumpLibraryScreen(tester, env, _host(onStudy: () => studied++));
+
+    await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(40)));
+    expect(studied, 1);
+  });
+
+  libraryTest('with only new cards Study this deck names no count; with '
+      'nothing to study, or no way in, it is absent', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        view: _workload(const CardWorkload(overdue: 0, today: 0, newCards: 3)),
+        onStudy: () {},
+      ),
+    );
+    expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        view: _workload(const CardWorkload(overdue: 0, today: 0, newCards: 0)),
+        onStudy: () {},
+      ),
+    );
+    expect(find.byType(MxButton), findsNothing);
+
+    await pumpLibraryScreen(tester, env, _host());
+    expect(find.byType(MxButton), findsNothing);
   });
 
   libraryTest('a deck with no card yet reads 0 of 0, no division by zero', (
@@ -122,5 +166,16 @@ void main() {
     for (final segment in segments.evaluate()) {
       expect(segment.size!.height, greaterThan(0));
     }
+  });
+
+  libraryTest('the progress label keeps the 12 overline, one line on a phone '
+      '(owner 2026-09-26, register 119)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
+
+    final label = tester.widget<Text>(
+      find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
+    );
+    expect(label.style!.fontSize, 12);
+    expect(label.style!.fontWeight, FontWeight.w700);
   });
 }

@@ -6,6 +6,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/di/schedule_repository_provider.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
@@ -14,6 +15,9 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/features/deck/presentation/widgets/sections/deck_lock_strip_widget.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -48,6 +52,11 @@ final class _FirstSwitchFails implements ScheduleRepository {
   @override
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>
       _real.recordTurn(turn);
+
+  @override
+  Future<(SchedulerType, CardScheduleState)?> scheduleOf({
+    required String cardId,
+  }) => _real.scheduleOf(cardId: cardId);
 
   @override
   Future<Outcome<void, SrsRejection>> completeLearning({
@@ -157,6 +166,24 @@ void main() {
       expect(_option(tester, title).onSelected, isNull, reason: title);
     }
     expect(find.text(_en.algorithmResetAction), findsOneWidget);
+  });
+
+  libraryTest('the lock strip centres its tile on the title and body (owner '
+      '2026-09-26)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+
+    final strip = find.byType(DeckLockStripWidget);
+    expectCentredOn(
+      tester,
+      find.descendant(of: strip, matching: find.byType(MxCard)),
+      [find.descendant(of: strip, matching: find.byType(MxIconTile))],
+    );
   });
 
   libraryTest('a switch refused because the tree just locked says why (E4)', (

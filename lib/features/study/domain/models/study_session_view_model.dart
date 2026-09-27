@@ -21,6 +21,7 @@ final class StudySessionView {
     required this.progress,
     required this.summary,
     this.board,
+    this.trail = const [],
   });
 
   final String sessionId;
@@ -56,6 +57,11 @@ final class StudySessionView {
   /// null in every other mode (BR-STUDY-049).
   final MatchBoard? board;
 
+  /// `browse`: the cards of the round already shown, oldest first, for
+  /// looking back (BR-STUDY-048); empty in every other mode and once the
+  /// session has ended.
+  final List<TrailCard> trail;
+
   int get currentStageIndex => stages.indexOf(currentMode);
 
   /// The round the session serves in its current stage.
@@ -65,6 +71,24 @@ final class StudySessionView {
   /// deleted. Continue settles it (spec D12).
   bool get isStalled =>
       status == SessionStatus.inProgress && currentItem == null;
+}
+
+/// A card Browse already showed in this round, for looking back
+/// (BR-STUDY-048): what the card face draws.
+final class TrailCard {
+  const TrailCard({
+    required this.cardId,
+    required this.front,
+    required this.back,
+    required this.pronunciation,
+    required this.example,
+  });
+
+  final String cardId;
+  final String front;
+  final String back;
+  final String? pronunciation;
+  final String? example;
 }
 
 /// The card a session serves, with its queue row (spec §8.2).
@@ -169,22 +193,14 @@ final class RoundProgress {
 final class SessionSummary {
   const SessionSummary({
     required this.cardCount,
-    required this.answeredCardCount,
-    required this.turnCount,
     required this.learnedCardCount,
     required this.wrongTurnCount,
+    required this.answeredCardCount,
+    required this.turnCount,
   });
 
   /// The distinct cards of the queue.
   final int cardCount;
-
-  /// Distinct cards with at least one turn recorded (handoff 21 "Cards
-  /// answered"; spec D11a).
-  final int answeredCardCount;
-
-  /// Every turn recorded, including a relearning comeback (handoff 21 "of
-  /// {total} turns"; spec D11a).
-  final int turnCount;
 
   /// In a learning session, its cards that are now learned; null in a
   /// review.
@@ -192,4 +208,14 @@ final class SessionSummary {
 
   /// The session's turns whose action was a lapse (BR-SRS-018).
   final int wrongTurnCount;
+
+  /// The distinct cards with a graded turn; a Browse advance is no turn
+  /// (BR-MODE-006; FE-A6 D11).
+  final int answeredCardCount;
+
+  /// The session's graded turns, its `review_log` rows (FE-A6 D11).
+  final int turnCount;
+
+  /// Nothing was answered: the summary shows no stats (FE-A6 D18).
+  bool get hasAnswers => turnCount > 0;
 }

@@ -27,14 +27,22 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     required this.onSearch,
     required this.onOpenAlgorithm,
     required this.onOpenStudy,
+    required this.onOpenStudyOptions,
+    required this.onOpenTrash,
   });
 
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onSearch;
   final ValueChanged<String> onOpenAlgorithm;
 
-  /// Opens [String]'s Study entry (spec D10).
+  /// A deck's Study Entry (screen 14), from an action sheet or a summary.
   final ValueChanged<String> onOpenStudy;
+
+  /// Screen 15 for a deck (FE-A3 D3).
+  final ValueChanged<String> onOpenStudyOptions;
+
+  /// Opens the Trash (screen 06) from the app bar (FE-B1 D1).
+  final VoidCallback onOpenTrash;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,6 +73,11 @@ class DeckLibraryRootWidget extends ConsumerWidget {
             // Features that wait are named in one place (spec A4, amended).
             : [
                 MxIconButton(
+                  icon: AppIcons.delete,
+                  semanticLabel: l10n.libraryTrash,
+                  onPressed: onOpenTrash,
+                ),
+                MxIconButton(
                   icon: AppIcons.upcoming,
                   semanticLabel: l10n.libraryComingSoon,
                   onPressed: () => unawaited(showDeckComingSoonSheet(context)),
@@ -89,7 +102,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               AppSpacing.control,
             ),
             child: MxSearchField.trigger(
-              hintText: l10n.deckSearchHint,
+              hintText: l10n.searchFieldHint,
               onTap: onSearch,
             ),
           ),
@@ -99,6 +112,8 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               onOpenDeck: onOpenDeck,
               onOpenAlgorithm: onOpenAlgorithm,
               onOpenStudy: onOpenStudy,
+              onOpenStudyOptions: onOpenStudyOptions,
+              onOpenTrash: onOpenTrash,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(

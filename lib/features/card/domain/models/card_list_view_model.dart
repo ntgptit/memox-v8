@@ -31,8 +31,8 @@ final class CardListItem {
   final List<TagEntity> tags;
 }
 
-/// How many cards each filter would show under the current search, whatever
-/// filter is picked (IT-ORG-005).
+/// How many cards each filter would show under the current search and tags,
+/// whatever filter is picked (IT-ORG-005, BR-TAG-004).
 final class CardListCounts {
   const CardListCounts({
     required this.all,
@@ -48,8 +48,8 @@ final class CardListCounts {
 }
 
 /// How many of the deck's active cards show each display state
-/// (BR-CARD-008, BR-SRS-013), whatever the search and the filter: the deck's
-/// progress, not the list's.
+/// (BR-CARD-008, BR-SRS-013), whatever the search, the filter and the tags:
+/// the deck's progress, not the list's.
 final class CardStatusCounts {
   const CardStatusCounts({
     required this.newCards,
@@ -67,8 +67,8 @@ final class CardStatusCounts {
 }
 
 /// The deck's work by when it is due (BR-STUDY-067, BR-STUDY-068), whatever
-/// the search and the filter: the summary's breakdown line (owner decision
-/// E-O1).
+/// the search, the filter and the tags: the summary's breakdown line (owner
+/// decision E-O1).
 final class CardWorkload {
   const CardWorkload({
     required this.overdue,

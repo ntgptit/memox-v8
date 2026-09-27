@@ -157,6 +157,92 @@ void main() {
     expect(tester.getSize(find.text(long)).height, greaterThan(oneLine));
   });
 
+  Future<void> pumpToasts(
+    WidgetTester tester,
+    List<({String message, bool hasUndo})> toasts, {
+    Duration duration = const Duration(seconds: 8),
+  }) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final toast in toasts)
+              MxButton(
+                label: 'Show ${toast.message}',
+                onPressed: () => showMxSnackbar(
+                  context,
+                  message: toast.message,
+                  actionLabel: toast.hasUndo ? 'Undo' : null,
+                  onAction: toast.hasUndo ? () {} : null,
+                  duration: duration,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  testWidgets('a toast stays its duration, then goes (FE-B1 D3)', (
+    tester,
+  ) async {
+    await pumpToasts(tester, [(message: 'Moved to Trash', hasUndo: true)]);
+    await tester.tap(find.text('Show Moved to Trash'));
+    await tester.pumpAndSettle();
+
+    await tester.pump(const Duration(seconds: 7));
+    expect(find.text('Moved to Trash'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('under TalkBack a toast with an action stays (FE-B1 D14)', (
+    tester,
+  ) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(accessibleNavigation: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await pumpToasts(tester, [
+      (message: 'Moved to Trash', hasUndo: true),
+      (message: 'Saved', hasUndo: false),
+    ]);
+
+    await tester.tap(find.text('Show Moved to Trash'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 30));
+    await tester.pumpAndSettle();
+    expect(find.text('Moved to Trash'), findsOneWidget);
+
+    // One without an action still goes.
+    await tester.tap(find.text('Show Saved'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 9));
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  testWidgets('a new toast replaces the one on screen (FE-B1 D14)', (
+    tester,
+  ) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(accessibleNavigation: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await pumpToasts(tester, [
+      (message: 'Moved to Trash', hasUndo: true),
+      (message: 'Saved', hasUndo: false),
+    ]);
+
+    await tester.tap(find.text('Show Moved to Trash'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show Saved'));
+    await tester.pumpAndSettle();
+    expect(find.text('Moved to Trash'), findsNothing);
+    expect(find.text('Saved'), findsOneWidget);
+  });
+
   test('actionLabel and onAction come together', () {
     expect(
       () => MxSnackbarContent(message: 'Saved', actionLabel: 'Undo'),

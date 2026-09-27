@@ -17,4 +17,16 @@ abstract final class AppDurations {
 
   /// One skeleton pulse, 0.45 to 0.75 opacity and back.
   static const Duration skeletonPulse = Duration(milliseconds: 1400);
+
+  /// How long a toast stays: the platform's 4 seconds.
+  static const Duration toast = Duration(milliseconds: 4000);
+
+  /// How long a toast offering Undo stays (FE-B1 D3).
+  static const Duration undoWindow = Duration(seconds: 8);
+
+  /// How long a stepper button is held before it starts repeating (FE-A3 D6).
+  static const Duration stepperRepeatDelay = Duration(milliseconds: 400);
+
+  /// The pace of a held stepper button, one step each (FE-A3 D6).
+  static const Duration stepperRepeatInterval = Duration(milliseconds: 80);
 }

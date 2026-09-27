@@ -46,11 +46,10 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
     required this.algorithm,
     required this.onAddCard,
     required this.onOpenCard,
-    required this.onStudy,
+    this.onExport,
+    this.onStudy,
+    this.onOpenTrash,
   });
-
-  /// Opens the deck's Study entry (spec D10).
-  final VoidCallback onStudy;
 
   final String deckId;
 
@@ -62,6 +61,17 @@ class CardListSectionWidget extends ConsumerStatefulWidget {
 
   /// A row tap outside selection: the router opens the card's detail.
   final ValueChanged<String> onOpenCard;
+
+  /// Export on the bulk bar: the router opens the export sheet over the
+  /// selection, which stays (UC-TRANSFER-002 A1). Null hides it.
+  final ValueChanged<Set<String>>? onExport;
+
+  /// The summary's Study this deck: the router opens the Study Entry.
+  final VoidCallback? onStudy;
+
+  /// Opens the Trash (screen 06), for the toasts and the gone state
+  /// (FE-B1). Hidden without it.
+  final VoidCallback? onOpenTrash;
 
   @override
   ConsumerState<CardListSectionWidget> createState() =>
@@ -154,11 +164,21 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     if (await write && mounted) _selection().clear();
   }
 
-  /// The bulk bar's commands over [selected]: Move, Flag, Tag, Delete.
-  /// Export waits under Coming soon (spec A4, amended); Select all is in the
-  /// app bar (spec A14).
+  /// The one selected card's text, when its row is loaded (kit 07).
+  CardTrashPreview? _previewOf(Set<String> selected) {
+    if (selected.length != 1) return null;
+    final id = selected.single;
+    for (final item in _lastView?.items ?? const <CardListItem>[]) {
+      if (item.id == id) return (front: item.front, back: item.back);
+    }
+    return null;
+  }
+
+  /// The bulk bar's commands over [selected]: Move, Flag, Tag, Export,
+  /// Delete (kit 07). Select all is in the app bar (spec A14).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
+    final onExport = widget.onExport;
     return [
       (
         icon: AppIcons.folder,
@@ -185,11 +205,24 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           _clearAfter(showCardTagDialog(context, cardIds: selected)),
         ),
       ),
+      if (onExport != null)
+        (
+          icon: AppIcons.fileDown,
+          label: l10n.cardExport,
+          onTap: () => onExport(selected),
+        ),
       (
         icon: AppIcons.delete,
         label: l10n.cardDelete,
         onTap: () => unawaited(
-          _clearAfter(showDeleteCardsDialog(context, cardIds: selected)),
+          _clearAfter(
+            showDeleteCardsDialog(
+              context,
+              cardIds: selected,
+              preview: _previewOf(selected),
+              onOpenTrash: widget.onOpenTrash,
+            ),
+          ),
         ),
       ),
     ];

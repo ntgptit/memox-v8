@@ -95,8 +95,9 @@ class _OptionalField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final styles = context.textStyles;
+    // The glyph centres on the label and value, as the schedule's fact
+    // tiles do (owner 2026-09-26).
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.control,
       children: [
         Icon(icon, size: AppIconSize.inline),

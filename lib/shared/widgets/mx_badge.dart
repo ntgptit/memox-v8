@@ -16,7 +16,10 @@ class MxBadge extends StatelessWidget {
     this.tone = MxBadgeTone.primary,
     this.isSolid = false,
     this.icon,
-  });
+  }) : assert(
+         !isSolid || tone == MxBadgeTone.primary,
+         'a solid badge is primary: only onPrimary is guaranteed on its fill',
+       );
 
   final String label;
   final MxBadgeTone tone;
@@ -48,6 +51,7 @@ class MxBadge extends StatelessWidget {
     final ink = switch ((isSolid, tone)) {
       (true, _) => colors.onPrimary,
       (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
+      (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
       (false, _) => toneColor,
     };
     return DecoratedBox(
