@@ -5,13 +5,9 @@ Import direction is an architectural property, not a lint, so it needs its own
 check — one that runs in CI, because a boundary nobody verifies is a boundary
 that has already broken.
 
-**Why Python and not the bash it replaced.** The rules are unchanged; the shape
-of the runtime is not. The bash version forked `find lib` seventeen times and a
-subprocess per file inside its loops, and on Windows git-bash each fork costs
-tens of milliseconds — the whole script took two minutes there while finishing
-in a second on Linux CI. This reads every source file once, in one process. The
-`.sh` beside it is now a thin wrapper so every `bash …/check_architecture.sh`
-caller and every doc that names it still works.
+It reads every source file once, in one process. The `.sh` beside it is a thin
+wrapper, so every `bash …/check_architecture.sh` caller and every doc that names
+it works.
 
 Usage: check_architecture.py [--quiet]
 Exit:  0 clean, 1 violations found.
@@ -225,10 +221,9 @@ _SUFFIX_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("/domain/entities/", ("_entity.dart",)),
     ("/domain/repositories/", ("_repository.dart",)),
     ("/domain/usecases/", ("_use_case.dart",)),
-    # CLAUDE.md's domain suffix table also admits _scheduler and _mode, and
-    # Study keeps its Strategy files (study_mode.dart, sm2_scheduler.dart, …)
-    # under models/ — recorded in wbs.md M-task outputs, the AD-18 dispatch
-    # table, and AD-18's boundary section, which all name `domain/models/`.
+    # The domain suffix table also admits _scheduler and _mode: Study keeps its
+    # Strategy files (study_mode.dart, sm2_scheduler.dart, …) under
+    # `domain/models/`.
     ("/domain/models/", ("_model.dart", "_mode.dart", "_scheduler.dart")),
     ("/domain/failures/", ("_failure.dart",)),
     ("/data/mappers/", ("_mapper.dart",)),

@@ -1,11 +1,11 @@
 ---
 name: flutter-ship
-description: Everything between "the features work" and "users are running it well" for this Flutter app — security review, performance profiling and rebuild scoping, logging abstraction and crash/analytics integration, CI pipeline with format/analyze/codegen-freshness/test/build gates, PR quality gates, signed flavored release builds, store metadata and Android/iOS submission, the pre-release checklist, and post-release monitoring. Use this skill when setting up or fixing CI, preparing a release or store submission, configuring signing or obfuscation, adding logging or analytics or crash reporting, doing a security or performance pass, or investigating crashes and metrics after a release. Covers checklist phases 16 through 22.
+description: Everything between "the features work" and "users are running it well" for this Flutter app — security review, performance profiling and rebuild scoping, logging abstraction and crash/analytics integration, CI pipeline with format/analyze/codegen-freshness/test/build gates, PR quality gates, signed flavored release builds, store metadata and Android/iOS submission, the pre-release checklist, and post-release monitoring. Use this skill when setting up or fixing CI, preparing a release or store submission, configuring signing or obfuscation, adding logging or analytics or crash reporting, doing a security or performance pass, or investigating crashes and metrics after a release.
 ---
 
 # Security, performance, observability, CI/CD and release
 
-Covers checklist Phases 16–22. They share a trigger — the project is heading
+Security, performance, logging, CI/CD, release and monitoring share a trigger — the project is heading
 toward release — and in practice several get touched in one session.
 
 Read `references/ci.md` for the pipeline definition and release build commands.
@@ -161,5 +161,6 @@ the rest into the next cycle.
 Then close the loop, which is the part usually skipped: review the KPIs against
 what you predicted, update the roadmap, **remove feature flags that have
 stabilised** (a permanent flag is permanent complexity and a permanent untested
-code path), and schedule the technical debt recorded in `docs/wbs.md` rather
+code path), and schedule the technical debt recorded in the WBS (`docs/wbs_BE.md`,
+`docs/wbs_FE.md`) rather
 than letting it accumulate silently.

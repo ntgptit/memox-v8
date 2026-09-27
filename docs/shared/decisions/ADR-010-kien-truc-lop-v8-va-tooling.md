@@ -21,7 +21,7 @@ feature trong `docs/features/`. Chủ dự án chốt ba điểm này ngày 2026
 | # | Câu hỏi | Quyết định |
 |---|---|---|
 | 1 | Tên thư mục feature | `lib/features/<f>/` với `<f>` là tên thư mục trong `docs/features/` viết snake_case: `deck`, `card`, `srs`, `study`, `study_mode`, `progress`, `tags`, `search`, `settings`, `reminders`, `transfer`, `trash`, `starter_decks` |
-| 2 | Kiến trúc lớp | Theo cấu trúc lớp mà tooling đang giả định, mô tả trong skill [`flutter-architecture`](../../../.claude/skills/flutter-architecture/SKILL.md): mỗi feature có `domain/` (entities, repositories, usecases…), `data/` (repository implementation, datasource, mapper), `presentation/`, và `di/` khi cần. Bảng và query Drift đặt tập trung ở `lib/core/database/` theo [`flutter-drift/references/project-baseline.md`](../../../.claude/skills/flutter-drift/references/project-baseline.md) |
+| 2 | Kiến trúc lớp | Theo cấu trúc lớp mà tooling đang giả định, mô tả trong skill [`flutter-architecture`](../../../.claude/skills/flutter-architecture/SKILL.md): mỗi feature có `domain/` (entities, repositories, usecases…), `data/` (repository implementation, datasource, mapper), `presentation/`, và `di/` khi cần. Bảng và query Drift đặt tập trung ở `lib/core/database/` theo `flutter-drift/references/project-baseline.md` (gỡ ở BE-D7, xem ADR-011) |
 | 3 | Phiên bản Flutter | 3.47.5 (stable, ra 2026-09-18), pin trong `.fvmrc` |
 
 **Lý do cụ thể cho repository contract** (điều kiện "concrete architectural reason"

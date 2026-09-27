@@ -1,12 +1,9 @@
 ---
 name: flutter-architecture
-description: The layering and code-style rules for this Flutter codebase — feature-first folder structure, what each layer may import, when a use case or an interface is actually worth creating, the analysis_options.yaml lint configuration, guard-clause control flow, banning magic values, and file/class naming conventions. Use this skill when creating a new feature folder, deciding where a file belongs, reviewing whether code respects layer boundaries, configuring or tightening lints, resolving an import that feels wrong, or when tempted to add an abstraction. Also use it before any code review or commit that adds new files. Covers checklist phases 4 and 5, and it ships `scripts/check_architecture.sh` to verify the boundaries mechanically.
+description: The layering and code-style rules for this Flutter codebase — feature-first folder structure, what each layer may import, when a use case or an interface is actually worth creating, the analysis_options.yaml lint configuration, guard-clause control flow, banning magic values, and file/class naming conventions. Use this skill when creating a new feature folder, deciding where a file belongs, reviewing whether code respects layer boundaries, configuring or tightening lints, resolving an import that feels wrong, or when tempted to add an abstraction. Also use it before any code review or commit that adds new files. It ships `scripts/check_architecture.sh` to verify the boundaries mechanically.
 ---
 
 # Architecture and code conventions
-
-Covers checklist Phases 4 (structure, dependency rules) and 5 (lint, code style,
-naming).
 
 ## Folder structure
 
@@ -221,9 +218,10 @@ root. It turns on `strict-casts`, `strict-inference`, `strict-raw-types`, and
 promotes the rules that matter to `error`.
 
 It deliberately does **not** declare a `custom_lint` plugin. `custom_lint` and
-`riverpod_lint` are descoped — see `Deferred and descoped` in `docs/wbs.md`. Do
-not add the block back: a plugin declared but not installed is silently ignored,
-so the rules look configured and never run.
+`riverpod_lint` are descoped: no published `custom_lint` supports `analyzer >=10`,
+which the generator stack requires. Do not add the block back: a plugin declared
+but not installed is silently ignored, so the rules look configured and never
+run.
 
 The Riverpod checks that `riverpod_lint` used to provide — `ref.read` inside
 `build()` being the one that matters most — are now owned by

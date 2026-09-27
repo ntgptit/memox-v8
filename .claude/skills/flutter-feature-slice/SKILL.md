@@ -1,11 +1,11 @@
 ---
 name: flutter-feature-slice
-description: Use when a request asks to build, add, implement or finish a feature or screen in this Flutter app — "add login", "build the deck list", "implement search", "finish the profile screen" — and when a coding task turns out to rest on a missing use case, an undefined state, or an unagreed API contract. Covers checklist phase 14, and it is the usual entry point for feature work.
+description: Use when a request asks to build, add, implement or finish a feature or screen in this Flutter app — "add login", "build the deck list", "implement search", "finish the profile screen" — and when a coding task turns out to rest on a missing use case, an undefined state, or an unagreed API contract. It is the usual entry point for feature work.
 ---
 
 # Building a feature as a vertical slice
 
-Covers checklist Phase 14. This is the loop you run for every feature, and it
+This is the loop you run for every feature, and it
 composes the other skills rather than repeating them.
 
 **Vertical slice means: database to screen, one feature at a time.** One feature
@@ -63,8 +63,9 @@ features/<feature>/domain/
 select on. `check_architecture.py` additionally pairs each folder with its
 required suffix. The authority on layout is ADR-011
 (`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`), and this block is a
-summary of it. `assets/feature_blueprint.md` is V7's worked example: read it
-for the reasoning, never for a path.
+summary of it. V8's worked examples are Deck and Card: `docs/features/deck/`
+and `docs/features/card/` hold their use cases, rules and data, and
+`lib/features/deck/` and `lib/features/card/` their code.
 
 - Entities are immutable, with value equality, in domain language. Entity state
   is the enum or sealed class from `docs/features/<feature>/data.md` (state
@@ -188,44 +189,19 @@ Minimum for a feature to be done:
 - [ ] A strict visual audit companion per production screen (MX-VIS-001), one
       call per state, PASS in light and dark.
 - [ ] Golden tests if this feature added a shared component.
-- [ ] Every new screen registered in the Widgetbook catalog (`widgetbook/`): a
-      use-case that mounts the screen inside a `ProviderScope` with the domain
-      contract faked, knobs selecting the states worth looking at (empty, a
-      few items, long Vietnamese names, error). A new shared component gets a
-      knob-driven playground there too. This is the human-inspection
-      counterpart of the audits above — the machine checks catch overlap and
-      contrast, the catalog is where a person turns the viewport and theme and
-      *looks*. `widgetbook/README.md` has the how-to.
-
-`assets/feature_blueprint.md` has the table of which test belongs at which level,
-and the counts the Deck slice ended up with as a size reference.
 
 ## Step 5 — Close it out
 
 - [ ] `.claude/skills/flutter-workflow/scripts/dod_check.sh` passes.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
-- [ ] `docs/wbs.md` updated in this commit — status, and anything descoped with
-      the reason.
+- [ ] The WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) updated in the same PR —
+      status, and anything descoped with the reason.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:
       `.claude/skills/flutter-workflow/references/definition-of-done.md`.
 - [ ] Conventional commit scoped to the feature: `feat(<feature>): ...`.
-
-`assets/feature_checklist.md` is a copy-paste version of all of the above to
-paste into a WBS entry or PR description.
-
-`assets/feature_blueprint.md` is the same ground covered from the other
-direction: what V7's `features/deck` slice settled, measured against V7's code
-rather than described in the abstract. Its paths are V7's; the V8 layout is
-ADR-011. Read it before starting the
-second feature of a kind — it records which folder layouts the guards actually
-accept, what already lives in `core/` and `shared/` so you do not rebuild it,
-the five steps every write controller follows, which test belongs at which level,
-and the one duplication that was left in place along with the three extractions
-that were tried and rejected. It is the answer to "how much of feature 1 can I
-copy", with the parts that must not be copied named.
 
 ## The failure modes this ordering prevents
 

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/table_changes.dart';
+import 'package:memox/core/database/id_chunks.dart';
 
 /// Row access for the Trash (`trash_queries.drift`). It returns Drift rows,
 /// never domain values, and runs inside the caller's transaction.
@@ -24,22 +25,27 @@ final class TrashDao {
 
   /// The batches a purge takes: [chosen] ones that still exist, and every
   /// one deleted at or before [cutoff], oldest first (BR-TRASH-009,
-  /// BR-TRASH-010).
+  /// BR-TRASH-010). [chosen] is read in chunks, each batch once (BE-C2).
   Future<List<DeleteBatch>> purgeCandidates({
     required Set<String> chosen,
     required DateTime cutoff,
-  }) =>
-      (_db.select(_db.deleteBatches)
-            ..where(
-              (batch) =>
-                  batch.id.isIn(chosen) |
-                  batch.deletedAt.isSmallerOrEqualValue(cutoff),
-            )
-            ..orderBy([
-              (batch) => OrderingTerm(expression: batch.deletedAt),
-              (batch) => OrderingTerm(expression: batch.id),
-            ]))
-          .get();
+  }) async {
+    final byId = <String, DeleteBatch>{
+      for (final batch in await (_db.select(
+        _db.deleteBatches,
+      )..where((batch) => batch.deletedAt.isSmallerOrEqualValue(cutoff))).get())
+        batch.id: batch,
+      for (final chunk in idChunks(chosen))
+        for (final batch in await (_db.select(
+          _db.deleteBatches,
+        )..where((batch) => batch.id.isIn(chunk))).get())
+          batch.id: batch,
+    };
+    return byId.values.toList()..sort((a, b) {
+      final byTime = a.deletedAt.compareTo(b.deletedAt);
+      return byTime != 0 ? byTime : a.id.compareTo(b.id);
+    });
+  }
 
   /// What still sits in the decks of [batchId] and is not of it: another
   /// batch's id, or null for an active row (BR-TRASH-010).

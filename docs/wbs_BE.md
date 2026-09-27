@@ -44,7 +44,8 @@
 Quy ước:
 
 - **Trạng thái:** `xong` (đạt Definition of Done và đã merge vào `master`) ·
-  `đang làm` · `chưa bắt đầu` · `bị chặn` (cần một quyết định trước khi làm).
+  `đang làm` · `chưa bắt đầu` · `bị chặn` (cần một quyết định trước khi làm) ·
+  `cắt` (chủ dự án quyết không làm; lý do ở cột Bằng chứng).
 - **Cỡ:** S < M < L < XL. Đây là ước lượng suy ra từ số luật nghiệp vụ và phần kỹ
   thuật mới, không phải cam kết.
 - **Phụ thuộc:** hạng mục phải xong trước, tính theo chiều import của ADR-011 và theo
@@ -82,6 +83,7 @@ Quy ước:
 | BE-D5 | Công cụ kiểm chứng không còn gì của V7 (mở rộng theo chủ dự án): `build_verification_plan.py` chỉ phục vụ `dod_check.sh --changed`, plan còn 11 field, bỏ shard, `--github-output`, Widgetbook, memox-api và prompt set; `dod_check.sh` không còn bước Widgetbook và bước prompt contract, nên `--changed` hết fail trên mọi thay đổi code; lời giúp và header tả V8; gỡ `check_prompt_contract.py`, `read_local_prompt_set.ps1` và test PowerShell của nó | xong | BE-D2 | M | [spec](superpowers/specs/2026-09-26-verification-tooling-design.md) và [plan](superpowers/plans/2026-09-27-verification-tooling.md) gói 12a; `GateReadsThePlanTest` và test của planner trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | BE-D6, BE-D7 |
 | BE-D6 | Guard và hook design token không còn gì của V7 (mở rộng theo chủ dự án): gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; `memox-v8` mang nhãn "MemoX V8" và 13 id `memox_v8.design_system.*`; sáu rule mang tên của V7 tìm tên của V8, hai id đổi theo; message, comment và lý do dẫn quyết định của V8; hook `.claude/hooks/check_design_tokens.py` nạp `memox-v8` bằng bộ nạp của guard và chạy chính rule của guard trên file vừa sửa, có test riêng và bước "hook tests" trong gate; tài liệu của guard ghi `ntgptit/memox-v8`. Giữ registry `memox` (V6) | xong | — | M | [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-guard-without-v7.md) gói 12b; `test_memox_v8_ruleset_contract.py`, `test_memox_v8_data_model_guard_rules.py` và `test_memox_v8_architecture_guard_rules.py` trong `code-verification-guard-v2/tests/`; `.claude/hooks/tests/test_check_design_tokens.py` | BE-D7 |
 | BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng: một cửa `nfc` (`unorm_dart`), `storedText` ở mọi đường ghi text, `foldText` có NFC nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001), tìm kiếm và Fill (so khớp phiên bản 2, BR-STUDY-027) coi hai dạng là một; migration v4 → v5 chuẩn hoá dữ liệu cũ và gộp tag trùng (BR-TAG-007) | xong | — | S–M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §4 và [plan G1](superpowers/plans/2026-09-27-local-backend-g1-unicode-nfc.md); test trong `test/core/text/`, `test/drift/migration_test.dart` | — |
+| BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite: `idChunks` (30 000 id một lô) trong transaction của thao tác, cho mọi tập id do người dùng chọn — đọc, đếm, gắn/gỡ tag, gắn cờ, di chuyển, export (sắp lại cả tập), purge Trash (mỗi batch một lần) | xong | — | S | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §5 và [plan G2](superpowers/plans/2026-09-27-local-backend-g2-chunked-batches.md); test `*_batch_limit_test.dart` với 33 000 id | — |
 
 ### V8.0 — còn lại
 
@@ -119,16 +121,15 @@ như hiện nay; chỉ repository và tầng `data/` biết tới sync.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | bị chặn | — | S | `DeckLevelSort.name`; Clarification 13 của [plan backend deck/card](superpowers/plans/2026-09-23-deck-card-backend.md) | Chủ dự án quyết có thêm dependency collation hay không |
-| BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite | chưa bắt đầu | — | S | Clarification 16 của plan backend deck/card | Chia lô trong cùng transaction khi có nhu cầu thật |
+| BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | cắt | — | S | Chủ dự án giữ thứ tự theo code unit (2026-09-27, [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md) D3) | — |
 
 ### Hạ tầng và tài liệu
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Làm trong BE-D7 (gói 12c) |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | xong | — | S | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §6 và [plan](superpowers/plans/2026-09-27-local-backend-g3-no-v7.md) gói G3; `host-coverage-map.md` chỉ lệnh đếm kịch bản đã có test | — |
 | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
-| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | chưa bắt đầu | BE-D6 | M | [Spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9 | Gói 12c: brainstorm, spec, plan |
+| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | xong | BE-D6 | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §6 và [plan](superpowers/plans/2026-09-27-local-backend-g3-no-v7.md) gói G3; `tools/docs/check.py` báo lỗi khi skill hoặc `docs/` còn nhắc Widgetbook, `docs/wbs.md`, `docs/checklist.md`, `memox-v7` hay "checklist phase" (`tools/docs/test_check.py`) | — |
 
 ## Đã xong và đã kiểm chứng
 
@@ -198,7 +199,6 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| BE-C1 | Chưa chốt có thêm dependency collation hay không | Thứ tự sort tên deck | Chủ dự án quyết |
 | BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
@@ -222,9 +222,8 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 ## Bước tiếp theo
 
-1. BE-D7 (gói 12c), gồm BE-D3, theo thứ tự chủ dự án chọn ngày 2026-09-26.
-2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
-3. BE-E7 sau API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
+1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+2. BE-E7 sau API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
    trong [`wbs_API.md`](wbs_API.md).
 
 ## Ngữ cảnh cập nhật
@@ -268,6 +267,8 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
   và hook design token không còn gì của V7. Hai lệnh `--ruleset memox-v7` trong skill
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
 - **Cập nhật ngày 2026-09-27:** BE-C5 xong trong gói G1 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): text lưu và fold ở dạng NFC qua `unorm_dart`, migration v4 → v5 (chỉ đổi dữ liệu) gộp tag trùng, Fill so khớp phiên bản 2. Điểm chặn BE-C5 đóng theo quyết định của chủ dự án.
+- **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
+- **Cập nhật ngày 2026-09-27:** BE-D7 và BE-D3 xong trong gói G3 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): skill `flutter-*` và tài liệu sống không còn trỏ tới Widgetbook, `docs/wbs.md`, checklist 22 phase, baseline và blueprint của V7; `tools/docs/check.py` giữ điều đó. Số AD-xx và M-xx của V7 trong skill còn lại, ngoài phạm vi gói.
 - **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
   (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
   trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));

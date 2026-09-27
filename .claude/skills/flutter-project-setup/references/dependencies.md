@@ -48,7 +48,7 @@ Add only when the need is real:
 | `build_runner` | Runs all generators. |
 | `riverpod_generator` | `@riverpod` → providers. |
 | ~~`riverpod_lint`~~ | **Descoped** — it needs `custom_lint` as its host. Its checks moved to code-verification-guard. |
-| ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `json_serializable`, `freezed` and `drift_dev` all require. Its job is now code-verification-guard's — see `docs/wbs.md`. |
+| ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `json_serializable`, `freezed` and `drift_dev` all require. Its job is now code-verification-guard's (`--ruleset memox-v8`). |
 | `drift_dev` | Drift table and DAO codegen. |
 | `freezed` | Data class codegen. |
 | `json_serializable` | `fromJson` / `toJson`. |
@@ -78,7 +78,7 @@ generated file committed stale (Phase 19.1).
   Every published `custom_lint` caps at `analyzer ^8`, while the generator stack
   needs `analyzer >=10`; installing them means downgrading `freezed_annotation`
   to `^2.2.0` and `uuid` to `^3.0.6`, which contradicts AD-03. Their checks are
-  owned by **code-verification-guard** — see `docs/wbs.md`.
+  owned by **code-verification-guard** (`--ruleset memox-v8`).
   Do **not** put `analyzer: plugins: - custom_lint` in `analysis_options.yaml`:
   a plugin declared but not installed is silently ignored, so the rules look
   configured and never run.

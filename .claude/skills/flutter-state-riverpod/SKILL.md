@@ -1,11 +1,11 @@
 ---
 name: flutter-state-riverpod
-description: Riverpod 3.x provider and controller design for this Flutter app — when to use @riverpod codegen, Notifier vs AsyncNotifier, family and autoDispose, how to model screen state as an immutable sealed class covering initial/loading/loaded/empty/error/refreshing/submitting, separating data from task status, and running side effects like navigation, snackbars and dialogs without firing them on rebuild. Use this skill when creating or changing a provider or controller, modelling screen state, deciding where async work belongs, fixing an infinite rebuild or a provider that refuses to dispose, or when a controller is tempted to hold a BuildContext. Covers checklist phase 9.
+description: Riverpod 3.x provider and controller design for this Flutter app — when to use @riverpod codegen, Notifier vs AsyncNotifier, family and autoDispose, how to model screen state as an immutable sealed class covering initial/loading/loaded/empty/error/refreshing/submitting, separating data from task status, and running side effects like navigation, snackbars and dialogs without firing them on rebuild. Use this skill when creating or changing a provider or controller, modelling screen state, deciding where async work belongs, fixing an infinite rebuild or a provider that refuses to dispose, or when a controller is tempted to hold a BuildContext.
 ---
 
 # State management with Riverpod
 
-Covers checklist Phase 9. Riverpod 3.x with code generation.
+Riverpod 3.x with code generation.
 
 Riverpod 3 note: the generated per-provider `Ref` subclasses from 2.x are gone.
 Write `Ref ref`, not `MyThingRef ref`. Examples found online for 2.x will not
@@ -49,8 +49,8 @@ rebuild scope.
 `ref.watch` in build, `ref.read` in callbacks. `ref.read` inside `build` reads a
 value without subscribing, so the widget silently stops updating — a bug that
 looks like "the data is stale" and is hard to trace back. `riverpod_lint` used to
-catch this; it is descoped (`docs/wbs.md`), so the check now lives in
-**code-verification-guard** (`memox.state_management.no_ref_read_in_build`).
+catch this; it is descoped (no `custom_lint` supports `analyzer >=10`), so the
+check now lives in **code-verification-guard** (`memox.state_management.no_ref_read_in_build`).
 Nothing in `flutter analyze` covers it.
 
 ## Modelling screen state

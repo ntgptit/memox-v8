@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/id_chunks.dart';
 import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -20,20 +21,28 @@ final class CardDao {
             ..where((card) => card.id.equals(id) & card.deleteBatchId.isNull()))
           .getSingleOrNull();
 
-  /// The active cards among [ids].
-  Future<List<CardRow>> liveRows(Set<String> ids) => (_db.select(
-    _db.card,
-  )..where((card) => card.id.isIn(ids) & card.deleteBatchId.isNull())).get();
+  /// The active cards among [ids], read in chunks (BE-C2).
+  Future<List<CardRow>> liveRows(Set<String> ids) async => [
+    for (final chunk in idChunks(ids))
+      ...await (_db.select(
+            _db.card,
+          )..where((card) => card.id.isIn(chunk) & card.deleteBatchId.isNull()))
+          .get(),
+  ];
 
   Future<Deck?> deckRow(String id) =>
       (_db.select(_db.deck)
             ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
           .getSingleOrNull();
 
-  /// The active decks among [ids].
-  Future<List<Deck>> deckRows(Set<String> ids) => (_db.select(
-    _db.deck,
-  )..where((deck) => deck.id.isIn(ids) & deck.deleteBatchId.isNull())).get();
+  /// The active decks among [ids], read in chunks (BE-C2).
+  Future<List<Deck>> deckRows(Set<String> ids) async => [
+    for (final chunk in idChunks(ids))
+      ...await (_db.select(
+            _db.deck,
+          )..where((deck) => deck.id.isIn(chunk) & deck.deleteBatchId.isNull()))
+          .get(),
+  ];
 
   /// The folded faces of the live cards of [deckId] (BR-TRANSFER-003).
   Future<Set<CardFoldedPair>> foldedPairs(String deckId) async {
@@ -58,20 +67,33 @@ final class CardDao {
   }
 
   /// The live cards of [deckId], or those among [ids], by `created_at`, then
-  /// `id` (BR-TRANSFER-010).
-  Future<List<CardRow>> exportRows(String deckId, Set<String>? ids) =>
-      (_db.select(_db.card)
-            ..where(
-              (card) =>
-                  card.deckId.equals(deckId) &
-                  card.deleteBatchId.isNull() &
-                  (ids == null ? const Constant(true) : card.id.isIn(ids)),
-            )
-            ..orderBy([
-              (card) => OrderingTerm.asc(card.createdAt),
-              (card) => OrderingTerm.asc(card.id),
-            ]))
-          .get();
+  /// `id` (BR-TRANSFER-010). [ids] are read in chunks, and the whole set is
+  /// ordered once they are all in (BE-C2).
+  Future<List<CardRow>> exportRows(String deckId, Set<String>? ids) async {
+    Future<List<CardRow>> read(List<String>? chunk) =>
+        (_db.select(_db.card)
+              ..where(
+                (card) =>
+                    card.deckId.equals(deckId) &
+                    card.deleteBatchId.isNull() &
+                    (chunk == null
+                        ? const Constant(true)
+                        : card.id.isIn(chunk)),
+              )
+              ..orderBy([
+                (card) => OrderingTerm.asc(card.createdAt),
+                (card) => OrderingTerm.asc(card.id),
+              ]))
+            .get();
+    if (ids == null) return read(null);
+    final rows = [for (final chunk in idChunks(ids)) ...await read(chunk)];
+    // Each chunk is ordered on its own; the export's order is the whole
+    // set's.
+    return rows..sort((a, b) {
+      final byTime = a.createdAt.compareTo(b.createdAt);
+      return byTime != 0 ? byTime : a.id.compareTo(b.id);
+    });
+  }
 
   Future<void> insertCard({
     required String id,
@@ -121,11 +143,13 @@ final class CardDao {
 
   /// The roots of [deckIds], active or in the Trash: a restore checks a card
   /// against the root of its deck, which may be in the Trash (BR-TRASH-006).
+  /// Read in chunks (BE-C2).
   Future<Set<String>> rootIdsOf(Set<String> deckIds) async => {
-    for (final deck in await (_db.select(
-      _db.deck,
-    )..where((deck) => deck.id.isIn(deckIds))).get())
-      deck.rootId,
+    for (final chunk in idChunks(deckIds))
+      for (final deck in await (_db.select(
+        _db.deck,
+      )..where((deck) => deck.id.isIn(chunk))).get())
+        deck.rootId,
   };
 
   /// Fires once, then after every write to the decks, the cards or the
@@ -166,18 +190,25 @@ final class CardDao {
   Future<void> closeSessionsTouching(String batchId, DateTime now) =>
       _db.closeSessionsTouchingBatch(now, batchId);
 
-  Future<void> moveCards(Set<String> ids, String deckId, DateTime now) =>
-      (_db.update(_db.card)..where((card) => card.id.isIn(ids))).write(
+  /// Moves [ids] into [deckId], in chunks (BE-C2).
+  Future<void> moveCards(Set<String> ids, String deckId, DateTime now) async {
+    for (final chunk in idChunks(ids)) {
+      await (_db.update(_db.card)..where((card) => card.id.isIn(chunk))).write(
         CardCompanion(deckId: Value(deckId), updatedAt: Value(now)),
       );
+    }
+  }
 
-  /// Writes only the cards whose flag differs from [isFlagged].
-  Future<void> setFlagged(Set<String> ids, bool isFlagged, DateTime now) {
+  /// Writes only the cards whose flag differs from [isFlagged], in chunks
+  /// (BE-C2).
+  Future<void> setFlagged(Set<String> ids, bool isFlagged, DateTime now) async {
     final flag = isFlagged ? 1 : 0;
-    return (_db.update(_db.card)..where(
-          (card) => card.id.isIn(ids) & card.isFlagged.equals(flag).not(),
-        ))
-        .write(CardCompanion(isFlagged: Value(flag), updatedAt: Value(now)));
+    for (final chunk in idChunks(ids)) {
+      await (_db.update(_db.card)..where(
+            (card) => card.id.isIn(chunk) & card.isFlagged.equals(flag).not(),
+          ))
+          .write(CardCompanion(isFlagged: Value(flag), updatedAt: Value(now)));
+    }
   }
 
   /// Whether [deckId] still holds a live card; tombstones do not count, as in
