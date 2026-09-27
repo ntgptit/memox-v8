@@ -1,9 +1,9 @@
-"""Fault-injection probes for the memox-v7 design-system ratchets (A20.1 §9).
+"""Fault-injection probes for the memox-v8 design-system ratchets.
 
-Every rule that lands for the Design System V1 closure ships three proofs:
-a positive synthetic probe (the rule goes red on the thing it bans), a
-comment false-positive probe (prose that names the thing stays green), and
-the live-tree scan the CI guard performs. The first two live here.
+Every design-system rule ships three proofs: a positive synthetic probe (the
+rule goes red on the thing it bans), a comment false-positive probe (prose that
+names the thing stays green), and the live-tree scan the gate's guard step
+performs. The first two live here.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ REGISTRY_PATH = (
     Path(__file__).parents[1]
     / "registries"
     / "projects"
-    / "memox-v7"
+    / "memox-v8"
     / "rules"
     / "memox-design-system-rules.yaml"
 )
@@ -50,8 +50,8 @@ def _violations(rule_id: str, tmp_path: Path, source: str) -> list:
     return RuleFactory().create(rule_config).check(tmp_path)
 
 
-SCREEN_CHROME = "memox_v7.design_system.no_raw_screen_chrome"
-CHOICE_CHIP = "memox_v7.design_system.no_raw_choice_chip"
+SCREEN_CHROME = "memox_v8.design_system.no_raw_screen_chrome"
+CHOICE_CHIP = "memox_v8.design_system.no_raw_choice_chip"
 
 
 def test_no_raw_screen_chrome_goes_red_on_a_raw_app_bar(tmp_path: Path) -> None:
@@ -75,10 +75,10 @@ def test_no_raw_screen_chrome_goes_red_on_a_sliver_app_bar(tmp_path: Path) -> No
 
 def test_no_raw_screen_chrome_ignores_prose_and_themes(tmp_path: Path) -> None:
     good = """
-    // The shell used to build an AppBar( here; it now owns the chrome.
+    // MxAppShell owns the chrome; a raw AppBar( here would route around it.
     /// A doc comment that says SliverAppBar( is still prose.
     final AppBarTheme theme = AppBarTheme(centerTitle: false);
-    return MxContentShell(title: title, body: child);
+    return MxAppShell(appBar: MxAppBar(title: title), body: child);
     """
     assert not _violations(SCREEN_CHROME, tmp_path, good)
 
@@ -93,24 +93,24 @@ def test_no_raw_choice_chip_goes_red_on_a_raw_choice_chip(tmp_path: Path) -> Non
 
 def test_no_raw_choice_chip_leaves_the_allowed_chips_alone(tmp_path: Path) -> None:
     good = """
-    // MxPillButton wraps a ChoiceChip( so features never build one.
+    // MxFilterChip owns the pick-one chip, so features never build a ChoiceChip(.
     Chip(label: Text(tag.name), onDeleted: remove),
     ActionChip(avatar: const Icon(Icons.add), label: Text(add), onPressed: open),
-    MxPillButton(label: label, isSelected: isSelected, onPressed: onPick),
+    MxFilterChip(label: label, isSelected: isSelected, onSelected: onPick),
     """
     assert not _violations(CHOICE_CHIP, tmp_path, good)
 
 
-SHEET_ROUTE = "memox_v7.design_system.no_raw_sheet_route"
-LOADING = "memox_v7.design_system.no_raw_loading_indicator"
-RESTYLE = "memox_v7.design_system.no_text_restyle"
+SHEET_ROUTE = "memox_v8.design_system.no_raw_sheet_route"
+LOADING = "memox_v8.design_system.no_raw_loading_indicator"
+RESTYLE = "memox_v8.design_system.no_text_restyle"
 
 
 def test_no_raw_sheet_route_goes_red_on_a_raw_route(tmp_path: Path) -> None:
     bad = """
     final chosen = await showModalBottomSheet<DeckListSort>(
       context: context,
-      builder: (sheetContext) => MxActionSheet(actions: actions),
+      builder: (sheetContext) => MxBottomSheet(child: options),
     );
     showBottomSheet(context: context, builder: (_) => child);
     """
@@ -119,10 +119,10 @@ def test_no_raw_sheet_route_goes_red_on_a_raw_route(tmp_path: Path) -> None:
 
 def test_no_raw_sheet_route_leaves_the_owner_and_prose_alone(tmp_path: Path) -> None:
     good = """
-    // showModalBottomSheet( used to be called here; showMxSheet owns it.
-    final chosen = await showMxSheet<DeckListSort>(
+    // showMxBottomSheet owns the route; a raw showModalBottomSheet( bypasses it.
+    final chosen = await showMxBottomSheet<DeckListSort>(
       context,
-      builder: (sheetContext) => MxActionSheet(actions: actions),
+      builder: (sheetContext) => MxBottomSheet(child: options),
     );
     """
     assert not _violations(SHEET_ROUTE, tmp_path, good)
@@ -140,23 +140,16 @@ def test_no_raw_loading_indicator_goes_red_on_a_bare_spinner(tmp_path: Path) -> 
 def test_no_raw_loading_indicator_leaves_the_family_and_prose_alone(tmp_path: Path) -> None:
     good = """
     // A bare CircularProgressIndicator( announces nothing.
-    child: MxLoadingState.inline(semanticsLabel: label),
-    child: MxLoadingState(semanticsLabel: label),
+    child: MxSpinner(semanticLabel: label),
+    child: MxSkeletonList(semanticLabel: label),
     """
     assert not _violations(LOADING, tmp_path, good)
-
-
-def test_no_raw_loading_indicator_excludes_the_determinate_ring() -> None:
-    rule = _rule_config(LOADING)
-    assert rule["exclude"] == [
-        "**/card/presentation/widgets/sections/card_progress_panel_widget.dart"
-    ]
 
 
 def test_no_text_restyle_sees_all_four_spellings_across_lines(tmp_path: Path) -> None:
     for bad in (
         "style: context.texts.bodySmall?.copyWith(color: colors.error),",
-        "style: context.textStyles.sectionLabel.copyWith(color: colors.onSurfaceVariant),",
+        "style: context.textStyles.rowTitle.copyWith(color: colors.onSurfaceVariant),",
         "style: Theme.of(context).textTheme.bodySmall?.copyWith(color: c),",
         """
     style: AppTypography.withWeight(
@@ -170,26 +163,37 @@ def test_no_text_restyle_sees_all_four_spellings_across_lines(tmp_path: Path) ->
         assert _violations(RESTYLE, tmp_path, bad), bad
 
 
-def test_no_text_restyle_accepts_inked_and_prose(tmp_path: Path) -> None:
+def test_no_text_restyle_accepts_named_styles_and_prose(tmp_path: Path) -> None:
     good = """
     // texts.bodySmall!.copyWith( is the spelling this rule refuses.
-    style: context.texts.bodySmall!.inked(context, AppInk.quiet),
+    style: context.textStyles.rowTitle,
     style: AppTypography.withWeight(
       context.texts.labelMedium!,
       FontWeight.w600,
-    ).inked(context, AppInk.stated).copyWith(
-      fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
     ),
     """
     assert not _violations(RESTYLE, tmp_path, good)
 
 
-def test_no_text_restyle_sees_the_hint_accessor(tmp_path: Path) -> None:
-    # A20.1 P1-09: the extension's fifth accessor is a resolved style; a
-    # `.copyWith(` on it is the same restyle in a new spelling.
+def test_no_text_restyle_sees_the_hint_style(tmp_path: Path) -> None:
+    # `MxTextStyles.inputHint` is a resolved style like the others; a
+    # `.copyWith(` on it is the same restyle, however the styles are reached.
+    assert _violations(
+        RESTYLE,
+        tmp_path,
+        "final s = context.textStyles.inputHint.copyWith(color: Colors.red);\n",
+    )
     violations = _violations(
         RESTYLE,
         tmp_path,
-        "final s = context.inputHintStyle!.copyWith(color: Colors.red);\n",
+        "final s = MxTextStyles(texts, scheme).inputHint.copyWith(color: ink);\n",
     )
     assert len(violations) == 1
+
+
+def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
+    good = """
+    hintStyle: MxTextStyles(texts, scheme).inputHint,
+    style: context.textStyles.inputHint,
+    """
+    assert not _violations(RESTYLE, tmp_path, good)

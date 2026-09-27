@@ -1,4 +1,4 @@
-"""Fault-injection probes for the memox-v7 design-token ratchets (A20.1 §9)."""
+"""Fault-injection probes for the memox-v8 design-token ratchets."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ REGISTRY_PATH = (
     Path(__file__).parents[1]
     / "registries"
     / "projects"
-    / "memox-v7"
+    / "memox-v8"
     / "rules"
     / "memox-design-token-rules.yaml"
 )

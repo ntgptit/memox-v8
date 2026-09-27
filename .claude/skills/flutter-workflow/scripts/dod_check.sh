@@ -290,6 +290,16 @@ else
   FAILED+=("CI tooling tests unavailable: $CI_TOOLING_TESTS")
 fi
 
+# The design-token hook exits 0 on any error by design, so a hook that has
+# stopped loading its rules looks like a clean file; its tests are what notice.
+HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"
+if [[ -n "$PY" && -d "$HOOK_TESTS" ]]; then
+  plan hook_tests "hook tests" \
+    "$PY -m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'"
+else
+  FAILED+=("hook tests unavailable: $HOOK_TESTS")
+fi
+
 # The guard's own probes, and they belong wherever the guard runs. A rule that
 # has been excluded, disabled or deleted leaves the guard green: the guard does
 # not go red when the thing being edited is itself, so its verdict is evidence

@@ -1089,6 +1089,17 @@ PLAN_FIELDS = frozenset({
 })
 
 
+class GateRunsTheHookTestsTest(unittest.TestCase):
+    """The design-token hook exits 0 on any error, so a hook that has stopped
+    working looks like a clean file; its tests are what notice, and the gate
+    runs them in every mode."""
+
+    def test_the_gate_runs_the_hook_tests(self) -> None:
+        script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+        self.assertIn('HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"', script)
+        self.assertIn("-m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'", script)
+
+
 class GateReadsThePlanTest(unittest.TestCase):
     """`dod_check.sh --changed` runs what `build_verification_plan.py` selects.
 
