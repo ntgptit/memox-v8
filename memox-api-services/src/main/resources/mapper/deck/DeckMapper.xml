@@ -53,4 +53,36 @@
         ORDER BY server_version
         LIMIT #{limit}
     </select>
+    <sql id="sameParent">
+        <choose>
+            <when test="parentId == null">parent_id IS NULL</when>
+            <otherwise>parent_id = #{parentId}</otherwise>
+        </choose>
+    </sql>
+    <!-- The end of the sibling group, rows in Trash included, so an undo gets its old place back (app trash D9). -->
+    <select id="nextSiblingPosition" resultType="int">
+        SELECT COALESCE(MAX(sibling_position) + 1, 0) FROM deck
+        WHERE user_id = #{userId} AND <include refid="sameParent"/> AND deleted_at IS NULL
+    </select>
+    <update id="updateName">
+        UPDATE deck SET name = #{name}, updated_at = #{now}, server_version = #{version}, last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <update id="updateStudyConfig">
+        UPDATE deck SET study_config = #{studyConfig}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <update id="updateContentType">
+        UPDATE deck SET content_type = #{contentType}, updated_at = #{now}, server_version = #{version},
+                        last_device_id = #{deviceId}
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+    <select id="deriveContentType" resultType="string">
+        SELECT CASE
+            WHEN EXISTS (SELECT 1 FROM deck c WHERE c.parent_id = p.id AND c.deleted_at IS NULL
+                         AND c.delete_batch_id IS NOT DISTINCT FROM p.delete_batch_id) THEN 'deck'
+            ELSE 'unset' END
+        FROM deck p WHERE p.id = #{id}
+    </select>
 </mapper>
