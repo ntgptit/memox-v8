@@ -1,4 +1,4 @@
 /**
  * Spring, security, OpenAPI and MyBatis configuration.
  */
-package com.memox.config;
+package com.memox.common.config;
