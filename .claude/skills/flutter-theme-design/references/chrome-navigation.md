@@ -57,7 +57,7 @@ Raw: `NavigationBar`.
 - [ ] Selected label.
 - [ ] Unselected label.
 - [ ] Selected weight — qua `withWeight`, vì `copyWith(fontWeight:)` trần trên
-      variable font vẽ weight cũ (bug thật, M99.61).
+      variable font vẽ weight cũ.
 - [ ] Label visibility.
 - [ ] Height.
 - [ ] Selected state không chỉ khác bằng hue khó nhận biết.
@@ -112,8 +112,8 @@ Raw: `NavigationRail`.
 
 ### Shared widget: `MxNavigationRail`
 
-Chỉ build nếu tablet/desktop layout support rail. (Lưu ý: AD-04 hiện không ship
-large-screen layout — mục này chờ quyết định đó đổi.)
+Chỉ build nếu tablet/desktop layout support rail. (Lưu ý: ADR-001 hiện không
+ship large-screen layout — mục này chờ quyết định đó đổi.)
 
 - [ ] Destination API giống `MxNavigationBar`.
 - [ ] Không tạo vocabulary selected mới.

@@ -72,22 +72,19 @@ Nên có semantic accessors:
 - `MxText.label`
 - `MxText.caption`
 
-Hoặc `AppTextStyles`, nhưng feature không `.copyWith(fontSize: ...)`.
+Hoặc một lớp vai chữ đặt tên (V8: `MxTextStyles` trong
+`lib/core/theme/mx_text_styles.dart`), nhưng feature không
+`.copyWith(fontSize: ...)`.
 
-**Đã ship (M99.66), theo nhánh `AppTextStyles`:** feature chọn rung rồi áp mực
-đóng — `texts.bodySmall!.inked(context, AppInk.quiet, isEmphasized:,
-isTabular:)` — hoặc vai đặt tên (`cardPrompt`, `sectionLabel`,
-`sectionLabelSmall`, `listHeading`, `stateChipLabel`, `heroNumeral`). Guard
-`no_text_restyle` cấm `texts.*.copyWith` lẫn đường vòng
+Guard `no_text_restyle` cấm `texts.*.copyWith` lẫn đường vòng
 `withWeight(...).copyWith`; `withWeight` thuần (nhấn không đổi màu) vẫn hợp lệ.
-Tổ hợp nào hai API không nói được là một vai còn thiếu — thêm vào
+Tổ hợp nào vai chữ không nói được là một vai còn thiếu — thêm vào
 `lib/core/theme`, không lắp tại chỗ.
 
-**Bẫy variable font (đã trả giá ba lần trong repo này):** cả hai face đều là
-variable font có trục `wght`; một `copyWith(fontWeight:)` trần báo weight mới
-cho test và vẽ weight cũ trên máy. Mọi re-weight đi qua
-`AppTypography.withWeight`, và test pin `fontVariations`, không chỉ
-`fontWeight`.
+**Bẫy variable font:** font của app là variable font có trục `wght`; một
+`copyWith(fontWeight:)` trần báo weight mới cho test và vẽ weight cũ trên máy.
+Mọi re-weight đi qua `AppTypography.withWeight`, và test pin `fontVariations`,
+không chỉ `fontWeight`.
 
 ## 3. `IconTheme`
 
@@ -101,12 +98,9 @@ cho test và vẽ weight cũ trên máy. Mọi re-weight đi qua
 
 ### Shared widget: `MxIcon`
 
-**Đã ship (M99.66).** Tone dùng chung enum `AppInk` với chữ; size enum
-`MxIconSize` (16/20/24/40); không nhãn ⇒ tự loại khỏi semantics. `Icon` trần
-vẫn hợp lệ trong slot đã theme (leading của button/tile); guard
-`no_raw_icon_color` cấm `Icon(color:)` mở — ngoại lệ duy nhất là
-`<AppInk>.resolve(context)` cho size không có bậc (hero 32, mark bám font
-size).
+`Icon` trần vẫn hợp lệ trong slot đã theme (leading của button/tile); guard
+`no_raw_icon_color` cấm `Icon(color:)` mở — ngoại lệ duy nhất là màu đọc qua
+`.resolve(context)` cho size không có bậc.
 
 - [ ] Nhận `IconData`.
 - [ ] Có semantic sizes: `sm/md/lg`.

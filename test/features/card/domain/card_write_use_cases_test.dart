@@ -23,8 +23,8 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
 
-// The card write use cases forward to one repository call each (AD-12). They
-// run here over the real repositories, so the test asserts what a person
+// The card write use cases forward to one repository call each (ADR-011 D4).
+// They run here over the real repositories, so the test asserts what a person
 // sees, not that a fake was called.
 
 void main() {

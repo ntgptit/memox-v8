@@ -23,8 +23,8 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_day_clock.dart';
 import '../../../support/test_database.dart';
 
-// The Trash use cases forward to one repository call each (AD-12), over the
-// real repositories, so the test asserts what a person sees in the Trash.
+// The Trash use cases forward to one repository call each (ADR-011 D4), over
+// the real repositories, so the test asserts what a person sees in the Trash.
 
 void main() {
   late AppDatabase db;

@@ -13,11 +13,10 @@ the output is not in the repo:
      exists beside it;
   4. a clean rebuild reproduces the same output, byte for byte (the slow one).
 
-**Why Python.** Checks 1–3 are unchanged; check 3 (the rebuild) still shells out
-to `dart`. The bash version's part-directive scan grepped every source file in a
-loop — ~135 forks — and on Windows git-bash the `--skip-rebuild` path took 52
-seconds. This reads each source once, in one process. The `.sh` beside it is a
-thin wrapper so every caller keeps working.
+**Why Python.** It reads each source once, in one process, instead of forking a
+grep per file, which is slow on Windows git-bash. Check 4 (the rebuild) shells
+out to `dart`. The `.sh` beside it is a thin wrapper so every caller keeps
+working.
 
 Usage: check_generated.py [--skip-rebuild]
 Exit:  0 clean, 1 problems found.

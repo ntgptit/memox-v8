@@ -58,9 +58,9 @@ and everything built with the typed API. It cannot track SQL it did not parse.
 ```dart
 // Drift cannot see which tables this reads. Say so, or the stream never updates.
 db.customSelect(
-  'SELECT COUNT(*) AS total FROM cards WHERE deck_id = ?',
+  'SELECT COUNT(*) AS total FROM card WHERE deck_id = ?',
   variables: [Variable<String>(deckId)],
-  readsFrom: {cards},          // ← without this it emits once and goes silent
+  readsFrom: {card},           // ← without this it emits once and goes silent
 ).watchSingle();
 ```
 
@@ -72,30 +72,26 @@ table.
 The reliable way to avoid the whole class of bug is to keep reusable SQL in
 `.drift`, where Drift resolves dependencies itself.
 
-**…with one proven exception.** drift 2.34's analyzer omits tables that a
-`.drift` query reads *only through a subquery* when the query also uses nested
-star columns (`c.**`) and Dart placeholders (`$predicate`/`$order`). This is
-not theory: `cardListItems` reads `card_tags`/`tags` inside its `tag_names`
-subquery, and the generated `readsFrom` lists only `cards` and
-`card_review_states` — moving the join into `FROM` as a derived table changed
-nothing, while `orphanedTags` (a plain query with a `WHERE` subquery) gets its
-tables counted fine. The symptom is the silent kind: the list emitted once and
-never re-emitted on a tag write, so the row kept a stale chip until something
-else touched `cards`.
+**…with one exception worth knowing.** drift's analyzer can leave out of the
+generated `readsFrom` a table that a `.drift` query reads *only through a
+subquery*, when the query also uses nested star columns (`c.**`) and Dart
+placeholders (`$predicate`/`$order`). The symptom is the silent kind: the stream
+emits once and never re-emits on a write to that table.
 
-So, whenever a `.drift` query reads a table only via subquery:
+So, whenever a query reads a table only via subquery, or a read is assembled
+from several statements:
 
 1. **Check the generated `readsFrom`** in `app_database.g.dart` after building.
-2. If a table is missing, **complete the dependency set in the DAO** — merge
-   the generated watch with `db.tableUpdates(TableUpdateQuery.onAllTables([...]))`
-   over the missing tables, re-running `query.get()` on each update
-   (`CardDao.watchCardListItems` is the template). The DAO is the right layer:
-   it owns Drift specifics, and the repository contract stays untouched.
-   Do *not* restructure the SQL to appease the analyzer if that costs the
-   query plan (the correlated form keeps the index's early stop).
-3. **Pin it with a both-ways repository-level test** — write to the subquery's
-   table, expect a re-emit; remove, expect another
-   (`test/features/card/data/card_list_tag_invalidation_test.dart`).
+2. If a table is missing, **complete the dependency set in the DAO**: watch
+   `db.tableUpdates(TableUpdateQuery.onAllTables([...]))` over every table the
+   read touches and re-run the read on each update (`CardListDao.changes()`
+   watches `card`, `card_schedule`, `card_tags` and `tags`). The DAO is the
+   right layer: it owns Drift specifics, and the repository contract stays
+   untouched. Do *not* restructure the SQL to appease the analyzer if that
+   costs the query plan.
+3. **Pin it with a repository-level test** that writes to the table and expects
+   a re-emit (`test/features/card/data/card_list_read_test.dart`: tagging a card
+   re-emits the list with its tags).
 
 Worth testing explicitly, because the failure is silent: insert → expect the
 stream emits; update → expect it emits; delete → expect it emits. For a joined
@@ -108,9 +104,11 @@ Use one when several writes form a single invariant:
 
 ```dart
 Future<void> createCard(...) => _dao.runInTransaction(() async {
-  await _dao.insertCard(card);              // content
-  await _dao.insertReviewState(state);      // BR-09: exactly one, same transaction
-  await _deckDao.lockContentType(deckId);   // BR-62: first child fixes the type
+  await _dao.insertCard(card);
+  // Exactly one schedule row per card.
+  await _dao.insertSchedule(schedule);
+  // The first child fixes the deck's content type (ADR-006).
+  await _deckDao.setContentType(deckId, 'card', now);
 });
 ```
 
@@ -142,7 +140,7 @@ transaction and reuses prepared statements, so an import of a thousand cards is
 one round of work rather than a thousand.
 
 ```dart
-await db.batch((batch) => batch.insertAll(cards, companions));
+await db.batch((batch) => batch.insertAll(db.card, companions));
 ```
 
 A `for` loop of single inserts inside a transaction is the anti-pattern — correct,

@@ -45,7 +45,7 @@ const _layerBuckets = <String, Set<String>>{
   'presentation': {'screens', 'controllers', 'states', 'providers', 'widgets'},
 };
 
-/// ADR-011 D8 (AD-15): the widget buckets, one level deep.
+/// ADR-011 D8: the widget buckets, one level deep.
 const _widgetBuckets = {'sections', 'items', 'overlays', 'support'};
 
 /// ADR-011 D3: the domain buckets another feature may import.
@@ -237,7 +237,7 @@ String? _featureShapeProblem(List<String> parts) {
 String? _widgetShapeProblem(List<String> parts) {
   if (parts.length < 2) return 'a file sits directly in widgets/';
   if (!_widgetBuckets.contains(parts.first)) {
-    return 'widgets/${parts.first}/ is not an AD-15 bucket';
+    return 'widgets/${parts.first}/ is not an ADR-011 D8 bucket';
   }
   return parts.length == 2 ? null : 'widget buckets are one level deep';
 }

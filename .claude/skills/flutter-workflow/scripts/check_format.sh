@@ -1,19 +1,29 @@
 #!/usr/bin/env bash
 # The one definition of *what the formatter looks at*, so the local gate and CI
-# cannot disagree about it: both call this script.
+# cannot disagree about it.
 #
-# The roots come from `git ls-files`, which lists the Dart files *this* working
-# tree tracks. `dart format .` would also walk the worktrees under
-# `.claude/worktrees/` (other branches' source, and their build output, which
-# Gradle deletes while it is being listed) and untracked build output. A new
-# top-level directory is picked up by itself; nothing is hardcoded.
+# **Why not `dart format .`.** Work on this repo runs in worktrees under
+# `.claude/worktrees/`, which are checkouts of this same repository on other
+# branches. `.` would hand the formatter another branch's source, so code that
+# is not in the working tree could turn the gate red, and it would walk into
+# those worktrees' `build/` output, where Gradle deletes directories while they
+# are being listed (`PathNotFoundException: Directory listing failed`).
 #
-# The paths are cut to their first segment, so the formatter gets a handful of
-# directories rather than hundreds of paths: on Windows that is the difference
-# between one process and "The command line is too long".
+# `git ls-files` answers exactly the right question — which Dart files does
+# *this* working tree track — and answers it again by itself when a new
+# top-level directory appears. Untracked build output is not listed, the
+# worktrees are excluded already, and nothing is hardcoded to go stale.
 #
-# Without git (an unpacked archive) there are no worktrees either, so `.` is the
-# fallback.
+# Cut to the first path segment so the formatter gets a handful of directories
+# rather than six hundred paths, which on Windows is the difference between one
+# process and "The command line is too long".
+#
+# **CI runs this too, and that is the point of the file.** A fresh clone has no
+# worktrees, so CI could run `dart format .`, but that would be a second
+# definition of the same check. One definition, one answer, both callers.
+#
+# A repo without git is a fresh unpacked archive, which has no worktrees either,
+# so `.` is the right fallback there.
 #
 # Usage: check_format.sh [--fix]
 # Exit:  0 formatted, 1 drift found (or a write failed under --fix).

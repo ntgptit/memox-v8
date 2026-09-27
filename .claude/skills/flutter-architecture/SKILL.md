@@ -28,7 +28,7 @@ lib/
     ├── data/                 # datasources/ mappers/ repositories/ models/
     ├── di/                   # flat: repository providers, typed as the contract
     └── presentation/         # screens/ controllers/ states/ providers/
-        └── widgets/          # exactly four buckets, one level deep (AD-15):
+        └── widgets/          # exactly four buckets, one level deep (ADR-011 D8):
                               #   sections/ items/ overlays/ support/
 ```
 
@@ -38,11 +38,11 @@ lib/
 | `domain/models/` | `_model`, `_scheduler`, `_mode` | value objects, stored-code enums, read models; `srs` schedulers, `study_mode` modes |
 | `domain/repositories/` | `_repository` | contracts, one implementation each |
 | `domain/failures/` | `_failure` | the feature's rejection-reason enum |
-| `domain/usecases/` | `_use_case` | one per UI interaction (AD-12) |
+| `domain/usecases/` | `_use_case` | one per UI interaction (ADR-011 D4) |
 | `data/datasources/` | `_dao`, `_data_source` | a DAO per bounded context |
 | `data/mappers/` | `_mapper` | row to entity, when the mapping is not trivial |
 | `data/repositories/` | `_repository_impl` | contract implementations; every write in one transaction |
-| `data/models/` | `_model` | DTOs; none while the app is local-only (ADR-001) |
+| `data/models/` | `_model` | DTOs, `json_serializable` (ADR-012); none in a feature yet, sync's are in `core/sync/` |
 | `di/` | `_provider` | repository providers; each constructs its implementation |
 | `presentation/screens/`, `controllers/`, `states/` | `_screen`, `_controller`, `_state` | a screen, its controllers, its state classes |
 | `presentation/providers/` | `_provider` | use-case providers |
@@ -52,12 +52,13 @@ Every feature file sits in a bucket of its layer; only `di/` is flat. No file
 sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
 feature root, and there are no barrels: another feature imports the bucket file
 it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
-`entities/deck.dart`. These wait for an ADR that opens the need:
-`core/network/`, `core/storage/`, `core/utils/`, `app/config/` and flavors,
-`app/di/`, `shared/models/`, `shared/extensions/`.
+`entities/deck.dart`. `core/network/` holds the one shared Dio client
+(ADR-012), and `core/sync/` the sync that uses it (ADR-013, ADR-014). These
+wait for an ADR that opens the need: `core/storage/`, `core/utils/`,
+`app/config/` and flavors, `app/di/`, `shared/models/`, `shared/extensions/`.
 
 **Placing a widget** is four questions asked in order, stopping at the first
-yes (AD-15, ratified for V8 by ADR-011 D8):
+yes (ADR-011 D8):
 
 1. Does it open *over* the screen (`showModalBottomSheet`/`showDialog`)? → `overlays/`
 2. Is it the repeated row of a list, or a part only that row uses? → `items/`
@@ -94,7 +95,7 @@ presentation ──► domain ◄── data
   repository implementation is constructed.
 - **presentation** may import its own `domain/` and `di/`, never `data/`. Every
   interaction it triggers, read or write, goes through exactly one use case
-  (AD-12, ADR-011 D4–D5): never to a DAO, never to Drift.
+  (ADR-011 D4–D5): never to a DAO, never to Drift.
 - **Between features**, a file may import another feature's
   `domain/{entities,models,repositories,failures}/`, file by file. A file in
   `presentation/` or `di/` may also import another feature's `di/`. Nothing
@@ -123,7 +124,7 @@ Clean Architecture here is a means, not the goal. The checklist says so
 explicitly, and it is the part most often ignored:
 
 - **A layer appears with its first real file, and a feature with a screen has
-  one use case per interaction** (AD-12, ratified by ADR-011 D4). A feature with
+  one use case per interaction** (ADR-011 D4). A feature with
   no screen has no `presentation/` and no `domain/usecases/`; nothing is
   scaffolded for later. Once a feature has a screen, every interaction goes
   through its own use case, reads and thin ones included, and no feature is
@@ -153,15 +154,20 @@ decision instead of an inconsistency.
 Guard clauses, early return, fail fast:
 
 ```dart
-Future<Deck> loadDeck(String id) async {
-  if (id.isEmpty) throw ArgumentError.value(id, 'id', 'must not be empty');
+Future<Outcome<DeckEntity, DeckRejection>> call(String deckId) async {
+  if (deckId.isEmpty) {
+    throw ArgumentError.value(deckId, 'deckId', 'must not be empty');
+  }
 
-  final deck = await _repository.findById(id);
-  if (deck == null) throw const NotFoundFailure(message: 'Deck not found');
+  final deck = await _decks.findById(deckId);
+  if (deck == null) return const Rejected(DeckRejection.notFound);
 
-  return deck;
+  return Ok(deck);
 }
 ```
+
+A missing deck is an expected outcome, so it is a `Rejected` reason
+(ADR-011 D6); an empty id is a programming error, so it throws.
 
 Avoid `else`. An `else` almost always means the guard was written as a branch
 instead of an exit — invert the condition and return early. Nested conditionals
@@ -213,15 +219,17 @@ because nothing is out of scope for a name that means nothing.
 
 ## Lint
 
-`references/analysis_options.yaml` is the configuration to copy into the project
-root. It turns on `strict-casts`, `strict-inference`, `strict-raw-types`, and
-promotes the rules that matter to `error`.
+The root `analysis_options.yaml` is what `flutter analyze` runs: the three
+`strict-*` modes (`strict-casts`, `strict-inference`, `strict-raw-types`) over
+`flutter_lints`, and a few rules. `references/analysis_options.yaml` is a
+stricter set that the root has not adopted: it enables more lints and promotes
+the ones that matter to `error`.
 
 It deliberately does **not** declare a `custom_lint` plugin. `custom_lint` and
-`riverpod_lint` are descoped: no published `custom_lint` supports `analyzer >=10`,
-which the generator stack requires. Do not add the block back: a plugin declared
-but not installed is silently ignored, so the rules look configured and never
-run.
+`riverpod_lint` are descoped: no published `custom_lint` supports
+`analyzer >=10`, which the generator stack requires. Do not add the block back:
+a plugin declared but not installed is silently ignored, so the rules look
+configured and never run.
 
 The Riverpod checks that `riverpod_lint` used to provide — `ref.read` inside
 `build()` being the one that matters most — are now owned by
