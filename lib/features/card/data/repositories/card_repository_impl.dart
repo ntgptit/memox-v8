@@ -2,7 +2,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
-import 'package:memox/features/card/data/repositories/card_command_recorder.dart';
+import 'package:memox/features/card/data/datasources/card_command_data_source.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
@@ -35,7 +35,7 @@ final class CardRepositoryImpl implements CardRepository {
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
        _detailDao = CardDetailDao(_db),
-       _commands = CardCommandRecorder(_db, now: now),
+       _commands = CardCommandDataSource(_db, now: now),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
@@ -44,7 +44,7 @@ final class CardRepositoryImpl implements CardRepository {
   final CardDao _dao;
   final CardListDao _listDao;
   final CardDetailDao _detailDao;
-  final CardCommandRecorder _commands;
+  final CardCommandDataSource _commands;
   final DateTime Function() _now;
 
   @override

@@ -5,8 +5,8 @@ import 'package:memox/core/sync/sync_outbox.dart';
 
 /// The sync commands and patches card writes record (BE-E7 spec §4.2), inside
 /// the caller's transaction and after its rows change.
-final class CardCommandRecorder {
-  CardCommandRecorder(AppDatabase db, {DateTime Function()? now})
+final class CardCommandDataSource {
+  CardCommandDataSource(AppDatabase db, {DateTime Function()? now})
     : _outbox = SyncOutboxWriter(db, now: now);
 
   final SyncOutboxWriter _outbox;
