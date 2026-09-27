@@ -46,7 +46,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 ## Capabilities and Constraints
 
-- **Local-only.** No network, no account, and one local profile. Drift (SQLite) is the source of truth (`ADR-001`). Login, multi-device sync, deck sharing and role permissions are out of MVP until a backend exists.
+- **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with the MemoX backend (`memox-api-services`) when connectivity is available. The backend is the canonical cross-device store; the local database is the device's operational store, online or offline (`ADR-013`). Login comes later; deck sharing and role permissions remain out of scope.
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
 - **Phones only, for now.** Tablet layouts (navigation rail, two-pane, wide layouts) are deferred by the owner (2026-09-24). On a tablet the app only needs to stay usable; the adaptive gap stays recorded in spec §9 row 63 until tablets are picked up.
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
