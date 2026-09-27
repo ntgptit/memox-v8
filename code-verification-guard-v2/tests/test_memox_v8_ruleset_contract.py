@@ -1,4 +1,5 @@
-"""Contract tests for the memox-v8 ruleset: it describes V8 and nothing else."""
+"""Contract tests for the memox-v8 ruleset: it describes V8 and nothing else,
+and it is the only MemoX ruleset beside V6's `memox`."""
 
 from __future__ import annotations
 
@@ -39,3 +40,9 @@ V7_MARKERS = {
 def test_memox_v8_cites_no_v7_decision_or_document() -> None:
     found = {name: _occurrences(pattern) for name, pattern in V7_MARKERS.items()}
     assert {name: hits for name, hits in found.items() if hits} == {}
+
+
+def test_the_memox_rulesets_are_v6_and_v8_only() -> None:
+    projects = RULESET_ROOT.parent
+    names = {path.name for path in projects.iterdir() if path.is_dir()}
+    assert {name for name in names if name.startswith("memox")} == {"memox", "memox-v8"}

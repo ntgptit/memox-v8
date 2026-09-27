@@ -195,5 +195,5 @@ changes, which is what you want for search-as-you-type.
 - [ ] Side effects in `ref.listen`, not `build`.
 - [ ] One-shot events consumed so they do not re-fire.
 - [ ] `select` used where only part of a state object is needed.
-- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7` clean —
+- [ ] `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean —
       `flutter analyze` does not cover these rules.

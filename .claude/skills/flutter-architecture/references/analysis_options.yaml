@@ -19,7 +19,7 @@
 #      is silently ignored, which is worse than not configuring it, because the
 #      rules look active and never run. Those checks now belong to
 #      code-verification-guard:
-#      `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v7`
+#      `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8`
 #
 #   3. Rules promoted to `error` under `errors:` are what "analyzer clean"
 #      means here. Demoting one is a project decision, not a local fix.
