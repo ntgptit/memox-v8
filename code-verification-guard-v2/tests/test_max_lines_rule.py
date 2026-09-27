@@ -69,9 +69,9 @@ def test_logical_count_drops_dartdoc_and_part_directives(tmp_path: Path):
     """Dartdoc is the dominant comment form in Flutter code, so it must not count.
 
     `///` is caught by the `//` prefix rather than by a rule of its own, which is
-    easy to break while tidying `_is_logical_source_line`. memox-v7 points its
-    main file-length gate at this mode precisely because one of its files is 400
-    raw lines and 56 logical ones, so this is the case that matters most there.
+    easy to break while tidying `_is_logical_source_line`. memox-v8 points its
+    file-length gates at this mode (`config/overrides.yaml`), because a
+    documented file is mostly dartdoc, so this is the case that matters most there.
     """
     source = tmp_path / "tokens.dart"
     source.write_text(

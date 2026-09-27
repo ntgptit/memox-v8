@@ -5890,5 +5890,78 @@
       }
     },
     "description": "Screen 07 tag filter sheet: the cards of this deck carrying a tag, 0 included (BE-B2 D3)."
+  },
+  "studyExitTitle": "Stop this session?",
+  "@studyExitTitle": {
+    "description": "The exit confirm dialog title (spec D8, owner ruling 2026-09-27)."
+  },
+  "studyExitBody": "Everything you answered is kept. Cards you haven't reached stay as they were.",
+  "@studyExitBody": {
+    "description": "The exit confirm dialog body."
+  },
+  "studyExitKeep": "Keep studying",
+  "@studyExitKeep": {
+    "description": "The exit confirm dialog: stay in the session."
+  },
+  "studyExitStop": "Stop",
+  "@studyExitStop": {
+    "description": "The exit confirm dialog: stop the session."
+  },
+  "cardCaptionAddMissing": "Add the missing field to enable save.",
+  "@cardCaptionAddMissing": {
+    "description": "Card edit footer caption when a required field is empty (kit 09)."
+  },
+  "cardDiscardEditedBody": "You edited {fields}. Leaving now keeps the card as it was saved.",
+  "@cardDiscardEditedBody": {
+    "placeholders": {
+      "fields": {
+        "type": "String"
+      }
+    },
+    "description": "Discard dialog body on Card edit, naming what changed (kit 09)."
+  },
+  "cardEditedPair": "{first} and {last}",
+  "@cardEditedPair": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    },
+    "description": "Joins the last two edited parts in the discard dialog."
+  },
+  "cardEditedSeparator": ", ",
+  "@cardEditedSeparator": {
+    "description": "Separates edited parts before the last pair in the discard dialog."
+  },
+  "cardEditedTerm": "the term",
+  "@cardEditedTerm": {
+    "description": "An edited part of a card: the front."
+  },
+  "cardEditedMeaning": "the meaning",
+  "@cardEditedMeaning": {
+    "description": "An edited part of a card: the back."
+  },
+  "cardEditedExample": "the example",
+  "@cardEditedExample": {
+    "description": "An edited part of a card: the example sentence."
+  },
+  "cardEditedHint": "the hint",
+  "@cardEditedHint": {
+    "description": "An edited part of a card: the hint."
+  },
+  "cardEditedPronunciation": "the pronunciation",
+  "@cardEditedPronunciation": {
+    "description": "An edited part of a card: the pronunciation."
+  },
+  "cardEditedFlag": "the flag",
+  "@cardEditedFlag": {
+    "description": "An edited part of a card: its flag."
+  },
+  "cardEditedTags": "the tags",
+  "@cardEditedTags": {
+    "description": "An edited part of a card: its tags."
   }
 }

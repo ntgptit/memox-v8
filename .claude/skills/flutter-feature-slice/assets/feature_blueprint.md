@@ -72,7 +72,7 @@ lib/features/<feature>/
 │   ├── repositories/   <name>_repository_impl.dart
 │   ├── mappers/        <name>_mapper.dart
 │   ├── datasources/    <name>_dao.dart
-│   └── models/         <name>_model.dart               (DTOs — none yet, AD-05)
+│   └── models/         <name>_model.dart               (DTOs — none yet, ADR-012)
 └── presentation/
     ├── screens/        <name>_screen.dart
     ├── controllers/    <name>_controller.dart
@@ -145,7 +145,7 @@ The `screens/` folder is preserved, not flattened.
 | `presentation/providers/` | **1 file** — the use-case wiring. |
 | `di/` | **1 file per contract the feature needs.** Declares the provider as the *domain type*, with a body that throws; the composition root binds it. Not `presentation/providers/`, because `provider_convention_test.dart` forbids `keepAlive` there and a repository handle has to be `keepAlive`. |
 | `data/datasources/` | the DAO. An abstract `LocalDataSource` over a Drift DAO would be an interface with one implementation and no second candidate. |
-| `data/models/` | **empty.** Drift's generated row class *is* the data model, and it lives in `core/database/` because the schema is shared across features. A per-feature DTO would be a second shape for one row, and `dio` is not a dependency (AD-05), so there is no wire format to model either. It gets files with the first real request. |
+| `data/models/` | **empty.** Drift's generated row class *is* the data model, and it lives in `core/database/` because the schema is shared across features. A per-feature DTO would be a second shape for one row, and `dio` is not a dependency (ADR-012), so there is no wire format to model either. It gets files with the first real request. |
 
 ### The use case layer
 
@@ -551,7 +551,7 @@ a sync layer:
 - an outbox table, a queue, a retry policy, a conflict resolution rule. Conflict
   policy is undecided and is a **product** question (which side wins when the same
   card was edited on two devices), not one to settle inside a feature's repository.
-- `dio`, and `data/remote/` (AD-05). `EnvConfig.apiBaseUrl` deliberately points at
+- `dio`, `retrofit` and a Retrofit `<name>_api.dart` in `data/datasources/` (ADR-012). `EnvConfig.apiBaseUrl` deliberately points at
   a `.invalid` host so a premature request fails at DNS instead of reaching
   something real.
 
@@ -1195,7 +1195,7 @@ decision, not an omission.
 reads are local SQLite and finish in single-digit milliseconds, so a skeleton
 would render a fake layout for less than a frame and then swap it — motion that
 says "slow" about something that is not. `MxAsyncView` uses a labelled spinner.
-Revisit when a read crosses a network; `dio` is deliberately absent today (AD-05).
+Revisit when a read crosses a network; `dio` is deliberately absent today (ADR-012).
 
 **No optimistic UI and no rollback.** An optimistic update buys the gap between
 "now" and "when the write lands". For a Drift write on the same isolate that gap

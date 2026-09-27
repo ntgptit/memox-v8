@@ -1104,5 +1104,20 @@
   "cardTagFilterLoadError": "Không tải được tag",
   "cardTagFilterEmptyTitle": "Không có thẻ nào mang các tag này",
   "cardClearTagFilter": "Bỏ lọc tag",
-  "cardTagFilterCount": "{count}"
+  "cardTagFilterCount": "{count}",
+  "studyExitTitle": "Dừng phiên này?",
+  "studyExitBody": "Mọi câu đã trả lời đều được giữ. Những thẻ chưa tới vẫn như cũ.",
+  "studyExitKeep": "Học tiếp",
+  "studyExitStop": "Dừng",
+  "cardCaptionAddMissing": "Điền trường còn thiếu để lưu.",
+  "cardDiscardEditedBody": "Bạn đã sửa {fields}. Rời đi bây giờ sẽ giữ thẻ như lần lưu trước.",
+  "cardEditedPair": "{first} và {last}",
+  "cardEditedSeparator": ", ",
+  "cardEditedTerm": "thuật ngữ",
+  "cardEditedMeaning": "nghĩa",
+  "cardEditedExample": "câu ví dụ",
+  "cardEditedHint": "gợi ý",
+  "cardEditedPronunciation": "phát âm",
+  "cardEditedFlag": "cờ",
+  "cardEditedTags": "nhãn"
 }

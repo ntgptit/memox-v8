@@ -139,12 +139,35 @@
       ]
     },
     {
+      "num": "08",
+      "dir": "08-card-create",
+      "title": "Card create",
+      "states": [
+        { "id": "emptyForm", "label": "Empty" },
+        { "id": "valid", "label": "Valid" },
+        { "id": "details", "label": "Details open" },
+        { "id": "validationErr", "label": "Back empty" },
+        { "id": "frontTooLong", "label": "Front too long" },
+        { "id": "tagLimit", "label": "10 tags" },
+        { "id": "deckRejects", "label": "Deck rejects" },
+        { "id": "saving", "label": "Saving" },
+        { "id": "saveFailed", "label": "Save failed" }
+      ]
+    },
+    {
       "num": "09",
       "dir": "09-card-edit",
       "title": "Card edit",
       "states": [
-        { "id": "delConfirm", "label": "Move to Trash" },
-        { "id": "notFound", "label": "Card gone" }
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "loadError", "label": "Load error" },
+        { "id": "notFound", "label": "Card gone" },
+        { "id": "validationErr", "label": "Validation" },
+        { "id": "dirtySaving", "label": "Saving" },
+        { "id": "saveFailed", "label": "Save failed" },
+        { "id": "discard", "label": "Discard" },
+        { "id": "delConfirm", "label": "Move to Trash" }
       ]
     },
     {
@@ -152,6 +175,12 @@
       "dir": "10-card-detail",
       "title": "Card detail",
       "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loadMore", "label": "More history" },
+        { "id": "loadMoreFailed", "label": "Load more failed" },
+        { "id": "empty", "label": "No history" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" },
         { "id": "notFound", "label": "Not found" }
       ]
     },

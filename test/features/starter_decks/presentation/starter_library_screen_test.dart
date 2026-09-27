@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';

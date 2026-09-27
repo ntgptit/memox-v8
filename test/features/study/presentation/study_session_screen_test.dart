@@ -139,9 +139,9 @@ void main() {
     );
   });
 
-  libraryTest('✕ abandons at once and the same screen shows "You left '
-      'early"; the turn taken stays, and the entry offers no Continue '
-      '(IT-CONT-004; owner ruling on D8; UC-STUDY-001 A3)', (
+  libraryTest('✕ asks first; Stop abandons and the same screen shows "You '
+      'left early"; the turn taken stays, and the entry offers no Continue '
+      '(IT-CONT-004; owner ruling 2026-09-27 on D8; UC-STUDY-001 A3)', (
     tester,
     env,
   ) async {
@@ -151,6 +151,9 @@ void main() {
 
     await tester.tap(find.byTooltip(_en.studySessionClose));
     await tester.pumpAndSettle();
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    await tester.tap(find.text(_en.studyExitStop));
+    await tester.pumpAndSettle();
 
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     final session = await sessionOf(env.db, id);
@@ -158,15 +161,38 @@ void main() {
     await _expectLeftForGood(env, id);
   });
 
-  libraryTest('system Back mid-session keeps the ✕ contract: it abandons, '
-      'the turn taken stays, no Continue; Back on the summary is Done, '
-      'never a return to a closed session (IT-NAV-010)', (tester, env) async {
+  libraryTest('Keep studying in the exit dialog changes nothing: the '
+      'session stays open on the same card (IT-CONT-004)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    await _pumpScreen(tester, env, id);
+    final front = _front(tester);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyExitTitle), findsNothing);
+    expect(_front(tester), front);
+    final session = await sessionOf(env.db, id);
+    expect(session.read<String>('status'), 'in_progress');
+  });
+
+  libraryTest('system Back mid-session keeps the ✕ contract: it asks, Stop '
+      'abandons, the turn taken stays, no Continue; Back on the summary is '
+      'Done, never a return to a closed session (IT-NAV-010)', (
+    tester,
+    env,
+  ) async {
     final id = await _session(env, ['a', 'b']);
     final done = <String>[];
     await _pumpScreen(tester, env, id, onDone: done.add);
     await _swipeLeft(tester);
 
     await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    await tester.tap(find.text(_en.studyExitStop));
     await tester.pumpAndSettle();
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     await _expectLeftForGood(env, id);
