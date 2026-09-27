@@ -150,6 +150,13 @@ final class MxTextStyles {
     color: isReached ? _scheme.onSurface : _scheme.onSurfaceVariant,
   );
 
+  /// A day bar's label (kit 22): 12, onSurfaceVariant, at 700 on the current
+  /// day.
+  TextStyle dayLabel({required bool isCurrent}) => AppTypography.withWeight(
+    _texts.labelSmall!,
+    isCurrent ? FontWeight.w700 : FontWeight.w400,
+  ).copyWith(color: _scheme.onSurfaceVariant);
+
   /// The number on an import step's dot (kit 11): the counter in [ink].
   TextStyle stepNumber(Color ink) => counter.copyWith(color: ink);
 
