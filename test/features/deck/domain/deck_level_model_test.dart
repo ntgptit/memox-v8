@@ -15,6 +15,7 @@ DeckTile _tile(
   int newCards = 0,
   int overdue = 0,
   int dueToday = 0,
+  int mastered = 0,
   DateTime? oldestDueAt,
 }) => DeckTile(
   id: id,
@@ -27,6 +28,7 @@ DeckTile _tile(
   newCount: newCards,
   overdueCount: overdue,
   dueTodayCount: dueToday,
+  masteredCount: mastered,
   oldestDueAt: oldestDueAt,
   startOfToday: _today,
 );
@@ -124,6 +126,26 @@ void main() {
       expect(_ids(level), ['z', 'y', 'w', 'x']);
     });
 
+    test('progress puts the least mastered first, decks with no card last, '
+        'then the manual order (BR-DECK-027)', () {
+      final level = DeckLevel.of([
+        _tile('empty', position: 0),
+        _tile('full', position: 1, cards: 10, mastered: 10),
+        _tile('half', position: 2, cards: 4, mastered: 2),
+        _tile('none', position: 3, cards: 5),
+        _tile('halfToo', position: 4, cards: 2, mastered: 1),
+        _tile('sliver', position: 5, cards: 10000, mastered: 1),
+      ], sort: DeckLevelSort.progress);
+      expect(_ids(level), [
+        'none',
+        'sliver',
+        'half',
+        'halfToo',
+        'full',
+        'empty',
+      ]);
+    });
+
     test('equal names keep the manual order', () {
       final level = DeckLevel.of([
         _tile('second', name: 'Same', position: 1),
@@ -167,6 +189,36 @@ void main() {
         (1, 1, 1, 2),
       );
       expect(level.maxOverdueDays, 1);
+    });
+  });
+
+  group('mastery (BR-DECK-026)', () {
+    test('a tile is mastered over every card, and has none with no card', () {
+      expect(_tile('e').masteryFraction, isNull);
+      expect(_tile('n', cards: 5).masteryFraction, 0);
+      expect(
+        _tile('h', cards: 1248, mastered: 204).masteryFraction,
+        closeTo(0.1635, 0.0001),
+      );
+      expect(_tile('f', cards: 10, mastered: 10).masteryFraction, 1);
+    });
+
+    test('the level sums every deck, whatever the filter; 0 with no card', () {
+      final tiles = [
+        _tile(
+          'due',
+          cards: 4,
+          mastered: 1,
+          overdue: 1,
+          oldestDueAt: DateTime(2026, 9, 20),
+        ),
+        _tile('idle', cards: 6, mastered: 3),
+      ];
+      final level = DeckLevel.of(tiles, filter: DeckLevelFilter.due);
+
+      expect((level.cardCount, level.masteredCount), (10, 4));
+      expect(level.masteryFraction, 0.4);
+      expect(DeckLevel.of([_tile('e')]).masteryFraction, 0);
     });
   });
 

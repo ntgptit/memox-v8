@@ -21,8 +21,9 @@ Success means:
   result is what every device ends with;
 - the SRS schedule computed by Dart and by Java agrees on a shared
   conformance dataset, and CI fails when they diverge;
-- the infrastructure of the deck sync slice
-  ([PR #110](https://github.com/ntgptit/memox-v8/pull/110)) is kept and
+- the infrastructure of the deck sync slices, server
+  ([PR #110](https://github.com/ntgptit/memox-v8/pull/110)) and app
+  ([PR #114](https://github.com/ntgptit/memox-v8/pull/114)), is kept and
   extended, not rewritten.
 
 Out of scope: designing a web client, login (its own spec), and the detailed
@@ -112,7 +113,11 @@ Results:
 - `{"opId": "…", "status": "rejected", "code": "DECK_PARENT_MISSING", "current": [{"entityType": "deck", "entityId": "…", "serverVersion": 40, "deleted": false, "row": {…}}, …]}`.
   `current` holds the server's copy of every entity in `affected`, and only
   of entities the user owns. An entity the server has never seen is returned
-  with `row: null`.
+  with `row: null`. What the client does with such an entity is decided in
+  the spec of step 1: deleting it cascades local children that may never have
+  been pushed, and keeping it, as the app deck slice
+  ([PR #114](https://github.com/ntgptit/memox-v8/pull/114)) does, leaves the
+  device diverged from the server.
 - **Each operation stands alone.** A rejection does not stop the batch. Later
   operations are validated on their own merits against the server's state.
   The client overwrites or deletes its local copy of each entity in `current`,
@@ -132,13 +137,20 @@ Results:
   its `current`.
 - Network errors, 5xx responses and backoff are unchanged (server sync design
   §4.3).
+- **Capture.** The app deck slice captures row changes with SQLite triggers,
+  because deck rows change from many places and a trigger cannot be
+  forgotten. A command must be written by the use case that performs the
+  operation, which can be forgotten. The spec of step 2 decides how that is
+  guarded: a test or guard that catches a change with no command, or triggers
+  kept as a safety net.
 
 ### 4.3 Pull: canonical state
 
 `GET /api/v1/sync/changes` is unchanged: a per-user change feed of whole rows
 ordered by `serverVersion`, including tombstones.
 
-- **One transaction per pull run.** The client fetches every page until
+- **One transaction per pull run** (the app deck slice commits per page;
+  step 2 changes it). The client fetches every page until
   `hasMore` is false, and applies them in one Drift transaction with
   `PRAGMA defer_foreign_keys = ON`. It stores `nextSince` only on commit.
 - **Why:** a row carries the version of its latest change only, so a child
@@ -270,9 +282,9 @@ with its own spec and plan:
 1. Command protocol and Deck: `command` and `patch` in push, handler
    registry, deck commands through `DeckService`, deck REST, `Idempotency-Key`;
    retire the deck row upsert.
-2. App: the deck sync slice on the command protocol (the Drift migration of
-   the server sync design §8, with `sync_outbox` holding `seq`, `kind`, `type`,
-   `payload`, `affected`).
+2. App: move the deck sync slice of PR #114 to the command protocol
+   (`sync_outbox` holding `seq`, `kind`, `type`, `payload`, `affected`;
+   capture; pull per run).
 3. Card and Tags, including duplicate tag names.
 4. Auth, before any deployment and before a second client.
 5. Trash, including the expired-purge job.

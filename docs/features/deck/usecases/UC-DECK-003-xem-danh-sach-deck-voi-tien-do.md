@@ -2,8 +2,8 @@
 id: UC-DECK-003
 title: Xem danh sách deck với tiến độ
 status: ready
-rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-STUDY-008, BR-STUDY-051]
-code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart]
+rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUDY-008, BR-STUDY-051]
+code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/models/deck_level_model.dart, lib/features/deck/domain/models/deck_level_query_model.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
@@ -28,7 +28,12 @@ code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/fea
    Overdue/Due today/New/Scheduled theo BR-STUDY-068 — lưới 2×2, mỗi hàng căn theo
    alphabetic baseline; Scheduled là tập trung tính, không actionable và không
    bao giờ là primary metric.
-4. Mở một deck hiển thị nội dung theo `content_type`: danh sách deck con, hoặc
+4. Mỗi deck có một thanh mastery: số thẻ `mastered` trên mọi thẻ của cây
+   (BR-DECK-026). Deck rỗng chỉ vẽ track. Thanh không có chữ, nên hàng đọc
+   "{n}% mastered" cho trình đọc màn hình.
+5. Mở một deck chứa deck con hiển thị ở tóm tắt một donut mastery của cả level,
+   cạnh dòng "Mastered · {thuật toán}".
+6. Mở một deck hiển thị nội dung theo `content_type`: danh sách deck con, hoặc
    danh sách card, không bao giờ cả hai (BR-DECK-011).
 
 ## Alternative / Error flow
@@ -40,6 +45,9 @@ code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/fea
   không cần refresh thủ công.
 - **A3 — Cây sâu nhiều cấp:** điều hướng xuống từng cấp; số liệu gộp luôn tính
   theo `root_id` (BR-DECK-002, BR-DECK-003).
+- **A4 — Sắp xếp và lọc:** Manual, Newest, Name, Most due hoặc Progress
+  (BR-DECK-027), cùng bộ lọc chỉ giữ deck có thẻ đến hạn. Mọi sort kết thúc bằng
+  thứ tự thủ công.
 
 **Error flows:**
 - **E1 — Đọc thất bại:** màn hình lỗi có nút thử lại.

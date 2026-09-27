@@ -1,0 +1,77 @@
+import 'deck.drift';
+import 'trash.drift';
+
+-- App deck-sync spec §3: one pending operation per synced row. A write
+-- replaces op_id (so an acknowledgement of an older push cannot remove it)
+-- and keeps created_at (so a parent stays ahead of its child).
+CREATE TABLE sync_outbox (
+  op_id TEXT NOT NULL PRIMARY KEY,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  op TEXT NOT NULL CHECK (op IN ('upsert', 'delete')),
+  created_at DATETIME NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  UNIQUE (entity_type, entity_id)
+) AS SyncOutboxEntry;
+
+CREATE TABLE sync_state (
+  -- `name`, not `key`: KEY is reserved in drift's SQL parser.
+  name TEXT NOT NULL PRIMARY KEY,
+  value TEXT NOT NULL
+) AS SyncStateEntry;
+
+-- A random version-4 UUID for op_id, written out in each trigger because
+-- SQLite has no function for it.
+CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;

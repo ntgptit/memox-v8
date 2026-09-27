@@ -182,7 +182,7 @@ trả lời được mọi lookup cũ, giữ cả hai chỉ khiến mỗi insert
 | `deck_id` | TEXT NOT NULL | → `deck(id)` ON DELETE CASCADE. Chỉ deck có `content_type = 'card'` (BR-DECK-009) |
 | `front` | TEXT NOT NULL | BR-CARD-001, BR-CARD-002 |
 | `back` | TEXT NOT NULL | BR-CARD-001, BR-CARD-002 |
-| `front_folded` | TEXT NOT NULL DEFAULT '' | `front` đã trim + hạ hoa bằng Dart. Search so trên cột này |
+| `front_folded` | TEXT NOT NULL DEFAULT '' | `front` đã trim, chuẩn hoá NFC rồi hạ hoa bằng Dart (`foldText`, BE-C5). Search so trên cột này |
 | `back_folded` | TEXT NOT NULL DEFAULT '' | Như trên, cho `back` |
 | `is_flagged` | INTEGER NOT NULL DEFAULT 0 | 0 \| 1. Cờ người dùng đánh dấu (BR-CARD-009) |
 | `example` | TEXT NULL | Tuỳ chọn (BR-CARD-003) |
@@ -199,6 +199,9 @@ lưu `CÔNG NGHỆ` không tìm ra được bằng `công nghệ`, trong khi th�
 tìm được. Fold cả hai vế trong Dart biến phép so thành byte-for-byte và đúng cho
 mọi bảng chữ cái. Đây đúng là lập luận `tags.name_folded` đã dùng (BR-TAG-001),
 áp cho hai mặt thẻ.
+
+Mọi text người dùng lưu ở dạng NFC (`storedText`), và migration v4 → v5 đưa dữ liệu
+cũ về dạng đó, gộp các tag trùng tên sau chuẩn hoá (BE-C5).
 
 Chỉ hạ hoa, **không** bỏ dấu: `công` vẫn không khớp `cong`. Tìm kiếm không dấu là
 quyết định sản phẩm (S1), không phải hệ quả phụ của một bản vá.
@@ -240,7 +243,7 @@ không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
 |---|---|---|
 | `id` | TEXT PK | UUID sinh phía client |
 | `name` | TEXT NOT NULL | BR-TAG-001. Lưu nguyên dạng người dùng gõ |
-| `name_folded` | TEXT NOT NULL | `lower(trim(name))`. Cột để **cưỡng chế** unique |
+| `name_folded` | TEXT NOT NULL | `foldText(name)`: trim, NFC, hạ hoa (BE-C5). Cột để **cưỡng chế** unique |
 | `owner_id` | TEXT NULL | NULL = local profile |
 | `created_at` | DATETIME NOT NULL | UTC |
 
@@ -565,6 +568,29 @@ hoặc `card_limit` ngoài 1–200 (BR-STUDY-003) làm giá trị ghi đè **kh�
 giá trị hiệu lực là giá trị của bảng này, và việc đọc MUST NOT sửa text đã lưu
 (IT-STUDY-013). Cột chỉ đổi khi người dùng lưu tuỳ chọn của root hoặc chọn
 `Use app defaults` (UC-SETTINGS-001 A1). Khoá lạ bị bỏ qua.
+
+## `sync_outbox` và `sync_state` (ADR-013)
+
+Hàng đợi đồng bộ và trạng thái sync
+([app deck-sync spec](../../superpowers/specs/2026-09-27-app-deck-sync-design.md) §3).
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
+| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` |
+| `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
+| `op` | TEXT NOT NULL | `upsert` \| `delete` |
+| `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
+| `attempts` | INTEGER NOT NULL | số lần push lỗi |
+
+`sync_state(name, value)` giữ `device_id`, cursor `since` và cờ tạm
+`applying_remote`.
+
+Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck` và `delete_batches` ghi outbox
+trong cùng transaction với mọi lần ghi, kể cả CTE, cascade và purge, trừ khi có
+`applying_remote` (dữ liệu từ server). `deck.server_version` và
+`delete_batches.server_version` là version server đã xác nhận; NULL là chưa
+từng được xác nhận.
 
 ## Bất biến — phải kiểm tra được bằng query
 

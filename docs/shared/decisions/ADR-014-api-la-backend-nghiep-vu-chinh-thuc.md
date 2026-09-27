@@ -32,8 +32,8 @@ Các dòng #3, #6, #7, #9, #10 của ADR-013 giữ nguyên.
 - Logic nghiệp vụ nằm ở hai nơi, Dart và Java. Để chúng không lệch nhau:
   - BR vẫn là nguồn luật duy nhất, và mọi service ở server dẫn BR của nó;
   - riêng SRS có bộ dữ liệu test dùng chung.
-- Hạ tầng của lát cắt deck ([PR #110](https://github.com/ntgptit/memox-v8/pull/110))
-  được giữ: idempotency theo `opId`, gom lô, `server_version`, cursor, tuần tự theo
+- Hạ tầng của lát cắt deck ở server ([PR #110](https://github.com/ntgptit/memox-v8/pull/110))
+  và ở app ([PR #114](https://github.com/ntgptit/memox-v8/pull/114)) được giữ: idempotency theo `opId`, gom lô, `server_version`, cursor, tuần tự theo
   user, `CurrentUserProvider`, `rejected` kèm `current`. `SyncEntityHandler` phát
   triển thành handler theo lệnh. Upsert hàng của deck được thay bằng các lệnh deck.
 - `wbs_API.md` xếp hạng mục theo nghiệp vụ; phía app của sync ở `wbs_BE.md`.
