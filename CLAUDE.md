@@ -166,8 +166,9 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
 - **They are reference material, not process.** When one conflicts with the
   rest of this file, this file wins: Superpowers and Impeccable own the
   workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
-  (ADR-010, ADR-011) and the guard. For example, V8 uses Riverpod and Drift,
-  not BLoC, Dio or Freezed.
+  (ADR-010, ADR-011, ADR-012) and the guard. For example, V8 uses Riverpod
+  and Drift, not BLoC or Freezed, and calls APIs through Retrofit on one shared
+  Dio client (ADR-012), never with hand-written Dio calls.
 - **Java/Spring skills apply to `memox-api-services/` only**
   ([Backend API](#backend-api-memox-api-services)), never to the Flutter app.
   The repo's own `spring-boot-mybatis-review` skill wins over the ECC

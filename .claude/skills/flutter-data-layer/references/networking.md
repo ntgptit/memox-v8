@@ -32,6 +32,33 @@ request can hang until the OS gives up — minutes of a spinner.
 Expose it as a single `keepAlive` provider. Multiple Dio instances mean multiple
 interceptor chains, and a token refreshed on one is not applied to the others.
 
+## Endpoints: Retrofit interfaces, never hand-written Dio calls (ADR-012)
+
+Each group of endpoints is a Retrofit interface in the feature's
+`data/datasources/`; `retrofit_generator` writes the calls. Features never call
+`dio.get`/`dio.post` themselves.
+
+```dart
+part 'deck_api.g.dart';
+
+@RestApi()
+abstract class DeckApi {
+  factory DeckApi(Dio dio) = _DeckApi;
+
+  @GET('/api/v1/decks')
+  Future<DeckPageModel> findDecks(@Query('page') int page, @Query('size') int size);
+
+  @POST('/api/v1/decks')
+  Future<DeckModel> createDeck(@Body() CreateDeckRequestModel request);
+}
+
+@Riverpod(keepAlive: true)
+DeckApi deckApi(Ref ref) => DeckApi(ref.watch(dioProvider));
+```
+
+DTOs (`DeckModel`, …) are `json_serializable` classes in `data/models/`, not
+Freezed; the repository maps them to entities and catches `DioException`.
+
 ## Interceptors
 
 **Request ID** — attach a UUID per request and log it. When a user reports a
