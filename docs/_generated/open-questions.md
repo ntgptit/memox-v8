@@ -24,7 +24,7 @@
 
 ## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
 
-- L67: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L75: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
 
 ## [features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md](../features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md)
 

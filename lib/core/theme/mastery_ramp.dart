@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// The single-colour mastery ramp (V3 MasteryRamp utility). One threshold
@@ -12,15 +13,32 @@ abstract final class MasteryRamp {
   static const double _masteredFrom = 0.67;
 
   /// The flat fill for [fraction] in `[0, 1]`, or null at 0, where only the
-  /// track is painted. Never a gradient.
-  static Color? fill(MxSemanticColors semantic, double fraction) {
+  /// track is painted. Never a gradient. The learning band is the learning
+  /// ink: the kit's amber is 1.73:1 on the track in light (deck mastery
+  /// spec R4); in dark the ink is the amber itself.
+  static Color? fill(
+    MxSemanticColors semantic,
+    MxDerivedColors derived,
+    double fraction,
+  ) {
     if (fraction.isNaN || fraction < 0 || fraction > 1) {
       throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
     }
     if (fraction == 0) return null;
-    if (fraction < _reviewingFrom) return semantic.statusLearning;
+    if (fraction < _reviewingFrom) return derived.statusLearningInk;
     if (fraction < _masteredFrom) return semantic.statusReviewing;
     return semantic.statusMastered;
+  }
+
+  /// [fraction] as a whole percent that never rounds to a lie: 0 only at 0,
+  /// 100 only at 1, and 1…99 between (deck mastery spec D13).
+  static int percent(double fraction) {
+    if (fraction.isNaN || fraction < 0 || fraction > 1) {
+      throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
+    }
+    if (fraction == 0) return 0;
+    if (fraction == 1) return 100;
+    return (fraction * 100).round().clamp(1, 99);
   }
 
   /// The unfilled track (progress-track = surfaceContainerHigh).

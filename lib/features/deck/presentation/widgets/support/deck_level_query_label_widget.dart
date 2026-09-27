@@ -8,5 +8,6 @@ extension DeckLevelQueryLabel on AppLocalizations {
     DeckLevelSort.name => deckSortName,
     DeckLevelSort.recent => deckSortRecent,
     DeckLevelSort.due => deckSortDue,
+    DeckLevelSort.progress => deckSortProgress,
   };
 }

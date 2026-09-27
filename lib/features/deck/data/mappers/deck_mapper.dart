@@ -39,6 +39,7 @@ DeckTile deckTileOf(DeckTileRow row, DateTime startOfToday) => DeckTile(
   newCount: row.newCount,
   overdueCount: row.overdueCount,
   dueTodayCount: row.dueTodayCount,
+  masteredCount: row.masteredCount,
   oldestDueAt: row.oldestDueAt,
   startOfToday: startOfToday,
 );

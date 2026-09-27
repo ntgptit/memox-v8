@@ -23,7 +23,9 @@ WHERE id = :deck_id AND delete_batch_id IS NULL;
 -- root_id in one statement. The sets are those of BR-STUDY-047 and
 -- BR-STUDY-051: New is an unlearned card; Due is a learned card whose due_at
 -- is at or before :now, Overdue before :start_of_today and Due today from it
--- on (BR-STUDY-068). Both come from Dart (BR-STUDY-068).
+-- on (BR-STUDY-068). Both come from Dart (BR-STUDY-068). Mastered is a
+-- learned card at box 8 or 128+ days (BR-DECK-026, BR-SRS-013); the literals
+-- match CardDisplayStatus, which a parity test pins.
 deckLevelOfRoots(:start_of_today AS DATETIME, :now AS DATETIME)
   AS DeckTileRow:
 SELECT
@@ -34,6 +36,7 @@ SELECT
   COALESCE(t.new_count, 0) AS new_count,
   COALESCE(t.overdue_count, 0) AS overdue_count,
   COALESCE(t.due_today_count, 0) AS due_today_count,
+  COALESCE(t.mastered_count, 0) AS mastered_count,
   t.oldest_due_at AS oldest_due_at
 FROM deck d
 LEFT JOIN (
@@ -44,6 +47,8 @@ LEFT JOIN (
       AND cs.due_at < :start_of_today) AS overdue_count,
     COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
       AND cs.due_at >= :start_of_today AND cs.due_at <= :now) AS due_today_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND (cs.current_box >= 8 OR cs.interval_days >= 128)) AS mastered_count,
     MIN(cs.due_at) FILTER (WHERE cs.learned_at IS NOT NULL
       AND cs.due_at <= :now) AS oldest_due_at
   FROM card c
@@ -75,6 +80,8 @@ counts AS (
       AND cs.due_at < :start_of_today) AS overdue_count,
     COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
       AND cs.due_at >= :start_of_today AND cs.due_at <= :now) AS due_today_count,
+    COUNT(*) FILTER (WHERE cs.learned_at IS NOT NULL
+      AND (cs.current_box >= 8 OR cs.interval_days >= 128)) AS mastered_count,
     MIN(cs.due_at) FILTER (WHERE cs.learned_at IS NOT NULL
       AND cs.due_at <= :now) AS oldest_due_at
   FROM tree
@@ -90,6 +97,7 @@ SELECT
   COALESCE(counts.new_count, 0) AS new_count,
   COALESCE(counts.overdue_count, 0) AS overdue_count,
   COALESCE(counts.due_today_count, 0) AS due_today_count,
+  COALESCE(counts.mastered_count, 0) AS mastered_count,
   counts.oldest_due_at AS oldest_due_at
 FROM deck d
 JOIN deck r ON r.id = d.root_id AND r.delete_batch_id IS NULL

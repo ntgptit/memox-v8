@@ -177,7 +177,6 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
 | BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
@@ -244,6 +243,10 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
 - **Cập nhật ngày 2026-09-27:** BE-C5 xong trong gói G1 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): text lưu và fold ở dạng NFC qua `unorm_dart`, migration v4 → v5 (chỉ đổi dữ liệu) gộp tag trùng, Fill so khớp phiên bản 2. Điểm chặn BE-C5 đóng theo quyết định của chủ dự án.
 - **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
+- **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
+  (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
+  trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));
+  không đổi schema.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

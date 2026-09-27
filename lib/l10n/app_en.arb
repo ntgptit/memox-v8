@@ -140,6 +140,10 @@
   "@deckSortDue": {
     "description": "Deck order: most due cards first."
   },
+  "deckSortProgress": "Progress",
+  "@deckSortProgress": {
+    "description": "Deck order: least mastered first (BR-DECK-027)."
+  },
   "deckCreateRootTitle": "New deck",
   "@deckCreateRootTitle": {
     "description": "Title of the new top-level deck dialog."
@@ -1800,7 +1804,25 @@
   "deckRowEmpty": "Empty · add cards or a sub-deck",
   "@deckRowEmpty": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckRowEmpty."
+  },  "deckRowMastered": "{percent}% mastered",
+  "@deckRowMastered": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 01: what a deck row's mastery bar says to TalkBack (BR-DECK-026)."
   },
+  "deckSummaryMastered": "Mastered · {algorithm}",
+  "@deckSummaryMastered": {
+    "placeholders": {
+      "algorithm": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 01: the open deck's summary overline beside the mastery donut."
+  },
+
   "deckDueBadge": "{count} due",
   "@deckDueBadge": {
     "placeholders": {
@@ -1847,6 +1869,10 @@
   "deckSortNameHint": "A → Z",
   "@deckSortNameHint": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckSortNameHint."
+  },
+  "deckSortProgressHint": "Least mastered first",
+  "@deckSortProgressHint": {
+    "description": "Screen handoff 01: the Progress sort's sub-line (BR-DECK-027)."
   },
   "deckFilterDueOnlyTitle": "Only decks with due cards",
   "@deckFilterDueOnlyTitle": {
@@ -4880,6 +4906,15 @@
       }
     },
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, a review completed."
+  },
+  "summaryReviewAtLimitBody": "You reviewed {cards} — the session limit.",
+  "@summaryReviewAtLimitBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 21 large: hero body, a review completed at the session's card limit (BR-STUDY-024)."
   },
   "summaryLearningFinished": "Learning finished",
   "@summaryLearningFinished": {

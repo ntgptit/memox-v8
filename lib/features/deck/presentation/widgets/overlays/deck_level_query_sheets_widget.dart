@@ -27,12 +27,13 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
 
   final String? parentId;
 
-  /// The handoff's order: manual, date added, name, most due.
+  /// The handoff's order: manual, date added, name, most due, progress.
   static const _sorts = [
     DeckLevelSort.manual,
     DeckLevelSort.recent,
     DeckLevelSort.name,
     DeckLevelSort.due,
+    DeckLevelSort.progress,
   ];
 
   DeckLevelQuery _query(WidgetRef ref) =>
@@ -74,7 +75,6 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
               description: _hint(l10n, sort),
               isSelected: sort == query.sort,
               onSelected: () => _query(ref).sortBy(sort),
-              // The progress sort waits under Coming soon (spec A4, amended).
               hasDivider: sort != _sorts.last,
             ),
           Padding(
@@ -117,5 +117,6 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
         DeckLevelSort.recent => l10n.deckSortRecentHint,
         DeckLevelSort.name => l10n.deckSortNameHint,
         DeckLevelSort.due => null,
+        DeckLevelSort.progress => l10n.deckSortProgressHint,
       };
 }

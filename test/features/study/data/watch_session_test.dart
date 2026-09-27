@@ -261,6 +261,25 @@ void main() {
     );
   });
 
+  test('the summary carries the card_limit fixed when the session opened '
+      '(BR-STUDY-024, handoff 21 large)', () async {
+    final (_, leaf) = await tree(SchedulerType.sm2);
+    for (final id in ['c1', 'c2']) {
+      await insertCard(db, id: id, deckId: leaf.id);
+    }
+    final id = await learning(leaf);
+    await db.customStatement(
+      'UPDATE study_session SET card_limit = 7 WHERE id = ?',
+      [id],
+    );
+    expect(
+      await sessions.abandonSession(sessionId: id),
+      isA<Ok<void, StudyRejection>>(),
+    );
+
+    expect((await viewOf(id)).summary!.cardLimit, 7);
+  });
+
   test('a session whose current cards were deleted is stalled until '
       'Continue settles it (spec D12)', () async {
     final (_, leaf) = await tree();
