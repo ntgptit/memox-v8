@@ -93,9 +93,10 @@ rules:
     scopes:
       - dart_lib
     # `kind` or any `…Kind` given a value (`:` or a single `=`) from a
-    # comparison of the boxes or the interval.
+    # comparison of the boxes or the interval. A comment line that quotes the
+    # inference is prose.
     patterns:
-      - '\b(?:kind|[A-Za-z_][A-Za-z0-9_]*Kind)\s*(?::|=(?!=))[^;]*\b(?:previousBox|nextBox|currentBox|intervalDays)\s*[!=]='
+      - '^(?!\s*(?://|\*)).*\b(?:kind|[A-Za-z_][A-Za-z0-9_]*Kind)\s*(?::|=(?!=))[^;]*\b(?:previousBox|nextBox|currentBox|intervalDays)\s*[!=]='
     tags:
       - memox
       - data-model
@@ -145,10 +146,11 @@ rules:
       - presentation_files
     # A set written out: the values side by side with nothing but commas
     # between them, on one line or over several. A `switch` that maps each
-    # action to its label puts `=>` between them and stays legal.
+    # action to its label puts `=>` between them and stays legal, and a list
+    # that starts on a comment line is prose.
     patterns:
-      - 'Sm2Action\.again\s*,\s*Sm2Action\.hard\s*,\s*Sm2Action\.good\s*,\s*Sm2Action\.easy\b'
-      - 'EightBoxAction\.forgotten\s*,\s*EightBoxAction\.remembered\b'
+      - '^(?![ \t]*(?://|\*))[^\n]*?Sm2Action\.again\s*,\s*Sm2Action\.hard\s*,\s*Sm2Action\.good\s*,\s*Sm2Action\.easy\b'
+      - '^(?![ \t]*(?://|\*))[^\n]*?EightBoxAction\.forgotten\s*,\s*EightBoxAction\.remembered\b'
     mode: file
     tags:
       - memox

@@ -150,6 +150,14 @@ def test_review_actions_leave_the_label_switch_and_supported_actions_alone(tmp_p
     assert not _violations(ACTIONS, tmp_path, SCREEN, good)
 
 
+def test_review_actions_leave_a_comment_that_quotes_the_set_alone(tmp_path: Path) -> None:
+    good = """
+  // Never [Sm2Action.again, Sm2Action.hard, Sm2Action.good, Sm2Action.easy]:
+  /// nor EightBoxAction.forgotten, EightBoxAction.remembered by hand.
+"""
+    assert not _violations(ACTIONS, tmp_path, SCREEN, good)
+
+
 def test_review_kind_goes_red_when_inferred_from_the_boxes(tmp_path: Path) -> None:
     for bad in (
         "final kind = previousBox == nextBox ? ReviewKind.relearning : ReviewKind.scheduled;\n",
@@ -165,5 +173,13 @@ def test_review_kind_leaves_the_stored_and_session_kinds_alone(tmp_path: Path) -
         kind: ReviewKind.scheduled,
     kind: round > 1 ? ReviewKind.relearning : ReviewKind.scheduled,
   final kind = turn.kind;
+"""
+    assert not _violations(KIND, tmp_path, MODEL, good)
+
+
+def test_review_kind_leaves_a_comment_that_quotes_the_inference_alone(tmp_path: Path) -> None:
+    good = """
+  // Never `kind = previousBox == nextBox ? …`: a box-8 turn would read as relearning.
+  /// The kind: previousBox != nextBox is not how a turn is labelled.
 """
     assert not _violations(KIND, tmp_path, MODEL, good)
