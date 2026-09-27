@@ -84,6 +84,7 @@ docs/
 ├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
 ├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
 ├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
+├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
