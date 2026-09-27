@@ -6,11 +6,13 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Builder;
 
 /**
  * A deck row on the sync wire, mirroring Drift's {@code deck} columns and stored values. {@code rootId} and
  * {@code depth} are derived by the server: ignored on push, authoritative on pull.
  */
+@Builder
 public record DeckSyncRow(
         @NotNull UUID id,
         @NotBlank String name,
