@@ -15,8 +15,6 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
-import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
 
@@ -24,38 +22,6 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 const Offset _swipeLeft = Offset(-300, 0);
 const double _swipeSpeed = 1000;
-
-/// A deck of three cards on a browse-only queue, in_progress today.
-Future<({String rootId, String deckId})> _browseSession(LibraryEnv env) async {
-  final root = await env.decks.root('Korean');
-  final leaf = await env.decks.sub(root.id, 'Lesson');
-  for (var i = 0; i < 3; i++) {
-    await insertCard(
-      env.db,
-      id: 'c$i',
-      deckId: leaf.id,
-      front: 'f$i',
-      back: 'b$i',
-    );
-  }
-  await insertSession(
-    env.db,
-    id: 's',
-    deckId: leaf.id,
-    rootId: root.id,
-    startedAt: libraryToday,
-  );
-  for (var i = 0; i < 3; i++) {
-    await insertQueueItem(
-      env.db,
-      sessionId: 's',
-      mode: 'browse',
-      cardId: 'c$i',
-      position: i,
-    );
-  }
-  return (rootId: root.id, deckId: leaf.id);
-}
 
 /// The session pushed over a page, as the router does (spec D2), so leaving
 /// it has somewhere to go back to.
@@ -101,7 +67,7 @@ Future<int> _advanced(LibraryEnv env) async {
 void main() {
   libraryTest('shows both faces, and a swipe left records one turn and '
       'advances (BR-MODE-005, BR-MODE-006)', (tester, env) async {
-    await _browseSession(env);
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
     await _openSession(tester, env);
 
     expect(find.text('f0'), findsOneWidget);
@@ -118,7 +84,7 @@ void main() {
     tester,
     env,
   ) async {
-    await _browseSession(env);
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
     await _openSession(tester, env);
     await tester.fling(find.text('f0'), _swipeLeft, _swipeSpeed);
     await tester.pumpAndSettle();
@@ -132,7 +98,7 @@ void main() {
 
   libraryTest('the close icon asks first; Keep studying changes nothing '
       '(spec D8, IT-CONT-004)', (tester, env) async {
-    await _browseSession(env);
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
     await _openSession(tester, env);
 
     await tester.tap(find.byTooltip(_en.studySessionExitLabel));
@@ -149,7 +115,7 @@ void main() {
 
   libraryTest('Stop from system Back abandons as user_exit and the same '
       'route shows the summary (spec D2, D8, IT-NAV-010)', (tester, env) async {
-    await _browseSession(env);
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
     await _openSession(tester, env);
 
     await tester.binding.handlePopRoute();
@@ -168,7 +134,7 @@ void main() {
 
   libraryTest('a locked write shows an inline error on the same card, and '
       'Retry advances once it succeeds (UC-STUDY-001 E2)', (tester, env) async {
-    await _browseSession(env);
+    await seedBrowseSession(env.db, env.decks, startedAt: libraryToday);
     final real = StudySessionRepositoryImpl(
       env.db,
       ScheduleRepositoryImpl(env.db),
@@ -201,7 +167,11 @@ void main() {
 
   libraryTest('a stale generation leaves the session with a message and '
       'records nothing (UC-STUDY-001 E4)', (tester, env) async {
-    final ids = await _browseSession(env);
+    final ids = await seedBrowseSession(
+      env.db,
+      env.decks,
+      startedAt: libraryToday,
+    );
     // A reset elsewhere moved the root's generation after the session opened.
     await env.db.customUpdate(
       'UPDATE deck SET generation = generation + 1 WHERE id = ?',
@@ -219,7 +189,11 @@ void main() {
 
   libraryTest('the deck deleted mid-session leaves the session '
       '(UC-STUDY-001 A5, IT-CONT-007)', (tester, env) async {
-    final ids = await _browseSession(env);
+    final ids = await seedBrowseSession(
+      env.db,
+      env.decks,
+      startedAt: libraryToday,
+    );
     await _openSession(tester, env);
 
     await env.db.customUpdate(

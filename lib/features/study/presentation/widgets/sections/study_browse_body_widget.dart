@@ -233,13 +233,19 @@ class _Face extends StatelessWidget {
           semanticsLabel: label,
           style: context.textStyles.overline,
         ),
+        // Centred in its half; a long face scrolls instead of overflowing.
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.control,
-              children: children,
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.control,
+                  children: children,
+                ),
+              ),
             ),
           ),
         ),

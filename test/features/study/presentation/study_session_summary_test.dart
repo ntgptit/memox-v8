@@ -3,65 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
-import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Future<String> _endedSession(
-  LibraryEnv env, {
-  required String status,
-  String? endReason,
-  String sessionKind = 'reviewing',
-  int cardCount = 4,
-  int answered = 4,
-  int wrong = 1,
-}) async {
-  final root = await env.decks.root('Korean');
-  final leaf = await env.decks.sub(root.id, 'Lesson');
-  for (var i = 0; i < cardCount; i++) {
-    await insertCard(env.db, id: 'c$i', deckId: leaf.id);
-  }
-  await insertSession(
-    env.db,
-    id: 's',
-    deckId: leaf.id,
-    rootId: root.id,
-    sessionKind: sessionKind,
-    status: status,
-    endReason: endReason,
-    endedAt: DateTime(2026, 9, 24, 10),
-  );
-  for (var i = 0; i < cardCount; i++) {
-    await insertQueueItem(
-      env.db,
-      sessionId: 's',
-      mode: 'browse',
-      cardId: 'c$i',
-      position: i,
-      status: 'completed',
-    );
-  }
-  for (var i = 0; i < answered; i++) {
-    await logReview(
-      env.db,
-      id: 'r$i',
-      cardId: 'c$i',
-      at: DateTime(2026, 9, 24, 9, i),
-      action: i < wrong ? 'forgotten' : 'remembered',
-    );
-  }
-  return leaf.id;
-}
 
 void main() {
   libraryTest('a completed review shows its facts (loaded)', (
     tester,
     env,
   ) async {
-    await _endedSession(env, status: 'completed');
+    await seedEndedSession(env.db, env.decks, status: 'completed');
     await pumpLibraryScreen(
       tester,
       env,
@@ -79,7 +31,12 @@ void main() {
     tester,
     env,
   ) async {
-    await _endedSession(env, status: 'completed', sessionKind: 'learning');
+    await seedEndedSession(
+      env.db,
+      env.decks,
+      status: 'completed',
+      sessionKind: 'learning',
+    );
     await pumpLibraryScreen(
       tester,
       env,
@@ -95,7 +52,12 @@ void main() {
     tester,
     env,
   ) async {
-    await _endedSession(env, status: 'abandoned', endReason: 'user_exit');
+    await seedEndedSession(
+      env.db,
+      env.decks,
+      status: 'abandoned',
+      endReason: 'user_exit',
+    );
     await pumpLibraryScreen(
       tester,
       env,
@@ -111,7 +73,12 @@ void main() {
     tester,
     env,
   ) async {
-    await _endedSession(env, status: 'abandoned', endReason: 'interrupted');
+    await seedEndedSession(
+      env.db,
+      env.decks,
+      status: 'abandoned',
+      endReason: 'interrupted',
+    );
     await pumpLibraryScreen(
       tester,
       env,
@@ -127,8 +94,9 @@ void main() {
     tester,
     env,
   ) async {
-    await _endedSession(
-      env,
+    await seedEndedSession(
+      env.db,
+      env.decks,
       status: 'invalidated',
       endReason: 'scheduler_reset',
     );
@@ -146,8 +114,9 @@ void main() {
   libraryTest('invalidated/scheduler_changed shows its copy and no facts '
       'card (handoff 21: "no BR limits the summary" does not apply here — '
       'the kit itself draws none)', (tester, env) async {
-    await _endedSession(
-      env,
+    await seedEndedSession(
+      env.db,
+      env.decks,
       status: 'invalidated',
       endReason: 'scheduler_changed',
     );
@@ -166,8 +135,9 @@ void main() {
   libraryTest(
     'failed/persistence_error shows the save-error copy, turns kept',
     (tester, env) async {
-      await _endedSession(
-        env,
+      await seedEndedSession(
+        env.db,
+        env.decks,
         status: 'failed',
         endReason: 'persistence_error',
       );
@@ -184,7 +154,7 @@ void main() {
   );
 
   libraryTest('Done pops the session route', (tester, env) async {
-    await _endedSession(env, status: 'completed');
+    await seedEndedSession(env.db, env.decks, status: 'completed');
     await pumpLibraryScreen(
       tester,
       env,

@@ -393,3 +393,85 @@ Future<void> insertQueueItem(
   ],
   updates: {db.studyQueueItems},
 );
+
+/// Session `s`: a deck of [count] cards on a browse-only learning queue,
+/// in progress since [startedAt] (screens 16, 21; study UI P1).
+Future<({String rootId, String deckId})> seedBrowseSession(
+  AppDatabase db,
+  DeckRepository decks, {
+  required DateTime startedAt,
+  int count = 3,
+}) async {
+  final root = await decks.root('Korean');
+  final leaf = await decks.sub(root.id, 'Lesson');
+  for (var i = 0; i < count; i++) {
+    await insertCard(db, id: 'c$i', deckId: leaf.id, front: 'f$i', back: 'b$i');
+  }
+  await insertSession(
+    db,
+    id: 's',
+    deckId: leaf.id,
+    rootId: root.id,
+    startedAt: startedAt,
+  );
+  for (var i = 0; i < count; i++) {
+    await insertQueueItem(
+      db,
+      sessionId: 's',
+      mode: 'browse',
+      cardId: 'c$i',
+      position: i,
+    );
+  }
+  return (rootId: root.id, deckId: leaf.id);
+}
+
+/// Session `s`, ended with [status] and [endReason]: [cardCount] cards on
+/// its queue, the first [answered] answered once, the first [wrong] of them
+/// forgotten (screen 21).
+Future<String> seedEndedSession(
+  AppDatabase db,
+  DeckRepository decks, {
+  required String status,
+  String? endReason,
+  String sessionKind = 'reviewing',
+  int cardCount = 4,
+  int answered = 4,
+  int wrong = 1,
+}) async {
+  final root = await decks.root('Korean');
+  final leaf = await decks.sub(root.id, 'Lesson');
+  for (var i = 0; i < cardCount; i++) {
+    await insertCard(db, id: 'c$i', deckId: leaf.id);
+  }
+  await insertSession(
+    db,
+    id: 's',
+    deckId: leaf.id,
+    rootId: root.id,
+    sessionKind: sessionKind,
+    status: status,
+    endReason: endReason,
+    endedAt: DateTime(2026, 9, 24, 10),
+  );
+  for (var i = 0; i < cardCount; i++) {
+    await insertQueueItem(
+      db,
+      sessionId: 's',
+      mode: 'browse',
+      cardId: 'c$i',
+      position: i,
+      status: 'completed',
+    );
+  }
+  for (var i = 0; i < answered; i++) {
+    await logReview(
+      db,
+      id: 'r$i',
+      cardId: 'c$i',
+      at: DateTime(2026, 9, 24, 9, i),
+      action: i < wrong ? 'forgotten' : 'remembered',
+    );
+  }
+  return leaf.id;
+}
