@@ -51,7 +51,7 @@ Quy ước:
 | API-04 | Nối MyBatis và Base dùng chung: `PageQuery`/`PagingResponse`, `CodeEnum` + `BaseEnumTypeHandler`, `UuidTypeHandler` | xong | API-02 | M | [PR #101](https://github.com/ntgptit/memox-v8/pull/101); [spec](superpowers/specs/2026-09-27-api-mybatis-base-design.md), [plan](superpowers/plans/2026-09-27-api-mybatis-base.md); `MyBatisBaseIT` | — |
 | API-05 | Gia cố nền: job `api` trong CI (`./mvnw verify`, format, coverage ≥ 80%), `X-Request-ID`, hợp đồng JSON, OpenAPI bật/tắt bằng `API_DOCS_ENABLED` | xong | API-03, API-04 | M | [PR #104](https://github.com/ntgptit/memox-v8/pull/104); [spec](superpowers/specs/2026-09-27-api-foundation-hardening-design.md), [plan](superpowers/plans/2026-09-27-api-foundation-hardening.md); `JsonContractTest`, `RequestIdFilterTest`, `OpenApiDocsTest` | — |
 | API-06 | `SecurityConfig` mở, stateless, không CSRF, không user sinh sẵn — tạm cho tới spec auth | xong | API-05 | S | [PR #105](https://github.com/ntgptit/memox-v8/pull/105); `SecurityConfigTest` | Thay ở API-B1 |
-| API-A1 | Sync cho `deck` (ADR-013 bước 2): Flyway `V1`, `V2`; `CurrentUserProvider` với user dev; `POST /api/v1/sync/push` idempotent theo `opId`, `GET /api/v1/sync/changes` phân trang theo `serverVersion`; cây deck do server suy ra (`root_id`, `depth`), từ chối chu trình, quá 10 cấp, parent thiếu; điểm mở rộng `SyncEntityHandler` | xong | API-04, API-06 | L | [PR #110](https://github.com/ntgptit/memox-v8/pull/110); [plan](superpowers/plans/2026-09-27-api-deck-sync.md); `SyncApiIT`, `DeckSyncHandlerIT`, `SyncMappersIT`, `SyncOperationApplierConcurrencyIT`, `SchemaIT` | Phía app: ADR-013 bước 3 (xem Điểm chặn) |
+| API-A1 | Sync cho `deck` (ADR-013 bước 2): Flyway `V1`, `V2`; `CurrentUserProvider` với user dev; `POST /api/v1/sync/push` idempotent theo `opId`, `GET /api/v1/sync/changes` phân trang theo `serverVersion`; cây deck do server suy ra (`root_id`, `depth`), từ chối chu trình, quá 10 cấp, parent thiếu; điểm mở rộng `SyncEntityHandler` | xong | API-04, API-06 | L | [PR #110](https://github.com/ntgptit/memox-v8/pull/110); [plan](superpowers/plans/2026-09-27-api-deck-sync.md); `SyncApiIT`, `DeckSyncHandlerIT`, `SyncMappersIT`, `SyncOperationApplierConcurrencyIT`, `SchemaIT` | Phía app: BE-E1 trong [`wbs_BE.md`](wbs_BE.md) |
 
 ### Sync — ADR-013 bước 4
 
@@ -61,7 +61,7 @@ của spec sync. Luật conflict theo §5.
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | API-A2 | Sync `card`: bảng, handler, upsert cả hàng (thao tác server nhận sau thắng), tombstone; card thuộc deck của đúng user | chưa bắt đầu | API-A1 | M | Spec sync §5, §7 | Brainstorm → spec → plan; cần hợp đồng cột với `schema.md` |
-| API-A3 | Sync `tags` và `card_tags` | chưa bắt đầu | API-A2 | M | Spec sync §5 | Sau API-A2 |
+| API-A3 | Sync `tags` và `card_tags` | chưa bắt đầu | API-A2 | M | Spec sync §5 | Chốt cách xử lý hai tag cùng tên tạo offline (xem Điểm chặn) |
 | API-A4 | Sync `review_log`: chỉ thêm, insert-if-absent theo `id`, id đã có trả `applied` | chưa bắt đầu | API-A2 | S | Spec sync §5, ADR-013 #7 | Sau API-A2 |
 | API-A5 | Lưu `card_schedule` do app tính (upsert phái sinh) để máy mới không phải chạy lại lịch sử; server không chạy SRS | chưa bắt đầu | API-A2, API-A4 | S | Spec sync §6, ADR-013 #8 | Sau API-A4 |
 | API-A6 | Sync setting theo tài khoản | bị chặn | API-A1 | S | Spec sync §5, §10 của ADR-013 | Chủ dự án chốt setting nào theo tài khoản, setting nào theo máy |
@@ -88,7 +88,7 @@ làm trước sự kiện (`CLAUDE.md`, "No speculative structure").
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| Phía app của sync (ADR-013 bước 3) | Chưa có dòng nào trong [`wbs_BE.md`](wbs_BE.md); `wbs_BE.md` còn ghi auth và sync nằm ngoài V8, trái với ADR-013 | API-A1 chưa có client nào dùng; không kiểm được hội tụ hai máy | Thêm hạng mục vào `wbs_BE.md` |
+| API-A3 | Tên tag không trùng (BR-TAG-001) là ràng buộc unique theo nghiệp vụ; hai máy offline có thể tạo cùng một tên với hai id, và spec sync chưa nói server gộp hay từ chối | Tag và `card_tags` sau khi sync | Chủ dự án quyết, ghi vào spec sync; cùng quyết định với BE-E2 |
 | API-A6 | Chưa chốt ranh giới setting theo tài khoản và theo máy | Bảng và handler của setting | Chủ dự án quyết |
 | API-B1, API-B2 | Chưa có spec auth | Không thể triển khai ra ngoài | Chủ dự án mở spec auth |
 
@@ -101,13 +101,15 @@ làm trước sự kiện (`CLAUDE.md`, "No speculative structure").
 
 ## Bước tiếp theo
 
-1. Lát cắt sync phía app cho `deck` (ADR-013 bước 3), theo dõi ở `wbs_BE.md`.
+1. Lát cắt sync phía app cho `deck` (ADR-013 bước 3): BE-E1 trong `wbs_BE.md`.
 2. API-A2 → API-A3, API-A4 → API-A5.
 3. API-B1 khi có spec auth.
 
 ## Ngữ cảnh cập nhật
 
 - **Tạo ngày 2026-09-27** theo yêu cầu của chủ dự án, từ `master` tại `8d9f60bc`.
+- **Cập nhật ngày 2026-09-27:** phía app của sync có hạng mục BE-E1…BE-E5 trong
+  `wbs_BE.md`; thêm điểm chặn về tag trùng tên cho API-A3.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; `./mvnw verify` pass; có IT chứng minh
   hành vi chính.

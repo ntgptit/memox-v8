@@ -24,8 +24,11 @@
   ADR-009 bổ sung: đủ sáu mode, tìm kiếm toàn thư viện, gắn/gỡ tag trên thẻ. Settings
   thuộc V8.0 theo [README của settings](features/settings/README.md).
 - **Sub-project sau V8.0:** Trash, import/export, Tag Management, nhắc học hằng ngày,
-  starter decks. Auth, sync, media, thống kê mở rộng và iOS/web nằm ngoài V8 nên không
-  có hạng mục ở đây.
+  starter decks. Media, thống kê mở rộng và iOS/web nằm ngoài V8 nên không có hạng mục
+  ở đây.
+- **Đồng bộ với server:** [ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)
+  đưa sync và login vào V8. Phần phía app ở nhóm "Đồng bộ với server"; phần server ở
+  [`wbs_API.md`](wbs_API.md).
 - **Thứ tự nghiệp vụ:** [`navigation.md`](shared/ui/navigation.md) chọn luồng ôn tập
   làm vertical slice nên xây đầu tiên; foundation spec xếp lõi V8.0 theo thứ tự
   deck/card → study/review → progress.
@@ -91,6 +94,20 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
 | BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn); quyết cách giữ hoà giải và lần gửi nền không chồng lên thao tác của người dùng ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14) |
+
+### Đồng bộ với server (ADR-013)
+
+Phía app của lộ trình §9 trong [spec sync](superpowers/specs/2026-09-27-server-sync-design.md).
+Mỗi hạng mục cần hạng mục server tương ứng trong [`wbs_API.md`](wbs_API.md) đã merge.
+Use case và presentation không đổi: chỉ repository và tầng `data/` biết tới sync.
+
+| ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
+|---|---|---|---|---|---|---|
+| BE-E1 | Lát cắt sync cho `deck` (bước 3): migration Drift v3 → v4 thêm `sync_outbox`, `sync_state` (`device_id`, cursor `since`) và cột `server_version`; `Dio` dùng chung trong `lib/core/network/` và Retrofit `SyncApi` (thêm `dio`, `retrofit`, theo ADR-012 #6); `SyncCoordinator` `keepAlive` chạy push rồi pull, lúc mở app, khi có mạng lại và sau khi ghi (debounce 2 giây), mỗi lần chỉ một lượt; outbox mỗi entity một dòng, `delete` đè `upsert`, thứ tự theo `created_at`; bỏ qua thay đổi pull về cho entity còn trong outbox; áp `current` khi bị từ chối; backoff 5 giây tới 5 phút; repository của deck ghi outbox trong cùng transaction, kể cả purge Trash | chưa bắt đầu | BE-D1, API-A1 | XL | Spec sync §2, §4, §8, §10; [ADR-012](shared/decisions/ADR-012-goi-api-bang-retrofit.md) | Brainstorm → spec → plan; cần một package theo dõi kết nối (xem Điểm chặn) |
+| BE-E2 | Sync `card`, `tags`, `card_tags`: repository ghi outbox, pull áp dụng theo khoá ngoại, purge Trash thêm `delete` cho từng hàng | chưa bắt đầu | BE-E1, API-A2, API-A3 | L | Spec sync §5, §8 | Chốt cách xử lý hai tag cùng tên tạo offline trên hai máy (xem Điểm chặn) |
+| BE-E3 | Sync `review_log` và chạy lại lịch ôn: sau pull có review mới, phát lại review của từng thẻ bị ảnh hưởng theo `(reviewed_at, id)` qua scheduler của thẻ, ghi `card_schedule` rồi đẩy lên như upsert phái sinh; test tất định (cùng log, hai thứ tự đến, cùng lịch) | chưa bắt đầu | BE-E2, API-A4, API-A5 | L | Spec sync §6; ADR-013 #7, #8 | Sau BE-E2 |
+| BE-E4 | Sync setting theo tài khoản; setting theo máy (nhắc học) giữ local | bị chặn | BE-E1, API-A6 | S | ADR-013 #10 | Cùng quyết định với API-A6 |
+| BE-E5 | Login phía app: interceptor auth của `Dio`, gắn dữ liệu local (`owner_id` đang `NULL`) vào tài khoản | bị chặn | BE-E1, API-B1, API-B2 | L | Spec sync §3; ADR-013 bước 5 | Cần spec auth |
 
 ### Tồn đọng từ backend deck/card
 
@@ -181,6 +198,10 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 | Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
 | BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
+| BE-E1 | Spec sync nói chạy lại "khi có mạng lại" nhưng dự án chưa có package theo dõi kết nối | Thêm dependency | Quyết trong spec của BE-E1, hoặc chỉ dựa vào lỗi mạng và backoff |
+| BE-E2 | Tên tag không trùng (BR-TAG-001) là ràng buộc unique theo nghiệp vụ; hai máy offline có thể tạo cùng một tên với hai id, và spec sync chưa nói server gộp hay từ chối | Tag và `card_tags` sau khi sync | Chủ dự án quyết, ghi vào spec sync; cùng quyết định với API-A3 |
+| BE-E4 | Chưa chốt setting nào theo tài khoản, setting nào theo máy | Bảng settings sau khi sync | Chủ dự án quyết (chung với API-A6) |
+| BE-E5 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
@@ -202,6 +223,8 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 1. BE-D7 (gói 12c), gồm BE-D3, theo thứ tự chủ dự án chọn ngày 2026-09-26.
 2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+3. BE-E1: lát cắt sync cho `deck`, server đã sẵn (API-A1); rồi BE-E2, BE-E3 theo
+   nhịp của API-A2…API-A5 trong [`wbs_API.md`](wbs_API.md).
 
 ## Ngữ cảnh cập nhật
 
@@ -243,6 +266,8 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 - **Cập nhật ngày 2026-09-27:** BE-D6 xong trong gói 12b, mở rộng theo chủ dự án: guard
   và hook design token không còn gì của V7. Hai lệnh `--ruleset memox-v7` trong skill
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
+- **Cập nhật ngày 2026-09-27:** thêm nhóm "Đồng bộ với server" (BE-E1…BE-E5), phía
+  app của ADR-013; bỏ sync và auth khỏi danh sách ngoài V8.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.
