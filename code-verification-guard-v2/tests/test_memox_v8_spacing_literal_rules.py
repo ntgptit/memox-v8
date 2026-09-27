@@ -1,12 +1,11 @@
-"""Tests for the memox-v7 raw-spacing rule, including the widened patterns.
+"""Tests for the memox-v8 raw-spacing rule and every spelling it catches.
 
-The rule originally caught only ``EdgeInsets.*`` and ``SizedBox(width|height:``
-with a bare number. Three real gaps were closed — ``Gap(8)``, the
-``spacing:``/``runSpacing:`` parameters of Row/Column/Wrap, and
-``EdgeInsetsDirectional`` — and each is pinned here in both directions: the raw
-literal fires, the token form does not. Loading the rule from the registry YAML
-rather than re-declaring the pattern is what makes these tests guard the fix
-itself, not a copy of it.
+Besides ``EdgeInsets.*`` and ``SizedBox(width|height:`` with a bare number, the
+rule catches ``Gap(8)``, the ``spacing:``/``runSpacing:`` parameters of
+Row/Column/Wrap, and ``EdgeInsetsDirectional``; each is pinned here in both
+directions: the raw literal fires, the token form does not. Loading the rule
+from the registry YAML rather than re-declaring the pattern is what makes these
+tests guard the rule itself, not a copy of it.
 """
 
 from __future__ import annotations
@@ -22,7 +21,7 @@ _RULES = (
     Path(__file__).parents[1]
     / "registries"
     / "projects"
-    / "memox-v7"
+    / "memox-v8"
     / "rules"
     / "memox-design-token-rules.yaml"
 )

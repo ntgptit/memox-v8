@@ -130,4 +130,5 @@ ghi ở `README.md` ở thư mục gốc repo.
 - Việc để lại cho sau, ngoài phạm vi ADR này:
   - Các tham chiếu V7 trong skill không liên quan tới thư mục (`docs/checklist.md`,
     `docs/wbs.md`, các số AD khác).
-  - 13 rule `memox_v7.design_system.*` trong ruleset `memox-v8`.
+  - 13 rule `memox_v7.design_system.*` trong ruleset `memox-v8`: đã đổi thành
+    `memox_v8.design_system.*` ở BE-D6 (gói 12b).

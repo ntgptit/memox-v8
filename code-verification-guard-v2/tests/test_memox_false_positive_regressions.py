@@ -35,7 +35,7 @@ _MEMOX_TESTING_RULES = (
     _ROOT
     / "registries"
     / "projects"
-    / "memox-v7"
+    / "memox-v8"
     / "rules"
     / "memox-testing-rules.yaml"
 )

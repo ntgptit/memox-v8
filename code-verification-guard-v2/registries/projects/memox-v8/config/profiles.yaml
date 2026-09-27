@@ -5,16 +5,12 @@ profiles:
   # on the developer's machine teaches people to push and find out, which is the
   # slowest possible feedback loop.
   #
-  # Every rule now has real targets, so warnings are failures. The list of
-  # `rule_without_targets` diagnostics that justified the softer gate drained
-  # once the feature-first tree landed in M3.1 — and the three that remained
-  # turned out to be genuine scope bugs, not "not yet": provider_files did not
-  # match the project's `*_provider.dart` convention, so the Riverpod rules were
-  # guarding nothing at all.
-  #
-  # That is the reason the diagnostic must never be silenced. It was not noise
-  # waiting for code to arrive; it was the only thing reporting that three rules
-  # were dead.
+  # Every rule has real targets, so warnings are failures. A
+  # `rule_without_targets` diagnostic is never noise waiting for code to
+  # arrive: a scope that matches no file leaves its rule guarding nothing, and
+  # the diagnostic is the only thing that says so. It must never be silenced;
+  # a rule that waits for a layer V8 has not built says so with
+  # `targets_pending` in `overrides.yaml`.
   local:
     failure:
       fail_on:
