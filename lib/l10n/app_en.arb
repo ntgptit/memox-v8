@@ -1872,6 +1872,10 @@
   "@deckStudyOptions": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
   },
+  "deckStudyOptionsHint": "Cards per session · new-card order",
+  "@deckStudyOptionsHint": {
+    "description": "Screen handoff 01 (FE-A3 D3): the Study options row's sub-line in the deck action sheet."
+  },
   "deckReviewAlgorithm": "Review algorithm",
   "@deckReviewAlgorithm": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckReviewAlgorithm."
@@ -2317,10 +2321,6 @@
   "comingSoonTagsBody": "Label cards, filter by label.",
   "@comingSoonTagsBody": {
     "description": "Coming soon: what tags do."
-  },
-  "comingSoonStudyOptionsBody": "Session size and new-card order.",
-  "@comingSoonStudyOptionsBody": {
-    "description": "Coming soon: what study options do."
   },
   "comingSoonProgressSort": "Sort by progress",
   "@comingSoonProgressSort": {
