@@ -1,5 +1,6 @@
-# Copy to the project root as analysis_options.yaml.
-# This file and the root copy are kept identical apart from these two lines.
+# A stricter configuration than the one the project runs. The root
+# analysis_options.yaml is what `flutter analyze` reads, and it is smaller: the
+# three strict-* modes over flutter_lints and a few rules.
 #
 # Three things to know before editing:
 #
@@ -13,12 +14,11 @@
 #      made it fire.
 #
 #   2. There is deliberately NO `plugins: - custom_lint` block. custom_lint and
-#      riverpod_lint are descoped (see `Deferred and descoped` in docs/wbs.md):
-#      no published custom_lint supports analyzer >=10, which the generator
-#      stack requires. Do not add it back — a plugin declared but not installed
-#      is silently ignored, which is worse than not configuring it, because the
-#      rules look active and never run. Those checks now belong to
-#      code-verification-guard:
+#      riverpod_lint are descoped: no published custom_lint supports analyzer
+#      >=10, which the generator stack requires. Do not add it back — a plugin
+#      declared but not installed is silently ignored, which is worse than not
+#      configuring it, because the rules look active and never run. Those checks
+#      now belong to code-verification-guard:
 #      `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8`
 #
 #   3. Rules promoted to `error` under `errors:` are what "analyzer clean"

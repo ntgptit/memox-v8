@@ -112,7 +112,7 @@ Before a component is done:
 - [ ] Survives 2.0× text scale without overflow.
 - [ ] Survives a 320px-wide screen.
 - [ ] Long text truncates or wraps deliberately, not by accident.
-- [ ] Golden test for light and dark (Phase 15.4).
+- [ ] Golden test for light and dark (`flutter-testing`).
 
 ## Widget composition
 
@@ -133,5 +133,4 @@ class _Header extends StatelessWidget {
 
 A `_buildX()` method looks like decomposition but is not: the returned subtree is
 part of the parent's build, so it rebuilds whenever the parent does and can never
-be `const`. Separate classes give narrower rebuild scopes for free — the same
-point Phase 17 makes about limiting rebuild range.
+be `const`. Separate classes give narrower rebuild scopes for free.

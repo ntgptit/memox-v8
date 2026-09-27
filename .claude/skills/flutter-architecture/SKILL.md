@@ -1,12 +1,9 @@
 ---
 name: flutter-architecture
-description: The layering and code-style rules for this Flutter codebase — feature-first folder structure, what each layer may import, when a use case or an interface is actually worth creating, the analysis_options.yaml lint configuration, guard-clause control flow, banning magic values, and file/class naming conventions. Use this skill when creating a new feature folder, deciding where a file belongs, reviewing whether code respects layer boundaries, configuring or tightening lints, resolving an import that feels wrong, or when tempted to add an abstraction. Also use it before any code review or commit that adds new files. Covers checklist phases 4 and 5, and it ships `scripts/check_architecture.sh` to verify the boundaries mechanically.
+description: The layering and code-style rules for this Flutter codebase — feature-first folder structure, what each layer may import, when a use case or an interface is actually worth creating, the analysis_options.yaml lint configuration, guard-clause control flow, banning magic values, and file/class naming conventions. Use this skill when creating a new feature folder, deciding where a file belongs, reviewing whether code respects layer boundaries, configuring or tightening lints, resolving an import that feels wrong, or when tempted to add an abstraction. Also use it before any code review or commit that adds new files. It ships `scripts/check_architecture.sh` to verify the boundaries mechanically.
 ---
 
 # Architecture and code conventions
-
-Covers checklist Phases 4 (structure, dependency rules) and 5 (lint, code style,
-naming).
 
 ## Folder structure
 
@@ -31,7 +28,7 @@ lib/
     ├── data/                 # datasources/ mappers/ repositories/ models/
     ├── di/                   # flat: repository providers, typed as the contract
     └── presentation/         # screens/ controllers/ states/ providers/
-        └── widgets/          # exactly four buckets, one level deep (AD-15):
+        └── widgets/          # exactly four buckets, one level deep (ADR-011 D8):
                               #   sections/ items/ overlays/ support/
 ```
 
@@ -41,11 +38,11 @@ lib/
 | `domain/models/` | `_model`, `_scheduler`, `_mode` | value objects, stored-code enums, read models; `srs` schedulers, `study_mode` modes |
 | `domain/repositories/` | `_repository` | contracts, one implementation each |
 | `domain/failures/` | `_failure` | the feature's rejection-reason enum |
-| `domain/usecases/` | `_use_case` | one per UI interaction (AD-12) |
+| `domain/usecases/` | `_use_case` | one per UI interaction (ADR-011 D4) |
 | `data/datasources/` | `_dao`, `_data_source` | a DAO per bounded context |
 | `data/mappers/` | `_mapper` | row to entity, when the mapping is not trivial |
 | `data/repositories/` | `_repository_impl` | contract implementations; every write in one transaction |
-| `data/models/` | `_model` | DTOs; none while the app is local-only (ADR-001) |
+| `data/models/` | `_model` | DTOs, `json_serializable`; none until the first API call (ADR-012) |
 | `di/` | `_provider` | repository providers; each constructs its implementation |
 | `presentation/screens/`, `controllers/`, `states/` | `_screen`, `_controller`, `_state` | a screen, its controllers, its state classes |
 | `presentation/providers/` | `_provider` | use-case providers |
@@ -55,12 +52,13 @@ Every feature file sits in a bucket of its layer; only `di/` is flat. No file
 sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
 feature root, and there are no barrels: another feature imports the bucket file
 it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
-`entities/deck.dart`. These wait for an ADR that opens the need:
-`core/network/`, `core/storage/`, `core/utils/`, `app/config/` and flavors,
-`app/di/`, `shared/models/`, `shared/extensions/`.
+`entities/deck.dart`. `core/network/` comes with the first API call, holding
+the one shared Dio client (ADR-012). These wait for an ADR that opens the need:
+`core/storage/`, `core/utils/`, `app/config/` and flavors, `app/di/`,
+`shared/models/`, `shared/extensions/`.
 
 **Placing a widget** is four questions asked in order, stopping at the first
-yes (AD-15, ratified for V8 by ADR-011 D8):
+yes (ADR-011 D8):
 
 1. Does it open *over* the screen (`showModalBottomSheet`/`showDialog`)? → `overlays/`
 2. Is it the repeated row of a list, or a part only that row uses? → `items/`
@@ -97,7 +95,7 @@ presentation ──► domain ◄── data
   repository implementation is constructed.
 - **presentation** may import its own `domain/` and `di/`, never `data/`. Every
   interaction it triggers, read or write, goes through exactly one use case
-  (AD-12, ADR-011 D4–D5): never to a DAO, never to Drift.
+  (ADR-011 D4–D5): never to a DAO, never to Drift.
 - **Between features**, a file may import another feature's
   `domain/{entities,models,repositories,failures}/`, file by file. A file in
   `presentation/` or `di/` may also import another feature's `di/`. Nothing
@@ -126,7 +124,7 @@ Clean Architecture here is a means, not the goal. The checklist says so
 explicitly, and it is the part most often ignored:
 
 - **A layer appears with its first real file, and a feature with a screen has
-  one use case per interaction** (AD-12, ratified by ADR-011 D4). A feature with
+  one use case per interaction** (ADR-011 D4). A feature with
   no screen has no `presentation/` and no `domain/usecases/`; nothing is
   scaffolded for later. Once a feature has a screen, every interaction goes
   through its own use case, reads and thin ones included, and no feature is
@@ -216,14 +214,17 @@ because nothing is out of scope for a name that means nothing.
 
 ## Lint
 
-`references/analysis_options.yaml` is the configuration to copy into the project
-root. It turns on `strict-casts`, `strict-inference`, `strict-raw-types`, and
-promotes the rules that matter to `error`.
+The root `analysis_options.yaml` is what `flutter analyze` runs: the three
+`strict-*` modes (`strict-casts`, `strict-inference`, `strict-raw-types`) over
+`flutter_lints`, and a few rules. `references/analysis_options.yaml` is a
+stricter set that the root has not adopted: it enables more lints and promotes
+the ones that matter to `error`.
 
 It deliberately does **not** declare a `custom_lint` plugin. `custom_lint` and
-`riverpod_lint` are descoped — see `Deferred and descoped` in `docs/wbs.md`. Do
-not add the block back: a plugin declared but not installed is silently ignored,
-so the rules look configured and never run.
+`riverpod_lint` are descoped: no published `custom_lint` supports
+`analyzer >=10`, which the generator stack requires. Do not add the block back:
+a plugin declared but not installed is silently ignored, so the rules look
+configured and never run.
 
 The Riverpod checks that `riverpod_lint` used to provide — `ref.read` inside
 `build()` being the one that matters most — are now owned by

@@ -22,6 +22,9 @@ REPO_ROOT = Path(__file__).resolve().parents[5]
 SKILLS = REPO_ROOT / ".claude" / "skills"
 
 REPO_OWNED_SKILLS = (
+    "flutter-architecture",
+    "flutter-design-system",
+    "flutter-feature-slice",
     "flutter-workflow",
 )
 
@@ -37,6 +40,7 @@ V7_MARKERS = (
     r"docs/checklist\.md",
     r"docs/wbs\.md",
     r"docs/architecture\.md",
+    r"docs/api-spec\.md",
     r"(?i)widgetbook",
     r"test/demo",
     r"feature_blueprint",
@@ -86,6 +90,7 @@ class MarkersTest(unittest.TestCase):
             "the 22 phases of docs/checklist.md",
             "update docs/wbs.md in this commit",
             "write it in docs/architecture.md",
+            "endpoints in docs/api-spec.md",
             "registered in the Widgetbook catalog",
             "the goldens under test/demo/",
             "see assets/feature_blueprint.md",

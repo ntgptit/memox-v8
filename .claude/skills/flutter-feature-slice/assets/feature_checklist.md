@@ -7,12 +7,13 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] Business rules and validation messages written
 - [ ] Design available, or agreement to use existing components only
 - [ ] State matrix decided (initial / loading / loaded / empty / error / refreshing / submitting)
-- [ ] API contract in `docs/api-spec.md`
+- [ ] API contract in `docs/features/<feature>/api.md`, when the slice calls
+      the API (ADR-012)
 - [ ] Data model and migration need known
 - [ ] Acceptance criteria written and externally checkable
 - [ ] Dependencies on other features identified and available
 
-## Layout (AD-12, AD-13)
+## Layout (ADR-011)
 - [ ] `domain/{entities,repositories,models,usecases,failures}/`
 - [ ] `data/{repositories,mappers,datasources,models}/`
 - [ ] `presentation/{screens,controllers,states,widgets,providers}/`
@@ -54,7 +55,7 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] Mapper DTO ↔ entity, handling nulls and unknown enum values
 - [ ] Repository implementation
 - [ ] Exceptions mapped to `Failure` at the repository boundary
-- [ ] Cache / sync policy applied per `docs/architecture.md`
+- [ ] Cache / sync policy applied per its ADR in `docs/shared/decisions/`
 - [ ] Migration written and tested if the schema changed
 
 ## Presentation
@@ -97,8 +98,7 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] Widget: loaded, empty, error
 - [ ] Integration: main flow
 - [ ] Golden: any new shared component, light and dark
-- [ ] Widgetbook: new screen mounted as a use-case with faked contract and
-      state knobs; new shared component as a knob playground (`widgetbook/`)
+- [ ] Golden compared, state by state, with the screen in the kit
 - [ ] **Every new guard or architecture test fault-injected**: create the
       violation, watch it fail, revert, watch it pass. Record what was injected
 - [ ] Every guard prints what it scanned and fails on zero — a rule that inspects
@@ -109,7 +109,8 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] CI green on the PR — the same gates, plus the web build and the
       generated-code check
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
-- [ ] `docs/wbs.md` updated in this commit
+- [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit; for a screen,
+      its row in the screen handoff index
 - [ ] Affected docs updated in this commit
 - [ ] Descoped items recorded with reasons
 - [ ] Reviewed against the full Definition of Done
