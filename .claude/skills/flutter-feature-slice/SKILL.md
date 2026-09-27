@@ -26,7 +26,7 @@ out to be open becomes rework, and the rework is always larger than the check.
       with no new visual design.
 - [ ] **State matrix decided** — which of initial / loading / loaded / empty /
       error / refreshing / submitting occur, and what each shows.
-- [ ] **API contract known** — N/A while AD-05 holds (no remote API in MVP;
+- [ ] **API contract known** — N/A while ADR-012 holds (no remote API in MVP;
       `docs/api-spec.md` deliberately does not exist yet). When the backend
       lands: endpoints, shapes, error format, pagination there first, and build
       against a fake implementing the same interface.

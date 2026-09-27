@@ -1,6 +1,6 @@
 ---
 name: flutter-testing
-description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links — no auth/network yet per AD-03/AD-05). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances. Covers checklist phase 15.
+description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links — no auth/network yet per AD-03/ADR-012). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances. Covers checklist phase 15.
 ---
 
 # Testing
@@ -69,7 +69,7 @@ test('deleting the last card keeps the deck card-typed (BR-63)', () async {
 **Error mapping deserves a dedicated table-driven test** — every
 `SqliteException` code the app can hit mapped to its expected `Failure`
 (`drift_error_mapper.dart` is the unit under test). It is high-traffic code
-that manual testing almost never exercises. (When networking lands per AD-05,
+that manual testing almost never exercises. (When networking lands per ADR-012,
 the same table-driven treatment applies to status codes and
 `DioExceptionType`.)
 
@@ -178,7 +178,7 @@ layer. Before writing, running or debugging any of it, read
 `flutter-harness` skill's `e2e-driving.md` for the framework-generic craft
 (liveness, finders, scrolling, IME, clock ticks, classifying a red run).
 
-Cover what the app actually has (no auth — AD-03; no network — AD-05): cold
+Cover what the app actually has (no auth — AD-03; no network — ADR-012): cold
 start, main navigation, deck/card CRUD through the UI, restart with state
 restored, the review flows, and each deep link. The canonical list is the 60
 scenarios in `docs/shared/testing/scenario-catalog.md` — extend that catalog rather than inventing
