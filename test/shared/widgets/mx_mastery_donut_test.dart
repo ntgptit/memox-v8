@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
@@ -18,12 +19,13 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
+  final derived = MxDerivedColors.resolve(scheme, semantic);
 
   testWidgets('56 box; the label is the percentage in the ramp colour', (
     tester,
   ) async {
     for (final (fraction, text, color) in [
-      (0.2, '20%', semantic.statusLearning),
+      (0.2, '20%', derived.statusLearningInk),
       (0.42, '42%', semantic.statusReviewing),
       (0.9, '90%', semantic.statusMastered),
     ]) {
@@ -50,7 +52,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('0%')).style!.color,
-      semantic.statusLearning,
+      derived.statusLearningInk,
     );
     expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
     expect(_ring(tester), isNot(paints..arc()));
@@ -64,6 +66,15 @@ void main() {
       semantic.statusMastered,
     );
     expect(_ring(tester), paints..arc(color: semantic.statusMastered));
+  });
+
+  testWidgets('the label never rounds to a lie: 99.6% reads 99%, 0.4% reads '
+      '1% (deck mastery spec D13)', (tester) async {
+    await pumpMx(tester, const MxMasteryDonut(fraction: 0.996));
+    expect(find.text('99%'), findsOneWidget);
+
+    await pumpMx(tester, const MxMasteryDonut(fraction: 0.004));
+    expect(find.text('1%'), findsOneWidget);
   });
 
   testWidgets('at 2x the label stays inside the ring', (tester) async {
