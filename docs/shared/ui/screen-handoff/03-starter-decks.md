@@ -24,7 +24,8 @@ person's own under the scheduler they choose. UC-STARTER-001; BR-STARTER-001…0
 | Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "{n} cards in {m} sub-decks, as a new deck of your own.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add deck". |
 
 Language names come from a small table of the tags the build ships: English,
-Vietnamese, Korean, and "Latin" for a `-Latn` tag; any other tag shows as written (D7).
+Vietnamese, Korean, and "Latin" for a `-Latn` tag; any other tag shows as written (D7). The fixtures' source, "Development fixture", is named in the
+person's language too; any other source shows as written.
 
 ## States
 
@@ -32,7 +33,7 @@ Vietnamese, Korean, and "Latin" for a `-Latn` tag; any other tag shows as writte
 |---|---|---|---|
 | list | ![](img/03-starter-decks/list-light.png) | ![](img/03-starter-decks/list-dark.png) | As drawn; the badge and the suggestion wrap instead of truncating (UI-base row 135). |
 | choose | ![](img/03-starter-decks/choose-light.png) | ![](img/03-starter-decks/choose-dark.png) | As drawn. |
-| adding | ![](img/03-starter-decks/adding-light.png) | ![](img/03-starter-decks/adding-dark.png) | The options and Cancel lock, the sheet cannot be dismissed, and "Add deck" spins with no "Adding…" text (D13). A second add is ignored. |
+| adding | ![](img/03-starter-decks/adding-light.png) | ![](img/03-starter-decks/adding-dark.png) | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add deck" spins with no "Adding…" text (D13). A second add is ignored. |
 | added | ![](img/03-starter-decks/added-light.png) | ![](img/03-starter-decks/added-dark.png) | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
 | alreadyPresent | ![](img/03-starter-decks/alreadyPresent-light.png) | ![](img/03-starter-decks/alreadyPresent-dark.png) | As drawn: a copy made meanwhile copies nothing more. |
 | secondCopy | ![](img/03-starter-decks/secondCopy-light.png) | ![](img/03-starter-decks/secondCopy-dark.png) | As drawn; "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
@@ -57,7 +58,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 
 "Starter decks" · "These decks are practice fixtures for development and testing, not
 published course material. Anything you add is yours to edit." · "In library" · "{n}
-cards" · "{m} sub-decks" · "Add to library" · "Add another copy" · "Suggests {algorithm}"
+cards" · "{m} sub-decks" · "Add to library" · "Add another copy" · "Development fixture" · "Suggests {algorithm}"
 · "SM-2" · "Eight boxes" · "Add “{title}”" · "{n} cards in {m} sub-decks, as a new deck
 of your own." · "Review algorithm · required" · "grade yourself, intervals adapt" · "Boxes
 1–8 · match, guess, recall, fill" · "Suggested for this deck · {description}" · "Add

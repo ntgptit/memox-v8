@@ -1030,6 +1030,7 @@
   "starterLanguageVietnamese": "Tiếng Việt",
   "starterLanguageKorean": "Tiếng Hàn",
   "starterLanguageLatin": "Chữ Latinh",
+  "starterSourceFixture": "Dữ liệu mẫu",
   "starterSheetTitle": "Thêm “{title}”",
   "starterSheetBody": "{cards} thẻ trong {decks} deck con, thành một deck mới của riêng bạn.",
   "starterSheetOverline": "Thuật toán ôn tập · bắt buộc",

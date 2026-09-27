@@ -5460,6 +5460,10 @@
   "@starterLanguageLatin": {
     "description": "Screen 03: a language tag in the Latin script, such as ko-Latn (spec D7)."
   },
+  "starterSourceFixture": "Development fixture",
+  "@starterSourceFixture": {
+    "description": "Screen 03: the content source of a development fixture template, in its facts line (BR-STARTER-010)."
+  },
   "starterSheetTitle": "Add “{title}”",
   "@starterSheetTitle": {
     "placeholders": {

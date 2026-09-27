@@ -5,6 +5,10 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 /// Between the facts of a template's line (kit 03).
 const String starterFactSeparator = ' · ';
 
+/// The content source every fixture template of the build names
+/// (BR-STARTER-010).
+const String _fixtureSource = 'Development fixture';
+
 /// The script subtag every romanisation carries, such as `ko-Latn`.
 const String _latinScript = '-Latn';
 
@@ -19,6 +23,11 @@ String starterLanguageName(AppLocalizations l10n, String tag) {
     _ => tag,
   };
 }
+
+/// A template's content source in the person's language; another source
+/// shows as written, as a language tag does (D7).
+String starterSourceName(AppLocalizations l10n, String source) =>
+    source == _fixtureSource ? l10n.starterSourceFixture : source;
 
 String starterSchedulerName(AppLocalizations l10n, SchedulerType type) =>
     switch (type) {
@@ -38,5 +47,5 @@ String starterEntryFacts(AppLocalizations l10n, StarterLibraryEntry entry) => [
   starterLanguageName(l10n, entry.backLanguage),
   l10n.starterCardCount(entry.cardCount),
   l10n.starterSubDeckCount(entry.subDeckCount),
-  entry.contentSource,
+  starterSourceName(l10n, entry.contentSource),
 ].join(starterFactSeparator);

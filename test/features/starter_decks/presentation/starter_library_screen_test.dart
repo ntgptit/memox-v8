@@ -83,6 +83,26 @@ void main() {
     expect(find.text(_en.starterInLibrary), findsNothing);
   });
 
+  libraryTest('the facts line is all in the person\'s language: the '
+      'fixture source is named in Vietnamese too (final review #2)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      StarterLibraryScreen(onOpenDeck: (_) {}, onCreateDeck: () {}),
+      locale: const Locale('vi'),
+      overrides: [StarterLibraryFake(env).asOverride],
+    );
+
+    expect(
+      find.text('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Development fixture'), findsNothing);
+  });
+
   libraryTest('choose: the sheet preselects the suggested scheduler; the one '
       'picked is the copy\'s, and the toast opens it (added)', (
     tester,
@@ -147,6 +167,10 @@ void main() {
     );
     await tester.tapAt(const Offset(180, 40));
     await tester.pump();
+    expect(find.byType(MxOptionRow), findsNWidgets(2));
+    // A drag down does not close it either (final review #1).
+    await tester.drag(find.byType(MxOptionRow).first, const Offset(0, 500));
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(MxOptionRow), findsNWidgets(2));
 
     library.hold!.complete();

@@ -72,78 +72,76 @@ class _StarterAlgorithmSheetWidgetState
     final state = ref.watch(starterAddControllerProvider);
     final isAdding = state.isAdding;
     const schedulers = [SchedulerType.sm2, SchedulerType.eightBox];
-    return PopScope(
-      canPop: !isAdding,
-      child: MxBottomSheet(
-        header: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.card,
-            AppSpacing.micro,
-            AppSpacing.card,
-            AppSpacing.control,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.micro,
-            children: [
-              Text(
-                l10n.starterSheetTitle(widget.entry.title),
-                style: styles.compactTitle,
-              ),
-              Text(
-                l10n.starterSheetBody(
-                  widget.entry.cardCount,
-                  widget.entry.subDeckCount,
-                ),
-                style: styles.footerCaption,
-              ),
-              const SizedBox(height: AppSpacing.control),
-              Text(
-                l10n.starterSheetOverline.toUpperCase(),
-                style: styles.overline,
-              ),
-            ],
-          ),
-        ),
-        footer: MxSheetActions(
-          isInSheet: true,
-          cancelLabel: l10n.commonCancel,
-          onCancel: isAdding ? null : () => Navigator.of(context).pop(),
-          confirmLabel: state.hasFailed
-              ? l10n.starterTryAgain
-              : l10n.starterAddDeck,
-          confirmIcon: state.hasFailed ? null : AppIcons.add,
-          isConfirmLoading: isAdding,
-          onConfirm: () => unawaited(_add()),
+    return MxBottomSheet(
+      isHeld: isAdding,
+      header: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.card,
+          AppSpacing.micro,
+          AppSpacing.card,
+          AppSpacing.control,
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.micro,
           children: [
-            for (final (index, scheduler) in schedulers.indexed)
-              MxOptionRow(
-                title: starterSchedulerName(l10n, scheduler),
-                description: _description(scheduler),
-                isSelected: scheduler == _scheduler,
-                onSelected: isAdding
-                    ? null
-                    : () => setState(() => _scheduler = scheduler),
-                hasDivider: index < schedulers.length - 1,
+            Text(
+              l10n.starterSheetTitle(widget.entry.title),
+              style: styles.compactTitle,
+            ),
+            Text(
+              l10n.starterSheetBody(
+                widget.entry.cardCount,
+                widget.entry.subDeckCount,
               ),
-            if (state.hasFailed)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.gutter,
-                  AppSpacing.control,
-                  AppSpacing.gutter,
-                  AppSpacing.control,
-                ),
-                child: MxInlineBanner(
-                  tone: MxBannerTone.danger,
-                  title: l10n.starterAddFailedTitle,
-                  message: l10n.starterAddFailedBody,
-                ),
-              ),
+              style: styles.footerCaption,
+            ),
+            const SizedBox(height: AppSpacing.control),
+            Text(
+              l10n.starterSheetOverline.toUpperCase(),
+              style: styles.overline,
+            ),
           ],
         ),
+      ),
+      footer: MxSheetActions(
+        isInSheet: true,
+        cancelLabel: l10n.commonCancel,
+        onCancel: isAdding ? null : () => Navigator.of(context).pop(),
+        confirmLabel: state.hasFailed
+            ? l10n.starterTryAgain
+            : l10n.starterAddDeck,
+        confirmIcon: state.hasFailed ? null : AppIcons.add,
+        isConfirmLoading: isAdding,
+        onConfirm: () => unawaited(_add()),
+      ),
+      child: Column(
+        children: [
+          for (final (index, scheduler) in schedulers.indexed)
+            MxOptionRow(
+              title: starterSchedulerName(l10n, scheduler),
+              description: _description(scheduler),
+              isSelected: scheduler == _scheduler,
+              onSelected: isAdding
+                  ? null
+                  : () => setState(() => _scheduler = scheduler),
+              hasDivider: index < schedulers.length - 1,
+            ),
+          if (state.hasFailed)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.gutter,
+                AppSpacing.control,
+                AppSpacing.gutter,
+                AppSpacing.control,
+              ),
+              child: MxInlineBanner(
+                tone: MxBannerTone.danger,
+                title: l10n.starterAddFailedTitle,
+                message: l10n.starterAddFailedBody,
+              ),
+            ),
+        ],
       ),
     );
   }
