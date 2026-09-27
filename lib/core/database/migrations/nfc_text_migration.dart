@@ -9,14 +9,43 @@ import 'package:memox/core/text/stored_text.dart';
 /// Puts every user text in its stored form (trimmed, NFC), recomputes the
 /// folded columns from it, and merges tags that become one name. A row
 /// already in that form is not written.
-Future<void> normalizeStoredText(DatabaseConnectionUser db) async {
-  await _normalizeDecks(db);
-  await _normalizeCards(db);
+///
+/// Decks and cards are read [pageSize] rows at a time, by `id`, so a large
+/// library upgrades in bounded memory. Tags are read whole: the merge needs
+/// every tag in age order, and a tag is only its name.
+Future<void> normalizeStoredText(
+  DatabaseConnectionUser db, {
+  int pageSize = 1000,
+}) async {
+  await _normalizeDecks(db, pageSize);
+  await _normalizeCards(db, pageSize);
   await _normalizeTags(db);
 }
 
-Future<void> _normalizeDecks(DatabaseConnectionUser db) async {
-  for (final row in await db.customSelect('SELECT id, name FROM deck').get()) {
+/// The rows of `SELECT [columns] FROM [table]`, [pageSize] at a time in `id`
+/// order. A step rewrites text, never an id, so the cursor stays valid.
+Stream<QueryRow> _pages(
+  DatabaseConnectionUser db,
+  String table,
+  String columns,
+  int pageSize,
+) async* {
+  var after = '';
+  while (true) {
+    final page = await db
+        .customSelect(
+          'SELECT $columns FROM $table WHERE id > ? ORDER BY id LIMIT ?',
+          variables: [Variable<String>(after), Variable<int>(pageSize)],
+        )
+        .get();
+    yield* Stream.fromIterable(page);
+    if (page.length < pageSize) return;
+    after = page.last.read<String>('id');
+  }
+}
+
+Future<void> _normalizeDecks(DatabaseConnectionUser db, int pageSize) async {
+  await for (final row in _pages(db, 'deck', 'id, name', pageSize)) {
     final name = row.read<String>('name');
     final stored = storedText(name);
     if (stored == name) continue;
@@ -27,14 +56,13 @@ Future<void> _normalizeDecks(DatabaseConnectionUser db) async {
   }
 }
 
-Future<void> _normalizeCards(DatabaseConnectionUser db) async {
-  for (final row
-      in await db
-          .customSelect(
-            'SELECT id, front, back, front_folded, back_folded, example, hint, '
-            'pronunciation FROM card',
-          )
-          .get()) {
+Future<void> _normalizeCards(DatabaseConnectionUser db, int pageSize) async {
+  await for (final row in _pages(
+    db,
+    'card',
+    'id, front, back, front_folded, back_folded, example, hint, pronunciation',
+    pageSize,
+  )) {
     final front = row.read<String>('front');
     final back = row.read<String>('back');
     final before = <String?>[
