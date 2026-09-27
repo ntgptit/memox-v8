@@ -63,3 +63,34 @@ def test_widget_database_access_leaves_use_cases_and_prose_alone(tmp_path: Path)
     final result = await ref.read(renameDeckUseCaseProvider).call(id, name);
     """
     assert not _violations(DB_ACCESS, tmp_path, good)
+
+
+REMINDER_PLUGINS = "memox_v8.architecture.reminder_plugins_have_one_door"
+PLUGINS_DOOR = (
+    "lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart"
+)
+
+
+def _violations_at(rule_id: str, tmp_path: Path, files: dict[str, str]) -> list:
+    for relative, source in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(source, encoding="utf-8")
+    rule_config = _rule_config(rule_id)
+    rule_config.pop("scopes", None)
+    rule_config["include"] = ["lib/**/*.dart"]
+    rule_config["enabled"] = True
+    return RuleFactory().create(rule_config).check(tmp_path)
+
+
+def test_reminder_plugins_are_imported_by_their_data_source_only(tmp_path: Path) -> None:
+    for plugin in ("android_alarm_manager_plus", "flutter_local_notifications"):
+        line = f"import 'package:{plugin}/{plugin}.dart';\n"
+        assert _violations_at(
+            REMINDER_PLUGINS, tmp_path / plugin,
+            {"lib/app/app.dart": line},
+        ), plugin
+        assert not _violations_at(
+            REMINDER_PLUGINS, tmp_path / f"{plugin}-door",
+            {PLUGINS_DOOR: line},
+        ), plugin
