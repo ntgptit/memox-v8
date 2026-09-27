@@ -14,6 +14,7 @@ touch the study state or history).
 | App bar | `MxAppBar` (content density) | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); trailing compact `MxButton` "Save". |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
+| Required legend | `CardRequiredLegendWidget` | A primary dot and "Required" above the fields, as in 08. |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card. |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
 | Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create. |
@@ -34,7 +35,7 @@ touch the study state or history).
 | validationErr | ![](img/09-card-edit/validationErr-light.png) | ![](img/09-card-edit/validationErr-dark.png) | As drawn, error shown only once the back field is touched (ruling P4a-L2). |
 | dirtySaving | ![](img/09-card-edit/dirtySaving-light.png) | ![](img/09-card-edit/dirtySaving-dark.png) | As drawn, except the button shows only its spinner in place of the label (see Deviations). |
 | saveFailed | ![](img/09-card-edit/saveFailed-light.png) | ![](img/09-card-edit/saveFailed-dark.png) | As drawn. |
-| discard | ![](img/09-card-edit/discard-light.png) | ![](img/09-card-edit/discard-dark.png) | Body is generic for every edit; it does not name which fields changed as the kit's mock does — see Deviations. |
+| discard | ![](img/09-card-edit/discard-light.png) | ![](img/09-card-edit/discard-dark.png) | As drawn: the body names what was edited ("You edited the meaning and the hint…"). |
 | delConfirm | ![](img/09-card-edit/delConfirm-light.png) | ![](img/09-card-edit/delConfirm-dark.png) | As drawn, minus the glyph beside the title (§9 row 108) and the answer count in the note (§9 row 110); spins while the move commits (FE-B1 D15). |
 
 Not captured: none — all nine kit states are V8-supported.

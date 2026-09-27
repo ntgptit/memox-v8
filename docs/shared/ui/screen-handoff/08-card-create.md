@@ -13,6 +13,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | App bar | `MxAppBar` (content density) | Close (✕); title "New card"; trailing compact `MxButton` "Save", disabled until valid, spinner in place of the label while saving. |
 | Deck path | `DeckContextHeaderWidget` (`MxBreadcrumb` + a destination row), injected by `app/` (ruling P4a-L7) | Library › ancestors › deck › "New card"; merges the kit's separate Breadcrumb and deck-destination pill into one component. Not a picker: the card belongs to the deck it was opened from. |
 | Deck-rejects banner | `MxInlineBanner` (warning) | "This deck no longer accepts cards." / "It now holds sub-decks."; shown only once the target deck can no longer hold a card. |
+| Required legend | `CardRequiredLegendWidget` | A primary dot and "Required" (overline) above the fields; each required field keeps its own marker. |
 | Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Overline "Front · Term", "Required", live "{count} / 60"; inline error once the field is touched (ruling P4a-L2). |
 | Back | `CardFieldWidget` (`MxTextFieldVariant.meaning`) | Overline "Back · Meaning", "Required", "{count} / 240"; inline error once touched. |
 | Optional details | `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidget` (3 × `CardFieldWidget`, `MxTextFieldVariant.detail`) | "Add details · example · hint · pronunciation"; opens example, hint, pronunciation, each "· optional", "{count} / 240". |
