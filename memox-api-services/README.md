@@ -10,14 +10,16 @@ Conventions and the review checklist live in the repo skill
 
 ## Package layout
 
-Packages are grouped by domain first, then by layer. The domains mirror the
-Flutter app's `lib/features/` folders, with the underscores dropped
-(`starter_decks` → `starterdecks`, `study_mode` → `studymode`).
+Packages are grouped by domain first, then by layer. Each domain package has
+the same name as its Flutter folder under `lib/features/`, including the
+underscores (`starter_decks`, `study_mode`), so the app and the API can be
+matched one to one. This is a deliberate deviation from the Java convention of
+concatenated lowercase names (`starterdecks`), which the owner decided on.
 
 ```
 src/main/java/com/memox/
 ├── <feature>/                  card, deck, progress, reminders, search, settings, srs,
-│   ├── controller/             starterdecks, study, studymode, tags, transfer, trash
+│   ├── controller/             starter_decks, study, study_mode, tags, transfer, trash
 │   ├── service/
 │   │   └── impl/
 │   ├── mapper/
