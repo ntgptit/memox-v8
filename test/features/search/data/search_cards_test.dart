@@ -11,6 +11,8 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 
+import 'package:memox/core/text/folded_text.dart';
+
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/study_fixtures.dart';
@@ -197,5 +199,26 @@ void main() {
 
     expect([for (final hit in results.decks) hit.name], ['xｱ', 'x𝒜']);
     expect(ids(results), ['kana', 'script']);
+  });
+
+  test('a term typed decomposed finds a card written precomposed, and Hangul '
+      'typed as jamo finds its syllable (BE-C5)', () async {
+    final repo = CardRepositoryImpl(
+      db,
+      ScheduleRepositoryImpl(db, now: () => now),
+      tags,
+      now: () => now,
+    );
+    final cong = await repo.card(
+      lessonId,
+      const CardDraft(front: 'co\u0302ng', back: 'work'),
+    );
+    final bab = await repo.card(
+      lessonId,
+      const CardDraft(front: '\u1107\u1161\u11B8', back: 'rice'),
+    );
+
+    expect(ids(await read(foldText('C\u00D4NG'))), [cong.id]);
+    expect(ids(await read(foldText('\uBC25'))), [bab.id]);
   });
 }

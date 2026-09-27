@@ -448,4 +448,23 @@ void main() {
       DeckRejection.notFound,
     );
   });
+
+  test('a deck name is stored in NFC on create and rename (BE-C5)', () async {
+    final created = await repo.createRootDeck(
+      name: 'Tie\u0302\u0301ng Vie\u0323\u0302t',
+      schedulerType: SchedulerType.eightBox,
+    );
+    final deck = (created as Ok<DeckEntity, DeckRejection>).value;
+    expect(deck.name, 'Ti\u1EBFng Vi\u1EC7t');
+
+    await repo.renameDeck(deckId: deck.id, name: ' \u1107\u1161\u11B8 ');
+
+    final row = await db
+        .customSelect(
+          'SELECT name FROM deck WHERE id = ?',
+          variables: [Variable(deck.id)],
+        )
+        .getSingle();
+    expect(row.read<String>('name'), '\uBC25');
+  });
 }
