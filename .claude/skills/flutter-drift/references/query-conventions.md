@@ -17,11 +17,11 @@ in Dart.
 ## File organisation
 
 Tables in `tables/*.drift`, queries in `queries/*.drift`, one pair per bounded
-area (`deck`, `card`, `tag`, `study`). A query file imports the table files it
+area (`deck`, `card`, `trash`). A query file imports the table files it
 reads:
 
 ```sql
-import '../tables/cards.drift';
+import '../tables/card.drift';
 ```
 
 Two failure modes worth naming:
@@ -46,7 +46,7 @@ SELECT
   card.front,
   card.back,
   card.created_at
-FROM cards AS card
+FROM card
 WHERE card.deck_id = :deckId
 ORDER BY
   card.created_at DESC,
@@ -133,7 +133,7 @@ When keyset pagination is the right answer, the shape is:
 ```sql
 listCardsAfterCursor:
 SELECT card.id, card.deck_id, card.front, card.created_at
-FROM cards AS card
+FROM card
 WHERE card.deck_id = :deckId
   AND (
     card.created_at > :cursorCreatedAt
@@ -168,7 +168,7 @@ serves `WHERE deck_id = ? ORDER BY created_at, id` **and** every lookup a plain
 on every insert, one of them redundant.
 
 - **Do not create an index without a query you can name.** Write the query in the
-  index's comment, as `cards.drift` does.
+  index's comment.
 - **Verify with `EXPLAIN QUERY PLAN`** before claiming a speed-up. The signal to
   hunt is `USE TEMP B-TREE FOR ORDER BY` — it means SQLite read everything and
   sorted it, and any `LIMIT` was applied after the work was already done.

@@ -115,9 +115,8 @@ meaning.
 - [ ] Semantics phát âm đúng.
 - [ ] Không expose color.
 
-Lưu ý repo: `badgeTheme` từng bị **từ chối** khỏi nhóm component theme chưa có renderer (khi đó là `app_planned_themes.dart`) vì
-due-vs-overdue là một quyết định cần màn hình — mục này chỉ mở khi
-quyết định đó có screen để check.
+Lưu ý repo: `badgeTheme` chưa vào `ThemeData` vì due-vs-overdue là một quyết
+định cần màn hình — mục này chỉ mở khi quyết định đó có screen để check.
 
 ## 34. `CarouselViewThemeData`
 

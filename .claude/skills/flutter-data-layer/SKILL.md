@@ -55,36 +55,40 @@ differ per screen.
 ## Repository shape
 
 ```dart
-final class DeckRepositoryImpl implements DeckRepository {
-  const DeckRepositoryImpl(this._remote, this._local, this._mapper);
+final class ReminderWorkloadRepositoryImpl
+    implements ReminderWorkloadRepository {
+  ReminderWorkloadRepositoryImpl(AppDatabase db)
+    : _dao = ReminderWorkloadDao(db);
+
+  final ReminderWorkloadDao _dao;
 
   @override
-  Future<List<Deck>> getDecks() async {
+  Future<List<ReminderDeckWorkload>> rootWorkloads({
+    required DateTime now,
+    required DateTime startOfToday,
+  }) async {
     try {
-      final dtos = await _remote.fetchDecks();
-      await _local.upsertAll(dtos);
-      return dtos.map(_mapper.toEntity).toList();
-    } on DioException catch (e, s) {
-      _logger.warning('fetchDecks failed', e, s);
-      final cached = await _local.getAll();
-      if (cached.isNotEmpty) return cached.map(_mapper.toEntity).toList();
-      throw mapDioException(e);          // -> Failure
-    } on DriftWrappedException catch (e, s) {
-      _logger.error('local read failed', e, s);
-      throw DatabaseFailure(message: 'Could not read local data', cause: e);
+      final rows = await _dao.rootDeckRows(now: now, startOfToday: startOfToday);
+      return [for (final row in rows) reminderDeckWorkloadOf(row, startOfToday)];
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }
 ```
 
-What that demonstrates: exceptions are caught at this boundary and only this
-boundary; the original is logged with its stack trace and then discarded from
-the user-facing path; the returned type is a domain entity, never a DTO.
+What that demonstrates: the repository reads Drift through its DAO; rows become
+domain types before they leave; and an exception is mapped at this boundary and
+only here, by `mapDatabaseError` in `lib/core/error/failure.dart`, keeping its
+stack trace (ADR-011 D6). A watch does the same with `.mapDatabaseErrors()`
+(`progress_repository_impl.dart`). The example is
+`lib/features/reminders/data/repositories/reminder_workload_repository_impl.dart`.
 
-Put `mapDioException` in `core/error/` and use it from every repository, so the
-same status code cannot produce different failures in different features. Test
-it directly (`flutter-testing`) — it is high-traffic code that manual testing rarely
-exercises.
+When the first API call lands, its `DioException` mapping goes next to
+`mapDatabaseError` in `core/error/` and every repository uses it (ADR-012), so
+the same status code cannot produce different failures in different features.
+Test both directly (`flutter-testing`) — they are high-traffic code that manual
+testing rarely exercises.
 
 ## DTO and entity are different types
 

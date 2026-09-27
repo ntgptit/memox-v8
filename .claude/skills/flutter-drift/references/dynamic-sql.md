@@ -14,7 +14,7 @@ against whatever the user typed into a search box.
 **A dynamic value** is a fixed query with a bound parameter:
 
 ```sql
-SELECT * FROM cards WHERE deck_id = :deckId;
+SELECT * FROM card WHERE deck_id = :deckId;
 ```
 
 Nothing to design here. Bind it and move on.
@@ -33,16 +33,14 @@ set you control, not from a string that arrives from the UI.
 | 3 | Dart query builder in the DAO | The structure varies too much for one statement to express honestly |
 | 4 | `customSelect` / `customUpdate` | Drift cannot express the SQL at all |
 
-**Level 2 is this project's default for a varying query**, because it keeps the
-statement — the projection, the joins, the tag `GROUP_CONCAT` — in SQL where
-`drift_dev` still type-checks it, while letting Dart decide the filter.
-`cardListItems` in `lib/core/database/queries/card.drift` is the worked example:
+**Level 2 keeps the statement in SQL**, where `drift_dev` still type-checks the
+projection and the joins, while letting Dart decide the filter:
 
 ```sql
-cardListItems:
-SELECT c.**, s.**, ( … ) AS tag_names
-FROM cards c
-INNER JOIN card_review_states s ON s.card_id = c.id
+cardsOfDeck:
+SELECT c.**, s.**
+FROM card c
+INNER JOIN card_schedule s ON s.card_id = c.id
 WHERE $predicate
 ORDER BY $order
 LIMIT :limit;
@@ -50,7 +48,11 @@ LIMIT :limit;
 
 Drift inlines `$predicate` as real SQL, so `all` emits `c.deck_id = ?` and
 `flagged` emits `c.deck_id = ? AND c.is_flagged = 1` — the same text separate
-statements would have emitted, and the same query plan. A template can also
+statements would have emitted, and the same query plan.
+
+The card list is level 3: `CardListDao` builds its window, its filter counts
+and Select all from one `_predicate`, so they never disagree about which cards
+a query lets through (BR-CARD-012). A template can also
 declare a default (`$predicate = TRUE`) for callers that pass nothing.
 
 Level 4 is a last resort, and it costs you the two things Drift was doing for
@@ -71,8 +73,7 @@ WHERE (:deckId IS NULL OR deck_id = :deckId)
 It reads as less duplication and costs the index: SQLite decides index usage per
 `WHERE` term, and an `OR` chain is optimisable only in specific shapes. With ten
 optional filters it is also a single condition block nobody can reason about.
-This project rejected exactly that chain in `card_list_query_mapper.dart` — the
-comment there records why.
+The card list composes instead (`CardListDao._predicate`).
 
 Compose instead: **a filter that is not applied contributes no SQL.**
 
@@ -97,15 +98,15 @@ beside it, so the pill count and the list it opens can never disagree.
 ## Values are bound; structure comes from an enum
 
 ```dart
-cards.deckId.equals(deckId);                  // value → bound
-cards.status.isIn(codes);                     // values → bound
+card.deckId.equals(deckId);                   // value → bound
+card.id.isIn(ids);                            // values → bound
 Variable<String>(term.toLowerCase());         // value → bound
 ```
 
 ```dart
 // Both wrong, and the second is wrong even with no user input in sight.
-customSelect("SELECT * FROM cards WHERE deck_id = '$deckId'");
-final sql = 'SELECT * FROM cards ORDER BY ${criteria.sortColumn}';
+customSelect("SELECT * FROM card WHERE deck_id = '$deckId'");
+final sql = 'SELECT * FROM card ORDER BY ${criteria.sortColumn}';
 ```
 
 Parameter binding works for **values only**. A table name, a column name,
@@ -116,18 +117,18 @@ reach SQL from outside the app, so can anything else.
 So: **sorting is an enum, never a string.**
 
 ```dart
-OrderBy cardListOrder(CardListSort sort, Cards c, CardReviewStates s) =>
-    switch (sort) {
-      CardListSort.newest => OrderBy([
-        OrderingTerm.desc(c.createdAt),
-        OrderingTerm.desc(c.id),          // tie-breaker, always
-      ]),
-      CardListSort.dueFirst => OrderBy([
-        OrderingTerm.asc(s.dueAt),
-        OrderingTerm.desc(c.createdAt),
-        OrderingTerm.desc(c.id),
-      ]),
-    };
+List<OrderingTerm> order(CardListSort sort) => switch (sort) {
+  CardListSort.newest => [
+    OrderingTerm.desc(_card.createdAt),
+    OrderingTerm.desc(_card.id),        // tie-breaker, always
+  ],
+  CardListSort.dueFirst => [
+    OrderingTerm.asc(_schedule.learnedAt.isNull()),
+    OrderingTerm.asc(_schedule.dueAt),
+    OrderingTerm.desc(_card.createdAt),
+    OrderingTerm.desc(_card.id),
+  ],
+};
 ```
 
 The exhaustive `switch` is the point: adding a sort is a compile error until it
@@ -136,8 +137,8 @@ that come with it:
 
 - Every sort ends in a unique tie-breaker.
 - A cursor must carry **every** column in the ordering it pages through.
-- Changing the sort invalidates the cursor and the window — see the window-reset
-  behaviour in `card_list_filter_controller.dart`.
+- Changing the sort invalidates the cursor and the window: whoever owns the
+  list resets both.
 - Every sort a user can pick should have an index that serves it, or it is a full
   sort wearing a `LIMIT`.
 
@@ -174,13 +175,9 @@ column, or a column name that came from the UI. It describes *what the user
 asked for* in domain vocabulary; turning that into SQL is the DAO's job and
 happens in one place.
 
-**Where this project stands:** the card list read threads six parameters through
-DAO → data source → repository → use case (`watchCardListItems`). It works and it
-is typed, but it is at the size where the criteria object starts paying for
-itself — particularly `now`, which is required only for one filter value and is
-enforced with a runtime `ArgumentError` today. A criteria object could make that
-combination unrepresentable instead of merely checked. Treat this as a refactor
-worth proposing, not as a rule the existing code violates.
+**Where this project stands:** the card list passes one criteria object,
+`CardListQuery` (filter, sort, search term, tags), from the use case down to
+`CardListDao`.
 
 ## Decide what an empty collection means
 
@@ -190,12 +187,12 @@ State the choice in code:
 
 ```dart
 // This project's convention: an empty filter is no filter.
-if (statuses.isEmpty) return null;
-return cards.status.isIn(statuses.map((s) => s.code));
+if (tagIds.isEmpty) return const Constant(true);
+return existsQuery(/* the card carries one of tagIds */);
 ```
 
 The same question applies to a blank search term, and the card list answers it
-explicitly: `if (term.isEmpty) return predicate` — an empty box narrows nothing.
+explicitly: `if (term.isEmpty) return inDeck;` — an empty box narrows nothing.
 
 ## Dynamic filters, stable shape
 
@@ -207,9 +204,9 @@ The boundary that keeps dynamic SQL maintainable:
 **Do not make the projection dynamic.** A query with `includeDeck`,
 `includeStatistics`, `includeHistory` flags has an unstable result type, unclear
 stream dependencies, and a query plan that changes per call. Write separate read
-models instead — `watchCardsByDeck`, `watchCardListItems`,
-`cardStateCountsByDeck` are four statements here precisely because they answer
-four questions. A varying *result shape* is the signal to split the query, where
+models instead — the card list's window, its filter counts and the deck's
+workload are separate statements precisely because they answer separate
+questions. A varying *result shape* is the signal to split the query, where
 a varying *filter* is not.
 
 **Do not make joins optional to reuse one query.** Fix the join graph per read

@@ -68,10 +68,8 @@ Material(child: InkWell(onTap: t, child: DecoratedBox(decoration: d, child: body
 DecoratedBox(decoration: d, child: Material(child: InkWell(onTap: t, child: body)))
 ```
 
-`mx_card.dart` is the worked example, `deck_tile_widget.dart` the caller, and
-`deck_tile_target_test.dart` pins it by geometry — which is the only way to see
-it, since the widget tree is identical either way and only the reacting pixels
-differ.
+`lib/shared/widgets/mx_card.dart` is the worked example. Only a test of the
+reacting pixels can pin it, since the widget tree is identical either way.
 
 ## The base set
 

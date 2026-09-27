@@ -52,14 +52,14 @@ Write into `docs/`. Templates are in `assets/`.
 | `docs/shared/decisions/` | Architecture and product decisions and their deviations, one ADR each, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/features/<feature>/api.md` | Endpoints, request/response shapes, error format, pagination — from the first slice that calls the API (ADR-012) | — |
-| `docs/design-system.md` | Owned by `flutter-design-system` | — |
-| `docs/testing-strategy.md` | Owned by `flutter-testing` | — |
-| `docs/release-checklist.md` | Owned by `flutter-ship` | — |
+| `docs/shared/ui/` | The design and screen handoffs from the kit; owned by `flutter-design-system` | — |
+| `docs/shared/testing/` | Scenario catalog, coverage map, execution guide; owned by `flutter-testing` | — |
 
-Do not create empty placeholder files for the last four before the phase that
-owns them — an empty document reads as "considered and found to need nothing",
-which is worse than an absent one. `docs/README.md` should list what exists and
-what is deliberately not written yet.
+Do not create an empty placeholder before the work that owns it — an `api.md`
+before the slice that calls the API, a release checklist before release. An
+empty document reads as "considered and found to need nothing", which is worse
+than an absent one. `docs/README.md` should list what exists and what is
+deliberately not written yet.
 
 ## Use cases
 

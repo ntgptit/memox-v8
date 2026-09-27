@@ -101,9 +101,9 @@ injection safety are all gone at once.
 
 The order matters: **index after query, never before**. Every index is paid for
 on every insert into that table, forever. An index whose query nobody can name is
-a permanent cost for a speculative benefit — and this project's own composite
-index earned its place by measurement (1193µs → 102µs, recorded in
-`cards.drift`), which is the standard to hold a new one to.
+a permanent cost for a speculative benefit. An index earns its place by a
+measurement, `EXPLAIN QUERY PLAN` and a timing before and after, which is the
+standard to hold a new one to.
 
 ### Step 3 — migrate, and prove the migration
 

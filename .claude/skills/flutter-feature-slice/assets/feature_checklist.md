@@ -39,13 +39,11 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] Input validation lives in a **value object** whose constructor is private —
       not in the controller, not in the repository, and not re-derived in the
       widget to decide which field to mark
-- [ ] `ValidationFailure` carries `Set<Enum> problems`, so one attempt reports
-      every wrong field. No `Map<String, String>`: the value would be copy the UI
-      must not render, which is what makes presentation re-derive the rule
+- [ ] A refusal is `Rejected(reason)` (ADR-011 D6), its reason a value of the
+      feature's enum in `domain/failures/`, never a sentence: the UI maps the
+      value to its own copy, so presentation never re-derives the rule
 - [ ] Any rule needing the data *as it stands at write time* stays in the
       repository, inside its transaction
-- [ ] Failure reasons are enums in `domain/failures/`, never sentences in
-      `Failure.message`
 - [ ] No Flutter / Dio / Drift / json_annotation imports
 
 ## Data
@@ -68,8 +66,7 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
       by a rebuild
 - [ ] Screen
 - [ ] Sections split into separate widget classes
-- [ ] Route path in `app/router/route_paths.dart`; its **name** and path
-      parameters in `core/navigation/route_names.dart`
+- [ ] Route path and its path parameters in `lib/app/router/app_routes.dart`
 - [ ] Only tokens and existing components used
 - [ ] Loading state
 - [ ] Empty state

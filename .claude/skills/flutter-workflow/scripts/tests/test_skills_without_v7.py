@@ -88,7 +88,8 @@ V7_MARKERS = (
     r"(?i)\bv7\b",
     r"\bAD-\d",
     r"\bBR-\d",
-    r"\bM\d+\.\d+\b",
+    r"\bM\d+\.\d+[a-z]*\b",
+    r"\bM\d+ R\d+\b",
     r"A20\.1",
     r"\bP[1-3]-\d\d\b",
     r"(?i)\bphases? \d",
@@ -101,7 +102,21 @@ V7_MARKERS = (
     r"feature_blueprint",
     r"phase-index",
     r"screen_gallery",
+    r"\bcard_review_states\b",
+    r"\breview_history\b",
+    r"\bparent_deck_id\b",
+    r"\broot_deck_id\b",
+    r"\bSurfaceColumnRule\b",
 )
+
+# A path the skills cite, in backticks, from the repo root or from the skill's
+# own folder. A placeholder (`<feature>`, `*`, `…`) names no file, and generated
+# output is gitignored, so a fresh checkout does not have it yet.
+CITED_PATH = re.compile(
+    r"`((?:lib|test|docs|tools|integration_test|assets|references|scripts)/[^`\s]*)`"
+)
+PLACEHOLDER = re.compile(r"[<>*{}$…]")
+GENERATED = re.compile(r"\.g\.dart$|/generated/")
 
 SKIPPED_DIRECTORIES = {"tests", "__pycache__"}
 
@@ -117,6 +132,24 @@ def _scanned_files(skill: Path) -> list[Path]:
         if path.is_file()
         and not SKIPPED_DIRECTORIES.intersection(path.relative_to(skill).parts)
     )
+
+
+def _missing_paths(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_SKILLS) -> list[str]:
+    missing = []
+    for name in names:
+        skill = root / ".claude" / "skills" / name
+        for path in _scanned_files(skill):
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for number, line in enumerate(text.splitlines(), start=1):
+                for match in CITED_PATH.finditer(line):
+                    cited = match.group(1).rstrip(".,:;")
+                    if PLACEHOLDER.search(cited) or GENERATED.search(cited):
+                        continue
+                    if (root / cited).exists() or (skill / cited).exists():
+                        continue
+                    relative = path.relative_to(root).as_posix()
+                    missing.append(f"{relative}:{number}: {cited}")
+    return missing
 
 
 def _occurrences(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_SKILLS) -> list[str]:
@@ -141,6 +174,13 @@ class MarkersTest(unittest.TestCase):
             "(AD-05 in the architecture notes)",
             "the deck keeps its type (BR-63)",
             "a real bug (M99.61)",
+            "shipped in Card Import (M99.19a finding V9)",
+            "the owner review M6 R7",
+            "INNER JOIN card_review_states s",
+            "an append-only review_history",
+            "COALESCE(parent_deck_id, id)",
+            "every deck carries root_deck_id",
+            "opt the screen into SurfaceColumnRule",
             "until A20.1 P1-08",
             "Covers checklist Phase 15.",
             "Covers checklist Phases 4 (structure) and 5 (lint).",
@@ -164,6 +204,7 @@ class MarkersTest(unittest.TestCase):
             "docs/wbs_BE.md and docs/wbs_FE.md",
             "docs/shared/decisions/ADR-001-quyet-dinh-nen-tang.md",
             "Material 3 in lib/core/theme/",
+            "card_schedule and review_log, parent_id and root_id",
         ):
             with self.subTest(text=text):
                 self.assertEqual(_markers_in(text), [])
@@ -192,6 +233,26 @@ class ScanTest(unittest.TestCase):
             [".claude/skills/flutter-example/references/notes.md:2: update docs/wbs.md here"],
         )
 
+    def test_a_cited_path_must_exist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "lib").mkdir()
+            (root / "lib" / "present.dart").write_text("", encoding="utf-8")
+            skill = root / ".claude" / "skills" / "flutter-example"
+            (skill / "references").mkdir(parents=True)
+            (skill / "references" / "notes.md").write_text("", encoding="utf-8")
+            (skill / "SKILL.md").write_text(
+                "See `lib/present.dart`, `references/notes.md` and `lib/absent.dart`.\n"
+                "A pattern: `lib/features/<feature>/domain/`, `test/**/*_test.dart`.\n"
+                "Generated: `lib/l10n/generated/app_localizations.dart`,"
+                " `lib/core/database/app_database.g.dart`.\n",
+                encoding="utf-8",
+            )
+
+            missing = _missing_paths(root, ("flutter-example",))
+
+        self.assertEqual(missing, [".claude/skills/flutter-example/SKILL.md:1: lib/absent.dart"])
+
 
 class RepoOwnedSkillsTest(unittest.TestCase):
     maxDiff = None
@@ -209,6 +270,9 @@ class RepoOwnedSkillsTest(unittest.TestCase):
 
     def test_no_repo_owned_skill_names_v7(self):
         self.assertEqual(_occurrences(), [])
+
+    def test_every_path_a_skill_cites_exists(self):
+        self.assertEqual(_missing_paths(), [])
 
     def test_project_documentation_is_its_own_canonical_source(self):
         """The install receipt named a V7 checkout as the skill's source.

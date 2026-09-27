@@ -43,23 +43,23 @@ final class IsNullValue<T> extends FilterValue<T> { const IsNullValue(); }
 
 Expression<bool>? deckFilter(FilterValue<String> filter) => switch (filter) {
   AnyValue()                  => null,                       // contributes no SQL
-  EqualsValue(:final value)   => cards.deckId.equals(value),
-  IsNullValue()               => cards.deckId.isNull(),
+  EqualsValue(:final value)   => card.deckId.equals(value),
+  IsNullValue()               => card.deckId.isNull(),
 };
 ```
 
 Where only one meaning exists, a nullable parameter is fine — but say so in the
 signature's documentation, because the next person will assume the other one.
 
-This project already relies on the distinction in the read direction:
-`dueNowPredicate` is `due_at IS NULL OR due_at <= :now`, because a never-scheduled
-card is due. Null there is a *state*, not an absent filter.
+This project relies on the distinction in the read direction: a `NULL`
+`learned_at` means the card is new (BR-STUDY-051), so "due" is
+`learned_at IS NOT NULL AND due_at <= :now`. Null there is a *state*, not an
+absent filter.
 
-The related smell, and this repo has one: a parameter that is only meaningful in
-combination with another. `watchCardListItems(..., DateTime? now)` requires `now`
-when the filter is `dueNow` and rejects it at runtime with an `ArgumentError`
-otherwise. A criteria object can make that unrepresentable rather than checked —
-see the criteria section of `dynamic-sql.md`.
+The related smell: a parameter that is only meaningful in combination with
+another, such as a `now` only one filter reads. A criteria object can make that
+unrepresentable rather than checked — see the criteria section of
+`dynamic-sql.md`.
 
 ## DYN-02 · Boolean structure is a tree
 
@@ -95,7 +95,8 @@ Use `created_at >= :from AND created_at < :to`, not `BETWEEN :from AND :to`.
 ```dart
 final from = DateTime.utc(2026, 8, 4);
 final to   = DateTime.utc(2026, 8, 5);          // exclusive
-cards.createdAt.isBiggerOrEqualValue(from) & cards.createdAt.isSmallerThanValue(to);
+card.createdAt.isBiggerOrEqualValue(from) &
+    card.createdAt.isSmallerThanValue(to);
 ```
 
 `BETWEEN` is inclusive on both ends, so "all of 4 August" becomes a hunt for
@@ -138,26 +139,25 @@ silently changes the results.
 `Ê`, `Đ`, `Ô`, or anything else outside a–z. For an app whose content is Korean
 and Vietnamese, that is not a detail.
 
-This project already knows it. `tags.drift` says so in the schema, and stores a
-`name_folded` column written by Dart's `toLowerCase()` — full Unicode folding at
-write time — with the unique index on that column rather than on `name COLLATE
-NOCASE`. `card_tag_dao_test.dart` inserts `Động từ` twice and requires the second
-to fail; that test is what proved the point.
+This project already knows it. `tags` stores a `name_folded` column, folded in
+Dart at write time, with the unique index on that column rather than on
+`name COLLATE NOCASE`; `test/features/tags/data/tag_repository_impl_test.dart`
+requires a name whose folded form matches an existing tag to reuse that tag.
 
-**Card search did not get the same treatment.** `searchPredicate` compares
-`instr(lower(front), :term)` where the needle is lowered in Dart and the haystack
-is lowered by SQLite:
+**Card search gets the same treatment.** `card` stores `front_folded` and
+`back_folded`, folded in Dart at write time, and the card list and library
+search compare the folded term against them with `instr`. Were the haystack
+lowered by SQLite instead, it would be folded ASCII-only:
 
 | Side | Folded by | `CÔNG` becomes |
 |---|---|---|
-| needle (search term) | Dart `toLowerCase()` — full Unicode | `công` |
-| haystack (stored text) | SQLite `lower()` — ASCII only | `cÔng` |
+| Dart (`foldText`) | full Unicode | `công` |
+| SQLite `lower()` | ASCII only | `cÔng` |
 
-So a card stored as `CÔNG NGHỆ` cannot be found by typing `công nghệ`. Korean is
-unaffected (no case), lowercase Vietnamese is unaffected, and uppercase
-Vietnamese entries are not — which is why this survives casual testing. The fix
-is the pattern the same repo already uses: fold once at write time into a
-column and compare against that.
+and a card stored as `CÔNG NGHỆ` could not be found by typing `công nghệ`.
+Korean is unaffected (no case), lowercase Vietnamese is unaffected, and
+uppercase Vietnamese entries are not — which is why that bug survives casual
+testing.
 
 Whatever an app decides, decide it explicitly and write it down:
 
@@ -181,7 +181,7 @@ it needs a migration and a test, not an edit.
 ORDER BY name COLLATE NOCASE
 
 -- …the index must say it too, or the index is not used.
-CREATE INDEX idx_decks_name_nocase ON decks (name COLLATE NOCASE);
+CREATE INDEX idx_deck_name_nocase ON deck (name COLLATE NOCASE);
 ```
 
 Collation affects comparison, equality, ordering, uniqueness *and* index
@@ -277,14 +277,14 @@ contract and state it:
 
 ## DYN-08 · Mandatory scope is not a filter
 
-Some predicates are not optional: `deleted_at IS NULL`, `owner_id = :current`,
-`workspace_id = :current`, any access-control condition. Exposing them as
-criteria fields means every caller can forget one, and the one that forgets is a
-data leak rather than a wrong list.
+Some predicates are not optional: `delete_batch_id IS NULL`,
+`owner_id = :current`, `workspace_id = :current`, any access-control condition.
+Exposing them as criteria fields means every caller can forget one, and the one
+that forgets is a data leak rather than a wrong list.
 
 ```dart
 Expression<bool> mandatoryScope(QueryContext context) =>
-    cards.deletedAt.isNull() & cards.ownerId.equals(context.ownerId);
+    card.deleteBatchId.isNull() & deck.ownerId.equals(context.ownerId);
 
 final predicate = mandatoryScope(context) & optionalFilters(criteria);
 ```
@@ -348,15 +348,17 @@ reproducible from its criteria.
 while the editor was open. Where that matters, make the update conditional:
 
 ```sql
-UPDATE cards
+UPDATE card
 SET front = :front, version = version + 1, updated_at = :updatedAt
 WHERE id = :id AND version = :expectedVersion;
 ```
 
 Then check the affected row count — zero means someone else wrote first, and that
-is a `ConflictFailure`, not a success. This becomes essential the moment there is
-background sync, autosave, import, or a second isolate. There is no `version`
-column here yet; it is the natural place for one when sync arrives.
+is a refusal, not a success. This becomes essential the moment there is
+autosave, import, or a second isolate writing. There is no `version` column
+here, and sync does not bring one: ADR-013 settles sync conflicts on the
+server, in the order it receives operations, with a `server_version` the server
+assigns.
 
 **Conflict target.** An upsert's conflict target is business semantics, not a
 runtime option — SQLite fires `DO UPDATE` / `DO NOTHING` off a specific
@@ -380,7 +382,7 @@ Two calls to one method can produce very different SQL, so a log line naming onl
 the method hides the slow shape. Log a **fingerprint**, never the values:
 
 ```
-query=watchCardListItems filters=deck,status,keyword,dateRange
+query=cardListWindow filters=deck,status,keyword,tags
 sort=createdAtDesc pagination=window pageSize=50 durationMs=18 rows=50
 ```
 

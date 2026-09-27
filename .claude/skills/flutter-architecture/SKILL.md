@@ -154,15 +154,20 @@ decision instead of an inconsistency.
 Guard clauses, early return, fail fast:
 
 ```dart
-Future<Deck> loadDeck(String id) async {
-  if (id.isEmpty) throw ArgumentError.value(id, 'id', 'must not be empty');
+Future<Outcome<DeckEntity, DeckRejection>> call(String deckId) async {
+  if (deckId.isEmpty) {
+    throw ArgumentError.value(deckId, 'deckId', 'must not be empty');
+  }
 
-  final deck = await _repository.findById(id);
-  if (deck == null) throw const NotFoundFailure(message: 'Deck not found');
+  final deck = await _decks.findById(deckId);
+  if (deck == null) return const Rejected(DeckRejection.notFound);
 
-  return deck;
+  return Ok(deck);
 }
 ```
+
+A missing deck is an expected outcome, so it is a `Rejected` reason
+(ADR-011 D6); an empty id is a programming error, so it throws.
 
 Avoid `else`. An `else` almost always means the guard was written as a branch
 instead of an exit — invert the condition and return early. Nested conditionals

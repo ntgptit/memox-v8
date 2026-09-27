@@ -124,8 +124,8 @@ its row with a counter — is not a band and is not held to this.
 `Wrap` sizes its children to their intrinsic width; `Row` without `Expanded`
 does the same. Two cards meant to be halves of a row then sit inboard of the
 column with dead space at the right, and the band above them measures
-perfectly because *the Wrap* is full-width — only the cards are not. This
-shipped in Card Import (M99.19a finding V9) and no gate saw it.
+perfectly because *the Wrap* is full-width — only the cards are not. No
+analyzer, guard or golden sees it.
 
 So when a band is a row of cards, give each child an `Expanded` (with
 `IntrinsicHeight` if they must be equal height) and pick the one-column
@@ -138,15 +138,11 @@ concept "hierarchy only" MUST NOT discard these layout relationships; theme
 tokens own the exact spacing values, while the concept still owns which edges
 and proportions relate.
 
-**The visual audit can enforce a declared row-of-surfaces contract.**
-For screens whose wireframe declares one surface column, opt that screen into
-`SurfaceColumnRule` and provide the production-surface finder explicitly. The
-rule groups those surfaces into rows by vertical overlap and fails when a
-row's union stops short of the column the other surfaces establish. It is not
-global: another screen may intentionally contain nested or asymmetric card
-groups, and the harness must not invent a layout contract merely because it
-sees an `MxCard`. Its synthetic unit tests pin what it catches, while the
-screen's `getRect` tests remain the primary proof of the declared geometry.
+**The visual audit does not check geometry.**
+`test/visual_audit/screen_audit.dart` (MX-VIS-001) runs each production screen
+in both themes at 1× and 2× text and fails on an overflow, a small tap target or
+an unlabelled one. The declared geometry is proved by the screen's `getRect`
+tests.
 
 **Assert the rest in a widget test, because nothing else can.** The audit
 knows about surfaces, not about headings, text fields or the gap between a
@@ -164,10 +160,9 @@ expect(card.left, moreOrLessEquals(heading.left, epsilon: 0.5));
 expect(card.right, moreOrLessEquals(heading.right, epsilon: 0.5));
 ```
 
-`test/features/card/presentation/card_import_alignment_test.dart` is the
-worked example: one helper, every band of every state, plus the stacked case
-at 320dp. Measure the widgets a reader sees — a card, a panel — never the
-invisible box that holds them, which is what hid the original defect.
+`test/shared/widgets/mx_footer_bar_test.dart` measures a shared widget this
+way. Measure the widgets a reader sees — a card, a panel — never the invisible
+box that holds them.
 
 ## Localization
 

@@ -9,8 +9,9 @@ Testing strategy in one line: **test what can be wrong, at the cheapest level
 that can catch it.** A rule that can be tested as a pure function should not be
 tested through a widget — a widget test that fails tells you far less about why.
 
-Record the strategy in `docs/testing-strategy.md` (create it — the file is deliberately absent until this phase, see `docs/README.md`), including what you have
-deliberately decided not to test and why.
+Record the strategy in `docs/shared/testing/` (`README.md` and
+`testing-pyramid-audit.md` hold it today), including what you have deliberately
+decided not to test and why.
 
 ## Layout
 
@@ -28,13 +29,14 @@ test/
 └── support/            shared: test_database.dart, fake clock, builders, pump helpers
 ```
 
-Folders appear with their first test (ADR-011 D1, D12). The suites that come
-with the UI (visual audits under `test/visual_audit/`, which the guard's
-`memox.visual.*` rules already target, goldens and `integration_test/`) are
-placed when the UI sub-project starts.
+Folders appear with their first test (ADR-011 D1, D12). The suites that came
+with the UI are in place: visual audits under `test/visual_audit/` (MX-VIS-001,
+which the guard's `memox.visual.*` rules also target) and goldens beside the
+widget tests. A device end-to-end suite does not exist yet.
 
-`mocktail` for mocks — no codegen, so a changed signature is a compile error
-where it matters rather than a stale generated file.
+Fakes of the domain contracts, not mocks: `test/support/` holds the shared ones
+(`fake_day_clock.dart`, `fake_reminder_platform.dart`, …), so a changed
+signature is a compile error where it matters.
 
 ## Unit tests
 
@@ -158,8 +160,8 @@ Do not golden-test anything with uncontrolled variation — relative timestamps,
 random content, network images, animations mid-flight. Freeze or inject those,
 or the test fails daily and gets ignored, which is worse than not having it.
 
-The checklist's pixel-difference threshold (under 3%) is for comparing against
-the design kit. For golden regression tests between runs, keep tolerance at or
+The pixel-difference threshold for comparing against the design kit is under
+3%. For golden regression tests between runs, keep tolerance at or
 near zero — the whole point is to notice change.
 
 ## Integration tests

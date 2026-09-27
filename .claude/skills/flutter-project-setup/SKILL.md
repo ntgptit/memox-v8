@@ -147,59 +147,39 @@ wiring.
 
 This is the contract between layers, so get it right before any feature uses it.
 
-**Data layer throws typed exceptions.** `DioException`, `DriftWrappedException`
-and friends are caught at the *repository boundary* and never travel further.
+MemoX V8's is ADR-011 D6, in `lib/core/error/`. It has two kinds of "no":
 
-**Domain layer speaks `Failure`.** A sealed class, so `switch` over it is
-exhaustive and the compiler tells you when a new failure type needs handling:
+- **A refusal is a value.** A write the rules refuse (a blank name, a move into
+  the deck's own subtree) returns `Rejected(reason)`, an `Outcome<T, R extends
+  Enum>` (`core/error/outcome.dart`). `R` is the feature's own reason enum in
+  `domain/failures/` (`DeckRejection`, …), so `core/` names no business reason,
+  a `switch` over it stays exhaustive, and the UI maps each value to its own
+  words. A rule the repository checks first is a reason, never an exception.
+- **An unexpected error is a `Failure`.** `core/error/failure.dart` holds a
+  sealed `Failure` with a `message` safe to show and a `cause` for logs only:
+  `ConstraintFailure`, `DatabaseLockedFailure`, `UnknownDatabaseFailure`.
 
 ```dart
-sealed class Failure {
-  const Failure({required this.message, this.cause});
-  final String message;   // safe to show a user
-  final Object? cause;    // for logs only, never rendered
+sealed class Outcome<T, R extends Enum> { const Outcome(); }
+final class Ok<T, R extends Enum> extends Outcome<T, R> { … final T value; }
+final class Rejected<T, R extends Enum> extends Outcome<T, R> {
+  … final R reason;
 }
-
-final class NetworkFailure extends Failure { ... }
-final class UnauthorizedFailure extends Failure { ... }
-final class ForbiddenFailure extends Failure { ... }
-final class ValidationFailure extends Failure {
-  const ValidationFailure({required super.message, this.problems = const <Enum>{}});
-  final Set<Enum> problems;  // typed field problems; drives inline form errors
-}
-final class NotFoundFailure extends Failure { ... }
-final class ConflictFailure extends Failure { ... }
-final class DatabaseFailure extends Failure { ... }
-final class UnknownFailure extends Failure { ... }
 ```
 
-`ValidationFailure` carries a **set of typed problems** because that is what the
-UI needs to show an error under the right input. Flattened to one string, the UI has
-to guess which field is wrong.
-
-Two details memox learned the hard way, both worth copying:
-
-* a `Set`, not a single value, because a form can fail in two places at once — a
-  blank name *and* an unchosen option — and one reason means the user is sent round
-  twice;
-* `Enum` values, not `Map<String, String>`. The map's key was a repeated string
-  literal nothing checked, and its value was a message the UI is forbidden to
-  render — so presentation ignored the value and re-derived the problem from the raw
-  input, which quietly gave the validation rule a second owner. `Enum` rather than a
-  feature type because `core/` may not import a feature, and on the *base* class
-  because `Failure` is `sealed`, so a feature cannot add a subtype.
-
-**Result type or exceptions?** Either works. Pick one and hold to it —
-`Result<T>` makes failure explicit in the signature at the cost of ceremony;
-throwing `Failure` and catching in the controller is lighter but easier to
-forget. Whichever you choose, the invariant is that a `DioException` never
-reaches presentation.
+**The data layer maps once.** Drift and sqlite3 exceptions are caught at the
+repository boundary and turned into a `Failure` by `mapDatabaseError`; a watch
+does the same through `mapDatabaseErrors()`. No repository inspects a driver
+exception itself, and no driver exception reaches presentation. When networking
+lands, its failures join the sealed class and are mapped in one place the same
+way.
 
 **Messages are for users.** No URLs, SQL, stack traces or internal identifiers.
 The technical detail goes in `cause` and into logs. When mapping an unexpected
 error, log the original and show something generic — a leaked stack trace in a
 snackbar is both a bad experience and an information disclosure.
 
-Put the mapping in one place (`core/error/`) so every repository maps the same
-exception to the same failure, and test it (`flutter-testing`) — error mapping is the
-code most likely to be wrong and least likely to be exercised by hand.
+Keep the mapping in one place (`core/error/`) so every repository maps the same
+exception to the same failure, and test it (`test/core/error/failure_test.dart`,
+per `flutter-testing`) — error mapping is the code most likely to be wrong and
+least likely to be exercised by hand.

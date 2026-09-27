@@ -85,11 +85,9 @@ examples.
   outside the transaction, which is a race between the check and the write.
 - **A pass-through use case with optional parameters must forward every one of
   them, and gets a test proving it.** Optional params have defaults, so a
-  dropped `sort:` or `searchTerm:` compiles clean and analyzes clean — the
-  card list shipped exactly this ("Showing 3 of 1", inert sort control) and
-  only end-to-end runs caught it. The lock is cheap: a fake repository that
-  records every parameter it receives, one assert per param
-  (`watch_card_list_items_use_case_test.dart` is the template).
+  dropped `sort:` or `searchTerm:` compiles clean and analyzes clean, and
+  only an end-to-end run would catch it. The lock is cheap: a fake repository
+  that records every parameter it receives, one assert per param.
 
 ## Step 2 — Data
 
