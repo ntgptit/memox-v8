@@ -106,10 +106,12 @@ mode available, because it is indistinguishable from a hang.
 
 ## Environments and flavors
 
-> **Not in V8 yet.** The app calls no API yet (ADR-012): no API base URL, no
-> staging backend, no analytics. So it has no flavors, no `EnvConfig` and no
-> `app/config/` (ADR-011). The rest of this section applies from the first API
-> call, when the base URL has to come from somewhere.
+> **No flavors in V8 yet.** The one environment value is the API base URL: a
+> build passes `--dart-define=API_BASE_URL=…`, which
+> `lib/core/network/api_config.dart` reads, and without it sync does not run.
+> There is no staging backend and no analytics, so there are no flavors, no
+> `EnvConfig` and no `app/config/` (ADR-011). The rest of this section applies
+> when a second value appears.
 
 Three flavors: development, staging, production. Each carries app name,
 application ID suffix, API base URL, log level, feature flags and analytics

@@ -1,8 +1,8 @@
 # MemoX V8 — The skills and documents without V7 (package 12c)
 
 Status: approved 2026-09-27 (scope, the two V7 documents, the checklist, the pin and
-design sections 1–2 in conversation, then this spec); amended during planning (§12) ·
-Path: architectural
+design sections 1–2 in conversation, then this spec); amended during planning (§12.1–
+§12.3) and during execution (§12.4) · Path: architectural
 
 ## 1. Intent
 
@@ -371,3 +371,35 @@ the slices that build sync.
   and the record of the removal in ADR-011 and `wbs_BE.md`.
 - **Counts on the new base:** the CI tooling tests are 67 at `5792aa1` (§2's 66 and
   the `api` job's test from #104), then 71, 73, 74 and 76; the host tests are 2349.
+
+### 12.4 `master` moved again, during execution: ADR-014 and the deck sync slice
+
+While the package ran, `master` took #110–#116: the deck sync slices on the server
+(#110) and in the app (#114), ADR-014, BE-C5, BE-C2 and deck mastery. The branch
+merged it. ADR-014 replaces ADR-013's rows #1 (in part), #2, #4 (push), #5 and #8: the
+outbox pushes commands and field patches in order, "the operation the server receives
+last wins" holds for patches only, and the server is canonical for SRS. #114 added
+`dio`, `retrofit`, `json_annotation` and `connectivity_plus` to `pubspec.yaml`, with
+`lib/core/network/`, `lib/core/sync/` and `sync.drift`; BE-C5 added `unorm_dart`.
+
+About 25 lines the package had written against `3f78fb6` became false: "no API call
+yet", "sync is not built", "the outbox keeps one entry per entity", "the app
+recomputes the schedule and the server runs no scheduler". The owner decided on
+2026-09-27, through the popup, to correct them in this package (Task 8), under §12.1's
+rule:
+
+- a skill states what exists now, and names where it lives;
+- it cites ADR-014 where ADR-014 replaced an ADR-013 row, instead of restating either
+  ADR's protocol;
+- it writes no new sync guidance: that comes with BE-E2…BE-E7 in `wbs_BE.md`.
+
+`flutter-project-setup`'s dependency table said it was `pubspec.yaml` as it stands,
+and nothing checked it. `test_skill_dependency_table.py`, beside the contract test,
+now does: every package in `pubspec.yaml` has a row, every row names one, and no
+package waits in "Add only when" for a need it already has. It failed first with the
+seven packages the table lacked. The CI tooling tests are then 80, and the host tests
+2429 on the merged base.
+
+A ruling from execution: `flutter-navigation`'s description deferred route guards "until
+auth lands, ADR-001", which cites the Authentication row ADR-013 replaced; it cites
+ADR-013 instead, as the skill's body does.

@@ -32,8 +32,8 @@ DeckRepository deckRepository(Ref ref) =>
 ```
 
 `autoDispose` is the default under codegen and is usually right. `keepAlive` is
-for things that are genuinely app-scoped — repositories, the database, config
-(and, when networking lands per ADR-012, the HTTP client). Screen data is not
+for things that are genuinely app-scoped — repositories, the database, config,
+the HTTP client (`dioProvider`, ADR-012) and sync. Screen data is not
 app-scoped; keeping it alive is how a user sees another account's data after
 switching.
 

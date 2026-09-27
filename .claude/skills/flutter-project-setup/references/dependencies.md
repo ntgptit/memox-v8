@@ -9,13 +9,9 @@ project targets, not exact pins.
 
 ## Runtime
 
-**Not yet for MemoX V8:** `dio`, `retrofit` and `json_annotation` are
-deliberately absent until the first feature calls the API (ADR-012). An unused
-HTTP client still costs build time, still needs upgrading, and still suggests a
-network layer exists.
-
 The table is `pubspec.yaml` as it stands; a package added there gets a row here
-in the same commit.
+in the same commit, and `flutter-workflow`'s `test_skill_dependency_table.py`
+fails until it does.
 
 | Package | Line | Why it is here |
 |---|---|---|
@@ -29,19 +25,22 @@ in the same commit.
 | `intl` | — | Locale-aware dates and numbers. |
 | `uuid` | 4.x | Client-generated IDs (ADR-007). Needed **from day one**: a row created offline keeps its ID through sync (ADR-013), and changing the primary-key strategy later means rewriting every foreign key. |
 | `characters` | — | Counts user text in graphemes, so a length limit counts what the user sees. |
+| `unorm_dart` | 0.3.x | Unicode NFC, so stored and folded text has one form (`lib/core/text/unicode_form.dart`, BE-C5). |
 | `csv` | 8.x | Reads and writes CSV/TSV for import and export (`transfer`). |
 | `excel` | 4.x | Reads `.xlsx` sources for import (`transfer`). |
 | `file_picker` | 13.x | Picks the file to import. |
 | `share_plus` | 13.x | Hands an export to the platform share sheet. |
+| `dio` | 5.x | The one HTTP client (ADR-012): `lib/core/network/`, with timeouts and the request-ID interceptor. |
+| `retrofit` | 4.x | An interface per endpoint group over the shared `Dio` (ADR-012); `SyncApi` is the first. |
+| `json_annotation` | 4.x | Annotations for the `json_serializable` DTOs (ADR-012), such as `lib/core/sync/sync_models.dart`. |
+| `connectivity_plus` | 7.x | Tells sync the connection is back, so a pending push runs. It reports link state, not reachability — a captive portal reads as online. |
 | ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. The row is struck rather than deleted because a session that has seen the old advice will look for it here. |
 
 Add only when the need is real:
 
 | Package | Add when |
 |---|---|
-| `dio`, `retrofit`, `json_annotation` | The first API call (ADR-012): one shared `Dio` in `core/network/`, a Retrofit interface per endpoint group, `json_serializable` DTOs in `data/models/`. |
 | `flutter_secure_storage` | Tokens exist, which needs login (ADR-013: login comes later). Keychain / EncryptedSharedPreferences, never SharedPreferences. |
-| `connectivity_plus` | You show an offline state or trigger sync on reconnect. Note it reports link state, not reachability — a captive portal reads as online. |
 | `cached_network_image` | You render remote images in lists. |
 | `sentry_flutter` / `firebase_crashlytics` | Entering release (`flutter-ship`). Not before. |
 
@@ -51,6 +50,8 @@ Add only when the need is real:
 |---|---|
 | `build_runner` | Runs all generators. |
 | `riverpod_generator` | `@riverpod` → providers. |
+| `retrofit_generator` | Retrofit interfaces → their implementation. |
+| `json_serializable` | DTO `fromJson`/`toJson`. |
 | `drift_dev` | Drift table and DAO codegen, and the schema dumps in `drift_schemas/`. |
 | `fake_async` | Drives timers and the day clock in tests. |
 | `flutter_lints` | Baseline rule set that `analysis_options.yaml` extends. |
@@ -58,9 +59,8 @@ Add only when the need is real:
 | ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `drift_dev` and the Riverpod generator require. Its job is now code-verification-guard's (the `memox-v8` ruleset). |
 
 Not here, on purpose: `freezed` (value classes are written by hand, and DTOs
-are `json_serializable`, never Freezed — ADR-012), `retrofit_generator` and
-`json_serializable` until the first API call (ADR-012), `mocktail` (tests fake
-the domain contracts instead), and a golden package (goldens run through
+are `json_serializable`, never Freezed — ADR-012), `mocktail` (tests fake the
+domain contracts instead), and a golden package (goldens run through
 `test/support/golden_harness.dart`).
 
 ## Code generation

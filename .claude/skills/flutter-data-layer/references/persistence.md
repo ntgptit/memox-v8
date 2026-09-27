@@ -26,19 +26,24 @@ remote — that policy belongs in one place, or it will drift per screen.
 
 ## Sync and conflicts
 
-Decided once for every synced entity by ADR-013 and its design,
-`docs/superpowers/specs/2026-09-27-server-sync-design.md`; a feature does not
-pick its own conflict policy. What a repository has to know:
+Decided once for every synced entity by ADR-013 and ADR-014, which replaced
+its push, conflict and SRS rows; a feature does not pick its own conflict
+policy. The designs are
+`docs/superpowers/specs/2026-09-27-api-authority-command-sync-design.md` and,
+for the deck slice as built,
+`docs/superpowers/specs/2026-09-27-app-deck-sync-design.md`. What a repository
+has to know:
 
-- **A write queues itself.** The row and one `sync_outbox` entry go in the same
-  Drift transaction. The outbox keeps at most one entry per entity, its id is
-  the push's idempotency key, and the entry leaves only once the server has
-  answered, so a push that fails loses nothing.
-- **The server settles conflicts.** Content follows the operation the server
-  receives last, and an operation that would break the deck tree is rejected
-  and replaced by the server's copy. No device clock takes part.
-- **Sync is not a feature's code.** One `SyncCoordinator` pushes and pulls; use
-  cases and presentation never see the network.
+- **A write queues itself.** Today triggers in `sync.drift` add a synced row's
+  write to `sync_outbox` in the same statement, so the repository writes its
+  row and nothing else (BE-E1); ADR-014 replaces the row upserts with commands
+  and field patches (BE-E7). An entry leaves the outbox only once the server
+  has answered, so a push that fails loses nothing.
+- **The server settles conflicts.** An operation it refuses comes back with
+  the server's copy, which replaces the local one. No device clock takes part.
+- **Sync is not a feature's code.** `lib/core/sync/` holds it: one
+  `SyncCoordinator` pushes and pulls, and use cases and presentation never see
+  the network.
 
 ## Secure storage
 

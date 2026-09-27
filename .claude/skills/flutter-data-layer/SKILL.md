@@ -1,6 +1,6 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (ADR-012), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
+description: Networking and persistence for this Flutter app. The app reads and writes Drift, and sync is the only code that calls the API, through Retrofit on the one shared Dio (ADR-012, ADR-014); decks sync today. Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
 ---
 
 # Data layer: networking and persistence
@@ -20,18 +20,18 @@ repository contract above it.
 
 ## Source of truth — already decided for this project
 
-**The server is canonical, and the app is offline-first (ADR-013).** The app
-always reads and writes Drift, online or offline: reads come from `watch()`
-streams, and a write lands locally first, so the UI never waits for the
-network. Drift is the durable store, not a cache. Sync is the data layer's own
-job, which use cases and presentation never see, and none of it is built yet:
-no feature calls the API, and the repository contract is what lets sync arrive
-without touching `domain/` or `presentation/`.
+**The server is canonical, and the app is offline-first (ADR-013, ADR-014).**
+The app always reads and writes Drift, online or offline: reads come from
+`watch()` streams, and a write lands locally first, so the UI never waits for
+the network. Drift is the durable store, not a cache. Sync is the data layer's
+own job, which use cases and presentation never see: `lib/core/sync/` pushes
+the outbox and pulls the server's changes, for decks today, and the repository
+contract is what lets it reach the other tables without touching `domain/` or
+`presentation/`.
 
-That means the networking half of this skill —
-`references/networking.md` — is **reference material for the sync slices**, not
-something to build ahead of them. `dio` is deliberately not a dependency yet
-(ADR-012).
+The networking half of this skill, `references/networking.md`, describes the
+client sync uses: one `Dio` in `lib/core/network/`, under a Retrofit interface
+per endpoint group (ADR-012). No repository calls the API.
 
 The generic reasoning below is kept because it is what makes the decision
 reviewable.
@@ -84,9 +84,11 @@ stack trace (ADR-011 D6). A watch does the same with `.mapDatabaseErrors()`
 (`progress_repository_impl.dart`). The example is
 `lib/features/reminders/data/repositories/reminder_workload_repository_impl.dart`.
 
-When the first API call lands, its `DioException` mapping goes next to
-`mapDatabaseError` in `core/error/` and every repository uses it (ADR-012), so
-the same status code cannot produce different failures in different features.
+Sync handles its own network failures: `SyncScheduler` retries a failed run
+with backoff, and nothing reaches a repository. When a repository first calls
+the API, its `DioException` mapping goes next to `mapDatabaseError` in
+`core/error/` and every repository uses it (ADR-012), so the same status code
+cannot produce different failures in different features.
 Test both directly (`flutter-testing`) — they are high-traffic code that manual
 testing rarely exercises.
 
@@ -125,7 +127,7 @@ widget.
 
 ## Checks before the data layer is done
 
-Now (Drift only; no API call yet, ADR-012):
+Now (every repository reads and writes Drift; only sync calls the API):
 
 - [ ] ADR-013's source of truth followed everywhere: the app reads and writes
       Drift, online or offline, and the server is canonical.
@@ -137,7 +139,7 @@ Now (Drift only; no API call yet, ADR-012):
 - [ ] Indexes exist for the queries actually run.
 - [ ] Migration tested from every released schema version.
 
-When the first API call lands (ADR-012):
+When a repository calls the API (ADR-012):
 
 - [ ] No `DioException` escapes a repository; DTOs never reach presentation.
 - [ ] Timeouts set for connect, receive and send.

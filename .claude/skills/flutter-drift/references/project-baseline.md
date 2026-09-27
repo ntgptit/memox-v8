@@ -9,9 +9,9 @@ The authority for tables, columns and invariants is
 [`docs/shared/data/schema.md`](../../../../docs/shared/data/schema.md); the
 decisions behind this file are ADR-001 (the platforms), ADR-002 (sensitive
 data, no encryption), ADR-007 (UUID keys), ADR-008 (UTC), ADR-010/ADR-011 (the
-layout) and ADR-013 (the server is canonical, Drift is the durable local
-store), in `docs/shared/decisions/`. Where this file and `schema.md` differ,
-`schema.md` wins.
+layout), and ADR-013 with ADR-014 (the server is canonical, Drift is the
+durable local store), in `docs/shared/decisions/`. Where this file and
+`schema.md` differ, `schema.md` wins.
 
 ## The layout
 
@@ -22,7 +22,10 @@ lib/core/database/
 ├── schema_versions.dart         generated step-by-step schemas (drift_schemas/)
 ├── table_changes.dart           the tables a read watches
 ├── di/database_provider.dart    @Riverpod(keepAlive: true), closes on dispose
-├── tables/                      deck, card, tags, srs, study, settings, trash
+├── id_chunks.dart               ids in batches under SQLite's bind limit
+├── migrations/                  the data a migration step rewrites
+├── tables/                      deck, card, tags, srs, study, settings, trash,
+│                                sync (outbox, state, capture triggers)
 └── queries/                     card, deck and trash queries (.drift)
 
 lib/features/<feature>/data/
@@ -75,14 +78,14 @@ feature — is already feature-owned.
 | Enums | stable lowercase text codes with a `CHECK` — `eight_box`, `sm2`, `unset`, `card`, `deck`, `learning`, `reviewing` | An ordinal would change meaning the day a value is inserted in the middle |
 | Timestamps | `DATETIME` columns holding UTC (ADR-008); **no `build.yaml`**, so Drift's default storage applies | See the warning below |
 
-**The `DATETIME` storage mode is an open contract.** With no `build.yaml`, Drift
-stores `DATETIME` as Unix epoch **seconds**. That is workable while everything
-is local, and sync (ADR-013) makes it a decision: ISO-8601 text keeps the
-offset and debugs easily, epoch integers sort and compare uniformly.
-Changing the mode after release is a data migration over every timestamp
-column, so **pin the choice before the first sync ships**, not after. Whoever
-settles it writes an ADR in `docs/shared/decisions/` and adds the `build.yaml`
-option in the same commit as the migration.
+**`DATETIME` is stored as Unix epoch seconds.** With no `build.yaml`, that is
+Drift's default, and the first sync slice shipped on it: the wire carries
+ISO-8601 UTC (ADR-008), and the adapters in `lib/core/sync/` convert at the
+boundary, dropping the fraction of a second Drift does not store. Changing the
+storage mode now is a data migration over every timestamp column and a change
+to every adapter. Whoever proposes it writes an ADR in
+`docs/shared/decisions/` and adds the `build.yaml` option in the same commit as
+the migration.
 
 ## Reads, windows and pagination
 
@@ -124,10 +127,11 @@ Knowing the negatives prevents half of the bad suggestions:
   `delete_batch_id` that points at `delete_batches` (BR-TRASH-001); there is no
   `deleted_at`. Every read of active rows filters `delete_batch_id IS NULL`, and
   only a purge deletes a row (BR-TRASH-010).
-- **No sync bookkeeping yet.** No `sync_outbox`, no `sync_state`, no
-  `server_version` column: ADR-013 adds them in one migration, with the first
-  slice that syncs. IDs, timestamps and layer boundaries are already
-  sync-shaped, which keeps that migration routine.
+- **No sync code in a repository.** `sync.drift` holds `sync_outbox` and
+  `sync_state`, and its triggers queue each write to `deck` and
+  `delete_batches` in the same statement; `server_version` on those two tables
+  records the server's acknowledgement. A table that does not sync yet has
+  neither; the order is BE-E2…BE-E7 in `docs/wbs_BE.md`.
 - **No encryption.** ADR-002 decides it for now; opening the database in one
   place (`connection.dart`) keeps adding it a change to one function.
 - **No `build.yaml`.** Adding one changes code generation for the whole repo —
@@ -140,8 +144,8 @@ Knowing the negatives prevents half of the bad suggestions:
 
 ## What "backend-ready" already means here
 
-Sync is decided (ADR-013) and not built. Four things are already shaped for it,
-and each one would be expensive to retrofit:
+Decks sync today (BE-E1), and the other tables follow. Four things made that
+possible, and each one would be expensive to retrofit:
 
 - **IDs are client-generated**, so rows created offline can be referenced
   immediately and never need renumbering.
@@ -153,25 +157,23 @@ and each one would be expensive to retrofit:
   which is what makes adding sync's tables and columns a routine change rather
   than a gamble.
 
-ADR-013 has already made the decisions the schema will carry, once, so no
-feature makes them again:
+ADR-013 and ADR-014 make the sync decisions once, so no feature makes them
+again. Two of them shape the schema:
 
-- **A write queues itself.** The row and one `sync_outbox` entry are written in
-  the same transaction; the outbox keeps at most one entry per entity, and that
-  entry's id is the push's idempotency key, so a retry after an ambiguous
-  failure cannot apply the change twice.
-- **The server orders conflicts, not a device clock.** Content follows the
-  operation the server receives last, the deck tree follows the server's
-  invariant checks, and every synced row carries the `server_version` the
-  server gave it; last-write-wins keyed on a local `updated_at` is not a policy.
-- **Each table has its rule.** `review_log` only grows and never conflicts;
-  `card_schedule` is derived, so the app recomputes it after a pull and pushes
-  the result, and the server runs no scheduler; the study-session tables and
-  the reminder settings stay on the device.
+- **The server orders conflicts, not a device clock.** Every synced row
+  carries the `server_version` the server gave it; last-write-wins keyed on a
+  local `updated_at` is not a policy.
+- **Not every table syncs.** `review_log` only grows and never conflicts;
+  `card_schedule` is derived and never a sync input, because the server is
+  canonical for SRS (ADR-014); the study-session tables and the reminder
+  settings stay on the device.
 
-The protocol and the conflict rules by data class are in ADR-013 and its
-design, `docs/superpowers/specs/2026-09-27-server-sync-design.md`; the
-database's part is only to make those states representable.
+How a change travels (commands and field patches pushed through the outbox,
+state pulled after a `server_version` cursor) is ADR-014's, with its design in
+`docs/superpowers/specs/2026-09-27-api-authority-command-sync-design.md`; the
+deck slice as built is
+`docs/superpowers/specs/2026-09-27-app-deck-sync-design.md`. The database's
+part is only to make those states representable.
 
 ## Invariants are executable here
 

@@ -101,20 +101,20 @@ features/<feature>/data/
 └── models/         <name>_model.dart               # DTOs, with the first wire format
 ```
 
-`models/` does not exist yet: **there is no DTO layer**, and a folder appears
-with its first real file (ADR-011 D1). DTOs are the wire format, and no feature
-calls the API yet: they arrive with the first call, as `json_serializable`
-classes, never Freezed (ADR-012). Until then Drift's generated row is the only
-data shape a feature has besides its entity.
+No feature has `models/` yet: **there is no DTO layer in a feature**, and a
+folder appears with its first real file (ADR-011 D1). DTOs are the wire format,
+`json_serializable` classes, never Freezed (ADR-012), and only sync calls the
+API: its DTOs are in `lib/core/sync/sync_models.dart`. A feature's only data
+shape besides its entity is Drift's generated row.
 
 Order: the DAO first, then the mapper, then the repository. The repository is
 where Drift exceptions become `Failure`s — nowhere else. **There is no cache
 policy to apply.** Reads come from `watch()` streams straight off the table:
 Drift is the app's durable store, not a cache in front of the server, so a
 cache layer here would be a guess at a requirement that does not exist. Nor is
-sync built per feature: once it lands, a repository writes its row and one
-`sync_outbox` row in the same transaction, and one app-wide `SyncCoordinator`
-pushes and pulls (ADR-013). Neither exists yet.
+sync built per feature: triggers in `sync.drift` queue a synced table's
+writes, and one app-wide `SyncCoordinator` in `lib/core/sync/` pushes and
+pulls (ADR-013, ADR-014).
 
 SQL goes in `.drift` files under `lib/core/database/` so `drift_dev` type-checks
 it at build time. No business SQL in Dart. Multi-step writes run inside

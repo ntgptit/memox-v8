@@ -42,7 +42,7 @@ lib/
 | `data/datasources/` | `_dao`, `_data_source` | a DAO per bounded context |
 | `data/mappers/` | `_mapper` | row to entity, when the mapping is not trivial |
 | `data/repositories/` | `_repository_impl` | contract implementations; every write in one transaction |
-| `data/models/` | `_model` | DTOs, `json_serializable`; none until the first API call (ADR-012) |
+| `data/models/` | `_model` | DTOs, `json_serializable` (ADR-012); none in a feature yet, sync's are in `core/sync/` |
 | `di/` | `_provider` | repository providers; each constructs its implementation |
 | `presentation/screens/`, `controllers/`, `states/` | `_screen`, `_controller`, `_state` | a screen, its controllers, its state classes |
 | `presentation/providers/` | `_provider` | use-case providers |
@@ -52,10 +52,10 @@ Every feature file sits in a bucket of its layer; only `di/` is flat. No file
 sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
 feature root, and there are no barrels: another feature imports the bucket file
 it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
-`entities/deck.dart`. `core/network/` comes with the first API call, holding
-the one shared Dio client (ADR-012). These wait for an ADR that opens the need:
-`core/storage/`, `core/utils/`, `app/config/` and flavors, `app/di/`,
-`shared/models/`, `shared/extensions/`.
+`entities/deck.dart`. `core/network/` holds the one shared Dio client
+(ADR-012), and `core/sync/` the sync that uses it (ADR-013, ADR-014). These
+wait for an ADR that opens the need: `core/storage/`, `core/utils/`,
+`app/config/` and flavors, `app/di/`, `shared/models/`, `shared/extensions/`.
 
 **Placing a widget** is four questions asked in order, stopping at the first
 yes (ADR-011 D8):
