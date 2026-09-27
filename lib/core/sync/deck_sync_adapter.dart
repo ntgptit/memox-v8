@@ -45,7 +45,7 @@ class DeckSyncAdapter implements EntitySyncAdapter {
   }
 
   @override
-  Future<void> upsertFromServer(Map<String, dynamic> row, int serverVersion) =>
+  Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
       _db
           .into(_db.deck)
           .insertOnConflictUpdate(

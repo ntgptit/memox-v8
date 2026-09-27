@@ -8,6 +8,9 @@ import 'tombstone_rules.dart';
 /// with its reason (trash spec §11). A statement that reads active content
 /// gets the filter, not an entry.
 const _readsTombstones = <String, String>{
+  'lib/core/sync/deck_sync_adapter.dart#readRow':
+      'sync uploads a deck in any state: a deck in the Trash carries its '
+      'delete_batch_id to the server (ADR-013)',
   'lib/core/database/queries/trash_queries.drift#trashDeckForest':
       'the origin of an entry walks decks in the Trash too (BR-TRASH-012)',
   'lib/core/database/queries/trash_queries.drift#trashBlockersOf':

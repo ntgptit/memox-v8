@@ -14,29 +14,29 @@ class SyncOperationModel {
     required this.row,
   });
 
-  factory SyncOperationModel.fromJson(Map<String, dynamic> json) =>
+  factory SyncOperationModel.fromJson(Map<String, Object?> json) =>
       _$SyncOperationModelFromJson(json);
 
   final String opId;
   final String entityType;
   final String entityId;
   final String op;
-  final Map<String, dynamic>? row;
+  final Map<String, Object?>? row;
 
-  Map<String, dynamic> toJson() => _$SyncOperationModelToJson(this);
+  Map<String, Object?> toJson() => _$SyncOperationModelToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
 class PushRequestModel {
   const PushRequestModel({required this.deviceId, required this.operations});
 
-  factory PushRequestModel.fromJson(Map<String, dynamic> json) =>
+  factory PushRequestModel.fromJson(Map<String, Object?> json) =>
       _$PushRequestModelFromJson(json);
 
   final String deviceId;
   final List<SyncOperationModel> operations;
 
-  Map<String, dynamic> toJson() => _$PushRequestModelToJson(this);
+  Map<String, Object?> toJson() => _$PushRequestModelToJson(this);
 }
 
 @JsonSerializable()
@@ -45,20 +45,21 @@ class SyncChangeModel {
     required this.entityType,
     required this.entityId,
     required this.serverVersion,
-    required this.deleted,
+    required this.isDeleted,
     required this.row,
   });
 
-  factory SyncChangeModel.fromJson(Map<String, dynamic> json) =>
+  factory SyncChangeModel.fromJson(Map<String, Object?> json) =>
       _$SyncChangeModelFromJson(json);
 
   final String entityType;
   final String entityId;
   final int serverVersion;
-  final bool deleted;
-  final Map<String, dynamic>? row;
+  @JsonKey(name: 'deleted')
+  final bool isDeleted;
+  final Map<String, Object?>? row;
 
-  Map<String, dynamic> toJson() => _$SyncChangeModelToJson(this);
+  Map<String, Object?> toJson() => _$SyncChangeModelToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -71,7 +72,7 @@ class OperationResultModel {
     required this.current,
   });
 
-  factory OperationResultModel.fromJson(Map<String, dynamic> json) =>
+  factory OperationResultModel.fromJson(Map<String, Object?> json) =>
       _$OperationResultModelFromJson(json);
 
   static const applied = 'applied';
@@ -84,19 +85,19 @@ class OperationResultModel {
 
   bool get isApplied => status == applied;
 
-  Map<String, dynamic> toJson() => _$OperationResultModelToJson(this);
+  Map<String, Object?> toJson() => _$OperationResultModelToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
 class PushResponseModel {
   const PushResponseModel({required this.results});
 
-  factory PushResponseModel.fromJson(Map<String, dynamic> json) =>
+  factory PushResponseModel.fromJson(Map<String, Object?> json) =>
       _$PushResponseModelFromJson(json);
 
   final List<OperationResultModel> results;
 
-  Map<String, dynamic> toJson() => _$PushResponseModelToJson(this);
+  Map<String, Object?> toJson() => _$PushResponseModelToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -107,12 +108,12 @@ class ChangesResponseModel {
     required this.hasMore,
   });
 
-  factory ChangesResponseModel.fromJson(Map<String, dynamic> json) =>
+  factory ChangesResponseModel.fromJson(Map<String, Object?> json) =>
       _$ChangesResponseModelFromJson(json);
 
   final List<SyncChangeModel> changes;
   final int nextSince;
   final bool hasMore;
 
-  Map<String, dynamic> toJson() => _$ChangesResponseModelToJson(this);
+  Map<String, Object?> toJson() => _$ChangesResponseModelToJson(this);
 }

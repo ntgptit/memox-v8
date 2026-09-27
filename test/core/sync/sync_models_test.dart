@@ -76,7 +76,7 @@ void main() {
       'hasMore': false,
     });
 
-    expect(page.changes.single.deleted, isTrue);
+    expect(page.changes.single.isDeleted, isTrue);
     expect(page.nextSince, 7);
   });
 }

@@ -8,7 +8,7 @@ abstract class EntitySyncAdapter {
   Future<Map<String, Object?>?> readRow(String id);
 
   /// Writes a server row. Called only inside `SyncStore.applyingRemote`.
-  Future<void> upsertFromServer(Map<String, dynamic> row, int serverVersion);
+  Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion);
 
   /// Deletes a row the server tombstoned; local cascades follow.
   Future<void> deleteFromServer(String id);

@@ -5,7 +5,7 @@ import 'package:memox/core/sync/sync_store.dart';
 
 import '../../support/test_database.dart';
 
-Map<String, dynamic> _serverRoot(String id) => {
+Map<String, Object?> _serverRoot(String id) => {
   'id': id,
   'name': 'From server',
   'parentId': null,
