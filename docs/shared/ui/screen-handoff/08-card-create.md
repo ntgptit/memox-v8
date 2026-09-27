@@ -50,8 +50,6 @@ card?") when leaving a dirty new-card form without saving.
 | "Add tag" dashed pill | Outline `MxButton` chip | §9 row 81 (P4a-L8): no dashed-border token |
 | The deck path (Breadcrumb + destination pill) sits inside the scroll, above the history strip | `DeckContextHeaderWidget` sits outside the scroll, as a persistent header | §9 row 81: the kit's pill is replaced by a structurally different, app-level component |
 | The save button's spinner sits beside "Saving…" text inside the button | `MxButton` swaps the label for the spinner; the words live only in the caption line | §9 row 46 (plan O2): the app-wide `MxButton` loading convention |
-| A shared "Required" legend line (dot + "Required") above the Front field, in addition to each field's own marker | The legend line is not built; only the per-field "Required" marker shows (`CardFieldWidget`'s `_FieldHeader`) | Unjustified — to align |
-| Kit's "valid" caption differs slightly from the "Fix the marked field" wording reused across create and edit | One shared caption vocabulary for both modes (`CardEditorFormWidget._caption`, used by 08 and 09 alike) | Unjustified — to align (minor; a consequence of the shared form widget) |
 
 ## Copy
 

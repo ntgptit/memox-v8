@@ -18,6 +18,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
+import 'package:memox/features/card/presentation/widgets/sections/card_required_legend_widget.dart';
+
 import '../../../support/deck_fixtures.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -426,5 +428,62 @@ void main() {
     await tester.enterText(_field(1), 'thank you');
     await tester.pump();
     expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+  });
+
+  libraryTest('create and edit show the shared Required legend above the '
+      'fields (kit 08, 09)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.pumpAndSettle();
+    expect(find.byType(CardRequiredLegendWidget), findsOneWidget);
+
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    expect(find.byType(CardRequiredLegendWidget), findsOneWidget);
+  });
+
+  libraryTest('leaving an edited card names what was edited (kit 09 '
+      'discard)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(0), 'bab');
+    await tester.enterText(_field(1), 'cooked rice');
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        _en.cardDiscardEditedBody(
+          _en.cardEditedPair(_en.cardEditedTerm, _en.cardEditedMeaning),
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('an edited card missing its back asks for the missing field '
+      '(kit 09 validation)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), '');
+    await tester.pump();
+
+    expect(find.text(_en.cardCaptionAddMissing), findsOneWidget);
   });
 }
