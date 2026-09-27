@@ -31,8 +31,15 @@ void main() {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
         children: [
-          for (final tone in MxButtonTone.values)
-            MxButton(label: tone.name, tone: tone, onPressed: () {}),
+          // The six tones share rows, so the column keeps to the phone.
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final tone in MxButtonTone.values)
+                MxButton(label: tone.name, tone: tone, onPressed: () {}),
+            ],
+          ),
           MxButton(
             label: 'Small',
             size: MxButtonSize.small,

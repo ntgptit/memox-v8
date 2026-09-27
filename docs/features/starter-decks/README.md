@@ -1,12 +1,12 @@
 ---
 feature: starter-decks
-code: [lib/features/starter_decks/domain, lib/features/starter_decks/data, lib/features/starter_decks/di]
+code: [lib/features/starter_decks/domain, lib/features/starter_decks/data, lib/features/starter_decks/di, lib/features/starter_decks/presentation]
 depends_on: [card, deck]
 ---
 ## Phạm vi
 
 **Phạm vi:** Starter library, phần store (BE-B4,
-[spec](../../superpowers/specs/2026-09-26-starter-decks-backend-design.md)). Màn 03 thuộc FE-B4.
+[spec](../../superpowers/specs/2026-09-26-starter-decks-backend-design.md)). Màn 03 thuộc FE-B4: [ui.md](ui.md).
 
 Starter deck / template: thư viện starter và sao chép một template vào dữ liệu cá nhân.
 Template là asset JSON đi kèm bản build (xem [`data.md`](data.md)); bản sao được ghi bởi

@@ -36,6 +36,32 @@ void main() {
     expect(container.read(provider).query.filter, CardListFilter.due);
   });
 
+  test('tags filter the query; applying them starts again from the first '
+      'window and every other change keeps them (BR-TAG-004)', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final provider = cardListRequestProvider('d');
+    final keep = container.listen(provider, (_, _) {});
+    addTearDown(keep.close);
+    final notifier = container.read(provider.notifier);
+
+    notifier
+      ..show(CardListFilter.due)
+      ..grow()
+      ..filterTags({'t1', 't2'});
+    expect(container.read(provider).windowSize, cardListWindowStep);
+    expect(container.read(provider).query.tagIds, {'t1', 't2'});
+    expect(container.read(provider).query.filter, CardListFilter.due);
+    notifier
+      ..search('kor')
+      ..sortBy(CardListSort.dueFirst)
+      ..show(CardListFilter.all)
+      ..grow();
+    expect(container.read(provider).tags, const CardTagFilter({'t2', 't1'}));
+    notifier.filterTags(const {});
+    expect(container.read(provider).tags.isEmpty, isTrue);
+  });
+
   test('a selection toggles, takes a whole set, and clears', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);

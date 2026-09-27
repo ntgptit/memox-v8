@@ -536,6 +536,13 @@ item names where it comes from.
 | 131 | Screen 22's list opens with a total row of the level's four numbers ("All decks", "Whole deck"; BR-PROGRESS-001), and its header carries no trailing totals (kit: "{n} active cards · {m} card-days") | owner 2026-09-27, FE-A9 D2 |
 | 132 | Screen 22 dims nothing by opacity: an idle deck row keeps its name and "No activity in this range" at full contrast, and its 0 is muted (kit: the row at 60%, which fails 4.5:1) | FE-A9 D11 (critique P2) |
 | 133 | Screen 22 never studied adds "Start studying" to the Study tab under Today's placeholder (UC-PROGRESS-001 A2); it adds the states the kit lacks: a quiet range (A3), no deck (A2) and a deck with no children (A1) | owner 2026-09-27, FE-A9 D1 |
+| 134 | `MxButtonTone.warning` paints the `warning` role with `onWarning` (amber, dark ink): screen 05's "Merge tags". The kit fills it orange with white text, about 2.8:1 | FE-B2 D15 (critique P1a) |
+| 135 | Screen 03's card lets "In library" follow the title and drops "Suggests {algorithm}" below the add when they do not fit; the kit pins the badge beside the title and cuts the suggestion to "Suggests…". The tile centres on the title's lines | FE-B4 critique P2a, P3; guard: marks centre on their row |
+| 136 | Screen 03's add spins with no "Adding…" text, as screen 15's save does | FE-B4 D13 (FE-A3 C8) |
+| 137 | Screen 05 lists tags in the store's folded order (BR-TAG-003), with "A→Z" as plain text; the kit folds diacritics in its order and draws a sort glyph | BR-TAG-003; FE-B2 critique P2b |
+| 138 | Screen 05's toasts are one sentence ("Couldn't rename tag. Nothing changed — try again in a moment.") with Retry; the kit draws a bold title line over a body | `MxSnackbarContent` has one message |
+| 139 | Screen 05's dialogs quote tag names instead of bolding them, and "Delete this tag?" has no glyph and is left-aligned | No per-site text styling; `MxDialog` has no glyph slot |
+| 140 | Screen 07's Tags chip is an `MxFilterChip`, selected with the count of tags applied, and opens the tag filter sheet, which the kit does not draw; the kit's chip is a ghost trigger that never reads as selected | owner 2026-09-27, FE-B2 D3, D14 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

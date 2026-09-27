@@ -47,6 +47,8 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onImportCards,
     required this.onExportCards,
     required this.onOpenTrash,
+    required this.onOpenStarterDecks,
+    required this.onOpenTags,
     required this.cardFab,
   });
 
@@ -95,6 +97,13 @@ class DeckLevelScreen extends StatelessWidget {
   /// refused Undo (FE-B1).
   final VoidCallback onOpenTrash;
 
+  /// Opens Starter decks (screen 03): the Library's app bar and its empty
+  /// state (FE-B4 spec D2).
+  final VoidCallback onOpenStarterDecks;
+
+  /// Opens Tags (screen 05) from the Library's app bar (FE-B2 spec D2).
+  final VoidCallback onOpenTags;
+
   /// A deck of cards' FAB, from the card feature like [cardContent] (spec
   /// D8). It hides itself while cards are selected.
   final Widget Function(String deckId) cardFab;
@@ -108,6 +117,8 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenStudy: onOpenStudy,
       onOpenStudyOptions: onOpenStudyOptions,
       onOpenTrash: onOpenTrash,
+      onOpenStarterDecks: onOpenStarterDecks,
+      onOpenTags: onOpenTags,
     ),
     final id => _OpenDeck(
       deckId: id,
