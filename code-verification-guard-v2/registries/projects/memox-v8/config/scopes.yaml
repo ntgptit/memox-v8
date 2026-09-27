@@ -1,7 +1,7 @@
 version: 1
 metadata:
   id: memox-v8-ruleset-scopes
-  name: MemoX V7 Ruleset Scopes
+  name: MemoX V8 Ruleset Scopes
   description: >-
     Scopes for the memox-v8 repo layout, which is feature-first and differs from
     every earlier MemoX ruleset. Product code lives in lib/features/<feature>/

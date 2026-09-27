@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: privacy
+# MemoX V8 guard rules — domain: privacy
 #
 # AD-08 and CLAUDE.md: private data here is broader than it looks — card
 # content, notes, learning history, imports, media and backups. Card content
@@ -7,7 +7,7 @@
 version: 1
 metadata:
   id: memox-v8-privacy
-  name: MemoX V7 Privacy Rules
+  name: MemoX V8 Privacy Rules
   description: Card content and other private data must never reach logs or exports.
   owner: memox-v8
 rules:

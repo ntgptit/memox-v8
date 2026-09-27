@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: design_token
+# MemoX V8 guard rules — domain: design_token
 #
 # CLAUDE.md "UI discipline": no hardcoded colours, text styles or padding —
 # everything comes from design tokens.
@@ -11,7 +11,7 @@
 version: 1
 metadata:
   id: memox-v8-design-token
-  name: MemoX V7 Design Token Rules
+  name: MemoX V8 Design Token Rules
   description: Colour, typography and spacing must come from tokens, not literals.
   owner: memox-v8
 rules:

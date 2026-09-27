@@ -1,11 +1,11 @@
-# MemoX V7 guard rules — domain: testing
+# MemoX V8 guard rules — domain: testing
 #
 # A disabled test is worse than a missing one: the count still goes up and the
 # suite still reports green, so nobody notices the coverage is gone.
 version: 1
 metadata:
   id: memox-v8-testing
-  name: MemoX V7 Testing Rules
+  name: MemoX V8 Testing Rules
   description: Test hygiene — no silently disabled or focused tests.
   owner: memox-v8
 rules:

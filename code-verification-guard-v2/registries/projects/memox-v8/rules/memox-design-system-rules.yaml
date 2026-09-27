@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: design_system
+# MemoX V8 guard rules — domain: design_system
 #
 # The design system's component boundary: a feature composes shared primitives
 # (`Mx*`), it does not rebuild them from raw Material widgets. The prose half of
@@ -25,13 +25,13 @@
 version: 1
 metadata:
   id: memox-v8-design-system
-  name: MemoX V7 Design System Rules
+  name: MemoX V8 Design System Rules
   description: >-
     Features compose shared Mx primitives; raw Material control widgets stay in
     lib/shared where the primitives are defined.
   owner: memox-v8
 rules:
-  - id: memox_v7.design_system.no_raw_button
+  - id: memox_v8.design_system.no_raw_button
     type: regex
     severity: error
     enabled: true
@@ -59,7 +59,7 @@ rules:
   # the rule that bans it — the first dry run here flagged a doc comment that
   # said "used to be a raw IconButton(color:)" while explaining why it no
   # longer is.
-  - id: memox_v7.design_system.no_raw_widget
+  - id: memox_v8.design_system.no_raw_widget
     type: regex
     severity: error
     enabled: true
@@ -96,7 +96,7 @@ rules:
   # a design-system component: no architecture decision forbids a feature from
   # owning one, and `MxContentShell` documents why the *shell* builds its own —
   # that is not a prohibition on features (A20.1 §9, FRAMEWORK_PRIMITIVE_ALLOWED).
-  - id: memox_v7.design_system.no_raw_screen_chrome
+  - id: memox_v8.design_system.no_raw_screen_chrome
     type: regex
     severity: error
     enabled: true
@@ -122,7 +122,7 @@ rules:
   # (A20.1 §8), and a multi-select `FilterChip` has no shared owner to point at.
   # Landed in Phase 6, after `showMxSheet` existed and every caller had moved
   # (A20.1 P1-01 → P1-03): guarding first would have banned the only route.
-  - id: memox_v7.design_system.no_raw_sheet_route
+  - id: memox_v8.design_system.no_raw_sheet_route
     type: regex
     severity: error
     enabled: true
@@ -151,7 +151,7 @@ rules:
   # excluded file and fails on one with no `value:` — so a loading spinner
   # added to an excluded file does not inherit the exemption silently. A new
   # determinate caller is added here **with its reason** in the same change.
-  - id: memox_v7.design_system.no_raw_loading_indicator
+  - id: memox_v8.design_system.no_raw_loading_indicator
     type: regex
     severity: error
     enabled: true
@@ -173,7 +173,7 @@ rules:
       - memox-v8
       - design-system
 
-  - id: memox_v7.design_system.no_raw_choice_chip
+  - id: memox_v8.design_system.no_raw_choice_chip
     type: regex
     severity: error
     enabled: true
@@ -189,7 +189,7 @@ rules:
       - memox-v8
       - design-system
 
-  - id: memox_v7.design_system.no_raw_style_escape
+  - id: memox_v8.design_system.no_raw_style_escape
     type: regex
     severity: error
     enabled: true
@@ -222,7 +222,7 @@ rules:
   # The pattern requires the `FontWeight.` literal on purpose:
   # `withWeight`'s own implementation writes `fontWeight: weight`, so the one
   # file allowed to touch the field never matches.
-  - id: memox_v7.design_system.no_flat_style_from
+  - id: memox_v8.design_system.no_flat_style_from
     type: regex
     severity: error
     enabled: true
@@ -243,7 +243,7 @@ rules:
       - memox-v8
       - design-system
 
-  - id: memox_v7.design_system.no_bare_font_weight
+  - id: memox_v8.design_system.no_bare_font_weight
     type: regex
     severity: error
     enabled: true
@@ -273,7 +273,7 @@ rules:
   # What it cannot see — a restyle through a local alias
   # (`final text = texts.bodyMedium!; text.copyWith(color:)`) — is
   # `text_restyle_alias_test.dart`'s, a two-pass scan a regex cannot be.
-  - id: memox_v7.design_system.no_text_restyle
+  - id: memox_v8.design_system.no_text_restyle
     type: regex
     mode: file
     severity: error
@@ -303,7 +303,7 @@ rules:
   # `.resolve(` is the one legal colour spelling on a raw Icon — it proves the
   # value came out of AppInk's closed set. Everything else is an open colour on
   # a glyph, which MxIcon exists to own.
-  - id: memox_v7.design_system.no_raw_icon_color
+  - id: memox_v8.design_system.no_raw_icon_color
     type: regex
     severity: error
     enabled: true
@@ -339,7 +339,7 @@ rules:
   # `dart format` puts every argument of a call this long — and where a
   # comment never starts with an identifier and a colon; the second covers a
   # call written on one line.
-  - id: memox_v7.design_system.color_scheme_arguments_are_m3_roles
+  - id: memox_v8.design_system.color_scheme_arguments_are_m3_roles
     type: regex
     mode: file
     severity: error
@@ -367,7 +367,7 @@ rules:
   # shapes this catches; a scheme held under another name is a naming
   # finding first (`highContrastScheme` renamed its parameter to `scheme` for
   # exactly this reason).
-  - id: memox_v7.design_system.color_scheme_reads_are_m3_roles
+  - id: memox_v8.design_system.color_scheme_reads_are_m3_roles
     type: regex
     severity: error
     enabled: true

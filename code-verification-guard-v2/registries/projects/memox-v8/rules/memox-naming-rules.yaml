@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: naming
+# MemoX V8 guard rules — domain: naming
 #
 # CLAUDE.md "Naming": files are snake_case with a suffix that states the role.
 # The suffix is not decoration — check_architecture.sh and several scopes in
@@ -7,7 +7,7 @@
 version: 1
 metadata:
   id: memox-v8-naming
-  name: MemoX V7 Naming Rules
+  name: MemoX V8 Naming Rules
   description: File naming, role suffixes, and banned vague type names.
   owner: memox-v8
 rules:

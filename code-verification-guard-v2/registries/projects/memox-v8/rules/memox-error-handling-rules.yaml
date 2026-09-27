@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: error_handling
+# MemoX V8 guard rules — domain: error_handling
 #
 # CLAUDE.md "Errors" and "Control flow". A swallowed exception is the defect
 # class that costs the most to diagnose later, because the evidence is destroyed
@@ -6,7 +6,7 @@
 version: 1
 metadata:
   id: memox-v8-error-handling
-  name: MemoX V7 Error Handling Rules
+  name: MemoX V8 Error Handling Rules
   description: Exception handling, failure mapping and logging discipline.
   owner: memox-v8
 rules:

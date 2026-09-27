@@ -1,9 +1,9 @@
-"""Fault-injection probes for the memox-v7 design-system ratchets (A20.1 §9).
+"""Fault-injection probes for the memox-v8 design-system ratchets.
 
-Every rule that lands for the Design System V1 closure ships three proofs:
-a positive synthetic probe (the rule goes red on the thing it bans), a
-comment false-positive probe (prose that names the thing stays green), and
-the live-tree scan the CI guard performs. The first two live here.
+Every design-system rule ships three proofs: a positive synthetic probe (the
+rule goes red on the thing it bans), a comment false-positive probe (prose that
+names the thing stays green), and the live-tree scan the gate's guard step
+performs. The first two live here.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ REGISTRY_PATH = (
     Path(__file__).parents[1]
     / "registries"
     / "projects"
-    / "memox-v7"
+    / "memox-v8"
     / "rules"
     / "memox-design-system-rules.yaml"
 )
@@ -50,8 +50,8 @@ def _violations(rule_id: str, tmp_path: Path, source: str) -> list:
     return RuleFactory().create(rule_config).check(tmp_path)
 
 
-SCREEN_CHROME = "memox_v7.design_system.no_raw_screen_chrome"
-CHOICE_CHIP = "memox_v7.design_system.no_raw_choice_chip"
+SCREEN_CHROME = "memox_v8.design_system.no_raw_screen_chrome"
+CHOICE_CHIP = "memox_v8.design_system.no_raw_choice_chip"
 
 
 def test_no_raw_screen_chrome_goes_red_on_a_raw_app_bar(tmp_path: Path) -> None:
@@ -101,9 +101,9 @@ def test_no_raw_choice_chip_leaves_the_allowed_chips_alone(tmp_path: Path) -> No
     assert not _violations(CHOICE_CHIP, tmp_path, good)
 
 
-SHEET_ROUTE = "memox_v7.design_system.no_raw_sheet_route"
-LOADING = "memox_v7.design_system.no_raw_loading_indicator"
-RESTYLE = "memox_v7.design_system.no_text_restyle"
+SHEET_ROUTE = "memox_v8.design_system.no_raw_sheet_route"
+LOADING = "memox_v8.design_system.no_raw_loading_indicator"
+RESTYLE = "memox_v8.design_system.no_text_restyle"
 
 
 def test_no_raw_sheet_route_goes_red_on_a_raw_route(tmp_path: Path) -> None:

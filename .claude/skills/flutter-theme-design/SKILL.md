@@ -11,7 +11,7 @@ Skill này nói *hợp đồng từng component*: một Material component chỉ
 riêng trong `references/`.
 
 **Trạng thái vs. đích.** Checklist này là *đích*, không phải mô tả hiện trạng.
-Guard `memox_v7.design_system.no_raw_button` hôm nay mới phủ bốn nút; danh sách
+Guard `memox_v8.design_system.no_raw_button` hôm nay mới phủ bốn nút; danh sách
 cấm đầy đủ ở `references/legacy-and-guards.md` §XI là nơi guard sẽ lớn tới.
 Khi checklist và code lệch nhau: một mục chưa làm là việc chưa làm, không phải
 lý do sửa checklist — sửa checklist cần quyết định của chủ dự án.

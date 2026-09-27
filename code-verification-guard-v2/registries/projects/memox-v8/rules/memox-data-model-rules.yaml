@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: data_model
+# MemoX V8 guard rules — domain: data_model
 #
 # These encode the memox invariants that are cheap to violate and expensive to
 # discover. BR-57 is the headline: COALESCE(parent_deck_id, id) LOOKS like it
@@ -8,7 +8,7 @@
 version: 1
 metadata:
   id: memox-v8-data-model
-  name: MemoX V7 Data Model Rules
+  name: MemoX V8 Data Model Rules
   description: Deck-tree, scheduler and review-history invariants (BR-xx, AD-06, AD-11).
   owner: memox-v8
 rules:

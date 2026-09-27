@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: state_management
+# MemoX V8 guard rules — domain: state_management
 #
 # This file is the replacement for riverpod_lint, which is descoped (see
 # "Deferred and descoped" in docs/wbs.md). `flutter analyze` covers NONE of
@@ -8,7 +8,7 @@
 version: 1
 metadata:
   id: memox-v8-state-management
-  name: MemoX V7 State Management Rules
+  name: MemoX V8 State Management Rules
   description: Riverpod 3 provider and controller rules — the riverpod_lint replacement.
   owner: memox-v8
 rules:

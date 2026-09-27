@@ -1,4 +1,4 @@
-# MemoX V7 guard rules — domain: architecture
+# MemoX V8 guard rules — domain: architecture
 #
 # Encodes the "Layering" non-negotiables in CLAUDE.md. The single most valuable
 # rule here is domain_no_infrastructure_import: AD-01 says a Spring Boot backend
@@ -8,7 +8,7 @@
 version: 1
 metadata:
   id: memox-v8-architecture
-  name: MemoX V7 Architecture Rules
+  name: MemoX V8 Architecture Rules
   description: Layer boundaries, dependency direction, and data-layer ownership.
   owner: memox-v8
 rules:
