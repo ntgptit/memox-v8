@@ -40,6 +40,14 @@ class V7ResidueTest(unittest.TestCase):
             ("docs/shared/x.md", 1),
         })
 
+    def test_a_bare_ledger_name_is_a_marker(self):
+        root = tree({
+            ".claude/skills/a/x.py": "# recorded in wbs.md M-task outputs\n",
+            "docs/a.md": "see [wbs](../wbs.md)\nprogress in wbs_BE.md and wbs_FE.md\n",
+        })
+        hits = {(p.relative_to(root).as_posix(), line) for p, line, _ in check.v7_residue(root)}
+        self.assertEqual(hits, {(".claude/skills/a/x.py", 1), ("docs/a.md", 1)})
+
     def test_case_does_not_hide_a_marker(self):
         root = tree({"docs/a.md": "WIDGETBOOK\nMemoX-V7\n"})
         self.assertEqual(len(check.v7_residue(root)), 2)

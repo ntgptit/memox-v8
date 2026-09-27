@@ -383,10 +383,11 @@ def destination_exists(dest: str) -> bool:
 # ------------------------------------------------------------ V7 residue
 
 # V7 is a reference, not a template (CLAUDE.md). These name V7 things V8 does
-# not have: its component catalog, its progress ledger and phase checklist, and
-# its repository (local backend spec 2026-09-27 §6, BE-D7).
+# not have: its component catalog, its progress ledger (`wbs.md` by any path;
+# V8's are `wbs_BE.md` and `wbs_FE.md`), its phase checklist, and its
+# repository (local backend spec 2026-09-27 §6, BE-D7).
 V7_MARKER = re.compile(
-    r"widgetbook|docs/wbs\.md|docs/checklist\.md|memox-v7|checklist phases?\b",
+    r"widgetbook|\bwbs\.md|docs/checklist\.md|memox-v7|checklist phases?\b",
     re.IGNORECASE,
 )
 V7_SCAN = (".claude/skills", "docs")

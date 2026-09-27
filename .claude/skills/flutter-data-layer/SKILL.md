@@ -20,18 +20,19 @@ repository contract above it.
 
 ## Source of truth — already decided for this project
 
-**memox is local-first with no backend yet (AD-01 in `docs/architecture.md`).**
-Drift is the source of truth; reads come from `watch()` streams; there is no
-remote data source and no cache layer. The Spring Boot backend arrives later,
-and the repository contract is what lets it arrive without touching `domain/`
-or `presentation/`.
+**The server is the official data; the app is offline-first (ADR-013, ADR-014).**
+`memox-api-services` holds the official copy and runs the business rules. On the
+device, Drift is the durable working store: use cases read and write Drift,
+reads come from `watch()` streams, and a write lands locally first, with its
+`sync_outbox` row in the same transaction. `SyncCoordinator`
+(`lib/core/sync/`) pushes the outbox and pulls the server's state; only
+repositories and the `data/` layer know sync exists, and `domain/` and
+`presentation/` do not change for it.
 
-That means the networking half of this skill —
-`references/networking.md` — is **reference material for a later phase**, not
-something to build now. `dio` is deliberately not a dependency yet (ADR-012).
-
-The generic reasoning below is kept because it is what makes the decision
-reviewable when the backend lands.
+APIs are called through Retrofit on one shared `Dio` (ADR-012): an `@RestApi()`
+interface per endpoint group (`lib/core/sync/sync_api.dart`), the client and its
+interceptors in `lib/core/network/`. `references/networking.md` is the guide for
+that half.
 
 **Offline-first** — the database is the source of truth. Reads always come from
 Drift and are exposed as a stream, so the UI updates when data changes for any
@@ -43,7 +44,7 @@ up front and dramatically better under bad connectivity.
 with a TTL. Reads try the network, fall back to cache, and say so in the UI when
 they are showing stale data.
 
-Whichever it is, write it in `docs/architecture.md`. And the UI must never
+Whichever it is, record it in an ADR (`docs/shared/decisions/`). And the UI must never
 choose: a widget deciding "if offline read local else read remote" has pulled a
 data-layer policy into presentation, and that policy will then differ per screen.
 
@@ -116,9 +117,9 @@ widget.
 
 ## Checks before the data layer is done
 
-Now (local-first, ADR-012 in force):
+Every data-layer change:
 
-- [ ] Source of truth declared in `docs/architecture.md` and followed everywhere.
+- [ ] Reads and writes go through Drift; only the sync layer talks to the server (ADR-013).
 - [ ] No Drift exception escapes a repository.
 - [ ] Exception→failure mapping in one place, with tests.
 - [ ] Generated row types never reach presentation.
@@ -127,7 +128,7 @@ Now (local-first, ADR-012 in force):
 - [ ] Indexes exist for the queries actually run.
 - [ ] Migration tested from every released schema version.
 
-When the backend lands (deferred with ADR-012):
+Every change that calls the API (ADR-012):
 
 - [ ] No `DioException` escapes a repository; DTOs never reach presentation.
 - [ ] Timeouts set for connect, receive and send.
