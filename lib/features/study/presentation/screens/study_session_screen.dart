@@ -13,7 +13,7 @@ import 'package:memox/features/study/presentation/widgets/overlays/study_exit_di
 import 'package:memox/features/study/presentation/widgets/sections/session_context_line_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_body_widget.dart';
-import 'package:memox/features/study/presentation/widgets/sections/study_session_ended_placeholder_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -100,8 +100,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
           when value.endReason == SessionEndReason.staleGeneration =>
         const MxAppShell(body: SizedBox.shrink()),
       AsyncData(value: Ok(:final value)) when value.summary != null =>
-        StudySessionEndedPlaceholderWidget(
+        StudySessionSummaryWidget(
+          view: value,
+          summary: value.summary!,
+          // P1's only way into a session is the Study entry, so one pop lands
+          // on it again: Done back to the deck, Study this deck to study on.
           onDone: () => unawaited(Navigator.of(context).maybePop()),
+          onStudyThisDeck: () => unawaited(Navigator.of(context).maybePop()),
         ),
       AsyncData(value: Ok(:final value)) => PopScope(
         canPop: false,

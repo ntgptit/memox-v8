@@ -2627,5 +2627,112 @@
   "studySummaryDone": "Done",
   "@studySummaryDone": {
     "description": "The summary footer's action (handoff 21)."
+  },
+  "studySummaryTitleReview": "Review finished",
+  "@studySummaryTitleReview": {
+    "description": "Summary hero title: a completed review (handoff 21)."
+  },
+  "studySummaryTitleLearning": "Learning finished",
+  "@studySummaryTitleLearning": {
+    "description": "Summary hero title: a completed learning session."
+  },
+  "studySummaryTitleLeftEarly": "You left early",
+  "@studySummaryTitleLeftEarly": {
+    "description": "Summary hero title: the person stopped the session (BR-STUDY-014)."
+  },
+  "studySummaryTitleInterrupted": "Session interrupted",
+  "@studySummaryTitleInterrupted": {
+    "description": "Summary hero title: closed by the system on an earlier day (BR-STUDY-072)."
+  },
+  "studySummaryTitleReset": "Ended by a reset",
+  "@studySummaryTitleReset": {
+    "description": "Summary hero title: the deck was reset during the session (BR-STUDY-015)."
+  },
+  "studySummaryTitleSchedulerChanged": "Ended by an algorithm change",
+  "@studySummaryTitleSchedulerChanged": {
+    "description": "Summary hero title: the algorithm changed during the session (BR-STUDY-016)."
+  },
+  "studySummaryTitleSaveError": "Stopped by a save error",
+  "@studySummaryTitleSaveError": {
+    "description": "Summary hero title: an answer could not be saved (BR-STUDY-018)."
+  },
+  "studySummaryBodyReview": "You reviewed {count} cards. Their next due dates are set.",
+  "@studySummaryBodyReview": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Summary hero body: a completed review."
+  },
+  "studySummaryBodyLearning": "{count} cards finished learning. They come back tomorrow at 00:00.",
+  "@studySummaryBodyLearning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Summary hero body: a completed learning session (BR-STUDY-074)."
+  },
+  "studySummaryBodyLeftEarly": "You answered {answered} of {total} cards before leaving.",
+  "@studySummaryBodyLeftEarly": {
+    "placeholders": {
+      "answered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Summary hero body: stopped by the person; answers are kept."
+  },
+  "studySummaryBodyInterrupted": "This session from an earlier day was closed and could not be resumed today. Every answer you gave is kept.",
+  "@studySummaryBodyInterrupted": {
+    "description": "Summary hero body: interrupted."
+  },
+  "studySummaryBodyReset": "Learning progress of this deck was reset while you were studying, so this session could not continue. Answers given before the reset stay in the history of the earlier cycle.",
+  "@studySummaryBodyReset": {
+    "description": "Summary hero body: ended by a reset."
+  },
+  "studySummaryBodySchedulerChanged": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; start learning from the deck.",
+  "@studySummaryBodySchedulerChanged": {
+    "description": "Summary hero body: ended by an algorithm change."
+  },
+  "studySummaryBodySaveError": "An answer could not be written to this device, so the session stopped. Everything saved before that is kept; the unanswered cards are still due.",
+  "@studySummaryBodySaveError": {
+    "description": "Summary hero body: stopped by a save error."
+  },
+  "studySummaryFactsHeader": "This session",
+  "@studySummaryFactsHeader": {
+    "description": "The summary's facts section header."
+  },
+  "studySummaryFactAnswered": "Cards answered",
+  "@studySummaryFactAnswered": {
+    "description": "Summary fact: distinct cards with a turn (spec D11a)."
+  },
+  "studySummaryFactWrong": "Wrong turns",
+  "@studySummaryFactWrong": {
+    "description": "Summary fact: turns graded as a lapse."
+  },
+  "studySummaryFactOfTurns": "of {total} turns",
+  "@studySummaryFactOfTurns": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Summary fact: all turns recorded (spec D11a)."
+  },
+  "studySummaryEndNoteSchedulerChanged": "Nothing was lost — the answers are in the history.",
+  "@studySummaryEndNoteSchedulerChanged": {
+    "description": "Summary note under an algorithm-change end."
+  },
+  "studySummaryStudyThisDeck": "Study this deck",
+  "@studySummaryStudyThisDeck": {
+    "description": "Summary action: back to the deck's Study entry."
+  },
+  "studySummaryDoneCaption": "Done returns you to the deck.",
+  "@studySummaryDoneCaption": {
+    "description": "The summary footer's caption."
   }
 }
