@@ -47,8 +47,9 @@ void main() {
       db.syncOutbox,
     )..orderBy([(o) => OrderingTerm(expression: o.seq)])).get();
     String label(SyncOutboxEntry e) {
-      if (e.kind == 'patch')
+      if (e.kind == 'patch') {
         return '${e.entityType}/${e.patchGroup} ${e.entityId}';
+      }
       final payload = jsonDecode(e.payload!) as Map<String, Object?>;
       return '${e.commandType} ${payload['id'] ?? payload['deckId'] ?? payload['batchId'] ?? (payload['items'] as List).single['cardId']}';
     }
