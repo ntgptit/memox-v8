@@ -1,11 +1,11 @@
 ---
 name: flutter-navigation
-description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until auth lands, AD-03), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour. Covers checklist phase 8.
+description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until auth lands, AD-03), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
 ---
 
 # Navigation
 
-Covers checklist Phase 8. Router configuration lives in `app/router/`.
+Router configuration lives in `app/router/`.
 
 ```
 app/router/

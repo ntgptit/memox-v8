@@ -54,15 +54,9 @@ without re-checking.
       regenerating a baseline and reviewing it in isolation is not visual
       parity evidence.
 - [ ] No user-visible string outside the ARB files.
-- [ ] Registered in the Widgetbook catalog (`widgetbook/`): a new shared
-      component gets a knob-driven playground; a new screen gets a use-case
-      mounting it with its domain contract faked, states reachable via knobs.
-      The catalog is where a human inspects the UI under both themes, text
-      scales and viewports without hunting through the app — a screen missing
-      from it is invisible to that review.
 
 ## Paperwork
-- [ ] `docs/wbs.md` updated in this commit.
+- [ ] The WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) updated in the same PR.
 - [ ] Any doc the change invalidates (data model, API spec, design system) updated
       in this commit too.
 - [ ] Code reviewed.

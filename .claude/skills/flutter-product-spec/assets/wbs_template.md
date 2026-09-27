@@ -30,7 +30,6 @@ Status values: `todo` · `in-progress` · `blocked` · `done` · `descoped`
   - [ ] <checkable by someone who did not do the work>
 - **Dependencies:** <task IDs, or none>
 - **Tests required:** <specific tests, or "none — config only" with the reason>
-- **Checklist phases:** <e.g. 2.3, 3.1>
 
 ### T0.2 · ...
 

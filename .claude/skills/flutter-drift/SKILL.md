@@ -1,6 +1,6 @@
 ---
 name: flutter-drift
-description: Use when a task touches the database in any way — adding or changing a table, column, constraint or index; writing or editing a `.drift` query; bumping `schemaVersion` or writing a migration; adding a DAO or local data source; debugging a Drift stream that will not re-emit, a slow query, a locked database or a failing migration test; and above all when reviewing a pull request that changes anything under `lib/core/database/` or any `data/` folder. Reach for it even when the request sounds like plain feature work ("save the deck", "load cards faster", "why is this list stale") — those are database changes wearing a feature's clothes. Covers checklist phase 11 in depth; `flutter-data-layer` owns the repository/DTO boundary above it.
+description: Use when a task touches the database in any way — adding or changing a table, column, constraint or index; writing or editing a `.drift` query; bumping `schemaVersion` or writing a migration; adding a DAO or local data source; debugging a Drift stream that will not re-emit, a slow query, a locked database or a failing migration test; and above all when reviewing a pull request that changes anything under `lib/core/database/` or any `data/` folder. Reach for it even when the request sounds like plain feature work ("save the deck", "load cards faster", "why is this list stale") — those are database changes wearing a feature's clothes. `flutter-data-layer` owns the repository/DTO boundary above it.
 ---
 
 # Drift: development and review
@@ -15,11 +15,11 @@ and they fail in different ways.
 
 Before either, know what this project has **already settled**. Most Drift advice
 on the internet — and most generic checklists, including good ones — assumes a
-greenfield repo. memox-v7 is not greenfield, and a well-meant "best practice"
-applied here is a refactor nobody asked for. Read
-`references/project-baseline.md` before proposing any structural change; it
-lists what is fixed, why, and which generic recommendations this project has
-deliberately declined.
+greenfield repo. This one has settled its layout (ADR-010, ADR-011: tables and
+named queries in `lib/core/database/`, DAOs in each feature's
+`data/datasources/`) and its schema (`docs/shared/data/schema.md`), and a
+well-meant "best practice" applied here is a refactor nobody asked for. Read
+those before proposing any structural change.
 
 ## The one rule everything else serves
 
@@ -189,7 +189,6 @@ Load only what the task needs.
 
 | File | Read it when |
 |---|---|
-| `references/project-baseline.md` | Before proposing any structural change, or when a generic Drift recommendation seems to conflict with this repo |
 | `references/layering.md` | Deciding where code goes — `AppDatabase` vs DAO vs data source vs repository — or reviewing a type that crossed a boundary |
 | `references/schema-conventions.md` | Adding or changing a table, column, constraint, enum or timestamp |
 | `references/query-conventions.md` | Writing or reviewing a `.drift` query, designing an index, or paginating |

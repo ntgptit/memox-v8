@@ -1,12 +1,9 @@
 ---
 name: flutter-design-system
-description: Design tokens, Material 3 theming, the shared component library, responsive layout, localization and accessibility for this Flutter app. Use this skill whenever UI is being built or reviewed — creating or changing a widget, picking a colour/spacing/text style, adding a shared component, wiring light and dark themes, handling small screens or large text scale, adding user-facing strings or ARB entries, or checking semantic labels and contrast. Also use it when reviewing UI code for hardcoded colours, hardcoded padding, or untranslated strings, which are the most common violations in this codebase. Covers checklist phases 7, 12 and 13.
+description: Design tokens, Material 3 theming, the shared component library, responsive layout, localization and accessibility for this Flutter app. Use this skill whenever UI is being built or reviewed — creating or changing a widget, picking a colour/spacing/text style, adding a shared component, wiring light and dark themes, handling small screens or large text scale, adding user-facing strings or ARB entries, or checking semantic labels and contrast. Also use it when reviewing UI code for hardcoded colours, hardcoded padding, or untranslated strings, which are the most common violations in this codebase.
 ---
 
 # Design system, localization and accessibility
-
-Covers checklist Phases 7 (tokens, theme, components, responsive), 12
-(localization) and 13 (accessibility).
 
 These three are one skill because they are all properties of *how a component is
 written*. A component built with a hardcoded colour, a literal string, or no
@@ -70,13 +67,11 @@ Each needs light, dark, enabled, disabled, loading, and error where it applies.
 A button without a loading state means every caller invents its own, and they
 will not match.
 
-A new shared component is not done until it has a knob-driven playground in the
-Widgetbook catalog (`widgetbook/lib/components/`, registered in
-`widgetbook/lib/main.dart`) — the catalog is where every state is inspected
-under both themes, text scales and viewports without hunting through screens,
-and the CI smoke test fails if the tree stops building. New screens go in too,
-mounted with their domain contract faked; `widgetbook/README.md` has the
-how-to.
+A new shared component is not done until its states are pinned by widget tests
+and goldens (`flutter-testing`), under both themes and a large text scale, and the
+screens that use it render in the screen gallery
+(`.claude/skills/flutter-testing/scripts/build_screen_gallery.py`), where a person
+reviews the demo goldens side by side.
 
 **A component that can be tapped is a surface with a target composed into it, not
 a control that happens to look like a surface.** A surface that *is* the control

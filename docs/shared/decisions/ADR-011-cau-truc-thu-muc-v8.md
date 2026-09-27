@@ -124,6 +124,9 @@ ghi ở `README.md` ở thư mục gốc repo.
 - Skill `flutter-architecture` và các skill liên quan trỏ về ADR này, thay cho
   `docs/architecture.md` của V7. `feature_blueprint.md` và `project-baseline.md` trở
   thành tài liệu tham khảo V7.
+  - Cập nhật 2026-09-27 (BE-D7): hai file này đã gỡ; bố cục thuộc ADR này và
+    ADR-010, schema thuộc `docs/shared/data/schema.md`, ví dụ mẫu là Deck và Card
+    của V8 (`docs/features/deck/`, `docs/features/card/`).
 - Foundation plan ngày 2026-09-23 đã được sửa theo ADR này trước khi chạy Task 2.
 - Định nghĩa `depends_on` trong `docs/README.md` ghi rõ: chiều import Dart do ADR này quy
   định.

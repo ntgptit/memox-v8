@@ -5,7 +5,7 @@ description: Turns a vague product idea into the written artifacts that all late
 
 # Product specification and planning
 
-Covers checklist Phases 0 and 1. Output is documents in `docs/`, not code.
+Output is documents in `docs/`, not code.
 
 The point of this phase is not paperwork. It is that every ambiguity you leave
 here becomes a rewrite later, and the rewrite costs 10–50× what settling the
@@ -48,7 +48,7 @@ Write into `docs/`. Templates are in `assets/`.
 | `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
 | `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
 | `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
-| `docs/wbs.md` | Milestones → features → tasks, the live progress ledger | `assets/wbs_template.md` |
+| `docs/wbs_BE.md`, `docs/wbs_FE.md` | Groups → items, the live progress ledger (backend and frontend) | `assets/wbs_template.md` |
 | `docs/architecture.md` | Layering decisions and deviations, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/api-spec.md` | Endpoints, request/response shapes, error format, pagination — not until the backend exists (AD-05) | — |
@@ -103,8 +103,8 @@ inline error from BR-04 and the password field is not cleared" is.
 
 Order tasks by dependency, and let vertical slices dominate: one feature working
 end to end beats four features half-built, because only the former proves the
-architecture. `docs/wbs.md` is then maintained for the life of the project as
-the progress ledger — see `flutter-workflow` for the update discipline.
+architecture. The WBS (`docs/wbs_BE.md`, `docs/wbs_FE.md`) is then maintained
+for the life of the project as the progress ledger — see `flutter-workflow` for the update discipline.
 
 ## When to stop
 

@@ -1,90 +1,59 @@
 ---
 name: flutter-workflow
-description: Entry point and router for all development work on this Flutter app. Use this skill whenever work starts on memox-v7 and the next step is not already obvious — "what's next", "start phase N", "let's build X", "continue the app", "add a feature", "is this done", "review before commit" — and whenever you need to know which of the other flutter-* skills applies. It maps the 22-phase checklist in docs/checklist.md to the specific skill that covers each phase, enforces the dependency order between phases, and holds the Definition of Done. Consult it before starting any non-trivial task so work does not begin on a phase whose prerequisites are still open.
+description: Router for development work on MemoX V8 — which `flutter-*` skill applies to a task, where progress is recorded (`docs/wbs_BE.md`, `docs/wbs_FE.md`), and the Definition of Done. Use it when work starts and the owning skill is not obvious — "what's next", "let's build X", "add a feature", "is this done", "review before commit". Process (brainstorm, plan, execute, review) belongs to Superpowers, per CLAUDE.md.
 ---
 
 # Flutter workflow router
 
-This project is built against a 22-phase checklist (`docs/checklist.md`). This
-skill decides *what to work on next* and *which skill to load*. It does not
-contain implementation detail — that lives in the specialised skills.
+This skill decides *which skill to load* and *where progress is recorded*. It
+does not contain implementation detail — that lives in the specialised skills —
+and it does not sequence work: brainstorming, plans, execution and review are
+Superpowers', and UI judgement is Impeccable's (CLAUDE.md, "Layers and
+authority").
 
 ## First: find out where the project actually is
 
 Do not trust memory or assumption about project state. Check:
 
 ```bash
-cat docs/wbs.md 2>/dev/null | head -60   # the progress ledger
-ls lib/ 2>/dev/null                      # does the app exist yet
+sed -n 1,40p docs/wbs_BE.md   # backend: domain, data, use cases
+sed -n 1,40p docs/wbs_FE.md   # frontend: screens, theme, shared widgets
 git log --oneline -10
 ```
 
-`docs/wbs.md` is authoritative for progress. If it is missing or clearly stale
+The two WBS files are authoritative for progress: `wbs_BE.md` for `domain/`,
+`data/` and use cases, `wbs_FE.md` for presentation. If one is clearly stale
 relative to the code, say so and fix it before building anything else — every
 later decision depends on it being true.
 
 ## Routing table
 
-| You are doing | Load skill | Checklist phase |
-|---|---|---|
-| Defining the product, users, MVP scope, use cases, business rules, WBS, docs | `flutter-product-spec` | 0, 1 |
-| Creating the Flutter project, dependencies, flavors, bootstrap, error model | `flutter-project-setup` | 2, 3, 6 |
-| Folder structure, layer boundaries, lint config, naming, code conventions | `flutter-architecture` | 4, 5 |
-| Design tokens, theming, shared components, responsive, localization, a11y | `flutter-design-system` | 7, 12, 13 |
-| A component theme in `lib/core/theme/`, an `Mx*` widget's API, admitting a new Material widget, theme ↔ widget parity | `flutter-theme-design` | 7 (component level) |
-| Routes, guards, deep links, nested shells, back behaviour | `flutter-navigation` | 8 |
-| Providers, controllers, UI state modelling, side effects | `flutter-state-riverpod` | 9 |
-| Dio, API contracts, repository shape, DTO/entity split, cache, sync, secure storage | `flutter-data-layer` | 10, 11 |
-| Anything under `lib/core/database/` or a `data/` folder — `.drift` schema and queries, indexes, migrations, DAOs, transactions, stream invalidation — and reviewing a database PR | `flutter-drift` | 11 |
-| Building one feature end to end | `flutter-feature-slice` | 14 |
-| Any kind of test | `flutter-testing` | 15 |
-| Security, performance, logging, analytics, CI/CD, release, post-release | `flutter-ship` | 16–22 |
+| You are doing | Load skill |
+|---|---|
+| Defining the product, users, MVP scope, use cases, business rules, WBS, docs | `flutter-product-spec` |
+| Creating the Flutter project, dependencies, flavors, bootstrap, error model | `flutter-project-setup` |
+| Folder structure, layer boundaries, lint config, naming, code conventions | `flutter-architecture` |
+| Design tokens, theming, shared components, responsive, localization, a11y | `flutter-design-system` |
+| A component theme in `lib/core/theme/`, an `Mx*` widget's API, admitting a new Material widget, theme ↔ widget parity | `flutter-theme-design` |
+| Routes, guards, deep links, nested shells, back behaviour | `flutter-navigation` |
+| Providers, controllers, UI state modelling, side effects | `flutter-state-riverpod` |
+| Retrofit API clients on the shared Dio (ADR-012), repository shape, DTO/entity split, cache, sync, secure storage | `flutter-data-layer` |
+| Anything under `lib/core/database/` or a `data/` folder — `.drift` schema and queries, indexes, migrations, DAOs, transactions, stream invalidation — and reviewing a database PR | `flutter-drift` |
+| Building one feature end to end | `flutter-feature-slice` |
+| Any kind of test | `flutter-testing` |
+| Security, performance, logging, analytics, CI/CD, release, post-release | `flutter-ship` |
 
 When a task spans several rows — which most real tasks do — `flutter-feature-slice`
 is usually the right entry point; it pulls in the others in the right order.
 
 **Before building a feature, read the two that already went the whole way.** Deck
-and Card are the worked examples:
-`flutter-feature-slice/assets/feature_blueprint.md` records what they settled,
-`lib/features/deck/README.md` and `lib/features/card/README.md` record each
-slice. Take the **method** from them — layering, where a rule is enforced, what a
-use case may know, which test sits at which level — and not the business. Neither
-feature's data shape is a template (AD-17); a third feature that grows a tree or
-a `content_type` because Deck has one has copied the wrong half.
-
-This routing line exists because it was missing: until M99.2 the front door named
-no reference implementation at all, so an agent found the blueprint only by
-landing on `flutter-feature-slice` first.
-
-## Phase order is a dependency graph, not a suggestion
-
-The recommended order is:
-
-```
-business requirements → use cases + business rules → WBS → project foundation
-→ architecture boundaries → theme & tokens → minimal shared components → router
-→ database/network foundation → features as vertical slices → automated tests
-→ pixel comparison → CI/CD → internal testing → production release → monitoring
-```
-
-The expensive mistakes this ordering prevents are specific, and worth naming so
-you can recognise when someone is about to make one:
-
-- **UI before business rules are settled.** The screens get built around an
-  assumption, the rule lands differently, and the state model has to be redone.
-  If the rules for a flow are still open, build something else.
-- **Features before tokens and the router.** Every feature then hardcodes colours
-  and navigation, and you pay to unpick it in every file.
-- **Shared components before two real callers exist.** A component abstracted from
-  one usage is a guess. Wait for the second caller — it tells you what actually
-  varies. Two similar-looking widgets is not a reason to merge them.
-- **Tests deferred to "after the feature works".** They then get written against
-  whatever the code happens to do, which is not the same as what it should do.
-
-If asked to jump ahead, do not silently refuse and do not silently comply. Say
-which prerequisite is open, what the concrete risk is, and offer the smallest
-unblocking step. If the user confirms after hearing that, proceed — it is their
-call, and a documented deliberate shortcut is fine. Note it in the WBS.
+and Card are the worked examples: `docs/features/deck/` and `docs/features/card/`
+hold their use cases, rules and data, `lib/features/deck/` and
+`lib/features/card/` their code. Take the **method** from them — layering, where
+a rule is enforced, what a use case may know, which test sits at which level —
+and not the business. Neither feature's data shape is a template: a third
+feature that grows a tree or a `content_type` because Deck has one has copied
+the wrong half.
 
 ## Definition of Done
 
@@ -102,10 +71,8 @@ that actually catches problems.
 
 ## Keeping the ledger honest
 
-Update `docs/wbs.md` in the same commit as the work it describes. Mark items
-done only when they are done by the Definition of Done, not when the code first
-runs. If something was descoped or deferred, write that down with the reason —
-a future session reading "done" on a half-finished item will build on sand.
-
-`references/phase-index.md` has the full phase-to-skill map with the specific
-checklist sub-sections each skill covers, for when the table above is too coarse.
+Update the WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) in the PR that does the
+work it describes. Mark items `xong` only when they are done by the Definition of
+Done, not when the code first runs. If something was descoped or deferred, write
+that down with the reason — a future session reading "done" on a half-finished
+item will build on sand.
