@@ -70,4 +70,12 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên có thể tiếp tục và workload của các root deck đến từ một snapshot, và việc đọc không ghi gì, kể cả khi còn phiên của ngày trước đang mở (BR-PROGRESS-011, BR-STUDY-020).
+- [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** thẻ Resume nêu đúng tên deck, `kind` và mode lấy từ hàng session, kể cả khi phiên mở trên deck con (BR-SRS-015, BR-MODE-008, BR-STUDY-075).
+- [ ] **Given** nhiều root deck có workload khác nhau, **when** danh sách hiện, **then** thứ tự giảm dần theo Overdue, rồi Due today, rồi New (không theo tổng), hoà thì theo tên đã fold rồi `id` (BR-STUDY-076).
+- [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** đúng phiên đó được mở lại tại lượt đã lưu và không có phiên thứ hai; nếu phiên vừa hết hạn thì bị từ chối và Study Home sẵn sàng lại (BR-STUDY-004, BR-STUDY-036).
+- [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộc ngày học cũ, hết hàng đợi hay thuộc generation cũ, **when** màn hình tải, **then** không có thẻ Resume (BR-STUDY-075, A1, A2).
+- [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then** màn hiện trạng thái đã bắt kịp và các deck vẫn mở được để học trước (BR-STUDY-008, A3).
+- [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình tải, **then** hệ thống hiện zero state riêng, không có con số nào (BR-STUDY-077, A5).
+- [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện trạng thái lỗi, và Retry đọc lại (E1).
+- [ ] OPEN QUESTION: A4 nói thư viện chưa có deck nào thì empty state dẫn tới Starter Library, lối thứ hai là về Library — màn chỉ có một lối "Go to Library" (`studyHomeGoToLibrary`), và test `study_home_screen_test.dart` 'no root deck: only "Go to Library", no starter line (H1)' ghi rõ điều đó (A4).

@@ -71,4 +71,15 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thống nói rõ tìm được tên deck, mặt trước và mặt sau card, và tên tag, và chưa đọc gì (BR-SEARCH-003).
+- [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm được fold bằng đúng hàm của các cột đã lưu và đúng một lần đọc trang đầu chạy; từ gõ trước đó không bao giờ được đọc (BR-SEARCH-002, BR-SEARCH-003).
+- [ ] **Given** có kết quả, **when** hiển thị, **then** deck đứng trước card, mỗi nhóm có số đếm riêng, và một card chỉ khớp qua mặt trước, mặt sau hoặc tên tag, không bao giờ qua example, hint hay pronunciation (BR-SEARCH-001, BR-SEARCH-005).
+- [ ] **Given** nhiều kết quả khớp, **when** xếp hạng, **then** mỗi nhóm xếp khớp đúng trước khớp tiền tố trước khớp chứa, bậc của một card là bậc tốt nhất trong các trường nó khớp, và hoà thì xét văn bản đã fold, rồi `created_at`, rồi `id` (BR-SEARCH-004, BR-SEARCH-007).
+- [ ] **Given** một card khớp qua nhiều trường, **when** hiển thị, **then** nó xuất hiện đúng một lần; card chỉ khớp qua tag thì nêu tag khớp tốt nhất; dòng deck có đường dẫn tổ tiên, dòng card có đường dẫn deck chứa nó (BR-SEARCH-006).
+- [ ] **Given** một kết quả, **when** chạm, **then** kết quả deck mở deck đó, kết quả card mở chi tiết chỉ đọc của card đó (BR-SEARCH-008).
+- [ ] **Given** hơn 50 kết quả, **when** hiển thị, **then** số đếm báo còn nhiều hơn, và tải thêm nối trang kế tiếp theo con trỏ keyset, không lặp và không sót (BR-SEARCH-007, A1).
+- [ ] **Given** chỉ một nhóm có kết quả, **when** hiển thị, **then** nhóm còn lại không vẽ tiêu đề rỗng (A2).
+- [ ] **Given** deck hoặc tag của một kết quả đang hiện bị đổi tên, di chuyển hoặc xoá ở nơi khác, **when** thay đổi xảy ra, **then** kết quả đang hiện cập nhật tại chỗ mà không cần tìm lại (BR-SEARCH-008, A3).
+- [ ] **Given** ô nhập đang có chữ, **when** người dùng xoá trắng, **then** màn về trạng thái ban đầu ngay, không chờ debounce và không đọc gì (BR-SEARCH-003, A4).
+- [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** màn hiện lỗi kèm Retry, không hiện kết quả cũ, và Retry đọc lại từ trang đầu (E1).
+- [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết quả đã có giữ nguyên, chỉ cuối danh sách hiện lỗi kèm Retry, và Retry đọc lại đúng con trỏ đó (E2).

@@ -79,4 +79,14 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** một root đã khoá scheduler và đã học, **when** người dùng xác nhận reset với một chế độ, **then** trong một transaction `generation` tăng đúng 1, `first_answered_at = NULL`, và mọi study state trong cây khởi tạo lại ở giá trị đầu của chế độ đó, cùng generation mới (BR-SRS-020, BR-SRS-022, BR-SRS-024).
+- [ ] **Given** một reset vừa xong, **when** kiểm tra dữ liệu, **then** cây deck, card, tag và `content_type` không đổi (BR-SRS-021).
+- [ ] **Given** một reset vừa xong, **when** kiểm tra `review_log`, **then** các dòng cũ còn nguyên và vẫn mang generation cũ (BR-SRS-023).
+- [ ] **Given** nhiều cây deck độc lập, **when** một cây được reset, **then** các cây khác không đổi gì (BR-SRS-020, BR-SRS-029).
+- [ ] **Given** reset giữ nguyên chế độ đang chạy, **when** người dùng xác nhận, **then** chế độ giữ nguyên nhưng `generation` vẫn tăng và study state vẫn khởi tạo lại (BR-SRS-020, A1).
+- [ ] **Given** một root chưa từng học hoặc không có card, **when** hộp xác nhận hiện, **then** tóm tắt nói rõ không có gì để mất, và reset vẫn thực hiện được (BR-SRS-030, A2).
+- [ ] **Given** hộp xác nhận reset đang mở, **when** người dùng bấm Huỷ, **then** không có gì thay đổi (A3).
+- [ ] **Given** một deck con, **when** người dùng tìm thao tác đặt lại tiến độ học, **then** thao tác không có ở đó; chỉ root mới reset được (BR-DECK-024, A4).
+- [ ] **Given** một ghi lỗi giữa transaction reset, **when** hệ thống xử lý, **then** toàn bộ rollback: root giữ `generation`, chế độ, study state và trạng thái phiên cũ (BR-SRS-027, E1).
+- [ ] **Given** cây có một phiên `in_progress`, **when** reset được thực hiện, **then** phiên đó thành `invalidated` với `end_reason = scheduler_reset`, lượt trả lời kế tiếp của nó bị từ chối, và các lượt đã ghi trước reset vẫn giữ (BR-STUDY-015, E2).
+- [ ] **Given** một root không tồn tại hoặc đang ở Trash, **when** yêu cầu reset hoặc xem tóm tắt, **then** thao tác bị từ chối, không có tóm tắt và không ghi gì.

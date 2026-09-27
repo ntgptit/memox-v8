@@ -87,5 +87,51 @@ class V7ResidueTest(unittest.TestCase):
         self.assertEqual(hits, [], "\n".join(f"{p}:{n}: {m}" for p, n, m in hits))
 
 
+
+def uc(status: str, criteria: str, elsewhere: str = "") -> "check.g.Doc":
+    body = (
+        "## Main flow\n\n" + elsewhere + "\n\n"
+        "## Acceptance criteria\n\n" + criteria + "\n"
+    )
+    return check.g.Doc(
+        path=Path("docs/features/x/usecases/UC-X-001-x.md"), kind="UC", feature="x",
+        meta={"id": "UC-X-001", "status": status}, body=body,
+        sections=check.g.h2_sections(body),
+    )
+
+
+class AcceptanceCriteriaTest(unittest.TestCase):
+    GWT = "- [ ] **Given** một deck, **when** xoá, **then** nó vào Trash (BR-TRASH-001)."
+    PLACEHOLDER = "- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then."
+
+    def errors(self, doc) -> list[str]:
+        report = check.Report()
+        check.check_acceptance_criteria(doc, report)
+        return [message for _, _, message in report.lines]
+
+    def test_a_ready_uc_with_a_criterion_passes(self):
+        self.assertEqual(self.errors(uc("ready", self.GWT)), [])
+
+    def test_a_ready_uc_with_only_the_placeholder_fails(self):
+        self.assertEqual(len(self.errors(uc("ready", self.PLACEHOLDER))), 1)
+
+    def test_open_questions_alone_do_not_satisfy_it(self):
+        self.assertEqual(len(self.errors(uc("ready", self.PLACEHOLDER + "\n" + self.PLACEHOLDER))), 1)
+
+    def test_a_criterion_outside_the_section_does_not_count(self):
+        self.assertEqual(len(self.errors(uc("ready", self.PLACEHOLDER, elsewhere=self.GWT))), 1)
+
+    def test_a_criterion_in_a_fence_does_not_count(self):
+        fenced = "```\n" + self.GWT + "\n```"
+        self.assertEqual(len(self.errors(uc("ready", fenced))), 1)
+
+    def test_an_open_question_written_as_given_when_then_does_not_count(self):
+        question = "- [ ] OPEN QUESTION: should **Given** X, **when** Y, **then** Z?"
+        self.assertEqual(len(self.errors(uc("ready", question))), 1)
+
+    def test_a_draft_uc_is_not_checked(self):
+        self.assertEqual(self.errors(uc("draft", self.PLACEHOLDER)), [])
+
+
 if __name__ == "__main__":
     unittest.main()

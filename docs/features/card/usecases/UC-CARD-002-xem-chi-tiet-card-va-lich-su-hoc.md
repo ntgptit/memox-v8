@@ -92,4 +92,18 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then** nó hiện toàn bộ mặt trước, mặt sau và chỉ các trường tuỳ chọn có giá trị; việc đọc không ghi gì (BR-CARD-013, BR-CARD-014).
+- [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, **then** thông tin hiện tại (tag, cờ, trạng thái, ngày tới hạn, số liệu học) cập nhật theo (BR-CARD-014).
+- [ ] **Given** một card có lịch sử, **when** chi tiết tải, **then** trang đầu là 50 event gần nhất, mới nhất trước, nhóm theo generation với generation hiện tại trên cùng, kể cả event của generation cũ sau một lần Reset (BR-CARD-015, BR-CARD-017, A3).
+- [ ] **Given** một event lịch sử, **when** hiển thị, **then** nó nêu thời điểm, chế độ học, loại lượt, hành động và đúng giá trị lịch trước và sau đã lưu trên hàng đó (BR-CARD-016).
+- [ ] **Given** đã cuộn tới cuối trang đã tải, **when** người dùng tải thêm, **then** 50 event kế tiếp nối vào theo con trỏ keyset, không lặp và không sót, kể cả khi có answer mới ghi giữa lúc phân trang (BR-CARD-015).
+- [ ] **Given** người dùng chọn Edit trên chi tiết, **when** editor mở, **then** đó là editor của UC-CARD-001 A1 cho đúng card đó, và sửa nội dung không đụng study state hay lịch sử (BR-CARD-005, BR-CARD-018, A1).
+- [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** dòng thời gian hiện trạng thái rỗng có giải thích, không phải lỗi, và nội dung cùng trạng thái hiện tại vẫn hiện đủ (BR-CARD-018, A2).
+- [ ] **Given** người dùng đang ở chi tiết mở từ card list, **when** quay lại, **then** card list giữ nguyên filter, search, sort, cửa sổ đã tải và lựa chọn (BR-CARD-020).
+- [ ] **Given** đang ở chế độ chọn nhiều, **when** chạm một hàng, **then** hàng chỉ đổi trạng thái chọn, hệ thống không mở chi tiết (BR-CARD-020, A4).
+- [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** hệ thống nói rõ đã hết thay vì để một nút tải thêm không làm gì (A5).
+- [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở chi tiết, **then** hệ thống hiện mặt not-found kèm lối về danh sách, không màn trắng và không lộ id hay chi tiết kỹ thuật (BR-CARD-019, BR-CORE-005, E1).
+- [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** màn chuyển sang mặt not-found, và không có thao tác ghi nào từ đây (BR-CARD-013, BR-CARD-019, E2).
+- [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **then** hệ thống hiện mặt lỗi kèm Retry, ẩn nguyên nhân kỹ thuật, và Retry chạy lại đúng lần đọc đó (BR-CORE-005, E3).
+- [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** các event đã hiện giữ nguyên, chỉ cuối danh sách hiện lỗi kèm Retry, và Retry tiếp tục từ đúng con trỏ trước đó (BR-CARD-015, E4).
+- [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời màn hoặc yêu cầu tải thêm lần nữa trước khi nó về, **then** kết quả tới muộn bị bỏ qua và danh sách không bao giờ nối cùng một tập event hai lần (BR-CARD-015, E5).

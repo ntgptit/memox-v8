@@ -72,4 +72,14 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** nhiều root deck với card ở nhiều cấp, **when** danh sách deck tải hoặc phát lại, **then** mỗi lần phát chỉ chạy đúng một câu lệnh gộp theo `root_id`, không phải một câu mỗi deck, kể cả khi cây sâu nhiều cấp (BR-DECK-002, BR-DECK-003, A3).
+- [ ] **Given** deck có card mới, card đến hạn hôm nay và card quá hạn, **when** xem danh sách, **then** số New và số Due hiện tách biệt, không bao giờ gộp, và Due bằng Overdue cộng Due today (BR-STUDY-051).
+- [ ] **Given** cây có N card active trong đó M card `mastered`, **when** xem hàng deck, **then** thanh mastery vẽ theo tỉ lệ M/N và hàng đọc phần trăm cho trình đọc màn hình; deck không có card chỉ vẽ track và không đọc phần trăm (BR-DECK-026).
+- [ ] **Given** một card `mastered` đang ở Trash, **when** tính mastery của deck chứa nó, **then** card đó không được tính ở cả tử số lẫn mẫu số (BR-DECK-026).
+- [ ] **Given** một deck `content_type = 'deck'`, **when** mở nó, **then** màn hiện danh sách deck con; một deck `content_type = 'card'` thì hiện danh sách card; không màn nào hiện cả hai (BR-DECK-011).
+- [ ] **Given** không deck nào có card đến hạn, **when** xem danh sách, **then** trạng thái được trình bày bình thường, không phải lỗi (BR-STUDY-008).
+- [ ] **Given** chưa có deck nào, **when** mở danh sách, **then** hệ thống hiện empty state với hai lối: tạo deck mới và mở thư viện starter (A1).
+- [ ] **Given** danh sách đang mở, **when** dữ liệu đổi ở nơi khác (thêm card, card thành `mastered`, deck mới), **then** danh sách tự cập nhật mà không cần làm mới tay (A2).
+- [ ] **Given** các deck có mastery khác nhau và có deck không có card, **when** chọn sort Progress, **then** deck sắp theo mastery tăng dần, deck không có card đứng cuối, và hai deck bằng nhau giữ thứ tự thủ công (BR-DECK-027, A4).
+- [ ] **Given** bộ lọc chỉ-deck-có-thẻ-đến-hạn đang bật và không deck nào có thẻ đến hạn, **when** xem danh sách, **then** danh sách rỗng và nói rõ lý do (A4).
+- [ ] **Given** đọc dữ liệu lỗi, **when** tải danh sách, **then** hệ thống hiện lỗi bằng lời thường kèm Retry, và Retry tải lại (E1).

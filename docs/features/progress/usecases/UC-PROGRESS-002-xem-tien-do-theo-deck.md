@@ -82,4 +82,14 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 ## Acceptance criteria
 
-- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **then** cấp thư viện hiện bộ chọn 7/30 ngày, một bảng tổng cho toàn bộ dữ liệu, và một hàng cho mỗi root deck với bốn số của nó, sắp theo số thẻ đã học giảm dần rồi tên đã fold rồi id; deck chưa học vẫn hiện và đứng cuối (BR-PROGRESS-001, BR-PROGRESS-002, BR-PROGRESS-004, BR-PROGRESS-005, BR-PROGRESS-006).
+- [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** người dùng chạm "30 ngày", **then** mọi số và thứ tự danh sách đổi ngay sang khoảng 30 ngày, không có state loading (BR-PROGRESS-003).
+- [ ] **Given** người dùng chạm một hàng deck, **when** cấp của deck đó mở ra, **then** hệ thống hiện tổng của riêng subtree deck đó và một hàng cho mỗi deck con trực tiếp; back trả về đúng cấp vừa rời.
+- [ ] **Given** cấp của một deck đang mở, **when** một lượt học được ghi, một deck con đổi tên, hoặc deck bị xoá ở nơi khác, **then** các số trên màn tự cập nhật (BR-PROGRESS-008).
+- [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** mở cấp của deck đó, **then** hệ thống vẫn hiện bộ chọn và bảng tổng của chính deck đó kèm dòng nói rõ tổng ở trên đã là toàn bộ, không hiện danh sách hàng nào (A1).
+- [ ] **Given** thư viện chưa có deck nào, **when** mở tab Progress, **then** hệ thống chỉ hiện empty state, không hiện bộ chọn khoảng và không hiện bảng tổng (A2).
+- [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** đọc xong, **then** danh sách vẫn liệt kê đủ mọi deck với số 0, và bảng tổng có thêm dòng gợi ý đổi sang khoảng dài hơn (BR-PROGRESS-006, A3).
+- [ ] **Given** cấp thư viện hoặc cấp một deck đang mở gần nửa đêm, **when** local midnight trôi qua, **then** cửa sổ của khoảng đang chọn trượt một ngày và hệ thống tự đọc lại mà không có write nào trong database (BR-PROGRESS-003, BR-PROGRESS-008, A4).
+- [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** màn hình nhận lỗi, **then** hệ thống hiện mặt lỗi chung kèm Retry, và Retry đọc lại (E1).
+- [ ] **Given** deep link tới `/progress/:deckId` của một deck đã bị xoá, ở trong Trash, hoặc không tồn tại, **when** mở màn, **then** hệ thống hiện một empty state riêng chỉ với đường quay lại cấp thư viện, không hiện Retry (E2).
+- [ ] OPEN QUESTION: E1 nói lý do hiện ra được localize theo kiểu failure — code luôn hiện cùng một tiêu đề và thân lỗi chung (`progressErrorTitle`, `progressErrorBody`) bất kể kiểu failure (`lib/features/progress/presentation/screens/deck_progress_screen.dart:47-54`) (E1).
