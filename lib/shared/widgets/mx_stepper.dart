@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
@@ -242,6 +243,10 @@ class _StepButtonState extends State<_StepButton> {
   /// Set once a hold has stepped, so its release is not one more tap.
   var _hasRepeated = false;
 
+  /// Where the pointer went down: past touch slop from here it scrolls the
+  /// page, and a hold that the scroll view has taken must not repeat.
+  Offset? _downAt;
+
   @override
   void didUpdateWidget(_StepButton oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -254,9 +259,10 @@ class _StepButtonState extends State<_StepButton> {
     super.dispose();
   }
 
-  void _start(PointerDownEvent _) {
+  void _start(PointerDownEvent event) {
     _hasRepeated = false;
     _stop();
+    _downAt = event.position;
     if (widget.onPressed == null) return;
     _timer = Timer(AppDurations.stepperRepeatDelay, () {
       _repeat();
@@ -282,6 +288,14 @@ class _StepButtonState extends State<_StepButton> {
     _timer = null;
   }
 
+  /// The gesture arena sends no cancel to a raw listener when a scroll
+  /// wins, so the movement itself ends the hold.
+  void _move(PointerMoveEvent event) {
+    final downAt = _downAt;
+    if (downAt == null) return;
+    if ((event.position - downAt).distance > kTouchSlop) _stop();
+  }
+
   void _tap() {
     if (_hasRepeated) {
       _hasRepeated = false;
@@ -295,6 +309,7 @@ class _StepButtonState extends State<_StepButton> {
     final colors = context.colors;
     return Listener(
       onPointerDown: _start,
+      onPointerMove: _move,
       onPointerUp: _stop,
       onPointerCancel: _stop,
       child: Tooltip(
