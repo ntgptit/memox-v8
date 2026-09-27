@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.memox.deck.mapper.DeckSyncMapper">
+<mapper namespace="com.memox.deck.mapper.DeckMapper">
 
     <sql id="deckColumns">
         id, user_id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version,
@@ -28,25 +28,12 @@
         SELECT id, rel FROM sub ORDER BY rel, id
     </select>
 
-    <insert id="upsertDeck">
+    <insert id="insertDeck">
         INSERT INTO deck (<include refid="deckColumns"/>)
         VALUES (#{id}, #{userId}, #{name}, #{parentId}, #{rootId}, #{depth}, #{contentType}, #{schedulerType},
                 #{schedulerVersion}, #{schedulerConfig}, #{studyConfig}, #{generation}, #{firstAnsweredAt},
                 #{sourceTemplateId}, #{sourceTemplateVersion}, #{deleteBatchId}, #{siblingPosition}, #{createdAt},
                 #{updatedAt}, #{serverVersion}, #{lastDeviceId}, NULL)
-        ON CONFLICT (id) DO UPDATE SET
-            name = EXCLUDED.name, parent_id = EXCLUDED.parent_id, root_id = EXCLUDED.root_id,
-            depth = EXCLUDED.depth, content_type = EXCLUDED.content_type,
-            scheduler_type = EXCLUDED.scheduler_type, scheduler_version = EXCLUDED.scheduler_version,
-            scheduler_config = EXCLUDED.scheduler_config, study_config = EXCLUDED.study_config,
-            generation = EXCLUDED.generation, first_answered_at = EXCLUDED.first_answered_at,
-            source_template_id = EXCLUDED.source_template_id,
-            source_template_version = EXCLUDED.source_template_version,
-            delete_batch_id = EXCLUDED.delete_batch_id, sibling_position = EXCLUDED.sibling_position,
-            created_at = EXCLUDED.created_at, updated_at = EXCLUDED.updated_at,
-            server_version = EXCLUDED.server_version, last_device_id = EXCLUDED.last_device_id,
-            deleted_at = NULL
-        WHERE deck.user_id = EXCLUDED.user_id
     </insert>
 
     <update id="updateSubtreePlacement">
@@ -59,14 +46,6 @@
         WHERE deck.id = numbered.id
     </update>
 
-    <update id="tombstoneSubtree">
-        <include refid="liveSubtree"/>,
-        numbered AS (SELECT id, ROW_NUMBER() OVER (ORDER BY rel, id) AS rn FROM sub)
-        UPDATE deck
-        SET deleted_at = now(), server_version = #{firstVersion} + numbered.rn - 1, last_device_id = #{deviceId}
-        FROM numbered
-        WHERE deck.id = numbered.id
-    </update>
 
     <select id="findChangesSince" resultType="com.memox.deck.model.Deck">
         SELECT <include refid="deckColumns"/> FROM deck

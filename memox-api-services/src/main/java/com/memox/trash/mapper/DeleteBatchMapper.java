@@ -7,11 +7,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface DeleteBatchSyncMapper {
+public interface DeleteBatchMapper {
 
     DeleteBatch findDeleteBatchById(@Param("id") UUID id);
 
-    void upsertDeleteBatch(DeleteBatch batch);
+    void insertDeleteBatch(DeleteBatch batch);
 
     void tombstoneDeleteBatch(
             @Param("id") UUID id, @Param("serverVersion") long serverVersion, @Param("deviceId") UUID deviceId);

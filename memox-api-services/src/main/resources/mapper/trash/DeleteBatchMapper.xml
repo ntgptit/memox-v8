@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.memox.trash.mapper.DeleteBatchSyncMapper">
+<mapper namespace="com.memox.trash.mapper.DeleteBatchMapper">
 
     <sql id="columns">
         id, user_id, item_type, root_item_id, deleted_at, server_version, last_device_id, tombstoned_at
@@ -10,13 +10,9 @@
         SELECT <include refid="columns"/> FROM delete_batch WHERE id = #{id}
     </select>
 
-    <insert id="upsertDeleteBatch">
+    <insert id="insertDeleteBatch">
         INSERT INTO delete_batch (<include refid="columns"/>)
         VALUES (#{id}, #{userId}, #{itemType}, #{rootItemId}, #{deletedAt}, #{serverVersion}, #{lastDeviceId}, NULL)
-        ON CONFLICT (id) DO UPDATE SET
-            item_type = EXCLUDED.item_type, root_item_id = EXCLUDED.root_item_id,
-            deleted_at = EXCLUDED.deleted_at, server_version = EXCLUDED.server_version,
-            last_device_id = EXCLUDED.last_device_id, tombstoned_at = NULL
     </insert>
 
     <update id="tombstoneDeleteBatch">

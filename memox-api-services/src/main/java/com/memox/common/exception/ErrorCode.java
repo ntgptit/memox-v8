@@ -31,8 +31,7 @@ public enum ErrorCode {
     DECK_TREE_TOO_DEEP(HttpStatus.CONFLICT),
     DECK_PARENT_MISSING(HttpStatus.CONFLICT),
 
-    SYNC_ENTITY_CONFLICT(HttpStatus.CONFLICT),
-    SYNC_ENTITY_UNSUPPORTED(HttpStatus.BAD_REQUEST);
+    SYNC_ENTITY_CONFLICT(HttpStatus.CONFLICT);
 
     private static final String MESSAGE_KEY_PREFIX = "error.";
 
