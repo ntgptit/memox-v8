@@ -64,7 +64,7 @@ Quy ước:
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | API-A1 | Sync cho `deck` theo hàng (ADR-013 bước 2): Flyway `V1`, `V2`; `CurrentUserProvider` với user dev; `POST /api/v1/sync/push` idempotent theo `opId`, `GET /api/v1/sync/changes` phân trang theo `serverVersion`; cây deck do server suy ra; `SyncEntityHandler`; phần server của #114: Flyway `V3` (`delete_batch`, deck từ chối các hàng mà CHECK của app từ chối), `DeleteBatchSyncHandler` | xong | API-04, API-06 | L | [PR #110](https://github.com/ntgptit/memox-v8/pull/110), [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [plan](superpowers/plans/2026-09-27-api-deck-sync.md); `SyncApiIT`, `DeckSyncHandlerIT`, `SyncMappersIT`, `SyncOperationApplierConcurrencyIT`, `SchemaIT` | Upsert hàng của deck bị thay ở API-A2; phần hạ tầng giữ lại |
-| API-A2 | Giao thức lệnh, Deck và Card: push nhận `command` và `patch`, `current` là danh sách theo `affected`; handler theo `type`, `EntityReader` theo `entityType`; `DeckService` và `CardService` (một DTO cho REST và payload); bảng `card` (Flyway `V4`); 7 lệnh deck, 4 lệnh card, patch `study_options`, `content`, `flag`; `content_type` do server suy; tạo dưới cha trong Trash thì theo cha vào batch; NFC phía server; REST ghi và bốn endpoint đọc; `Idempotency-Key`; gỡ upsert hàng của deck và `delete_batch` | đang làm | API-A1 | XL | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) | Plan ba pha: giao thức + Deck → Card → REST |
+| API-A2 | Giao thức lệnh, Deck và Card: push nhận `command` và `patch`, `current` là danh sách theo `affected`; handler theo `type`, `EntityReader` theo `entityType`; `DeckService` và `CardService` (một DTO cho REST và payload); bảng `card` (Flyway `V4`); 7 lệnh deck, 4 lệnh card, patch `study_options`, `content`, `flag`; `content_type` do server suy; tạo dưới cha trong Trash thì theo cha vào batch; NFC phía server; REST ghi và bốn endpoint đọc; `Idempotency-Key`; gỡ upsert hàng của deck và `delete_batch` | xong | API-A1 | XL | [PR #118](https://github.com/ntgptit/memox-v8/pull/118); [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) | BE-E7 chuyển app sang lệnh |
 
 ### Nghiệp vụ
 
@@ -115,7 +115,7 @@ Không làm trước khi có sự kiện (`CLAUDE.md`, "No speculative structure
 
 Theo §9 của spec API authority:
 
-1. API-A2 (giao thức lệnh, Deck và Card), rồi BE-E7 ở phía app.
+1. BE-E7 ở phía app (API-A2 đã xong).
 2. API-B1, API-B2.
 3. API-C1 khi có spec auth.
 4. API-B3.
@@ -133,6 +133,8 @@ Theo §9 của spec API authority:
 - **Cập nhật ngày 2026-09-27:** API-A2 vào `đang làm` với [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md): gộp phần Card
   cần cho luật Deck (chủ dự án chọn), nên API-B1 chỉ còn tạo card theo lô; điểm chặn
   "lệnh tạo bị từ chối" đóng theo D4 (theo cha vào Trash).
+- **Cập nhật ngày 2026-09-27:** API-A2 xong (PR #118): giao thức lệnh, Deck, Card, REST ghi và
+  bốn endpoint đọc; `./mvnw -B verify` xanh (60 unit + 62 IT, coverage đạt).
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; `./mvnw verify` pass; có IT chứng minh
   hành vi chính, và REST với lệnh sync cho cùng kết quả.
