@@ -46,3 +46,8 @@
 - L50: 3. A `ready` UC whose section holds only OPEN QUESTION lines: the guard must
 - L203: OPEN QUESTION lines) from Step 2.
 - L227: - BE-D4 → `xong`; Bằng chứng: this plan, the guard, the count of OPEN QUESTION
+
+## [wbs_BE.md](../wbs_BE.md)
+
+- L131: | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | xong | — | M | [spec](../superpowers/specs/2026-09-27-local-backend-completion-design.md) §7 và [plan](../superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md) gói G4: 18 UC có tiêu chí Given/When/Then, mỗi tiêu chí đối chiếu với code và test; `tools/docs/check.py` báo lỗi khi một UC `ready` không có dòng Given/When/Then (`tools/docs/test_check.py`); 8 OPEN QUESTION ghi lệch giữa UC và code | Chủ dự án quyết 8 OPEN QUESTION (xem Ngữ cảnh cập nhật) |
+- L272: - **Cập nhật ngày 2026-09-27:** BE-D4 xong trong gói G4 của [spec hoàn tất backend local](../superpowers/specs/2026-09-27-local-backend-completion-design.md): 18 UC `ready` có acceptance criteria; chỉ dòng giữ chỗ của mỗi UC được thay. Tám chỗ UC và code lệch nhau được ghi thành OPEN QUESTION, không sửa bên nào: UC-DECK-001 A1 (Cancel không hỏi xác nhận) và E3 (`eight_box` được chọn sẵn); UC-DECK-006 (một mục Reorder kéo thả, không phải Move up/Move down); UC-STUDY-001 A4 (tổng kết không nêu số thẻ còn lại) và A5 (hiện tổng kết trước khi về danh sách); UC-STUDY-002 A4 (không có lối Starter Library); UC-STUDY-003 E1 (`modeNotOffered` hiện như lần mở thất bại chung); UC-PROGRESS-002 E1 (lỗi không theo kiểu failure). Điểm chặn BE-D4 đóng.
