@@ -3,6 +3,15 @@
 Status: approved 2026-09-27 · Path: architectural · Decision record:
 [ADR-013](../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)
 
+> **Amended 2026-09-27** by the
+> [API authority and command sync design](2026-09-27-api-authority-command-sync-design.md)
+> ([ADR-014](../../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md)):
+> push carries commands and field-group patches instead of row upserts (4.1,
+> 4.3), a pull run applies in one transaction (4.2), section 5 is replaced for
+> the data it covers, and section 6 is reversed: the server is the SRS
+> authority. Sections 2, 3, 7, 8 and 10 still hold where that design does not
+> say otherwise.
+
 ## 1. Intent
 
 MemoX becomes an online app with an official backend that stays fully usable

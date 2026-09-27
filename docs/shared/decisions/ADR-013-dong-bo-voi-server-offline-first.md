@@ -31,6 +31,11 @@ Thiết kế chi tiết nằm ở
 | 9 | Xoá | Server lưu tombstone (`deleted_at`). Purge local vẫn xoá hàng như cũ, nhưng kèm một thao tác `delete` trong outbox |
 | 10 | Không sync | `study_session`, `study_queue_items`, `study_guess_options` và setting theo máy (nhắc nhở). Phiên đang học dở gắn với máy đang học; các review đã xong vẫn sync qua `review_log` |
 
+> Dòng #1 (phần server là chuẩn), #2, #4 (phần push), #5 và #8 đã được sửa bởi
+> [ADR-014](ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) (2026-09-27): API là
+> backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái, server là chuẩn
+> của SRS.
+
 ## Hệ quả
 
 - ADR này thay các dòng *Data posture* ("local-only, không network") và
