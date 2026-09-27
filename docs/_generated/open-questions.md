@@ -8,27 +8,12 @@
 
 ## [features/deck/usecases/UC-DECK-001-tao-root-deck.md](../features/deck/usecases/UC-DECK-001-tao-root-deck.md)
 
-- L58: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md)
-
-- L95: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md)
-
-- L75: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md](../features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md)
-
-- L81: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
-
-## [features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md](../features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md)
-
-- L81: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L64: - [ ] OPEN QUESTION: A1 nói huỷ khi đã nhập dữ liệu thì hỏi xác nhận trước khi bỏ — nút Cancel đóng dialog ngay, không hỏi (`lib/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart:117`) (A1).
+- L65: - [ ] OPEN QUESTION: bước 2 và E3 nói chế độ ôn tập bắt buộc chọn, không có mặc định ngầm, và chưa chọn thì báo lỗi — dialog chọn sẵn `eight_box` (`create_root_deck_dialog_widget.dart:41`), nên người dùng tạo được deck mà không chọn và E3 không xảy ra được (BR-SRS-001, E3).
 
 ## [features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md)
 
-- L56: - [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.
+- L63: - [ ] OPEN QUESTION: Trigger và UI nói action sheet có Move up và Move down, ẩn riêng ở deck đầu và deck cuối — action sheet có một mục Reorder mở chế độ kéo thả (`lib/features/deck/presentation/widgets/overlays/deck_action_sheet_widget.dart:163`), move up và move down chỉ là action của TalkBack (`test/features/deck/presentation/deck_reorder_test.dart`).
 
 ## [features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md](../features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md)
 
