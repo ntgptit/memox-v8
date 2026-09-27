@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:memox/core/database/sync_change_collector.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/schema_versions.dart';
 
@@ -26,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -89,8 +90,25 @@ class AppDatabase extends _$AppDatabase {
         // 2026-09-27 §4).
         await normalizeStoredText(this);
       },
+      from5To6: (m, schema) async {
+        // BE-E7 (app command sync spec §3): commands replace row capture.
+        // The old outbox holds row upserts the server no longer accepts.
+        for (final trigger in _rowSyncTriggers) {
+          await customStatement('DROP TRIGGER IF EXISTS $trigger');
+        }
+        await m.deleteTable('sync_outbox');
+        await m.createTable(schema.syncOutbox);
+        await m.createIndex(schema.idxSyncOutboxPatch);
+        await m.addColumn(schema.card, schema.card.serverVersion);
+        await customStatement(
+          "INSERT OR REPLACE INTO sync_state (name, value) VALUES ('since', '0')",
+        );
+      },
     ),
     beforeOpen: (details) async {
+      for (final statement in syncChangeCollectorStatements()) {
+        await customStatement(statement);
+      }
       await customStatement('PRAGMA foreign_keys = ON');
       // BR-SETTINGS-001: the one settings row exists from the first open, so
       // every surface reads real values. It changes nothing once it exists.
@@ -117,3 +135,13 @@ String _seedOutbox(String entityType, String table, String order) =>
     "substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), "
     "'$entityType', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER) "
     'FROM $table ORDER BY $order';
+
+/// The capture triggers of #114 (app deck-sync spec §3), dropped in v6.
+const _rowSyncTriggers = [
+  'deck_sync_insert',
+  'deck_sync_update',
+  'deck_sync_delete',
+  'delete_batches_sync_insert',
+  'delete_batches_sync_update',
+  'delete_batches_sync_delete',
+];

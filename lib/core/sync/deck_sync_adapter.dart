@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
+import 'package:memox/core/sync/sync_outbox.dart';
 
 /// Syncs `deck`. The server derives rootId and depth; the pulled values are
 /// written as they come.
@@ -13,36 +14,6 @@ class DeckSyncAdapter implements EntitySyncAdapter {
 
   @override
   String get entityType => type;
-
-  @override
-  Future<Map<String, Object?>?> readRow(String id) async {
-    final deck = await (_db.select(
-      _db.deck,
-    )..where((d) => d.id.equals(id))).getSingleOrNull();
-    if (deck == null) {
-      return null;
-    }
-    return {
-      'id': deck.id,
-      'name': deck.name,
-      'parentId': deck.parentId,
-      'rootId': deck.rootId,
-      'depth': deck.depth,
-      'contentType': deck.contentType,
-      'schedulerType': deck.schedulerType,
-      'schedulerVersion': deck.schedulerVersion,
-      'schedulerConfig': deck.schedulerConfig,
-      'studyConfig': deck.studyConfig,
-      'generation': deck.generation,
-      'firstAnsweredAt': _time(deck.firstAnsweredAt),
-      'sourceTemplateId': deck.sourceTemplateId,
-      'sourceTemplateVersion': deck.sourceTemplateVersion,
-      'deleteBatchId': deck.deleteBatchId,
-      'siblingPosition': deck.siblingPosition,
-      'createdAt': _time(deck.createdAt),
-      'updatedAt': _time(deck.updatedAt),
-    };
-  }
 
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
@@ -79,13 +50,13 @@ class DeckSyncAdapter implements EntitySyncAdapter {
       (_db.delete(_db.deck)..where((d) => d.id.equals(id))).go();
 
   @override
-  Future<void> markAcknowledged(String id, int serverVersion) =>
-      (_db.update(_db.deck)..where((d) => d.id.equals(id))).write(
-        DeckCompanion(serverVersion: Value(serverVersion)),
-      );
-
-  /// Drift stores whole seconds; the wire drops the fractional part so a
-  /// round-trip is exact.
-  static String? _time(DateTime? value) =>
-      toWireTime(value)?.replaceFirst(RegExp(r'\.\d+Z$'), 'Z');
+  Future<Map<String, Object?>?> readPatch(String id, String group) async {
+    if (group != SyncPatchGroup.studyOptions) {
+      return null;
+    }
+    final deck = await (_db.select(
+      _db.deck,
+    )..where((d) => d.id.equals(id))).getSingleOrNull();
+    return deck == null ? null : {'studyConfig': deck.studyConfig};
+  }
 }

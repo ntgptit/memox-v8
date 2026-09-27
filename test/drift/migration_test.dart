@@ -9,7 +9,8 @@ import 'generated/schema.dart';
 // BE-D1: every schema version upgrades to the current one, with its rows and
 // their values intact (spec §5.3; .claude/skills/flutter-drift/references/
 // migrations.md). v3 is the Trash's (trash spec §5.3); v4 is sync's (ADR-013);
-// v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4).
+// v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4);
+// v6 moves sync to commands (BE-E7).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -109,66 +110,70 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v5', () async {
+  test('v1 upgrades to the schema of v6', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
   });
 
-  test('v2 upgrades to the schema of v5', () async {
+  test('v2 upgrades to the schema of v6', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
   });
 
-  test('v3 upgrades to the schema of v5', () async {
+  test('v3 upgrades to the schema of v6', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
   });
 
-  test('v4 upgrades to the schema of v5', () async {
+  test('v4 upgrades to the schema of v6', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
+  });
+
+  test('v5 upgrades to the schema of v6 without the row triggers', () async {
+    final db = AppDatabase(await verifier.startAt(5));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 6);
+    final triggers = await db
+        .customSelect(
+          "SELECT name FROM sqlite_master WHERE type = 'trigger' AND name LIKE '%_sync_%'",
+        )
+        .get();
+    expect(triggers, isEmpty);
+  });
+
+  test('the old row outbox is dropped and the cursor restarts', () async {
+    final schema = await verifier.schemaAt(3);
+    for (final statement in _v1Rows.where(
+      (s) => s.startsWith('INSERT INTO deck'),
+    )) {
+      schema.rawDatabase.execute(statement);
+    }
+    schema.rawDatabase.execute(
+      "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('B', 'deck', 'R1', 0)",
+    );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 6);
+
+    final queued = await db.select(db.syncOutbox).get();
+    expect(queued.where((e) => e.kind != 'command'), isEmpty);
+    final since = await (db.select(
+      db.syncState,
+    )..where((s) => s.name.equals('since'))).getSingle();
+    expect(since.value, '0');
   });
 
   test(
-    'a v3 database queues its batches and decks for the first sync',
-    () async {
-      final schema = await verifier.schemaAt(3);
-      for (final statement in _v1Rows.where(
-        (s) => s.startsWith('INSERT INTO deck'),
-      )) {
-        schema.rawDatabase.execute(statement);
-      }
-      schema.rawDatabase.execute(
-        "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('B', 'deck', 'R1', 0)",
-      );
-      final db = AppDatabase(schema.newConnection());
-      addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 5);
-
-      final queued = await db
-          .customSelect(
-            'SELECT entity_type, entity_id FROM sync_outbox ORDER BY created_at, rowid',
-          )
-          .get();
-      expect(queued.first.read<String>('entity_type'), 'delete_batch');
-      expect(
-        queued.skip(1).map((r) => r.read<String>('entity_id')).take(2).toSet(),
-        {'R', 'S'},
-      );
-      expect(queued, hasLength(5));
-    },
-  );
-
-  test(
-    'a new database has the schema of v5, the one an upgrade ends at',
+    'a new database has the schema of v6, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 5);
+      await verifier.migrateAndValidate(db, 6);
     },
   );
 
@@ -186,7 +191,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 5);
+      await verifier.migrateAndValidate(db, 6);
     });
     tearDown(() => db.close());
 
@@ -249,7 +254,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 5);
+      await verifier.migrateAndValidate(db, 6);
     });
     tearDown(() => db.close());
 

@@ -2,81 +2,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/sync_models.dart';
 
 void main() {
-  test('reads a push response with a rejection carrying the server copy', () {
-    final response = PushResponseModel.fromJson({
-      'results': [
+  test('a command operation leaves the patch fields out', () {
+    const op = SyncOperationModel(
+      opId: 'o1',
+      kind: 'command',
+      type: 'RENAME_DECK',
+      payload: {'deckId': 'R', 'name': 'n'},
+      affected: [
+        {'entityType': 'deck', 'entityId': 'R'},
+      ],
+    );
+    expect(op.toJson(), {
+      'opId': 'o1',
+      'kind': 'command',
+      'type': 'RENAME_DECK',
+      'payload': {'deckId': 'R', 'name': 'n'},
+      'affected': [
+        {'entityType': 'deck', 'entityId': 'R'},
+      ],
+    });
+  });
+
+  test('a rejection carries the list of current copies', () {
+    final result = OperationResultModel.fromJson({
+      'opId': 'o1',
+      'status': 'rejected',
+      'serverVersion': null,
+      'code': 'DECK_TREE_CYCLE',
+      'current': [
         {
-          'opId': 'a',
-          'status': 'applied',
+          'entityType': 'deck',
+          'entityId': 'R',
           'serverVersion': 3,
-          'code': null,
-          'current': null,
+          'deleted': false,
+          'row': {'id': 'R'},
         },
-        {
-          'opId': 'b',
-          'status': 'rejected',
-          'serverVersion': null,
-          'code': 'DECK_TREE_CYCLE',
-          'current': {
-            'entityType': 'deck',
-            'entityId': 'x',
-            'serverVersion': 2,
-            'deleted': false,
-            'row': {'id': 'x', 'name': 'X'},
-          },
-        },
-      ],
-    });
-
-    expect(response.results.first.serverVersion, 3);
-    expect(response.results.last.code, 'DECK_TREE_CYCLE');
-    expect(response.results.last.current!.row!['name'], 'X');
-  });
-
-  test('writes a push request in the wire shape', () {
-    final json = const PushRequestModel(
-      deviceId: 'd',
-      operations: [
-        SyncOperationModel(
-          opId: 'o',
-          entityType: 'deck',
-          entityId: 'x',
-          op: 'delete',
-          row: null,
-        ),
-      ],
-    ).toJson();
-
-    expect(json, {
-      'deviceId': 'd',
-      'operations': [
-        {
-          'opId': 'o',
-          'entityType': 'deck',
-          'entityId': 'x',
-          'op': 'delete',
-          'row': null,
-        },
-      ],
-    });
-  });
-
-  test('reads a changes page', () {
-    final page = ChangesResponseModel.fromJson({
-      'changes': [
         {
           'entityType': 'deck',
-          'entityId': 'x',
-          'serverVersion': 7,
+          'entityId': 'N',
+          'serverVersion': 0,
           'deleted': true,
           'row': null,
         },
       ],
-      'nextSince': 7,
-      'hasMore': false,
     });
-
-    expect(page.changes.single.isDeleted, isTrue);
-    expect(page.nextSince, 7);
+    expect(result.isApplied, isFalse);
+    expect(result.current!.map((c) => c.isAbsent), [false, true]);
   });
 }

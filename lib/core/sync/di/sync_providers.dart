@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/di/network_providers.dart';
+import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
@@ -21,7 +22,11 @@ SyncScheduler? syncScheduler(Ref ref) {
   final coordinator = SyncCoordinator(
     api: ref.watch(syncApiProvider),
     store: store,
-    adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db)],
+    adapters: [
+      DeckSyncAdapter(db),
+      DeleteBatchSyncAdapter(db),
+      CardSyncAdapter(db),
+    ],
   );
   final online = Connectivity().onConnectivityChanged
       .where((results) => !results.contains(ConnectivityResult.none))

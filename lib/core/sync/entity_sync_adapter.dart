@@ -1,20 +1,18 @@
-/// How one synced table is read for push and written from the server. The
-/// coordinator never names a table (app deck-sync spec §5).
+/// How one synced table is written from the server and read for a patch. The
+/// coordinator never names a table (BE-E7 spec §5).
 abstract class EntitySyncAdapter {
   String get entityType;
 
-  /// The row in wire shape (camelCase keys, ISO-8601 UTC times), or null when
-  /// it no longer exists.
-  Future<Map<String, Object?>?> readRow(String id);
-
-  /// Writes a server row. Called only inside `SyncStore.applyingRemote`.
+  /// Writes a server row. Called only inside `SyncStore.applyingServer`.
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion);
 
   /// Deletes a row the server tombstoned; local cascades follow.
   Future<void> deleteFromServer(String id);
 
-  /// Records the version the server gave to the pushed state.
-  Future<void> markAcknowledged(String id, int serverVersion);
+  /// The current fields of [group] for a patch, or null when the entity is
+  /// gone or has no such group.
+  Future<Map<String, Object?>?> readPatch(String id, String group) async =>
+      null;
 }
 
 /// Wire time: ISO-8601 in UTC (ADR-008).

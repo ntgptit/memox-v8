@@ -2,26 +2,35 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'sync_models.g.dart';
 
-/// The sync wire format (server-sync spec §4). `row` stays a map: each
-/// EntitySyncAdapter converts its own table.
-@JsonSerializable()
+/// The sync wire format (API-A2 spec §4).
+/// One push operation (API-A2 spec §4.1): a command, or a patch of one
+/// field group. Null fields are left out.
+@JsonSerializable(includeIfNull: false)
 class SyncOperationModel {
   const SyncOperationModel({
     required this.opId,
-    required this.entityType,
-    required this.entityId,
-    required this.op,
-    required this.row,
+    required this.kind,
+    this.type,
+    this.entityType,
+    this.entityId,
+    this.group,
+    this.payload,
+    this.fields,
+    this.affected = const [],
   });
 
   factory SyncOperationModel.fromJson(Map<String, Object?> json) =>
       _$SyncOperationModelFromJson(json);
 
   final String opId;
-  final String entityType;
-  final String entityId;
-  final String op;
-  final Map<String, Object?>? row;
+  final String kind;
+  final String? type;
+  final String? entityType;
+  final String? entityId;
+  final String? group;
+  final Map<String, Object?>? payload;
+  final Map<String, Object?>? fields;
+  final List<Map<String, Object?>> affected;
 
   Map<String, Object?> toJson() => _$SyncOperationModelToJson(this);
 }
@@ -59,6 +68,9 @@ class SyncChangeModel {
   final bool isDeleted;
   final Map<String, Object?>? row;
 
+  /// An id the server never stored (API-A2 `SyncChange.absent`).
+  bool get isAbsent => serverVersion == 0 && row == null;
+
   Map<String, Object?> toJson() => _$SyncChangeModelToJson(this);
 }
 
@@ -81,7 +93,7 @@ class OperationResultModel {
   final String status;
   final int? serverVersion;
   final String? code;
-  final SyncChangeModel? current;
+  final List<SyncChangeModel>? current;
 
   bool get isApplied => status == applied;
 
