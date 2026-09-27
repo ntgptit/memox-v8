@@ -11,7 +11,8 @@ spring:
       enabled: true
 
 mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
+  # classpath*: scans every root (main and test classes); classpath: stops at the first one that has mapper/.
+  mapper-locations: classpath*:mapper/**/*.xml
   type-handlers-package: com.memox.common.type_handler
   configuration:
     map-underscore-to-camel-case: true
