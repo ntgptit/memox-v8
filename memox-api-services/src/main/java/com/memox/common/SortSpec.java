@@ -1,7 +1,6 @@
 package com.memox.common;
 
 import jakarta.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +18,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SortSpec<TSort extends Enum<TSort>> {
 
-	@NotNull
-	private TSort field;
+    @NotNull
+    private TSort field;
 
-	@NotNull
-	private SortDirection direction = SortDirection.ASC;
-
+    @NotNull
+    private SortDirection direction = SortDirection.ASC;
 }

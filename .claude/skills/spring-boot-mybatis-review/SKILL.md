@@ -30,15 +30,17 @@ Controller → Service (interface) → ServiceImpl → Mapper (+ XML) → Databa
 
 ## Review order and severity
 
-Read the flow end to end first: Controller → Request DTO → Service → ServiceImpl → Mapper → Mapper XML → TypeHandler → DB → Response DTO.
+First question, before anything else: **does this change re-implement something the base already provides?** If the project documents its base (for example a README "Base" or "Foundation" section, or a `common` package), read it first. A feature's own paging DTO, error envelope, `try/catch` returning `ResponseEntity`, request-ID handling or string/collection helper is a finding: MEDIUM, or HIGH when it duplicates exception handling or pagination (two behaviours for the same concern). The fix is always "use the base", never "extend the duplicate".
+
+Then read the flow end to end: Controller → Request DTO → Service → ServiceImpl → Mapper → Mapper XML → TypeHandler → DB → Response DTO.
 
 Priority: Correctness → Security → Data integrity → Transaction → Performance → Architecture → SOLID → Maintainability → Design pattern → Readability → Style.
 
 | Severity | Use for |
 |---|---|
 | 🔴 CRITICAL | SQL injection (`${}` on user input), data corruption, security hole / sensitive-data leak, wrong transaction (swallowed exception → partial commit), wrong business logic, serious race condition (read-modify-write stock/balance) |
-| 🟠 HIGH | N+1 / query in loop, full-table load, serious full scan (function on indexed column), excessive DB calls, wrong transaction boundary, **layer violation** (Controller → Mapper), in-memory pagination, God class |
-| 🟡 MEDIUM | SOLID violation hurting maintainability, big `if/switch` by type that keeps growing, SDK coupling, Model used as request/response DTO, magic strings instead of enum, wrong/missing TypeHandler, custom utility duplicating Apache Commons, hand-rolled CSV parsing, pass-through Repository, poor packages, changed ServiceImpl logic without a unit test or changed Mapper SQL without a Testcontainers integration test |
+| 🟠 HIGH | N+1 / query in loop, full-table load, serious full scan (function on indexed column), excessive DB calls, wrong transaction boundary, **layer violation** (Controller → Mapper), in-memory pagination, God class, duplicating the base's exception handling or pagination |
+| 🟡 MEDIUM | SOLID violation hurting maintainability, big `if/switch` by type that keeps growing, SDK coupling, Model used as request/response DTO, magic strings instead of enum, wrong/missing TypeHandler, custom utility duplicating Apache Commons, hand-rolled CSV parsing, pass-through Repository, poor packages, changed ServiceImpl logic without a unit test or changed Mapper SQL without a Testcontainers integration test, re-implementing another base facility, scattered @Value instead of @ConfigurationProperties |
 | 🔵 LOW | a better pattern exists but current code is simple, naming, formatting, comments, style |
 
 ## Output contract

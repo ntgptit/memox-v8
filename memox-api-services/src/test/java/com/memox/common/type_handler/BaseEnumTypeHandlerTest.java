@@ -10,100 +10,95 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
-
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.type.JdbcType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 class BaseEnumTypeHandlerTest {
 
-	private static final String COLUMN = "status";
+    private static final String COLUMN = "status";
 
-	private final SampleStatusTypeHandler handler = new SampleStatusTypeHandler();
+    private final SampleStatusTypeHandler handler = new SampleStatusTypeHandler();
 
-	@Getter
-	@RequiredArgsConstructor
-	private enum DuplicateCode implements CodeEnum {
+    @Getter
+    @RequiredArgsConstructor
+    private enum DuplicateCode implements CodeEnum {
+        FIRST("X"),
 
-		FIRST("X"),
+        SECOND("X");
 
-		SECOND("X");
+        private final String code;
+    }
 
-		private final String code;
+    @Test
+    void writesTheCodeNotTheName() throws Exception {
+        PreparedStatement statement = mock(PreparedStatement.class);
 
-	}
+        handler.setParameter(statement, 1, SampleStatus.ACTIVE, null);
 
-	@Test
-	void writesTheCodeNotTheName() throws Exception {
-		PreparedStatement statement = mock(PreparedStatement.class);
+        verify(statement).setString(1, "A");
+    }
 
-		handler.setParameter(statement, 1, SampleStatus.ACTIVE, null);
+    @Test
+    void writesNullAsSqlNull() throws Exception {
+        PreparedStatement statement = mock(PreparedStatement.class);
 
-		verify(statement).setString(1, "A");
-	}
+        handler.setParameter(statement, 1, null, JdbcType.VARCHAR);
 
-	@Test
-	void writesNullAsSqlNull() throws Exception {
-		PreparedStatement statement = mock(PreparedStatement.class);
+        verify(statement).setNull(1, Types.VARCHAR);
+    }
 
-		handler.setParameter(statement, 1, null, JdbcType.VARCHAR);
+    @Test
+    void readsTheConstantForItsCodeByColumnName() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(COLUMN)).thenReturn("I");
 
-		verify(statement).setNull(1, Types.VARCHAR);
-	}
+        assertThat(handler.getResult(resultSet, COLUMN)).isEqualTo(SampleStatus.INACTIVE);
+    }
 
-	@Test
-	void readsTheConstantForItsCodeByColumnName() throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(resultSet.getString(COLUMN)).thenReturn("I");
+    @Test
+    void readsTheConstantForItsCodeByColumnIndex() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(1)).thenReturn("A");
 
-		assertThat(handler.getResult(resultSet, COLUMN)).isEqualTo(SampleStatus.INACTIVE);
-	}
+        assertThat(handler.getResult(resultSet, 1)).isEqualTo(SampleStatus.ACTIVE);
+    }
 
-	@Test
-	void readsTheConstantForItsCodeByColumnIndex() throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(resultSet.getString(1)).thenReturn("A");
+    @Test
+    void readsTheConstantFromACallableStatement() throws Exception {
+        CallableStatement statement = mock(CallableStatement.class);
+        when(statement.getString(2)).thenReturn("A");
 
-		assertThat(handler.getResult(resultSet, 1)).isEqualTo(SampleStatus.ACTIVE);
-	}
+        assertThat(handler.getResult(statement, 2)).isEqualTo(SampleStatus.ACTIVE);
+    }
 
-	@Test
-	void readsTheConstantFromACallableStatement() throws Exception {
-		CallableStatement statement = mock(CallableStatement.class);
-		when(statement.getString(2)).thenReturn("A");
+    @Test
+    void readsSqlNullAsNull() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(COLUMN)).thenReturn(null);
 
-		assertThat(handler.getResult(statement, 2)).isEqualTo(SampleStatus.ACTIVE);
-	}
+        assertThat(handler.getResult(resultSet, COLUMN)).isNull();
+    }
 
-	@Test
-	void readsSqlNullAsNull() throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(resultSet.getString(COLUMN)).thenReturn(null);
+    @ParameterizedTest
+    @ValueSource(strings = {"X", "a", "ACTIVE", ""})
+    void rejectsAnUnknownCodeNamingTheEnum(String storedCode) throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(COLUMN)).thenReturn(storedCode);
 
-		assertThat(handler.getResult(resultSet, COLUMN)).isNull();
-	}
+        assertThatThrownBy(() -> handler.getResult(resultSet, COLUMN))
+                .hasRootCauseInstanceOf(IllegalArgumentException.class)
+                .hasRootCauseMessage("Unknown SampleStatus code: '" + storedCode + "'");
+    }
 
-	@ParameterizedTest
-	@ValueSource(strings = { "X", "a", "ACTIVE", "" })
-	void rejectsAnUnknownCodeNamingTheEnum(String storedCode) throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(resultSet.getString(COLUMN)).thenReturn(storedCode);
-
-		assertThatThrownBy(() -> handler.getResult(resultSet, COLUMN))
-			.hasRootCauseInstanceOf(IllegalArgumentException.class)
-			.hasRootCauseMessage("Unknown SampleStatus code: '" + storedCode + "'");
-	}
-
-	@Test
-	void rejectsAnEnumWithDuplicateCodesWhenBuilt() {
-		// Anonymous on purpose: MyBatis's handler package scan skips anonymous classes, so this deliberately broken
-		// handler never reaches the MyBatisBaseIT context.
-		assertThatThrownBy(() -> new BaseEnumTypeHandler<DuplicateCode>(DuplicateCode.class) {
-		}).isInstanceOf(IllegalStateException.class);
-	}
-
+    @Test
+    void rejectsAnEnumWithDuplicateCodesWhenBuilt() {
+        // Anonymous on purpose: MyBatis's handler package scan skips anonymous classes, so this deliberately broken
+        // handler never reaches the MyBatisBaseIT context.
+        assertThatThrownBy(() -> new BaseEnumTypeHandler<DuplicateCode>(DuplicateCode.class) {})
+                .isInstanceOf(IllegalStateException.class);
+    }
 }

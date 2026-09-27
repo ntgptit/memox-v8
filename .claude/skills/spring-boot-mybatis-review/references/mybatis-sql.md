@@ -16,6 +16,10 @@
 
 A Mapper does database access only. Called from ServiceImpl, never from Controller.
 
+Do not set `mybatis.type-aliases-package` to the whole application package: MyBatis aliases by simple class
+name, and two classes with the same simple name in different features stop the application from starting.
+Use fully qualified names in mapper XML.
+
 ## 2. SQL-first and CTE
 
 The database does filtering, joining, grouping, aggregation, sorting, counting, ranking, partitioning, pagination and
