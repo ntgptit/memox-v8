@@ -361,11 +361,16 @@ $$;
 create function private.push_one(p_user uuid, p_device uuid, p_op jsonb) returns jsonb
 language plpgsql set search_path = '' as $$
 declare
-  v_op_id uuid := (p_op->>'opId')::uuid;
+  -- Parsed safely: a failure here would escape this block's handler and fail the whole batch.
+  v_op_id uuid := private.try_uuid(p_op->>'opId');
   v_type text := p_op->>'entityType';
   v_version bigint;
   v_code text;
 begin
+  if v_op_id is null then
+    return jsonb_build_object('opId', p_op->>'opId', 'status', 'rejected', 'serverVersion', null,
+      'code', 'VALIDATION_FAILED', 'current', null);
+  end if;
   select server_version into v_version from public.sync_applied_op where user_id = p_user and op_id = v_op_id;
   if found then
     return jsonb_build_object('opId', p_op->>'opId', 'status', 'applied', 'serverVersion', v_version,

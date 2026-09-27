@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(32);
 
 -- Test helpers, created inside the rolled-back transaction.
 create function public.t_uuid(n int) returns uuid language sql immutable as $$
@@ -94,6 +94,12 @@ select is((select (r->0->>'status') || '/' || (r->1->>'code') || '/' || (public.
     public.t_op(17, 'deck', public.t_uuid(50), 'upsert', public.t_root(public.t_uuid(50))),
     public.t_op(18, 'deck', public.t_uuid(51), 'upsert', public.t_root(public.t_uuid(52))))) r),
   'applied/VALIDATION_FAILED/true', 'a rejected operation does not undo the one before it');
+
+select is((select (r->0->>'status') || '/' || (r->1->>'code') || '/' || (public.t_change(public.t_uuid(60)) is not null)::text
+  from public.t_push(jsonb_build_array(
+    public.t_op(21, 'deck', public.t_uuid(60), 'upsert', public.t_root(public.t_uuid(60))),
+    public.t_op(22, 'deck', public.t_uuid(61), 'upsert', public.t_root(public.t_uuid(61))) || '{"opId":"not-a-uuid"}')) r),
+  'applied/VALIDATION_FAILED/true', 'a malformed opId is rejected alone, not the whole batch');
 
 -- Delete tombstones the live subtree, one version per row; resurrection clears it.
 select is(public.t_push(jsonb_build_array(public.t_op(19, 'deck', public.t_uuid(10), 'delete', null)))->0->>'status',
