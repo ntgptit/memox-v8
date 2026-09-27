@@ -8,7 +8,7 @@ Each layer answers one question; none takes over another's.
 |---|---|---|
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
-| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, this file |
+| Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
 | ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
@@ -117,7 +117,10 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   not BLoC, Dio or Freezed.
 - **Java/Spring skills wait for a backend.** V8.0 is local-only (ADR-001), so
   it has no backend to use them on yet. They apply once a server-side
-  sub-project starts, under that sub-project's ADRs.
+  sub-project starts, under that sub-project's ADRs. For Spring Boot +
+  MyBatis code, the repo's own `spring-boot-mybatis-review` skill holds the
+  conventions and review checklist; it wins over the ECC `springboot-*` and
+  `jpa-patterns` skills.
 - **Skills only.** ECC's agents, rules, hooks, commands and memory are not
   used here. A plan task never delegates to an ECC agent; its implementer
   reads the relevant skill instead.
