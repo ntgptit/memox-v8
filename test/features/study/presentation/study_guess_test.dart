@@ -226,6 +226,8 @@ void main() {
 
       await tester.tap(find.text(_en.studySessionClose));
       await tester.pumpAndSettle();
+      await tester.tap(find.text(_en.studyExitStop));
+      await tester.pumpAndSettle();
 
       expect(
         (await sessionOf(env.db, id)).read<String>('end_reason'),

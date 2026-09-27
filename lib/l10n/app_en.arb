@@ -5408,5 +5408,21 @@
   "studyOptionsSaved": "Saved · applies to the next session",
   "@studyOptionsSaved": {
     "description": "Screen handoff 15 (FE-A3 plan 2): toast after a save."
+  },
+  "studyExitTitle": "Stop this session?",
+  "@studyExitTitle": {
+    "description": "The exit confirm dialog title (spec D8, owner ruling 2026-09-27)."
+  },
+  "studyExitBody": "Everything you answered is kept. Cards you haven't reached stay as they were.",
+  "@studyExitBody": {
+    "description": "The exit confirm dialog body."
+  },
+  "studyExitKeep": "Keep studying",
+  "@studyExitKeep": {
+    "description": "The exit confirm dialog: stay in the session."
+  },
+  "studyExitStop": "Stop",
+  "@studyExitStop": {
+    "description": "The exit confirm dialog: stop the session."
   }
 }
