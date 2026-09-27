@@ -41,8 +41,10 @@ Presentation → UseCase → Repository (domain contract)
   of that user's devices.
 - **Drift** is each device's durable operational store. The app always reads
   and writes it, online or offline; it is never cleared as a cache.
-- **Write path:** a repository writes the row and one `sync_outbox` entry in
-  the same Drift transaction. The UI updates from Drift's `watch()` at once.
+- **Write path:** SQLite triggers on each synced table write the
+  `sync_outbox` entry in the writer's own transaction, whichever code path
+  wrote the row (see the [app deck-sync design](2026-09-27-app-deck-sync-design.md)).
+  The UI updates from Drift's `watch()` at once.
 - **`SyncCoordinator`** (in `data/`, one per app, with a `keepAlive`
   provider) runs push and then pull. It runs at app start, when connectivity
   returns, and after local writes, debounced by 2 seconds. Only one run is in
@@ -188,9 +190,15 @@ created_at DATETIME, attempts INTEGER)`
   holding `device_id` and the `since` cursor.
 - New column `server_version INTEGER NULL` on each synced table. `NULL` means
   never acknowledged by the server.
-- Repositories of synced features write the outbox entry in the same
-  transaction as the row. Trash purge adds `delete` entries for every purged
-  row before deleting them.
+- Triggers on synced tables write the outbox entry in the same transaction
+  as the row, purge and cascades included. Every write sets a fresh `op_id`,
+  and an acknowledgement deletes the entry only if its `op_id` is unchanged.
+  Writes that apply server data run under `sync_state.applying_remote`, which
+  the triggers skip.
+- Text pushed is already NFC: migration v4 → v5 and every write normalise it
+  (BE-C5), so the server compares strings as stored. The v4 → v5 step
+  rewrites deck names under the capture triggers, so a renamed deck is queued
+  and its NFC name reaches the server.
 
 ## 9. Rollout
 

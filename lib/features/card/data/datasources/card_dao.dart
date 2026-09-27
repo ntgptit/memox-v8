@@ -4,6 +4,7 @@ import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
+import 'package:memox/core/text/stored_text.dart';
 
 /// Row access for `card`, plus the reads and writes of the owning `deck` row
 /// that card writes need. It returns Drift rows, never domain entities, and
@@ -210,21 +211,16 @@ final class CardDao {
           );
 }
 
-/// The columns a draft sets: sides trimmed with their folded forms computed
-/// in Dart (schema.md), blank optional fields stored as null.
+/// The columns a draft sets: sides in their stored form (trimmed, NFC) with
+/// their folded forms computed in Dart (schema.md), blank optional fields
+/// stored as null (BE-C5).
 CardCompanion _contentOf(CardDraft draft) => CardCompanion(
-  front: Value(draft.front.trim()),
-  back: Value(draft.back.trim()),
+  front: Value(storedText(draft.front)),
+  back: Value(storedText(draft.back)),
   frontFolded: Value(foldText(draft.front)),
   backFolded: Value(foldText(draft.back)),
-  example: Value(_trimmedOrNull(draft.example)),
-  hint: Value(_trimmedOrNull(draft.hint)),
-  pronunciation: Value(_trimmedOrNull(draft.pronunciation)),
+  example: Value(storedTextOrNull(draft.example)),
+  hint: Value(storedTextOrNull(draft.hint)),
+  pronunciation: Value(storedTextOrNull(draft.pronunciation)),
   isFlagged: Value(draft.isFlagged ? 1 : 0),
 );
-
-String? _trimmedOrNull(String? value) {
-  final trimmed = value?.trim();
-  if (trimmed == null || trimmed.isEmpty) return null;
-  return trimmed;
-}

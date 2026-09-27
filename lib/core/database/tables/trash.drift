@@ -10,7 +10,8 @@ CREATE TABLE delete_batches (
   -- The only home of the deletion time: the 30-day retention counts from it
   -- (BR-TRASH-009).
   deleted_at DATETIME NOT NULL,
-  owner_id TEXT -- NULL = local profile. Scope: sub-project sau (auth).
+  owner_id TEXT, -- NULL = local profile. Scope: sub-project sau (auth).
+  server_version INTEGER -- NULL = never acknowledged by the server (ADR-013).
 ) AS DeleteBatch;
 
 CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id);

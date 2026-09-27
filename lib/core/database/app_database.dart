@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/schema_versions.dart';
 
 part 'app_database.g.dart';
@@ -12,6 +13,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/study.drift',
     'package:memox/core/database/tables/settings.drift',
     'package:memox/core/database/tables/trash.drift',
+    'package:memox/core/database/tables/sync.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
     'package:memox/core/database/queries/trash_queries.drift',
@@ -24,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -58,6 +60,35 @@ class AppDatabase extends _$AppDatabase {
         await m.createIndex(schema.idxDeckDeleteBatch);
         await m.createIndex(schema.idxCardDeleteBatch);
       },
+      from3To4: (m, schema) async {
+        // ADR-013: sync. The outbox, its state, the acknowledged version on
+        // each synced row, and the triggers that capture every local write
+        // (app deck-sync spec §3). Existing rows are queued so the first sync
+        // uploads the library: batches first, then decks parents-first.
+        await m.createTable(schema.syncOutbox);
+        await m.createTable(schema.syncState);
+        await m.addColumn(schema.deck, schema.deck.serverVersion);
+        await m.addColumn(
+          schema.deleteBatches,
+          schema.deleteBatches.serverVersion,
+        );
+        await m.createTrigger(schema.deckSyncInsert);
+        await m.createTrigger(schema.deckSyncUpdate);
+        await m.createTrigger(schema.deckSyncDelete);
+        await m.createTrigger(schema.deleteBatchesSyncInsert);
+        await m.createTrigger(schema.deleteBatchesSyncUpdate);
+        await m.createTrigger(schema.deleteBatchesSyncDelete);
+        await customStatement(
+          _seedOutbox('delete_batch', 'delete_batches', 'id'),
+        );
+        await customStatement(_seedOutbox('deck', 'deck', 'depth, id'));
+      },
+      from4To5: (m, schema) async {
+        // G1 (BE-C5): user text in NFC, folded columns recomputed, tags that
+        // become one name merged; no structure changes (local backend spec
+        // 2026-09-27 §4).
+        await normalizeStoredText(this);
+      },
     ),
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -77,3 +108,12 @@ class AppDatabase extends _$AppDatabase {
 /// The id of the one `app_settings` row: `CHECK (id = 1)` keeps the table at
 /// this row (BR-SETTINGS-001).
 const appSettingsRowId = 1;
+
+/// Queues every existing row of [table] for upload, in [order].
+String _seedOutbox(String entityType, String table, String order) =>
+    'INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) '
+    "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "
+    "substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || "
+    "substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), "
+    "'$entityType', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER) "
+    'FROM $table ORDER BY $order';

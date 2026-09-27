@@ -8,7 +8,9 @@ environment:
 
 dependencies:
   characters: ^1.4.1
+  connectivity_plus: ^7.3.1
   csv: ^8.0.0
+  dio: ^5.11.1
   drift: ^2.35.0
   drift_flutter: ^0.3.1
   excel: ^4.0.6
@@ -20,9 +22,12 @@ dependencies:
   flutter_riverpod: ^3.4.3
   go_router: ^18.0.1
   intl: any
+  json_annotation: ^4.12.0
+  retrofit: ^4.10.0
   riverpod_annotation: ^4.0.7
   share_plus: ^13.3.0
   sqlite3: ^3.6.0
+  unorm_dart: ^0.3.2
   uuid: ^4.6.0
 
 dev_dependencies:
@@ -33,6 +38,8 @@ dev_dependencies:
   fake_async: ^1.3.3
   drift_dev: ^2.35.0
   riverpod_generator: ^4.0.9
+  retrofit_generator: ^10.2.11
+  json_serializable: ^6.14.1
 
 flutter:
   generate: true

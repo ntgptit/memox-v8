@@ -233,4 +233,30 @@ void main() {
       expect(row.read<String>('front_folded'), 'công nghệ');
     },
   );
+
+  test('a card is stored in NFC with its folded faces, optional fields too '
+      '(BE-C5)', () async {
+    final card = await cards.card(
+      leaf.id,
+      const CardDraft(
+        front: 'co\u0302ng',
+        back: '\u1107\u1161\u11B8',
+        example: ' vie\u0323\u0302c ',
+      ),
+    );
+    final row = await db
+        .customSelect(
+          'SELECT front, back, front_folded, back_folded, example FROM card '
+          'WHERE id = ?',
+          variables: [Variable(card.id)],
+        )
+        .getSingle();
+    expect(row.data, {
+      'front': 'c\u00F4ng',
+      'back': '\uBC25',
+      'front_folded': 'c\u00F4ng',
+      'back_folded': '\uBC25',
+      'example': 'vi\u1EC7c',
+    });
+  });
 }

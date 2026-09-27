@@ -28,8 +28,9 @@ class SchemaIT {
             new PostgreSQLContainer<>(DockerImageName.parse(TestcontainersConfiguration.POSTGRES_IMAGE));
 
     private static final String INSERT_ROOT = "INSERT INTO deck (id, user_id, name, parent_id, root_id, depth,"
-            + " content_type, scheduler_type, sibling_position, created_at, updated_at, server_version,"
-            + " last_device_id) VALUES (?, ?, 'Root', NULL, ?, ?, ?, ?, 0, now(), now(), 1, ?)";
+            + " content_type, scheduler_type, scheduler_version, generation, sibling_position, created_at,"
+            + " updated_at, server_version, last_device_id)"
+            + " VALUES (?, ?, 'Root', NULL, ?, ?, ?, ?, 1, 1, 0, now(), now(), 1, ?)";
 
     @Autowired
     private JdbcTemplate jdbc;
