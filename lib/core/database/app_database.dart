@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:memox/core/sync/library_upload_seed.dart';
 import 'package:memox/core/database/sync_change_collector.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/schema_versions.dart';
@@ -100,6 +101,7 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.syncOutbox);
         await m.createIndex(schema.idxSyncOutboxPatch);
         await m.addColumn(schema.card, schema.card.serverVersion);
+        await seedLibraryUpload(this);
         await customStatement(
           "INSERT OR REPLACE INTO sync_state (name, value) VALUES ('since', '0')",
         );

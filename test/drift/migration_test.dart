@@ -146,7 +146,7 @@ void main() {
     expect(triggers, isEmpty);
   });
 
-  test('the old row outbox is dropped and the cursor restarts', () async {
+  test('the library is queued as commands and the cursor restarts', () async {
     final schema = await verifier.schemaAt(3);
     for (final statement in _v1Rows.where(
       (s) => s.startsWith('INSERT INTO deck'),
@@ -161,7 +161,19 @@ void main() {
     await verifier.migrateAndValidate(db, 6);
 
     final queued = await db.select(db.syncOutbox).get();
-    expect(queued.where((e) => e.kind != 'command'), isEmpty);
+    expect(
+      queued.map((e) => e.commandType ?? '${e.entityType}/${e.patchGroup}'),
+      [
+        'CREATE_ROOT_DECK',
+        'CREATE_ROOT_DECK',
+        'CREATE_SUB_DECK',
+        'CREATE_SUB_DECK',
+        'deck/study_options',
+      ],
+      reason:
+          "R's study options go up as a patch; batch B is inconsistent (R1 "
+          'is not in it), so it is not sent',
+    );
     final since = await (db.select(
       db.syncState,
     )..where((s) => s.name.equals('since'))).getSingle();
