@@ -91,9 +91,9 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | FE-B1 | Trash: màn hình Trash mở từ app bar, xoá vào Trash, khôi phục (UC-TRASH-001) | xong | BE-B1, FE-A1, FE-A2 | M | [spec](superpowers/specs/2026-09-26-trash-ui-design.md); [plan 1: luồng xoá, Undo, câu chữ](superpowers/plans/2026-09-26-trash-delete-flows.md); [plan 2: màn 06, lối vào, auto-purge](superpowers/plans/2026-09-26-trash-screen.md); [screen handoff 06](shared/ui/screen-handoff/06-trash.md). Hợp đồng cho UI ở §10 của [spec gói 7](superpowers/specs/2026-09-25-trash-backend-design.md); [README trash](features/trash/README.md) | — |
-| FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | chưa bắt đầu | BE-B2, FE-A2 | M | BE-B2 xong: hợp đồng cho UI ở §9 của [spec gói 8](superpowers/specs/2026-09-26-tag-management-backend-design.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | Màn 05 trên 5 use case của `tags`: gọi `PlanTagRenameUseCase` khi tên đổi, xác nhận gộp bằng `mergeIntoTagId`, gặp `mergeNotConfirmed` thì xem trước lại; ghi lệch với kit ở `renameMerge`: số thẻ sau gộp là hợp các thẻ (spec D6), không phải tổng `31 + 46`; overlay lọc của màn 07 đọc `WatchDeckTagCountsUseCase`, đặt `CardListQuery.tagIds` và bỏ khỏi lựa chọn tag không còn trong danh sách; hành động `Tags` trên app bar của Library; "Find cards with this tag" là tìm kiếm thư viện theo tên tag (spec D12) |
+| FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | xong | BE-B2, FE-A2 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B4); file chi tiết [05](shared/ui/screen-handoff/05-tags.md), bộ lọc tag ở [07](shared/ui/screen-handoff/07-card-list.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | — |
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
-| FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | chưa bắt đầu | BE-B4, FE-A1 | M | BE-B4 xong: hợp đồng cho UI ở §9 của [spec gói 10](superpowers/specs/2026-09-26-starter-decks-backend-design.md); [ui.md](features/starter-decks/ui.md) | Màn 03 trên 2 use case của `starter_decks`: `WatchStarterLibraryUseCase` cho `loading`, `list`, `none`, `loadFailed`; `AddStarterDeckUseCase` cho `adding`, `added` (Open tới `rootDeckId`), `alreadyPresent` (`alreadyInLibrary`), `secondCopy` (xác nhận rồi gọi lại với `allowSecondCopy`) và `addFailed`; sheet chọn scheduler chọn sẵn `suggestedScheduler`; tên ngôn ngữ lấy từ thẻ BCP 47; note "Development fixture" theo BR-STARTER-010 |
+| FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | xong | BE-B4, FE-A1 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B2); file chi tiết [03](shared/ui/screen-handoff/03-starter-decks.md); `rootEmpty` của màn 01 có "Browse starter decks"; [ui.md](features/starter-decks/ui.md) | — |
 | FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | chưa bắt đầu | BE-B5a, BE-B5b, FE-A3 | S–M | [README reminders](features/reminders/README.md); hợp đồng sáu use case ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §9 | Sau BE-B5b. Màn 24 không bắt đầu một thao tác nhắc học khi thao tác trước chưa xong ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14). Khi hiện hàng Daily reminder ở màn 23: câu chữ reset nêu cả nhắc học (dòng 123 của sổ nợ UI-base), và sau khi reset thì gọi `ReconcileReminderUseCase` (spec gói 11a §9; FE-A3 D4) |
 
 ### Nợ của UI base (spec UI base §9)
@@ -168,9 +168,8 @@ và phụ thuộc giữa các màn quyết định:
 1. Mọi màn của V8.0 đã dựng: FE-A9 (Tiến độ) là màn cuối. Còn lại của V8.0 là phần dở
    của FE-A1 (mastery, chờ BR/UC) và FE-A2 (file chi tiết 08–10).
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-3. Sau V8.0: FE-B1 (Trash, #78) và FE-B3 (import/export, #72) đã xong. FE-B2 (tag) và
-   FE-B4 (starter) không còn chờ backend vì BE-B2 và BE-B4 đã xong. BE-B5a xong trong
-   gói 11a; FE-B5 còn chờ BE-B5b, adapter Android.
+3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag) và FE-B4
+   (starter) đã xong. BE-B5a xong trong gói 11a; FE-B5 còn chờ BE-B5b, adapter Android.
 
 ## Ước lượng effort (rà soát 2026-09-25)
 
@@ -250,3 +249,5 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   sheet của deck và từ app bar màn 14; Coming soon không còn nêu Study options.
 - **Cập nhật ngày 2026-09-27:** FE-A9 xong: màn 22 thay placeholder cuối cùng (tab
   Progress), hai cấp `/progress` và `/progress/:deckId`; `PlaceholderScreen` đã bỏ.
+- **Cập nhật ngày 2026-09-27:** FE-B2 và FE-B4 xong trong một plan: màn 03 và 05, chip Tags
+  và bộ lọc tag của màn 07, app bar và `rootEmpty` của màn 01; sheet Coming soon đã bỏ.

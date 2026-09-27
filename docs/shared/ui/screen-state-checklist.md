@@ -32,17 +32,17 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **151**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **31**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **175**; một phần **3**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
-| 01 | Deck list · recursive | FE-A1 | 22 | 19 | 3 | 0 | 0 | [01-deck-list.md](screen-handoff/01-deck-list.md) |
+| 01 | Deck list · recursive | FE-A1 | 22 | 20 | 2 | 0 | 0 | [01-deck-list.md](screen-handoff/01-deck-list.md) |
 | 02 | Review algorithm & reset | FE-A4 | 9 | 9 | 0 | 0 | 0 | [02-review-algorithm.md](screen-handoff/02-review-algorithm.md) |
-| 03 | Starter decks | FE-B4 | 10 | 0 | 0 | 10 | 0 | — |
+| 03 | Starter decks | FE-B4 | 10 | 10 | 0 | 0 | 0 | [03-starter-decks.md](screen-handoff/03-starter-decks.md) |
 | 04 | Library search | FE-A1, FE-A10 | 5 | 5 | 0 | 0 | 0 | [04-library-search.md](screen-handoff/04-library-search.md) |
-| 05 | Tags | FE-B2 | 12 | 0 | 0 | 12 | 0 | — |
+| 05 | Tags | FE-B2 | 12 | 12 | 0 | 0 | 0 | [05-tags.md](screen-handoff/05-tags.md) |
 | 06 | Trash | FE-B1 | 15 | 15 | 0 | 0 | 0 | [06-trash.md](screen-handoff/06-trash.md) |
-| 07 | Card list | FE-A2 | 15 | 13 | 1 | 0 | 1 | [07-card-list.md](screen-handoff/07-card-list.md) |
+| 07 | Card list | FE-A2 | 15 | 14 | 0 | 0 | 1 | [07-card-list.md](screen-handoff/07-card-list.md) |
 | 08 | Card create | FE-A2 | 9 | 0 | 9 | 0 | 0 | — |
 | 09 | Card edit | FE-A2 | 9 | 2 | 7 | 0 | 0 | — |
 | 10 | Card detail | FE-A2 | 7 | 1 | 6 | 0 | 0 | — |
@@ -73,10 +73,10 @@ FE-A1 · [01-deck-list.md](screen-handoff/01-deck-list.md)
 |---|---|---|---|---|
 | [~] | Root · decks | `rootLoaded` | một phần | Thanh mastery ẩn: chờ BR/UC của deck định nghĩa mastery (điểm chặn trong `wbs_BE.md`). |
 | [x] | Root · loading | `rootLoading` | xong |  |
-| [~] | Root · first launch | `rootEmpty` | một phần | Chỉ có Create deck; starter decks nằm dưới Coming soon, chờ FE-B4. |
+| [x] | Root · first launch | `rootEmpty` | xong | Create deck và "Browse starter decks" (FE-B4). |
 | [x] | Root · error | `rootError` | xong |  |
 | [x] | Root · search | `rootSearch` | xong |  |
-| [~] | Root · sort & filter | `rootSortFilter` | một phần | Chưa có sort "Progress" (Coming soon), cùng điểm chặn mastery. |
+| [~] | Root · sort & filter | `rootSortFilter` | một phần | Chưa có sort "Progress": chờ BR/UC, cùng điểm chặn mastery. |
 | [x] | Root · due filter, none | `rootDueEmpty` | xong |  |
 | [x] | Root · deck actions | `rootOverflow` | xong |  |
 | [x] | Root · create deck | `rootCreate` | xong |  |
@@ -112,20 +112,20 @@ FE-A4 · [02-review-algorithm.md](screen-handoff/02-review-algorithm.md)
 
 ### 03 · Starter decks
 
-FE-B4 · chưa có detail file
+FE-B4 · [03-starter-decks.md](screen-handoff/03-starter-decks.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Templates | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Choose algorithm | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Adding | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Added | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Already present | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Second copy | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Add failed | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Loading | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | None in build | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
-| [ ] | Load failed | — | chưa làm | Sau V8.0; BE-B4 đã xong. |
+| [x] | Templates | `list` | xong | Badge và dòng gợi ý xuống dòng thay vì bị cắt. |
+| [x] | Choose algorithm | `choose` | xong |  |
+| [x] | Adding | `adding` | xong | Nút quay, không kèm chữ (D13). |
+| [x] | Added | `added` | xong | Open mở deck gốc mới trong Thư viện. |
+| [x] | Already present | `alreadyPresent` | xong |  |
+| [x] | Second copy | `secondCopy` | xong |  |
+| [x] | Add failed | `addFailed` | xong |  |
+| [x] | Loading | `loading` | xong | Note rồi skeleton rows (UI-base dòng 125). |
+| [x] | None in build | `none` | xong |  |
+| [x] | Load failed | `loadFailed` | xong |  |
 
 ### 04 · Library search
 
@@ -141,22 +141,22 @@ FE-A1, FE-A10 · [04-library-search.md](screen-handoff/04-library-search.md)
 
 ### 05 · Tags
 
-FE-B2 · chưa có detail file
+FE-B2 · [05-tags.md](screen-handoff/05-tags.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Loaded | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Loading | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Empty | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Search empty | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Tag actions | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Rename | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Rename → merge | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Name too long | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Delete | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Busy row | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Op error | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
-| [ ] | Tag gone | — | chưa làm | Sau V8.0; BE-B2 đã xong. |
+| [x] | Loaded | `loaded` | xong | Thứ tự theo tên đã fold (BR-TAG-003). |
+| [x] | Loading | `loading` | xong |  |
+| [x] | Empty | `empty` | xong |  |
+| [x] | Search empty | `searchEmpty` | xong |  |
+| [x] | Tag actions | `sheet` | xong |  |
+| [x] | Rename | `rename` | xong |  |
+| [x] | Rename → merge | `renameMerge` | xong | Số thẻ là hợp (BE-B2 D6); nút tông warning (D15). |
+| [x] | Name too long | `nameTooLong` | xong |  |
+| [x] | Delete | `del` | xong |  |
+| [x] | Busy row | `busy` | xong |  |
+| [x] | Op error | `opError` | xong | Toast một câu, có Retry. |
+| [x] | Tag gone | `tagGone` | xong |  |
 
 ### 06 · Trash
 
@@ -186,7 +186,7 @@ FE-A2 · [07-card-list.md](screen-handoff/07-card-list.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [~] | Loaded | `loaded` | một phần | Chưa có chip Tags: chờ FE-B2. |
+| [x] | Loaded | `loaded` | xong | Chip Tags và bộ lọc tag (FE-B2 D3, D14). |
 | [x] | Empty | `empty` | xong |  |
 | [x] | Search empty | `searchEmpty` | xong |  |
 | [x] | Loading | `loading` | xong |  |
@@ -484,3 +484,5 @@ FE-A3 · [26-language.md](screen-handoff/26-language.md)
 - **Cập nhật ngày 2026-09-26:** FE-A3 plan 1 dựng màn 23, 25 và 26; 14 state chuyển sang
   xong.
 - **Cập nhật ngày 2026-09-27:** FE-A3 plan 2 dựng màn 15; 7 state chuyển sang xong.
+- **Cập nhật ngày 2026-09-27:** FE-B2 + FE-B4 dựng màn 03 và 05, `rootEmpty` của màn 01 và
+  chip Tags của màn 07; 24 state chuyển sang xong.
