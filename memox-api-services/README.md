@@ -8,6 +8,10 @@ Conventions and the review checklist live in the repo skill
 ./mvnw verify
 ```
 
+The gate also checks the format (palantir-java-format; fix it with
+`./mvnw spotless:apply`) and line coverage of at least 80% (JaCoCo). CI runs
+it in the `api` job.
+
 ## Package layout
 
 Packages are grouped by domain first, then by layer. Each domain package has

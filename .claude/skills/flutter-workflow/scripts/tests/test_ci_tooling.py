@@ -987,6 +987,15 @@ class WorkflowContractTest(unittest.TestCase):
         )
         self.assertGreater(int(counted.group(2)), 0, "a floor of 0 lets a run of no test pass")
 
+    def test_the_api_job_runs_the_maven_gate(self) -> None:
+        """The backend is checked on every run: unit and integration tests
+        against PostgreSQL, format and coverage, all behind `./mvnw verify`."""
+        _, jobs = self._workflow()
+        self.assertIn("api", jobs, "no job verifies memox-api-services")
+        api = jobs["api"]
+        self.assertIn("working-directory: memox-api-services", api)
+        self.assertIn("./mvnw -B verify", api)
+
     def test_ci_gate_judges_every_other_job_whatever_happened_to_it(self) -> None:
         """A job that the required check does not cover can fail without
         blocking a merge."""

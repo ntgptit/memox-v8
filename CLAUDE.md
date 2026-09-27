@@ -124,8 +124,10 @@ API security) goes there; the Flutter app at the repo root stays the client.
   [No speculative structure](#no-speculative-structure) asks for, so it is
   not a speculative single-implementation interface.
 - **Gate:** `./mvnw verify` from `memox-api-services/` (`mvnw.cmd verify` in
-  PowerShell). The Flutter gates (`dod_check.sh`, `flutter test`) do not cover
-  it, and it does not cover the app.
+  PowerShell): tests, format (palantir-java-format; fix with
+  `./mvnw spotless:apply`) and line coverage ≥ 80%. CI runs it in the `api`
+  job. The Flutter gates (`dod_check.sh`, `flutter test`) do not cover it, and
+  it does not cover the app.
 
 ## UI source of truth
 
