@@ -109,6 +109,7 @@ void main() {
           wrongTurnCount: 2,
           answeredCardCount: 9,
           turnCount: 14,
+          cardLimit: 20,
         ),
       ),
       SummaryOutcome.leftEarly,
@@ -168,6 +169,7 @@ void main() {
           wrongTurnCount: 0,
           answeredCardCount: 0,
           turnCount: 0,
+          cardLimit: 20,
         ),
       ),
       SummaryOutcome.leftEarly,
@@ -175,6 +177,55 @@ void main() {
 
     expect(find.byType(MxStatTile), findsNothing);
     expect(find.byType(MxListRow), findsNothing);
+  });
+
+  libraryTest('a review that reached its card_limit says so (handoff 21 '
+      'large, BR-STUDY-024)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        summary: const SessionSummary(
+          cardCount: 200,
+          learnedCardCount: null,
+          wrongTurnCount: 41,
+          answeredCardCount: 200,
+          turnCount: 241,
+          cardLimit: 200,
+        ),
+      ),
+      SummaryOutcome.reviewFinished,
+    );
+
+    expect(
+      find.text(
+        _en.summaryReviewAtLimitBody(_en.summaryCards(200)),
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        _en.summaryReviewFinishedBody(_en.summaryCards(200)),
+        findRichText: true,
+      ),
+      findsNothing,
+    );
+  });
+
+  libraryTest('a review under its card_limit keeps the plain body', (
+    tester,
+    env,
+  ) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+
+    expect(
+      find.text(
+        _en.summaryReviewAtLimitBody(_en.summaryCards(20)),
+        findRichText: true,
+      ),
+      findsNothing,
+    );
   });
 
   libraryTest('the summary holds at text scale 2 (FE-A6 D19)', (

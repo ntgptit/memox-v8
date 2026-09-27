@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **197**; một phần **3**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **198**; một phần **2**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -56,7 +56,7 @@ Kit có **26 màn, 211 state**. Xong **197**; một phần **3**; đã dựng nh
 | 18 | Study · Guess | FE-A6 | 1 | 1 | 0 | 0 | 0 | [18-study-guess.md](screen-handoff/18-study-guess.md) |
 | 19 | Study · Recall | FE-A6 | 3 | 3 | 0 | 0 | 0 | [19-study-recall.md](screen-handoff/19-study-recall.md) |
 | 20 | Study · Fill | FE-A6 | 3 | 3 | 0 | 0 | 0 | [20-study-fill.md](screen-handoff/20-study-fill.md) |
-| 21 | Session summary | FE-A6 | 10 | 8 | 1 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
+| 21 | Session summary | FE-A6 | 10 | 9 | 0 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
 | 22 | Progress | FE-A9 | 8 | 8 | 0 | 0 | 0 | [22-progress.md](screen-handoff/22-progress.md) |
 | 23 | Settings | FE-A3 | 8 | 8 | 0 | 0 | 0 | [23-settings.md](screen-handoff/23-settings.md) |
 | 24 | Daily reminder | FE-B5 | 9 | 0 | 0 | 9 | 0 | — |
@@ -396,7 +396,7 @@ FE-A6 · [21-session-summary.md](screen-handoff/21-session-summary.md)
 |---|---|---|---|---|
 | [x] | Review finished | `loaded` | xong |  |
 | [x] | Learning finished | `learning` | xong |  |
-| [~] | 200 cards | `large` | một phần | Thiếu vế "— the session limit": read model của phiên chưa có `card_limit`. |
+| [x] | 200 cards | `large` | xong | "— the session limit" khi hàng đợi của phiên ôn chạm `card_limit` (BR-STUDY-024). |
 | [x] | Left early | `leftEarly` | xong |  |
 | [x] | Interrupted | `interrupted` | xong |  |
 | [x] | Ended by reset | `reset` | xong |  |
@@ -488,3 +488,5 @@ FE-A3 · [26-language.md](screen-handoff/26-language.md)
   chip Tags của màn 07; 24 state chuyển sang xong.
 - **Cập nhật ngày 2026-09-27:** màn 08, 09 và 10 đã đối chiếu với kit ở #103 (FE-A2), với
   detail file riêng; 22 state chuyển sang xong.
+- **Cập nhật ngày 2026-09-27:** read model của phiên mang `card_limit`; `large` của màn 21
+  chuyển sang xong.

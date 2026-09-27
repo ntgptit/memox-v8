@@ -63,13 +63,15 @@ SessionSummary _counts(
   int? learned,
   int answered,
   int wrong,
-  int turns,
-) => SessionSummary(
+  int turns, {
+  int limit = 50,
+}) => SessionSummary(
   cardCount: cards,
   learnedCardCount: learned,
   wrongTurnCount: wrong,
   answeredCardCount: answered,
   turnCount: turns,
+  cardLimit: limit,
 );
 
 /// Handoff 21's states with the kit's numbers.
@@ -77,6 +79,11 @@ final _summaries = <(String, StudySessionView, SummaryOutcome)>[
   (
     'review',
     summaryView(summary: _counts(20, null, 20, 3, 23)),
+    SummaryOutcome.reviewFinished,
+  ),
+  (
+    'large',
+    summaryView(summary: _counts(200, null, 200, 41, 241, limit: 200)),
     SummaryOutcome.reviewFinished,
   ),
   (

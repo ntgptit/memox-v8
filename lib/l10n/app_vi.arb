@@ -915,6 +915,7 @@
   "summaryCards": "{count} thẻ",
   "summaryReviewFinished": "Ôn tập xong",
   "summaryReviewFinishedBody": "Bạn đã ôn {cards}. Lịch đến hạn tiếp theo đã được đặt.",
+  "summaryReviewAtLimitBody": "Bạn đã ôn {cards} — đủ giới hạn của phiên.",
   "summaryLearningFinished": "Học mới xong",
   "summaryLearningFinishedBody": "{cards} đã học xong. Chúng quay lại lúc 00:00 ngày mai.",
   "summaryLeftEarly": "Bạn đã dừng sớm",

@@ -4881,6 +4881,15 @@
     },
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, a review completed."
   },
+  "summaryReviewAtLimitBody": "You reviewed {cards} — the session limit.",
+  "@summaryReviewAtLimitBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 21 large: hero body, a review completed at the session's card limit (BR-STUDY-024)."
+  },
   "summaryLearningFinished": "Learning finished",
   "@summaryLearningFinished": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero title, a learning session completed."
