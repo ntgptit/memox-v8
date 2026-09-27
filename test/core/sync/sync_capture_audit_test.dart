@@ -252,6 +252,34 @@ void main() {
       ),
     );
   });
+  test('each imported card has its own affected, the deck only once', () async {
+    final transfer = CardTransferRepositoryImpl(db, cards);
+    final (entries, _) = await audited(
+      () async => transfer.importCards(
+        deckId: sub,
+        drafts: const [
+          CardDraft(front: 'x', back: 'y'),
+          CardDraft(front: 'z', back: 'w'),
+        ],
+        includeDuplicates: false,
+      ),
+    );
+    final creates = [
+      for (final entry in entries)
+        {
+          for (final item in jsonDecode(entry.affected) as List)
+            SyncEntityRef.fromJson(item as Map<String, Object?>),
+        },
+    ];
+    final ids = [
+      for (final entry in entries)
+        (jsonDecode(entry.payload!) as Map<String, Object?>)['id']! as String,
+    ];
+    expect(creates, hasLength(2));
+    expect(creates[0], {SyncEntityRef.card(ids[0]), SyncEntityRef.deck(sub)});
+    expect(creates[1], {SyncEntityRef.card(ids[1])});
+  });
+
   test('saveRootStudyOptions and clearRootStudyOptions', () async {
     final settings = SettingsRepositoryImpl(db);
     await expectCaptured(

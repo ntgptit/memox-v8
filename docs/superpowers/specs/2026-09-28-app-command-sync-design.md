@@ -117,6 +117,10 @@ exist during a migration.
 | `StarterLibraryRepositoryImpl.addStarterDeck` | `CREATE_ROOT_DECK`, `CREATE_SUB_DECK` and `CREATE_CARD` in tree order |
 | settings: root study options saved or reset to the app defaults | patch `deck/study_options` |
 
+`affected` is what each write actually changed (D2): a parent or deck whose
+content type the write did not change is not in it, since it did not change on
+the server either.
+
 The ids of new decks, cards and batches are the ones the repository already
 generates with `newId()`; they are carried in the payload.
 

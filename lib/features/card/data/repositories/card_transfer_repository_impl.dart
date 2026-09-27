@@ -54,23 +54,25 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       }
 
       final taken = await _dao.foldedPairs(deckId);
-      final written = <String>[];
+      final toWrite = <CardDraft>[];
       for (final draft in drafts) {
         final pair = (front: foldText(draft.front), back: foldText(draft.back));
         if (!includeDuplicates && taken.contains(pair)) continue;
         taken.add(pair);
-        written.add(await _cards.insertCard(deckId, draft, at));
+        toWrite.add(draft);
       }
-      if (written.isNotEmpty && contentType == DeckContentType.unset) {
+      if (toWrite.isNotEmpty && contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
-      for (final id in written) {
-        await _cards.recordCreated(id);
+      // Each card's command right after its insert, so its `affected` is its
+      // own row (the first one also carries the deck's new type; BE-E7 D2).
+      for (final draft in toWrite) {
+        await _cards.recordCreated(await _cards.insertCard(deckId, draft, at));
       }
       return Ok(
         CardImportResult(
-          written: written.length,
-          skippedDuplicates: drafts.length - written.length,
+          written: toWrite.length,
+          skippedDuplicates: drafts.length - toWrite.length,
         ),
       );
     });
