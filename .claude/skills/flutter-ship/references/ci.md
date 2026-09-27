@@ -22,9 +22,8 @@ Choices that are easy to get wrong:
 
 - **One definition of the gate.** CI runs the `dod_check.sh` a contributor
   runs, in full: never `--fast` or `--changed`, and no selection by the
-  planner. `build_verification_plan.py` still serves `dod_check.sh --changed`
-  on a workstation; its CI-only outputs (shards, `--github-output`) are BE-D5
-  in `docs/wbs_BE.md`.
+  planner. `build_verification_plan.py` serves `dod_check.sh --changed` on a
+  workstation and nothing else: it writes no output for CI.
 - **`CI gate` is the one required check.** It needs every other job and runs
   whatever happened to them, so a job that failed, was cancelled or was
   skipped fails it instead of passing unnoticed. A new job goes into its
