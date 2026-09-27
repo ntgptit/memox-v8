@@ -66,6 +66,13 @@ The shared code in `com.memox.common` that every feature reuses.
   response header, prefixed to every log line as `[id]`, and returned as
   `requestId` in every error body. One `INFO` line per request logs method,
   path, status and duration.
+- **JSON contract:** Boot's defaults, pinned by `JsonContractTest`. Instants
+  are ISO-8601 UTC strings (`"2026-09-27T01:02:03Z"`), null fields are written
+  as `null`, enums by constant name (never their DB code), UUIDs as lowercase
+  strings, and unknown request properties are ignored.
+- **OpenAPI:** `/v3/api-docs` and `/swagger-ui.html` document every endpoint,
+  with the error body as each operation's `default` response. Set
+  `API_DOCS_ENABLED=false` to turn both off (production).
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
