@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
@@ -244,6 +245,37 @@ void main() {
 
     expect(reads, 2);
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
+  });
+
+  libraryTest('at large text in Vietnamese the streak tiles stack, so a label '
+      'or a count keeps its line; at 1x they sit side by side', (
+    tester,
+    env,
+  ) async {
+    await progressLibrary(env, today: false);
+    Future<(Offset, Offset)> tiles(double scale) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(_Taps()),
+        textScale: scale,
+        locale: const Locale('vi'),
+      );
+      await _settle(tester);
+      final flame = find.byIcon(AppIcons.streak);
+      await tester.scrollUntilVisible(flame, 200);
+      return (
+        tester.getTopLeft(flame),
+        tester.getTopLeft(find.byIcon(AppIcons.studiedToday)),
+      );
+    }
+
+    final (current, today) = await tiles(2);
+    expect(today.dy, greaterThan(current.dy));
+    expect(today.dx, current.dx);
+
+    final (current1x, today1x) = await tiles(1);
+    expect(today1x.dx, greaterThan(current1x.dx));
   });
 
   libraryTest('loading is labelled for TalkBack', (tester, env) async {

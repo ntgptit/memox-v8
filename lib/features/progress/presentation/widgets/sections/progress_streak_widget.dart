@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_decorations.dart';
@@ -80,12 +82,29 @@ class ProgressStreakWidget extends StatelessWidget {
           ? l10n.progressTodayNothing
           : l10n.progressTodayCounted,
     );
-    return Row(
-      spacing: AppSpacing.control,
-      children: [
-        Expanded(child: current),
-        Expanded(child: today),
-      ],
+    // Side by side as the kit draws them, until a label or a count would
+    // break its line (large text, Vietnamese): then one tile per line.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final share = (constraints.maxWidth - AppSpacing.control) / 2;
+        final isStacked =
+            share < _StreakTile.minWidth(context, current) ||
+            share < _StreakTile.minWidth(context, today);
+        if (isStacked) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.control,
+            children: [current, today],
+          );
+        }
+        return Row(
+          spacing: AppSpacing.control,
+          children: [
+            Expanded(child: current),
+            Expanded(child: today),
+          ],
+        );
+      },
     );
   }
 
@@ -109,6 +128,34 @@ class _StreakTile extends StatelessWidget {
   });
 
   final IconData icon;
+
+  /// The narrowest [tile] that keeps its label and its count on one line
+  /// each: the inset, the icon tile, the gap and the wider of the two.
+  static double minWidth(BuildContext context, _StreakTile tile) {
+    final styles = context.textStyles;
+    final textScaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    double widthOf(String text, TextStyle style) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: direction,
+        textScaler: textScaler,
+        maxLines: 1,
+      )..layout();
+      final width = painter.width;
+      painter.dispose();
+      return width;
+    }
+
+    final text = math.max(
+      widthOf(tile.label.toUpperCase(), styles.compactOverline),
+      widthOf(tile.value, styles.summaryBodyStrong),
+    );
+    return AppSpacing.grouped * 2 +
+        MxIconTile.smallBox +
+        AppSpacing.control +
+        text;
+  }
 
   /// Null tints with primary.
   final Color? tint;
