@@ -108,14 +108,29 @@ class ProgressStreakWidget extends StatelessWidget {
     );
   }
 
-  String _lastDay(BuildContext context) {
-    final locale = context.l10n.localeName;
-    final last = overview.lastActiveDay!;
-    final gap = overview.today.date.difference(last).inDays;
-    return gap <= _weekdayReach
-        ? DateFormat.EEEE(locale).format(last)
-        : DateFormat.MMMd(locale).format(last);
-  }
+  String _lastDay(BuildContext context) => progressLostStreakDay(
+    today: overview.today.date,
+    last: overview.lastActiveDay!,
+    locale: context.l10n.localeName,
+  );
+}
+
+/// The day a lost streak ended, as its note names it (C8): the weekday
+/// within six days of [today], else a short date. Counted on calendar dates:
+/// hours / 24 is wrong across a clock change (BR-STUDY-067's rule).
+String progressLostStreakDay({
+  required DateTime today,
+  required DateTime last,
+  required String locale,
+}) {
+  final gap = DateTime.utc(
+    today.year,
+    today.month,
+    today.day,
+  ).difference(DateTime.utc(last.year, last.month, last.day)).inDays;
+  return gap <= ProgressStreakWidget._weekdayReach
+      ? DateFormat.EEEE(locale).format(last)
+      : DateFormat.MMMd(locale).format(last);
 }
 
 class _StreakTile extends StatelessWidget {

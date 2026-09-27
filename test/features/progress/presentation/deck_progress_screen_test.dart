@@ -96,6 +96,33 @@ void main() {
     expect(find.text(_en.commonRetry), findsNothing);
   });
 
+  libraryTest('a deck moved to the Trash while its level is open turns into '
+      'the gone state, with no error in between (E2, BR-PROGRESS-008)', (
+    tester,
+    env,
+  ) async {
+    final korean = await studiedDeck(
+      env,
+      'Korean',
+      days: [(daysAgo: 0, learning: 0, reviewing: 2)],
+    );
+    await pumpLibraryScreen(tester, env, _screen(korean, _Taps()));
+    await _settle(tester);
+    expect(find.text(_en.progressWholeDeck), findsOneWidget);
+
+    await env.decks.deleteDeck(deckId: korean);
+    await tester.pump();
+    expect(find.text(_en.progressErrorTitle), findsNothing);
+    await _settle(tester);
+
+    expect(
+      find.widgetWithText(MxEmptyState, _en.deckGoneTitle),
+      findsOneWidget,
+    );
+    expect(find.text(_en.progressWholeDeck), findsNothing);
+    expect(find.text(_en.commonRetry), findsNothing);
+  });
+
   libraryTest('a failed read shows the error with Retry (E1)', (
     tester,
     env,
