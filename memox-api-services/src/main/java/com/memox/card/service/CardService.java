@@ -5,6 +5,7 @@ import com.memox.card.dto.request.CardFlagRequest;
 import com.memox.card.dto.request.CreateCardRequest;
 import com.memox.card.dto.request.DeleteCardsRequest;
 import com.memox.card.dto.request.MoveCardsRequest;
+import com.memox.card.dto.response.CardResponse;
 import com.memox.sync.service.WriteContext;
 import java.util.UUID;
 
@@ -22,4 +23,7 @@ public interface CardService {
     void deleteCards(WriteContext context, DeleteCardsRequest request);
 
     void undoCardDeletion(WriteContext context, UUID batchId);
+
+    /** The user's active card. */
+    CardResponse getCard(UUID userId, UUID cardId);
 }

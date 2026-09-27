@@ -5,6 +5,7 @@ import com.memox.card.dto.request.CardFlagRequest;
 import com.memox.card.dto.request.CreateCardRequest;
 import com.memox.card.dto.request.DeleteCardsRequest;
 import com.memox.card.dto.request.MoveCardsRequest;
+import com.memox.card.dto.response.CardResponse;
 import com.memox.card.mapper.CardMapper;
 import com.memox.card.model.Card;
 import com.memox.card.service.CardService;
@@ -236,5 +237,33 @@ public class CardServiceImpl implements CardService {
         }
         throw new BusinessException(
                 existing.getUserId().equals(context.userId()) ? ErrorCode.CONFLICT : ErrorCode.SYNC_ENTITY_CONFLICT);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CardResponse getCard(UUID userId, UUID cardId) {
+        Card card = cardMapper.findCardById(cardId);
+        if (card == null
+                || !card.getUserId().equals(userId)
+                || card.getDeletedAt() != null
+                || card.getDeleteBatchId() != null) {
+            throw new BusinessException(ErrorCode.CARD_NOT_FOUND);
+        }
+        return toResponse(card);
+    }
+
+    static CardResponse toResponse(Card card) {
+        return CardResponse.builder()
+                .id(card.getId())
+                .deckId(card.getDeckId())
+                .front(card.getFront())
+                .back(card.getBack())
+                .example(card.getExample())
+                .hint(card.getHint())
+                .pronunciation(card.getPronunciation())
+                .isFlagged(card.isFlagged())
+                .createdAt(card.getCreatedAt())
+                .updatedAt(card.getUpdatedAt())
+                .build();
     }
 }
