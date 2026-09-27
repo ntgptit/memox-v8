@@ -1,6 +1,6 @@
 # FE-A9: the Progress UI — design
 
-Status: draft for review; design sections approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3)
+Status: approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3), amended after the pre-plan critique (`.impeccable/critique/2026-09-27T04-00-00Z__progress-kit.md`): D2, D10, D11
 
 ## 1. Intent
 
@@ -60,7 +60,7 @@ Success means three things:
 | # | Topic | Decision | Authority |
 |---|---|---|---|
 | D1 | Never studied | The kit's layout: dashed placeholders in Today and Streak, and every deck row at 0 (UC-PROGRESS-002 A3). Below Today's placeholder, a "Start studying" button opens the Study tab, which UC-PROGRESS-001 A2 asks for. Recorded as a deviation from the kit and from A2's "one empty state for the whole screen" | Owner, 2026-09-27 |
-| D2 | The total | A total row heads each list, in the same shape as a deck row: active cards on the right; active days, learning and reviewing on the sub-line. It is read, never added up (BR-PROGRESS-002), and it is not a button. The kit's header trailing text stays | Owner, 2026-09-27 |
+| D2 | The total | A total row heads each list, in the same shape as a deck row: active cards on the right; active days, learning and reviewing on the sub-line. It is read, never added up (BR-PROGRESS-002), and it is not a button. The kit's header trailing text is dropped: the total row carries it | Owner, 2026-09-27; amended after the critique (P3) |
 | D3 | Structure | Two screens, `ProgressScreen` and `DeckProgressScreen`, sharing their section widgets. Each reads one `StreamProvider` over its use case. No controller: the screen only reads | Owner, 2026-09-27 (approach A of three) |
 | D4 | The range | One `progressRangeProvider` for the whole tab: a deck opened from Last 30 days opens at Last 30 days, and Back keeps the choice. Switching reads `decksFor(range)` and `total.of(range)` and never the database | Owner, 2026-09-27; BR-PROGRESS-003 |
 | D5 | The route | `/progress/:deckId` is a child of the Progress branch, so the bottom navigation stays, as the kit draws it. Each row pushes one level; Back returns to the level it left, at any depth | Owner, 2026-09-27; UC-PROGRESS-002 step 5 |
@@ -68,6 +68,8 @@ Success means three things:
 | D7 | The streak colour | `streak` joins `MxSemanticColors`, light and dark, from foundations, with `AppIcons.streak` (flame). This screen is its first consumer | Owner, 2026-09-27 |
 | D8 | Live numbers | Once a level has shown, a new emission replaces the numbers without the skeleton (BR-PROGRESS-018). Retry is `ref.invalidate` of the level's provider | UC-PROGRESS-001 A3, E1 |
 | D9 | The Study tab | `progress` imports no feature. "Start studying" calls a callback that `app/` wires to the Study branch | ADR-011 import map |
+| D10 | The range's place | At the library level the tray sits after Streak, directly above the list it changes; Today and Streak never change with it. At a deck's level it stays at the top. A deviation from the kit | Owner, 2026-09-27 (critique P1); UC-PROGRESS-001 step 4, UC-PROGRESS-002 step 1 |
+| D11 | Inactive rows | Nothing is dimmed by opacity: an inactive row keeps its name and "No activity in this range" at full contrast, and its 0 is in `onSurfaceVariant` | Critique P2 (contrast) |
 
 ## 4. Structure
 
@@ -105,8 +107,7 @@ Exact file names follow the guard's buckets and suffixes, and the plan settles t
 From top to bottom, in one scroll view:
 
 1. **App bar:** the large title "Progress".
-2. **Range:** `MxSegmentedTray` with "Last 7 days" and "Last 30 days" (D4).
-3. **Today** (`MxCard`):
+2. **Today** (`MxCard`):
    - the overline, the figure (`today.total`), and one of these sub-lines:
      - "{learning} learning · {reviewing} reviewing · a card counts once per day";
      - "No cards studied yet today" when today is 0;
@@ -115,7 +116,7 @@ From top to bottom, in one scroll view:
      bar at full strength, a day with nothing as a thin baseline;
    - day labels are the locale's narrow weekday, and the last reads "Today";
    - the legend: Learning, Reviewing.
-4. **Streak** (`MxCard`), with two tiles side by side:
+3. **Streak** (`MxCard`), with two tiles side by side:
    - **"Current":** the flame in `streak` (in `onSurfaceVariant` at 0), "{n} days" (or
      "1 day"), and "includes today", "held from yesterday" or "no study yesterday";
    - **"Today":** "{n} cards", and "counted once each" or "nothing yet";
@@ -124,17 +125,19 @@ From top to bottom, in one scroll view:
    - when it is lost, an `MxNote`: "The streak ended on {day}. It starts again with the
      next card you study." {day} is the weekday name when `lastActiveDay` falls within
      the last six days, else a short date ("Sep 3").
+4. **Range:** `MxSegmentedTray` with "Last 7 days" and "Last 30 days" (D4), directly
+   above the list it changes (D10).
 5. **The list:**
-   - the header "BY DECK · LAST 7 DAYS" (or "· LAST 30 DAYS"), with the kit's trailing
-     "{active cards} active cards · {card-days} card-days";
+   - the header "BY DECK · LAST 7 DAYS" (or "· LAST 30 DAYS"), with no trailing text
+     (D2);
    - the total row "All decks" (D2);
    - one row per root deck, in `decksFor(range)` order. Each row shows:
      - the name;
      - the sub-line "{days} active days · {learning} learning · {reviewing} reviewing",
        with learning in the learning ink and reviewing in `primaryInk`;
      - active cards on the right, over "cards".
-   - A deck with no activity in the range is dimmed and reads "No activity in this
-     range". A row opens `/progress/:deckId`.
+   - A deck with no activity in the range reads "No activity in this range", with its
+     0 in `onSurfaceVariant` and nothing dimmed (D11). A row opens `/progress/:deckId`.
 6. **The footer line:** "Read-only · a card studied several times in a day counts
    once · resets change nothing here".
 
@@ -153,14 +156,14 @@ From top to bottom, in one scroll view:
 | State | Shown |
 |---|---|
 | Last 7 days / Last 30 days | §5.1 with the chosen range |
-| Streak held, streak lost | §5.1 item 4, with its note |
+| Streak held, streak lost | §5.1 item 3, with its note |
 | Never (D1) | `MxDashedNote` in Today ("Your last seven days appear here once you study. Browsing cards does not count.") and in Streak ("A streak starts with your first study day."). Below Today's note, "Start studying" (secondary `MxButton`) opens the Study tab. Every deck row at 0 |
 | A range with no activity (UC-PROGRESS-002 A3) | an `MxNote` below the total row: "Nothing studied in the last 7 days. Switch to Last 30 days to see older study." At Last 30 days, only the first sentence. Neutral, never the error colour |
 | No decks (UC-PROGRESS-002 A2) | only `MxEmptyState` "No decks yet · Create a deck in the Library and its progress appears here". No button, no range, no total |
 | Inside a deck | §5.2 |
 | A deck with no children (A1) | the total row and an `MxNote`: "This deck holds its cards directly, so the total above is all of it." |
 | Deck gone (E2) | `MxEmptyState` "This deck is no longer here" with Back, and no Retry (UI-base row 129) |
-| Loading | the range tray, then `MxSkeletonList` (UI-base row 125), where the kit draws a skeleton per card |
+| Loading | `MxSkeletonList` (UI-base row 125), where the kit draws the tray and a skeleton per card; a deck's level keeps its tray above it |
 | Error (E1) | `MxErrorState` "Couldn't summarise your progress · Your study history is safe on this device. Try again in a moment." with Retry, and no range |
 
 Every string is in `app_en.arb` (with its description) and `app_vi.arb`. Days and dates
