@@ -52,6 +52,17 @@ class SchemaIT {
     }
 
     @Test
+    void rejectsTwoRowsWithTheSameVersionForOneUser() {
+        UUID user = UUID.randomUUID();
+        UUID first = UUID.randomUUID();
+        UUID second = UUID.randomUUID();
+        jdbc.update(INSERT_ROOT, first, user, first, 1, "deck", "sm2", UUID.randomUUID());
+
+        assertThatThrownBy(() -> jdbc.update(INSERT_ROOT, second, user, second, 1, "deck", "sm2", UUID.randomUUID()))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     void rejectsDepthAboveTen() {
         UUID id = UUID.randomUUID();
 

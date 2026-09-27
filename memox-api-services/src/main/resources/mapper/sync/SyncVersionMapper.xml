@@ -12,4 +12,8 @@
     <select id="current" resultType="java.lang.Long">
         SELECT version FROM user_sync_version WHERE user_id = #{userId}
     </select>
+
+    <select id="lockUser" resultType="java.lang.Object" flushCache="true">
+        SELECT pg_advisory_xact_lock(hashtextextended(CAST(#{userId} AS text), 0))
+    </select>
 </mapper>

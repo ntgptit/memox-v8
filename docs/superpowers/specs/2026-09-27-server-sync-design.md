@@ -92,6 +92,11 @@ Presentation → UseCase → Repository (domain contract)
   the server has never seen it. A rejected operation does not stop the batch.
 - Batch limit: 100 operations; the coordinator loops until the outbox is
   empty.
+- **One user's operations are serialized.** Each operation takes a
+  transaction-scoped advisory lock on its user before reading, so a subtree read
+  and the write that follows cannot interleave with another device's operation;
+  two cross moves can never form a cycle. `(user_id, server_version)` is unique
+  on every synced table.
 
 ### 4.2 Pull
 

@@ -10,6 +10,7 @@ import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.deck.dto.DeckSyncRow;
 import com.memox.sync.dto.response.SyncChange;
+import com.memox.sync.mapper.SyncVersionMapper;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +34,9 @@ class DeckSyncHandlerIT {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private SyncVersionMapper syncVersionMapper;
 
     private final UUID user = UUID.randomUUID();
 
@@ -155,6 +159,30 @@ class DeckSyncHandlerIT {
         assertThat(handler.changesSince(user, 0, 10))
                 .extracting(SyncChange::serverVersion)
                 .isSorted();
+    }
+
+    @Test
+    void resurrectingAndMovingADeletedDeckNeverOutrunsTheVersionCounter() {
+        UUID rootA = createRoot();
+        UUID rootB = createRoot();
+        UUID x = createChild(rootA);
+        handler.delete(user, DEVICE, x);
+
+        long version = handler.upsert(user, DEVICE, x, row(x, rootB, "deck", null, rootA, 2));
+
+        assertThat(syncVersionMapper.current(user)).isGreaterThanOrEqualTo(version);
+        assertThat(currentRow(x).rootId()).isEqualTo(rootB);
+    }
+
+    @Test
+    void rejectsAConfigThatIsNotJson() {
+        UUID root = UUID.randomUUID();
+        JsonNode bad = row(root, null, "deck", "sm2", root, 1);
+        ((com.fasterxml.jackson.databind.node.ObjectNode) bad).put("schedulerConfig", "{not json");
+
+        assertThatThrownBy(() -> handler.upsert(user, DEVICE, root, bad))
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.VALIDATION_FAILED);
     }
 
     private UUID createRoot() {

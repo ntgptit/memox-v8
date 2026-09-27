@@ -61,7 +61,8 @@ public class DeckSyncHandler implements SyncEntityHandler {
 
         boolean placementChanged =
                 existing != null && (!Objects.equals(existing.getRootId(), rootId) || existing.getDepth() != depth);
-        int descendants = placementChanged ? subtree.size() - 1 : 0;
+        // A tombstoned deck has no live subtree, so there are no descendants to rewrite when it is resurrected.
+        int descendants = placementChanged ? Math.max(0, subtree.size() - 1) : 0;
         long lastVersion = syncVersionMapper.allocate(userId, 1 + descendants);
         long version = lastVersion - descendants;
 
@@ -113,6 +114,8 @@ public class DeckSyncHandler implements SyncEntityHandler {
                     || !validator.validate(row).isEmpty()) {
                 throw new BusinessException(ErrorCode.VALIDATION_FAILED);
             }
+            requireJsonOrNull(row.schedulerConfig());
+            requireJsonOrNull(row.studyConfig());
             boolean rootShape = row.parentId() == null
                     ? "deck".equals(row.contentType()) && row.schedulerType() != null
                     : row.schedulerType() == null;
@@ -122,6 +125,13 @@ public class DeckSyncHandler implements SyncEntityHandler {
             return row;
         } catch (JsonProcessingException | IllegalArgumentException e) {
             throw new BusinessException(ErrorCode.VALIDATION_FAILED);
+        }
+    }
+
+    /** Config columns hold JSON that other devices parse; refuse anything else. */
+    private void requireJsonOrNull(String value) throws JsonProcessingException {
+        if (value != null) {
+            objectMapper.readTree(value);
         }
     }
 

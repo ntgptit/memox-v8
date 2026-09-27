@@ -15,4 +15,10 @@ public interface SyncVersionMapper {
     long allocate(@Param("userId") UUID userId, @Param("count") int count);
 
     Long current(@Param("userId") UUID userId);
+
+    /**
+     * Serializes this user's sync writes until the transaction ends, so a subtree read and the write that follows it
+     * cannot interleave with another device's operation (for example two cross moves forming a cycle).
+     */
+    void lockUser(@Param("userId") UUID userId);
 }
