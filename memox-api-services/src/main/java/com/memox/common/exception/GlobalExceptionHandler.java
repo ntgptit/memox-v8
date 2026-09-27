@@ -1,10 +1,12 @@
 package com.memox.common.exception;
 
+import com.memox.common.config.RequestIdFilter;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,6 +40,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String CODE_PROPERTY = "code";
     private static final String ERRORS_PROPERTY = "errors";
+
+    private static final String REQUEST_ID_PROPERTY = "requestId";
 
     @ExceptionHandler(BusinessException.class)
     ResponseEntity<Object> handleBusiness(BusinessException ex, WebRequest request) {
@@ -76,6 +80,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
                 status, getMessageSource().getMessage(code.getMessageKey(), null, locale));
         problem.setProperty(CODE_PROPERTY, code.name());
+        String requestId = MDC.get(RequestIdFilter.REQUEST_ID_MDC_KEY);
+        if (requestId != null) {
+            problem.setProperty(REQUEST_ID_PROPERTY, requestId);
+        }
         if (isValidationFailure(ex)) {
             problem.setProperty(ERRORS_PROPERTY, violationsOf(ex, locale));
         }

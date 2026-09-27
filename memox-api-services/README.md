@@ -61,6 +61,11 @@ The shared code in `com.memox.common` that every feature reuses.
   property; validation errors add `errors: [{field, message}]`, and a
   database constraint violation is a 409 `CONFLICT`. `GlobalExceptionHandler`
   never returns SQL, constraint names or stack traces.
+- **Request ID:** every request gets an `X-Request-ID` (the client's own, if
+  it matches `[A-Za-z0-9._-]{1,64}`, otherwise a new UUID). It is echoed in the
+  response header, prefixed to every log line as `[id]`, and returned as
+  `requestId` in every error body. One `INFO` line per request logs method,
+  path, status and duration.
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
@@ -88,7 +93,7 @@ The shared code in `com.memox.common` that every feature reuses.
 | `<feature>/model` | Database row shapes | plain classes mapped by MyBatis | HTTP annotations, `@Data` on sensitive fields | Not used as a request or response type. |
 | `<feature>/enums` | Finite feature values | enums with a DB `code` | magic strings | Needs a TypeHandler when the DB value differs from the name. |
 | `common` | Cross-feature building blocks | shared API error body, paging request/response | feature logic | Only what at least two features use. |
-| `common/config` | Spring and MyBatis configuration | `@Configuration`, security, OpenAPI, MyBatis settings | business logic | |
+| `common/config` | Spring and MyBatis configuration | `@Configuration`, servlet filters, security, OpenAPI, MyBatis settings | business logic | |
 | `common/exception` | Error model and mapping | business exception types, `@RestControllerAdvice` | feature logic | Never exposes stack traces or SQL. |
 | `common/type_handler` | Enum ↔ DB mapping | `BaseEnumTypeHandler` and one subclass per enum | business logic | Each handler is tested: enum→DB, DB→enum, NULL, unknown value. |
 | `common/util` | Project-specific helpers | stateless helpers with no library equivalent | wrappers around Java, Apache Commons or Spring utilities; feature logic | Check the Java standard API, then Apache Commons, then Spring first. |

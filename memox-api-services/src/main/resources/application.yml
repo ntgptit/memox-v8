@@ -13,3 +13,8 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
     default-statement-timeout: 30
+
+logging:
+  pattern:
+    # Boot's default console and file patterns include this slot; see RequestIdFilter.
+    correlation: "[%X{requestId:-}] "
