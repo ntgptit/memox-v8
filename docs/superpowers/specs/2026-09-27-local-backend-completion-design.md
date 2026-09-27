@@ -167,8 +167,8 @@ recorded.
 ## 7. G4 — BE-D4: acceptance criteria for 18 UCs
 
 - **Scope (D4).** In 18 UC files, only the placeholder line of
-  `## Acceptance criteria` ("OPEN QUESTION: nguồn chưa có acceptance
-  criteria…") is replaced. UC-TRANSFER-001, UC-TRANSFER-002,
+  `## Acceptance criteria` (the open-question marker saying the source has no
+  criteria yet) is replaced. UC-TRANSFER-001, UC-TRANSFER-002,
   UC-REMINDER-001 and UC-STARTER-001 already carry criteria and are not
   touched.
 - **Form.** Follow those four UCs:
@@ -177,7 +177,8 @@ recorded.
 - **Source.** Only the UC itself and its `active` rules. Every criterion is
   checked against the code and tests.
   - Where the UC and the code disagree, neither is edited. The criterion
-    becomes an `OPEN QUESTION: …` line inside the same section, as the
+    becomes an open-question line, with the repo's marker, inside the same
+    section, as the
     placeholder convention already does.
   - These questions are listed in the PR and in the final report.
 - **Guard.** `tools/docs/check.py` reports an error when a `ready` UC's
