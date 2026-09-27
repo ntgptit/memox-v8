@@ -13,9 +13,8 @@
 #      made it fire.
 #
 #   2. There is deliberately NO `plugins: - custom_lint` block. custom_lint and
-#      riverpod_lint are descoped (see `Deferred and descoped` in docs/wbs.md):
-#      no published custom_lint supports analyzer >=10, which the generator
-#      stack requires. Do not add it back — a plugin declared but not installed
+#      riverpod_lint are descoped: no published custom_lint supports
+#      analyzer >=10, which the generator stack requires. Do not add it back — a plugin declared but not installed
 #      is silently ignored, which is worse than not configuring it, because the
 #      rules look active and never run. Those checks now belong to
 #      code-verification-guard:

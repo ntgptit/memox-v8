@@ -143,7 +143,8 @@ second about the evidence.
       `flutter test` all pass.
 - [ ] Generated code regenerated and committed — no diff after a fresh
       `build_runner build`.
-- [ ] `docs/shared/data/schema.md` and `docs/wbs.md` updated in the same commit.
+- [ ] `docs/shared/data/schema.md` and the WBS row (`docs/wbs_BE.md`) updated in
+      the same PR.
 
 ## Writing up findings
 

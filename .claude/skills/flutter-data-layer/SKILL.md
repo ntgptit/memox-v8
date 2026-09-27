@@ -1,12 +1,9 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. Today only the persistence half is live — dio is deliberately not a dependency (ADR-012), so the networking guidance here is reference for the backend phase, not current work. Covers the future shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive. Covers checklist phases 10 and 11.
+description: Networking and persistence for this Flutter app. APIs are called through Retrofit on one shared Dio client (ADR-012). Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
 ---
 
 # Data layer: networking and persistence
-
-Covers checklist Phases 10 (networking) and 11 (database, cache, secure
-storage).
 
 The repository is the boundary. Above it, domain entities and `Failure`. Below
 it, DTOs, Dio and Drift. Nothing from below crosses up — that single rule is

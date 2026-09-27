@@ -5,13 +5,9 @@ Import direction is an architectural property, not a lint, so it needs its own
 check — one that runs in CI, because a boundary nobody verifies is a boundary
 that has already broken.
 
-**Why Python and not the bash it replaced.** The rules are unchanged; the shape
-of the runtime is not. The bash version forked `find lib` seventeen times and a
-subprocess per file inside its loops, and on Windows git-bash each fork costs
-tens of milliseconds — the whole script took two minutes there while finishing
-in a second on Linux CI. This reads every source file once, in one process. The
-`.sh` beside it is now a thin wrapper so every `bash …/check_architecture.sh`
-caller and every doc that names it still works.
+It reads every source file once, in one process. The `.sh` beside it is a thin
+wrapper, so every `bash …/check_architecture.sh` caller and every doc that names
+it works.
 
 Usage: check_architecture.py [--quiet]
 Exit:  0 clean, 1 violations found.

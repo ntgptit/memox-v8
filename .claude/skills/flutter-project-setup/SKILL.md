@@ -1,13 +1,12 @@
 ---
 name: flutter-project-setup
-description: Stands up the Flutter project skeleton and everything that is decided once and constrains the rest of the build — toolchain check, git repo conventions, `flutter create` with the right org and IDs, the dependency set and why each package is there, dev dependencies and code generation, build flavors for dev/staging/prod, the bootstrap function with error boundaries, and the Failure/error model. Use this skill when creating a new Flutter app, adding or auditing dependencies, wiring `main.dart` and bootstrap, setting up environments or flavors, configuring build_runner, or designing how errors are represented across layers. Covers checklist phases 2, 3 and 6.
+description: Stands up the Flutter project skeleton and everything that is decided once and constrains the rest of the build — toolchain check, git repo conventions, `flutter create` with the right org and IDs, the dependency set and why each package is there, dev dependencies and code generation, build flavors for dev/staging/prod, the bootstrap function with error boundaries, and the Failure/error model. Use this skill when creating a new Flutter app, adding or auditing dependencies, wiring `main.dart` and bootstrap, setting up environments or flavors, configuring build_runner, or designing how errors are represented across layers.
 ---
 
 # Project setup and foundation
 
-Covers checklist Phases 2 (environment), 3 (dependencies) and 6 (bootstrap,
-flavors, error model). These are grouped because they are decided once and
-constrain everything after — the flavor decides the log level bootstrap
+Environment, dependencies, bootstrap, flavors and the error model are grouped
+because they are decided once and constrain everything after — the flavor decides the log level bootstrap
 installs, and the error model decides what the error boundary reports.
 
 Prerequisite: the product section of `docs/README.md` and
