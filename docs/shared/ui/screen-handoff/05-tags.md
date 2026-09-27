@@ -43,7 +43,7 @@ not to Tags (plan C4).
 | del | ![](img/05-tags/del-light.png) | ![](img/05-tags/del-dark.png) | No glyph over the title; the text is left-aligned; the buttons stack when "Remove from {n} cards" cannot keep its line (UI-base row 139). |
 | busy | ![](img/05-tags/busy-light.png) | ![](img/05-tags/busy-dark.png) | As drawn. |
 | opError | ![](img/05-tags/opError-light.png) | ![](img/05-tags/opError-dark.png) | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). |
-| tagGone | ![](img/05-tags/tagGone-light.png) | ![](img/05-tags/tagGone-dark.png) | As drawn (E3). |
+| tagGone | ![](img/05-tags/tagGone-light.png) | ![](img/05-tags/tagGone-dark.png) | As drawn (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
 | read error | — | — | **V8 addition (E1, D10):** `MxErrorState` "Couldn't load tags" with Retry. |
 
 Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,search_empty,sheet,rename,rename_merge,name_too_long,del,busy,op_error,tag_gone,read_error}_{light,dark}.png`.

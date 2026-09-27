@@ -210,6 +210,20 @@ void main() {
     expect(find.text('tạm'), findsWidgets);
   });
 
+  libraryTest('a tag deleted elsewhere while its rename dialog is open closes '
+      'the dialog and says it is gone (E3)', (tester, env) async {
+    await _pump(tester, env);
+    await _openRename(tester, 'tạm');
+    await env.db.customStatement(
+      "DELETE FROM card_tags WHERE tag_id = 't-tam'",
+    );
+    await env.db.customStatement("DELETE FROM tags WHERE id = 't-tam'");
+    await _type(tester, 'tạm thời');
+
+    expect(find.text(_en.tagsRenameConfirm), findsNothing);
+    expect(find.text(_en.tagsGone('tạm')), findsOneWidget);
+  });
+
   libraryTest('del: the dialog says no card is deleted; the tag goes and '
       'every card stays (A3)', (tester, env) async {
     await _pump(tester, env);

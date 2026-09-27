@@ -98,13 +98,17 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
           .read(tagActionsControllerProvider.notifier)
           .planRename(tagId: widget.tag.id, name: name);
       if (!mounted || _name.text != name) return;
-      setState(() {
-        _plan = switch (outcome) {
-          Ok(:final value) => value,
-          // A tag gone meanwhile: the write says so (E3).
-          Rejected() => null,
-        };
-      });
+      switch (outcome) {
+        case Ok(:final value):
+          setState(() => _plan = value);
+        // The tag was deleted meanwhile: nothing here can succeed. The dialog
+        // hands the name to the write, which writes nothing and says the tag
+        // is gone (E3).
+        case Rejected(reason: TagRejection.notFound):
+          _pop(null);
+        case Rejected():
+          setState(() => _plan = null);
+      }
     } on Failure {
       // The last plan stays; the write checks again.
     }
