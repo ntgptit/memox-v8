@@ -388,6 +388,10 @@ final class MxTextStyles {
     FontWeight.w700,
   ).copyWith(color: _scheme.onSurface);
 
+  /// A caption run in [ink], such as a Progress row's learning and
+  /// reviewing counts (kit 22): 12/600.
+  TextStyle captionIn(Color ink) => footerCaption.copyWith(color: ink);
+
   /// A summary fact's value (kit ResultRow): 16/700 tabular, in [ink].
   TextStyle factValue(Color ink) => AppTypography.withWeight(
     _texts.bodyLarge!.copyWith(fontSize: _factValueSize),
