@@ -31,6 +31,10 @@ request can hang until the OS gives up — minutes of a spinner.
 
 Expose it as a single `keepAlive` provider. Multiple Dio instances mean multiple
 interceptor chains, and a token refreshed on one is not applied to the others.
+V8's is `dioProvider` in `lib/core/network/di/network_providers.dart`: these
+three timeouts and the request-ID interceptor, with the base URL from
+`ApiConfig`. The auth and logging interceptors above come with login and with
+a need to log.
 
 ## Endpoints: Retrofit interfaces, never hand-written Dio calls (ADR-012)
 
@@ -98,60 +102,30 @@ it cannot be forgotten by a new endpoint. Never log a full response body in
 production — it will contain user data.
 
 **Error mapping** — do not map inside the interceptor. Let `DioException`
-propagate to the repository, which owns the decision of whether a failure means
-"show an error" or "fall back to cache". An interceptor cannot know that.
+propagate to the code that owns the decision of what a failure means: sync
+today, a repository once one calls the API. An interceptor cannot know that.
 
 ## Mapping to Failure
 
-`core/error/dio_error_mapper.dart`:
+Only sync calls the API today, and it maps nothing: `SyncScheduler` retries a
+failed run with backoff (`lib/core/sync/sync_scheduler.dart`). When a
+repository first calls the API, the mapping follows ADR-011 D6 and ADR-012, the
+way `lib/core/error/` already maps the database:
 
-```dart
-Failure mapDioException(DioException e) {
-  final type = e.type;
-  if (type == DioExceptionType.connectionError ||
-      type == DioExceptionType.connectionTimeout) {
-    return const NetworkFailure(message: 'No internet connection');
-  }
-  if (type == DioExceptionType.receiveTimeout ||
-      type == DioExceptionType.sendTimeout) {
-    return const NetworkFailure(message: 'The server took too long to respond');
-  }
-  if (type == DioExceptionType.cancel) {
-    return const CancelledFailure(message: 'Request cancelled');
-  }
+- **A refusal the server states is a value.** A `ProblemDetail` whose `code`
+  names a business rule becomes `Rejected(reason)`, the reason a value of the
+  calling feature's enum in `domain/failures/`. The UI maps each reason to its
+  own words, so it never renders the server's message; the `requestId` goes to
+  the log, to trace the failure on the server.
+- **Anything else is a `Failure`.** No connection, a timeout, a 5xx, or a body
+  the contract does not describe: the sealed `Failure` in
+  `lib/core/error/failure.dart` gains the subclasses they need, and one
+  `mapDioException` beside `mapDatabaseError` maps them, keeping the stack
+  trace.
 
-  final status = e.response?.statusCode;
-  if (status == null) return UnknownFailure(message: 'Something went wrong', cause: e);
-
-  return switch (status) {
-    400 => ValidationFailure(
-        message: _serverMessage(e) ?? 'Invalid request',
-        // Typed problems, mapped from the server's field names to this feature's
-        // problem enum. Not the server's strings: those are copy the UI must not
-        // render, and a `Map<String, String>` here is what led memox to re-derive
-        // validation in presentation.
-        problems: _problems(e),
-      ),
-    401 => const UnauthorizedFailure(message: 'Please sign in again'),
-    403 => const ForbiddenFailure(message: 'You do not have access to this'),
-    404 => const NotFoundFailure(message: 'Not found'),
-    409 => const ConflictFailure(message: 'This was changed elsewhere'),
-    422 => ValidationFailure(
-        message: _serverMessage(e) ?? 'Please check your input',
-        problems: _problems(e),
-      ),
-    >= 500 => const NetworkFailure(message: 'The server is having problems'),
-    _ => UnknownFailure(message: 'Something went wrong', cause: e),
-  };
-}
-```
-
-Server messages are shown only where the API contract guarantees they are
-user-safe — otherwise you forward internal detail to the user. If it is not
-guaranteed, use the generic message and log the server's text.
-
-Test this function directly, per status code and exception type. It is the code
-most likely to be wrong and least likely to be exercised by hand.
+Test that function directly, per status code and exception type
+(`flutter-testing`). It is the code most likely to be wrong and least likely to
+be exercised by hand.
 
 ## API contract
 

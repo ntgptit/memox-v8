@@ -400,6 +400,12 @@ package waits in "Add only when" for a need it already has. It failed first with
 seven packages the table lacked. The CI tooling tests are then 80, and the host tests
 2429 on the merged base.
 
+The final review found two more leftovers no marker can see: `networking.md` still
+mapped `DioException` to V7's `Failure` per error kind, and a sentence in
+`dynamic-sql-semantics.md` stated ADR-013's superseded conflict row. Both now follow
+ADR-011 D6 and ADR-014, and the contract test also checks that every `…Failure` a
+skill names is defined in `lib/core/error/failure.dart`; the CI tooling tests are 82.
+
 A ruling from execution: `flutter-navigation`'s description deferred route guards "until
 auth lands, ADR-001", which cites the Authentication row ADR-013 replaced; it cites
 ADR-013 instead, as the skill's body does.

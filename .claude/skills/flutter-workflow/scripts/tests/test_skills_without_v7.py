@@ -118,6 +118,12 @@ CITED_PATH = re.compile(
 PLACEHOLDER = re.compile(r"[<>*{}$…]")
 GENERATED = re.compile(r"\.g\.dart$|/generated/")
 
+# V7 had a `Failure` per error kind; V8 has the few `lib/core/error/failure.dart`
+# defines (ADR-011 D6), so a skill that names another sends the agent to a type
+# that does not exist.
+FAILURE_NAME = re.compile(r"\b[A-Z][A-Za-z0-9]*Failure\b")
+FAILURE_CLASS = re.compile(r"\bclass\s+([A-Z][A-Za-z0-9]*Failure)\b")
+
 SKIPPED_DIRECTORIES = {"tests", "__pycache__"}
 
 
@@ -150,6 +156,21 @@ def _missing_paths(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_S
                     relative = path.relative_to(root).as_posix()
                     missing.append(f"{relative}:{number}: {cited}")
     return missing
+
+
+def _unknown_failures(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_SKILLS) -> list[str]:
+    source = (root / "lib" / "core" / "error" / "failure.dart").read_text(encoding="utf-8")
+    known = set(FAILURE_CLASS.findall(source))
+    unknown = []
+    for name in names:
+        for path in _scanned_files(root / ".claude" / "skills" / name):
+            text = path.read_text(encoding="utf-8", errors="replace")
+            for number, line in enumerate(text.splitlines(), start=1):
+                for failure in FAILURE_NAME.findall(line):
+                    if failure not in known:
+                        relative = path.relative_to(root).as_posix()
+                        unknown.append(f"{relative}:{number}: {failure}")
+    return unknown
 
 
 def _occurrences(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_SKILLS) -> list[str]:
@@ -253,6 +274,28 @@ class ScanTest(unittest.TestCase):
 
         self.assertEqual(missing, [".claude/skills/flutter-example/SKILL.md:1: lib/absent.dart"])
 
+    def test_a_failure_a_skill_names_must_exist(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            error = root / "lib" / "core" / "error"
+            error.mkdir(parents=True)
+            (error / "failure.dart").write_text(
+                "sealed class Failure {}\n"
+                "final class ConstraintFailure extends Failure {}\n",
+                encoding="utf-8",
+            )
+            skill = root / ".claude" / "skills" / "flutter-example"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "A `Failure`, such as a `ConstraintFailure`.\n"
+                "return const NetworkFailure(message: 'offline');\n",
+                encoding="utf-8",
+            )
+
+            unknown = _unknown_failures(root, ("flutter-example",))
+
+        self.assertEqual(unknown, [".claude/skills/flutter-example/SKILL.md:2: NetworkFailure"])
+
 
 class RepoOwnedSkillsTest(unittest.TestCase):
     maxDiff = None
@@ -273,6 +316,9 @@ class RepoOwnedSkillsTest(unittest.TestCase):
 
     def test_every_path_a_skill_cites_exists(self):
         self.assertEqual(_missing_paths(), [])
+
+    def test_every_failure_a_skill_names_exists(self):
+        self.assertEqual(_unknown_failures(), [])
 
     def test_project_documentation_is_its_own_canonical_source(self):
         """The install receipt named a V7 checkout as the skill's source.

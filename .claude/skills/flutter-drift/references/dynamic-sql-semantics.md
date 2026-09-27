@@ -356,9 +356,9 @@ WHERE id = :id AND version = :expectedVersion;
 Then check the affected row count — zero means someone else wrote first, and that
 is a refusal, not a success. This becomes essential the moment there is
 autosave, import, or a second isolate writing. There is no `version` column
-here, and sync does not bring one: ADR-013 settles sync conflicts on the
-server, in the order it receives operations, with a `server_version` the server
-assigns.
+here, and sync does not bring one: the server settles sync conflicts and gives
+each synced row its `server_version` (ADR-013; ADR-014 sets how, which differs
+between a field patch and a command).
 
 **Conflict target.** An upsert's conflict target is business semantics, not a
 runtime option — SQLite fires `DO UPDATE` / `DO NOTHING` off a specific
