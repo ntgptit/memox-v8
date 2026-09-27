@@ -4,6 +4,8 @@
 The plan grows monotonically: every rule may add checks, tests or downstream
 features, but no rule can remove work selected by an earlier rule. Unknown and
 high-risk paths promote the plan to the complete non-golden host suite.
+
+`dod_check.sh --changed` is its only caller; V8's CI runs the full gate.
 """
 
 from __future__ import annotations
@@ -21,7 +23,6 @@ from typing import Iterable
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_IMPACT_MAP = SCRIPT_DIR / "verification_impact_map.json"
-PROMPT_PREFIX = "docs/prompt/"
 FEATURE_SOURCE_PREFIX = "lib/features/"
 FEATURE_TEST_PREFIX = "test/features/"
 LAYER_ORDER = ("domain", "data", "presentation")
@@ -45,6 +46,13 @@ def normalize_path(raw: str) -> str:
 
 @dataclass(frozen=True)
 class VerificationPlan:
+    """What `dod_check.sh --changed` runs, and why.
+
+    The gate acts on `needs_static`, `needs_host_tests` and
+    `local_test_targets`, and prints `risk`, `test_files` and `reasons`; the
+    other fields explain the selection.
+    """
+
     changed_paths: tuple[str, ...]
     affected_features: tuple[str, ...]
     affected_layers: tuple[str, ...]
@@ -52,31 +60,10 @@ class VerificationPlan:
     unmatched_paths: tuple[str, ...]
     test_files: tuple[str, ...]
     local_test_targets: tuple[str, ...]
-    changed_count: int
-    estimated_test_weight: int
-    shard_count: int
     risk: str
-    has_prompt_changes: bool
-    prompt_only: bool
-    docs_only: bool
-    code_required: bool
-    needs_contracts: bool
     needs_static: bool
     needs_host_tests: bool
-    needs_widgetbook: bool
-    needs_goldens: bool
-    needs_memox_api: bool
     full_suite: bool
-
-    @property
-    def shard_matrix(self) -> dict[str, list[dict[str, int]]]:
-        total = max(1, self.shard_count)
-        return {
-            "include": [
-                {"shard": index, "label": index + 1, "total": total}
-                for index in range(total)
-            ]
-        }
 
     def to_json_dict(self) -> dict[str, object]:
         payload = asdict(self)
@@ -87,7 +74,6 @@ class VerificationPlan:
         payload["unmatched_paths"] = list(self.unmatched_paths)
         payload["test_files"] = list(self.test_files)
         payload["local_test_targets"] = list(self.local_test_targets)
-        payload["shard_matrix"] = self.shard_matrix
         return payload
 
 
@@ -103,15 +89,12 @@ class ImpactMap:
     # nobody has classified.
     inert_prefixes: tuple[str, ...]
     inert_files: frozenset[str]
-    one_shard_max_weight: int
-    two_shard_max_weight: int
 
     @classmethod
     def load(cls, path: Path = DEFAULT_IMPACT_MAP) -> "ImpactMap":
         raw = json.loads(path.read_text(encoding="utf-8"))
         if raw.get("version") != 1:
             raise ValueError("unsupported verification impact-map version")
-        thresholds = raw["shard_weight_thresholds"]
         return cls(
             feature_dependencies={
                 key: tuple(value)
@@ -125,8 +108,6 @@ class ImpactMap:
             full_scope_files=frozenset(raw["full_scope_files"]),
             inert_prefixes=tuple(raw.get("inert_prefixes", ())),
             inert_files=frozenset(raw.get("inert_files", ())),
-            one_shard_max_weight=int(thresholds["one"]),
-            two_shard_max_weight=int(thresholds["two"]),
         )
 
 
@@ -141,14 +122,10 @@ class VerificationPlanBuilder:
         self.layers: set[str] = set()
         self.reasons: set[str] = set()
         self.unmatched_paths: set[str] = set()
-        self.needs_memox_api = False
         self.test_prefixes: set[str] = set()
         self.exact_test_files: set[str] = set()
-        self.has_prompt_changes = False
-        self.has_docs_changes = False
         self.has_code_changes = False
         self.requires_host_coverage = False
-        self.needs_widgetbook = False
         self.has_golden_image_changes = False
         self.full_suite = False
 
@@ -159,7 +136,6 @@ class VerificationPlanBuilder:
         self.full_suite = True
         self.has_code_changes = True
         self.requires_host_coverage = True
-        self.needs_widgetbook = True
         self.add_reason(reason)
         if unmatched_path:
             self.unmatched_paths.add(unmatched_path)
@@ -175,8 +151,6 @@ class VerificationPlanBuilder:
         self.add_reason(reason)
         for layer in normalized_layers:
             self.test_prefixes.add(f"test/features/{feature}/{layer}/")
-        if "presentation" in normalized_layers:
-            self.needs_widgetbook = True
 
     def require_downstream(self, feature: str, reason: str) -> None:
         pending = [feature]
@@ -199,7 +173,6 @@ class VerificationPlanBuilder:
         self.test_prefixes.update(
             {"test/features/", "test/app/", "test/shared/"}
         )
-        self.needs_widgetbook = True
         self.add_reason(reason)
 
     def require_test_path(self, path: str, reason: str) -> None:
@@ -230,33 +203,22 @@ class VerificationPlanBuilder:
             return
         if path.startswith("test/shared/"):
             self.test_prefixes.add("test/shared/")
-            self.needs_widgetbook = True
             return
         self.require_full("unrecognised test support path", unmatched_path=path)
 
     def classify_path(self, path: str) -> None:
         self.changed_paths.add(path)
 
-        if path.startswith(PROMPT_PREFIX):
-            self.has_prompt_changes = True
-            self.has_docs_changes = True
-            self.add_reason("prompt delivery contract changed")
-            return
-
         if path.startswith("docs/") or path in {"AGENTS.md", "CLAUDE.md", "README.md"}:
-            self.has_docs_changes = True
             self.add_reason("documentation contract changed")
             return
 
         if path.startswith(".claude/") and path.endswith(".md"):
-            self.has_docs_changes = True
             self.add_reason("agent workflow documentation changed")
             return
 
         # **Before the full-scope check, because `.github/` is a prefix there
-        # and an issue template is not a pipeline.** Measured: a one-file
-        # markdown template under `.github/` selected the entire Dart suite and
-        # the Windows golden job — 1847s of runner time to verify a paragraph.
+        # and an issue template is not a pipeline.**
         #
         # These are not "low risk" paths, they are paths that cannot reach the
         # build at all: git plumbing, editor settings, repository furniture.
@@ -274,34 +236,12 @@ class VerificationPlanBuilder:
             self.require_full("high-risk or verification-infrastructure path changed")
             return
 
-        # The Java backend is a build input, but not a Dart one. Without this branch
-        # `memox-api/**` reaches the unrecognised-path rule at the bottom and promotes
-        # itself to the full Flutter suite — goldens and Widgetbook included — none of
-        # which a Spring Boot change can fail. It selects its own Maven job instead.
-        if path.startswith("memox-api/"):
-            self.needs_memox_api = True
-            self.add_reason("memox-api changed; the Maven verify job covers it")
-            return
-
-        if path.startswith("widgetbook/"):
-            self.has_code_changes = True
-            self.needs_widgetbook = True
-            self.add_reason("Widgetbook catalog changed")
-            return
-
-        # **A picture is not code, and it was only ever reaching the full
-        # suite by accident.** `require_test_path` sets `has_code_changes`
-        # first thing and then finds no rule for a `.png`, so every golden
-        # image fell through to `require_full("unrecognised test support
-        # path")`. Measured on real history: two of the last forty commits were
-        # golden-regeneration PRs — 26 and 31 PNGs — and each one ran five host
-        # shards, `flutter analyze` and the Widgetbook smoke test. A PNG cannot
-        # fail any of them.
-        #
-        # What checks a regenerated picture is the golden job comparing it
-        # against a fresh render, and `needs_goldens` already fires on
-        # `/goldens/` independently of `code_required` — so returning here
-        # without claiming a code change selects exactly that job and no other.
+        # **A picture is not code.** Nothing the gate runs can fail on a
+        # committed golden image; CI's `goldens` job is what compares it
+        # against a fresh render. Returning here without claiming a code
+        # change keeps a plan of pictures alone at no static check and no host
+        # test, with the risk `pixels`. A picture beside a code change does not
+        # narrow the plan: the code's own rule selects its checks.
         if "/goldens/" in path and not path.endswith(".dart"):
             self.has_golden_image_changes = True
             self.add_reason("committed golden image changed")
@@ -344,7 +284,6 @@ class VerificationPlanBuilder:
             return
 
         if path.endswith(".md"):
-            self.has_docs_changes = True
             self.add_reason("markdown documentation changed")
             return
 
@@ -393,7 +332,7 @@ class VerificationPlanBuilder:
         consumer_tests = discover_test_consumers(
             self.root,
             {path for path in self.changed_paths if path.endswith(".dart")},
-            set(runnable_tests),
+            runnable_tests,
         )
         if consumer_tests:
             self.exact_test_files.update(consumer_tests)
@@ -402,8 +341,8 @@ class VerificationPlanBuilder:
             selected = runnable_tests
         else:
             selected = {
-                path: weight
-                for path, weight in runnable_tests.items()
+                path
+                for path in runnable_tests
                 if path in self.exact_test_files
                 or any(path.startswith(prefix) for prefix in self.test_prefixes)
             }
@@ -415,20 +354,6 @@ class VerificationPlanBuilder:
             selected = runnable_tests
             needs_host_tests = bool(selected)
 
-        estimated_weight = sum(selected.values())
-        local_targets = compress_test_targets(set(selected), set(runnable_tests))
-        shard_count = choose_shard_count(
-            estimated_weight,
-            len(selected),
-            self.impact_map.one_shard_max_weight,
-            self.impact_map.two_shard_max_weight,
-        ) if needs_host_tests else 0
-
-        changed = tuple(sorted(self.changed_paths))
-        prompt_only = bool(changed) and all(
-            path.startswith(PROMPT_PREFIX) for path in changed
-        )
-        docs_only = bool(changed) and not code_required
         # `pixels` rather than `docs` for a picture-only change: both require no
         # Dart verification, but calling a regenerated golden "docs" in the one
         # field a human reads at a glance is a small untruth in exactly the
@@ -442,71 +367,30 @@ class VerificationPlanBuilder:
             if self.has_golden_image_changes
             else "docs"
         )
-        # **Pixel comparison belongs on the PR, not only in a dispatch-only
-        # workflow.** `ci-full.yml` has always had a `goldens` job on Windows,
-        # and it is `workflow_dispatch:` — so in practice nothing ever compared
-        # a committed PNG against a fresh render. #337 changed how six
-        # components lay out, committed no goldens, went green on every check,
-        # and left 26 stale pictures on `main`; the gallery published a
-        # pre-#337 app until someone ran the suite by hand.
-        #
-        # Any code change can move a pixel, so `code_required` is the trigger.
-        # A change that touches the pictures themselves counts too, because a
-        # PR that only regenerates goldens is exactly the one whose claim needs
-        # checking — and PNGs are not code, so `code_required` is false there.
-        needs_goldens = code_required or any(
-            "/goldens/" in path or path.startswith("test/demo/")
-            for path in changed
-        )
         return VerificationPlan(
-            changed_paths=changed,
+            changed_paths=tuple(sorted(self.changed_paths)),
             affected_features=tuple(sorted(self.features)),
             affected_layers=tuple(sorted(self.layers)),
             reasons=tuple(sorted(self.reasons)),
             unmatched_paths=tuple(sorted(self.unmatched_paths)),
             test_files=tuple(sorted(selected)),
-            local_test_targets=local_targets,
-            changed_count=len(changed),
-            estimated_test_weight=estimated_weight,
-            shard_count=shard_count,
+            local_test_targets=compress_test_targets(selected, runnable_tests),
             risk=risk,
-            has_prompt_changes=self.has_prompt_changes,
-            prompt_only=prompt_only,
-            docs_only=docs_only,
-            code_required=code_required,
-            needs_contracts=True,
             needs_static=code_required,
             needs_host_tests=needs_host_tests,
-            needs_widgetbook=self.needs_widgetbook,
-            needs_goldens=needs_goldens,
-            needs_memox_api=self.needs_memox_api,
             full_suite=self.full_suite,
         )
-
-
-def choose_shard_count(
-    weight: int,
-    file_count: int,
-    one_shard_max_weight: int,
-    two_shard_max_weight: int,
-) -> int:
-    if file_count <= 0:
-        return 0
-    if weight <= one_shard_max_weight or file_count == 1:
-        return 1
-    if weight <= two_shard_max_weight or file_count < 5:
-        return min(2, file_count)
-    return min(5, file_count)
 
 
 def compress_test_targets(
     selected_files: set[str], all_test_files: set[str]
 ) -> tuple[str, ...]:
-    """Compress an exact plan to safe local CLI targets.
+    """Compress an exact selection to the fewest command-line targets.
 
-    GitHub shards need exact files. Windows' command line cannot carry hundreds
-    of them, so the local gate replaces a complete selected subtree with that
-    directory while proving no unselected tracked test lives below it.
+    `dod_check.sh` hands the targets to `flutter test` on one command line,
+    which on Windows cannot carry hundreds of files. A complete selected
+    subtree becomes its directory, and only when no unselected test lives
+    below it.
     """
     if not selected_files:
         return ()
@@ -537,14 +421,11 @@ def compress_test_targets(
 
 
 # **The worktree scan is memoized per process, and that is a scheduling fix
-# rather than a correctness one.** Sealing a plan reads every tracked Dart file
-# twice — once to weigh the runnable tests, once to build the reverse import
-# graph — which is ~2,150 files on this repo and about 1.2s. One `build_plan`
-# per process pays that once and nobody notices; `test_ci_tooling.py` calls it
-# 32 times against an unchanging tree and paid it 32 times, which measured
-# **37.5s of the suite's 43s** (2026-08-29). The gate that suite belongs to runs
-# on every local iteration, so that was most of the wait between "fix a doc
-# line" and "learn whether the guard agrees".
+# rather than a correctness one.** Sealing a plan reads each test file to find
+# the runnable ones, and every tracked Dart file to build the reverse import
+# graph. The CLI builds one plan per process and pays that once;
+# `test_ci_tooling.py` builds many plans against unchanging trees and would
+# otherwise pay it for every one.
 #
 # **Keyed by resolved root, and only valid within one process.** The CLI builds
 # one plan and exits, so nothing here can observe a tree that changed underneath
@@ -556,10 +437,9 @@ def compress_test_targets(
 # There is deliberately no `clear()` here. Nothing needs one — a process that
 # wanted a second answer would be a process that changed the tree between two
 # plans, and the plan is a statement about one tree. Adding the escape hatch
-# before a caller exists is the habit this repository names in AD-14 and
-# refuses everywhere else.
+# before a caller exists is the speculative structure `CLAUDE.md` refuses.
 _WORKTREE_SCAN_CACHE: dict[str, frozenset[str]] = {}
-_RUNNABLE_TEST_CACHE: dict[str, dict[str, int]] = {}
+_RUNNABLE_TEST_CACHE: dict[str, frozenset[str]] = {}
 _REVERSE_IMPORT_CACHE: dict[str, dict[str, set[str]]] = {}
 
 
@@ -606,25 +486,22 @@ def is_golden_only_test(path: Path) -> bool:
     )
 
 
-def discover_tests(root: Path) -> dict[str, int]:
+def discover_tests(root: Path) -> set[str]:
+    """The runnable test files: every `_test.dart` under `test/` that is not
+    golden-only."""
     key = str(root.resolve())
     cached = _RUNNABLE_TEST_CACHE.get(key)
     if cached is not None:
-        return dict(cached)
-    paths = sorted(
+        return set(cached)
+    paths = {
         path
         for path in discover_worktree_dart_files(root)
         if path.startswith("test/")
         and path.endswith("_test.dart")
         and not is_golden_only_test(root / path)
-    )
-    declaration = re.compile(r"\b(?:testWidgets|testGoldens|test)\s*\(")
-    weights = {
-        path: max(1, len(declaration.findall((root / path).read_text(encoding="utf-8"))))
-        for path in paths
     }
-    _RUNNABLE_TEST_CACHE[key] = dict(weights)
-    return weights
+    _RUNNABLE_TEST_CACHE[key] = frozenset(paths)
+    return paths
 
 
 def _package_name(root: Path) -> str:
@@ -718,39 +595,10 @@ def build_plan(
     return builder.seal()
 
 
-def _bool(value: bool) -> str:
-    return "true" if value else "false"
-
-
-def write_github_output(path: Path, plan: VerificationPlan) -> None:
-    values = {
-        "changed_count": str(plan.changed_count),
-        "has_prompt_changes": _bool(plan.has_prompt_changes),
-        "prompt_only": _bool(plan.prompt_only),
-        "docs_only": _bool(plan.docs_only),
-        "code_required": _bool(plan.code_required),
-        "needs_contracts": _bool(plan.needs_contracts),
-        "needs_static": _bool(plan.needs_static),
-        "needs_host_tests": _bool(plan.needs_host_tests),
-        "needs_widgetbook": _bool(plan.needs_widgetbook),
-        "needs_goldens": _bool(plan.needs_goldens),
-        "needs_memox_api": _bool(plan.needs_memox_api),
-        "full_suite": _bool(plan.full_suite),
-        "risk": plan.risk,
-        "shard_count": str(plan.shard_count),
-        "shard_matrix": json.dumps(plan.shard_matrix, separators=(",", ":")),
-        "test_files_json": json.dumps(plan.test_files, separators=(",", ":")),
-    }
-    with path.open("a", encoding="utf-8") as output:
-        for key, value in values.items():
-            output.write(f"{key}={value}\n")
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--impact-map", type=Path, default=DEFAULT_IMPACT_MAP)
-    parser.add_argument("--github-output", type=Path)
     parser.add_argument("--json-output", type=Path)
     parser.add_argument("--paths-file", type=Path)
     parser.add_argument("--force-full", action="store_true")
@@ -766,13 +614,11 @@ def main() -> int:
         impact_map=ImpactMap.load(args.impact_map),
         force_full=args.force_full,
     )
-    if args.github_output:
-        write_github_output(args.github_output, plan)
     payload = json.dumps(plan.to_json_dict(), ensure_ascii=False, separators=(",", ":"))
     if args.json_output:
         args.json_output.write_text(payload + "\n", encoding="utf-8")
-    if not args.github_output and not args.json_output:
-        print(payload)
+        return 0
+    print(payload)
     return 0
 
 
