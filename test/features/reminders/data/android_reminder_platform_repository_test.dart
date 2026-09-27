@@ -144,16 +144,24 @@ void main() {
     test('a notification that will not go still leaves the alarm cancelled, '
         'and says so', () async {
       plugins.failing.add('cancelNotification');
-      expect(await platform.cancel(), _rejected(ReminderRejection.couldNotCancel));
+      expect(
+        await platform.cancel(),
+        _rejected(ReminderRejection.couldNotCancel),
+      );
       expect(plugins.calls, containsAll(['cancelAlarm', 'cancelNotification']));
     });
 
-    test('an alarm that will not cancel still lets the notification go',
-        () async {
-      plugins.failing.add('cancelAlarm');
-      expect(await platform.cancel(), _rejected(ReminderRejection.couldNotCancel));
-      expect(plugins.calls, contains('cancelNotification'));
-    });
+    test(
+      'an alarm that will not cancel still lets the notification go',
+      () async {
+        plugins.failing.add('cancelAlarm');
+        expect(
+          await platform.cancel(),
+          _rejected(ReminderRejection.couldNotCancel),
+        );
+        expect(plugins.calls, contains('cancelNotification'));
+      },
+    );
 
     test('a refusal or a throw is couldNotCancel', () async {
       plugins.refuses = true;
