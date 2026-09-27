@@ -380,6 +380,56 @@ def destination_exists(dest: str) -> bool:
     return (g.DOCS / pattern).exists()
 
 
+# ------------------------------------------------------------ V7 residue
+
+# V7 is a reference, not a template (CLAUDE.md). These name V7 things V8 does
+# not have: its component catalog, its progress ledger and phase checklist, and
+# its repository (local backend spec 2026-09-27 §6, BE-D7).
+V7_MARKER = re.compile(
+    r"widgetbook|docs/wbs\.md|docs/checklist\.md|memox-v7|checklist phases?\b",
+    re.IGNORECASE,
+)
+V7_SCAN = (".claude/skills", "docs")
+# Records of what was decided or done then; they name V7 on purpose.
+V7_HISTORY = {
+    "docs/shared/decisions": "an ADR records the context its decision was taken in",
+    "docs/superpowers/specs": "a spec records what was decided on its date",
+    "docs/superpowers/plans": "a plan records what was done on its date",
+    "docs/wbs_BE.md": "its rows and log name what BE-D5, BE-D6 and BE-D7 removed",
+    ".claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py":
+        "asserts that Widgetbook stays out of the gate",
+    "tools/docs/test_check.py": "the markers are this check's test data",
+}
+
+
+def is_history(relative: str) -> bool:
+    return any(relative == path or relative.startswith(path + "/") for path in V7_HISTORY)
+
+
+def v7_residue(root: Path) -> list[tuple[Path, int, str]]:
+    """Every V7 marker in a text file under V7_SCAN, outside V7_HISTORY."""
+    hits: list[tuple[Path, int, str]] = []
+    for scan in V7_SCAN:
+        for path in sorted((root / scan).rglob("*")):
+            relative = path.relative_to(root).as_posix()
+            if not path.is_file() or "__pycache__" in path.parts or is_history(relative):
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue  # binary: an image, a font, a golden
+            for number, line in enumerate(text.splitlines(), start=1):
+                match = V7_MARKER.search(line)
+                if match:
+                    hits.append((path, number, match.group(0)))
+    return hits
+
+
+def check_v7_residue(report: Report) -> None:
+    for path, number, marker in v7_residue(g.ROOT):
+        report.error(f"{show(path)}:{number}", f"`{marker}` names V7; V8 does not have it (BE-D7)")
+
+
 # ------------------------------------------------------------------- main
 
 
@@ -405,6 +455,7 @@ def run(plan: Path | None) -> Report:
     check_text(docs, report)
     check_generated(report)
     check_design_handoff(report)
+    check_v7_residue(report)
     if plan is not None:
         check_plan(plan, report)
     check_warnings(docs, report)
