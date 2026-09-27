@@ -98,6 +98,9 @@ Out of scope:
     `row: null`.
 
   `OperationResult.current` changes from one change to a list.
+  The app deletes its local row for `row: null` only when the code is
+  `DECK_PARENT_MISSING`, and keeps and logs it otherwise
+  ([BE-E7 design](2026-09-28-app-command-sync-design.md) §9).
 - **REST takes the same per-user lock** before it writes, so REST and sync
   operations of one user never interleave.
 
