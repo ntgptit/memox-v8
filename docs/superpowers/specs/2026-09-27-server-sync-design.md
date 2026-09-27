@@ -195,6 +195,10 @@ created_at DATETIME, attempts INTEGER)`
   and an acknowledgement deletes the entry only if its `op_id` is unchanged.
   Writes that apply server data run under `sync_state.applying_remote`, which
   the triggers skip.
+- Text pushed is already NFC: migration v4 → v5 and every write normalise it
+  (BE-C5), so the server compares strings as stored. The v4 → v5 step
+  rewrites deck names under the capture triggers, so a renamed deck is queued
+  and its NFC name reaches the server.
 
 ## 9. Rollout
 

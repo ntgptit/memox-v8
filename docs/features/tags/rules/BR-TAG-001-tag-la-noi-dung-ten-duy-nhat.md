@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Tag MUST là nội dung, quan hệ nhiều-nhiều với thẻ. Tên tag MUST không rỗng sau trim, MUST tối đa 50 ký tự, MUST NOT chứa ký tự điều khiển, và MUST là duy nhất không phân biệt hoa thường.
+Tag MUST là nội dung, quan hệ nhiều-nhiều với thẻ. Tên tag MUST không rỗng sau trim, MUST tối đa 50 ký tự, MUST NOT chứa ký tự điều khiển, và MUST là duy nhất không phân biệt hoa thường hay dạng Unicode (so trên dạng NFC).
 
 **Enforced by:** rule + db
 **Liên quan:** BR-SRS-021

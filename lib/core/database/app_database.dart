@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/schema_versions.dart';
 
 part 'app_database.g.dart';
@@ -25,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -81,6 +82,12 @@ class AppDatabase extends _$AppDatabase {
           _seedOutbox('delete_batch', 'delete_batches', 'id'),
         );
         await customStatement(_seedOutbox('deck', 'deck', 'depth, id'));
+      },
+      from4To5: (m, schema) async {
+        // G1 (BE-C5): user text in NFC, folded columns recomputed, tags that
+        // become one name merged; no structure changes (local backend spec
+        // 2026-09-27 §4).
+        await normalizeStoredText(this);
       },
     ),
     beforeOpen: (details) async {

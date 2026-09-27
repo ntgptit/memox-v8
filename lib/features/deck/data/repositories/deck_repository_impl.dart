@@ -20,6 +20,7 @@ import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
+import 'package:memox/core/text/stored_text.dart';
 
 /// Every write reads the rows its rules need and writes inside one
 /// transaction, so a rule never judges data another write has changed.
@@ -50,7 +51,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       await _dao.insert(
         DeckCompanion.insert(
           id: id,
-          name: name.trim(),
+          name: storedText(name),
           rootId: id,
           depth: 1,
           contentType: Value(DeckContentType.deck.name),
@@ -91,7 +92,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       await _dao.insert(
         DeckCompanion.insert(
           id: id,
-          name: name.trim(),
+          name: storedText(name),
           parentId: Value(parentId),
           rootId: parent.rootId,
           depth: parent.depth + 1,
@@ -156,7 +157,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       if (await _dao.findRow(deckId) == null) {
         return const Rejected(DeckRejection.notFound);
       }
-      await _dao.rename(deckId, name.trim(), at);
+      await _dao.rename(deckId, storedText(name), at);
       return const Ok(null);
     });
   }

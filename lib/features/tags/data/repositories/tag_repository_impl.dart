@@ -8,6 +8,7 @@ import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
+import 'package:memox/core/text/stored_text.dart';
 
 /// Every method checks its rules on rows read inside its transaction, and
 /// writes only once every rule has passed: a refusal writes nothing.
@@ -150,7 +151,7 @@ final class TagRepositoryImpl implements TagRepository {
       case Ok(value: TagRenameRename()):
         await _dao.rename(
           tagId,
-          name: name.trim(),
+          name: storedText(name),
           nameFolded: TagEntity.fold(name),
         );
         return const Ok(null);
@@ -185,7 +186,7 @@ final class TagRepositoryImpl implements TagRepository {
     }
     final source = await _dao.findById(tagId);
     if (source == null) return const Rejected(TagRejection.notFound);
-    if (name.trim() == source.name) return const Ok(TagRenameUnchanged());
+    if (storedText(name) == source.name) return const Ok(TagRenameUnchanged());
     final target = await _dao.findByFoldedName(TagEntity.fold(name));
     if (target == null || target.id == tagId) {
       return const Ok(TagRenameRename());
@@ -207,7 +208,7 @@ final class TagRepositoryImpl implements TagRepository {
     await _dao.insertTag(
       TagsCompanion.insert(
         id: id,
-        name: name.trim(),
+        name: storedText(name),
         nameFolded: TagEntity.fold(name),
         createdAt: at,
       ),

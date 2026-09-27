@@ -8,10 +8,11 @@ import 'package:memox/features/study_mode/domain/models/study_answer_model.dart'
 import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dart';
 
 /// The comparison policy a `fill` turn is judged by, stored on the turn: the
-/// typed term, trimmed and lower-cased with its accents kept, against
-/// `front_folded`. A change to the policy raises it and never touches the
+/// typed term folded (trimmed, NFC, lower-cased, accents kept) against
+/// `front_folded`. Version 2 added NFC (BE-C5); version 1 had no Unicode
+/// normalisation. A change to the policy raises it and never touches the
 /// turns already recorded (BR-STUDY-026, BR-STUDY-027).
-const fillComparisonVersion = 1;
+const fillComparisonVersion = 2;
 
 /// `fill`: the meaning is shown and the person types the term. Only a card
 /// with an `example` can be asked; the others are skipped in this stage and

@@ -138,6 +138,26 @@ void main() {
       );
     });
 
+    test('a draft written in the other Unicode form is a duplicate (BE-C5, '
+        'BR-TRANSFER-003)', () async {
+      await CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db, now: _now),
+        TagRepositoryImpl(db, now: _now),
+        now: _now,
+      ).card(leaf.id, const CardDraft(front: 'c\u00F4ng', back: 'work'));
+
+      final result = _ok(
+        await cards.importCards(
+          deckId: leaf.id,
+          drafts: const [CardDraft(front: 'co\u0302ng', back: 'work')],
+          includeDuplicates: false,
+        ),
+      );
+
+      expect((result.written, result.skippedDuplicates), (0, 1));
+    });
+
     test('duplicates of the deck as it is now, and within the batch, are skipped by default', () async {
       await insertCard(
         db,

@@ -75,6 +75,21 @@ void main() {
   tearDown(() => db.close());
 
   group('attachByName', () {
+    test('a name typed decomposed reuses the tag stored precomposed, and a '
+        'new tag is stored in NFC (BE-C5)', () async {
+      await _cards(db, ['c1', 'c2']);
+      await tags.attachByName(
+        cardIds: {'c1'},
+        name: 'Co\u0302ng vie\u0323\u0302c',
+      );
+
+      await tags.attachByName(cardIds: {'c2'}, name: 'c\u00F4ng vi\u1EC7c');
+
+      expect(await _count(db, 'tags'), 1);
+      expect(await _tagNamesOf(db, 'c1'), ['C\u00F4ng vi\u1EC7c']);
+      expect(await _tagNamesOf(db, 'c2'), ['C\u00F4ng vi\u1EC7c']);
+    });
+
     test('creates the tag once and links every card (BR-TAG-001)', () async {
       await _cards(db, ['c1', 'c2']);
 

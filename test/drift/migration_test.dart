@@ -8,7 +8,8 @@ import 'generated/schema.dart';
 
 // BE-D1: every schema version upgrades to the current one, with its rows and
 // their values intact (spec §5.3; .claude/skills/flutter-drift/references/
-// migrations.md). v3 is the Trash's (trash spec §5.3).
+// migrations.md). v3 is the Trash's (trash spec §5.3); v4 is sync's (ADR-013);
+// v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -108,22 +109,28 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v4', () async {
+  test('v1 upgrades to the schema of v5', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 4);
+    await verifier.migrateAndValidate(db, 5);
   });
 
-  test('v2 upgrades to the schema of v4', () async {
+  test('v2 upgrades to the schema of v5', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 4);
+    await verifier.migrateAndValidate(db, 5);
   });
 
-  test('v3 upgrades to the schema of v4', () async {
+  test('v3 upgrades to the schema of v5', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 4);
+    await verifier.migrateAndValidate(db, 5);
+  });
+
+  test('v4 upgrades to the schema of v5', () async {
+    final db = AppDatabase(await verifier.startAt(4));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 5);
   });
 
   test(
@@ -140,7 +147,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 4);
+      await verifier.migrateAndValidate(db, 5);
 
       final queued = await db
           .customSelect(
@@ -157,11 +164,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v4, the one an upgrade ends at',
+    'a new database has the schema of v5, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 4);
+      await verifier.migrateAndValidate(db, 5);
     },
   );
 
@@ -179,7 +186,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 4);
+      await verifier.migrateAndValidate(db, 5);
     });
     tearDown(() => db.close());
 
@@ -242,7 +249,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 4);
+      await verifier.migrateAndValidate(db, 5);
     });
     tearDown(() => db.close());
 
