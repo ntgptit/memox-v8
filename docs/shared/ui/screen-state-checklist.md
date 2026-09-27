@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **175**; một phần **3**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **197**; một phần **3**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -43,9 +43,9 @@ Kit có **26 màn, 211 state**. Xong **175**; một phần **3**; đã dựng nh
 | 05 | Tags | FE-B2 | 12 | 12 | 0 | 0 | 0 | [05-tags.md](screen-handoff/05-tags.md) |
 | 06 | Trash | FE-B1 | 15 | 15 | 0 | 0 | 0 | [06-trash.md](screen-handoff/06-trash.md) |
 | 07 | Card list | FE-A2 | 15 | 14 | 0 | 0 | 1 | [07-card-list.md](screen-handoff/07-card-list.md) |
-| 08 | Card create | FE-A2 | 9 | 0 | 9 | 0 | 0 | — |
-| 09 | Card edit | FE-A2 | 9 | 2 | 7 | 0 | 0 | — |
-| 10 | Card detail | FE-A2 | 7 | 1 | 6 | 0 | 0 | — |
+| 08 | Card create | FE-A2 | 9 | 9 | 0 | 0 | 0 | [08-card-create.md](screen-handoff/08-card-create.md) |
+| 09 | Card edit | FE-A2 | 9 | 9 | 0 | 0 | 0 | [09-card-edit.md](screen-handoff/09-card-edit.md) |
+| 10 | Card detail | FE-A2 | 7 | 7 | 0 | 0 | 0 | [10-card-detail.md](screen-handoff/10-card-detail.md) |
 | 11 | Card import | FE-B3 | 16 | 16 | 0 | 0 | 0 | [11-card-import.md](screen-handoff/11-card-import.md) |
 | 12 | Card export | FE-B3 | 9 | 9 | 0 | 0 | 0 | [12-card-export.md](screen-handoff/12-card-export.md) |
 | 13 | Study home | FE-A8 | 7 | 7 | 0 | 0 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
@@ -204,48 +204,48 @@ FE-A2 · [07-card-list.md](screen-handoff/07-card-list.md)
 
 ### 08 · Card create
 
-FE-A2 · chưa có detail file
+FE-A2 · [08-card-create.md](screen-handoff/08-card-create.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [~] | Empty | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Valid | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Details open | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Back empty | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Front too long | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | 10 tags | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Deck rejects | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Saving | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Save failed | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
+| [x] | Empty | `emptyForm` | xong | Save tắt tới khi hợp lệ. |
+| [x] | Valid | `valid` | xong |  |
+| [x] | Details open | `details` | xong | Ba trường tùy chọn là ô nhập thật. |
+| [x] | Back empty | `validationErr` | xong | Lỗi hiện sau khi chạm trường (P4a-L2). |
+| [x] | Front too long | `frontTooLong` | xong | Lỗi hiện sau khi chạm trường. |
+| [x] | 10 tags | `tagLimit` | xong | Rút Add tag, hiện cảnh báo (BR-TAG-002). |
+| [x] | Deck rejects | `deckRejects` | xong | Câu chữ khác kit: không có đường chọn deck khác (§9 dòng 81). |
+| [x] | Saving | `saving` | xong | Spinner thay nhãn nút (§9 dòng 46). |
+| [x] | Save failed | `saveFailed` | xong |  |
 
 ### 09 · Card edit
 
-FE-A2 · chưa có detail file
+FE-A2 · [09-card-edit.md](screen-handoff/09-card-edit.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [~] | Loaded | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Loading | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Load error | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
+| [x] | Loaded | `loaded` | xong |  |
+| [x] | Loading | `loading` | xong | `MxSkeletonList` chung thay skeleton theo hình trường (§9 dòng 125). |
+| [x] | Load error | `loadError` | xong | Thân lỗi dùng câu chung của app. |
 | [x] | Card gone | `notFound` | xong | Căn theo kit ở FE-B1 (câu chữ Trash, Open Trash). |
-| [~] | Validation | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Saving | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Save failed | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
-| [~] | Discard | — | đã dựng, chưa đối chiếu | Dựng ở #33; lệch ghi ở UI-base §9 dòng 79–84; chưa có detail file. |
+| [x] | Validation | `validationErr` | xong | Lỗi hiện sau khi chạm trường (P4a-L2). |
+| [x] | Saving | `dirtySaving` | xong | Spinner thay nhãn nút (§9 dòng 46). |
+| [x] | Save failed | `saveFailed` | xong |  |
+| [x] | Discard | `discard` | xong | Thân hộp thoại nêu trường đã sửa. |
 | [x] | Move to Trash | `delConfirm` | xong | Card "More" và hộp thoại của FE-B1 (D13). |
 
 ### 10 · Card detail
 
-FE-A2 · chưa có detail file
+FE-A2 · [10-card-detail.md](screen-handoff/10-card-detail.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [~] | Loaded | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
-| [~] | More history | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
-| [~] | Load more failed | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
-| [~] | No history | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
-| [~] | Loading | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
-| [~] | Error | — | đã dựng, chưa đối chiếu | Dựng ở #35, #36; lệch ghi ở UI-base §9 dòng 85–90; chưa có detail file. |
+| [x] | Loaded | `loaded` | xong | Badge và cờ nằm trên nội dung (§9 dòng 89); lịch sử không có rail (§9 dòng 86). |
+| [x] | More history | `loadMore` | xong | Nút `MxButton` secondary "Load older history". |
+| [x] | Load more failed | `loadMoreFailed` | xong | Retry nằm dưới câu báo (§9 dòng 50). |
+| [x] | No history | `empty` | xong |  |
+| [x] | Loading | `loading` | xong | `MxSkeletonList` chung (§9 dòng 125). |
+| [x] | Error | `error` | xong | Thân lỗi dùng câu chung của app. |
 | [x] | Not found | `notFound` | xong | Căn theo kit ở FE-B1 (Open Trash, D11). |
 
 ### 11 · Card import
@@ -486,3 +486,5 @@ FE-A3 · [26-language.md](screen-handoff/26-language.md)
 - **Cập nhật ngày 2026-09-27:** FE-A3 plan 2 dựng màn 15; 7 state chuyển sang xong.
 - **Cập nhật ngày 2026-09-27:** FE-B2 + FE-B4 dựng màn 03 và 05, `rootEmpty` của màn 01 và
   chip Tags của màn 07; 24 state chuyển sang xong.
+- **Cập nhật ngày 2026-09-27:** màn 08, 09 và 10 đã đối chiếu với kit ở #103 (FE-A2), với
+  detail file riêng; 22 state chuyển sang xong.
