@@ -56,9 +56,13 @@
   "@libraryEmptyTitle": {
     "description": "First-run empty state title: the Library has no deck."
   },
-  "libraryEmptyBody": "A deck groups the sub-decks that hold your cards. Create one to begin.",
+  "libraryEmptyBody": "A deck groups the sub-decks that hold your cards. Create one, or copy a starter deck to begin with content.",
   "@libraryEmptyBody": {
     "description": "First-run empty state body."
+  },
+  "libraryBrowseStarterDecks": "Browse starter decks",
+  "@libraryBrowseStarterDecks": {
+    "description": "Library root empty state: opens Starter decks (screen 03; FE-B4 spec §5.4)."
   },
   "libraryNothingDueTitle": "Nothing due right now",
   "@libraryNothingDueTitle": {
@@ -2297,30 +2301,6 @@
       }
     },
     "description": "Screen handoff 02 (library alignment phase D): resetDoneToast."
-  },
-  "libraryComingSoon": "Coming soon",
-  "@libraryComingSoon": {
-    "description": "Library app bar action and sheet title: features that arrive later (spec A4, amended)."
-  },
-  "libraryComingSoonBody": "These arrive in a later version. Everything you add now is kept.",
-  "@libraryComingSoonBody": {
-    "description": "Coming soon sheet: the line under its title."
-  },
-  "comingSoonStarterDecksBody": "Ready-made decks to copy.",
-  "@comingSoonStarterDecksBody": {
-    "description": "Coming soon: what starter decks do."
-  },
-  "comingSoonTagsBody": "Label cards, filter by label.",
-  "@comingSoonTagsBody": {
-    "description": "Coming soon: what tags do."
-  },
-  "comingSoonProgressSort": "Sort by progress",
-  "@comingSoonProgressSort": {
-    "description": "Coming soon: the progress sort's name."
-  },
-  "comingSoonProgressSortBody": "Least mastered decks first.",
-  "@comingSoonProgressSortBody": {
-    "description": "Coming soon: what the progress sort does."
   },
   "cardDeckProgress": "Deck progress · {algorithm}",
   "@cardDeckProgress": {
