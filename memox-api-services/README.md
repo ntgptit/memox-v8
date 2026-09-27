@@ -50,12 +50,13 @@ to have no API.
 
 The shared code in `com.memox.common` that every feature reuses.
 
-- **Errors:** throw `BusinessException(errorCode, detail)`, where `errorCode`
-  comes from the feature's own enum implementing `ErrorCode`, for example
-  `DeckErrorCode.DECK_NOT_FOUND`. Every error response is RFC 9457
-  `application/problem+json` with a `code` property; validation errors add
-  `errors: [{field, message}]`. `GlobalExceptionHandler` never returns SQL,
-  constraint names or stack traces.
+- **Errors:** throw `new BusinessException(ErrorCode.SOME_CODE)`. A feature
+  adds its codes to the `ErrorCode` enum after the generic ones, and adds
+  their client-facing text to `messages.properties` as `error.<NAME>`.
+  Every error response is RFC 9457 `application/problem+json` with a `code`
+  property; validation errors add `errors: [{field, message}]`, and a
+  database constraint violation is a 409 `CONFLICT`. `GlobalExceptionHandler`
+  never returns SQL, constraint names or stack traces.
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the

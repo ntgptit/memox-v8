@@ -26,7 +26,7 @@ Success means:
 
 | Topic | Decision | Why |
 |---|---|---|
-| Error body | Spring `ProblemDetail` (RFC 9457), plus the properties `code` and, for validation, `errors` | Native to Spring 6; no custom envelope to maintain |
+| Error body | Spring `ProblemDetail` (RFC 9457), plus the properties `code` and, for validation, `errors`; text from `messages.properties` (the #100 design, see 5.2) | Native to Spring 6; no custom envelope to maintain |
 | Paging | `PageQuery<TSort>`, `SortSpec<TSort>`, `SortDirection`, `PagingResponse<T>` in the base now | Deck, card and search lists all need it |
 | Test database | Testcontainers PostgreSQL; H2 removed | Same engine as production (CTE, window functions, `uuid`, `timestamptz`) |
 | Primary keys | `java.util.UUID` in Java, native `uuid` column in PostgreSQL | ADR-007: keys are client-generated UUIDs; the native type is 16 bytes and indexes well. The API carries the canonical string form |
@@ -93,28 +93,35 @@ mybatis:
 
 ### 5.2 Errors (`common.exception`)
 
-- `ErrorCode` interface: `String code()`, `HttpStatus status()`. Feature
-  enums implement it, for example `DeckErrorCode.DECK_NOT_FOUND`.
-- `CommonErrorCode` enum, limited to what the handler below produces:
-  `VALIDATION_FAILED` (400), `BAD_REQUEST` (400), `NOT_FOUND` (404),
-  `METHOD_NOT_ALLOWED` (405), `DATA_CONFLICT` (409),
-  `UNSUPPORTED_MEDIA_TYPE` (415), `INTERNAL_ERROR` (500). Its codes equal
-  the constant names. Security errors (401, 403) are raised in filters,
-  before the advice, and belong to the security spec.
-- `BusinessException extends RuntimeException`: holds an `ErrorCode` and a
-  client-safe `detail` message. It is the only exception class; the HTTP
-  status comes from the code.
-- `GlobalExceptionHandler extends ResponseEntityExceptionHandler`
-  (`@RestControllerAdvice`):
+Superseded during integration: PR #100 landed on `master` first with its own
+error design, and the owner chose to keep it and patch its gaps. The design
+in force is:
+
+- `ErrorCode` is one central enum. Each constant carries an `HttpStatus`,
+  and its client-facing text lives in `messages.properties` under
+  `error.<NAME>`. Feature codes are added after the generic ones, so
+  `ErrorCode.fromStatus` picks a generic code for a status raised by Spring
+  MVC.
+- `BusinessException(ErrorCode)` is the one exception class for rule
+  violations. It carries no free-text detail.
+- `GlobalExceptionHandler extends ResponseEntityExceptionHandler` sends
+  every path through `handleExceptionInternal`. The `detail` always comes
+  from `messages.properties`, 5xx errors are logged with their stack trace,
+  and 4xx errors are logged with only the exception class.
 
 | Exception | Status | `code` | Body extras |
 |---|---|---|---|
-| `BusinessException` | from its `ErrorCode` | from its `ErrorCode` | `detail` = the exception's detail |
-| `MethodArgumentNotValidException`, `HandlerMethodValidationException` | 400 | `VALIDATION_FAILED` | `errors: [{field, message}]` |
-| `ConstraintViolationException` | 400 | `VALIDATION_FAILED` | `errors: [{field, message}]` |
-| `DataIntegrityViolationException` (includes `DuplicateKeyException`) | 409 | `DATA_CONFLICT` | generic detail; the cause is logged at `WARN`, never returned |
-| any other Spring MVC exception handled by the parent | parent's status | the `CommonErrorCode` with that status (404, 405, 415); otherwise `BAD_REQUEST` for 4xx and `INTERNAL_ERROR` for 5xx | added in `handleExceptionInternal` |
-| `Exception` | 500 | `INTERNAL_ERROR` | generic detail; logged at `ERROR` with the exception |
+| `BusinessException` | from its `ErrorCode` | its `ErrorCode` | — |
+| `BindException` / `MethodArgumentNotValidException`, `HandlerMethodValidationException`, `ConstraintViolationException` | 400 | `VALIDATION_FAILED` | `errors: [{field, message}]` (parameter errors use the parameter name) |
+| `DataIntegrityViolationException` (includes `DuplicateKeyException`) | 409 | `CONFLICT` | generic detail; neither the SQL nor the constraint is returned |
+| `AccessDeniedException` | 403 | `FORBIDDEN` | — |
+| any other Spring MVC exception handled by the parent | parent's status | `ErrorCode.fromStatus` | — |
+| `Exception` | 500 | `INTERNAL_ERROR` | generic detail |
+
+This branch added three things to #100: the `errors` list for
+`HandlerMethodValidationException`, the `ConstraintViolationException`
+mapping (it used to fall into the 500 catch-all), and the 409 mapping for
+`DataIntegrityViolationException` (also a 500 before).
 
 ### 5.3 Type handlers (`common.type_handler`)
 
@@ -146,7 +153,7 @@ mybatis:
 | `BaseEnumTypeHandlerTest` | unit, Mockito on JDBC | enum → DB, DB → enum, `NULL`, unknown code |
 | `PageQueryTest` | unit, Bean Validation | defaults, `page < 0`, `size` 0 and above max, `offset()` |
 | `PagingResponseTest` | unit | `totalPages`, `hasNext` and `hasPrevious` on the first, middle, last and empty pages |
-| `GlobalExceptionHandlerTest` | `@WebMvcTest` with a test-only controller, security filters off | each row of the 5.2 table: status, `application/problem+json`, `code`, `errors`, no leaked SQL or stack trace |
+| `GlobalExceptionHandlerTests` (from #100, extended) | `@WebMvcTest` with a test-only controller and `@WithMockUser` | each row of the 5.2 table: status, `application/problem+json`, `code`, `errors`, no leaked SQL or stack trace |
 | `MyBatisBaseIT` | `@MybatisTest` + Testcontainers PostgreSQL 18 | a test-only mapper and its XML under `src/test/resources/mapper/` are loaded; `UUID`, a code enum and `Instant` round-trip unchanged |
 | `MemoxApiServicesApplicationTests` | `@SpringBootTest` + the shared `TestcontainersConfiguration` | the full context starts, Flyway included |
 
@@ -166,5 +173,5 @@ From now on the gate `./mvnw verify` needs a running Docker.
 ## 8. Documentation
 
 `memox-api-services/README.md` gains a short "Base" section: the error
-format, the paging contract, how a feature adds an `ErrorCode` or a code
+format, the paging contract, how a feature adds an `ErrorCode` constant or a code
 enum, the `uuid`/`timestamptz` column rules, and that the gate needs Docker.
