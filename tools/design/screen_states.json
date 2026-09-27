@@ -263,6 +263,21 @@
       ]
     },
     {
+      "num": "22",
+      "dir": "22-progress",
+      "title": "Progress",
+      "states": [
+        { "id": "loaded", "label": "Last 7 days" },
+        { "id": "month", "label": "Last 30 days" },
+        { "id": "held", "label": "Streak held" },
+        { "id": "lost", "label": "Streak lost" },
+        { "id": "deck", "label": "Inside a deck" },
+        { "id": "never", "label": "Never studied" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "error", "label": "Error" }
+      ]
+    },
+    {
       "num": "23",
       "dir": "23-settings",
       "title": "Settings",
