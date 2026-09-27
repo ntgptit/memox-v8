@@ -2,6 +2,7 @@ package com.memox.deck.service;
 
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
@@ -26,4 +27,8 @@ public interface DeckService {
     void moveDeck(WriteContext context, UUID deckId, MoveDeckRequest request);
 
     void reorderDeck(WriteContext context, UUID deckId, ReorderDeckRequest request);
+
+    void deleteDeck(WriteContext context, UUID deckId, DeleteDeckRequest request);
+
+    void undoDeckDeletion(WriteContext context, UUID batchId);
 }

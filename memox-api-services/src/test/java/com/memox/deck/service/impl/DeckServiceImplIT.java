@@ -8,6 +8,7 @@ import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
@@ -17,6 +18,8 @@ import com.memox.deck.mapper.DeckMapper;
 import com.memox.deck.model.Deck;
 import com.memox.deck.service.DeckService;
 import com.memox.sync.service.WriteContext;
+import com.memox.trash.mapper.DeleteBatchMapper;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +40,9 @@ class DeckServiceImplIT {
 
     @Autowired
     DeckMapper deckMapper;
+
+    @Autowired
+    DeleteBatchMapper deleteBatchMapper;
 
     final WriteContext ctx = new WriteContext(UUID.randomUUID(), UUID.randomUUID());
 
@@ -255,5 +261,97 @@ class DeckServiceImplIT {
         rejects(
                 () -> deckService.reorderDeck(ctx, c, new ReorderDeckRequest(root, DeckPlacement.AFTER)),
                 ErrorCode.VALIDATION_FAILED);
+    }
+
+    static final Instant DELETED_AT = Instant.parse("2026-09-27T02:00:00Z");
+
+    UUID delete(UUID deckId) {
+        UUID batch = UUID.randomUUID();
+        deckService.deleteDeck(ctx, deckId, new DeleteDeckRequest(batch, DELETED_AT));
+        return batch;
+    }
+
+    @Test
+    void deleteMarksTheActiveSubtreeInOneBatchAndUnsetsAnEmptiedParent_BR_DECK_022_TRASH_003_005() {
+        UUID root = root("sm2");
+        UUID parent = child(root);
+        UUID x = child(parent);
+        UUID y = child(x);
+
+        UUID batch = delete(x);
+
+        assertThat(deck(x).getDeleteBatchId()).isEqualTo(batch);
+        assertThat(deck(y).getDeleteBatchId()).isEqualTo(batch);
+        assertThat(deck(parent).getContentType()).isEqualTo("unset");
+        assertThat(deleteBatchMapper.findDeleteBatchById(batch).getDeletedAt()).isEqualTo(DELETED_AT);
+        assertThat(deleteBatchMapper.findDeleteBatchById(batch).getRootItemId()).isEqualTo(x);
+        rejects(() -> deckService.renameDeck(ctx, x, new RenameDeckRequest("n")), ErrorCode.DECK_IN_TRASH);
+    }
+
+    @Test
+    void anInnerDeckAlreadyInTrashKeepsItsOwnBatch_BR_TRASH_003() {
+        UUID root = root("sm2");
+        UUID x = child(root);
+        UUID y = child(x);
+        UUID inner = delete(y);
+
+        UUID outer = delete(x);
+
+        assertThat(deck(y).getDeleteBatchId()).isEqualTo(inner);
+        assertThat(deck(x).getDeleteBatchId()).isEqualTo(outer);
+    }
+
+    @Test
+    void undoRestoresExactlyTheBatchAndTombstonesIt_BR_TRASH_008() {
+        UUID root = root("sm2");
+        UUID parent = child(root);
+        UUID x = child(parent);
+        UUID y = child(x);
+        UUID batch = delete(x);
+
+        deckService.undoDeckDeletion(ctx, batch);
+
+        assertThat(deck(x).getDeleteBatchId()).isNull();
+        assertThat(deck(y).getDeleteBatchId()).isNull();
+        assertThat(deck(parent).getContentType()).isEqualTo("deck");
+        assertThat(deleteBatchMapper.findDeleteBatchById(batch).getTombstonedAt())
+                .isNotNull();
+        rejects(() -> deckService.undoDeckDeletion(ctx, batch), ErrorCode.BATCH_NOT_FOUND);
+    }
+
+    @Test
+    void undoIsRefusedWhenTheOldParentIsNowInTrash() {
+        UUID root = root("sm2");
+        UUID parent = child(root);
+        UUID x = child(parent);
+        UUID inner = delete(x);
+        delete(parent);
+
+        rejects(() -> deckService.undoDeckDeletion(ctx, inner), ErrorCode.DECK_IN_TRASH);
+    }
+
+    @Test
+    void aSubDeckCreatedUnderADeckInTrashJoinsItsBatchAndReturnsWithIt_D4() {
+        UUID root = root("sm2");
+        UUID parent = child(root);
+        UUID batch = delete(parent);
+
+        UUID late = child(parent);
+
+        assertThat(deck(late).getDeleteBatchId()).isEqualTo(batch);
+        assertThat(deck(parent).getContentType()).isEqualTo("deck");
+        deckService.undoDeckDeletion(ctx, batch);
+        assertThat(deck(late).getDeleteBatchId()).isNull();
+        assertThat(deck(parent).getContentType()).isEqualTo("deck");
+    }
+
+    @Test
+    void aMoveIntoADeckInTrashIsRefused() {
+        UUID root = root("sm2");
+        UUID target = child(root);
+        UUID x = child(root);
+        delete(target);
+
+        rejects(() -> deckService.moveDeck(ctx, x, new MoveDeckRequest(target)), ErrorCode.DECK_IN_TRASH);
     }
 }

@@ -80,4 +80,24 @@ public interface DeckMapper {
             @Param("positions") List<DeckPosition> positions,
             @Param("deviceId") UUID deviceId,
             @Param("now") Instant now);
+
+    /** The active subtree under {@code id}, itself included at {@code rel = 0}; decks in Trash stop the walk. */
+    List<DeckSubtreeNode> findActiveSubtree(@Param("userId") UUID userId, @Param("id") UUID id);
+
+    int markActiveSubtree(
+            @Param("userId") UUID userId,
+            @Param("id") UUID id,
+            @Param("batchId") UUID batchId,
+            @Param("firstVersion") long firstVersion,
+            @Param("deviceId") UUID deviceId,
+            @Param("now") Instant now);
+
+    int countInBatch(@Param("userId") UUID userId, @Param("batchId") UUID batchId);
+
+    int restoreBatch(
+            @Param("userId") UUID userId,
+            @Param("batchId") UUID batchId,
+            @Param("firstVersion") long firstVersion,
+            @Param("deviceId") UUID deviceId,
+            @Param("now") Instant now);
 }

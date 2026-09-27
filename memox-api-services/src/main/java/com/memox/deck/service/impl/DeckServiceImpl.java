@@ -7,6 +7,7 @@ import com.memox.common.exception.ErrorCode;
 import com.memox.common.util.TextRules;
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
@@ -20,6 +21,8 @@ import com.memox.deck.model.DeckSubtreeNode;
 import com.memox.deck.service.DeckService;
 import com.memox.sync.service.ChangeVersions;
 import com.memox.sync.service.WriteContext;
+import com.memox.trash.mapper.DeleteBatchMapper;
+import com.memox.trash.model.DeleteBatch;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,10 +42,12 @@ public class DeckServiceImpl implements DeckService {
     static final int NAME_MAX_LENGTH = 200;
     private static final int ROOT_DEPTH = 1;
     private static final int FIRST_GENERATION = 1;
+    static final String BATCH_ITEM_DECK = "deck";
     /** The algorithm versions Dart ships (EightBoxScheduler.version, Sm2Scheduler.version); API-B5 owns them. */
     private static final Map<String, Integer> SCHEDULER_VERSIONS = Map.of("eight_box", 1, "sm2", 1);
 
     private final DeckMapper deckMapper;
+    private final DeleteBatchMapper deleteBatchMapper;
     private final ChangeVersions changeVersions;
     private final ObjectMapper objectMapper;
     private final Clock clock;
@@ -315,5 +320,95 @@ public class DeckServiceImpl implements DeckService {
         if (inside) {
             throw new BusinessException(ErrorCode.DECK_TREE_CYCLE);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteDeck(WriteContext context, UUID deckId, DeleteDeckRequest request) {
+        changeVersions.lock(context);
+        Deck deck = activeDeck(context, deckId);
+        requireNewBatch(context, request.batchId());
+        deleteBatchMapper.insertDeleteBatch(DeleteBatch.builder()
+                .id(request.batchId())
+                .userId(context.userId())
+                .itemType(BATCH_ITEM_DECK)
+                .rootItemId(deck.getId())
+                .deletedAt(request.deletedAt())
+                .serverVersion(changeVersions.next(context))
+                .lastDeviceId(context.deviceId())
+                .build());
+        int rows = deckMapper.findActiveSubtree(context.userId(), deck.getId()).size();
+        deckMapper.markActiveSubtree(
+                context.userId(),
+                deck.getId(),
+                request.batchId(),
+                changeVersions.block(context, rows),
+                context.deviceId(),
+                clock.instant());
+        if (deck.getParentId() != null) {
+            refreshContentType(context, deck.getParentId());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void undoDeckDeletion(WriteContext context, UUID batchId) {
+        changeVersions.lock(context);
+        DeleteBatch batch = ownedBatch(context, batchId, BATCH_ITEM_DECK);
+        Deck item = deckMapper.findDeckById(batch.getRootItemId());
+        if (item == null || item.getDeletedAt() != null || !batchId.equals(item.getDeleteBatchId())) {
+            throw new BusinessException(ErrorCode.BATCH_NOT_FOUND);
+        }
+        Deck parent = null;
+        List<DeckSubtreeNode> subtree = deckMapper.findLiveSubtree(context.userId(), item.getId());
+        if (item.getParentId() != null) {
+            parent = parentOrMissing(context, item.getParentId());
+            if (parent.getDeleteBatchId() != null) {
+                throw new BusinessException(ErrorCode.DECK_IN_TRASH);
+            }
+            requirePlaceableUnder(parent, item, subtree);
+        }
+        Instant now = clock.instant();
+        int rows = deckMapper.countInBatch(context.userId(), batchId);
+        deckMapper.restoreBatch(
+                context.userId(), batchId, changeVersions.block(context, rows), context.deviceId(), now);
+        if (parent != null) {
+            // Back to its old place under a parent that may have moved meanwhile (BR-TRASH-008).
+            int depth = parent.getDepth() + 1;
+            deckMapper.updatePlacement(
+                    context.userId(),
+                    item.getId(),
+                    parent.getId(),
+                    parent.getRootId(),
+                    depth,
+                    item.getSiblingPosition(),
+                    changeVersions.next(context),
+                    context.deviceId(),
+                    now);
+            rewriteDescendants(context, item.getId(), parent.getRootId(), depth, subtree.size() - 1, now);
+            refreshContentType(context, parent.getId());
+        }
+        deleteBatchMapper.tombstoneDeleteBatch(batchId, changeVersions.next(context), context.deviceId());
+    }
+
+    /** The owner's live batch of {@code itemType}; anything else has nothing to undo. */
+    DeleteBatch ownedBatch(WriteContext context, UUID batchId, String itemType) {
+        DeleteBatch batch = deleteBatchMapper.findDeleteBatchById(batchId);
+        if (batch == null
+                || !batch.getUserId().equals(context.userId())
+                || batch.getTombstonedAt() != null
+                || !itemType.equals(batch.getItemType())) {
+            throw new BusinessException(ErrorCode.BATCH_NOT_FOUND);
+        }
+        return batch;
+    }
+
+    private void requireNewBatch(WriteContext context, UUID batchId) {
+        DeleteBatch existing = deleteBatchMapper.findDeleteBatchById(batchId);
+        if (existing == null) {
+            return;
+        }
+        throw new BusinessException(
+                existing.getUserId().equals(context.userId()) ? ErrorCode.CONFLICT : ErrorCode.SYNC_ENTITY_CONFLICT);
     }
 }

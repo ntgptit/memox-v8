@@ -108,4 +108,41 @@
         ) AS v(id, position, version)
         WHERE deck.id = v.id AND deck.user_id = #{userId}
     </update>
+    <!-- Active decks under #{id}: a deck in Trash keeps its own batch, and so does everything under it. -->
+    <sql id="activeSubtree">
+        WITH RECURSIVE sub AS (
+            SELECT id, 0 AS rel FROM deck
+            WHERE id = #{id} AND user_id = #{userId} AND deleted_at IS NULL AND delete_batch_id IS NULL
+            UNION
+            SELECT d.id, sub.rel + 1 FROM deck d JOIN sub ON d.parent_id = sub.id
+            WHERE d.user_id = #{userId} AND d.deleted_at IS NULL AND d.delete_batch_id IS NULL AND sub.rel &lt; 10
+        )
+    </sql>
+    <select id="findActiveSubtree" resultType="com.memox.deck.model.DeckSubtreeNode">
+        <include refid="activeSubtree"/>
+        SELECT id, rel FROM sub ORDER BY rel, id
+    </select>
+    <update id="markActiveSubtree">
+        <include refid="activeSubtree"/>,
+        numbered AS (SELECT id, ROW_NUMBER() OVER (ORDER BY rel, id) AS rn FROM sub)
+        UPDATE deck
+        SET delete_batch_id = #{batchId}, server_version = #{firstVersion} + numbered.rn - 1,
+            updated_at = #{now}, last_device_id = #{deviceId}
+        FROM numbered
+        WHERE deck.id = numbered.id
+    </update>
+    <select id="countInBatch" resultType="int">
+        SELECT count(*) FROM deck WHERE user_id = #{userId} AND delete_batch_id = #{batchId} AND deleted_at IS NULL
+    </select>
+    <update id="restoreBatch">
+        WITH numbered AS (
+            SELECT id, ROW_NUMBER() OVER (ORDER BY depth, id) AS rn FROM deck
+            WHERE user_id = #{userId} AND delete_batch_id = #{batchId} AND deleted_at IS NULL
+        )
+        UPDATE deck
+        SET delete_batch_id = NULL, server_version = #{firstVersion} + numbered.rn - 1,
+            updated_at = #{now}, last_device_id = #{deviceId}
+        FROM numbered
+        WHERE deck.id = numbered.id
+    </update>
 </mapper>

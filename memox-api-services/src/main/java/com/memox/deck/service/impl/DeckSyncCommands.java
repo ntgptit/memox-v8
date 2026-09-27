@@ -2,6 +2,7 @@ package com.memox.deck.service.impl;
 
 import com.memox.deck.dto.request.CreateRootDeckRequest;
 import com.memox.deck.dto.request.CreateSubDeckRequest;
+import com.memox.deck.dto.request.DeleteDeckRequest;
 import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
@@ -64,5 +65,20 @@ class DeckSyncCommands {
                 "REORDER_DECK",
                 (context, payload) -> decks.reorderDeck(
                         context, payloads.id(payload, "deckId"), payloads.read(payload, ReorderDeckRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler deleteDeckCommand(DeckService decks, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "DELETE_DECK",
+                (context, payload) -> decks.deleteDeck(
+                        context, payloads.id(payload, "deckId"), payloads.read(payload, DeleteDeckRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler undoDeckDeletionCommand(DeckService decks, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "UNDO_DECK_DELETION",
+                (context, payload) -> decks.undoDeckDeletion(context, payloads.id(payload, "batchId")));
     }
 }
