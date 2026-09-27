@@ -1,7 +1,7 @@
 # MemoX V8 guard rules — domain: data_model
 #
 # These encode the memox invariants that are cheap to violate and expensive to
-# discover. BR-57 is the headline: COALESCE(parent_deck_id, id) LOOKS like it
+# discover. BR-DECK-003 is the headline: COALESCE(parent_id, id) LOOKS like it
 # resolves the root deck and does so correctly for a two-level tree — it returns
 # the wrong deck from the third level down. Every test written against a shallow
 # fixture passes. Only a real user with a nested deck finds it.
@@ -12,26 +12,28 @@ metadata:
   description: Deck-tree, scheduler and review-history invariants (BR-xx, AD-06, AD-11).
   owner: memox-v8
 rules:
-  - id: memox.data_model.no_coalesce_parent_deck_id
+  - id: memox.data_model.no_coalesce_parent_id
     type: regex
     severity: error
     enabled: true
     message: >-
-      BR-57 — never resolve a root deck with `COALESCE(parent_deck_id, id)`. It
-      returns the level-2 deck at depth 3 and every shallow-fixture test still
-      passes. Use `root_deck_id`.
+      BR-DECK-003 — never resolve a root deck with `COALESCE(parent_id, id)`.
+      It returns the level-2 deck at depth 3 and every shallow-fixture test
+      still passes. Use `deck.root_id`.
     scopes:
       - dart_source
       - drift_sql_files
+    # SQL in any case, in a `.drift` file or a Dart string, and Drift's
+    # `coalesce([deck.parentId, …])`. A comment line that quotes the form is
+    # prose: `srs_dao.dart` says why it joins on `root_id` in these words.
     patterns:
-      - 'COALESCE\s*\(\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?parent_deck_id'
-      - 'COALESCE\s*\(\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?parentDeckId'
+      - '^(?!\s*(?://|\*|--)).*\b(?i:coalesce)\s*\(\s*\[?\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?(?:parent_id|parentId)\b'
     tags:
       - memox
       - data-model
       - correctness
     fix:
-      hint: Join on `root_deck_id`, which is maintained for every descendant.
+      hint: Join on `deck.root_id`, which every deck carries (BR-DECK-003).
 
   # AD-06: scheduling must be a pure function of its inputs, or the whole matrix
   # of box x action becomes untestable.
@@ -74,70 +76,79 @@ rules:
       - data-model
       - correctness
 
-  # AD-11 / BR-76: review_kind is stored, never derived. Deriving it by diffing
-  # before/after state is wrong for a scheduled review of a box-8 card, and
-  # history written with the wrong label cannot be recomputed later.
+  # BR-SRS-015: a turn's kind is stored when the turn is written, never inferred
+  # by comparing the state before and after it. A scheduled turn on a box-8
+  # card answered `remembered` has `previous_box == next_box == 8` and would
+  # read as relearning, and history written with the wrong label cannot be
+  # recomputed later. A kind decided from the session (BR-SRS-016, BR-SRS-017)
+  # compares no states and stays legal.
   - id: memox.data_model.review_kind_not_inferred
     type: regex
     severity: error
     enabled: true
     message: >-
-      AD-11 / BR-76 — `review_kind` is stored, never inferred. Deriving it from a
-      box/interval comparison is wrong for a scheduled review of a box-8 card,
+      BR-SRS-015 — a turn's `kind` is stored, never inferred. Deriving it from a
+      box or interval comparison is wrong for a scheduled turn on a box-8 card,
       and mislabelled history cannot be recomputed later.
     scopes:
       - dart_lib
+    # `kind` or any `…Kind` given a value (`:` or a single `=`) from a
+    # comparison of the boxes or the interval.
     patterns:
-      - 'reviewKind\s*=\s*(?:[^;]*\?[^;]*:)'
-      - 'reviewKind\s*=\s*[^;]*(?:previousBox|currentBox|nextBox|intervalDays)\s*=='
-      - 'reviewKind\s*=\s*[^;]*(?:previousBox|currentBox|nextBox|intervalDays)\s*!='
+      - '\b(?:kind|[A-Za-z_][A-Za-z0-9_]*Kind)\s*(?::|=(?!=))[^;]*\b(?:previousBox|nextBox|currentBox|intervalDays)\s*[!=]='
     tags:
       - memox
       - data-model
       - correctness
 
-  # AD-09: a review written from a stale-generation session must be rejected,
-  # not applied — otherwise a reset silently un-resets itself.
-  - id: memox.data_model.no_scheduler_generation_on_cards_table
+  # ADR-004: a reset starts a new generation of a deck's schedules and keeps
+  # every card's content. That holds while `card` keeps the content and
+  # `card_schedule` the schedule: a schedule column on `card` is content a
+  # reset would have to touch.
+  - id: memox.data_model.no_schedule_columns_on_card_table
     type: regex
     severity: error
     enabled: true
     message: >-
-      `cards` holds content only — no SRS columns and no `scheduler_generation`.
-      Content must survive every reset (CLAUDE.md, AD-09).
+      `card` holds content only; the schedule lives in `card_schedule`
+      (`generation`, `due_at`, `current_box`, `ease_factor`, …). Content must
+      survive every reset (ADR-004).
     scopes:
       - dart_source
       - drift_sql_files
-    # `[^;]*`, never `(?:[^;]|\n)*`. A negated class already matches newlines,
-    # so that alternation was ambiguous: every newline gave the engine two ways
-    # to consume it, and the *passing* case — the column absent, which is every
-    # run — backtracked through 2^n splits before failing. One 5 KB
-    # `cards.drift` cost 57s per pattern and 178s for this rule alone, 99% of
-    # the whole guard. Same matches, 0.000s.
+    # A column is a line of the table's body that starts with its name, and the
+    # body runs to the line that closes the table, not to the first `;`: a
+    # comment inside the table may hold one. `(?:(?!\n\)).)*?` takes each
+    # character one way, so a table with no schedule column fails fast; an
+    # alternation such as `(?:[^;]|\n)*` gives every newline two ways to be
+    # consumed and backtracks exponentially.
     patterns:
-      - 'CREATE\s+TABLE\s+cards\b[^;]*\bscheduler_generation\b'
-      - 'CREATE\s+TABLE\s+cards\b[^;]*\bdue_at\b'
-      - 'CREATE\s+TABLE\s+cards\b[^;]*\bease_factor\b'
+      - '(?s)CREATE\s+TABLE\s+card\s*\((?:(?!\n\)).)*?\n\s*(?:generation|learned_at|due_at|last_answered_at|answer_count|lapse_count|current_box|ease_factor|interval_days|repetitions|scheduler_type|scheduler_version)\s+\w'
     mode: file
     tags:
       - memox
       - data-model
       - correctness
 
-  # BR-30: the two schedulers have different action sets. Hardcoding four
-  # buttons is wrong for every eight_box deck.
+  # ADR-003: the two schedulers have different action sets, and the UI renders
+  # the buttons from the deck's scheduler. Hardcoding sm2's four is wrong for
+  # every eight_box deck.
   - id: memox.data_model.review_actions_from_supported_actions
     type: regex
     severity: error
     enabled: true
     message: >-
-      BR-30 — render review buttons from the scheduler's `supportedActions`.
+      ADR-003 — render review buttons from the scheduler's `supportedActions`.
       `eight_box` has two actions and `sm2` has four; a hardcoded set is wrong
-      for half the decks.
+      for every deck of the other scheduler.
     scopes:
       - presentation_files
+    # A set written out: the values side by side with nothing but commas
+    # between them, on one line or over several. A `switch` that maps each
+    # action to its label puts `=>` between them and stays legal.
     patterns:
-      - "ReviewAction\\.again[^;]*ReviewAction\\.hard[^;]*ReviewAction\\.good[^;]*ReviewAction\\.easy"
+      - 'Sm2Action\.again\s*,\s*Sm2Action\.hard\s*,\s*Sm2Action\.good\s*,\s*Sm2Action\.easy\b'
+      - 'EightBoxAction\.forgotten\s*,\s*EightBoxAction\.remembered\b'
     mode: file
     tags:
       - memox

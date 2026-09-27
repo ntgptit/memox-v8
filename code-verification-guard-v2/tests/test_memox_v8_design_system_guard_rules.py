@@ -184,12 +184,25 @@ def test_no_text_restyle_accepts_inked_and_prose(tmp_path: Path) -> None:
     assert not _violations(RESTYLE, tmp_path, good)
 
 
-def test_no_text_restyle_sees_the_hint_accessor(tmp_path: Path) -> None:
-    # A20.1 P1-09: the extension's fifth accessor is a resolved style; a
-    # `.copyWith(` on it is the same restyle in a new spelling.
+def test_no_text_restyle_sees_the_hint_style(tmp_path: Path) -> None:
+    # `MxTextStyles.inputHint` is a resolved style like the others; a
+    # `.copyWith(` on it is the same restyle, however the styles are reached.
+    assert _violations(
+        RESTYLE,
+        tmp_path,
+        "final s = context.textStyles.inputHint.copyWith(color: Colors.red);\n",
+    )
     violations = _violations(
         RESTYLE,
         tmp_path,
-        "final s = context.inputHintStyle!.copyWith(color: Colors.red);\n",
+        "final s = MxTextStyles(texts, scheme).inputHint.copyWith(color: ink);\n",
     )
     assert len(violations) == 1
+
+
+def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
+    good = """
+    hintStyle: MxTextStyles(texts, scheme).inputHint,
+    style: context.textStyles.inputHint,
+    """
+    assert not _violations(RESTYLE, tmp_path, good)

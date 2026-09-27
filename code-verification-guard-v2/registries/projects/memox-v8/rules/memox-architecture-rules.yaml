@@ -94,9 +94,12 @@ rules:
       database access from a widget (CLAUDE.md "UI discipline").
     scopes:
       - widget_ui_files
+    # A query on the database or a DAO, or the database provider itself, read
+    # outside a comment.
     patterns:
-      - '\b(?:_?database|_?db|appDatabase)\s*\.\s*(?:select|into|update|delete|customSelect|customStatement|customSelectStream)\s*\('
+      - '\b(?:_?database|_?db)\s*\.\s*(?:select|into|update|delete|customSelect|customStatement|customSelectStream)\s*\('
       - '\b_?[A-Za-z0-9]*Dao\s*\.\s*[a-z][A-Za-z0-9_]*\s*\('
+      - '^(?!\s*(?://|\*)).*\bdatabaseProvider\b'
     tags:
       - memox
       - architecture
