@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **136**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **46**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **143**; một phần **5**; đã dựng nhưng chưa đối chiếu **22**; chưa làm **39**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -50,7 +50,7 @@ Kit có **26 màn, 211 state**. Xong **136**; một phần **5**; đã dựng nh
 | 12 | Card export | FE-B3 | 9 | 9 | 0 | 0 | 0 | [12-card-export.md](screen-handoff/12-card-export.md) |
 | 13 | Study home | FE-A8 | 7 | 7 | 0 | 0 | 0 | [13-study-home.md](screen-handoff/13-study-home.md) |
 | 14 | Study entry | FE-A6, FE-A7 | 9 | 9 | 0 | 0 | 0 | [14-study-entry.md](screen-handoff/14-study-entry.md) |
-| 15 | Study options | FE-A3 | 7 | 0 | 0 | 7 | 0 | — |
+| 15 | Study options | FE-A3 | 7 | 7 | 0 | 0 | 0 | [15-study-options.md](screen-handoff/15-study-options.md) |
 | 16 | Study · Browse | FE-A6 | 1 | 1 | 0 | 0 | 0 | [16-study-browse.md](screen-handoff/16-study-browse.md) |
 | 17 | Study · Match | FE-A6 | 1 | 1 | 0 | 0 | 0 | [17-study-match.md](screen-handoff/17-study-match.md) |
 | 18 | Study · Guess | FE-A6 | 1 | 1 | 0 | 0 | 0 | [18-study-guess.md](screen-handoff/18-study-guess.md) |
@@ -319,17 +319,17 @@ FE-A6, FE-A7 · [14-study-entry.md](screen-handoff/14-study-entry.md)
 
 ### 15 · Study options
 
-FE-A3 · chưa có detail file
+FE-A3 · [15-study-options.md](screen-handoff/15-study-options.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Deck override | — | chưa làm |  |
-| [ ] | App defaults | — | chưa làm |  |
-| [ ] | Invalid limit | — | chưa làm |  |
-| [ ] | Saving | — | chưa làm |  |
-| [ ] | Saved | — | chưa làm |  |
-| [ ] | Save failed | — | chưa làm |  |
-| [ ] | Loading | — | chưa làm |  |
+| [x] | Deck override | `override` | xong | Save chỉ bật khi có thay đổi hợp lệ (D9). |
+| [x] | App defaults | `defaults` | xong |  |
+| [x] | Invalid limit | `invalid` | xong | Thông báo nằm dưới stepper (UC E1). |
+| [x] | Saving | `saving` | xong | Nút chỉ có spinner, không có chữ "Saving…". |
+| [x] | Saved | `saved` | xong |  |
+| [x] | Save failed | `saveFailed` | xong |  |
+| [x] | Loading | `loading` | xong | Skeleton list (UI-base §9 dòng 125). |
 
 ### 16 · Study · Browse
 
@@ -480,3 +480,4 @@ FE-A3 · [26-language.md](screen-handoff/26-language.md)
 - **Tạo ngày 2026-09-26** theo yêu cầu của chủ dự án, từ `master` tại `e2ad9de`.
 - **Cập nhật ngày 2026-09-26:** FE-A3 plan 1 dựng màn 23, 25 và 26; 14 state chuyển sang
   xong.
+- **Cập nhật ngày 2026-09-27:** FE-A3 plan 2 dựng màn 15; 7 state chuyển sang xong.
