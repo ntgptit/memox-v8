@@ -26,8 +26,13 @@ final class PluginReminderPluginsDataSource
     priority: Priority.defaultPriority,
   );
 
+  /// A failed start is not remembered: the next call tries again.
   @override
-  Future<void> initialize() => _ready ??= _initialize();
+  Future<void> initialize() =>
+      _ready ??= _initialize().catchError((Object error) {
+        _ready = null;
+        throw error;
+      });
 
   Future<void> _initialize() async {
     await AndroidAlarmManager.initialize();
