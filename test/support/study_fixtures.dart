@@ -460,6 +460,7 @@ StudySessionView summaryView({
     wrongTurnCount: 3,
     answeredCardCount: 20,
     turnCount: 23,
+    cardLimit: 50,
   ),
 }) => StudySessionView(
   sessionId: 's',

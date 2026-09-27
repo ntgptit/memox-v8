@@ -543,6 +543,8 @@ item names where it comes from.
 | 138 | Screen 05's toasts are one sentence ("Couldn't rename tag. Nothing changed — try again in a moment.") with Retry; the kit draws a bold title line over a body | `MxSnackbarContent` has one message |
 | 139 | Screen 05's dialogs quote tag names instead of bolding them, and "Delete this tag?" has no glyph and is left-aligned | No per-site text styling; `MxDialog` has no glyph slot |
 | 140 | Screen 07's Tags chip is an `MxFilterChip`, selected with the count of tags applied, and opens the tag filter sheet, which the kit does not draw; the kit's chip is a ghost trigger that never reads as selected | owner 2026-09-27, FE-B2 D3, D14 |
+| 141 | `MasteryRamp`'s < 34% band resolves to `statusLearningInk`: 4.94:1 on the progress track in light, the kit amber itself in dark. The kit's amber is 1.73:1 on the track in light. Screen 01's bars and every `MxMasteryDonut` (screens 01, 07) follow; the donut's label in that band also clears row 57 | Deck mastery spec R4 (owner ruling, critique P1) |
+| 142 | Screen 01's mastery bar keeps the progress track (`surfaceContainerHigh`) where the kit draws `surface-container`; its fill keeps at least its height in from either end, and a percent reads 0 only at 0 and 100 only at 100 (`MasteryRamp.percent`) | Deck mastery spec D13 (critique P2a, P2b, P3) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

@@ -35,9 +35,10 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 BR-TRASH-004) and is built with the kit's copy: "Ended — content moved to Trash", the facts, and the
 note "Restore the card from Trash to include it in the next review."
 
-**Built (FE-A6 P1c):** every state above but `large` and `loading`, drawn by `SessionSummaryWidget` on
+**Built (FE-A6 P1c):** every state above but `loading`, drawn by `SessionSummaryWidget` on
 the session's route (spec D2); goldens `test/features/study/presentation/goldens/summary_*`. `large`
-shows the review body without "— the session limit": the session read model has no `card_limit` yet.
+reads "— the session limit" when a completed review's queue reached the `card_limit` the session
+opened with (`SessionSummary.cardLimit`, read from `study_session.card_limit`).
 `loading` is not reachable: the summary arrives with the session's view, and the route's first load
 is a spinner. A session left early from a review reads "The {n} cards you reviewed are kept. The
 other {m} are still due." (a V8 addition; the kit draws only the learning case).

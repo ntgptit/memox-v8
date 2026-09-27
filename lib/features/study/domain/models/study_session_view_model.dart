@@ -197,6 +197,7 @@ final class SessionSummary {
     required this.wrongTurnCount,
     required this.answeredCardCount,
     required this.turnCount,
+    required this.cardLimit,
   });
 
   /// The distinct cards of the queue.
@@ -216,6 +217,13 @@ final class SessionSummary {
   /// The session's graded turns, its `review_log` rows (FE-A6 D11).
   final int turnCount;
 
+  /// The ceiling on the queue, fixed when the session opened
+  /// (BR-STUDY-024).
+  final int cardLimit;
+
   /// Nothing was answered: the summary shows no stats (FE-A6 D18).
   bool get hasAnswers => turnCount > 0;
+
+  /// The queue was cut at [cardLimit] (handoff 21 large).
+  bool get isAtCardLimit => cardCount >= cardLimit;
 }

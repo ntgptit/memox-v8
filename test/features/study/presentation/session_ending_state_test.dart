@@ -31,6 +31,7 @@ StudySessionView _view(
           wrongTurnCount: 1,
           answeredCardCount: 2,
           turnCount: 3,
+          cardLimit: 20,
         ),
 );
 
