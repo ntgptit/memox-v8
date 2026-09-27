@@ -20,6 +20,7 @@ import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart'
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
+import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_study_header_widget.dart';
@@ -84,6 +85,16 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       GoRoute(
                         path: AppRoutes.studyChild,
                         builder: (context, state) => _studyEntry(
+                          context,
+                          state.pathParameters[AppRoutes.deckIdParam]!,
+                        ),
+                      ),
+                      // A full-screen task above the shell, as the kit
+                      // draws it (FE-A3 spec §4).
+                      GoRoute(
+                        path: AppRoutes.studyOptionsChild,
+                        parentNavigatorKey: rootNavigator,
+                        builder: (context, state) => _studyOptions(
                           context,
                           state.pathParameters[AppRoutes.deckIdParam]!,
                         ),
@@ -216,6 +227,8 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onOpenAlgorithm: (id) =>
         unawaited(context.push(AppRoutes.deckAlgorithm(id))),
     onOpenStudy: study,
+    onOpenStudyOptions: (id) =>
+        unawaited(context.push(AppRoutes.studyOptions(id))),
     onAddCard: addCard,
     onImportCards: (id) => unawaited(context.push(AppRoutes.importCards(id))),
     onExportCards: (deck) => unawaited(
@@ -259,6 +272,20 @@ StudyEntryScreen _studyEntry(BuildContext context, String deckId) =>
       ),
       onOpenSession: (sessionId) =>
           context.go(AppRoutes.studySession(sessionId)),
+      onOpenStudyOptions: () =>
+          unawaited(context.push(AppRoutes.studyOptions(deckId))),
+    );
+
+/// Screen 15 with the deck's path from the deck feature, which settings
+/// may not read (FE-A3 plan 2, C6).
+StudyOptionsScreen _studyOptions(BuildContext context, String deckId) =>
+    StudyOptionsScreen(
+      deckId: deckId,
+      breadcrumb: DeckStudyHeaderWidget(
+        deckId: deckId,
+        part: DeckStudyHeaderPart.breadcrumb,
+        trailingLabel: context.l10n.deckStudyOptions,
+      ),
     );
 
 /// Opens the Trash on the root navigator (FE-B1 D2). The router pushes it,

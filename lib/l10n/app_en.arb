@@ -1872,6 +1872,10 @@
   "@deckStudyOptions": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckStudyOptions."
   },
+  "deckStudyOptionsHint": "Cards per session · new-card order",
+  "@deckStudyOptionsHint": {
+    "description": "Screen handoff 01 (FE-A3 D3): the Study options row's sub-line in the deck action sheet."
+  },
   "deckReviewAlgorithm": "Review algorithm",
   "@deckReviewAlgorithm": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckReviewAlgorithm."
@@ -2317,10 +2321,6 @@
   "comingSoonTagsBody": "Label cards, filter by label.",
   "@comingSoonTagsBody": {
     "description": "Coming soon: what tags do."
-  },
-  "comingSoonStudyOptionsBody": "Session size and new-card order.",
-  "@comingSoonStudyOptionsBody": {
-    "description": "Coming soon: what study options do."
   },
   "comingSoonProgressSort": "Sort by progress",
   "@comingSoonProgressSort": {
@@ -5081,5 +5081,107 @@
   "settingsOrderSaveFailed": "Couldn't save the new-card order.",
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
+  },
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it.",
+  "@studyOptionsBelongTo": {
+    "placeholders": {
+      "root": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 15 (FE-A3 plan 2): the note naming the root deck (BR-STUDY-056)."
+  },
+  "studyOptionsUnreadable": "This deck's options could not be read. Saving replaces them.",
+  "@studyOptionsUnreadable": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): warning for an override that cannot be read."
+  },
+  "studyOptionsUseAppDefaults": "Use app defaults",
+  "@studyOptionsUseAppDefaults": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the toggle (UC-SETTINGS-001 A1)."
+  },
+  "studyOptionsFollowing": "Following Settings · {count} cards, {order}",
+  "@studyOptionsFollowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 15 (FE-A3 plan 2): the toggle sub-line while on; {order} is studyOptionsOrderCreatedShort or …RandomShort."
+  },
+  "studyOptionsOwn": "Off · this deck has its own options",
+  "@studyOptionsOwn": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the toggle sub-line while off."
+  },
+  "studyOptionsOrderCreatedShort": "created order",
+  "@studyOptionsOrderCreatedShort": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the order inside a sentence."
+  },
+  "studyOptionsOrderRandomShort": "random order",
+  "@studyOptionsOrderRandomShort": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the order inside a sentence."
+  },
+  "studyOptionsAppDefaultsHeader": "App defaults (read-only here)",
+  "@studyOptionsAppDefaultsHeader": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): section header while the toggle is on."
+  },
+  "studyOptionsThisDeck": "This deck",
+  "@studyOptionsThisDeck": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): section header while the toggle is off."
+  },
+  "studyOptionsCardLimitRange": "1 to {max}",
+  "@studyOptionsCardLimitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    },
+    "description": "Screen handoff 15 (FE-A3 plan 2): the card limit sub-line."
+  },
+  "studyOptionsCreationOrder": "Creation order",
+  "@studyOptionsCreationOrder": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): order option."
+  },
+  "studyOptionsCreationOrderHint": "Oldest cards first — the order you added or imported them",
+  "@studyOptionsCreationOrderHint": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): order option description."
+  },
+  "studyOptionsRandomHint": "Shuffled each learning session",
+  "@studyOptionsRandomHint": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): order option description."
+  },
+  "studyOptionsApplyNote": "Changes apply to sessions started from now on. A session already open keeps the options it started with.",
+  "@studyOptionsApplyNote": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the note under the options (BR-SETTINGS-004)."
+  },
+  "studyOptionsFixLimit": "Fix the limit to enable save.",
+  "@studyOptionsFixLimit": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): footer caption while the limit is invalid."
+  },
+  "studyOptionsSaveFailed": "Couldn't save. The deck still uses {count} cards, {order}.",
+  "@studyOptionsSaveFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "order": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 15 (FE-A3 plan 2): footer caption after a failed save (E4); {order} is …Short."
+  },
+  "studyOptionsLocalOnly": "Saved to this device only.",
+  "@studyOptionsLocalOnly": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): footer caption."
+  },
+  "studyOptionsSaving": "Saving…",
+  "@studyOptionsSaving": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): the Save button while it runs."
+  },
+  "studyOptionsSaved": "Saved · applies to the next session",
+  "@studyOptionsSaved": {
+    "description": "Screen handoff 15 (FE-A3 plan 2): toast after a save."
   }
 }

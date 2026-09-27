@@ -32,10 +32,12 @@ One recursive screen for the Library root (`/decks`) and any open deck
 `MxBottomSheet` with a header (tile, name, "N sub-decks · N cards · {algorithm}") and
 `MxActionSheetCommandRow`s:
 
-- **Root deck:** Open deck · Study this deck → screen 14 · Rename · Review algorithm
+- **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study options
+  ("Cards per session · new-card order") → screen 15 · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
   Move to Trash ("Recoverable for 30 days").
 - **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck → screen 14 · Rename ·
+  Study options → screen 15 (its root's options) ·
   Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
 
@@ -103,7 +105,6 @@ One `MxBottomSheet`, "Sort & filter":
 |---|---|---|
 | Starter decks, Tags actions | under Coming soon | FE-B4, FE-B2 |
 | "Browse starter decks" | under Coming soon | FE-B4 |
-| Study options | under Coming soon | FE-A3 |
 | Sort by progress | under Coming soon | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Mastery bar, donut | hidden | a BR/UC definition (blocked in `wbs_BE.md`) |
 | Due strip tap | not interactive | FE-A8 |

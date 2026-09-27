@@ -45,6 +45,9 @@ abstract final class AppRoutes {
   /// A deck's Study Entry (screen 14), relative to [deckChild] (FE-A6 D1).
   static const String studyChild = 'study';
 
+  /// A deck's study options (screen 15), relative to [deckChild] (FE-A3).
+  static const String studyOptionsChild = 'options';
+
   /// A deck's card editor in create mode, relative to [deckChild].
   static const String cardNewChild = 'cards/new';
 
@@ -67,6 +70,10 @@ abstract final class AppRoutes {
 
   /// Screen 14 for [deckId].
   static String studyEntry(String deckId) => '${deck(deckId)}/$studyChild';
+
+  /// Screen 15 for [deckId], whose options are its root's.
+  static String studyOptions(String deckId) =>
+      '${deck(deckId)}/$studyOptionsChild';
 
   /// The session [sessionId], its summary once it has ended.
   static String studySession(String sessionId) => '$study/session/$sessionId';

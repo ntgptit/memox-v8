@@ -14,6 +14,7 @@ Tuỳ chọn ứng dụng (V8.0): mặc định học toàn app, theme và ngôn
 | Tab Settings (màn 23) | UC-SETTINGS-001 |
 | Theme (màn 25) | UC-SETTINGS-001 |
 | Language (màn 26) | UC-SETTINGS-001 |
+| Study options của bộ thẻ (màn 15) | UC-SETTINGS-001 (A1, E4) |
 
 Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặc deep link `/settings`"). Nhắc học hằng ngày (UC-REMINDER-001) nằm trong branch Settings nhưng thuộc feature `reminders`.
 

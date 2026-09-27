@@ -32,6 +32,7 @@ class StudyEntryScreen extends ConsumerWidget {
     required this.title,
     required this.breadcrumb,
     required this.onOpenSession,
+    this.onOpenStudyOptions,
   });
 
   final String deckId;
@@ -44,6 +45,10 @@ class StudyEntryScreen extends ConsumerWidget {
 
   /// Opens the session a start answered; composed by `app/`.
   final ValueChanged<String> onOpenSession;
+
+  /// Opens the deck's study options (screen 15, FE-A3 D3); composed by
+  /// `app/`, as study may not read settings. Null hides the icon.
+  final VoidCallback? onOpenStudyOptions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,6 +66,14 @@ class StudyEntryScreen extends ConsumerWidget {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        actions: [
+          if (onOpenStudyOptions case final open?)
+            MxIconButton(
+              icon: AppIcons.studyOptions,
+              semanticLabel: l10n.deckStudyOptions,
+              onPressed: open,
+            ),
+        ],
       ),
       body: StudyEntryBodyWidget(
         deckId: deckId,

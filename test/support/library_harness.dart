@@ -212,6 +212,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
   ValueChanged<String>? onOpenStudy,
+  ValueChanged<String>? onOpenStudyOptions,
   VoidCallback? onOpenTrash,
 }) => DeckLevelScreen(
   deckId: deckId,
@@ -220,6 +221,7 @@ DeckLevelScreen deckScreen({
   onSearch: onSearch ?? () {},
   onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
   onOpenStudy: onOpenStudy ?? (_) {},
+  onOpenStudyOptions: onOpenStudyOptions ?? (_) {},
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},

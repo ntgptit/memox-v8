@@ -57,6 +57,7 @@ abstract final class AppIcons {
   static const IconData gallery = Icons.widgets_outlined;
   static const IconData themeMode = Icons.contrast;
   static const IconData theme = Icons.palette_outlined;
+  static const IconData studyOptions = Icons.tune; // sliders-horizontal
   static const IconData shuffle = Icons.shuffle; // shuffle
   static const IconData language = Icons.language; // globe
   static const IconData resetOptions =

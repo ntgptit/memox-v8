@@ -9,6 +9,7 @@ Màn hình, điều hướng và validation dùng chung nhiều UC của feature
 | 23 · Settings | `/settings` (tab Settings) | Bottom bar | [23-settings.md](../../shared/ui/screen-handoff/23-settings.md) |
 | 25 · Theme | `/settings/theme`, trên root navigator, không có bottom bar | Hàng Theme của màn 23 | [25-theme.md](../../shared/ui/screen-handoff/25-theme.md) |
 | 26 · Language | `/settings/language`, trên root navigator, không có bottom bar | Hàng Language của màn 23 | [26-language.md](../../shared/ui/screen-handoff/26-language.md) |
+| 15 · Study options | `/decks/deck/:deckId/options`, trên root navigator, không có bottom bar | Hàng Study options trong action sheet của deck; icon trên app bar màn 14 | [15-study-options.md](../../shared/ui/screen-handoff/15-study-options.md) |
 
 Theme và ngôn ngữ áp cho cả app: `main()` đọc dòng `app_settings` một lần trước frame
 đầu (chờ tối đa 2 giây), rồi `MemoxApp` theo stream. Nguồn:
