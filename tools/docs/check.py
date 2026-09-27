@@ -380,6 +380,33 @@ def destination_exists(dest: str) -> bool:
     return (g.DOCS / pattern).exists()
 
 
+# ------------------------------------------------------- acceptance criteria
+
+ACCEPTANCE_SECTION = "Acceptance criteria"
+ACCEPTANCE_LINE = re.compile(r"\*\*given\*\*.*\*\*when\*\*.*\*\*then\*\*", re.IGNORECASE)
+
+
+def section_text(body: str, name: str) -> str:
+    """The unfenced lines under `## name`, up to the next `## ` heading."""
+    lines: list[str] = []
+    inside = False
+    for _, line in g.iter_unfenced(body):
+        if line.startswith("## "):
+            inside = line[3:].strip() == name
+            continue
+        if inside:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
+    """A `ready` UC is a contract; its criteria are the checkable half (BE-D4)."""
+    if doc.kind != "UC" or doc.status != "ready":
+        return
+    if not ACCEPTANCE_LINE.search(section_text(doc.body, ACCEPTANCE_SECTION)):
+        report.error(doc.path, "ready UC has no Given/When/Then line under `## Acceptance criteria`")
+
+
 # ------------------------------------------------------------ V7 residue
 
 # V7 is a reference, not a template (CLAUDE.md). These name V7 things V8 does
@@ -474,6 +501,7 @@ def run(plan: Path | None) -> Report:
             check_identity(doc, report)
         check_sections(doc, report)
         check_paths(doc, report)
+        check_acceptance_criteria(doc, report)
     check_dependency_cycles(docs, report)
     by_id = check_duplicates(docs, report)
     check_references(docs, by_id, report)
