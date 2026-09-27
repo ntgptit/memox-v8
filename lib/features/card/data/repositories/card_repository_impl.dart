@@ -1,10 +1,8 @@
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/entity_sync_adapter.dart';
-import 'package:memox/core/sync/sync_entity_ref.dart';
-import 'package:memox/core/sync/sync_outbox.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
+import 'package:memox/features/card/data/repositories/card_command_recorder.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
@@ -37,7 +35,7 @@ final class CardRepositoryImpl implements CardRepository {
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
        _detailDao = CardDetailDao(_db),
-       _outbox = SyncOutboxWriter(_db, now: now),
+       _commands = CardCommandRecorder(_db, now: now),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
@@ -46,7 +44,7 @@ final class CardRepositoryImpl implements CardRepository {
   final CardDao _dao;
   final CardListDao _listDao;
   final CardDetailDao _detailDao;
-  final SyncOutboxWriter _outbox;
+  final CardCommandRecorder _commands;
   final DateTime Function() _now;
 
   @override
@@ -91,7 +89,7 @@ final class CardRepositoryImpl implements CardRepository {
       }
       await _dao.updateContent(cardId, draft, at);
       await _replaceTags(cardId, draft, at);
-      await _outbox.patch(SyncEntityType.card, cardId, SyncPatchGroup.content);
+      await _commands.contentEdited(cardId);
       return const Ok(null);
     });
   }
@@ -119,10 +117,7 @@ final class CardRepositoryImpl implements CardRepository {
         items.add({'cardId': cardId, 'batchId': batchId});
       }
       await _unsetEmptied({for (final row in rows) row.deckId}, at);
-      await _outbox.command(SyncCommandType.deleteCards, {
-        'items': items,
-        'deletedAt': toWireTime(at),
-      });
+      await _commands.deleted(items, at);
       for (final batchId in batchIds) {
         await _dao.closeSessionsTouching(batchId, at);
       }
@@ -162,9 +157,7 @@ final class CardRepositoryImpl implements CardRepository {
       // move (trash spec D9).
       final restored = await _restoreInto(card.deckId, {batchId: card}, at: at);
       if (restored case Ok()) {
-        await _outbox.command(SyncCommandType.undoCardDeletion, {
-          'batchId': batchId,
-        }, subject: SyncEntityRef.deleteBatch(batchId));
+        await _commands.undone(batchId);
       }
       return restored;
     });
@@ -212,10 +205,7 @@ final class CardRepositoryImpl implements CardRepository {
           at,
         );
       }
-      await _outbox.command(SyncCommandType.moveCards, {
-        'cardIds': cardIds.toList()..sort(),
-        'targetDeckId': targetDeckId,
-      });
+      await _commands.moved(cardIds, targetDeckId);
       return const Ok(null);
     });
   }
@@ -233,9 +223,7 @@ final class CardRepositoryImpl implements CardRepository {
         return const Rejected(CardRejection.notFound);
       }
       await _dao.setFlagged(cardIds, isFlagged, at);
-      for (final cardId in cardIds) {
-        await _outbox.patch(SyncEntityType.card, cardId, SyncPatchGroup.flag);
-      }
+      await _commands.flagged(cardIds);
       return const Ok(null);
     });
   }
@@ -370,25 +358,14 @@ final class CardRepositoryImpl implements CardRepository {
           .map(_moveTargetsOf)
           .mapDatabaseErrors();
 
+  /// Records the CREATE_CARD of a stored card (BE-E7 spec §4.2), after the
+  /// write's deck changes so `affected` includes them.
+  Future<void> recordCreated(String cardId) async =>
+      _commands.created((await _dao.findRow(cardId))!);
+
   /// One card, its schedule row (BR-CARD-004) and its tags, inside the
   /// caller's transaction; the new card's id. An import writes each card
   /// through it too (`CardTransferRepositoryImpl`, BR-TRANSFER-004).
-  /// Records the CREATE_CARD of a stored card, with its stored values
-  /// (BE-E7 spec §4.2). Called after the write's deck changes, so `affected`
-  /// includes them.
-  Future<void> recordCreated(String cardId) async {
-    final row = (await _dao.findRow(cardId))!;
-    await _outbox.command(SyncCommandType.createCard, {
-      'id': row.id,
-      'deckId': row.deckId,
-      'front': row.front,
-      'back': row.back,
-      'example': row.example,
-      'hint': row.hint,
-      'pronunciation': row.pronunciation,
-    }, subject: SyncEntityRef.card(row.id));
-  }
-
   Future<String> insertCard(String deckId, CardDraft draft, DateTime at) async {
     final id = newId();
     await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);

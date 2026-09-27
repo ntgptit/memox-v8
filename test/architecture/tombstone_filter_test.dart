@@ -14,6 +14,9 @@ const _readsTombstones = <String, String>{
   'lib/core/sync/card_sync_adapter.dart#readPatch':
       'a content or flag patch reads its card in any state: the push sends '
       "the card's current value (BE-E7)",
+  'lib/core/sync/library_upload_seed.dart#command':
+      'the library upload reads decks and cards in any state: an item in the '
+      'Trash is created, then deleted with its own batch (BE-E7 §4.3)',
   'lib/core/database/migrations/nfc_text_migration.dart#_normalizeDecks':
       'migration v4 → v5 puts every stored name in NFC, a deck in the Trash '
       'too, since a restore brings it back (BE-C5)',
