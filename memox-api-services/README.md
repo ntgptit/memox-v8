@@ -94,11 +94,15 @@ never re-implements paging, error bodies, exception handling, request IDs,
 type handlers or string/collection helpers (Apache Commons first). The review
 skill `spring-boot-mybatis-review` flags it.
 
+Security is open for now: `SecurityConfig` permits every request, statelessly,
+with no CSRF token and no generated user, until the auth spec replaces it.
+Never expose the API to the internet in this state.
+
 Deliberately not built yet, each with the event that triggers it:
 
 | Deferred | Trigger |
 |---|---|
-| Authentication, `CurrentUserProvider` (UUID user id, ADR-007) | the auth spec (ADR-001: one user type) |
+| Authentication (replaces the open `SecurityConfig`), `CurrentUserProvider` (UUID user id, ADR-007) | the auth spec (ADR-001: one user type) |
 | Auditing columns | the first table, designed with the sync protocol: an offline-first client may own `updated_at` |
 | `commons-csv` | the `transfer` API |
 | Spring profiles, production config | the first deployment |
