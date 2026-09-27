@@ -403,7 +403,12 @@ def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
     """A `ready` UC is a contract; its criteria are the checkable half (BE-D4)."""
     if doc.kind != "UC" or doc.status != "ready":
         return
-    if not ACCEPTANCE_LINE.search(section_text(doc.body, ACCEPTANCE_SECTION)):
+    criteria = [
+        line
+        for line in section_text(doc.body, ACCEPTANCE_SECTION).splitlines()
+        if g.OPEN_QUESTION not in line
+    ]
+    if not any(ACCEPTANCE_LINE.search(line) for line in criteria):
         report.error(doc.path, "ready UC has no Given/When/Then line under `## Acceptance criteria`")
 
 

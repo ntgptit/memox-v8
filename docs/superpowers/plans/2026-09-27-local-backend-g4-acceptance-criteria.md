@@ -20,10 +20,10 @@ written as an `OPEN QUESTION` line in the same section.
 
 ## Global Constraints
 
-- In 18 UC files, only the placeholder line of `## Acceptance criteria` is
-  replaced: `- [ ] OPEN QUESTION: nguồn chưa có acceptance criteria dạng
-  Given/When/Then; Postconditions giữ nguyên văn ở `## Local`.` Nothing else in
-  a UC changes (docs/README.md, "Hợp đồng và phạm vi sửa").
+- In 18 UC files, only the placeholder line of `## Acceptance criteria` (the
+  `OPEN QUESTION` line saying the source has no Given/When/Then criteria yet) is
+  replaced. Nothing else in a UC changes (docs/README.md, "Hợp đồng và phạm vi
+  sửa").
 - UC-TRANSFER-001, UC-TRANSFER-002, UC-REMINDER-001 and UC-STARTER-001 already
   carry criteria and are not touched.
 - Form, as in those four UCs: `- [ ] **Given** … **when** … **then** … (BR-…, E2)`,
@@ -47,7 +47,7 @@ written as an `OPEN QUESTION` line in the same section.
    ledger the test or code that shows it.
 2. An alternative or error flow with no criterion (A/E ids listed in the UC but
    absent from the section).
-3. A `ready` UC whose section holds only OPEN QUESTION lines: the guard must
+3. A `ready` UC whose section holds only `OPEN QUESTION` lines: the guard must
    still require at least one Given/When/Then line.
 4. The guard must read only the `## Acceptance criteria` section, not a
    Given/When/Then phrase elsewhere in the file, and must ignore fenced code.
@@ -200,7 +200,7 @@ behaviour the code does not have, or has differently, becomes an
 - [ ] **Step 3: Replace the placeholder**
 
 Replace only the placeholder line in each UC with the criteria (and any
-OPEN QUESTION lines) from Step 2.
+`OPEN QUESTION` lines) from Step 2.
 
 - [ ] **Step 4: Verify and commit**
 
@@ -224,7 +224,7 @@ git commit -m "docs(<feature>): acceptance criteria for <UC ids> (BE-D4 G4)"
 
 - [ ] **Step 1: WBS**
 
-- BE-D4 → `xong`; Bằng chứng: this plan, the guard, the count of OPEN QUESTION
+- BE-D4 → `xong`; Bằng chứng: this plan, the guard, the count of `OPEN QUESTION`
   lines recorded.
 - Remove the BE-D4 row from "Điểm chặn và quyết định còn mở".
 - Add a dated log line listing the open questions (UC id and one clause each).

@@ -125,6 +125,10 @@ class AcceptanceCriteriaTest(unittest.TestCase):
         fenced = "```\n" + self.GWT + "\n```"
         self.assertEqual(len(self.errors(uc("ready", fenced))), 1)
 
+    def test_an_open_question_written_as_given_when_then_does_not_count(self):
+        question = "- [ ] OPEN QUESTION: should **Given** X, **when** Y, **then** Z?"
+        self.assertEqual(len(self.errors(uc("ready", question))), 1)
+
     def test_a_draft_uc_is_not_checked(self):
         self.assertEqual(self.errors(uc("draft", self.PLACEHOLDER)), [])
 
