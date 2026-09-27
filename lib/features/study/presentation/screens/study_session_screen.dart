@@ -25,6 +25,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_self_as
 import 'package:memox/features/study/presentation/widgets/sections/study_session_error_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_exit_dialog_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -84,7 +85,14 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
-  void _abandon() => unawaited(_controller.abandon());
+  /// The ✕ and system Back ask first (spec D8, owner ruling 2026-09-27);
+  /// Stop abandons, Keep studying changes nothing.
+  void _abandon() => unawaited(_confirmAbandon());
+
+  Future<void> _confirmAbandon() async {
+    if (!await showStudyExitDialog(context)) return;
+    await _controller.abandon();
+  }
 
   void _advance(StudyItem item) =>
       unawaited(_controller.answer(item, const AdvanceAnswer()));

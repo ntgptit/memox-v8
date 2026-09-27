@@ -3,22 +3,17 @@ package com.memox.common.exception;
 import lombok.Getter;
 
 /**
- * The one exception for expected business failures. The HTTP status comes from the {@link ErrorCode}; the detail
- * must be safe to show to the client.
+ * A rule violation the client can act on. Thrown by services; {@link GlobalExceptionHandler} turns it into the
+ * error body with the code's HTTP status and message.
  */
 @Getter
 public class BusinessException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+	private final ErrorCode errorCode;
 
-	private final transient ErrorCode errorCode;
-
-	private final String detail;
-
-	public BusinessException(ErrorCode errorCode, String detail) {
-		super(errorCode.code() + ": " + detail);
+	public BusinessException(ErrorCode errorCode) {
+		super(errorCode.name());
 		this.errorCode = errorCode;
-		this.detail = detail;
 	}
 
 }

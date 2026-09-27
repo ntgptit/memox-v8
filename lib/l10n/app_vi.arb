@@ -1020,5 +1020,9 @@
   "studyOptionsSaveFailed": "Chưa lưu được. Bộ thẻ vẫn dùng {count} thẻ, {order}.",
   "studyOptionsLocalOnly": "Chỉ lưu trên thiết bị này.",
   "studyOptionsSaving": "Đang lưu…",
-  "studyOptionsSaved": "Đã lưu · áp dụng cho phiên sau"
+  "studyOptionsSaved": "Đã lưu · áp dụng cho phiên sau",
+  "studyExitTitle": "Dừng phiên này?",
+  "studyExitBody": "Mọi câu đã trả lời đều được giữ. Những thẻ chưa tới vẫn như cũ.",
+  "studyExitKeep": "Học tiếp",
+  "studyExitStop": "Dừng"
 }
