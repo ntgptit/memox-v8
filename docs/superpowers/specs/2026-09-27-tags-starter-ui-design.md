@@ -1,6 +1,6 @@
 # FE-B2 + FE-B4: the Tags and Starter decks UI — design
 
-Status: draft for review; design sections approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3)
+Status: approved 2026-09-27 · Path: architectural · Owner rulings 2026-09-27 (§3)
 
 ## 1. Intent
 
