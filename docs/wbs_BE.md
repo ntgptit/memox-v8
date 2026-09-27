@@ -127,9 +127,9 @@ như hiện nay; chỉ repository và tầng `data/` biết tới sync.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | chưa bắt đầu | — | S | Khảo sát ngày 2026-09-24. `code:` của README srs và README settings đã sửa cùng BE-A1 và BE-A2; của README study và README study-mode cùng gói 2a | Làm trong BE-D7 (gói 12c) |
+| BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) còn ghi "V8 chưa có test nào"; skill `flutter-workflow` còn trỏ tới `docs/wbs.md` của V7 | xong | — | S | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §6 và [plan](superpowers/plans/2026-09-27-local-backend-g3-no-v7.md) gói G3; `host-coverage-map.md` chỉ lệnh đếm kịch bản đã có test | — |
 | BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | bị chặn | — | M | [`open-questions.md`](_generated/open-questions.md) ghi thiếu ở 18 UC; UC-TRANSFER-001 và UC-TRANSFER-002 (BE-B3), UC-STARTER-001 (BE-B4), UC-REMINDER-001 (BE-B5a) đã có, trong phạm vi spec của gói | Sửa UC `ready` là sửa hợp đồng: chủ dự án nêu phạm vi file được sửa, rồi viết theo từng nhóm hạng mục |
-| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | chưa bắt đầu | BE-D6 | M | [Spec gói 12a](superpowers/specs/2026-09-26-verification-tooling-design.md) §2, §9 | Gói 12c: brainstorm, spec, plan |
+| BE-D7 | Skill và tài liệu không còn V7: Widgetbook trong Definition of Done và trong skill `flutter-feature-slice`, `flutter-design-system`; các con trỏ tới `docs/wbs.md` và checklist của V7; baseline và blueprint của V7; bản ghi cài đặt của skill `project-documentation`; lịch sử của V7 trong comment của các script khác của `flutter-workflow` và `flutter-architecture` (`check_format.sh`, `check_generated.sh`, `check_architecture.py`). Gồm BE-D3 | xong | BE-D6 | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §6 và [plan](superpowers/plans/2026-09-27-local-backend-g3-no-v7.md) gói G3; `tools/docs/check.py` báo lỗi khi skill hoặc `docs/` còn nhắc Widgetbook, `docs/wbs.md`, `docs/checklist.md`, `memox-v7` hay "checklist phase" (`tools/docs/test_check.py`) | — |
 
 ## Đã xong và đã kiểm chứng
 
@@ -223,9 +223,8 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
 
 ## Bước tiếp theo
 
-1. BE-D7 (gói 12c), gồm BE-D3, theo thứ tự chủ dự án chọn ngày 2026-09-26.
-2. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
-3. BE-E7 song song với API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
+1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+2. BE-E7 song song với API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
    trong [`wbs_API.md`](wbs_API.md).
 
 ## Ngữ cảnh cập nhật
@@ -270,6 +269,7 @@ Không có hạng mục backend nào đang làm sau gói 12b (BE-D6).
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
 - **Cập nhật ngày 2026-09-27:** BE-C5 xong trong gói G1 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): text lưu và fold ở dạng NFC qua `unorm_dart`, migration v4 → v5 (chỉ đổi dữ liệu) gộp tag trùng, Fill so khớp phiên bản 2. Điểm chặn BE-C5 đóng theo quyết định của chủ dự án.
 - **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
+- **Cập nhật ngày 2026-09-27:** BE-D7 và BE-D3 xong trong gói G3 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): skill `flutter-*` và tài liệu sống không còn trỏ tới Widgetbook, `docs/wbs.md`, checklist 22 phase, baseline và blueprint của V7; `tools/docs/check.py` giữ điều đó. Số AD-xx và M-xx của V7 trong skill còn lại, ngoài phạm vi gói.
 - **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
   (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
   trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));
