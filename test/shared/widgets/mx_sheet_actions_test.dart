@@ -93,6 +93,26 @@ void main() {
     );
   });
 
+  testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Merge tags',
+          onConfirm: () {},
+          isWarning: true,
+        ),
+      ),
+    );
+
+    expect(
+      tester.widget<MxButton>(_button('Merge tags')).tone,
+      MxButtonTone.warning,
+    );
+  });
+
   testWidgets('a disabled confirm leaves Cancel live (RF3)', (tester) async {
     var cancels = 0;
     await pumpMx(
