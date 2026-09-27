@@ -1,6 +1,6 @@
 # Local backend completion — roadmap for the backend items left in `wbs_BE.md`
 
-Status: draft, awaiting the owner's review (2026-09-27) · Path: architectural ·
+Status: approved by the owner (2026-09-27): run G1 → G5 back to back, merging each package once green · Path: architectural ·
 WBS: [`wbs_BE.md`](../../wbs_BE.md)
 
 ## 1. Intent
