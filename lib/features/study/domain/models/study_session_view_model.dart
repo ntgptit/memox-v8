@@ -169,12 +169,22 @@ final class RoundProgress {
 final class SessionSummary {
   const SessionSummary({
     required this.cardCount,
+    required this.answeredCardCount,
+    required this.turnCount,
     required this.learnedCardCount,
     required this.wrongTurnCount,
   });
 
   /// The distinct cards of the queue.
   final int cardCount;
+
+  /// Distinct cards with at least one turn recorded (handoff 21 "Cards
+  /// answered"; spec D11a).
+  final int answeredCardCount;
+
+  /// Every turn recorded, including a relearning comeback (handoff 21 "of
+  /// {total} turns"; spec D11a).
+  final int turnCount;
 
   /// In a learning session, its cards that are now learned; null in a
   /// review.

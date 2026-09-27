@@ -17,7 +17,13 @@ typedef RoundCounts = ({int completed, int total});
 typedef ResumableRow = ({StudySession session, String deckName});
 
 /// The counts a session's summary shows (spec D11).
-typedef SummaryCounts = ({int cardCount, int learnedCount, int wrongCount});
+typedef SummaryCounts = ({
+  int cardCount,
+  int answeredCardCount,
+  int turnCount,
+  int learnedCount,
+  int wrongCount,
+});
 
 /// An option of a `guess` question: the option card and its meaning.
 typedef OptionRecord = ({String cardId, String back});
@@ -296,6 +302,10 @@ final class StudyViewDao {
           'SELECT'
           ' (SELECT COUNT(DISTINCT card_id) FROM study_queue_items'
           '  WHERE session_id = ?) AS card_count,'
+          ' (SELECT COUNT(DISTINCT card_id) FROM review_log'
+          '  WHERE session_id = ?) AS answered_card_count,'
+          ' (SELECT COUNT(*) FROM review_log WHERE session_id = ?)'
+          '  AS turn_count,'
           ' (SELECT COUNT(DISTINCT q.card_id) FROM study_queue_items q'
           '  JOIN card_schedule cs ON cs.card_id = q.card_id'
           '  WHERE q.session_id = ? AND cs.learned_at IS NOT NULL)'
@@ -306,6 +316,8 @@ final class StudyViewDao {
             Variable<String>(sessionId),
             Variable<String>(sessionId),
             Variable<String>(sessionId),
+            Variable<String>(sessionId),
+            Variable<String>(sessionId),
             for (final action in lapseActions) Variable<String>(action),
           ],
           readsFrom: {_db.studyQueueItems, _db.cardSchedule, _db.reviewLog},
@@ -313,6 +325,8 @@ final class StudyViewDao {
         .getSingle();
     return (
       cardCount: row.read<int>('card_count'),
+      answeredCardCount: row.read<int>('answered_card_count'),
+      turnCount: row.read<int>('turn_count'),
       learnedCount: row.read<int>('learned_count'),
       wrongCount: row.read<int>('wrong_count'),
     );

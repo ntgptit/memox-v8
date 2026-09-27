@@ -70,6 +70,8 @@ StudySessionView studySessionViewOf(
         ? null
         : SessionSummary(
             cardCount: counts.cardCount,
+            answeredCardCount: counts.answeredCardCount,
+            turnCount: counts.turnCount,
             learnedCardCount: switch (kind) {
               SessionKind.learning => counts.learnedCount,
               SessionKind.reviewing => null,

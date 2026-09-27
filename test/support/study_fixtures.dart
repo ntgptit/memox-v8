@@ -328,3 +328,68 @@ Future<String> _otherPair(
             )
             .getSingle())
         .read<String>('card_id');
+
+/// A `study_session` row exactly as production writes it (schema.md), for a
+/// test that seeds a session state directly instead of driving the full
+/// production flow — P1's screens are exercised this way because P1 builds
+/// only `browse`, one stage short of any scheduler's whole chain
+/// (BR-MODE-004; spec §3).
+Future<void> insertSession(
+  AppDatabase db, {
+  required String id,
+  required String deckId,
+  required String rootId,
+  String sessionKind = 'learning',
+  String currentMode = 'browse',
+  String status = 'in_progress',
+  String? endReason,
+  int generation = 1,
+  int cursor = 0,
+  int cardLimit = 20,
+  DateTime? startedAt,
+  DateTime? endedAt,
+}) => db.customInsert(
+  'INSERT INTO study_session (id, deck_id, root_id, generation, '
+  'session_kind, current_mode, status, end_reason, cursor, card_limit, '
+  'started_at, ended_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  variables: [
+    Variable<String>(id),
+    Variable<String>(deckId),
+    Variable<String>(rootId),
+    Variable<int>(generation),
+    Variable<String>(sessionKind),
+    Variable<String>(currentMode),
+    Variable<String>(status),
+    Variable<String>(endReason),
+    Variable<int>(cursor),
+    Variable<int>(cardLimit),
+    Variable<DateTime>(startedAt ?? DateTime(2026, 9, 24, 9)),
+    Variable<DateTime>(endedAt),
+  ],
+  updates: {db.studySession},
+);
+
+/// A `study_queue_items` row exactly as production writes it.
+Future<void> insertQueueItem(
+  AppDatabase db, {
+  required String sessionId,
+  required String mode,
+  required String cardId,
+  required int position,
+  int round = 1,
+  String status = 'pending',
+  int answersInSession = 0,
+}) => db.customInsert(
+  'INSERT INTO study_queue_items (session_id, mode, round, card_id, '
+  'position, status, answers_in_session) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  variables: [
+    Variable<String>(sessionId),
+    Variable<String>(mode),
+    Variable<int>(round),
+    Variable<String>(cardId),
+    Variable<int>(position),
+    Variable<String>(status),
+    Variable<int>(answersInSession),
+  ],
+  updates: {db.studyQueueItems},
+);
