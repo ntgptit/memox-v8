@@ -13,6 +13,7 @@ import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
 import com.memox.deck.dto.request.StudyOptionsRequest;
+import com.memox.deck.dto.response.DeckResponse;
 import com.memox.deck.enums.DeckPlacement;
 import com.memox.deck.mapper.DeckMapper;
 import com.memox.deck.model.Deck;
@@ -426,5 +427,36 @@ public class DeckServiceImpl implements DeckService {
         }
         throw new BusinessException(
                 existing.getUserId().equals(context.userId()) ? ErrorCode.CONFLICT : ErrorCode.SYNC_ENTITY_CONFLICT);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DeckResponse getDeck(UUID userId, UUID deckId) {
+        Deck deck = deckMapper.findDeckById(deckId);
+        if (deck == null
+                || !deck.getUserId().equals(userId)
+                || deck.getDeletedAt() != null
+                || deck.getDeleteBatchId() != null) {
+            throw new BusinessException(ErrorCode.DECK_NOT_FOUND);
+        }
+        return toResponse(deck);
+    }
+
+    static DeckResponse toResponse(Deck deck) {
+        return DeckResponse.builder()
+                .id(deck.getId())
+                .parentId(deck.getParentId())
+                .rootId(deck.getRootId())
+                .depth(deck.getDepth())
+                .name(deck.getName())
+                .contentType(deck.getContentType())
+                .schedulerType(deck.getSchedulerType())
+                .schedulerVersion(deck.getSchedulerVersion())
+                .generation(deck.getGeneration())
+                .studyConfig(deck.getStudyConfig())
+                .siblingPosition(deck.getSiblingPosition())
+                .createdAt(deck.getCreatedAt())
+                .updatedAt(deck.getUpdatedAt())
+                .build();
     }
 }

@@ -7,6 +7,7 @@ import com.memox.deck.dto.request.MoveDeckRequest;
 import com.memox.deck.dto.request.RenameDeckRequest;
 import com.memox.deck.dto.request.ReorderDeckRequest;
 import com.memox.deck.dto.request.StudyOptionsRequest;
+import com.memox.deck.dto.response.DeckResponse;
 import com.memox.sync.service.WriteContext;
 import java.util.UUID;
 
@@ -31,4 +32,7 @@ public interface DeckService {
     void deleteDeck(WriteContext context, UUID deckId, DeleteDeckRequest request);
 
     void undoDeckDeletion(WriteContext context, UUID batchId);
+
+    /** The user's active deck. */
+    DeckResponse getDeck(UUID userId, UUID deckId);
 }
