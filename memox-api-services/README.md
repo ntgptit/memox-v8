@@ -34,6 +34,7 @@ src/main/java/com/memox/
 │   │   └── response/
 │   ├── model/
 │   └── enums/
+├── sync/                       sync protocol (ADR-013)
 └── common/                     shared API types (error body, paging)
     ├── config/
     ├── exception/
@@ -73,6 +74,13 @@ The shared code in `com.memox.common` that every feature reuses.
 - **OpenAPI:** `/v3/api-docs` and `/swagger-ui.html` document every endpoint,
   with the error body as each operation's `default` response. Set
   `API_DOCS_ENABLED=false` to turn both off (production).
+- **Sync (ADR-013):** `POST /api/v1/sync/push` applies a batch of client
+  operations idempotently (`opId`), each in its own transaction, and returns one
+  `applied`/`rejected` result per operation (a rejection carries the server's
+  copy as `current`). `GET /api/v1/sync/changes?since=&limit=` pages the user's
+  changes by `serverVersion`. A synced table implements `SyncEntityHandler`;
+  the owner always comes from `CurrentUserProvider` (a dev user until login,
+  `MEMOX_DEV_USER_ID`).
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
@@ -127,6 +135,7 @@ Deliberately not built yet, each with the event that triggers it:
 | `common/exception` | Error model and mapping | business exception types, `@RestControllerAdvice` | feature logic | Never exposes stack traces or SQL. |
 | `common/type_handler` | Enum ↔ DB mapping | `BaseEnumTypeHandler` and one subclass per enum | business logic | Each handler is tested: enum→DB, DB→enum, NULL, unknown value. |
 | `common/util` | Project-specific helpers | stateless helpers with no library equivalent | wrappers around Java, Apache Commons or Spring utilities; feature logic | Check the Java standard API, then Apache Commons, then Spring first. |
+| `common/security` | Who is calling | `CurrentUserProvider` and its implementations, security properties | feature logic | The owner of every row comes from here, never from a request. |
 | `resources/mapper/<feature>` | SQL | MyBatis XML | SQL built in Java strings | The namespace is the mapper interface's fully qualified name. |
 | `resources/db/migration` | Schema | Flyway `V<n>__<description>.sql` | changes to a migration that has already been applied | The schema holds PK, FK, UNIQUE, NOT NULL and CHECK constraints. |
 
