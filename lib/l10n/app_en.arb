@@ -5840,5 +5840,71 @@
       }
     },
     "description": "Screen 05: the toast when the tag was deleted elsewhere (tagGone, E3)."
+  },
+  "cardFilterTags": "Tags",
+  "@cardFilterTags": {
+    "description": "Screen 07: the Tags filter chip; it opens the tag filter sheet (spec D14)."
+  },
+  "cardTagFilterTitle": "Filter by tags",
+  "@cardTagFilterTitle": {
+    "description": "Screen 07 tag filter sheet: the title."
+  },
+  "cardTagFilterNone": "Show cards with any of the chosen tags",
+  "@cardTagFilterNone": {
+    "description": "Screen 07 tag filter sheet: the sub-line with nothing chosen (OR, BR-TAG-004)."
+  },
+  "cardTagFilterChosen": "{count} chosen · cards with any of them",
+  "@cardTagFilterChosen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 07 tag filter sheet: the sub-line with tags chosen."
+  },
+  "cardTagFilterSearchHint": "Search tags",
+  "@cardTagFilterSearchHint": {
+    "description": "Screen 07 tag filter sheet: the search above 8 tags."
+  },
+  "cardTagFilterSearchClear": "Clear search",
+  "@cardTagFilterSearchClear": {
+    "description": "Screen 07 tag filter sheet: the search field's clear button label."
+  },
+  "cardTagFilterClear": "Clear",
+  "@cardTagFilterClear": {
+    "description": "Screen 07 tag filter sheet: empties the draft and stays open (A4)."
+  },
+  "cardTagFilterApply": "Apply",
+  "@cardTagFilterApply": {
+    "description": "Screen 07 tag filter sheet: applies the chosen tags and closes."
+  },
+  "cardTagFilterEmpty": "No tags yet. Add tags while creating or editing cards.",
+  "@cardTagFilterEmpty": {
+    "description": "Screen 07 tag filter sheet: the library has no tag."
+  },
+  "cardTagFilterClose": "Close",
+  "@cardTagFilterClose": {
+    "description": "Screen 07 tag filter sheet: closes the sheet when there is no tag."
+  },
+  "cardTagFilterLoadError": "Couldn't load tags",
+  "@cardTagFilterLoadError": {
+    "description": "Screen 07 tag filter sheet: the tag read failed."
+  },
+  "cardTagFilterEmptyTitle": "No cards with these tags",
+  "@cardTagFilterEmptyTitle": {
+    "description": "Screen 07: the tag filter matches no card (UC-TAG-001 A7)."
+  },
+  "cardClearTagFilter": "Clear tag filter",
+  "@cardClearTagFilter": {
+    "description": "Screen 07: removes the tag filter (A7)."
+  },
+  "cardTagFilterCount": "{count}",
+  "@cardTagFilterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 07 tag filter sheet: the cards of this deck carrying a tag, 0 included (BE-B2 D3)."
   }
 }

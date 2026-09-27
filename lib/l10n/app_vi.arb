@@ -1094,5 +1094,19 @@
   "tagsDeleteConfirm": "{count, plural, =0{Xoá tag} other{Gỡ khỏi {count} thẻ}}",
   "tagsRenameFailed": "Không đổi được tên tag. Chưa có gì thay đổi — hãy thử lại sau giây lát.",
   "tagsDeleteFailed": "Không xoá được tag. Chưa có gì thay đổi — hãy thử lại sau giây lát.",
-  "tagsGone": "“{tag}” không còn nữa — nó vừa bị xoá."
+  "tagsGone": "“{tag}” không còn nữa — nó vừa bị xoá.",
+  "cardFilterTags": "Tag",
+  "cardTagFilterTitle": "Lọc theo tag",
+  "cardTagFilterNone": "Hiện thẻ có bất kỳ tag nào được chọn",
+  "cardTagFilterChosen": "Đã chọn {count} · thẻ có bất kỳ tag nào",
+  "cardTagFilterSearchHint": "Tìm tag",
+  "cardTagFilterSearchClear": "Xoá tìm kiếm",
+  "cardTagFilterClear": "Bỏ chọn",
+  "cardTagFilterApply": "Áp dụng",
+  "cardTagFilterEmpty": "Chưa có tag nào. Hãy thêm tag khi tạo hoặc sửa thẻ.",
+  "cardTagFilterClose": "Đóng",
+  "cardTagFilterLoadError": "Không tải được tag",
+  "cardTagFilterEmptyTitle": "Không có thẻ nào mang các tag này",
+  "cardClearTagFilter": "Bỏ lọc tag",
+  "cardTagFilterCount": "{count}"
 }

@@ -275,6 +275,7 @@ void main() {
           filter: CardListFilter.all,
           sort: CardListSort.newest,
           searchTerm: '',
+          tags: const CardTagFilter(),
           windowSize: cardListWindowStep,
         ).overrideWith(
           (ref) => Stream<CardListView>.error(StateError('disk I/O error')),
@@ -324,6 +325,7 @@ void main() {
           filter: CardListFilter.all,
           sort: CardListSort.newest,
           searchTerm: '',
+          tags: const CardTagFilter(),
           windowSize: cardListWindowStep,
         ).overrideWith((ref) => stream.stream),
       ],

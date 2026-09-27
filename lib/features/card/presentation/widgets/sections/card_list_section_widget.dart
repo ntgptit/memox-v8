@@ -254,6 +254,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       filter: request.filter,
       sort: request.sort,
       searchTerm: request.searchTerm,
+      tags: request.tags,
       windowSize: request.windowSize,
     );
     final async = ref.watch(provider);
@@ -355,6 +356,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           onStudy: widget.onStudy,
         ),
         CardListToolbarWidget(
+          deckId: widget.deckId,
           request: request,
           counts: view.counts,
           onFilter: _show,
@@ -377,6 +379,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           request: request,
           total: view.statusCounts.total,
           onShowAll: () => _show(CardListFilter.all),
+          onClearTags: () => _request().filterTags(const {}),
           onAddCard: widget.onAddCard,
         )
       else
