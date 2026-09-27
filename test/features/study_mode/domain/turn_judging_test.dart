@@ -72,6 +72,19 @@ Matcher _verdict({
 
 void main() {
   group('fill', () {
+    test('a term typed in the other Unicode form is right, under comparison '
+        'version 2 (BE-C5, BR-STUDY-027)', () {
+      expect(
+        _judge(StudyMode.fill, const FillAnswer('co\u0302ng')),
+        _verdict(
+          action: EightBoxAction.remembered,
+          isCorrect: true,
+          comparisonVersion: 2,
+          usedHint: false,
+        ),
+      );
+    });
+
     test('folds the typed term and compares it with front_folded: spaces and '
         'case fall away, accents stay (BR-STUDY-026; IT-MODE-010)', () {
       expect(
@@ -79,7 +92,7 @@ void main() {
         _verdict(
           action: EightBoxAction.remembered,
           isCorrect: true,
-          comparisonVersion: 1,
+          comparisonVersion: 2,
           usedHint: false,
         ),
       );
@@ -88,7 +101,7 @@ void main() {
         _verdict(
           action: EightBoxAction.forgotten,
           isCorrect: false,
-          comparisonVersion: 1,
+          comparisonVersion: 2,
           usedHint: false,
         ),
       );
@@ -114,7 +127,7 @@ void main() {
         _verdict(
           action: EightBoxAction.forgotten,
           isCorrect: false,
-          comparisonVersion: 1,
+          comparisonVersion: 2,
           usedHint: true,
         ),
       );
@@ -127,7 +140,7 @@ void main() {
         _verdict(
           action: EightBoxAction.remembered,
           isCorrect: true,
-          comparisonVersion: 1,
+          comparisonVersion: 2,
           usedHint: true,
         ),
       );

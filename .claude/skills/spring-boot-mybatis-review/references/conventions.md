@@ -50,6 +50,30 @@ Flag vague packages: `misc`, `others`, `temp`, `helper2`, `common2`, `bean`, `ob
 
 Prefer `@Getter`, `@Setter`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@RequiredArgsConstructor`, `@Slf4j`, `@Value`.
 
+Objects with four or more fields are built with `@Builder`, never with setter chains or positional constructors:
+
+```java
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor   // MyBatis result mapping
+@AllArgsConstructor  // required by @Builder next to @NoArgsConstructor
+public class Invoice { … }
+
+@Builder
+public record InvoiceResponse(UUID id, String number, String status, BigDecimal amount, …) {}
+
+Invoice invoice = Invoice.builder()
+        .id(id)
+        .userId(userId)
+        .number(request.number())
+        .status(STATUS_DRAFT)
+        .build();
+```
+
+A swapped pair of same-typed positional arguments (`amount`, `tax`; `createdAt`, `updatedAt`) compiles and passes
+review; named builder calls do not allow it.
+
 ```java
 @Service
 @RequiredArgsConstructor

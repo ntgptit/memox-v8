@@ -125,6 +125,44 @@ void main() {
     },
   );
 
+  test(
+    'each tile counts the mastered cards of its subtree (BR-DECK-026)',
+    () async {
+      final [root] = await level(null).first;
+      final [mixedTile, noDueTile] = await level(library.id).first;
+
+      expect(
+        (root.masteredCount, mixedTile.masteredCount, noDueTile.masteredCount),
+        (1, 1, 0),
+      );
+      expect(mixedTile.masteryFraction, 0.25);
+    },
+  );
+
+  test('a card that becomes mastered emits again with the new count '
+      '(BR-DECK-026, UC-DECK-003 A2)', () async {
+    final emitted = <List<DeckTile>>[];
+    final subscription = level(null).listen(emitted.add);
+    await pumpEventQueue();
+
+    await db.customUpdate(
+      "UPDATE card_schedule SET current_box = 8 WHERE card_id = 'review'",
+      updates: {db.cardSchedule},
+    );
+    await pumpEventQueue();
+
+    expect([for (final tiles in emitted) tiles.single.masteredCount], [1, 2]);
+    await subscription.cancel();
+  });
+
+  test('a mastered card in the Trash is not counted (BR-DECK-026)', () async {
+    await trashCardRow(db, 'master');
+
+    final [root] = await level(null).first;
+
+    expect((root.cardCount, root.masteredCount), (4, 0));
+  });
+
   test('decks and cards in the Trash are left out (spec §8)', () async {
     await insertCard(
       db,

@@ -79,6 +79,7 @@ StudySessionView studySessionViewOf(
             wrongTurnCount: counts.wrongCount,
             answeredCardCount: counts.answeredCount,
             turnCount: counts.turnCount,
+            cardLimit: session.cardLimit,
           ),
     trail: [
       for (final card in served?.trail ?? const <TrailRecord>[])

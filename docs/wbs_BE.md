@@ -24,8 +24,12 @@
   ADR-009 bổ sung: đủ sáu mode, tìm kiếm toàn thư viện, gắn/gỡ tag trên thẻ. Settings
   thuộc V8.0 theo [README của settings](features/settings/README.md).
 - **Sub-project sau V8.0:** Trash, import/export, Tag Management, nhắc học hằng ngày,
-  starter decks. Auth, sync, media, thống kê mở rộng và iOS/web nằm ngoài V8 nên không
-  có hạng mục ở đây.
+  starter decks. Media, thống kê mở rộng và iOS/web nằm ngoài V8 nên không có hạng mục
+  ở đây.
+- **Đồng bộ với server:** [ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)
+  và [ADR-014](shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) đưa
+  sync và login vào V8. Phần phía app ở nhóm "Đồng bộ với server"; phần server ở
+  [`wbs_API.md`](wbs_API.md).
 - **Thứ tự nghiệp vụ:** [`navigation.md`](shared/ui/navigation.md) chọn luồng ôn tập
   làm vertical slice nên xây đầu tiên; foundation spec xếp lõi V8.0 theo thứ tự
   deck/card → study/review → progress.
@@ -40,7 +44,8 @@
 Quy ước:
 
 - **Trạng thái:** `xong` (đạt Definition of Done và đã merge vào `master`) ·
-  `đang làm` · `chưa bắt đầu` · `bị chặn` (cần một quyết định trước khi làm).
+  `đang làm` · `chưa bắt đầu` · `bị chặn` (cần một quyết định trước khi làm) ·
+  `cắt` (chủ dự án quyết không làm; lý do ở cột Bằng chứng).
 - **Cỡ:** S < M < L < XL. Đây là ước lượng suy ra từ số luật nghiệp vụ và phần kỹ
   thuật mới, không phải cam kết.
 - **Phụ thuộc:** hạng mục phải xong trước, tính theo chiều import của ADR-011 và theo
@@ -77,6 +82,8 @@ Quy ước:
 | BE-C4 | Lọc card list theo tag (BR-TAG-004): `CardListQuery.tagIds`, một `EXISTS` trên `card_tags` trong vị từ chung của danh sách, số đếm và Select all; số đếm trạng thái và workload vẫn tính cả deck | xong | BE-B2 | S | Spec gói 8 §8; `test/features/card/data/card_list_tag_filter_test.dart` | — |
 | BE-D5 | Công cụ kiểm chứng không còn gì của V7 (mở rộng theo chủ dự án): `build_verification_plan.py` chỉ phục vụ `dod_check.sh --changed`, plan còn 11 field, bỏ shard, `--github-output`, Widgetbook, memox-api và prompt set; `dod_check.sh` không còn bước Widgetbook và bước prompt contract, nên `--changed` hết fail trên mọi thay đổi code; lời giúp và header tả V8; gỡ `check_prompt_contract.py`, `read_local_prompt_set.ps1` và test PowerShell của nó | xong | BE-D2 | M | [spec](superpowers/specs/2026-09-26-verification-tooling-design.md) và [plan](superpowers/plans/2026-09-27-verification-tooling.md) gói 12a; `GateReadsThePlanTest` và test của planner trong `.claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py` | BE-D6, BE-D7 |
 | BE-D6 | Guard và hook design token không còn gì của V7 (mở rộng theo chủ dự án): gỡ registry `memox-v7` của `code-verification-guard-v2` cùng test của nó; `memox-v8` mang nhãn "MemoX V8" và 13 id `memox_v8.design_system.*`; sáu rule mang tên của V7 tìm tên của V8, hai id đổi theo; message, comment và lý do dẫn quyết định của V8; hook `.claude/hooks/check_design_tokens.py` nạp `memox-v8` bằng bộ nạp của guard và chạy chính rule của guard trên file vừa sửa, có test riêng và bước "hook tests" trong gate; tài liệu của guard ghi `ntgptit/memox-v8`. Giữ registry `memox` (V6) | xong | — | M | [spec](superpowers/specs/2026-09-27-guard-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-guard-without-v7.md) gói 12b; `test_memox_v8_ruleset_contract.py`, `test_memox_v8_data_model_guard_rules.py` và `test_memox_v8_architecture_guard_rules.py` trong `code-verification-guard-v2/tests/`; `.claude/hooks/tests/test_check_design_tokens.py` | BE-D7 |
+| BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng: một cửa `nfc` (`unorm_dart`), `storedText` ở mọi đường ghi text, `foldText` có NFC nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001), tìm kiếm và Fill (so khớp phiên bản 2, BR-STUDY-027) coi hai dạng là một; migration v4 → v5 chuẩn hoá dữ liệu cũ và gộp tag trùng (BR-TAG-007) | xong | — | S–M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §4 và [plan G1](superpowers/plans/2026-09-27-local-backend-g1-unicode-nfc.md); test trong `test/core/text/`, `test/drift/migration_test.dart` | — |
+| BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite: `idChunks` (30 000 id một lô) trong transaction của thao tác, cho mọi tập id do người dùng chọn — đọc, đếm, gắn/gỡ tag, gắn cờ, di chuyển, export (sắp lại cả tập), purge Trash (mỗi batch một lần) | xong | — | S | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §5 và [plan G2](superpowers/plans/2026-09-27-local-backend-g2-chunked-batches.md); test `*_batch_limit_test.dart` với 33 000 id | — |
 | BE-D7 | Skill và tài liệu không còn V7 (mở rộng theo chủ dự án): 15 skill do repo sở hữu không còn dẫn V7 — quyết định `AD-nn`, luật `BR-nn`, mốc, checklist 22 phase, `docs/wbs.md`, `docs/architecture.md`, Widgetbook, tên bảng và tên file của V7 — và mọi đường dẫn chúng nêu đều có thật; gỡ `feature_blueprint.md`, `phase-index.md`, `integration-test-harness.md`, hai script gallery, `wbs_template.md` và receipt cài đặt của `project-documentation`; `project-baseline.md` và bảng dependency viết lại theo V8; error model theo ADR-011 D6; câu nào dẫn ADR-001 về local-only hay chưa có auth thì dẫn ADR-012 và ADR-013; 8 dòng AD-12/AD-15 trong `lib/` và `test/` trỏ ADR-011. Gồm BE-D3 | xong | BE-D6 | M | [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md) và [plan](superpowers/plans/2026-09-27-skills-without-v7.md) gói 12c; `.claude/skills/flutter-workflow/scripts/tests/test_skills_without_v7.py`, test này cũng ghim mọi thư mục skill là của repo hoặc vendored | FE-D4 |
 | BE-D3 | Sửa tài liệu đã lệch với code: [host-coverage-map.md](shared/testing/host-coverage-map.md) không còn ghi "V8 chưa có test nào"; skill `flutter-workflow` đọc `docs/wbs_BE.md` và `docs/wbs_FE.md` | xong | — | S | Làm trong BE-D7 (gói 12c) | — |
 
@@ -94,13 +101,29 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
 | BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn); quyết cách giữ hoà giải và lần gửi nền không chồng lên thao tác của người dùng ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14) |
 
+### Đồng bộ với server (ADR-013, ADR-014)
+
+Phía app của §9 trong
+[spec API authority](superpowers/specs/2026-09-27-api-authority-command-sync-design.md):
+outbox đẩy lệnh và patch, pull nhận trạng thái chính thức. Mỗi hạng mục cần hạng
+mục server tương ứng trong [`wbs_API.md`](wbs_API.md). Use case vẫn chạy trên Drift
+như hiện nay; chỉ repository và tầng `data/` biết tới sync.
+
+| ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
+|---|---|---|---|---|---|---|
+| BE-E1 | Sync deck phía app theo mô hình hàng (ADR-013 bước 3): Drift v4 với `sync_outbox`, `sync_state`, `server_version` và trigger SQLite ghi outbox trong transaction của người ghi; `Dio` dùng chung và Retrofit `SyncApi` (ADR-012); `SyncCoordinator` push rồi pull, backoff, `connectivity_plus`; adapter cho `deck` và `delete_batches`; chỉ chạy khi có `API_BASE_URL` | xong | BE-D1, API-A1 | XL | [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [spec](superpowers/specs/2026-09-27-app-deck-sync-design.md), [plan](superpowers/plans/2026-09-27-app-deck-sync.md) | Chuyển sang lệnh ở BE-E7 |
+| BE-E7 | Chuyển sync deck của app sang mô hình lệnh (ADR-014): `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case của deck ghi lệnh deck, patch `study_options`; lệnh không gộp, patch gộp theo nhóm trường; cả lượt pull trong một transaction (#114 đang commit từng trang); áp `current` cho mọi entity trong `affected` | chưa bắt đầu | BE-E1, API-A2 | L | Spec API authority §4, §9 bước 2 | Spec của hạng mục quyết hai điểm ở mục Điểm chặn |
+| BE-E2 | Card và Tags: lệnh card, tag và patch `content`/`flag` vào outbox; import và starter deck tách thành lệnh tạo; khi `TAG_NAME_TAKEN`, gộp tag bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox | chưa bắt đầu | BE-E7, API-B1, API-B2 | L | Spec API authority §5 | Sau BE-E7 |
+| BE-E3 | Trash: lệnh xoá, Undo, khôi phục và purge vào outbox; dọn Trash hết hạn chỉ ở local, không đẩy lên | chưa bắt đầu | BE-E2, API-B3 | M | Spec API authority §5 "Expired Trash purge" | Sau BE-E2 |
+| BE-E4 | SRS: phía Dart của bộ dữ liệu test dùng chung; `RECORD_REVIEW` (đủ trường của `ReviewTurn`), `COMPLETE_LEARNING`, `RESET_LEARNING_PROGRESS`, `CHANGE_DECK_SCHEDULER` vào outbox; `card_schedule` local là bản tạm, bị ghi đè khi pull; review của generation cũ bị từ chối thì xoá dòng local | chưa bắt đầu | BE-E2, API-B4, API-B5 | L | Spec API authority §6 | Làm cùng API-B4 |
+| BE-E5 | Setting theo tài khoản: patch `appearance`, `study_defaults`, `study_options` của root; nhắc học giữ local | chưa bắt đầu | BE-E7, API-B6 | S | Spec API authority §5 | Sau API-B6 |
+| BE-E6 | Login phía app: interceptor auth của `Dio`, gắn dữ liệu local (`owner_id` đang `NULL`) vào tài khoản | bị chặn | BE-E7, API-C1, API-C2 | L | Spec sync §3 | Cần spec auth |
+
 ### Tồn đọng từ backend deck/card
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | bị chặn | — | S | `DeckLevelSort.name`; Clarification 13 của [plan backend deck/card](superpowers/plans/2026-09-23-deck-card-backend.md) | Chủ dự án quyết có thêm dependency collation hay không |
-| BE-C5 | Chuẩn hoá Unicode (NFC) cho text trên toàn ứng dụng. Cùng một chữ có thể đến ở dạng dựng sẵn hoặc dạng tổ hợp (ví dụ `é` và `e` + U+0301), và `foldText` chỉ trim và hạ chữ thường, nên kiểm trùng (BR-TRANSFER-003), tên tag (BR-TAG-001) và tìm kiếm coi hai dạng là hai chuỗi khác nhau | bị chặn | — | S–M | Quyết định D17 của gói 9a (spec trên nhánh `claude/be-transfer`, không merge vì #72 đã làm BE-B3); dòng này mất theo gói đó và được thêm lại trong gói 10 | Chủ dự án quyết có chuẩn hoá ở mọi đường ghi text và ở phép fold hay không; Dart không có sẵn chuẩn hoá Unicode (xem Điểm chặn) |
-| BE-C2 | Batch trên 32.766 id, vượt giới hạn biến bind của SQLite | chưa bắt đầu | — | S | Clarification 16 của plan backend deck/card | Chia lô trong cùng transaction khi có nhu cầu thật |
+| BE-C1 | Sắp tên theo thứ tự tiếng Việt. Hiện tên được so theo code unit, nên tên bắt đầu bằng Ă, Đ, Ơ… đứng sau "z" | cắt | — | S | Chủ dự án giữ thứ tự theo code unit (2026-09-27, [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md) D3) | — |
 
 ### Hạ tầng và tài liệu
 
@@ -180,11 +203,11 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| BE-C1 | Chưa chốt có thêm dependency collation hay không | Thứ tự sort tên deck | Chủ dự án quyết |
-| BE-C5 | Chưa chốt có chuẩn hoá Unicode (NFC) hay không, và nếu có thì bằng dependency nào | Kiểm trùng khi import, tên tag, tìm kiếm | Chủ dự án quyết; đổi phép fold là đổi dữ liệu đã lưu (`front_folded`, `back_folded`, `name_folded`), cần migration |
-| Mastery của danh sách deck | Chưa BR/UC nào nói thanh mastery, donut và dòng "Mastered" của màn 01 đếm gì, cũng như sort "tiến độ" mà UC-DECK-006 nhắc tới (đang là Coming soon). Trạng thái thẻ đã có ở BR-CARD-006…BR-CARD-008, và panel "mastered" của card list (IT-ORG-010) đã dựng trên số đếm của BE-A9 | Chỉ hai phần đó của danh sách deck; không thuộc Progress (BE-A7, spec gói 4 D1) | Bổ sung định nghĩa vào BR/UC của deck trước khi làm |
 | BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
+| BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
+| BE-E7 | Lệnh tạo bị từ chối mà server chưa từng thấy entity (`current` là `null`): xoá hàng local thì cascade mất các card chưa đẩy lên; #114 giữ hàng và ghi log, nên local lệch server mãi | Dữ liệu tạo offline dưới một cha đã bị máy khác xoá | Chốt trong spec của API-A2 và BE-E7 |
+| BE-E6 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
 | BE-D4 | Sửa UC `ready` là sửa hợp đồng ([`docs/README.md`](README.md), mục "Hợp đồng và phạm vi sửa") | 18 UC còn thiếu | Chủ dự án nêu phạm vi file được sửa |
 
 ## Trạng thái kiểm chứng
@@ -205,6 +228,8 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 ## Bước tiếp theo
 
 1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+2. BE-E7 song song với API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
+   trong [`wbs_API.md`](wbs_API.md).
 
 ## Ngữ cảnh cập nhật
 
@@ -246,6 +271,16 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 - **Cập nhật ngày 2026-09-27:** BE-D6 xong trong gói 12b, mở rộng theo chủ dự án: guard
   và hook design token không còn gì của V7. Hai lệnh `--ruleset memox-v7` trong skill
   chuyển sang `memox-v8` trong gói này, nên BE-D7 không còn việc đó.
+- **Cập nhật ngày 2026-09-27:** BE-C5 xong trong gói G1 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): text lưu và fold ở dạng NFC qua `unorm_dart`, migration v4 → v5 (chỉ đổi dữ liệu) gộp tag trùng, Fill so khớp phiên bản 2. Điểm chặn BE-C5 đóng theo quyết định của chủ dự án.
+- **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
+- **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
+  (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
+  trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));
+  không đổi schema.
+- **Cập nhật ngày 2026-09-27:** thêm nhóm "Đồng bộ với server" (BE-E1…BE-E7), phía
+  app của ADR-013 và ADR-014 (outbox đẩy lệnh, server là chuẩn của SRS); BE-E1 là sync
+  deck theo hàng đã merge ở #114, BE-E7 chuyển nó sang lệnh; bỏ sync và auth khỏi danh
+  sách ngoài V8.
 - **Cập nhật ngày 2026-09-27:** BE-D7 xong trong gói 12c, gồm BE-D3, mở rộng theo chủ dự
   án: skill và tài liệu không còn V7. Việc đối chiếu `flutter-theme-design` với code V8
   tách thành FE-D4 trong [`wbs_FE.md`](wbs_FE.md).

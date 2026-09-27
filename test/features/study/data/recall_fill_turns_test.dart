@@ -211,7 +211,7 @@ void main() {
       );
       final log = (await logsOf('C-card')).single;
       expect(log.read<String>('action'), 'forgotten');
-      expect(log.read<int>('comparison_version'), 1);
+      expect(log.read<int>('comparison_version'), 2);
       expect(log.read<bool>('used_hint'), isFalse);
       final stored = [
         for (final row

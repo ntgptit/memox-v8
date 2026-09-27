@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -279,6 +280,50 @@ void main() {
     expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
     expect(studied, [korean.id]);
+  });
+
+  libraryTest('the summary shows the level mastery donut beside "Mastered · '
+      '{algorithm}" (BR-DECK-026)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await env.decks.sub(korean.id, 'Grammar');
+    await insertCard(
+      env.db,
+      id: 'known',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 5, 1),
+      dueAt: DateTime(2026, 10, 30),
+      box: 8,
+    );
+    await insertCard(env.db, id: 'fresh', deckId: words.id);
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    final donut = tester.widget<MxMasteryDonut>(find.byType(MxMasteryDonut));
+    expect(donut.fraction, 0.5);
+    final overline = _en.deckSummaryMastered(_en.deckSchedulerEightBox);
+    expect(find.text(overline.toUpperCase()), findsOneWidget);
+  });
+
+  libraryTest('the summary with its donut holds at text scale 2 on a 360 '
+      'phone', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(
+      env.db,
+      id: 'late',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 22),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: korean.id),
+      textScale: 2,
+    );
+
+    expect(find.byType(MxMasteryDonut), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   libraryTest('the summary counts every sub-deck under the due filter', (

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/text/folded_text.dart';
+import 'package:memox/core/database/id_chunks.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 
 /// The card list read model (UC-CARD-001): a window, the filter counts, the
@@ -86,26 +87,29 @@ final class CardListDao {
     return select.map((row) => row.readTable(_schedule)).get();
   }
 
-  /// The tags of [cardIds] in one statement, each card's by folded name then
-  /// id (BR-TAG-001). No statement for no card.
+  /// The tags of [cardIds], each card's by folded name then id (BR-TAG-001).
+  /// One statement per chunk of cards (BE-C2): a card's tags all come from
+  /// its own chunk, so each list keeps its order. No statement for no card.
   Future<Map<String, List<Tag>>> tagsOf(List<String> cardIds) async {
     if (cardIds.isEmpty) return const {};
     final links = _db.cardTags;
     final tags = _db.tags;
-    final select =
-        _db.select(links).join([
-            innerJoin(tags, tags.id.equalsExp(links.tagId)),
-          ])
-          ..where(links.cardId.isIn(cardIds))
-          ..orderBy([
-            OrderingTerm.asc(tags.nameFolded),
-            OrderingTerm.asc(tags.id),
-          ]);
     final byCard = <String, List<Tag>>{};
-    for (final row in await select.get()) {
-      byCard
-          .putIfAbsent(row.readTable(links).cardId, () => [])
-          .add(row.readTable(tags));
+    for (final chunk in idChunks(cardIds)) {
+      final select =
+          _db.select(links).join([
+              innerJoin(tags, tags.id.equalsExp(links.tagId)),
+            ])
+            ..where(links.cardId.isIn(chunk))
+            ..orderBy([
+              OrderingTerm.asc(tags.nameFolded),
+              OrderingTerm.asc(tags.id),
+            ]);
+      for (final row in await select.get()) {
+        byCard
+            .putIfAbsent(row.readTable(links).cardId, () => [])
+            .add(row.readTable(tags));
+      }
     }
     return byCard;
   }

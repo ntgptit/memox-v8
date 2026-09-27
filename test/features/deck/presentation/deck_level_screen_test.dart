@@ -365,16 +365,44 @@ void main() {
     expect(find.byType(MxFab), findsOneWidget);
   });
 
-  libraryTest('the sort sheet offers only the sorts that work', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the sort sheet offers the five sorts of the kit, Progress last '
+      '(BR-DECK-027)', (tester, env) async {
     await _seed(env);
     await pumpLibraryScreen(tester, env, deckScreen());
     await tester.tap(find.text(_en.deckSortManual));
     await tester.pumpAndSettle();
 
-    // Manual, recent, name, due: the progress sort waits (spec A4, amended).
-    expect(find.byType(MxOptionRow), findsNWidgets(4));
+    final rows = tester.widgetList<MxOptionRow>(find.byType(MxOptionRow));
+    expect(rows, hasLength(5));
+    expect(
+      (rows.last.title, rows.last.description),
+      (_en.deckSortProgress, _en.deckSortProgressHint),
+    );
+  });
+
+  libraryTest('sort by progress puts the least mastered first and the empty '
+      'deck last (BR-DECK-027)', (tester, env) async {
+    await _seed(env);
+    final hangul = await env.decks.root('Hangul');
+    final letters = await env.decks.sub(hangul.id, 'Letters');
+    await insertCard(
+      env.db,
+      id: 'known',
+      deckId: letters.id,
+      learnedAt: DateTime(2026, 5, 1),
+      dueAt: DateTime(2026, 10, 30),
+      box: 8,
+    );
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await tester.tap(find.text(_en.deckSortManual));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckSortProgress));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.commonDone));
+    await tester.pumpAndSettle();
+
+    double top(String name) => tester.getTopLeft(find.text(name)).dy;
+    expect(top('Korean'), lessThan(top('Hangul')));
+    expect(top('Hangul'), lessThan(top('Kanji')));
   });
 }

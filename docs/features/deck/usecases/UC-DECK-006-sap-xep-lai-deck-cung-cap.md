@@ -2,7 +2,7 @@
 id: UC-DECK-006
 title: Sắp xếp lại Deck cùng cấp
 status: ready
-rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-SRS-007]
+rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-027, BR-SRS-007]
 code: [lib/features/deck/domain/usecases/reorder_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -27,8 +27,8 @@ Manual order.
 
 **Alternative flows:** Deck đầu không hiện Move up; deck cuối không hiện Move
 down; level chỉ có một deck không hiện thao tác reorder. Khi đang dùng sort theo
-tên, ngày, due hoặc tiến độ, thao tác bị ẩn để neighbour không bị suy ra từ một
-view-only order.
+tên, ngày, due hoặc tiến độ (BR-DECK-027), thao tác bị ẩn để neighbour không bị
+suy ra từ một view-only order.
 
 **Error flows:** Source hoặc target đã stale, hoặc không còn sibling → transaction
 từ chối và không ghi gì. Lỗi database ở bất kỳ update nào → toàn transaction

@@ -12,7 +12,8 @@ import '../../../support/library_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-/// Korean › {Words (3 overdue, 1 today, 1 new), Grammar}; Words › Verbs.
+/// Korean › {Words (3 overdue, 1 today, 1 new, 1 mastered), Grammar};
+/// Words › Verbs.
 Future<({String korean, String words})> _seed(LibraryEnv env) async {
   final korean = await env.decks.root('Korean');
   final words = await env.decks.sub(korean.id, 'Words');
@@ -35,6 +36,14 @@ Future<({String korean, String words})> _seed(LibraryEnv env) async {
     dueAt: DateTime(2026, 9, 24),
   );
   await insertCard(env.db, id: 'new', deckId: verbs.id);
+  await insertCard(
+    env.db,
+    id: 'known',
+    deckId: verbs.id,
+    learnedAt: DateTime(2026, 5, 1),
+    dueAt: DateTime(2026, 10, 30),
+    box: 8,
+  );
   return (korean: korean.id, words: words.id);
 }
 

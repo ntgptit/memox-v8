@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.memox.sync.mapper.SyncAppliedOpMapper">
+
+    <select id="findServerVersion" resultType="java.lang.Long">
+        SELECT server_version FROM sync_applied_op WHERE user_id = #{userId} AND op_id = #{opId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sync_applied_op (user_id, op_id, server_version)
+        VALUES (#{userId}, #{opId}, #{serverVersion})
+    </insert>
+</mapper>
