@@ -2,6 +2,7 @@ package com.memox.deck.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.memox.card.mapper.CardMapper;
 import com.memox.common.exception.BusinessException;
 import com.memox.common.exception.ErrorCode;
 import com.memox.common.util.TextRules;
@@ -48,6 +49,7 @@ public class DeckServiceImpl implements DeckService {
 
     private final DeckMapper deckMapper;
     private final DeleteBatchMapper deleteBatchMapper;
+    private final CardMapper cardMapper;
     private final ChangeVersions changeVersions;
     private final ObjectMapper objectMapper;
     private final Clock clock;
@@ -345,6 +347,15 @@ public class DeckServiceImpl implements DeckService {
                 changeVersions.block(context, rows),
                 context.deviceId(),
                 clock.instant());
+        int cards = cardMapper.countCardsInDeckBatch(context.userId(), request.batchId());
+        if (cards > 0) {
+            cardMapper.markCardsInDeckBatch(
+                    context.userId(),
+                    request.batchId(),
+                    changeVersions.block(context, cards),
+                    context.deviceId(),
+                    clock.instant());
+        }
         if (deck.getParentId() != null) {
             refreshContentType(context, deck.getParentId());
         }
@@ -372,6 +383,11 @@ public class DeckServiceImpl implements DeckService {
         int rows = deckMapper.countInBatch(context.userId(), batchId);
         deckMapper.restoreBatch(
                 context.userId(), batchId, changeVersions.block(context, rows), context.deviceId(), now);
+        int cards = cardMapper.countInBatch(context.userId(), batchId);
+        if (cards > 0) {
+            cardMapper.restoreCardBatch(
+                    context.userId(), batchId, changeVersions.block(context, cards), context.deviceId(), now);
+        }
         if (parent != null) {
             // Back to its old place under a parent that may have moved meanwhile (BR-TRASH-008).
             int depth = parent.getDepth() + 1;

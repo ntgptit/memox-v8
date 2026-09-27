@@ -206,4 +206,29 @@ class SyncApiIT {
         op.put("fields", fields);
         return op;
     }
+
+    @Test
+    void aCardCreatedOfflineUnderADeletedDeckIsKeptInTheDecksBatch() throws Exception {
+        UUID root = UUID.randomUUID();
+        UUID deck = UUID.randomUUID();
+        UUID batch = UUID.randomUUID();
+        UUID card = UUID.randomUUID();
+        push(
+                command("CREATE_ROOT_DECK", Map.of("id", root, "name", "Root", "schedulerType", "sm2")),
+                command("CREATE_SUB_DECK", Map.of("id", deck, "parentId", root, "name", "Deck")),
+                command("DELETE_DECK", Map.of("deckId", deck, "batchId", batch, "deletedAt", "2026-09-27T02:00:00Z")));
+
+        push(command("CREATE_CARD", Map.of("id", card, "deckId", deck, "front", "犬", "back", "dog")))
+                .andExpect(jsonPath("$.results[0].status").value("applied"));
+
+        JsonNode feed = readJson(changes(0));
+        JsonNode cardChange = null;
+        for (JsonNode change : feed.get("changes")) {
+            if (change.get("entityId").asText().equals(card.toString())) {
+                cardChange = change;
+            }
+        }
+        assertThat(cardChange).isNotNull();
+        assertThat(cardChange.get("row").get("deleteBatchId").asText()).isEqualTo(batch.toString());
+    }
 }

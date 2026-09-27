@@ -3,6 +3,8 @@ package com.memox.card.service.impl;
 import com.memox.card.dto.request.CardContentRequest;
 import com.memox.card.dto.request.CardFlagRequest;
 import com.memox.card.dto.request.CreateCardRequest;
+import com.memox.card.dto.request.DeleteCardsRequest;
+import com.memox.card.dto.request.MoveCardsRequest;
 import com.memox.card.service.CardService;
 import com.memox.sync.service.PayloadReader;
 import com.memox.sync.service.SyncCommandHandler;
@@ -38,5 +40,26 @@ class CardSyncCommands {
                 "flag",
                 (context, cardId, fields) ->
                         cards.updateFlag(context, cardId, payloads.read(fields, CardFlagRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler moveCardsCommand(CardService cards, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "MOVE_CARDS",
+                (context, payload) -> cards.moveCards(context, payloads.read(payload, MoveCardsRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler deleteCardsCommand(CardService cards, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "DELETE_CARDS",
+                (context, payload) -> cards.deleteCards(context, payloads.read(payload, DeleteCardsRequest.class)));
+    }
+
+    @Bean
+    SyncCommandHandler undoCardDeletionCommand(CardService cards, PayloadReader payloads) {
+        return new SyncCommandHandler(
+                "UNDO_CARD_DELETION",
+                (context, payload) -> cards.undoCardDeletion(context, payloads.id(payload, "batchId")));
     }
 }
