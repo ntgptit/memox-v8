@@ -16,23 +16,18 @@
 
 ### Shared widget: `MxCard`
 
-Recipe theo meaning (AD-23, M99.83): `flat` · `raised` · `focal` · `recessed`
-· `feedback` · `muted` · `tonal` · `accent` · `tile` · `option` — mỗi recipe
-là một named constructor map 1-1 vào private spec. Không đặt tên theo
-feature (`study`, `deck`).
+Biến thể theo meaning, không theo feature (`study`, `deck`): mỗi biến thể map
+1-1 vào một spec riêng của card.
 
-- [x] Internal padding là enum đóng `MxCardPadding { none, compact, standard }`;
-      `none` = child tự sở hữu content area.
-- [x] Interactive card có hover/press/focus riêng; focus ring chỉ vẽ ở
+- [ ] Internal padding là một lựa chọn đóng; card không nhận `EdgeInsets` tuỳ ý.
+- [ ] Interactive card có hover/press/focus riêng; focus ring chỉ vẽ ở
       `FocusHighlightMode.traditional` (cùng gate với autofocus của button).
-- [x] Non-interactive card không giả button state; `onLongPress` không cần
+- [ ] Non-interactive card không giả button state; `onLongPress` không cần
       `onTap` vẫn phải reach được.
-- [x] Không expose `color/radius/shadow/elevation/EdgeInsets` — enforced bằng
-      `test/app/shared_api_closure_test.dart` (allowlist AST) và
-      `test/app/card_activation_wrapper_test.dart`.
-- [x] Selection: tri-state `isSelected` thuộc card (M99.70); selected fill là
-      `MxCardSelectionTreatment { edge, tint }`, không phải `Color`.
-- [x] Interactive card giữ sàn 48×48 structural, không nhờ padding.
+- [ ] Không expose `color/radius/shadow/elevation/EdgeInsets`.
+- [ ] Selection: `isSelected` thuộc card; treatment của trạng thái chọn là một
+      lựa chọn đóng, không phải `Color`.
+- [ ] Interactive card giữ sàn 48×48 structural, không nhờ padding.
 
 ## 30. `ListTileThemeData`
 
@@ -120,9 +115,8 @@ meaning.
 - [ ] Semantics phát âm đúng.
 - [ ] Không expose color.
 
-Lưu ý repo: `badgeTheme` từng bị **từ chối** khỏi nhóm component theme chưa có renderer (khi đó là `app_planned_themes.dart`) vì
-due-vs-overdue là một quyết định cần màn hình (BR-161) — mục này chỉ mở khi
-quyết định đó có screen để check.
+Lưu ý repo: `badgeTheme` chưa vào `ThemeData` vì due-vs-overdue là một quyết
+định cần màn hình — mục này chỉ mở khi quyết định đó có screen để check.
 
 ## 34. `CarouselViewThemeData`
 

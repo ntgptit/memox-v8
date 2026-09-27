@@ -50,7 +50,7 @@ exists for exactly this.
 ## Logging
 
 Card content, notes, learning history, imports, media and backups are private
-(AD-08). A database log touches all of them at once, so the rules are stricter
+(ADR-002). A database log touches all of them at once, so the rules are stricter
 here than anywhere else in the app:
 
 - **Never log row content, at any level.** Not in debug, not "temporarily".
@@ -59,10 +59,10 @@ here than anywhere else in the app:
 - **Never log the database path.**
 
 What is safe and useful: the statement text, its duration, the row count, the
-transaction duration, and migration `from`/`to`. `query_log_interceptor.dart`
-does the first two and is gated on `kDebugMode` — a compile-time constant rather
-than a runtime flag, so the tree shaker removes the interceptor and its log lines
-from a release build entirely. For anything adjacent to private data that is
+transaction duration, and migration `from`/`to`. A statement log, if one is
+added, is gated on `kDebugMode` — a compile-time constant rather than a runtime
+flag, so the tree shaker removes it and its log lines from a release build
+entirely. For anything adjacent to private data that is
 stronger than a flag that can be set wrong and still ship.
 
 Beyond that:

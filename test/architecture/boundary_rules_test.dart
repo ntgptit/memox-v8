@@ -51,7 +51,7 @@ void main() {
       expect(shapeViolations(sources), hasLength(3));
     });
 
-    test('a widget sits one level deep in an AD-15 bucket', () {
+    test('a widget sits one level deep in an ADR-011 D8 bucket', () {
       const widgets = 'lib/features/deck/presentation/widgets';
       final sources = [
         _file('$widgets/deck_tile_widget.dart'),

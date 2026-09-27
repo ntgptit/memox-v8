@@ -22,9 +22,11 @@ git log --oneline -10
 ```
 
 The two WBS files are authoritative for progress: `wbs_BE.md` for `domain/`,
-`data/` and use cases, `wbs_FE.md` for presentation. If one is clearly stale
-relative to the code, say so and fix it before building anything else — every
-later decision depends on it being true.
+`data/` and use cases, `wbs_FE.md` for presentation. A screen's row in the
+[screen handoff index](../../../docs/shared/ui/screen-handoff/00-index.md) is
+authoritative for that screen. If one is clearly stale relative to the code,
+say so and fix it before building anything else — every later decision
+depends on it being true.
 
 ## Routing table
 
@@ -72,7 +74,8 @@ that actually catches problems.
 ## Keeping the ledger honest
 
 Update the WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) in the PR that does the
-work it describes. Mark items `xong` only when they are done by the Definition of
+work it describes, and a screen's row in the screen handoff index when the
+screen is built. Mark items `xong` only when they are done by the Definition of
 Done, not when the code first runs. If something was descoped or deferred, write
 that down with the reason — a future session reading "done" on a half-finished
 item will build on sand.

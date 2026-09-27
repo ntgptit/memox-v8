@@ -5,8 +5,8 @@ description: Use when a request asks to build, add, implement or finish a featur
 
 # Building a feature as a vertical slice
 
-This is the loop you run for every feature, and it
-composes the other skills rather than repeating them.
+This is the loop you run for every feature, and it composes the other skills
+rather than repeating them.
 
 **Vertical slice means: database to screen, one feature at a time.** One feature
 working end to end proves the architecture and surfaces integration problems
@@ -26,10 +26,10 @@ out to be open becomes rework, and the rework is always larger than the check.
       with no new visual design.
 - [ ] **State matrix decided** — which of initial / loading / loaded / empty /
       error / refreshing / submitting occur, and what each shows.
-- [ ] **API contract known** — N/A while ADR-012 holds (no remote API in MVP;
-      `docs/api-spec.md` deliberately does not exist yet). When the backend
-      lands: endpoints, shapes, error format, pagination there first, and build
-      against a fake implementing the same interface.
+- [ ] **API contract known** — N/A until the slice calls the API (ADR-012).
+      When it does: endpoints, shapes, error format and pagination in
+      `docs/features/<feature>/api.md` first, and build against a fake
+      implementing the same interface.
 - [ ] **Data model known** — entities, tables, whether a migration is needed.
 - [ ] **Acceptance criteria written** in the WBS entry, checkable by someone
       else.
@@ -53,7 +53,7 @@ features/<feature>/domain/
 ├── entities/       <name>_entity.dart
 ├── repositories/   <name>_repository.dart          # abstract contract
 ├── models/         <name>_model.dart               # read model / value object / enum
-├── usecases/       <verb>_<noun>_use_case.dart     # one per UI interaction (AD-12)
+├── usecases/       <verb>_<noun>_use_case.dart     # one per UI interaction (ADR-011 D4)
 └── failures/       <name>_failure.dart             # the feature's rejection enum
 ```
 
@@ -63,9 +63,8 @@ features/<feature>/domain/
 select on. `check_architecture.py` additionally pairs each folder with its
 required suffix. The authority on layout is ADR-011
 (`docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md`), and this block is a
-summary of it. V8's worked examples are Deck and Card: `docs/features/deck/`
-and `docs/features/card/` hold their use cases, rules and data, and
-`lib/features/deck/` and `lib/features/card/` their code.
+summary of it. `lib/features/deck/` and `lib/features/card/` are the worked
+examples.
 
 - Entities are immutable, with value equality, in domain language. Entity state
   is the enum or sealed class from `docs/features/<feature>/data.md` (state
@@ -76,21 +75,19 @@ and `docs/features/card/` hold their use cases, rules and data, and
   contract still has one method and the implementation makes three.
 - Business validation belongs here — it is the same regardless of UI, and here
   it can be unit-tested without a widget or a server.
-- **One use case per interaction** (AD-12). It takes the repository *contract*,
-  never an implementation, and it is where the input validation lives — a
-  controller that validates and a repository that validates the same rule again
-  is the shape this replaced.
+- **One use case per interaction** (ADR-011 D4). It takes the repository
+  *contract*, never an implementation, and it is where the input validation
+  lives — a controller that validates and a repository that validates the same
+  rule again is the shape this replaced.
 - **A rule that needs the tree as it stands at the moment of writing stays in the
   repository**, inside `runInTransaction`. Depth limits, content locks, emptiness
   checks, subtree moves. A use case above the repository would put the check
   outside the transaction, which is a race between the check and the write.
 - **A pass-through use case with optional parameters must forward every one of
   them, and gets a test proving it.** Optional params have defaults, so a
-  dropped `sort:` or `searchTerm:` compiles clean and analyzes clean — the
-  card list shipped exactly this ("Showing 3 of 1", inert sort control) and
-  only end-to-end runs caught it. The lock is cheap: a fake repository that
-  records every parameter it receives, one assert per param
-  (`watch_card_list_items_use_case_test.dart` is the template).
+  dropped `sort:` or `searchTerm:` compiles clean and analyzes clean, and
+  only an end-to-end run would catch it. The lock is cheap: a fake repository
+  that records every parameter it receives, one assert per param.
 
 ## Step 2 — Data
 
@@ -104,21 +101,25 @@ features/<feature>/data/
 └── models/         <name>_model.dart               # DTOs, with the first wire format
 ```
 
-`models/` does not exist yet: **there is no DTO layer**, and a folder appears
-with its first real file (ADR-011 D1). The app is local-only (ADR-001), Drift is
-the source of truth, and a DTO would be a second shape for data that already has
-two. The folder comes with the first real wire format, not in anticipation of
-one.
+No feature has `models/` yet: **there is no DTO layer in a feature**, and a
+folder appears with its first real file (ADR-011 D1). DTOs are the wire format,
+`json_serializable` classes, never Freezed (ADR-012), and only sync calls the
+API: its DTOs are in `lib/core/sync/sync_models.dart`. A feature's only data
+shape besides its entity is Drift's generated row.
 
 Order: the DAO first, then the mapper, then the repository. The repository is
-where Drift exceptions become `Failure`s — nowhere else. **There is no cache or
-sync policy to apply.** Reads come from `watch()` streams straight off the table;
-sync bookkeeping is deliberately deferred (AD-01), so a cache layer here would be
-a guess at a requirement that does not exist.
+where Drift exceptions become `Failure`s — nowhere else. **There is no cache
+policy to apply.** Reads come from `watch()` streams straight off the table:
+Drift is the app's durable store, not a cache in front of the server, so a
+cache layer here would be a guess at a requirement that does not exist. Nor is
+sync built per feature: triggers in `sync.drift` queue a synced table's
+writes, and one app-wide `SyncCoordinator` in `lib/core/sync/` pushes and
+pulls (ADR-013, ADR-014).
 
-SQL goes in `.drift` files so `drift_dev` type-checks it at build time (AD-02).
-No business SQL in Dart. Multi-step writes run inside `dao.runInTransaction`, and
-every guard that can refuse runs *before* the first mutation.
+SQL goes in `.drift` files under `lib/core/database/` so `drift_dev` type-checks
+it at build time. No business SQL in Dart. Multi-step writes run inside
+`dao.runInTransaction`, and every guard that can refuse runs *before* the first
+mutation.
 
 ## Step 3 — Presentation
 
@@ -189,19 +190,55 @@ Minimum for a feature to be done:
 - [ ] A strict visual audit companion per production screen (MX-VIS-001), one
       call per state, PASS in light and dark.
 - [ ] Golden tests if this feature added a shared component.
+- [ ] Each golden compared, state by state, with the screen in the kit (the
+      Definition of Done's UI section): the machine checks catch overlap and
+      contrast; this is where a person *looks*.
+
+`test/features/deck/` and `test/features/card/` show which test sits at which
+level, and their size is a reference for a slice of that weight.
 
 ## Step 5 — Close it out
 
 - [ ] `.claude/skills/flutter-workflow/scripts/dod_check.sh` passes.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
-- [ ] The WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) updated in the same PR —
-      status, and anything descoped with the reason.
+- [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit — status, and
+      anything descoped with the reason; for a screen, its row in the screen
+      handoff index.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:
       `.claude/skills/flutter-workflow/references/definition-of-done.md`.
 - [ ] Conventional commit scoped to the feature: `feat(<feature>): ...`.
+
+`assets/feature_checklist.md` is a copy-paste version of all of the above to
+paste into a WBS entry or PR description.
+
+## What does not transfer from Deck and Card
+
+Deck and Card are worked examples of the **method**, not templates for the
+data. Everything below exists in one of them **because that feature's business
+asked for it**; a new feature that acquires one without its own reason has been
+scaffolded, not designed.
+
+| Belongs to | What it is | Why it is not yours |
+|---|---|---|
+| Deck | The recursive tree (`parent_id`, `root_id`) | A feature whose objects do not *contain* other objects of the same kind has no tree. Most do not. |
+| Deck | The content type a deck settles on its first child | A business rule of Deck (ADR-006), not a pattern. |
+| Deck | The scheduler on the root deck and its lock | Study's business (ADR-003, ADR-004). It reaches Deck only because a deck is what gets studied. |
+| Deck | `DeckRejection` and its values | The *idea* — a refusal carries its reason as a value (ADR-011 D6) — transfers. The values do not. |
+| Card | Tags, the flag and the optional detail fields | Card content. A tag table is not a layer. |
+| Card | The card statuses derived at read time | Derived-not-stored is decided per feature; *these statuses* answer Card's. |
+| Both | The literal folder contents | The buckets are fixed (ADR-011 D8); which of them a feature fills is decided by what it renders. An empty bucket is not a gap. |
+
+**The test to apply instead of copying.** For each thing you are about to bring
+across, ask: *"if I delete this, does my feature stop being correct, or does it
+stop resembling Deck?"* Only the first is a reason to keep it.
+
+**Where Deck and Card disagree, the disagreement is the answer.** Two examples
+exist so the method can be told apart from one feature's habits — a single
+example cannot distinguish "this is the rule" from "this is how that one was
+built".
 
 ## The failure modes this ordering prevents
 

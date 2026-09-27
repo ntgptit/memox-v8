@@ -17,7 +17,7 @@ no Flutter, no Drift. A feature's public surface is its
 `domain/{entities,models,repositories,failures}/`, imported file by file; there are
 no barrels. Drift tables and named queries live centrally in
 `lib/core/database/{tables,queries}` per
-`flutter-drift/references/project-baseline.md` (gỡ ở BE-D7);
+[`flutter-drift/references/project-baseline.md`](../../../.claude/skills/flutter-drift/references/project-baseline.md);
 `core/database` assembles them into one `AppDatabase`. A repository
 implementation runs every write inside one Drift transaction. A repository
 contract has exactly one implementation, which is deliberate (ADR-010's

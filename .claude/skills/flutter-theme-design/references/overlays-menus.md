@@ -2,7 +2,7 @@
 
 **Nguyên tắc chương này:** Material không được âm thầm quyết định độ sâu. Mọi
 overlay khai elevation explicit — SnackBar từng là cái cuối cùng để SDK tự
-quyết (6.0, kể cả ở dark nơi app đã tắt bóng), và đó là một bug thật (M99.61).
+quyết (6.0, kể cả ở dark nơi app đã tắt bóng).
 
 ## 35. `DialogThemeData`
 

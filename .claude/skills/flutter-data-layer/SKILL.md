@@ -1,6 +1,6 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. APIs are called through Retrofit on one shared Dio client (ADR-012). Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
+description: Networking and persistence for this Flutter app. The app reads and writes Drift, and sync is the only code that calls the API, through Retrofit on the one shared Dio (ADR-012, ADR-014); decks sync today. Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
 ---
 
 # Data layer: networking and persistence
@@ -20,67 +20,77 @@ repository contract above it.
 
 ## Source of truth — already decided for this project
 
-**The server is the official data; the app is offline-first (ADR-013, ADR-014).**
-`memox-api-services` holds the official copy and runs the business rules. On the
-device, Drift is the durable working store: use cases read and write Drift,
-reads come from `watch()` streams, and a write lands locally first, with its
-`sync_outbox` row in the same transaction. `SyncCoordinator`
-(`lib/core/sync/`) pushes the outbox and pulls the server's state; only
-repositories and the `data/` layer know sync exists, and `domain/` and
-`presentation/` do not change for it.
+**The server is canonical, and the app is offline-first (ADR-013, ADR-014).**
+The app always reads and writes Drift, online or offline: reads come from
+`watch()` streams, and a write lands locally first, so the UI never waits for
+the network. Drift is the durable store, not a cache. Sync is the data layer's
+own job, which use cases and presentation never see: `lib/core/sync/` pushes
+the outbox and pulls the server's changes, for decks today, and the repository
+contract is what lets it reach the other tables without touching `domain/` or
+`presentation/`.
 
-APIs are called through Retrofit on one shared `Dio` (ADR-012): an `@RestApi()`
-interface per endpoint group (`lib/core/sync/sync_api.dart`), the client and its
-interceptors in `lib/core/network/`. `references/networking.md` is the guide for
-that half.
+The networking half of this skill, `references/networking.md`, describes the
+client sync uses: one `Dio` in `lib/core/network/`, under a Retrofit interface
+per endpoint group (ADR-012). No repository calls the API.
 
-**Offline-first** — the database is the source of truth. Reads always come from
-Drift and are exposed as a stream, so the UI updates when data changes for any
-reason. The network is a background process that fills the database. Writes go
-to the database first with a pending-sync marker, then upload. This is more work
-up front and dramatically better under bad connectivity.
+The generic reasoning below is kept because it is what makes the decision
+reviewable.
+
+**Offline-first** — reads always come from the database and are exposed as a
+stream, so the UI updates when data changes for any reason. The network is a
+background process that fills the database. Writes go to the database first
+and are queued for upload. This is more work up front and dramatically better
+under bad connectivity, and it is what ADR-013 chose, with the server holding
+the canonical copy.
 
 **Online-first** — the network is the source of truth, the database is a cache
 with a TTL. Reads try the network, fall back to cache, and say so in the UI when
 they are showing stale data.
 
-Whichever it is, record it in an ADR (`docs/shared/decisions/`). And the UI must never
-choose: a widget deciding "if offline read local else read remote" has pulled a
-data-layer policy into presentation, and that policy will then differ per screen.
+Whichever it is, record it in an ADR in `docs/shared/decisions/`. And the UI
+must never choose: a widget deciding "if offline read local else read remote"
+has pulled a data-layer policy into presentation, and that policy will then
+differ per screen.
 
 ## Repository shape
 
 ```dart
-final class DeckRepositoryImpl implements DeckRepository {
-  const DeckRepositoryImpl(this._remote, this._local, this._mapper);
+final class ReminderWorkloadRepositoryImpl
+    implements ReminderWorkloadRepository {
+  ReminderWorkloadRepositoryImpl(AppDatabase db)
+    : _dao = ReminderWorkloadDao(db);
+
+  final ReminderWorkloadDao _dao;
 
   @override
-  Future<List<Deck>> getDecks() async {
+  Future<List<ReminderDeckWorkload>> rootWorkloads({
+    required DateTime now,
+    required DateTime startOfToday,
+  }) async {
     try {
-      final dtos = await _remote.fetchDecks();
-      await _local.upsertAll(dtos);
-      return dtos.map(_mapper.toEntity).toList();
-    } on DioException catch (e, s) {
-      _logger.warning('fetchDecks failed', e, s);
-      final cached = await _local.getAll();
-      if (cached.isNotEmpty) return cached.map(_mapper.toEntity).toList();
-      throw mapDioException(e);          // -> Failure
-    } on DriftWrappedException catch (e, s) {
-      _logger.error('local read failed', e, s);
-      throw DatabaseFailure(message: 'Could not read local data', cause: e);
+      final rows = await _dao.rootDeckRows(now: now, startOfToday: startOfToday);
+      return [for (final row in rows) reminderDeckWorkloadOf(row, startOfToday)];
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }
 ```
 
-What that demonstrates: exceptions are caught at this boundary and only this
-boundary; the original is logged with its stack trace and then discarded from
-the user-facing path; the returned type is a domain entity, never a DTO.
+What that demonstrates: the repository reads Drift through its DAO; rows become
+domain types before they leave; and an exception is mapped at this boundary and
+only here, by `mapDatabaseError` in `lib/core/error/failure.dart`, keeping its
+stack trace (ADR-011 D6). A watch does the same with `.mapDatabaseErrors()`
+(`progress_repository_impl.dart`). The example is
+`lib/features/reminders/data/repositories/reminder_workload_repository_impl.dart`.
 
-Put `mapDioException` in `core/error/` and use it from every repository, so the
-same status code cannot produce different failures in different features. Test
-it directly (Phase 15.1) — it is high-traffic code that manual testing rarely
-exercises.
+Sync handles its own network failures: `SyncScheduler` retries a failed run
+with backoff, and nothing reaches a repository. When a repository first calls
+the API, its `DioException` mapping goes next to `mapDatabaseError` in
+`core/error/` and every repository uses it (ADR-012), so the same status code
+cannot produce different failures in different features.
+Test both directly (`flutter-testing`) — they are high-traffic code that manual
+testing rarely exercises.
 
 ## DTO and entity are different types
 
@@ -117,9 +127,10 @@ widget.
 
 ## Checks before the data layer is done
 
-Every data-layer change:
+Now (every repository reads and writes Drift; only sync calls the API):
 
-- [ ] Reads and writes go through Drift; only the sync layer talks to the server (ADR-013).
+- [ ] ADR-013's source of truth followed everywhere: the app reads and writes
+      Drift, online or offline, and the server is canonical.
 - [ ] No Drift exception escapes a repository.
 - [ ] Exception→failure mapping in one place, with tests.
 - [ ] Generated row types never reach presentation.
@@ -128,7 +139,7 @@ Every data-layer change:
 - [ ] Indexes exist for the queries actually run.
 - [ ] Migration tested from every released schema version.
 
-Every change that calls the API (ADR-012):
+When a repository calls the API (ADR-012):
 
 - [ ] No `DioException` escapes a repository; DTOs never reach presentation.
 - [ ] Timeouts set for connect, receive and send.

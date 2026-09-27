@@ -56,8 +56,7 @@ addTearDown(db.close);
 - [ ] An empty search term / empty collection filter does what the convention
       says (see `dynamic-sql.md`).
 - [ ] Pagination neither duplicates nor drops a row across a window growth or a
-      cursor step — `card_list_window_test.dart` does this by growing the window
-      over a deck and comparing the id sets.
+      cursor step: grow the window over a deck and compare the id sets.
 
 **Plans, for the queries that matter**:
 
@@ -67,9 +66,9 @@ expect(plan.map((r) => r.data.values.join(' ')).join('\n'),
        isNot(contains('USE TEMP B-TREE')));
 ```
 
-This is how "the index is used" stops being a claim. `card_list_window_test.dart`
-pins exactly that for the card window: the composite index supplies the order, so
-`LIMIT` stops early instead of sorting the deck and putting a lid on it.
+This is how "the index is used" stops being a claim: pin it for every query
+whose order an index is meant to supply, so `LIMIT` stops early instead of
+sorting the whole deck and putting a lid on it.
 
 **Transactions and batches**:
 
@@ -112,14 +111,14 @@ subject rather than on collateral damage from the fixture.
 
 The fixture also has to be deep enough to be honest: this one builds a
 three-level tree, because a one-level fixture would let the root-resolution
-invariants pass even with the `COALESCE(parent_deck_id, id)` bug that BR-57
+invariants pass even with the `COALESCE(parent_id, id)` bug that BR-DECK-003
 forbids.
 
 ## Repository and provider tests
 
 - Repository tests assert **domain** results and failure mapping — a constraint
-  violation surfacing as `ConflictFailure`, a missing row as `NotFoundFailure` —
-  never the SQL that produced them.
+  violation surfacing as `ConstraintFailure`, a missing deck as
+  `Rejected(DeckRejection.notFound)` — never the SQL that produced them.
 - Provider tests override at `appDatabaseProvider` with an in-memory database, so
   the repositories under test are the real ones:
 

@@ -1,6 +1,6 @@
 # III. Buttons & Actions
 
-**Nguyên tắc chương này, trả giá mới có (M99.61):** đổi resting fill/foreground
+**Nguyên tắc chương này:** đổi resting fill/foreground
 của một component khỏi cặp canonical của Material thì **mọi state default
 component đó sở hữu là của mình phải khai lại** — M3 hardcode default theo cặp
 *cũ* (FAB: `onPrimaryContainer` 8/10/10%), không suy từ override.
@@ -141,7 +141,7 @@ Variants semantic: standard, accent, destructive.
 - [ ] Focus/hover/highlight elevation.
 - [ ] **Hover/focus/splash color** — M3 default là `onPrimaryContainer`
       hardcode; đổi resting pair mà bỏ ba slot này là mực hệ khác trên fill hệ
-      này (bug thật, M99.61).
+      này.
 - [ ] Size.
 - [ ] Extended typography.
 - [ ] Splash.
