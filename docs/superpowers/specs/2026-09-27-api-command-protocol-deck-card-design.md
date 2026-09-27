@@ -265,3 +265,21 @@ For BE-E7, the app side of this protocol:
   coordinator skips unknown entity types and still advances `since`
   (`lib/core/sync/sync_coordinator.dart`), so card changes pulled before
   BE-E7 would otherwise be missed for good.
+
+## 10. Plan-time rulings
+
+- A root cannot be moved, and a move to the deck's current parent is not a move:
+  both are `VALIDATION_FAILED`, as the app refuses them (`rootCannotMove`,
+  `sameParent`).
+- Re-creating an id the user already owns is `CONFLICT`; another user's id is
+  `SYNC_ENTITY_CONFLICT`.
+- A command on a card in Trash is `CARD_IN_TRASH` (the card twin of
+  `DECK_IN_TRASH`).
+- Undo tombstones its `delete_batch` row, as the app deletes it
+  (`DeckDao.restoreBatch`), and re-places the item under its parent at its old
+  position.
+- A sub-deck's derived `content_type` counts the children that share its own
+  `delete_batch_id`, so a deck in Trash keeps its shape and a create under it
+  (D4) marks it correctly before an undo.
+- REST names its device with an optional `X-Device-Id` header; without it the
+  row records `00000000-0000-0000-0000-000000000000`.

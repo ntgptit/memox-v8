@@ -74,13 +74,17 @@ The shared code in `com.memox.common` that every feature reuses.
 - **OpenAPI:** `/v3/api-docs` and `/swagger-ui.html` document every endpoint,
   with the error body as each operation's `default` response. Set
   `API_DOCS_ENABLED=false` to turn both off (production).
-- **Sync (ADR-013):** `POST /api/v1/sync/push` applies a batch of client
-  operations idempotently (`opId`), each in its own transaction, and returns one
-  `applied`/`rejected` result per operation (a rejection carries the server's
-  copy as `current`). `GET /api/v1/sync/changes?since=&limit=` pages the user's
-  changes by `serverVersion`. A synced table implements `SyncEntityHandler`;
-  the owner always comes from `CurrentUserProvider` (a dev user until login,
-  `MEMOX_DEV_USER_ID`).
+- **Sync (ADR-013, ADR-014):** `POST /api/v1/sync/push` applies a batch of
+  operations idempotently (`opId`), each in its own transaction. An operation is
+  a `command` (`type` + `payload`, run by the same service method as the REST
+  route) or a `patch` (`entityType` + `entityId` + `group` + `fields`). The
+  result is `applied` with the user's latest version, or `rejected` with `current`:
+  the server's copy of each entity in `affected` that the user owns.
+  `GET /api/v1/sync/changes?since=&limit=` pages the user's changes by
+  `serverVersion`. A feature adds `SyncCommandHandler`/`SyncPatchHandler` beans
+  and one `EntityReader`; every write takes `ChangeVersions.lock` and gives each
+  changed row its own version. The owner always comes from
+  `CurrentUserProvider` (a dev user until login, `MEMOX_DEV_USER_ID`).
 - **Paging:** a list endpoint takes a request that extends
   `PageQuery<TheSortEnum>` (zero-based `page`, `size` 1–100, default 20) and
   returns `PagingResponse.of(items, query, totalItems)`. Each constant of the
