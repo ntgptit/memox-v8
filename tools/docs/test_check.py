@@ -58,6 +58,18 @@ class V7ResidueTest(unittest.TestCase):
         hits = [p.relative_to(root).as_posix() for p, _, _ in check.v7_residue(root)]
         self.assertEqual(hits, ["docs/wbs_FE.md"])
 
+    def test_a_new_spec_or_plan_is_scanned(self):
+        root = tree({
+            "docs/superpowers/specs/2099-01-01-new-design.md": "add a Widgetbook use-case\n",
+            "docs/superpowers/plans/2099-01-01-new.md": "update docs/wbs.md\n",
+        })
+        self.assertEqual(len(check.v7_residue(root)), 2)
+
+    def test_every_exclusion_is_one_file(self):
+        root = Path(__file__).resolve().parents[2]
+        for path in check.V7_HISTORY:
+            self.assertTrue((root / path).is_file(), path)
+
     def test_every_exclusion_gives_a_reason(self):
         for path, reason in check.V7_HISTORY.items():
             self.assertTrue(reason.strip(), path)

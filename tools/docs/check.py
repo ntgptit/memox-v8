@@ -390,11 +390,35 @@ V7_MARKER = re.compile(
     re.IGNORECASE,
 )
 V7_SCAN = (".claude/skills", "docs")
-# Records of what was decided or done then; they name V7 on purpose.
+# Records of what was decided or done then; they name V7 on purpose. One file
+# per entry, so a new spec, plan or ADR is scanned like any live document.
+_DATED = "a dated record of the V7 removal it planned or ran"
 V7_HISTORY = {
-    "docs/shared/decisions": "an ADR records the context its decision was taken in",
-    "docs/superpowers/specs": "a spec records what was decided on its date",
-    "docs/superpowers/plans": "a plan records what was done on its date",
+    "docs/shared/decisions/ADR-011-cau-truc-thu-muc-v8.md":
+        "the ADR's context names the V7 pointers it left for later",
+    "docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md":
+        "the foundation decision names where V7 lives",
+    "docs/superpowers/specs/2026-09-23-build-apk-release-design.md":
+        "records the V7 workflow it took as reference",
+    "docs/superpowers/specs/2026-09-23-v8-folder-architecture-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-25-ci-gate-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-26-verification-tooling-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-guard-without-v7-design.md": _DATED,
+    "docs/superpowers/specs/2026-09-27-local-backend-completion-design.md": _DATED,
+    "docs/superpowers/plans/2026-09-23-docs-v8-reset.md": _DATED,
+    "docs/superpowers/plans/2026-09-23-v8-folder-architecture.md": _DATED,
+    "docs/superpowers/plans/2026-09-24-settings-reset-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-24-study-session-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-25-ci-gate.md": _DATED,
+    "docs/superpowers/plans/2026-09-26-reminders-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-26-starter-decks-backend.md":
+        "a dated plan that quotes the WBS rows of its day",
+    "docs/superpowers/plans/2026-09-27-guard-without-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-local-backend-g3-no-v7.md": _DATED,
+    "docs/superpowers/plans/2026-09-27-verification-tooling.md": _DATED,
     "docs/wbs_BE.md": "its rows and log name what BE-D5, BE-D6 and BE-D7 removed",
     ".claude/skills/flutter-workflow/scripts/tests/test_ci_tooling.py":
         "asserts that Widgetbook stays out of the gate",
@@ -403,7 +427,7 @@ V7_HISTORY = {
 
 
 def is_history(relative: str) -> bool:
-    return any(relative == path or relative.startswith(path + "/") for path in V7_HISTORY)
+    return relative in V7_HISTORY
 
 
 def v7_residue(root: Path) -> list[tuple[Path, int, str]]:
