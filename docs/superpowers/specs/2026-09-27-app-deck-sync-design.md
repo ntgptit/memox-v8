@@ -5,6 +5,9 @@ Status: approved 2026-09-27 · Path: architectural · Parent:
 [ADR-013](../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md),
 [ADR-012](../../shared/decisions/ADR-012-goi-api-bang-retrofit.md)
 
+> Since 2026-09-28 the server is Supabase and sync is enabled by `SUPABASE_URL` and
+> `SUPABASE_PUBLISHABLE_KEY` ([Supabase backend design](2026-09-28-supabase-backend-design.md) §5).
+
 ## 1. Intent
 
 The server side of deck sync is live (PR #110). This slice makes the Flutter

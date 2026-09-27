@@ -1,6 +1,6 @@
 ---
 name: flutter-data-layer
-description: Networking and persistence for this Flutter app. The app reads and writes Drift, and sync is the only code that calls the API, through Retrofit on the one shared Dio (ADR-012, ADR-014); decks sync today. Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
+description: Networking and persistence for this Flutter app. The app reads and writes Drift, and sync is the only code that calls the API, through the Supabase RPCs in `SupabaseSyncApi` (ADR-015), while Retrofit on the one shared Dio stays for a future REST API (ADR-012); decks sync today. Covers the shared Dio client with auth/logging/error/token-refresh/request-ID interceptors, DTO-to-entity mapping, pagination and error-response contracts, offline and retry behaviour, Drift schema design with indexes and migrations, cache strategy with TTL and a declared source of truth, conflict resolution and sync, and secure storage of tokens. Use this skill when calling an API, adding or changing a repository implementation, designing database tables or writing a Drift migration, deciding what to cache or how to sync, handling offline state, or storing anything sensitive.
 ---
 
 # Data layer: networking and persistence
@@ -20,7 +20,7 @@ repository contract above it.
 
 ## Source of truth — already decided for this project
 
-**The server is canonical, and the app is offline-first (ADR-013, ADR-014).**
+**The server is canonical, and the app is offline-first (ADR-013, ADR-015).**
 The app always reads and writes Drift, online or offline: reads come from
 `watch()` streams, and a write lands locally first, so the UI never waits for
 the network. Drift is the durable store, not a cache. Sync is the data layer's

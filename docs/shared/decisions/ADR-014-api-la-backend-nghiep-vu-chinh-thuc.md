@@ -1,9 +1,12 @@
 ---
 id: ADR-014
 title: API là backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái
-status: active
-superseded_by:
+status: deprecated
+superseded_by: ADR-015
 ---
+> **Thay bởi [ADR-015](ADR-015-supabase-lam-backend.md) (2026-09-28):** backend là
+> Supabase; nghiệp vụ và SRS chỉ ở app. Văn bản dưới đây giữ làm lịch sử.
+
 ## Bối cảnh
 
 [ADR-013](ADR-013-dong-bo-voi-server-offline-first.md) chốt server là dữ liệu

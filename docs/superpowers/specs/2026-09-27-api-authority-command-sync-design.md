@@ -1,5 +1,9 @@
 # MemoX — the API as the business authority, with command-based sync
 
+> **Superseded 2026-09-28** by [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md)
+> and the [Supabase backend design](2026-09-28-supabase-backend-design.md): the
+> backend is Supabase and business rules stay in the app. Kept as history.
+
 Status: approved 2026-09-27 · Path: architectural · Decision record:
 [ADR-014](../../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) ·
 Amends: [server sync design](2026-09-27-server-sync-design.md)

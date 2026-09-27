@@ -573,6 +573,8 @@ giá trị hiệu lực là giá trị của bảng này, và việc đọc MUST
 
 Hàng đợi đồng bộ và trạng thái sync
 ([app deck-sync spec](../../superpowers/specs/2026-09-27-app-deck-sync-design.md) §3).
+Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi qua
+`sync_push`/`sync_changes` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md)).
 
 | Cột | Kiểu | Ghi chú |
 |---|---|---|

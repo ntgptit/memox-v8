@@ -1,5 +1,7 @@
 # memox-api-services
 
+> **Frozen 2026-09-28** ([ADR-015](../docs/shared/decisions/ADR-015-supabase-lam-backend.md)): the backend is Supabase; this project is a reference, out of CI.
+
 The MemoX backend API: Spring Boot 3, Java 17, MyBatis, PostgreSQL.
 Conventions and the review checklist live in the repo skill
 [`spring-boot-mybatis-review`](../.claude/skills/spring-boot-mybatis-review/SKILL.md).

@@ -1,5 +1,9 @@
 # MemoX API — command protocol, Deck and Card (API-A2)
 
+> **Superseded 2026-09-28** by [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md)
+> and the [Supabase backend design](2026-09-28-supabase-backend-design.md): the
+> backend is Supabase and business rules stay in the app. Kept as history.
+
 Status: approved 2026-09-27 · Path: architectural · WBS: API-A2 in
 [`wbs_API.md`](../../wbs_API.md) · Parent design:
 [API authority and command sync](2026-09-27-api-authority-command-sync-design.md)

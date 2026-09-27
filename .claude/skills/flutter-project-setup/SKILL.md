@@ -106,9 +106,11 @@ mode available, because it is indistinguishable from a hang.
 
 ## Environments and flavors
 
-> **No flavors in V8 yet.** The one environment value is the API base URL: a
-> build passes `--dart-define=API_BASE_URL=…`, which
-> `lib/core/network/api_config.dart` reads, and without it sync does not run.
+> **No flavors in V8 yet.** The environment values are the Supabase project: a
+> build passes `--dart-define=SUPABASE_URL=…` and
+> `--dart-define=SUPABASE_PUBLISHABLE_KEY=…`, which
+> `lib/core/network/supabase_config.dart` reads, and without both sync does not
+> run (ADR-015).
 > There is no staging backend and no analytics, so there are no flavors, no
 > `EnvConfig` and no `app/config/` (ADR-011). The rest of this section applies
 > when a second value appears.

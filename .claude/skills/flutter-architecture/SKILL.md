@@ -53,7 +53,7 @@ sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
 feature root, and there are no barrels: another feature imports the bucket file
 it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
 `entities/deck.dart`. `core/network/` holds the one shared Dio client
-(ADR-012), and `core/sync/` the sync that uses it (ADR-013, ADR-014). These
+(ADR-012) and the Supabase settings, and `core/sync/` the sync (ADR-013, ADR-015). These
 wait for an ADR that opens the need: `core/storage/`, `core/utils/`,
 `app/config/` and flavors, `app/di/`, `shared/models/`, `shared/extensions/`.
 

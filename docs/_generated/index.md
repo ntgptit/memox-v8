@@ -31,7 +31,7 @@
 | [ADR-011](../shared/decisions/ADR-011-cau-truc-thu-muc-v8.md) | Cấu trúc thư mục V8 | active | — |
 | [ADR-012](../shared/decisions/ADR-012-goi-api-bang-retrofit.md) | App gọi API bằng Retrofit trên một Dio client dùng chung | active | — |
 | [ADR-013](../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md) | Server là dữ liệu chính thức, app offline-first và tự đồng bộ | active | — |
-| [ADR-014](../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) | API là backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái | active | — |
+| [ADR-014](../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) | API là backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái | deprecated | — |
 | [ADR-015](../shared/decisions/ADR-015-supabase-lam-backend.md) | Supabase làm backend, nghiệp vụ ở app | active | — |
 
 ## [card](../features/card/README.md)
