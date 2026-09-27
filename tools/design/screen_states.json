@@ -48,6 +48,23 @@
       ]
     },
     {
+      "num": "03",
+      "dir": "03-starter-decks",
+      "title": "Starter decks",
+      "states": [
+        { "id": "list", "label": "Templates" },
+        { "id": "choose", "label": "Choose algorithm" },
+        { "id": "adding", "label": "Adding" },
+        { "id": "added", "label": "Added" },
+        { "id": "alreadyPresent", "label": "Already present" },
+        { "id": "secondCopy", "label": "Second copy" },
+        { "id": "addFailed", "label": "Add failed" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "none", "label": "None in build" },
+        { "id": "loadFailed", "label": "Load failed" }
+      ]
+    },
+    {
       "num": "04",
       "dir": "04-library-search",
       "title": "Library search",
@@ -57,6 +74,25 @@
         { "id": "results", "label": "Results" },
         { "id": "noResults", "label": "No results" },
         { "id": "error", "label": "Error" }
+      ]
+    },
+    {
+      "num": "05",
+      "dir": "05-tags",
+      "title": "Tags",
+      "states": [
+        { "id": "loaded", "label": "Loaded" },
+        { "id": "loading", "label": "Loading" },
+        { "id": "empty", "label": "Empty" },
+        { "id": "searchEmpty", "label": "Search empty" },
+        { "id": "sheet", "label": "Tag actions" },
+        { "id": "rename", "label": "Rename" },
+        { "id": "renameMerge", "label": "Rename → merge" },
+        { "id": "nameTooLong", "label": "Name too long" },
+        { "id": "del", "label": "Delete" },
+        { "id": "busy", "label": "Busy row" },
+        { "id": "opError", "label": "Op error" },
+        { "id": "tagGone", "label": "Tag gone" }
       ]
     },
     {
