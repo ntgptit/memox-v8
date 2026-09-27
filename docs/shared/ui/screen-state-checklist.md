@@ -32,11 +32,11 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **198**; một phần **2**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **200**; một phần **0**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
-| 01 | Deck list · recursive | FE-A1 | 22 | 20 | 2 | 0 | 0 | [01-deck-list.md](screen-handoff/01-deck-list.md) |
+| 01 | Deck list · recursive | FE-A1 | 22 | 22 | 0 | 0 | 0 | [01-deck-list.md](screen-handoff/01-deck-list.md) |
 | 02 | Review algorithm & reset | FE-A4 | 9 | 9 | 0 | 0 | 0 | [02-review-algorithm.md](screen-handoff/02-review-algorithm.md) |
 | 03 | Starter decks | FE-B4 | 10 | 10 | 0 | 0 | 0 | [03-starter-decks.md](screen-handoff/03-starter-decks.md) |
 | 04 | Library search | FE-A1, FE-A10 | 5 | 5 | 0 | 0 | 0 | [04-library-search.md](screen-handoff/04-library-search.md) |
@@ -71,12 +71,12 @@ FE-A1 · [01-deck-list.md](screen-handoff/01-deck-list.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [~] | Root · decks | `rootLoaded` | một phần | Thanh mastery ẩn: chờ BR/UC của deck định nghĩa mastery (điểm chặn trong `wbs_BE.md`). |
+| [x] | Root · decks | `rootLoaded` | xong | Thanh mastery trên mỗi hàng (BR-DECK-026). |
 | [x] | Root · loading | `rootLoading` | xong |  |
 | [x] | Root · first launch | `rootEmpty` | xong | Create deck và "Browse starter decks" (FE-B4). |
 | [x] | Root · error | `rootError` | xong |  |
 | [x] | Root · search | `rootSearch` | xong |  |
-| [~] | Root · sort & filter | `rootSortFilter` | một phần | Chưa có sort "Progress": chờ BR/UC, cùng điểm chặn mastery. |
+| [x] | Root · sort & filter | `rootSortFilter` | xong | Có sort Progress (BR-DECK-027). |
 | [x] | Root · due filter, none | `rootDueEmpty` | xong |  |
 | [x] | Root · deck actions | `rootOverflow` | xong |  |
 | [x] | Root · create deck | `rootCreate` | xong |  |
@@ -490,3 +490,5 @@ FE-A3 · [26-language.md](screen-handoff/26-language.md)
   detail file riêng; 22 state chuyển sang xong.
 - **Cập nhật ngày 2026-09-27:** read model của phiên mang `card_limit`; `large` của màn 21
   chuyển sang xong.
+- **Cập nhật ngày 2026-09-27:** BR-DECK-026 và BR-DECK-027 định nghĩa mastery của deck;
+  `rootLoaded` và `rootSortFilter` của màn 01 chuyển sang xong.
