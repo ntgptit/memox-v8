@@ -18,11 +18,16 @@ enum StudyOptionsSource {
 final class EffectiveStudyOptions {
   const EffectiveStudyOptions({
     required this.rootDeckId,
+    required this.rootDeckName,
     required this.options,
     required this.source,
   });
 
   final String rootDeckId;
+
+  /// The root's name, read with its options, for screen 15's note
+  /// (BR-STUDY-056).
+  final String rootDeckName;
   final StudyOptions options;
   final StudyOptionsSource source;
 

@@ -77,6 +77,7 @@ void main() {
     EffectiveStudyOptions from(StudyOptionsSource source) =>
         EffectiveStudyOptions(
           rootDeckId: 'root',
+          rootDeckName: 'Korean',
           options: StudyOptions.defaults,
           source: source,
         );

@@ -117,6 +117,8 @@ void main() {
     expect(ofRoot?.options.newCardOrder, NewCardOrder.random);
     expect(ofRoot?.source, StudyOptionsSource.rootOverride);
     expect(ofSub?.rootDeckId, 'r');
+    // Screen 15 names the root from the same read (FE-A3 plan 2, C6).
+    expect(ofSub?.rootDeckName, 'r');
     expect(ofSub?.options.cardLimit, 30);
     expect(await settings.studyOptionsOf(deckId: 'missing'), isNull);
     await _moveTreeToTrash(db);
