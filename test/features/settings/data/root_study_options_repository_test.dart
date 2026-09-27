@@ -195,6 +195,8 @@ void main() {
   test("saving a root's options writes its override and nothing else "
       '(BR-SETTINGS-003)', () async {
     await _insertTree(db);
+    // The fixture's own rows are queued too; start from an empty outbox.
+    await db.customStatement('DELETE FROM sync_outbox');
     final before = await totalChanges(db);
 
     final result = await settings.saveRootStudyOptions(
@@ -206,7 +208,9 @@ void main() {
     final root = await _root(db);
     expect(root.studyConfig, '{"card_limit":30,"new_card_order":"random"}');
     expect(root.updatedAt, _t0());
-    expect(await totalChanges(db), before + 1);
+    // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
+    expect(await totalChanges(db), before + 2);
+    expect(await _queued(db), ['deck/r']);
   });
 
   test('a card limit out of bounds is refused for a root too '
@@ -276,6 +280,8 @@ void main() {
         db,
         studyConfig: '{"card_limit":30,"new_card_order":"random"}',
       );
+      // The fixture's own rows are queued too; start from an empty outbox.
+      await db.customStatement('DELETE FROM sync_outbox');
       final before = await totalChanges(db);
 
       final cleared = await settings.clearRootStudyOptions(rootDeckId: 'r');
@@ -283,7 +289,9 @@ void main() {
       final again = await settings.clearRootStudyOptions(rootDeckId: 'r');
 
       expect(cleared, isA<Ok<void, SettingsRejection>>());
-      expect(afterFirst, before + 1);
+      // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
+      expect(afterFirst, before + 2);
+      expect(await _queued(db), ['deck/r']);
       expect(again, isA<Ok<void, SettingsRejection>>());
       final root = await _root(db);
       expect(root.studyConfig, isNull);
@@ -369,3 +377,14 @@ void main() {
     );
   });
 }
+
+/// The sync operations the writes queued, as `type/id`.
+Future<List<String>> _queued(AppDatabase db) async => [
+  for (final row
+      in await db
+          .customSelect(
+            'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
+          )
+          .get())
+    '${row.read<String>('entity_type')}/${row.read<String>('entity_id')}',
+];

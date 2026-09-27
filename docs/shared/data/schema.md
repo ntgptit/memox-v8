@@ -566,6 +566,29 @@ giá trị hiệu lực là giá trị của bảng này, và việc đọc MUST
 (IT-STUDY-013). Cột chỉ đổi khi người dùng lưu tuỳ chọn của root hoặc chọn
 `Use app defaults` (UC-SETTINGS-001 A1). Khoá lạ bị bỏ qua.
 
+## `sync_outbox` và `sync_state` (ADR-013)
+
+Hàng đợi đồng bộ và trạng thái sync
+([app deck-sync spec](../../superpowers/specs/2026-09-27-app-deck-sync-design.md) §3).
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
+| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` |
+| `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
+| `op` | TEXT NOT NULL | `upsert` \| `delete` |
+| `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
+| `attempts` | INTEGER NOT NULL | số lần push lỗi |
+
+`sync_state(name, value)` giữ `device_id`, cursor `since` và cờ tạm
+`applying_remote`.
+
+Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck` và `delete_batches` ghi outbox
+trong cùng transaction với mọi lần ghi, kể cả CTE, cascade và purge, trừ khi có
+`applying_remote` (dữ liệu từ server). `deck.server_version` và
+`delete_batches.server_version` là version server đã xác nhận; NULL là chưa
+từng được xác nhận.
+
 ## Bất biến — phải kiểm tra được bằng query
 
 Mỗi query dưới đây **phải luôn trả về 0 dòng**. Chúng là đặc tả cho phần kiểm tra

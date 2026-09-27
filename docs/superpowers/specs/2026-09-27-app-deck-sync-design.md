@@ -51,7 +51,7 @@ CREATE TABLE sync_outbox (
 ) AS SyncOutboxEntry;
 
 CREATE TABLE sync_state (
-  key TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL PRIMARY KEY,
   value TEXT NOT NULL
 ) AS SyncStateEntry;
 ```
