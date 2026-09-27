@@ -1,7 +1,8 @@
 # MemoX V8 — The skills and documents without V7 (package 12c)
 
 Status: approved 2026-09-27 (scope, the two V7 documents, the checklist, the pin and
-design sections 1–2 in conversation, then this spec) · Path: architectural
+design sections 1–2 in conversation, then this spec); amended during planning (§12) ·
+Path: architectural
 
 ## 1. Intent
 
@@ -285,3 +286,88 @@ last skill task.
 - **A marker pattern catches V8 text.** Narrow the pattern and record why (§7).
 - **Rollback:** revert the squash commit; the package changes only skills, one test
   file and documents.
+
+## 12. Amendments (2026-09-27, during planning)
+
+Planning ran on `master` as it moved, after the approval above. What follows amends
+§2–§10: the owner's decisions came through the popup; the rest are rulings the
+prototype needed, each with its reason.
+
+### 12.1 `master` moved: ADR-012 and ADR-013
+
+`master` moved to `3f78fb6` (#103–#109), and the branch merged it (`5792aa1`). Two
+ADRs arrived that change §4.1:
+
+- ADR-012 (the app calls APIs through Retrofit on one shared Dio) says it replaces
+  AD-05. `dio`, `retrofit` and `json_annotation` arrive with the first API call; DTOs
+  are `json_serializable`, never Freezed.
+- ADR-013 (the server is canonical; the app is offline-first and syncs) replaces
+  ADR-001's Data posture and Authentication rows and "Drift is the source of truth".
+
+| V7 | What it said | V8 |
+|---|---|---|
+| AD-01 | Local-first; sync deferred | ADR-013 |
+| AD-03 | No authentication yet | ADR-013 (identity now, login later) |
+| AD-05 | No network, no `dio` | ADR-012 |
+
+ADR-001 keeps the rows still in force: the platforms, and the Web build as the E2E
+channel.
+
+A skill does not cite a superseded row as if it held. A sentence that said
+"local-only (ADR-001)", "no auth (ADR-001)" or "Drift is the source of truth" now
+follows ADR-012 or ADR-013, and so does the V7 guidance next to it that ADR-013
+contradicts: the sync flow that flagged rows `isPendingSync`, the cache table that put
+a TTL on decks, the repository example that read the network first. The package does
+not write the sync or network guidance ADR-013's roadmap will need; that comes with
+the slices that build sync.
+
+### 12.2 The owner's decisions after approval
+
+- **The eight lines of `lib/` and `test/` that cite AD-12 and AD-15** (two
+  controllers, three use-case tests, `boundary_rules.dart` and a test name) cite
+  ADR-011 D4 and D8, in the `flutter-architecture` task; `boundary_rules.dart`'s
+  message changes with them. The contract test still scans skills only. This narrows
+  §10's "`lib/`, `test/` and `.github/`".
+- **Cited paths are pinned.** Every path in backticks that a repo-owned skill cites
+  under `lib/`, `test/`, `docs/`, `tools/` or `integration_test/`, or under its own
+  `assets/`, `references/` or `scripts/`, exists. A placeholder (`<feature>`, `*`, `…`,
+  `{…}`, `$…`) names no file, and generated output (`*.g.dart`, `/generated/`) is not
+  in a fresh checkout, so neither is checked.
+- **`flutter-theme-design`** loses what is V7's: milestones, history, and the
+  "Đã ship" claims about APIs or widgets V8 does not have. Its contract checklists and
+  the `[x]` rules that still hold stay. Reconciling the skill with V8's
+  `lib/core/theme/`, `lib/shared/widgets/` and the design handoff is FE-D4 in
+  `wbs_FE.md`, done with the first FE package that touches the design system.
+
+### 12.3 Rulings
+
+- **The repo-owned skills are 15.** §2 missed `spring-boot-mybatis-review`, which
+  `CLAUDE.md` names among the repo's rules. It cites nothing of V7 and joins
+  `REPO_OWNED_SKILLS`. `VENDORED_SKILLS` names the other 35 directories (ECC,
+  Superpowers, Impeccable), and a test pins that every directory under
+  `.claude/skills/` is in one list or the other, so no skill leaves the scan unnoticed.
+- **The contract test grows task by task.** §9 has it written first and green only
+  after the last skill task. Each task instead adds the skills it cleans, so the gate
+  stays green after every task and each red run lists exactly that task's work.
+- **The markers widen** beyond §7's table, each for a V7 trace the table missed:
+  `\bM\d+\.\d+[a-z]*\b` and `\bM\d+ R\d+\b` (a milestone with a letter suffix, a
+  review round), `(?i)\bphases? \d` (the plural "Phases 4 and 5"),
+  `docs/api-spec\.md`, and names V8 does not have: `card_review_states`,
+  `review_history`, `parent_deck_id`, `root_deck_id`, `SurfaceColumnRule`.
+- **V7 without a marker goes too** where it contradicts V8: V7's "due" (without
+  `learned_at`), the emptied deck, V7's error model (a `Failure` per kind, a
+  `ValidationFailure` with a set of problems) where ADR-011 D6 holds, dependency
+  tables that were not V8's `pubspec.yaml`, the `@freezed` state example, generated
+  code said to be committed, and the reference `analysis_options.yaml` claiming to be
+  the root's copy. Names that only illustrate (`deck.dart` as a counterexample,
+  `dio_error_mapper.dart`) stay, unpinned.
+- **Two more V7 documents go:** `flutter-testing/references/integration-test-harness.md`
+  (V7's `integration_test/` harness; its three defect classes move into the skill),
+  and `flutter-product-spec/assets/wbs_template.md`, which §4.3 already removes.
+- **§4.3's worked examples** are `lib/features/deck/` and `lib/features/card/`: the
+  two READMEs it names do not exist.
+- **§8's search** for the removed files also finds the contract test's markers,
+  `skill_distribution.py`'s receipt constant (the code that reads a receipt, not one),
+  and the record of the removal in ADR-011 and `wbs_BE.md`.
+- **Counts on the new base:** the CI tooling tests are 67 at `5792aa1` (§2's 66 and
+  the `api` job's test from #104), then 71, 73, 74 and 76; the host tests are 2349.
