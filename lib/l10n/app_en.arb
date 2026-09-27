@@ -5998,5 +5998,50 @@
   "cardEditedTags": "the tags",
   "@cardEditedTags": {
     "description": "An edited part of a card: its tags."
+  },
+  "reminderDueCards": "{count, plural, =1{1 card is due} other{{count} cards are due}}",
+  "@reminderDueCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "The daily reminder notification (BE-B5b; kit screen 24 \"What it says\", reminders spec D9). The due count of the most urgent root."
+  },
+  "reminderOtherDecks": "{count, plural, =1{1 other deck has cards} other{{count} other decks have cards}}",
+  "@reminderOtherDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "The daily reminder notification (BE-B5b; kit screen 24 \"What it says\", reminders spec D9). How many other roots have cards due."
+  },
+  "reminderBody": "{due} in {deck}.",
+  "@reminderBody": {
+    "placeholders": {
+      "due": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "The daily reminder notification (BE-B5b; kit screen 24 \"What it says\", reminders spec D9). No other root has cards due."
+  },
+  "reminderBodyWithOthers": "{due} in {deck}, and {others} waiting.",
+  "@reminderBodyWithOthers": {
+    "placeholders": {
+      "due": {
+        "type": "String"
+      },
+      "deck": {
+        "type": "String"
+      },
+      "others": {
+        "type": "String"
+      }
+    },
+    "description": "The daily reminder notification (BE-B5b; kit screen 24 \"What it says\", reminders spec D9). Other roots have cards due too."
   }
 }
