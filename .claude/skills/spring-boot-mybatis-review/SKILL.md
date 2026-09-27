@@ -27,6 +27,10 @@ Controller → Service (interface) → ServiceImpl → Mapper (+ XML) → Databa
 - ServiceImpl calls the Mapper directly. A Repository/DAO that only forwards to the Mapper is boilerplate.
 - No Clean/Hexagonal/Onion/CQRS/Event Sourcing/heavy DDD unless the project already uses it.
 - Constructor injection via `@RequiredArgsConstructor` + `private final`; no `@Autowired` fields, no `ApplicationContext.getBean`.
+- Build every object with four or more fields — MyBatis model, request/response record, query DTO — with Lombok
+  `@Builder`: `Invoice.builder().id(id).amount(amount)…build()`. A MyBatis model carries
+  `@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor` (MyBatis maps through the no-args constructor
+  and setters); a record takes `@Builder` directly. Tests build fixtures the same way.
 
 ## Review order and severity
 
@@ -83,6 +87,8 @@ as written. "Later we might need X" (headers, more types, another vendor) is not
 
 ## Common misses (seen in unguided reviews)
 
+- Filling a many-field object with a chain of setters or a positional constructor (`new InvoiceResponse(a, b, c, …)`):
+  MEDIUM — a swapped argument compiles and ships. Fix: `@Builder` on the type, `builder()` at the call site.
 - Rating Controller → Mapper as MEDIUM. It is a layer violation: HIGH.
 - Suggesting `line.split(",")` fixes instead of Apache Commons CSV (`CSVFormat`/`CSVParser`).
 - Suggesting Spring's or a custom `StringUtil` instead of Apache Commons `StringUtils`/`CollectionUtils`.
