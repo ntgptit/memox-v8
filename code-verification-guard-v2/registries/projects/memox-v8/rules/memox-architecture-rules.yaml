@@ -243,3 +243,25 @@ rules:
     tags:
       - memox-v8
       - architecture
+
+  # BE-B5b: the reminder's two plugins are reached through one data source,
+  # the one thing the adapter's host tests fake (local backend spec
+  # 2026-09-27 §8).
+  - id: memox_v8.architecture.reminder_plugins_have_one_door
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import `android_alarm_manager_plus` and `flutter_local_notifications`
+      only in
+      `lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart`;
+      go through `ReminderPluginsDataSource` instead.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart
+    patterns:
+      - "^\\s*import\\s+'package:(android_alarm_manager_plus|flutter_local_notifications)/"
+    tags:
+      - memox-v8
+      - architecture

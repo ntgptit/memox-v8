@@ -3,7 +3,7 @@ id: UC-REMINDER-001
 title: Bật nhắc học hằng ngày
 status: ready
 rules: [BR-DECK-003, BR-CORE-001, BR-CORE-002, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-003, BR-REMINDER-004, BR-REMINDER-005, BR-REMINDER-006, BR-REMINDER-007, BR-REMINDER-008, BR-REMINDER-009, BR-REMINDER-010, BR-REMINDER-011, BR-REMINDER-012, BR-STUDY-051, BR-STUDY-067, BR-STUDY-074]
-code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart]
+code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart, lib/features/reminders/data/repositories/android_reminder_platform_repository_impl.dart, lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 

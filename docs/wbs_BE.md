@@ -99,7 +99,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | — |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
-| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | chưa bắt đầu | BE-B5a | M | [Spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 ghi hai plugin ứng viên | Cần chọn dependency và có Android SDK hoặc thiết bị (xem Điểm chặn); quyết cách giữ hoà giải và lần gửi nền không chồng lên thao tác của người dùng ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14) |
+| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | đang làm | BE-B5a | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §8 và [plan](superpowers/plans/2026-09-27-local-backend-g5-android-reminder.md) gói G5: phần kiểm chứng được trên host đã xong — `AndroidReminderPlatformRepositoryImpl` trên `android_alarm_manager_plus` 5.1.1 và `flutter_local_notifications` 22.3.1, `ReminderOperationGate`, entry point nền, chạm mở Study Home, Reconcile lúc khởi động, manifest và gradle; test trong `test/features/reminders/` và `test/app/reminder_tap_test.dart` | Kiểm chứng trên thiết bị: `flutter build apk` (hoặc workflow `build-apk.yml`), nhắc bắn đúng giờ, chạm mở Study Home, sống qua reboot; gradle và manifest chưa build được trong container (xem Điểm chặn) |
 
 ### Đồng bộ với server (ADR-013, ADR-014)
 
@@ -199,14 +199,13 @@ như hiện nay; chỉ repository và tầng `data/` biết tới sync.
 
 ## Đang làm
 
-Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
+BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết bị (xem Điểm chặn).
 
 ## Điểm chặn và quyết định còn mở
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| BE-B5b | Cần dependency cho lịch nền và notification cục bộ | Thêm package vào dự án | Quyết trong spec của BE-B5b, kèm lý do và cách rollback; ứng viên ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §13 |
-| BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Không kiểm chứng được adapter, manifest và lịch nền | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
+| BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Chưa build được APK với manifest và gradle mới; chưa thấy nhắc bắn, chạm và reboot trên thiết bị | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
 | BE-E6 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
 
@@ -227,7 +226,7 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 
 ## Bước tiếp theo
 
-1. BE-B5b cùng hoặc sau FE-B5, khi có Android SDK hoặc thiết bị (xem Điểm chặn).
+1. BE-B5b: kiểm chứng trên thiết bị khi có Android SDK hoặc thiết bị (xem Điểm chặn); FE-B5 dựng màn 24 trên các use case và provider có sẵn.
 2. BE-E7 sau API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
    trong [`wbs_API.md`](wbs_API.md).
 
@@ -275,6 +274,7 @@ Không có hạng mục backend nào đang làm sau gói 12c (BE-D7).
 - **Cập nhật ngày 2026-09-27:** BE-C2 xong trong gói G2 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): tập id do người dùng chọn đi theo lô 30 000 trong transaction của thao tác. BE-C1 cắt theo quyết định của chủ dự án (giữ thứ tự code unit); điểm chặn của nó đóng.
 - **Cập nhật ngày 2026-09-27:** BE-D7 và BE-D3 xong trong gói G3 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): skill `flutter-*` và tài liệu sống không còn trỏ tới Widgetbook, `docs/wbs.md`, checklist 22 phase, baseline và blueprint của V7; `tools/docs/check.py` giữ điều đó. Số AD-xx và M-xx của V7 trong skill còn lại, ngoài phạm vi gói.
 - **Cập nhật ngày 2026-09-27:** BE-D4 xong trong gói G4 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md): 18 UC `ready` có acceptance criteria; chỉ dòng giữ chỗ của mỗi UC được thay. Tám chỗ UC và code lệch nhau được ghi thành `OPEN QUESTION`, không sửa bên nào: UC-DECK-001 A1 (Cancel không hỏi xác nhận) và E3 (`eight_box` được chọn sẵn); UC-DECK-006 (một mục Reorder kéo thả, không phải Move up/Move down); UC-STUDY-001 A4 (tổng kết không nêu số thẻ còn lại) và A5 (hiện tổng kết trước khi về danh sách); UC-STUDY-002 A4 (không có lối Starter Library); UC-STUDY-003 E1 (`modeNotOffered` hiện như lần mở thất bại chung); UC-PROGRESS-002 E1 (lỗi không theo kiểu failure). Điểm chặn BE-D4 đóng.
+- **Cập nhật ngày 2026-09-27:** BE-B5b đang làm: gói G5 của [spec hoàn tất backend local](superpowers/specs/2026-09-27-local-backend-completion-design.md) xong phần kiểm chứng được trên host (adapter Android, gate, entry point nền, chạm mở Study Home, Reconcile lúc khởi động, manifest, gradle). Điểm chặn "chọn dependency" đóng; còn điểm chặn Android SDK cho bước thiết bị.
 - **Cập nhật ngày 2026-09-27:** điểm chặn "Mastery của danh sách deck" đóng: BR-DECK-026
   (mastery = thẻ `mastered` ÷ mọi thẻ active của cây) và BR-DECK-027 (sort Progress), đếm
   trong hai truy vấn level của deck ([spec](superpowers/specs/2026-09-27-deck-mastery-design.md));
