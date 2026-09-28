@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
@@ -78,6 +81,39 @@ void main() {
       ),
     );
     expect(find.textContaining('No connection.'), findsOneWidget);
+  });
+
+  libraryTest('while a Retry reloads, the error stays and its Retry spins', (
+    tester,
+    env,
+  ) async {
+    var reads = 0;
+    final pending = StreamController<SyncStatus>();
+    addTearDown(pending.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: [
+        syncCommandsProvider.overrideWithValue(FakeSyncCommands()),
+        syncStatusProvider.overrideWith((ref) {
+          reads++;
+          return reads == 1
+              ? Stream<SyncStatus>.error(StateError('read failed'))
+              : pending.stream;
+        }),
+      ],
+    );
+    await _settle(tester);
+    await tester.tap(find.text('Retry'));
+    await _settle(tester);
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    final retry = find.descendant(
+      of: find.byType(MxErrorState),
+      matching: find.byType(MxButton),
+    );
+    expect(tester.widget<MxButton>(retry).isLoading, isTrue);
   });
 
   libraryTest('a second command waits for the first', (tester, env) async {
