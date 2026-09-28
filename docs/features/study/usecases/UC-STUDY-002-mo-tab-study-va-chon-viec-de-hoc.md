@@ -78,4 +78,4 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then** màn hiện trạng thái đã bắt kịp và các deck vẫn mở được để học trước (BR-STUDY-008, A3).
 - [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình tải, **then** hệ thống hiện zero state riêng, không có con số nào (BR-STUDY-077, A5).
 - [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện trạng thái lỗi, và Retry đọc lại (E1).
-- [ ] OPEN QUESTION: A4 nói thư viện chưa có deck nào thì empty state dẫn tới Starter Library, lối thứ hai là về Library — màn chỉ có một lối "Go to Library" (`studyHomeGoToLibrary`), và test `study_home_screen_test.dart` 'no root deck: only "Go to Library", no starter line (H1)' ghi rõ điều đó (A4).
+- [ ] **Given** thư viện chưa có root deck nào, **when** màn hình tải, **then** empty state có "Browse starter decks" dẫn tới Starter Library và lối thứ hai "Go to Library" về Library (A4).

@@ -22,18 +22,21 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// Screen 13, the Study tab (UC-STUDY-002): the session Resume takes up, the
 /// library's workload, and every root deck with its own, read as one
 /// snapshot. It writes nothing but Resume (BR-STUDY-075). Where it leads —
-/// the session, a deck's Study Entry, the Library — `app/` decides.
+/// the session, a deck's Study Entry, the Library, the Starter Library —
+/// `app/` decides.
 class StudyHomeScreen extends ConsumerWidget {
   const StudyHomeScreen({
     super.key,
     required this.onOpenSession,
     required this.onOpenDeck,
     required this.onOpenLibrary,
+    required this.onOpenStarterDecks,
   });
 
   final ValueChanged<String> onOpenSession;
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onOpenLibrary;
+  final VoidCallback onOpenStarterDecks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,10 +65,12 @@ class StudyHomeScreen extends ConsumerWidget {
       NoRootDecks() => StudyHomeEmptyWidget(
         hasDecks: false,
         onOpenLibrary: onOpenLibrary,
+        onOpenStarterDecks: onOpenStarterDecks,
       ),
       NoCards() => StudyHomeEmptyWidget(
         hasDecks: true,
         onOpenLibrary: onOpenLibrary,
+        onOpenStarterDecks: onOpenStarterDecks,
       ),
       final RootDeckWorkload workload => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

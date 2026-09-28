@@ -4837,9 +4837,13 @@
   "@studyHomeNoDecksTitle": {
     "description": "Screen handoff 13 (FE-A8): no root deck."
   },
-  "studyHomeNoDecksBody": "Your library is empty. Create a deck in Library to get started.",
+  "studyHomeNoDecksBody": "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library.",
   "@studyHomeNoDecksBody": {
-    "description": "Screen handoff 13 (FE-A8): no root deck; the starter line is dropped (H1)."
+    "description": "Screen handoff 13 (FE-A8): no root deck; the kit's starter line (UC-STUDY-002 A4)."
+  },
+  "studyHomeBrowseStarterDecks": "Browse starter decks",
+  "@studyHomeBrowseStarterDecks": {
+    "description": "Screen handoff 13: no root deck; the primary action opens the Starter Library (UC-STUDY-002 A4)."
   },
   "studyHomeNoCardsTitle": "Your decks have no cards yet",
   "@studyHomeNoCardsTitle": {

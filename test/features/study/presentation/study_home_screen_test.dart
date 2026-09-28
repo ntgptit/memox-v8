@@ -30,12 +30,14 @@ final class _Taps {
   final sessions = <String>[];
   final decks = <String>[];
   var library = 0;
+  var starterDecks = 0;
 }
 
 StudyHomeScreen _screen(_Taps taps) => StudyHomeScreen(
   onOpenSession: taps.sessions.add,
   onOpenDeck: taps.decks.add,
   onOpenLibrary: () => taps.library++,
+  onOpenStarterDecks: () => taps.starterDecks++,
 );
 
 Future<void> _settle(WidgetTester tester) async {
@@ -141,16 +143,16 @@ void main() {
     );
   });
 
-  libraryTest('no root deck: only "Go to Library", no starter line (H1)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('no root deck: "Browse starter decks" first, then "Go to '
+      'Library" (UC-STUDY-002 A4, 13 noDecks)', (tester, env) async {
     final taps = _Taps();
     await pumpLibraryScreen(tester, env, _screen(taps));
     await _settle(tester);
 
     expect(find.text(_en.studyHomeNoDecksTitle), findsOneWidget);
     expect(find.text(_en.studyHomeNoDecksBody), findsOneWidget);
+    await tester.tap(find.text(_en.studyHomeBrowseStarterDecks));
+    expect(taps.starterDecks, 1);
     await tester.tap(find.text(_en.studyHomeGoToLibrary));
     expect(taps.library, 1);
   });

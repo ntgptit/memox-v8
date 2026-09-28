@@ -30,6 +30,7 @@ StudyHomeScreen _screen() => StudyHomeScreen(
   onOpenSession: (_) {},
   onOpenDeck: (_) {},
   onOpenLibrary: () {},
+  onOpenStarterDecks: () {},
 );
 
 final _overdue = DateTime(2026, 9, 20);

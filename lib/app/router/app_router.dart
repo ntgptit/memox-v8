@@ -174,14 +174,16 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
             routes: [
               GoRoute(
                 path: AppRoutes.study,
-                // Screen 13 (FE-A8): a deck and the Library open in the
-                // Library branch, as the summary's "Study this deck" does.
+                // Screen 13 (FE-A8): a deck, the Library and the Starter
+                // Library open in the Library branch, as the summary's "Study
+                // this deck" does.
                 builder: (context, state) => StudyHomeScreen(
                   onOpenSession: (sessionId) =>
                       context.go(AppRoutes.studySession(sessionId)),
                   onOpenDeck: (deckId) =>
                       context.go(AppRoutes.studyEntry(deckId)),
                   onOpenLibrary: () => context.go(AppRoutes.decks),
+                  onOpenStarterDecks: () => context.go(AppRoutes.starterDecks),
                 ),
               ),
             ],

@@ -296,7 +296,7 @@ FE-A8 · [13-study-home.md](screen-handoff/13-study-home.md)
 | [x] | Resume + workload | `loaded` | xong | P6. |
 | [x] | Workload | `noResume` | xong | P6. |
 | [x] | Zero workload | `zero` | xong | P6. |
-| [x] | No decks | `noDecks` | xong | P6. |
+| [x] | No decks | `noDecks` | xong | P6; "Browse starter decks" theo kit và UC-STUDY-002 A4 từ audit 2026-09-28. |
 | [x] | No cards | `noCards` | xong | P6. |
 | [x] | Loading | `loading` | xong | P6. |
 | [x] | Error | `error` | xong | P6. |
