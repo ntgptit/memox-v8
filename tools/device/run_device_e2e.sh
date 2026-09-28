@@ -189,12 +189,15 @@ scenario_IT-PLAT-006() {
   english
   adbs logcat -c
   sh_ monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
-  expect_text "Start your library" || return 1
-  if adbs logcat -d | grep -E "FATAL EXCEPTION|E/flutter"; then
+  local status=0
+  expect_text "Start your library" || status=1
+  if ((status == 0)) && adbs logcat -d | grep -E "FATAL EXCEPTION|E/flutter"; then
     FAILED_AT="a crash in logcat"
-    return 1
+    status=1
   fi
-  adbs uninstall "$PKG" >/dev/null
+  # Cleanup: the verdict is the checks above, not this.
+  adbs uninstall "$PKG" >/dev/null || true
+  return $status
 }
 
 ids=("$@")
