@@ -22,7 +22,8 @@ Needs Docker. From the repo root:
    which pushes `migrations/` on every merge to `master` that changes them
    and on demand (`workflow_dispatch`).
 4. Same place: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (Project
-   Settings → API Keys), for the keep-alive workflow.
+   Settings → API Keys), for the keep-alive workflow and the Build APK
+   workflow, which passes them to `--dart-define-from-file`.
 5. Build the app with both values:
 
        flutter run --dart-define=SUPABASE_URL=https://<ref>.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=<key>
