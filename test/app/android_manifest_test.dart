@@ -13,4 +13,15 @@ void main() {
 
     expect(application, contains('android:enableOnBackInvokedCallback="true"'));
   });
+
+  // ADR-015: sync calls Supabase; only debug and profile get INTERNET from Flutter.
+  test('the release build may use the network', () {
+    final manifest = File('android/app/src/main/AndroidManifest.xml')
+        .readAsStringSync();
+
+    expect(
+      manifest,
+      contains('<uses-permission android:name="android.permission.INTERNET"/>'),
+    );
+  });
 }
