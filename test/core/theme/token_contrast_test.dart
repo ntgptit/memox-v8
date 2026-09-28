@@ -72,6 +72,12 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _nonText,
     ),
     ('toggle off edge on a row', scheme.outline, row, _nonText),
+    (
+      'toggle off thumb on its track',
+      scheme.onSurfaceVariant,
+      scheme.surfaceContainerHighest,
+      _nonText,
+    ),
     ('progress fill on its track', scheme.primary, track, _nonText),
     ('sheet grabber', scheme.onSurfaceVariant, sheet, _nonText),
   ];
