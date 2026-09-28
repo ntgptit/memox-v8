@@ -25,6 +25,7 @@ fails until it does.
 | `intl` | — | Locale-aware dates and numbers. |
 | `uuid` | 4.x | Client-generated IDs (ADR-007). Needed **from day one**: a row created offline keeps its ID through sync (ADR-013), and changing the primary-key strategy later means rewriting every foreign key. |
 | `characters` | — | Counts user text in graphemes, so a length limit counts what the user sees. |
+| `collection` | 1.x | The Dart team's collection helpers (`groupListsBy`, `sortedBy`, `firstWhereOrNull`, `DeepCollectionEquality`) beyond the SDK's `Iterable`. Already resolved through Flutter; declared so `lib/` may import it. |
 | `unorm_dart` | 0.3.x | Unicode NFC, so stored and folded text has one form (`lib/core/text/unicode_form.dart`, BE-C5). |
 | `csv` | 8.x | Reads and writes CSV/TSV for import and export (`transfer`). |
 | `excel` | 4.x | Reads `.xlsx` sources for import (`transfer`). |
