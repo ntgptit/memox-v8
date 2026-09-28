@@ -33,6 +33,7 @@
 | [ADR-013](../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md) | Server là dữ liệu chính thức, app offline-first và tự đồng bộ | active | — |
 | [ADR-014](../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) | API là backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái | deprecated | — |
 | [ADR-015](../shared/decisions/ADR-015-supabase-lam-backend.md) | Supabase làm backend, nghiệp vụ ở app | active | — |
+| [ADR-016](../shared/decisions/ADR-016-mo-hinh-xu-ly-loi.md) | Mô hình xử lý lỗi — không có handler lỗi toàn cục | active | — |
 
 ## [card](../features/card/README.md)
 
