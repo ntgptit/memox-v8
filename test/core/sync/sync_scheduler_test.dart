@@ -170,21 +170,63 @@ void main() {
     });
   });
 
-  test('a report that throws does not stop the scheduler', () {
+  test('a success that cannot be recorded counts as a failed run', () {
     fakeAsync((clock) {
       var runs = 0;
-      final triggers = StreamController<void>();
+      var recordFails = true;
       final scheduler = SyncScheduler(
         run: () async => runs++,
-        triggers: triggers.stream,
+        triggers: const Stream.empty(),
+        onSucceeded: () async {
+          if (recordFails) throw StateError('disk full');
+        },
+      )..start();
+
+      bool? result;
+      clock.elapse(Duration.zero);
+      expect(runs, 1);
+      unawaited(scheduler.syncNow().then((value) => result = value));
+      recordFails = false;
+      clock.elapse(Duration.zero);
+      expect(runs, 2);
+      expect(result, isTrue);
+      scheduler.dispose();
+    });
+  });
+
+  test('an unrecordable success backs off and retries (spec §6)', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final scheduler = SyncScheduler(
+        run: () async => runs++,
+        triggers: const Stream.empty(),
         onSucceeded: () async => throw StateError('disk full'),
       )..start();
+
       clock.elapse(Duration.zero);
-      triggers.add(null);
-      clock.elapse(const Duration(seconds: 2));
+      expect(runs, 1);
+      clock.elapse(const Duration(seconds: 5));
       expect(runs, 2);
       scheduler.dispose();
-      unawaited(triggers.close());
+    });
+  });
+
+  test('a failure that cannot be recorded still backs off', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final scheduler = SyncScheduler(
+        run: () async {
+          runs++;
+          throw StateError('offline');
+        },
+        triggers: const Stream.empty(),
+        onFailed: (_) async => throw StateError('disk full'),
+      )..start();
+
+      clock.elapse(Duration.zero);
+      clock.elapse(const Duration(seconds: 5));
+      expect(runs, 2);
+      scheduler.dispose();
     });
   });
 }

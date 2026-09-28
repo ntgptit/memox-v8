@@ -226,3 +226,14 @@ changing retry or backoff; login (SB-A2); a sync indicator in the app bar.
 - Rollback: revert the PR. The migration only adds a table and keys; as with every
   schema bump, Drift refuses to open a schema-6 database with an older build, so a device
   that ran this build needs a build at schema 6 or later.
+
+## 11. Owner ruling after the build (2026-09-28)
+
+The in-flow `MxInlineBanner` on screens 13 and 27 was "too tall" and should
+"overlay like an alert". Both became a floating notice: a new shared
+`MxFloatingNotice` in a new `MxAppShell.notice` slot (UI-base register row 143).
+Screen 27 shows one notice — the refused rows with their two actions, else the
+last failure — and drops the refused rows' longer message. Screen 13's stale
+sentence is shortened to "Some changes haven't synced in over a day. They're safe
+here."
+

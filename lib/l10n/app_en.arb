@@ -6387,10 +6387,6 @@
     },
     "description": "Screen 27 (SB-U1): the refused-rows banner title."
   },
-  "syncRejectedBody": "The server didn't accept them. They're safe here. Try again, or keep them on this device only.",
-  "@syncRejectedBody": {
-    "description": "Screen 27 (SB-U1): the refused-rows banner message (local-first voice)."
-  },
   "syncTryAgain": "Try again",
   "@syncTryAgain": {
     "description": "Screen 27 (SB-U1): re-queues the refused rows and syncs."
@@ -6444,7 +6440,7 @@
     },
     "description": "Screen 13 (SB-U1): the sync banner while refused rows remain (spec §5.3)."
   },
-  "studyHomeSyncStale": "Some changes haven't reached the server for over a day. They're safe on this device.",
+  "studyHomeSyncStale": "Some changes haven't synced in over a day. They're safe here.",
   "@studyHomeSyncStale": {
     "description": "Screen 13 (SB-U1): the sync banner when a change waited over 24 h."
   },

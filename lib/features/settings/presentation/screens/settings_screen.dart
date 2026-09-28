@@ -84,7 +84,10 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
-            if (ref.watch(syncStatusProvider).value case final status?)
+            // Hidden on a stream error too (sync status spec §6).
+            if (ref.watch(syncStatusProvider) case AsyncData(
+              value: final status?,
+            ))
               SettingsSyncSectionWidget(
                 status: status,
                 now: ref.watch(dayClockProvider).now(),

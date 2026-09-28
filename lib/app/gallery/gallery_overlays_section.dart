@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -44,6 +45,16 @@ class GalleryOverlaysSection extends StatelessWidget {
           MxButton(
             label: context.l10n.commonRetry,
             icon: AppIcons.retry,
+            size: MxButtonSize.compact,
+            onPressed: () {},
+          ),
+        ],
+      ),
+      MxFloatingNotice(
+        message: context.l10n.studyHomeSyncStale,
+        actions: [
+          MxButton(
+            label: context.l10n.studyHomeSyncDetails,
             size: MxButtonSize.compact,
             onPressed: () {},
           ),

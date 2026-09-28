@@ -22,8 +22,7 @@ server and removed its offline banner; the screen was shaped with Impeccable on
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content density) + back `MxIconButton` | "Sync". |
-| Refused rows | `MxInlineBanner` (`warning`) + two compact `MxButton`s | Title "{n} changes are kept only on this device", message "The server didn't accept them. They're safe here. Try again, or keep them on this device only.", then Try again (primary) · Keep on this device (outline). Only while refused rows remain. |
-| Last failure | `MxInlineBanner` (`warning`) | One sentence per kind (spec §5.4), local-first; no code, id or message. Only while the last run failed after the last success. |
+| Notice | `MxFloatingNotice` in `MxAppShell.notice` | Floats over the bottom of the page (owner ruling 2026-09-28; UI-base register row 143). Refused rows win: "{n} changes are kept only on this device", then Keep on this device (outline) · Try again (primary) under it. Otherwise the last failed run's sentence (spec §5.4), local-first, with no code, id or message. None when all is well. |
 | Status | `MxSection` + two `MxSettingsRow`s + note | "Last synced" · "{Today, 14:32}" or "Not yet"; "Waiting to sync" · "{n} changes" or "Nothing waiting"; the note "MemoX syncs on its own when you're online. Your study never waits for it." |
 | Sync now | `MxButton` (primary, block, cloud-sync glyph) | Spins and is disabled while a run it started is going. |
 | Toasts | `MxSnackbar` | "Synced"; "Couldn't sync. Nothing was lost."; "Kept on this device"; "Couldn't change that. Nothing was lost." · Retry. |
@@ -51,13 +50,13 @@ Every state is a V8 addition; the images are the goldens.
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| No such screen; kit v3 removed `OfflineBanner` ("the product uses no network") | Screen 27 | ADR-015 brought the server; SB-U1 owner rulings R1, R3, R5–R7; Impeccable shape 2026-09-28 |
+| No such screen; kit v3 removed `OfflineBanner` ("the product uses no network") | Screen 27, its problems in a floating notice (register row 143) | ADR-015 brought the server; SB-U1 owner rulings R1, R3, R5–R7; Impeccable shape 2026-09-28 |
 | — | Times in 24-hour `HH:mm` in every language, "Sep 26" style dates in English | Spec R6; screen 24's FE-B5 D9 |
 
 ## Copy
 
 - App bar: "Sync".
-- Refused rows: "{n} changes are kept only on this device" · "The server didn't accept them. They're safe here. Try again, or keep them on this device only." · "Try again" · "Keep on this device".
+- Refused rows: "{n} changes are kept only on this device" · "Keep on this device" · "Try again".
 - Failures: "No connection. Your changes are safe on this device and will sync when you're back online." · "Couldn't sign in to sync. Your changes are safe on this device. MemoX will try again." · "The server couldn't take the changes. They're safe on this device. MemoX will try again." · "Sync stopped with an error. Your changes are safe on this device. MemoX will try again."
 - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} changes" · "Nothing waiting" · "MemoX syncs on its own when you're online. Your study never waits for it." · "Sync now".
 - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" · "Couldn't change that. Nothing was lost." · "Retry".

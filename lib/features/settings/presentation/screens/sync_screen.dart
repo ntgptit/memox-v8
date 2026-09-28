@@ -8,7 +8,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/presentation/controllers/sync_controller.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/sync_problem_banners_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/sections/sync_notice_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_status_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -36,8 +36,8 @@ class SyncScreen extends ConsumerWidget {
       (_, notice) => _say(context, ref, notice),
     );
     final task = ref.watch(syncControllerProvider.select((s) => s.task));
-    void run(SyncTask next) =>
-        unawaited(ref.read(syncControllerProvider.notifier).run(next));
+    final status = ref.watch(syncStatusProvider);
+    final shown = status.value;
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.syncTitle,
@@ -48,11 +48,17 @@ class SyncScreen extends ConsumerWidget {
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
       ),
-      body: switch (ref.watch(syncStatusProvider)) {
+      notice: shown != null && SyncNoticeWidget.shows(shown)
+          ? SyncNoticeWidget(
+              status: shown,
+              task: task,
+              onRun: (next) => _run(ref, next),
+            )
+          : null,
+      body: switch (status) {
         AsyncData(:final value?) => MxScreenScroll(
           children: [
             const SizedBox(height: AppSpacing.control),
-            SyncProblemBannersWidget(status: value, task: task, onRun: run),
             SyncStatusSectionWidget(
               status: value,
               now: ref.watch(dayClockProvider).now(),
@@ -63,7 +69,9 @@ class SyncScreen extends ConsumerWidget {
               icon: AppIcons.sync,
               isBlock: true,
               isLoading: task == SyncTask.syncNow,
-              onPressed: task == null ? () => run(SyncTask.syncNow) : null,
+              onPressed: task == null
+                  ? () => _run(ref, SyncTask.syncNow)
+                  : null,
             ),
           ],
         ),
@@ -89,6 +97,9 @@ class SyncScreen extends ConsumerWidget {
     );
   }
 
+  void _run(WidgetRef ref, SyncTask task) =>
+      unawaited(ref.read(syncControllerProvider.notifier).run(task));
+
   void _say(BuildContext context, WidgetRef ref, SyncNotice? notice) {
     final l10n = context.l10n;
     switch (notice) {
@@ -105,8 +116,7 @@ class SyncScreen extends ConsumerWidget {
           context,
           message: l10n.syncChangeFailed,
           actionLabel: l10n.commonRetry,
-          onAction: () =>
-              unawaited(ref.read(syncControllerProvider.notifier).run(task)),
+          onAction: () => _run(ref, task),
         );
     }
   }

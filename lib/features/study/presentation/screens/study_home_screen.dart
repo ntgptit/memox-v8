@@ -48,7 +48,17 @@ class StudyHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final children = switch (ref.watch(studyHomeProvider)) {
+    final home = ref.watch(studyHomeProvider);
+    // Only over a loaded page and a readable status (spec §5.3, §6).
+    final sync = switch (ref.watch(syncStatusProvider)) {
+      AsyncData(:final value) => value,
+      _ => null,
+    };
+    final showsSync =
+        home is AsyncData &&
+        sync != null &&
+        needsAttention(sync, ref.watch(dayClockProvider).now());
+    final children = switch (home) {
       AsyncData(:final value) => _loaded(context, ref, value),
       AsyncError() => [
         MxErrorState(
@@ -62,6 +72,9 @@ class StudyHomeScreen extends ConsumerWidget {
     };
     return MxAppShell(
       appBar: MxAppBar(title: l10n.studyHomeTitle),
+      notice: showsSync
+          ? StudyHomeSyncBannerWidget(status: sync, onOpenSync: onOpenSync)
+          : null,
       body: MxScreenScroll(children: children),
     );
   }
@@ -95,13 +108,7 @@ class StudyHomeScreen extends ConsumerWidget {
         ],
       ),
     };
-    final sync = ref.watch(syncStatusProvider).value;
-    final showsSync =
-        sync != null && needsAttention(sync, ref.watch(dayClockProvider).now());
     return [
-      // The banner carries its own margin below.
-      if (showsSync)
-        StudyHomeSyncBannerWidget(status: sync, onOpenSync: onOpenSync),
       if (session != null) ...[
         StudyHomeResumeWidget(
           session: session,

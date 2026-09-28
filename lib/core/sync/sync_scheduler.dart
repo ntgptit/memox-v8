@@ -107,9 +107,11 @@ class SyncScheduler {
     var succeeded = false;
     try {
       await _run();
+      // A success that cannot be recorded fails the run, which backs off and
+      // is retried (sync status spec §6).
+      await _onSucceeded?.call();
       succeeded = true;
       _failures = 0;
-      await _report(() async => _onSucceeded?.call());
     } catch (error, stackTrace) {
       _failures++;
       log('Sync failed; retrying', error: error, stackTrace: stackTrace);
@@ -128,7 +130,8 @@ class SyncScheduler {
     }
   }
 
-  /// A report that fails is logged; it never stops sync.
+  /// A failure that cannot be recorded is logged; the run already failed and
+  /// backs off either way.
   Future<void> _report(Future<void> Function() report) async {
     try {
       await report();
