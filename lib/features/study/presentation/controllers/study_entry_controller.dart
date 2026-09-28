@@ -23,6 +23,9 @@ class StudyEntryController extends _$StudyEntryController {
     StudyRejection.nothingToLearn,
     StudyRejection.nothingDue,
     StudyRejection.modeUnavailable,
+    // The root's scheduler changed while the direction sheet was open:
+    // self-assess is no longer offered (UC-STUDY-003 E1).
+    StudyRejection.modeNotOffered,
     StudyRejection.notFound,
     StudyRejection.sessionClosed,
     StudyRejection.sessionExpired,

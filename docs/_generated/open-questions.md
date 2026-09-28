@@ -15,10 +15,6 @@
 
 - L180: - [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).
 
-## [features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md](../features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md)
-
-- L94: - [ ] OPEN QUESTION: E1 nói khi `self_assess` không còn được offer lúc sheet đang mở thì sheet hiện một dòng lỗi và giữ nguyên lựa chọn, như các trường hợp "đổi giữa chừng" khác — `StudyRejection.modeNotOffered` không nằm trong `_changedMeanwhile` (`lib/features/study/presentation/controllers/study_entry_controller.dart:22-30`), nên trường hợp này hiện như một lần mở thất bại chung (BR-SRS-003, BR-STUDY-015, E1).
-
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions

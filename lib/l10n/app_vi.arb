@@ -1166,5 +1166,7 @@
   "reminderTimeSave": "Lưu",
   "settingsReminder": "Nhắc học hằng ngày",
   "settingsReminderOff": "Tắt",
-  "settingsReminderOn": "Bật · {time}"
+  "settingsReminderOn": "Bật · {time}",
+  "studyEntryRefusedNotOfferedTitle": "Bộ thẻ này không còn chế độ Tự đánh giá.",
+  "studyEntryRefusedNotOfferedBody": "Thuật toán ôn tập của bộ thẻ đã đổi. Hãy chọn lại chế độ ôn."
 }

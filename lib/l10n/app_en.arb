@@ -6215,5 +6215,13 @@
       }
     },
     "description": "Screen 23 (FE-B5): the Daily reminder row while on; {time} is HH:mm (spec D6, D9)."
+  },
+  "studyEntryRefusedNotOfferedTitle": "Self-check is no longer offered for this deck.",
+  "@studyEntryRefusedNotOfferedTitle": {
+    "description": "Screen 14 refusal (UC-STUDY-003 E1): the root deck scheduler changed while the direction sheet was open."
+  },
+  "studyEntryRefusedNotOfferedBody": "Its review algorithm changed. Choose a review mode again.",
+  "@studyEntryRefusedNotOfferedBody": {
+    "description": "Screen 14 refusal (UC-STUDY-003 E1); nothing was written."
   }
 }
