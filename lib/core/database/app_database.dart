@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/schema_versions.dart';
+import 'package:memox/core/database/tables/sync_keys.dart';
 
 part 'app_database.g.dart';
 
@@ -26,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -117,6 +118,23 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           '${_seedOutbox('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
           'ON CONFLICT (entity_type, entity_id) DO NOTHING',
+        );
+      },
+      from8To9: (m, schema) async {
+        // SB-S5: the study and display settings sync per account (library and
+        // study sync spec §3.5). They are queued once only when they differ
+        // from the defaults, so an untouched install never overwrites the
+        // account (plan R11).
+        await m.createTrigger(schema.appSettingsSyncUpdate);
+        await customStatement(
+          "INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) "
+          "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "
+          "substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || "
+          "substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), "
+          "'account_settings', '$accountSettingsEntityId', 'upsert', "
+          "CAST(strftime('%s', 'now') AS INTEGER) FROM app_settings "
+          "WHERE id = $appSettingsRowId AND (card_limit <> 20 OR new_card_order <> 'created' "
+          "OR theme_mode <> 'system' OR language <> 'system')",
         );
       },
     ),
