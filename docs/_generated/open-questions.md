@@ -7,10 +7,6 @@
 - L64: - [ ] OPEN QUESTION: A1 nói huỷ khi đã nhập dữ liệu thì hỏi xác nhận trước khi bỏ — nút Cancel đóng dialog ngay, không hỏi (`lib/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart:117`) (A1).
 - L65: - [ ] OPEN QUESTION: bước 2 và E3 nói chế độ ôn tập bắt buộc chọn, không có mặc định ngầm, và chưa chọn thì báo lỗi — dialog chọn sẵn `eight_box` (`create_root_deck_dialog_widget.dart:41`), nên người dùng tạo được deck mà không chọn và E3 không xảy ra được (BR-SRS-001, E3).
 
-## [features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md](../features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md)
-
-- L95: - [ ] OPEN QUESTION: E1 nói lý do hiện ra được localize theo kiểu failure — code luôn hiện cùng một tiêu đề và thân lỗi chung (`progressErrorTitle`, `progressErrorBody`) bất kể kiểu failure (`lib/features/progress/presentation/screens/deck_progress_screen.dart:47-54`) (E1).
-
 ## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
 
 - L180: - [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).

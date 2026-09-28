@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/failure_message.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -47,11 +49,15 @@ class DeckProgressScreen extends ConsumerWidget {
       _ => null,
     };
     final Widget body = switch (read) {
-      AsyncError() => MxScreenScroll(
+      AsyncError(:final error) => MxScreenScroll(
         children: [
           MxErrorState(
             title: l10n.progressErrorTitle,
-            body: l10n.progressErrorBody,
+            // The reason by the kind of failure, never its cause
+            // (UC-PROGRESS-002 E1, BR-CORE-005).
+            body: error is Failure
+                ? l10n.failure(error)
+                : l10n.progressErrorBody,
             retryLabel: l10n.commonRetry,
             onRetry: () => ref.invalidate(deckProgressProvider(deckId)),
           ),

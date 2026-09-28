@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/failure_message.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -35,10 +37,12 @@ class ProgressScreen extends ConsumerWidget {
     final l10n = context.l10n;
     // Once shown, a new snapshot only replaces the numbers (FE-A9 D8).
     final children = switch (ref.watch(progressProvider)) {
-      AsyncError() => [
+      AsyncError(:final error) => [
         MxErrorState(
           title: l10n.progressErrorTitle,
-          body: l10n.progressErrorBody,
+          // The reason by the kind of failure, never its cause
+          // (UC-PROGRESS-001 E1, BR-CORE-005).
+          body: error is Failure ? l10n.failure(error) : l10n.progressErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(progressProvider),
         ),

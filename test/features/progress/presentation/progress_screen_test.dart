@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
@@ -245,6 +246,26 @@ void main() {
 
     expect(reads, 2);
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
+  });
+
+  libraryTest('a failed read says what failed, by the kind of failure '
+      '(UC-PROGRESS-001 E1, BR-CORE-005)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(_Taps()),
+      overrides: [
+        progressProvider.overrideWith(
+          (ref) => Stream<Progress>.error(
+            const DatabaseLockedFailure(cause: '/data/memox.sqlite'),
+          ),
+        ),
+      ],
+    );
+    await _settle(tester);
+
+    expect(find.text(_en.failureBusy), findsOneWidget);
+    expect(find.textContaining('/data/'), findsNothing);
   });
 
   libraryTest('at large text in Vietnamese the streak tiles stack, so a label '
