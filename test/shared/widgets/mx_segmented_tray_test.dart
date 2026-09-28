@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
@@ -132,5 +133,33 @@ void main() {
       ),
       throwsAssertionError,
     );
+  });
+  testWidgets('a null onSelected dims the tray and disables every option', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxSegmentedTray<_Range>(
+        segments: _segments,
+        selected: _Range.week,
+        onSelected: null,
+      ),
+    );
+
+    final opacity = tester.widget<Opacity>(
+      find
+          .descendant(
+            of: find.byType(MxSegmentedTray<_Range>),
+            matching: find.byType(Opacity),
+          )
+          .first,
+    );
+    expect(opacity.opacity, AppOpacity.disabled);
+    expect(
+      tester.getSemantics(find.text('30d')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
   });
 }
