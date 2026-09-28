@@ -102,11 +102,11 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | xong | — | M | Chủ dự án duyệt 2026-09-28 (ảnh trước/sau): `error` sáng `#C02447`, `inversePrimary` `#A0ACFF`, chữ mastery dùng `statusMasteredInk`, glyph banner cảnh báo dùng `warningInk`, toggle tắt có viền `outline` và núm `onSurfaceVariant`, track tiến độ `surfaceContainerLow`, grabber `onSurfaceVariant`; viền ô nhập và viền nút outline giữ như kit (miễn trừ). §9 dòng 1–4, 30, 57–60 đóng, dòng 144 ghi độ lệch; phần contrast của dòng 66 (skeleton, viền banner) nằm ngoài phạm vi đã duyệt. `textContrastGuideline` không vào `auditProductionScreen` vì đọc sai chữ 12px và nút tô nền; thay bằng `test/core/theme/token_contrast_test.dart` | — |
+| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | xong | — | M | Chủ dự án duyệt 2026-09-28 (ảnh trước/sau): `error` sáng `#C02447`, `inversePrimary` `#A0ACFF`, chữ mastery dùng `statusMasteredInk`, glyph banner cảnh báo dùng `warningInk`, toggle tắt có viền `outline` và núm `onSurfaceVariant`, track tiến độ `surfaceContainerLow`, grabber `onSurfaceVariant`; viền ô nhập và viền nút outline giữ như kit (miễn trừ). §9 dòng 1–4, 30, 57–60 đóng, dòng 145 ghi độ lệch; phần contrast của dòng 66 (skeleton, viền banner) nằm ngoài phạm vi đã duyệt. `textContrastGuideline` không vào `auditProductionScreen` vì đọc sai chữ 12px và nút tô nền; thay bằng `test/core/theme/token_contrast_test.dart` | — |
 | FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | xong | — | M | Typography tiếng Việt: text một dòng có ellipsis dùng line-height 1.5 (`screenTitle`, `listRowTitle`, `rowSubtitle`, `tagLabel`); Hangul dùng font fallback của hệ điều hành; §9 dòng 5 đã đóng, dòng 102 ghi độ lệch | — |
 | FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | xong | — | S | UI-base debt, đợt 1: `MxSkeletonList`, tên cho spinner và donut, grabber có action đóng; §9 dòng 61, 65 đã đóng | — |
 | FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
-| FE-C5 | Adaptive: chưa có window-size class, chưa có navigation rail cho tablet và màn hình ngang (dòng 63) | xong | — | M | Chủ dự án chọn phương án B 2026-09-28 (ảnh mockup): [spec](superpowers/specs/2026-09-28-tablet-rail-design.md), [plan](superpowers/plans/2026-09-28-tablet-rail.md); từ 600 dp `MxNavRail` thay bottom nav (`AppTabShell`), `MxAppShell` cấp cột 720 dp, FAB bám mép cột, snackbar tối đa bằng cột; golden `app_tablet_*` và `mx_nav_rail_*`; §9 dòng 63 đóng, dòng 145 ghi độ lệch; PRODUCT.md cập nhật | — |
+| FE-C5 | Adaptive: chưa có window-size class, chưa có navigation rail cho tablet và màn hình ngang (dòng 63) | xong | — | M | Chủ dự án chọn phương án B 2026-09-28 (ảnh mockup): [spec](superpowers/specs/2026-09-28-tablet-rail-design.md), [plan](superpowers/plans/2026-09-28-tablet-rail.md); từ 600 dp `MxNavRail` thay bottom nav (`AppTabShell`), `MxAppShell` cấp cột 720 dp, FAB bám mép cột, snackbar tối đa bằng cột; golden `app_tablet_*` và `mx_nav_rail_*`; §9 dòng 63 đóng, dòng 146 ghi độ lệch; PRODUCT.md cập nhật | — |
 | FE-C6 | BottomSheet không chừa chỗ cho bàn phím (dòng 64) | xong | — | S | UI-base debt, đợt 1: sheet đặt trên IME inset; §9 dòng 64 đã đóng | — |
 | FE-C7 | Chuỗi của gallery debug là literal tiếng Anh, chưa đưa vào ARB (dòng 19) | xong | — | S | Gallery l10n: 125 key `gallery…` en/vi; luật chuỗi literal của guard phủ `lib/app/`; §9 dòng 19 đã đóng | — |
 | FE-C8 | Hiệu năng: mỗi `MxSkeleton` chạy ticker riêng; `context.derivedColors` dựng lại ở mỗi lần đọc (dòng 66) | xong | — | S | UI-base debt, đợt 1: một pulse cho mỗi danh sách; `derivedColors` nhớ theo theme; §9 dòng 66 (phần contrast chờ FE-C1) | — |
@@ -117,7 +117,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 |---|---|---|---|---|---|---|
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng; job `goldens` của CI so ảnh trên mỗi pull request (BE-D2) | — |
 | FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
-| FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | bị chặn | — | M | [host-coverage-map.md](shared/testing/host-coverage-map.md); §9 dòng 18: máy phát triển không có emulator | Cần môi trường có emulator hoặc thiết bị |
+| FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | xong | — | M | [spec](superpowers/specs/2026-09-28-device-e2e-design.md) và [plan](superpowers/plans/2026-09-28-device-e2e.md); `integration_test/` và `tools/device/run_device_e2e.sh`; 8/8 PASS trên emulator API 36 ngày 2026-09-28 ([device-e2e.md](shared/testing/device-e2e.md)); kèm deep link `memox://app/<route>` và màn not-found (IT-NAV-005) | — |
 | FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | xong | — | M | 10 chỗ sai tên hoặc API được sửa theo code (`MxAppShell`, `MxButton` với `MxButtonTone`/`MxButtonSize`, `MxBottomNav`, `MxListRow`, `MxSelectionCheckbox`, `MxToggle`, `MxFilterChip`/`MxTagChip`/`MxChipTrigger`, `MxDialog`/`showMxDialog`, `showMxSnackbar`, `MxSpinner`/`MxSkeleton*`/`MxLinearProgress`), bảng parity ghi slot nào có trong `app_theme.dart`, `MxIcon` (không tồn tại) thay bằng `AppIcons`/`AppIconSize`, danh sách rule guard đầy đủ; checklist ThemeData của slot chưa dựng giữ nguyên vì SKILL.md ghi rõ là đích | — |
 
 ## Đã xong và đã kiểm chứng
@@ -144,9 +144,7 @@ so nội dung.
 
 ## Điểm chặn và quyết định còn mở
 
-| Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
-|---|---|---|---|
-| FE-D3 | Không có emulator hoặc thiết bị | 8 kịch bản `DEVICE-E2E` | Môi trường chạy |
+Không còn điểm chặn nào của FE (FE-C1 và FE-D3 đã xong 2026-09-28).
 
 ## Trạng thái kiểm chứng
 
@@ -265,3 +263,7 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không
   làm.
 - **Cập nhật ngày 2026-09-28:** FE-D4 xong: skill `flutter-theme-design` dùng tên và API thật của V8; bảng parity theme ↔ widget ghi slot nào đã có.
+- **Cập nhật ngày 2026-09-28:** FE-D3 xong: tám kịch bản `DEVICE-E2E` chạy bằng
+  `tools/device/run_device_e2e.sh` (8/8 PASS trên emulator API 36). Thêm deep link
+  `memox://app/<route>` và màn not-found cho route lạ (IT-NAV-005). Điểm chặn "không có
+  emulator" đóng.

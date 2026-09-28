@@ -59,6 +59,7 @@ Add only when the need is real:
 | `json_serializable` | DTO `fromJson`/`toJson`. |
 | `drift_dev` | Drift table and DAO codegen, and the schema dumps in `drift_schemas/`. |
 | `fake_async` | Drives timers and the day clock in tests. |
+| `integration_test` | Device scenarios (`DEVICE-E2E`, FE-D3), run by `tools/device/run_device_e2e.sh`; part of the Flutter SDK. |
 | `flutter_lints` | Baseline rule set that `analysis_options.yaml` extends. |
 | ~~`riverpod_lint`~~ | **Descoped** — it needs `custom_lint` as its host. Its checks moved to code-verification-guard. |
 | ~~`custom_lint`~~ | **Descoped.** No published version supports `analyzer >=10`, which `drift_dev` and the Riverpod generator require. Its job is now code-verification-guard's (the `memox-v8` ruleset). |

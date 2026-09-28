@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -135,6 +135,28 @@ class AppDatabase extends _$AppDatabase {
           "CAST(strftime('%s', 'now') AS INTEGER) FROM app_settings "
           "WHERE id = $appSettingsRowId AND (card_limit <> 20 OR new_card_order <> 'created' "
           "OR theme_mode <> 'system' OR language <> 'system')",
+        );
+      },
+      from9To10: (m, schema) async {
+        // SB-S4: reviews and schedules sync (library and study sync spec
+        // §3.3–3.4, ADR-017). Existing rows are queued: schedules, then
+        // reviews oldest first.
+        await m.createTrigger(schema.reviewLogSyncInsert);
+        await m.createTrigger(schema.cardScheduleSyncInsert);
+        await m.createTrigger(schema.cardScheduleSyncUpdate);
+        await customStatement(
+          _seedOutbox(
+            'card_schedule',
+            '(SELECT card_id AS id FROM card_schedule)',
+            'id',
+          ),
+        );
+        await customStatement(
+          _seedOutbox(
+            'review_log',
+            '(SELECT id, answered_at FROM review_log)',
+            'answered_at, id',
+          ),
         );
       },
     ),

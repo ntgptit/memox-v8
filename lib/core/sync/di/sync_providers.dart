@@ -3,9 +3,11 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
+import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
 import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
+import 'package:memox/core/sync/review_log_sync_adapter.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
 import 'package:memox/core/sync/sync_commands.dart';
 import 'package:memox/core/sync/sync_api.dart';
@@ -55,6 +57,8 @@ SyncCoordinator syncCoordinator(Ref ref) {
       DeckSyncAdapter(db),
       TagSyncAdapter(db, store, now: clock.now),
       cards,
+      CardScheduleSyncAdapter(db, store, now: clock.now),
+      ReviewLogSyncAdapter(db),
       AccountSettingsSyncAdapter(db),
     ],
     now: clock.now,

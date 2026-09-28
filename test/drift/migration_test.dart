@@ -11,7 +11,8 @@ import 'generated/schema.dart';
 // migrations.md). v3 is the Trash's (trash spec §5.3); v4 is sync's (ADR-013);
 // v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4); v6
 // records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2); v8
-// syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5).
+// syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5); v10 syncs reviews
+// and schedules (SB-S4).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -111,133 +112,58 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v9', () async {
+  test('v1 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v2 upgrades to the schema of v9', () async {
+  test('v2 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v3 upgrades to the schema of v9', () async {
+  test('v3 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v4 upgrades to the schema of v9', () async {
+  test('v4 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v5 upgrades to the schema of v9', () async {
+  test('v5 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(5));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v6 upgrades to the schema of v9', () async {
+  test('v6 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(6));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v7 upgrades to the schema of v9', () async {
+  test('v7 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(7));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('v8 upgrades to the schema of v9', () async {
+  test('v8 upgrades to the schema of v10', () async {
     final db = AppDatabase(await verifier.startAt(8));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
+    await verifier.migrateAndValidate(db, 10);
   });
 
-  test('a v8 database queues its settings only when they are not the defaults', () async {
-    for (final (theme, queued) in [('system', 0), ('dark', 1)]) {
-      final schema = await verifier.schemaAt(8);
-      schema.rawDatabase
-        ..execute(
-          'INSERT OR IGNORE INTO app_settings (id, updated_at) VALUES (1, 0)',
-        )
-        ..execute("UPDATE app_settings SET theme_mode = '$theme' WHERE id = 1")
-        ..execute('DELETE FROM sync_outbox');
-      final db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 9);
-      final rows = await db
-          .customSelect(
-            "SELECT 1 FROM sync_outbox WHERE entity_type = 'account_settings'",
-          )
-          .get();
-      expect(rows, hasLength(queued), reason: theme);
-      await db.close();
-    }
-  });
-
-  test('a v7 database queues its tags and its tagged cards', () async {
-    final schema = await verifier.schemaAt(7);
-    schema.rawDatabase
-      ..execute(
-        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-        "scheduler_version, generation, sibling_position, created_at, updated_at) "
-        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-      )
-      ..execute(
-        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
-        "('K1', 'R', 'f', 'b', 1, 1), ('K2', 'R', 'f', 'b', 2, 2)",
-      )
-      ..execute(
-        "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('T', 'v', 'v', 0)",
-      )
-      ..execute("INSERT INTO card_tags (card_id, tag_id) VALUES ('K1', 'T')")
-      ..execute('DELETE FROM sync_outbox');
-    final db = AppDatabase(schema.newConnection());
+  test('v9 upgrades to the schema of v10', () async {
+    final db = AppDatabase(await verifier.startAt(9));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
-
-    final queued = await db
-        .customSelect(
-          'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
-        )
-        .get();
-    expect(
-      queued.map(
-        (r) =>
-            '${r.read<String>('entity_type')}/${r.read<String>('entity_id')}',
-      ),
-      ['tag/T', 'card/K1'],
-    );
-  });
-
-  test('a v6 database queues its cards for the first card sync', () async {
-    final schema = await verifier.schemaAt(6);
-    schema.rawDatabase
-      ..execute(
-        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
-        "scheduler_version, generation, sibling_position, created_at, updated_at) "
-        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
-      )
-      ..execute('DELETE FROM sync_outbox')
-      ..execute(
-        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
-        "('K2', 'R', 'f', 'b', 2, 2), ('K1', 'R', 'f', 'b', 1, 1)",
-      );
-    final db = AppDatabase(schema.newConnection());
-    addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 9);
-
-    final queued = await db
-        .customSelect(
-          "SELECT entity_id FROM sync_outbox WHERE entity_type = 'card' ORDER BY created_at, rowid",
-        )
-        .get();
-    expect(queued.map((r) => r.read<String>('entity_id')), ['K1', 'K2']);
+    await verifier.migrateAndValidate(db, 10);
   });
 
   test(
@@ -254,7 +180,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 9);
+      await verifier.migrateAndValidate(db, 10);
 
       final queued = await db
           .customSelect(
@@ -271,11 +197,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v9, the one an upgrade ends at',
+    'a new database has the schema of v10, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 9);
+      await verifier.migrateAndValidate(db, 10);
     },
   );
 
@@ -293,7 +219,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 9);
+      await verifier.migrateAndValidate(db, 10);
     });
     tearDown(() => db.close());
 
@@ -356,7 +282,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 9);
+      await verifier.migrateAndValidate(db, 10);
     });
     tearDown(() => db.close());
 

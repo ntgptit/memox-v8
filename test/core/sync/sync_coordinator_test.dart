@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
+import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
 import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
+import 'package:memox/core/sync/review_log_sync_adapter.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
@@ -51,6 +53,8 @@ class _Device {
             DeckSyncAdapter(db),
             TagSyncAdapter(db, SyncStore(db)),
             cards,
+            CardScheduleSyncAdapter(db, SyncStore(db)),
+            ReviewLogSyncAdapter(db),
             AccountSettingsSyncAdapter(db),
           ],
       pullLimit: pullLimit,

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/app/router/app_tab_shell.dart';
+import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
@@ -50,6 +51,8 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
   return GoRouter(
     navigatorKey: rootNavigator,
     initialLocation: AppRoutes.decks,
+    // IT-NAV-005, FE-D3 spec D5: not go_router's page, which prints the error.
+    errorBuilder: (context, state) => const RouteNotFoundScreen(),
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

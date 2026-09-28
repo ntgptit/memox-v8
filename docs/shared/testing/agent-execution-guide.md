@@ -310,7 +310,7 @@ thi MUST cung cấp:
   hơn khởi động lại tiến trình Android thật, và MUST ghi rõ trong báo cáo khi
   dùng thay thế.
 - Khởi động lại tiến trình Android thật cho `DEVICE-E2E`, qua trình chạy
-  ADB/thiết bị; phụ thuộc môi trường chạy.
+  ADB/thiết bị: `tools/device/run_device_e2e.sh` ([device-e2e.md](device-e2e.md)).
 - Hai bề mặt ứng dụng cùng chia sẻ một cơ sở dữ liệu, cho kịch bản cần kiểm
   đồng bộ giữa hai bề mặt.
 - Công cụ tiêm lỗi tại tầng lưu trữ/cơ sở dữ liệu, cho kịch bản mô phỏng lỗi
