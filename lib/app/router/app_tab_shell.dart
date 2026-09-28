@@ -37,6 +37,8 @@ class AppTabShell extends StatelessWidget {
     return ColoredBox(
       color: context.colors.surface,
       child: Row(
+        // The rail runs the full height, its destinations from the top.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           MxNavRail(
             destinations: destinations,

@@ -99,7 +99,11 @@ void main() {
       devicePixelRatio: 1,
     );
 
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 32);
+    final rail = tester.getRect(find.byType(MxNavRail));
+    expect(rail.width, 80 + 32);
+    // Full height, destinations from the top (spec §3).
+    expect((rail.top, rail.height), (0, 800));
+    expect(tester.getTopLeft(_railItem(_en.navLibrary)).dy, lessThan(100));
     final branch = tester.element(find.byType(MxAppShell).last);
     expect(MediaQuery.paddingOf(branch).left, 0);
     expect(MediaQuery.sizeOf(branch).width, 1280 - 80 - 32);
