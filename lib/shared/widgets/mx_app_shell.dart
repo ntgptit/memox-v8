@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -49,29 +50,39 @@ class MxAppShell extends StatelessWidget {
     final appBar = this.appBar;
     return Scaffold(
       backgroundColor: context.colors.surface,
+      // A wide window centres the column at [AppSize.contentMaxWidth]; the
+      // ground fills the rest (FE-C5). A phone gets its full width.
       // A context below the Scaffold, whose MediaQuery has already lost the
       // bottom inset when a bottom nav owns it; the shell's own context would
       // hand that inset back to the body.
       body: Builder(
-        builder: (bodyContext) => Column(
-          children: [
-            ?appBar,
-            Expanded(
-              // The app bar owns the top inset; a footer owns the bottom one.
-              child: MediaQuery.removePadding(
-                context: bodyContext,
-                removeTop: appBar != null,
-                removeBottom: footer != null,
-                child: _NoticeLayer(
-                  notice: notice,
-                  child: appBar == null
-                      ? SafeArea(bottom: false, child: body)
-                      : body,
-                ),
+        builder: (bodyContext) => LayoutBuilder(
+          builder: (_, constraints) => Center(
+            child: SizedBox(
+              width: math.min(constraints.maxWidth, AppSize.contentMaxWidth),
+              child: Column(
+                children: [
+                  ?appBar,
+                  Expanded(
+                    // The app bar owns the top inset; a footer owns the
+                    // bottom one.
+                    child: MediaQuery.removePadding(
+                      context: bodyContext,
+                      removeTop: appBar != null,
+                      removeBottom: footer != null,
+                      child: _NoticeLayer(
+                        notice: notice,
+                        child: appBar == null
+                            ? SafeArea(bottom: false, child: body)
+                            : body,
+                      ),
+                    ),
+                  ),
+                  ?footer,
+                ],
               ),
             ),
-            ?footer,
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomBar,
@@ -83,7 +94,8 @@ class MxAppShell extends StatelessWidget {
   }
 }
 
-/// FAB placement (Fab contract, caller-owned): 16 from the trailing edge;
+/// FAB placement (Fab contract, caller-owned): 16 from the column's trailing
+/// edge, which on a phone is the screen's (FE-C5);
 /// 24 + gesture inset above the bottom, or 4 above the bottom bar, which
 /// already carries the inset.
 final class _MxFabLocation extends FloatingActionButtonLocation {
@@ -94,13 +106,17 @@ final class _MxFabLocation extends FloatingActionButtonLocation {
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
+    final width = geometry.scaffoldSize.width;
+    final column = math.min(width, AppSize.contentMaxWidth);
+    final columnStart = (width - column) / 2;
+    final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
       TextDirection.ltr =>
-        geometry.scaffoldSize.width -
-            geometry.minInsets.right -
+        math.min(columnEnd, width - geometry.minInsets.right) -
             AppSpacing.gutter -
             fab.width,
-      TextDirection.rtl => geometry.minInsets.left + AppSpacing.gutter,
+      TextDirection.rtl =>
+        math.max(columnStart, geometry.minInsets.left) + AppSpacing.gutter,
     };
     // The part of the gesture inset not already covered by a bottom widget.
     final bottomContent = geometry.scaffoldSize.height - geometry.contentBottom;

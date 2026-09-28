@@ -21,12 +21,12 @@ void main() {
   );
 
   test('dangerSoft: error at 8% light, 16% dark', () {
-    expect(light.dangerSoft, isColorCloseTo(0x14DC2D4E));
+    expect(light.dangerSoft, isColorCloseTo(0x14C02447));
     expect(dark.dangerSoft, isColorCloseTo(0x29FF8FA3));
   });
 
   test('dangerBorder: error at 22% light, 32% dark', () {
-    expect(light.dangerBorder, isColorCloseTo(0x38DC2D4E));
+    expect(light.dangerBorder, isColorCloseTo(0x38C02447));
     expect(dark.dangerBorder, isColorCloseTo(0x52FF8FA3));
   });
 

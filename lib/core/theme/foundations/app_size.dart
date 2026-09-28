@@ -28,4 +28,15 @@ abstract final class AppSize {
 
   /// Square, icon only. V3 has no extended FAB.
   static const double fab = 52;
+
+  /// From this window width the top-level destinations sit in a rail
+  /// (FE-C5).
+  static const double navRailBreakpoint = 600;
+
+  /// The navigation rail's width.
+  static const double navRail = 80;
+
+  /// A screen's column never grows past this; the page ground fills the
+  /// rest of a wide window (FE-C5).
+  static const double contentMaxWidth = 720;
 }

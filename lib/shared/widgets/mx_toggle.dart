@@ -35,6 +35,20 @@ class _MxToggleState extends State<MxToggle> {
 
   var _hasFocus = false;
 
+  /// The ring over the track: focus first, else the off track's edge.
+  BoxDecoration? _ring(BuildContext context) {
+    if (_hasFocus) {
+      return _edge(context.derivedColors.primaryInk, AppStroke.focus);
+    }
+    if (widget.isOn) return null;
+    return _edge(context.colors.outline, AppStroke.control);
+  }
+
+  BoxDecoration _edge(Color color, double width) => BoxDecoration(
+    borderRadius: BorderRadius.circular(AppRadius.full),
+    border: Border.all(color: color, width: width),
+  );
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -53,16 +67,10 @@ class _MxToggleState extends State<MxToggle> {
         color: widget.isOn ? colors.primary : colors.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
-      // A foreground ring, so focus never pads the thumb (ruling R5).
-      foregroundDecoration: _hasFocus
-          ? BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadius.full),
-              border: Border.all(
-                color: context.derivedColors.primaryInk,
-                width: AppStroke.focus,
-              ),
-            )
-          : null,
+      // Foreground rings, so neither pads the thumb (ruling R5): focus, or
+      // the off track's outline edge, 3:1 against the row where the kit's
+      // track alone is 1.32 (FE-C1).
+      foregroundDecoration: _ring(context),
       child: AnimatedAlign(
         duration: duration,
         curve: Easing.standard,
@@ -72,7 +80,9 @@ class _MxToggleState extends State<MxToggle> {
         child: DecoratedBox(
           key: const ValueKey('mx-toggle-thumb'),
           decoration: BoxDecoration(
-            color: colors.surfaceBright,
+            // Off, the thumb sits on the track's fill: variant ink holds 3:1
+            // there, where outline is 2.74 light and 1.96 dark (FE-C1).
+            color: widget.isOn ? colors.surfaceBright : colors.onSurfaceVariant,
             shape: BoxShape.circle,
             boxShadow: AppShadows.whisper(colors),
           ),

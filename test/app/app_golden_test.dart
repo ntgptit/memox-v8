@@ -9,17 +9,26 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../support/deck_fixtures.dart';
 import '../support/golden_harness.dart';
 import '../support/library_harness.dart';
+
+/// The phone: 1080×2400 at 3x with its status and gesture insets.
+const _phone = (size: Size(1080, 2400), ratio: 3.0);
 
 Future<void> _pumpApp(
   WidgetTester tester,
   LibraryEnv env,
-  Brightness brightness,
-) async {
-  tester.view.physicalSize = const Size(1080, 2400);
-  tester.view.devicePixelRatio = 3;
-  tester.view.padding = const FakeViewPadding(top: 72, bottom: 60);
+  Brightness brightness, {
+  ({Size size, double ratio}) view = _phone,
+}) async {
+  tester.view.physicalSize = view.size;
+  tester.view.devicePixelRatio = view.ratio;
+  // 24 top and 20 bottom logical, at any ratio.
+  tester.view.padding = FakeViewPadding(
+    top: 24 * view.ratio,
+    bottom: 20 * view.ratio,
+  );
   addTearDown(tester.view.reset);
   tester.platformDispatcher.platformBrightnessTestValue = brightness;
   addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
@@ -77,5 +86,40 @@ void main() {
         );
       });
     });
+
+    // FE-C5: a rail and the 720 column on a tablet, with the tap-target
+    // rules the phone screens are audited against.
+    for (final (name, size, open) in [
+      ('landscape_library', const Size(1280, 800), false),
+      ('portrait_deck', const Size(800, 1280), true),
+    ]) {
+      libraryTest('tablet $name, ${brightness.name}', (tester, env) async {
+        final korean = await env.decks.root('Korean TOPIK I');
+        await env.decks.sub(korean.id, 'Vocabulary');
+        await env.decks.sub(korean.id, 'Grammar');
+        await env.decks.root('Spanish A2');
+        await withRealShadows(() async {
+          await _pumpApp(tester, env, brightness, view: (size: size, ratio: 1));
+          if (open) {
+            await tester.tap(find.text('Korean TOPIK I'));
+            await tester.pumpAndSettle();
+          }
+          await expectBoundaryGolden(
+            tester,
+            'goldens/app_tablet_${name}_${brightness.name}.png',
+            pixelRatio: 1.5,
+          );
+        });
+        final semantics = tester.ensureSemantics();
+        for (final guideline in [
+          androidTapTargetGuideline,
+          iOSTapTargetGuideline,
+          labeledTapTargetGuideline,
+        ]) {
+          await expectLater(tester, meetsGuideline(guideline));
+        }
+        semantics.dispose();
+      });
+    }
   }
 }

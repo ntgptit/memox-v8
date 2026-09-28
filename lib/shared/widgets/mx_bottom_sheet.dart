@@ -111,8 +111,10 @@ class MxBottomSheet extends StatelessWidget {
                           width: _grabberWidth,
                           height: _grabberHeight,
                           child: DecoratedBox(
+                            // Variant ink, 3:1 on the sheet; the kit's
+                            // outlineVariant is 1.30 (FE-C1).
                             decoration: BoxDecoration(
-                              color: colors.outlineVariant,
+                              color: colors.onSurfaceVariant,
                               borderRadius: BorderRadius.circular(
                                 AppRadius.full,
                               ),

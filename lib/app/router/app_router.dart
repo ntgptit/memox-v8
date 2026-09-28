@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -41,8 +41,6 @@ import 'package:memox/features/transfer/presentation/screens/card_import_screen.
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_app_shell.dart';
-import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 /// The app's routes: four top-level branches in a stateful shell, each
 /// keeping its own stack, plus the component gallery when [hasGallery]
@@ -58,7 +56,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
-            _TabShell(navigationShell: navigationShell),
+            AppTabShell(navigationShell: navigationShell),
         branches: [
           // The Library (library spec §4): one page per deck level.
           StatefulShellBranch(
@@ -436,51 +434,6 @@ void _openAncestor(
   });
   if (deckId == null || isOnStack) return;
   unawaited(router.push(levelOf(deckId)));
-}
-
-/// The bottom nav around the current branch.
-class _TabShell extends StatelessWidget {
-  const _TabShell({required this.navigationShell});
-
-  final StatefulNavigationShell navigationShell;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return MxAppShell(
-      body: navigationShell,
-      bottomBar: MxBottomNav(
-        destinations: [
-          MxNavDestination(
-            icon: AppIcons.library,
-            selectedIcon: AppIcons.librarySelected,
-            label: l10n.navLibrary,
-          ),
-          MxNavDestination(
-            icon: AppIcons.study,
-            selectedIcon: AppIcons.studySelected,
-            label: l10n.navStudy,
-          ),
-          MxNavDestination(
-            icon: AppIcons.progress,
-            selectedIcon: AppIcons.progressSelected,
-            label: l10n.navProgress,
-          ),
-          MxNavDestination(
-            icon: AppIcons.settings,
-            selectedIcon: AppIcons.settingsSelected,
-            label: l10n.navSettings,
-          ),
-        ],
-        selectedIndex: navigationShell.currentIndex,
-        // Re-tapping the current tab returns its branch to its root.
-        onSelected: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
-        ),
-      ),
-    );
-  }
 }
 
 /// Reconcile after Reset app options. A refusal or a read that fails

@@ -27,15 +27,20 @@ Future<void> withRealShadows(Future<void> Function() body) async {
   }
 }
 
-/// Compares the RepaintBoundary keyed [goldenBoundaryKey], captured at 3x,
-/// with the golden at [path] beside the calling test. Call it inside
-/// [withRealShadows], after pumping, so every layer was painted with blur.
-Future<void> expectBoundaryGolden(WidgetTester tester, String path) async {
+/// Compares the RepaintBoundary keyed [goldenBoundaryKey], captured at 3x
+/// or at [pixelRatio], with the golden at [path] beside the calling test.
+/// Call it inside [withRealShadows], after pumping, so every layer was
+/// painted with blur.
+Future<void> expectBoundaryGolden(
+  WidgetTester tester,
+  String path, {
+  double pixelRatio = _goldenPixelRatio,
+}) async {
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(goldenBoundaryKey),
   );
   final image = await tester.runAsync(
-    () => boundary.toImage(pixelRatio: _goldenPixelRatio),
+    () => boundary.toImage(pixelRatio: pixelRatio),
   );
   await expectLater(image, matchesGoldenFile(path));
   image!.dispose();

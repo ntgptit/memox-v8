@@ -33,6 +33,9 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showMxSnackbar(
   );
 }
 
+/// The toast's width on a wide window: the column less its gutters.
+const double _wideWidth = AppSize.contentMaxWidth - 2 * AppSpacing.gutter;
+
 /// The platform SnackBar that [showMxSnackbar] shows, configured with the
 /// contract's surface (ruling O9).
 ///
@@ -48,8 +51,13 @@ SnackBar buildMxSnackBar(
   Duration duration = AppDurations.toast,
 }) {
   final messenger = ScaffoldMessenger.of(context);
+  // On a window wider than the screen column the toast is at most the
+  // column, centred (FE-C5 D5); SnackBar.width replaces the theme's side
+  // inset only there.
+  final isWide = MediaQuery.sizeOf(context).width > AppSize.contentMaxWidth;
   // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
+    width: isWide ? _wideWidth : null,
     duration: duration,
     persist: onAction != null && MediaQuery.accessibleNavigationOf(context),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),

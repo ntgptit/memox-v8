@@ -249,4 +249,42 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  group('width (FE-C5 D5)', () {
+    Widget trigger() => Builder(
+      builder: (context) => MxButton(
+        label: 'Save',
+        onPressed: () => showMxSnackbar(context, message: 'Saved'),
+      ),
+    );
+    Rect toast(WidgetTester tester) => tester.getRect(
+      find
+          .descendant(
+            of: find.byType(SnackBar),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+
+    testWidgets('a wide window: at most the column, centred', (tester) async {
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pumpMxAt(tester, trigger());
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final rect = toast(tester);
+      expect((rect.left, rect.width), ((1280 - 688) / 2, 720 - 2 * 16));
+    });
+
+    testWidgets('a phone: the theme inset, as before', (tester) async {
+      await pumpMx(tester, trigger());
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final rect = toast(tester);
+      expect((rect.left, rect.width), (16, 360 - 2 * 16));
+    });
+  });
 }

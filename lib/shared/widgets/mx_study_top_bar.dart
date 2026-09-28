@@ -21,6 +21,7 @@ class MxStudyTopBar extends StatelessWidget {
     required this.closeLabel,
     required this.onClose,
     this.accent,
+    this.accentInk,
   }) : assert(total >= 1, 'a session has at least one card'),
        assert(
          current >= 1 && current <= total,
@@ -43,6 +44,9 @@ class MxStudyTopBar extends StatelessWidget {
   final VoidCallback onClose;
   final Color? accent;
 
+  /// The mode chip's text colour, when [accent] fails as text on its tint.
+  final Color? accentInk;
+
   static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
 
@@ -56,8 +60,10 @@ class MxStudyTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accentColor = accent ?? colors.primary;
-    // The badge text is ink: primaryInk unless the caller names an accent.
-    final accentInk = accent ?? context.derivedColors.primaryInk;
+    // The badge text is ink: primaryInk unless the caller names an accent,
+    // or the accent's own ink.
+    final accentInk =
+        this.accentInk ?? accent ?? context.derivedColors.primaryInk;
     final styles = context.textStyles;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero

@@ -41,6 +41,7 @@ abstract final class MasteryRamp {
     return (fraction * 100).round().clamp(1, 99);
   }
 
-  /// The unfilled track (progress-track = surfaceContainerHigh).
-  static Color track(ColorScheme scheme) => scheme.surfaceContainerHigh;
+  /// The unfilled track: surfaceContainerLow, so the primary fill keeps 3:1
+  /// against it in dark too (FE-C1; the kit's surfaceContainerHigh gave 2.46).
+  static Color track(ColorScheme scheme) => scheme.surfaceContainerLow;
 }

@@ -48,7 +48,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 - **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with a Supabase project when connectivity is available (`ADR-013`, `ADR-015`). The server is the canonical cross-device store and checks integrity only; business rules and SRS live in the app alone. Decks sync today; each install signs in anonymously until login lands. Deck sharing and role permissions remain out of scope. `memox-api-services/` is frozen as a reference (`ADR-015`).
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
-- **Phones only, for now.** Tablet layouts (navigation rail, two-pane, wide layouts) are deferred by the owner (2026-09-24). On a tablet the app only needs to stay usable; the adaptive gap stays recorded in spec §9 row 63 until tablets are picked up.
+- **Phones first; tablets get a rail and a column.** From a window width of 600 dp (tablets, and phones in landscape) the four destinations move to a navigation rail and every screen keeps its phone layout in a centred column of at most 720 dp (FE-C5, owner 2026-09-28; spec `2026-09-28-tablet-rail-design.md`). There are no two-pane or tablet-specific layouts.
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
 - **Data handling:**
   - User content is never logged (`BR-CORE-002`).

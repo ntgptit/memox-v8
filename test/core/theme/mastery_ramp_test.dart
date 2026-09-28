@@ -68,10 +68,10 @@ void main() {
     );
   });
 
-  test('the track is surfaceContainerHigh (progress-track)', () {
-    expect(
-      MasteryRamp.track(AppColorSchemes.light),
-      AppColorSchemes.light.surfaceContainerHigh,
-    );
+  test('the track is surfaceContainerLow, so a primary fill keeps 3:1 '
+      'in dark (FE-C1)', () {
+    for (final scheme in [AppColorSchemes.light, AppColorSchemes.dark]) {
+      expect(MasteryRamp.track(scheme), scheme.surfaceContainerLow);
+    }
   });
 }

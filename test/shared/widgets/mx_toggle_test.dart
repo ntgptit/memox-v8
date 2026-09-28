@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/widget_harness.dart';
@@ -12,6 +13,20 @@ const _thumbKey = ValueKey('mx-toggle-thumb');
 double _thumbOffset(WidgetTester tester) =>
     tester.getTopLeft(find.byKey(_thumbKey)).dx -
     tester.getTopLeft(find.byKey(_trackKey)).dx;
+
+/// The ring over the track: the off edge or the focus ring.
+Border? _ring(WidgetTester tester) =>
+    (tester
+                    .widget<AnimatedContainer>(find.byKey(_trackKey))
+                    .foregroundDecoration
+                as BoxDecoration?)
+            ?.border
+        as Border?;
+
+Color _thumbColor(WidgetTester tester) =>
+    (tester.widget<DecoratedBox>(find.byKey(_thumbKey)).decoration
+            as BoxDecoration)
+        .color!;
 
 Color _trackColor(WidgetTester tester) =>
     (tester.widget<AnimatedContainer>(find.byKey(_trackKey)).decoration!
@@ -39,6 +54,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(_trackColor(tester), scheme.primary);
     expect(_thumbOffset(tester), 21);
+  });
+
+  testWidgets('off: a 2 outline edge, 3:1 on the row, and a variant-ink '
+      'thumb, 3:1 on the track; '
+      'on: no edge, a bright thumb (FE-C1)', (tester) async {
+    await pumpMx(
+      tester,
+      MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
+    );
+    expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
+    // The thumb sits on the track's fill: variant ink, 3:1 there.
+    expect(_thumbColor(tester), scheme.onSurfaceVariant);
+
+    await pumpMx(
+      tester,
+      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
+    );
+    await tester.pumpAndSettle();
+    expect(_ring(tester), isNull);
+    expect(_thumbColor(tester), scheme.surfaceBright);
   });
 
   testWidgets('a tap reports the flipped value', (tester) async {
@@ -89,10 +124,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester
-          .widget<AnimatedContainer>(find.byKey(_trackKey))
-          .foregroundDecoration,
-      isNotNull,
+      _ring(tester),
+      Border.all(color: MxDerivedColors.primaryInkOf(scheme), width: 2),
     );
     expect(_thumbOffset(tester), before);
   });

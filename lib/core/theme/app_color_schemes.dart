@@ -15,6 +15,10 @@ abstract final class AppColorSchemes {
   static const Color _inverseSurface = Color(0xFF34395D);
   static const Color _onInverseSurface = Color(0xFFE8EAFC);
 
+  // The snackbar action on that invariant surface, so invariant too: 5.21:1,
+  // where the kit's 8B9AFF (light) and seed (dark) give 4.32 and 2.40 (FE-C1).
+  static const Color _inversePrimary = Color(0xFFA0ACFF);
+
   static final ColorScheme light = ColorScheme.fromSeed(seedColor: seed)
       .copyWith(
         primary: seed,
@@ -29,7 +33,9 @@ abstract final class AppColorSchemes {
         onTertiary: const Color(0xFFFFFFFF),
         tertiaryContainer: const Color(0xFFEBE3FE),
         onTertiaryContainer: const Color(0xFF33177E),
-        error: const Color(0xFFDC2D4E),
+        // Darker than the kit's DC2D4E, which is 3.74:1 as text on a sheet;
+        // this holds 4.5 on every surface and its tint (FE-C1).
+        error: const Color(0xFFC02447),
         onError: const Color(0xFFFFFFFF),
         errorContainer: const Color(0xFFFBDDE3),
         onErrorContainer: const Color(0xFF7A0A23),
@@ -47,7 +53,7 @@ abstract final class AppColorSchemes {
         outlineVariant: const Color(0xFFC5CBE3),
         inverseSurface: _inverseSurface,
         onInverseSurface: _onInverseSurface,
-        inversePrimary: const Color(0xFF8B9AFF),
+        inversePrimary: _inversePrimary,
         scrim: const Color(0xFF0A0E27),
         shadow: const Color(0xFF0F1638),
       );
@@ -89,7 +95,7 @@ abstract final class AppColorSchemes {
         outlineVariant: const Color(0xFF2A3267),
         inverseSurface: _inverseSurface,
         onInverseSurface: _onInverseSurface,
-        inversePrimary: seed,
+        inversePrimary: _inversePrimary,
         scrim: const Color(0xFF000000),
         shadow: const Color(0xFF000000),
       );

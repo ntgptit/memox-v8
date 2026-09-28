@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -16,6 +17,23 @@ const _footerKey = Key('footer');
 
 Widget _fab() =>
     MxFab(icon: AppIcons.add, semanticLabel: 'New', onPressed: () {});
+
+/// [shell] on a 1280×800 window, outside the phone frame (FE-C5).
+Future<void> _pumpWide(
+  WidgetTester tester,
+  Widget shell, {
+  TextDirection direction = TextDirection.ltr,
+}) async {
+  tester.view.physicalSize = const Size(1280, 800);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: buildLightTheme(),
+      home: Directionality(textDirection: direction, child: shell),
+    ),
+  );
+}
 
 void main() {
   testWidgets('page ground is surface; app bar above the body', (tester) async {
@@ -161,6 +179,41 @@ void main() {
       tester.getRect(find.byType(MxFab)).bottom,
       tester.getTopLeft(find.byKey(_barKey)).dy - 4,
     );
+  });
+
+  testWidgets('wide: the column is 720 and centred; the ground fills the '
+      'window (FE-C5)', (tester) async {
+    await _pumpWide(
+      tester,
+      const MxAppShell(
+        appBar: MxAppBar(title: 'Library', key: _barKey),
+        body: SizedBox.expand(key: _bodyKey),
+      ),
+    );
+
+    final body = tester.getRect(find.byKey(_bodyKey));
+    expect((body.left, body.width), ((1280 - 720) / 2, 720));
+    expect(tester.getRect(find.byKey(_barKey)).width, 720);
+    expect(tester.getSize(find.byType(Scaffold)).width, 1280);
+  });
+
+  testWidgets('wide: the FAB sits 16 in from the column edge, mirrored in '
+      'RTL (FE-C5)', (tester) async {
+    for (final (direction, left) in [
+      (TextDirection.ltr, 1000.0 - 16 - 52),
+      (TextDirection.rtl, 280.0 + 16),
+    ]) {
+      await _pumpWide(
+        tester,
+        MxAppShell(body: const SizedBox.expand(), fab: _fab()),
+        direction: direction,
+      );
+      expect(
+        tester.getTopLeft(find.byType(MxFab)).dx,
+        left,
+        reason: '$direction',
+      );
+    }
   });
 
   testWidgets('a notice floats over the bottom of the body', (tester) async {
