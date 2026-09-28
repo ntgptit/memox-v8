@@ -12,9 +12,8 @@ class SyncCoordinator {
     required this._api,
     required this._store,
     required List<EntitySyncAdapter> adapters,
-    DateTime Function() now = DateTime.now,
-  }) : _adapters = {for (final a in adapters) a.entityType: a},
-       _now = now;
+    this._now = DateTime.now,
+  }) : _adapters = {for (final a in adapters) a.entityType: a};
 
   static const pushBatchSize = 100;
   static const pullPageSize = 500;
