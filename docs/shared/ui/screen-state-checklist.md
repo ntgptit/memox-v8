@@ -444,15 +444,15 @@ FE-B5 · chưa có detail file
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Off | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Turning on | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | On | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Changing time | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Permission denied | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Could not schedule | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Off · may still show | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Unavailable | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Loading | — | chưa làm | Sau V8.0; chờ BE-B5. |
+| [ ] | Off | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Turning on | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | On | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Changing time | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Permission denied | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Could not schedule | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Off · may still show | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Unavailable | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
+| [ ] | Loading | — | chưa làm | Sau V8.0; FE-B5 (BE-B5a xong, BE-B5b còn bước thiết bị). |
 
 ### 25 · Theme
 
