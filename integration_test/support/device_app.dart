@@ -25,16 +25,29 @@ Future<void> launchApp(WidgetTester tester) async {
   await waitFor(tester, find.byType(Scaffold));
 }
 
+/// Pumps until [isMet] holds; false after [timeout]. A stopwatch, not the
+/// wall clock: a wait measures elapsed time.
+Future<bool> _pumpUntil(
+  WidgetTester tester,
+  bool Function() isMet,
+  Duration timeout,
+) async {
+  final watch = Stopwatch()..start();
+  while (watch.elapsed < timeout) {
+    await tester.pump(const Duration(milliseconds: 200));
+    if (isMet()) return true;
+  }
+  return false;
+}
+
 /// Pumps until [finder] finds something; fails naming it after [timeout].
 Future<void> waitFor(
   WidgetTester tester,
   Finder finder, {
   Duration timeout = _timeout,
 }) async {
-  final end = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(end)) {
-    await tester.pump(const Duration(milliseconds: 200));
-    if (finder.evaluate().isNotEmpty) return;
+  if (await _pumpUntil(tester, () => finder.evaluate().isNotEmpty, timeout)) {
+    return;
   }
   await _fail(tester, 'Timed out after $timeout waiting for $finder');
 }
@@ -46,11 +59,7 @@ Future<void> waitUntil(
   String what, {
   Duration timeout = _timeout,
 }) async {
-  final end = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(end)) {
-    await tester.pump(const Duration(milliseconds: 200));
-    if (isMet()) return;
-  }
+  if (await _pumpUntil(tester, isMet, timeout)) return;
   await _fail(tester, 'Timed out after $timeout waiting until $what');
 }
 
@@ -60,13 +69,13 @@ Future<Finder> waitForAny(
   List<Finder> finders, {
   Duration timeout = _timeout,
 }) async {
-  final end = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(end)) {
-    await tester.pump(const Duration(milliseconds: 200));
-    for (final finder in finders) {
-      if (finder.evaluate().isNotEmpty) return finder;
-    }
+  Finder? found;
+  bool isMet() {
+    found = finders.where((f) => f.evaluate().isNotEmpty).firstOrNull;
+    return found != null;
   }
+
+  if (await _pumpUntil(tester, isMet, timeout)) return found!;
   return _fail(tester, 'Timed out after $timeout waiting for any of $finders');
 }
 
@@ -76,10 +85,8 @@ Future<void> waitGone(
   Finder finder, {
   Duration timeout = _timeout,
 }) async {
-  final end = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(end)) {
-    await tester.pump(const Duration(milliseconds: 200));
-    if (finder.evaluate().isEmpty) return;
+  if (await _pumpUntil(tester, () => finder.evaluate().isEmpty, timeout)) {
+    return;
   }
   await _fail(tester, 'Timed out after $timeout waiting for $finder to go');
 }
