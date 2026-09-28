@@ -17,11 +17,12 @@ Needs Docker. From the repo root:
 1. Create a project on supabase.com (Free plan).
 2. Authentication → Sign In / Providers: enable **Anonymous sign-ins**, and
    turn on CAPTCHA or keep the default rate limit for anonymous sign-ins.
-3. `npx supabase login`, `npx supabase link --project-ref <ref>`,
-   `npx supabase db push`.
-4. GitHub → Settings → Secrets → Actions: `SUPABASE_URL` and
-   `SUPABASE_PUBLISHABLE_KEY` (Project Settings → API Keys), for the
-   keep-alive workflow.
+3. GitHub → Settings → Secrets → Actions: `SUPABASE_ACCESS_TOKEN` (Account →
+   Access Tokens) and `SUPABASE_DB_PASSWORD`, for the migrations workflow,
+   which pushes `migrations/` on every merge to `master` that changes them
+   and on demand (`workflow_dispatch`).
+4. Same place: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (Project
+   Settings → API Keys), for the keep-alive workflow.
 5. Build the app with both values:
 
        flutter run --dart-define=SUPABASE_URL=https://<ref>.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=<key>
