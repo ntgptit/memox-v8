@@ -491,3 +491,26 @@ Run → PASS. Commit — `SB-S4: the schedule progress order of spec §3.4`.
 - [ ] Gate: `dod_check.sh`, `local_pgtap.sh`, docs generate and check. A test that snapshots tables after a study write (as BR-TAG-009 did) may now see `sync_outbox`. Handle it with a ledgered ruling, as in SB-S3 and SB-S5.
 - [ ] WBS: SB-S4 `xong` with the PR link; SB-S8 note: "every data type now syncs; what remains needs login (group C)". Add a dated line.
 - [ ] Execution ledger; commit `SB-S4: docs, WBS and ledger`.
+
+## Execution ledger
+
+Executed inline (executing-plans) on 2026-09-28.
+
+- Spec: docs/superpowers/specs/2026-09-28-sync-library-and-study-design.md; ADR-017
+- Pre-flight:
+- - T1→T4: wire keys of review_log/card_schedule rows — consistent.
+- - T3→T4: compareScheduleProgress(local, pulled, rootSchedulerType:) — consistent.
+- - T2→T4/T5: triggers skip under applying_remote; adapters write under it — consistent.
+- Task 1: Ruling: added a 15th pgTAP assertion for the deck-delete path (reviews of its cards removed); the plan listed only the card-delete path — cost if wrong: none
+- Task 1: complete (commits df58089..d367737, tests: bash tools/supabase/local_pgtap.sh → ok    08_study_history_sync.sql (15))
+- Task 2: note: the v9→v10 migration test and from9To10 were added in one edit; the missing step is a compile error of stepByStep, the same RED as in earlier slices
+- Task 2: complete (commits d367737..9cbb2c0, tests: flutter test test/drift/ test/core/sync/sync_triggers_test.dart → 00:03 +47: All tests passed!)
+- Task 3: complete (commits 9cbb2c0..5480dc9, tests: flutter test test/core/sync/schedule_progress_test.dart → 00:00 +6: All tests passed!)
+- Task 4: Ruling: the card_schedule wire row carries cardId (the server checks it equals the entity id), because EntitySyncAdapter.upsertFromServer receives no entity id; spec §3.4 said 'every column but card_id' — cost if wrong: one redundant field on the wire
+- Task 4: Ruling: card_schedule_sync_adapter.dart#_rootSchedulerType joins the tombstone-read allowlist (the order compares against the root in any state)
+- Task 4: complete (commits 5480dc9..4f69eec, tests: flutter test test/core/sync/ test/architecture/ → 00:12 +146: All tests passed!)
+- Task 5: Ruling: case 2 needs six runs (b,a,b,a,b,a), not four: B keeps its more advanced schedule and pushes it on its next run, A takes it on the run after (spec §3.4 'after at most one more push'); case 3 likewise six runs; times compared as UTC — cost if wrong: none, the test counted rounds too low
+- Task 5: complete (commits 4f69eec..1f518e4, tests: flutter test test/core/sync/ → 00:12 +106: All tests passed!)
+- Task 6: Ruling: test/drift/migration_test.dart passed the guard's 400-line limit, so the sync seed tests (v6–v9 steps) moved to test/drift/sync_seed_migration_test.dart, unchanged — cost if wrong: none
+
+Gate: `dod_check.sh` green (2610 tests), `tools/supabase/local_pgtap.sh` 121/121, docs check PASS.
