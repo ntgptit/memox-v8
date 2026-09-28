@@ -1,6 +1,6 @@
 ---
 name: flutter-workflow
-description: Router for development work on MemoX V8 — which `flutter-*` skill applies to a task, where progress is recorded (`docs/wbs_BE.md`, `docs/wbs_FE.md`), and the Definition of Done. Use it when work starts and the owning skill is not obvious — "what's next", "let's build X", "add a feature", "is this done", "review before commit". Process (brainstorm, plan, execute, review) belongs to Superpowers, per CLAUDE.md.
+description: Router for development work on MemoX V8 — which `flutter-*` skill applies to a task, where progress is recorded (`docs/wbs_BE.md`, `docs/wbs_FE.md`, `docs/wbs_supabase.md`), and the Definition of Done. Use it when work starts and the owning skill is not obvious — "what's next", "let's build X", "add a feature", "is this done", "review before commit". Process (brainstorm, plan, execute, review) belongs to Superpowers, per CLAUDE.md.
 ---
 
 # Flutter workflow router
@@ -18,11 +18,13 @@ Do not trust memory or assumption about project state. Check:
 ```bash
 sed -n 1,40p docs/wbs_BE.md   # backend: domain, data, use cases
 sed -n 1,40p docs/wbs_FE.md   # frontend: screens, theme, shared widgets
+sed -n 1,40p docs/wbs_supabase.md   # server sync and login on Supabase
 git log --oneline -10
 ```
 
-The two WBS files are authoritative for progress: `wbs_BE.md` for `domain/`,
-`data/` and use cases, `wbs_FE.md` for presentation. A screen's row in the
+The WBS files are authoritative for progress: `wbs_BE.md` for `domain/`,
+`data/` and use cases, `wbs_FE.md` for presentation, `wbs_supabase.md` for
+sync and login on Supabase (`supabase/`, `lib/core/sync/`). A screen's row in the
 [screen handoff index](../../../docs/shared/ui/screen-handoff/00-index.md) is
 authoritative for that screen. If one is clearly stale relative to the code,
 say so and fix it before building anything else — every later decision
@@ -73,7 +75,7 @@ that actually catches problems.
 
 ## Keeping the ledger honest
 
-Update the WBS row (`docs/wbs_BE.md` or `docs/wbs_FE.md`) in the PR that does the
+Update the WBS row (`docs/wbs_BE.md`, `docs/wbs_FE.md` or `docs/wbs_supabase.md`) in the PR that does the
 work it describes, and a screen's row in the screen handoff index when the
 screen is built. Mark items `xong` only when they are done by the Definition of
 Done, not when the code first runs. If something was descoped or deferred, write
