@@ -26,7 +26,7 @@ void main() {
       return SyncCoordinator(
         api: server,
         store: SyncStore(db),
-        adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db), cards],
+        adapters: [DeleteBatchSyncAdapter(db), DeckSyncAdapter(db), cards],
         afterPull: cards.ensureSchedules,
       );
     }

@@ -9,6 +9,9 @@ class FakeSyncServer implements SyncApi {
   var _version = 0;
   var pushCalls = 0;
 
+  /// Every pushed operation as `type/id`, in the order pushed.
+  final pushed = <String>[];
+
   /// Entity keys (`type/id`) whose next upsert is rejected with this code.
   final rejectNext = <String, String>{};
 
@@ -40,6 +43,7 @@ class FakeSyncServer implements SyncApi {
     final results = <OperationResultModel>[];
     for (final op in request.operations) {
       final key = '${op.entityType}/${op.entityId}';
+      pushed.add(key);
       final already = _applied[op.opId];
       if (already != null) {
         results.add(_applied_(op.opId, already));

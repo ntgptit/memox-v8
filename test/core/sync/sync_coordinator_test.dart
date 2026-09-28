@@ -44,7 +44,7 @@ class _Device {
       store: SyncStore(db),
       adapters:
           adapters?.call(db) ??
-          [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db), cards],
+          [DeleteBatchSyncAdapter(db), DeckSyncAdapter(db), cards],
       pullLimit: pullLimit,
       afterPull: cards.ensureSchedules,
     );
@@ -271,7 +271,7 @@ void main() {
 
     await a.coordinator.requeueRejected();
 
-    final queued = await SyncStore(a.db).pendingBatch({'deck'}, 10);
+    final queued = await SyncStore(a.db).pendingBatch(['deck'], 10);
     expect(queued.single.op, 'delete');
   });
   test(

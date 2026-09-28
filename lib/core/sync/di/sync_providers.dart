@@ -46,7 +46,7 @@ SyncCoordinator syncCoordinator(Ref ref) {
   return SyncCoordinator(
     api: ref.watch(syncApiProvider),
     store: ref.watch(syncStoreProvider),
-    adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db), cards],
+    adapters: [DeleteBatchSyncAdapter(db), DeckSyncAdapter(db), cards],
     now: ref.watch(dayClockProvider).now,
     afterPull: cards.ensureSchedules,
   );

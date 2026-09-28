@@ -30,14 +30,14 @@ void main() {
     'an acknowledgement removes the entry only while its op id is current',
     () async {
       await _root(db, 'R');
-      final sent = (await store.pendingBatch({'deck'}, 10)).single.opId;
+      final sent = (await store.pendingBatch(['deck'], 10)).single.opId;
       await db.customStatement(
         "UPDATE deck SET name = 'edited' WHERE id = 'R'",
       );
 
       await store.removeIfUnchanged(sent);
 
-      expect(await store.pendingBatch({'deck'}, 10), hasLength(1));
+      expect(await store.pendingBatch(['deck'], 10), hasLength(1));
     },
   );
 
@@ -98,12 +98,12 @@ void main() {
     'enqueue adds an entry, or replaces the op id and keeps the time',
     () async {
       await _root(db, 'R');
-      final before = (await store.pendingBatch({'deck'}, 10)).single;
+      final before = (await store.pendingBatch(['deck'], 10)).single;
 
       await store.enqueue('deck', 'R', 'delete', t0);
       await store.enqueue('deck', 'X', 'upsert', t0);
 
-      final after = await store.pendingBatch({'deck'}, 10);
+      final after = await store.pendingBatch(['deck'], 10);
       final r = after.firstWhere((e) => e.entityId == 'R');
       expect(r.op, 'delete');
       expect(r.opId, isNot(before.opId));

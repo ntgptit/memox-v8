@@ -55,7 +55,7 @@ class SyncCoordinator {
   Future<void> _push(String deviceId) async {
     while (true) {
       final batch = await _store.pendingBatch(
-        _adapters.keys.toSet(),
+        _adapters.keys.toList(),
         pushBatchSize,
       );
       if (batch.isEmpty) {
