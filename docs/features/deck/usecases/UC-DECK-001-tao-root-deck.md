@@ -61,5 +61,5 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** tên rỗng hoặc chỉ có khoảng trắng, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E1).
 - [ ] **Given** tên dài hơn 200 ký tự, **when** xác nhận, **then** lỗi hiện ngay dưới ô nhập và không tạo gì (BR-DECK-020, E2).
 - [ ] **Given** ghi database thất bại, **when** xác nhận, **then** hệ thống báo lỗi, giữ nguyên form và dữ liệu đã nhập, và không tạo deck (E4).
-- [ ] OPEN QUESTION: A1 nói huỷ khi đã nhập dữ liệu thì hỏi xác nhận trước khi bỏ — nút Cancel đóng dialog ngay, không hỏi (`lib/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart:117`) (A1).
-- [ ] OPEN QUESTION: bước 2 và E3 nói chế độ ôn tập bắt buộc chọn, không có mặc định ngầm, và chưa chọn thì báo lỗi — dialog chọn sẵn `eight_box` (`create_root_deck_dialog_widget.dart:41`), nên người dùng tạo được deck mà không chọn và E3 không xảy ra được (BR-SRS-001, E3).
+- [ ] **Given** dialog tạo root deck đã có tên hoặc chế độ ôn, **when** người dùng bấm Cancel, Back hay chạm ra ngoài, **then** hệ thống hỏi "Discard this deck?"; Keep editing giữ nguyên dữ liệu, Discard đóng dialog và không tạo gì. Dialog còn trống thì đóng ngay (A1).
+- [ ] **Given** dialog tạo root deck vừa mở, **when** người dùng chưa chọn chế độ ôn tập mà bấm Create, **then** không có chế độ nào được chọn sẵn, lỗi inline "Choose how the cards are reviewed." hiện dưới phần chọn chế độ và không có deck nào được tạo (BR-SRS-001, E3).

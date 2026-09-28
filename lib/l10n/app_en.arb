@@ -6223,5 +6223,25 @@
   "studyEntryRefusedNotOfferedBody": "Its review algorithm changed. Choose a review mode again.",
   "@studyEntryRefusedNotOfferedBody": {
     "description": "Screen 14 refusal (UC-STUDY-003 E1); nothing was written."
+  },
+  "deckSchedulerRequired": "Choose how the cards are reviewed.",
+  "@deckSchedulerRequired": {
+    "description": "New root deck dialog (UC-DECK-001 E3, BR-SRS-001): Create without a scheduler."
+  },
+  "deckDiscardTitle": "Discard this deck?",
+  "@deckDiscardTitle": {
+    "description": "New root deck dialog (UC-DECK-001 A1): Cancel after typing."
+  },
+  "deckDiscardBody": "What you typed is not saved.",
+  "@deckDiscardBody": {
+    "description": "New root deck dialog (UC-DECK-001 A1)."
+  },
+  "deckKeepEditing": "Keep editing",
+  "@deckKeepEditing": {
+    "description": "New root deck dialog (UC-DECK-001 A1): back to the form."
+  },
+  "deckDiscard": "Discard",
+  "@deckDiscard": {
+    "description": "New root deck dialog (UC-DECK-001 A1): close without creating."
   }
 }

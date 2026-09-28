@@ -89,12 +89,19 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// No scheduler is chosen for the person (BR-SRS-001).
+  Future<void> chooseEightBox(WidgetTester tester) async {
+    await tester.tap(find.text(_en.deckSchedulerEightBox));
+    await tester.pump();
+  }
+
   libraryTest('a blank name is refused under the field; nothing is written', (
     tester,
     env,
   ) async {
     await pumpLibraryScreen(tester, env, _host());
     await open(tester);
+    await chooseEightBox(tester);
     await tester.tap(find.text(_en.deckCreateConfirm));
     await tester.pumpAndSettle();
 
@@ -110,6 +117,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _host());
     await open(tester);
     await tester.enterText(find.byType(EditableText), 'a' * 201);
+    await chooseEightBox(tester);
     await tester.tap(find.text(_en.deckCreateConfirm));
     await tester.pumpAndSettle();
 
@@ -136,6 +144,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _host());
     await open(tester);
     await tester.enterText(find.byType(EditableText), 'Korean');
+    await chooseEightBox(tester);
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
@@ -160,6 +169,7 @@ void main() {
     );
     await open(tester);
     await tester.enterText(find.byType(EditableText), 'Korean');
+    await chooseEightBox(tester);
     await tester.tap(find.text(_en.deckCreateConfirm));
     await tester.pump();
     await tester.tap(find.text(_en.deckCreateConfirm), warnIfMissed: false);
@@ -187,12 +197,64 @@ void main() {
     );
     await open(tester);
     await tester.enterText(find.byType(EditableText), 'Korean');
+    await chooseEightBox(tester);
     await tester.tap(find.text(_en.deckCreateConfirm));
     await tester.pumpAndSettle();
 
     expect(find.byType(MxDialog), findsOneWidget);
     expect(find.text(_en.failureUnknown), findsOneWidget);
     expect(find.textContaining('sqlite'), findsNothing);
+  });
+
+  libraryTest('no scheduler is chosen up front; Create without one says so '
+      'and writes nothing (BR-SRS-001, E3)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'Korean');
+    await tester.tap(find.text(_en.deckCreateConfirm));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckSchedulerRequired), findsOneWidget);
+    expect(find.byType(MxDialog), findsOneWidget);
+    expect(await _decks(env), isEmpty);
+
+    await chooseEightBox(tester);
+    expect(find.text(_en.deckSchedulerRequired), findsNothing);
+  });
+
+  libraryTest('Cancel with nothing typed closes at once (A1)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await tester.tap(find.text(_en.commonCancel));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxDialog), findsNothing);
+  });
+
+  libraryTest('Cancel after typing asks first: Keep editing keeps the name, '
+      'Discard closes and writes nothing (A1)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'Korean');
+    await tester.tap(find.text(_en.commonCancel));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.deckDiscardTitle), findsOneWidget);
+    await tester.tap(find.text(_en.deckKeepEditing));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.deckDiscardTitle), findsNothing);
+    expect(find.text('Korean'), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonCancel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckDiscard));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxDialog), findsNothing);
+    expect(await _decks(env), isEmpty);
   });
 
   libraryTest('the dialog meets the target guidelines', (tester, env) async {

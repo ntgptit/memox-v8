@@ -33,7 +33,10 @@ class MxSegmentedTray<T> extends StatelessWidget {
        );
 
   final List<MxSegment<T>> segments;
-  final T selected;
+
+  /// Null draws no option as chosen: a choice the person must make, with no
+  /// default (BR-SRS-001).
+  final T? selected;
   final ValueChanged<T> onSelected;
 
   /// The Progress range tray's wider option padding (16 instead of 12).
