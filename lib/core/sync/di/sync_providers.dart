@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
+import 'package:memox/core/sync/account_settings_sync_adapter.dart';
 import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
@@ -54,6 +55,7 @@ SyncCoordinator syncCoordinator(Ref ref) {
       DeckSyncAdapter(db),
       TagSyncAdapter(db, store, now: clock.now),
       cards,
+      AccountSettingsSyncAdapter(db),
     ],
     now: clock.now,
     afterPull: cards.ensureSchedules,

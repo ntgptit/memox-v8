@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/sync/account_settings_sync_adapter.dart';
 import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
@@ -32,6 +33,7 @@ void main() {
           DeckSyncAdapter(db),
           TagSyncAdapter(db, SyncStore(db)),
           cards,
+          AccountSettingsSyncAdapter(db),
         ],
         afterPull: cards.ensureSchedules,
       );
