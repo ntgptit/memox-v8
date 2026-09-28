@@ -35,6 +35,11 @@ out to be open becomes rework, and the rework is always larger than the check.
       else.
 - [ ] **Dependencies identified** — which features or shared components this
       needs, and whether they exist yet.
+- [ ] **Existing code known** — what `lib/core/` (`clock`, `id`, `text`,
+      `error`, `database`, `sync`, `theme`), `lib/shared/widgets/` and the
+      touched features already offer for this slice. Whether to reuse it,
+      extend it, write new, or add something common is a reuse-or-write call:
+      recommend one and ask the owner (CLAUDE.md, Asking the owner).
 
 If something is missing, stop and get it. Load `flutter-product-spec` if the
 gap is a use case or business rule. Report which item is open and what you need
