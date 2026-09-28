@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(16);
 
 create function public.t_uuid(n int) returns uuid language sql immutable as $$
   select format('00000000-0000-0000-0000-%s', lpad(n::text, 12, '0'))::uuid $$;
@@ -20,8 +20,8 @@ create function public.t_review(p_id uuid, p_card uuid) returns jsonb language s
     'comparisonVersion', null, 'usedHint', null, 'direction', null, 'action', 'remembered',
     'answeredAt', '2026-09-28T10:00:00Z', 'nextDueAt', '2026-09-30T00:00:00Z', 'previousBox', 1, 'nextBox', 2,
     'previousEaseFactor', null, 'nextEaseFactor', null, 'previousIntervalDays', null, 'nextIntervalDays', null) $$;
-create function public.t_schedule(p_answered text) returns jsonb language sql as $$
-  select jsonb_build_object('schedulerType', 'eight_box', 'schedulerVersion', 1, 'generation', 1,
+create function public.t_schedule(p_card uuid, p_answered text) returns jsonb language sql as $$
+  select jsonb_build_object('cardId', p_card, 'schedulerType', 'eight_box', 'schedulerVersion', 1, 'generation', 1,
     'learnedAt', '2026-09-27T00:00:00Z', 'dueAt', '2026-09-30T00:00:00Z', 'lastAnsweredAt', p_answered,
     'answerCount', 3, 'lapseCount', 0, 'currentBox', 2, 'easeFactor', null, 'intervalDays', null,
     'repetitions', null) $$;
@@ -50,7 +50,7 @@ select set_config('request.jwt.claims',
 select is(public.t_push(jsonb_build_array(
     public.t_op(1, 'deck', public.t_uuid(1), 'upsert', public.t_root(public.t_uuid(1))),
     public.t_op(2, 'card', public.t_uuid(10), 'upsert', public.t_card(public.t_uuid(10), public.t_uuid(1))),
-    public.t_op(3, 'card_schedule', public.t_uuid(10), 'upsert', public.t_schedule('2026-09-28T10:00:00Z')),
+    public.t_op(3, 'card_schedule', public.t_uuid(10), 'upsert', public.t_schedule(public.t_uuid(10), '2026-09-28T10:00:00Z')),
     public.t_op(4, 'review_log', public.t_uuid(50), 'upsert', public.t_review(public.t_uuid(50), public.t_uuid(10)))))
   @? '$[*] ? (@.status != "applied")', false, 'a card, its schedule and a review are applied');
 select is(public.t_change('review_log', public.t_uuid(50))->'row',
@@ -65,12 +65,15 @@ select is(public.t_push(jsonb_build_array(public.t_op(5, 'review_log', public.t_
   'a review sent again under a new op id keeps its version');
 select is(public.t_count('review_log', public.t_uuid(10)), 1::bigint, 'and is not stored twice');
 select is(public.t_push(jsonb_build_array(public.t_op(6, 'card_schedule', public.t_uuid(10), 'upsert',
-    public.t_schedule('2026-09-28T11:00:00Z')))) is not null
+    public.t_schedule(public.t_uuid(10), '2026-09-28T11:00:00Z')))) is not null
   and public.t_change('card_schedule', public.t_uuid(10))->'row'->>'lastAnsweredAt' = '2026-09-28T11:00:00.000000Z',
   true, 'a schedule is a whole-row upsert; the server does not compare');
 select is(public.t_push(jsonb_build_array(public.t_op(7, 'card_schedule', public.t_uuid(10), 'upsert',
-    public.t_schedule('2026-09-28T11:00:00Z') || '{"currentBox": null}')))->0->>'code',
+    public.t_schedule(public.t_uuid(10), '2026-09-28T11:00:00Z') || '{"currentBox": null}')))->0->>'code',
   'VALIDATION_FAILED', 'a schedule outside the CHECKs is refused');
+select is(public.t_push(jsonb_build_array(public.t_op(17, 'card_schedule', public.t_uuid(10), 'upsert',
+    public.t_schedule(public.t_uuid(99), '2026-09-28T11:00:00Z'))))->0->>'code',
+  'VALIDATION_FAILED', 'a schedule row names its own card');
 select is(public.t_push(jsonb_build_array(public.t_op(8, 'review_log', public.t_uuid(51), 'upsert',
     public.t_review(public.t_uuid(51), public.t_uuid(404)))))->0,
   jsonb_build_object('opId', public.t_uuid(100008), 'status', 'rejected', 'serverVersion', null,
@@ -86,7 +89,7 @@ select is(public.t_count('review_log', public.t_uuid(10)) + public.t_count('card
 -- Deletes take the history with the card.
 select is(public.t_push(jsonb_build_array(
     public.t_op(11, 'card', public.t_uuid(11), 'upsert', public.t_card(public.t_uuid(11), public.t_uuid(1))),
-    public.t_op(12, 'card_schedule', public.t_uuid(11), 'upsert', public.t_schedule('2026-09-28T10:00:00Z')),
+    public.t_op(12, 'card_schedule', public.t_uuid(11), 'upsert', public.t_schedule(public.t_uuid(11), '2026-09-28T10:00:00Z')),
     public.t_op(13, 'review_log', public.t_uuid(52), 'upsert', public.t_review(public.t_uuid(52), public.t_uuid(11))),
     public.t_op(14, 'card', public.t_uuid(11), 'delete', null)))->3->>'status', 'applied', 'a card with history is deleted');
 select is(public.t_count('review_log', public.t_uuid(11)) + public.t_count('card_schedule', public.t_uuid(11)),

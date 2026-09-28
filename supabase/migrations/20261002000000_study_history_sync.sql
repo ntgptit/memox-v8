@@ -79,7 +79,7 @@ language sql stable set search_path = '' as $$
   select jsonb_build_object(
     'entityType', 'card_schedule', 'entityId', s.card_id, 'serverVersion', s.server_version, 'deleted', false,
     'row', jsonb_build_object(
-      'schedulerType', s.scheduler_type, 'schedulerVersion', s.scheduler_version, 'generation', s.generation,
+      'cardId', s.card_id, 'schedulerType', s.scheduler_type, 'schedulerVersion', s.scheduler_version, 'generation', s.generation,
       'learnedAt', private.wire_time(s.learned_at), 'dueAt', private.wire_time(s.due_at),
       'lastAnsweredAt', private.wire_time(s.last_answered_at), 'answerCount', s.answer_count,
       'lapseCount', s.lapse_count, 'currentBox', s.current_box, 'easeFactor', s.ease_factor,
@@ -144,6 +144,9 @@ language plpgsql set search_path = '' as $$
 declare
   v_version bigint;
 begin
+  if (r->>'cardId')::uuid is distinct from p_id then
+    raise exception 'VALIDATION_FAILED';
+  end if;
   if private.card_of(p_user, p_id) = 'tombstoned' then
     return private.current_version(p_user);
   end if;
