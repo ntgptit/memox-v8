@@ -72,13 +72,14 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
       ),
       body: switch (ref.watch(reminderStatusProvider)) {
         AsyncData(:final value) => _loaded(context, value, action),
-        AsyncError() => MxScreenScroll(
+        AsyncError(:final isLoading) => MxScreenScroll(
           children: [
             MxErrorState(
               title: l10n.reminderReadErrorTitle,
               body: l10n.reminderReadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(reminderStatusProvider),
+              isRetrying: isLoading,
             ),
           ],
         ),

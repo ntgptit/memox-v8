@@ -14,10 +14,12 @@ class StudySessionErrorWidget extends StatelessWidget {
     super.key,
     required this.onClose,
     required this.onRetry,
+    required this.isRetrying,
   });
 
   final VoidCallback onClose;
   final VoidCallback onRetry;
+  final bool isRetrying;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class StudySessionErrorWidget extends StatelessWidget {
             body: l10n.studySessionErrorBody,
             retryLabel: l10n.commonRetry,
             onRetry: onRetry,
+            isRetrying: isRetrying,
           ),
         ],
       ),

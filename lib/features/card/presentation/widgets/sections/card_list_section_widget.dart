@@ -267,6 +267,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
             body: l10n.libraryLoadErrorBody,
             retryLabel: l10n.commonRetry,
             onRetry: () => ref.invalidate(provider),
+            isRetrying: async.isLoading,
           ),
         ],
       );

@@ -117,13 +117,14 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           AsyncData(:final value) => MxScreenScroll(
             children: _list(l10n, value),
           ),
-          AsyncError() => MxScreenScroll(
+          AsyncError(:final isLoading) => MxScreenScroll(
             children: [
               MxErrorState(
                 title: l10n.trashLoadErrorTitle,
                 body: l10n.libraryLoadErrorBody,
                 retryLabel: l10n.commonRetry,
                 onRetry: () => ref.invalidate(trashEntriesProvider),
+                isRetrying: isLoading,
               ),
             ],
           ),

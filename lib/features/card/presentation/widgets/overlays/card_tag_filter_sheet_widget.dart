@@ -71,12 +71,13 @@ class _CardTagFilterSheetWidgetState
     return switch (tags) {
       AsyncData(:final value) when value.isEmpty => _none(l10n),
       AsyncData(:final value) => _picker(l10n, value),
-      AsyncError() => MxBottomSheet(
+      AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(
           title: l10n.cardTagFilterLoadError,
           body: l10n.libraryLoadErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(cardTagFilterProvider(widget.deckId)),
+          isRetrying: isLoading,
         ),
       ),
       _ => MxBottomSheet(

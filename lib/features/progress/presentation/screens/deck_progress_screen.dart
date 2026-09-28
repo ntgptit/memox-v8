@@ -49,7 +49,7 @@ class DeckProgressScreen extends ConsumerWidget {
       _ => null,
     };
     final Widget body = switch (read) {
-      AsyncError(:final error) => MxScreenScroll(
+      AsyncError(:final error, :final isLoading) => MxScreenScroll(
         children: [
           MxErrorState(
             title: l10n.progressErrorTitle,
@@ -60,6 +60,7 @@ class DeckProgressScreen extends ConsumerWidget {
                 : l10n.progressErrorBody,
             retryLabel: l10n.commonRetry,
             onRetry: () => ref.invalidate(deckProgressProvider(deckId)),
+            isRetrying: isLoading,
           ),
         ],
       ),

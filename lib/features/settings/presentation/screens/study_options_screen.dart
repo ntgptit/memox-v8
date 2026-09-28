@@ -83,13 +83,14 @@ class StudyOptionsScreen extends ConsumerWidget {
                 rootName: loaded.$1.rootDeckName,
               ),
               AsyncData(value: Rejected()) => _gone(context),
-              AsyncError() => MxScreenScroll(
+              AsyncError(:final isLoading) => MxScreenScroll(
                 children: [
                   MxErrorState(
                     title: l10n.settingsLoadErrorTitle,
                     body: l10n.libraryLoadErrorBody,
                     retryLabel: l10n.commonRetry,
                     onRetry: () => ref.invalidate(studyOptionsProvider(deckId)),
+                    isRetrying: isLoading,
                   ),
                 ],
               ),

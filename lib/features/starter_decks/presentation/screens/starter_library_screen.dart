@@ -115,12 +115,13 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
               ),
             ],
           ],
-          AsyncError() => [
+          AsyncError(:final isLoading) => [
             MxErrorState(
               title: l10n.starterLoadErrorTitle,
               body: l10n.starterLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(starterLibraryProvider),
+              isRetrying: isLoading,
             ),
           ],
           // The note is the screen's own copy: it shows while the templates

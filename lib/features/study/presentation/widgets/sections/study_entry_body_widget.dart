@@ -61,12 +61,13 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       AsyncData(value: Ok(:final value)) => _loaded(ref, value, start, picked),
       // The screen leaves on notFound (UC-STUDY-001 E1).
       AsyncData() => const <Widget>[],
-      AsyncError() => [
+      AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.studyEntryErrorTitle,
           body: l10n.studyEntryErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => _retry(ref),
+          isRetrying: isLoading,
         ),
       ],
       _ => const [_LoadingEntry()],
