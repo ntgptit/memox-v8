@@ -184,7 +184,11 @@ plain chat text. This covers:
 - clarifying questions and choices between options;
 - approvals of a design, spec, plan or deviation;
 - requests to act: starting a phase, running a command with side effects,
-  installing a tool, opening or merging a PR.
+  installing a tool, opening or merging a PR;
+- reuse-or-write calls: adding or promoting code into `lib/core/` or
+  `lib/shared/`, or taking a shortcut (reusing, skipping or trimming) in
+  place of code the task asked for. The agent weighs the options and
+  recommends one; the owner decides.
 
 End a presented design, spec or plan with the popup (approve / request
 changes), not with a question in prose.

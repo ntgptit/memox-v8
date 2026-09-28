@@ -35,11 +35,11 @@ out to be open becomes rework, and the rework is always larger than the check.
       else.
 - [ ] **Dependencies identified** — which features or shared components this
       needs, and whether they exist yet.
-- [ ] **Existing code searched** — before planning any new function, class,
-      extension or widget, search `lib/core/` (`clock`, `id`, `text`, `error`,
-      `database`, `sync`, `theme`), `lib/shared/widgets/` and the features this
-      one touches for something that already does it. Reuse it if it fits; if
-      it almost fits, say what differs instead of writing a parallel copy.
+- [ ] **Existing code known** — what `lib/core/` (`clock`, `id`, `text`,
+      `error`, `database`, `sync`, `theme`), `lib/shared/widgets/` and the
+      touched features already offer for this slice. Whether to reuse it,
+      extend it, write new, or add something common is a reuse-or-write call:
+      recommend one and ask the owner (CLAUDE.md, Asking the owner).
 
 If something is missing, stop and get it. Load `flutter-product-spec` if the
 gap is a use case or business rule. Report which item is open and what you need
@@ -158,9 +158,6 @@ While building the screen:
 - Use existing components and tokens. Do not invent visual design mid-feature —
   if the design is genuinely missing, raise it rather than improvising, because
   an improvised variant becomes another thing to reconcile later.
-- Before adding a helper (date/time, id, text folding, error mapping,
-  formatting), grep `lib/core/` and `lib/shared/` for it first; a second
-  implementation of something core already owns is a review finding.
 - Do not create a shared component for this feature's first use. Build it
   locally; promote it to `shared/` when a second real caller appears and shows
   you what actually varies.
