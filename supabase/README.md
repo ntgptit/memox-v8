@@ -20,7 +20,9 @@ Needs Docker. From the repo root:
 3. GitHub → Settings → Secrets → Actions: `SUPABASE_ACCESS_TOKEN` (Account →
    Access Tokens) and `SUPABASE_DB_PASSWORD`, for the migrations workflow,
    which pushes `migrations/` on every merge to `master` that changes them
-   and on demand (`workflow_dispatch`).
+   and on demand (`workflow_dispatch`). The workflow runs pgTAP before the
+   push and, after it, fails when the project schema differs from
+   `migrations/`. The weekly usage workflow reads the same access token.
 4. Same place: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (Project
    Settings → API Keys), for the keep-alive workflow and the Build APK
    workflow, which passes them to `--dart-define-from-file`.
@@ -34,3 +36,17 @@ Needs Docker. From the repo root:
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - A new migration never edits one already pushed to the project.
+- The schema changes only through `migrations/`, never in the dashboard's SQL
+  Editor or Table Editor: the migrations workflow fails on any other change.
+  One exemption (owner's ruling, 2026-09-28): `public.rls_auto_enable()`, the
+  event-trigger function Supabase created with the project to switch RLS on
+  for new tables. It is not in `migrations/`, and it cannot be called directly
+  (it returns `event_trigger`), so the drift check skips it.
+
+## Workflows
+
+| Workflow | When | Does |
+|---|---|---|
+| `supabase migrations` | merge to `master` touching `migrations/`, or by hand | pgTAP, `db push`, then `db diff --linked` must be empty |
+| `supabase keep-alive` | daily | calls `ping` so the Free project does not pause |
+| `supabase usage` | weekly, or by hand | reports database size, users and 30-day active users; fails at 80% of a Free limit, so GitHub emails the owner |
