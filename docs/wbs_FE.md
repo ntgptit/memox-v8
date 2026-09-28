@@ -33,7 +33,7 @@
   accessibility (`CLAUDE.md`).
   - Handoff V3 có foundations, theme binding và 46 widget; các màn nằm ở
     [screen handoff](shared/ui/screen-handoff/00-index.md). File chi tiết đã có cho mọi
-    màn trừ 24 (FE-B5), kèm 16a.
+    màn, kèm 16a.
   - [Checklist màn hình và state](shared/ui/screen-state-checklist.md) liệt kê 26 màn và
     211 state của kit, và đánh dấu từng state xong, một phần, chưa làm hay không làm.
     Khi một hạng mục FE làm xong một state, sửa dòng của state đó ở checklist.
@@ -94,7 +94,8 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | xong | BE-B2, FE-A2 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B4); file chi tiết [05](shared/ui/screen-handoff/05-tags.md), bộ lọc tag ở [07](shared/ui/screen-handoff/07-card-list.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | — |
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | xong | BE-B4, FE-A1 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B2); file chi tiết [03](shared/ui/screen-handoff/03-starter-decks.md); `rootEmpty` của màn 01 có "Browse starter decks"; [ui.md](features/starter-decks/ui.md) | — |
-| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | chưa bắt đầu | BE-B5a, BE-B5b, FE-A3 | S–M | [README reminders](features/reminders/README.md); hợp đồng sáu use case ở [spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §9 | Sau BE-B5b. Màn 24 không bắt đầu một thao tác nhắc học khi thao tác trước chưa xong ([spec gói 11a](superpowers/specs/2026-09-26-reminders-backend-design.md) §14). Khi hiện hàng Daily reminder ở màn 23: câu chữ reset nêu cả nhắc học (dòng 123 của sổ nợ UI-base), và sau khi reset thì gọi `ReconcileReminderUseCase` (spec gói 11a §9; FE-A3 D4) |
+| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | xong | BE-B5a, BE-B5b, FE-A3 | S–M | [spec](superpowers/specs/2026-09-28-daily-reminder-ui-design.md) và [plan](superpowers/plans/2026-09-28-daily-reminder-ui.md); màn 24 [24-daily-reminder.md](shared/ui/screen-handoff/24-daily-reminder.md) `aligned`, 9/9 state của kit; bật, tắt, đổi giờ qua `ReminderOperationGate`; hàng Daily reminder của màn 23, câu chữ reset nêu nhắc học và `app/` hoà giải sau reset (dòng 123 của sổ nợ UI-base đóng); [ui.md](features/reminders/ui.md); test trong `test/features/reminders/presentation/`, `test/features/settings/presentation/`, companion `test/visual_audit/screens/features/reminders/` | Kiểm trên thiết bị (hộp thoại xin quyền, E1 bị từ chối hai lần) đi cùng bước thiết bị của BE-B5b |
+| FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | chưa bắt đầu | FE-B5, BE-B5b | S | Kit 24 vẽ nút này; FE-B5 ẩn nó vì port không có thao tác và cần code native hoặc package (quyết định của chủ dự án 2026-09-28) | Làm cùng bước thiết bị của BE-B5b, khi build được APK |
 
 ### Nợ của UI base (spec UI base §9)
 
@@ -133,8 +134,8 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 - Mọi hạng mục FE của V8.0 đã xong; FE-A1 (mastery, BR-DECK-026, BR-DECK-027) và FE-A2
   (file chi tiết 08–10, #103) không còn phần dở.
-- **FE-B5:** màn 24 trên các use case của BE-B5a và adapter host của BE-B5b; bước kiểm
-  chứng trên thiết bị đi cùng BE-B5b.
+- **FE-B5:** xong phần host (màn 24 `aligned`); bước kiểm trên thiết bị đi cùng BE-B5b.
+  FE-B6 chờ cùng bước đó.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
 sinh trong công cụ kiểm kiến trúc; `study_turn_data_source.dart`) đã vào `master` ở #53.
@@ -167,9 +168,9 @@ và phụ thuộc giữa các màn quyết định:
 
 1. Mọi màn của V8.0 đã dựng, không còn phần dở, và mọi màn trong index là `aligned`.
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
-3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag) và FE-B4
-   (starter) đã xong. BE-B5a xong trong gói 11a và phần host của BE-B5b xong ở gói G5,
-   nên FE-B5 dựng và kiểm trên host được; bước thiết bị đi cùng BE-B5b.
+3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
+   (starter) và FE-B5 (nhắc học, phần host) đã xong. Còn FE-B6 (nút Open system
+   settings) và bước thiết bị của FE-B5, cả hai đi cùng BE-B5b.
 4. FE-D4 cùng gói FE đầu tiên chạm design system.
 
 ## Ước lượng effort (rà soát 2026-09-25)
@@ -260,3 +261,7 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
 - **Cập nhật ngày 2026-09-28:** audit màn 13 theo kit: state `noDecks` có lại "Browse
   starter decks" mở Starter Library (lý do ẩn nó, màn 03 ngoài V8, đã hết từ FE-B4);
   OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.
+- **Cập nhật ngày 2026-09-28:** FE-B5 xong phần host: màn 24 (9/9 state của kit, cộng E4 và
+  E7), hàng Daily reminder của màn 23, reset nêu nhắc học và hoà giải sau reset. Thêm FE-B6
+  cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không
+  làm.
