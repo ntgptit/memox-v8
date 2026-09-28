@@ -6047,5 +6047,124 @@
       }
     },
     "description": "The daily reminder notification (BE-B5b; kit screen 24 \"What it says\", reminders spec D9). Other roots have cards due too."
+  },
+  "reminderTitle": "Daily reminder",
+  "@reminderTitle": {
+    "description": "Screen handoff 24 (FE-B5): the screen title, the toggle row and its TalkBack name."
+  },
+  "reminderNote": "Fires once a day, only when cards are due. Never for new cards, never twice.",
+  "@reminderNote": {
+    "description": "Screen handoff 24 (FE-B5): the note under the first section (BR-REMINDER-003, BR-REMINDER-004)."
+  },
+  "reminderOnHint": "One notification a day at the time below",
+  "@reminderOnHint": {
+    "description": "Screen handoff 24 (FE-B5): the toggle row while on."
+  },
+  "reminderOffHint": "Off · nothing is scheduled",
+  "@reminderOffHint": {
+    "description": "Screen handoff 24 (FE-B5): the toggle row while off."
+  },
+  "reminderDeniedHint": "Off · notification permission was refused",
+  "@reminderDeniedHint": {
+    "description": "Screen handoff 24 (FE-B5): the toggle row after the permission was refused (E1)."
+  },
+  "reminderTime": "Time",
+  "@reminderTime": {
+    "description": "Screen handoff 24 (FE-B5): the time row."
+  },
+  "reminderTimeOnHint": "Local time · stays the same if you travel",
+  "@reminderTimeOnHint": {
+    "description": "Screen handoff 24 (FE-B5): the time row while on (BR-REMINDER-002)."
+  },
+  "reminderTimeOffHint": "Turn the reminder on to choose a time",
+  "@reminderTimeOffHint": {
+    "description": "Screen handoff 24 (FE-B5): the time row while off."
+  },
+  "reminderTimeButton": "Reminder time, {time}",
+  "@reminderTimeButton": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 24 (FE-B5): TalkBack name of the time button; {time} is HH:mm."
+  },
+  "reminderPreviewTitle": "What it says",
+  "@reminderPreviewTitle": {
+    "description": "Screen handoff 24 (FE-B5): the preview section's title."
+  },
+  "reminderPreviewDeck": "한국어 TOPIK I · Từ vựng",
+  "@reminderPreviewDeck": {
+    "description": "Screen handoff 24 (FE-B5): the sample deck name in the preview, as the kit draws it."
+  },
+  "reminderPreviewQuoted": "“{text}”",
+  "@reminderPreviewQuoted": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 24 (FE-B5): the preview sentence in quotes; {text} is the notification's own body."
+  },
+  "reminderPreviewHint": "Deck name and counts only — never a card, tag or history, including on the lock screen. Opening it lands on Study.",
+  "@reminderPreviewHint": {
+    "description": "Screen handoff 24 (FE-B5): under the preview (BR-REMINDER-005, BR-REMINDER-008)."
+  },
+  "reminderDeniedTitle": "Notifications are blocked for MemoX",
+  "@reminderDeniedTitle": {
+    "description": "Screen handoff 24 (FE-B5): permission refused banner title (E1)."
+  },
+  "reminderDeniedBody": "Allow them in Android Settings › Apps › MemoX › Notifications, then turn the reminder on again.",
+  "@reminderDeniedBody": {
+    "description": "Screen handoff 24 (FE-B5): permission refused banner (E1, BR-REMINDER-011); no Open system settings button (spec D1)."
+  },
+  "reminderTryAgain": "Try again",
+  "@reminderTryAgain": {
+    "description": "Screen handoff 24 (FE-B5): the action of the E1 and E6 banners."
+  },
+  "reminderCouldNotTurnOnTitle": "Couldn’t schedule the reminder.",
+  "@reminderCouldNotTurnOnTitle": {
+    "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
+  },
+  "reminderCouldNotTurnOnBody": "It stays off. Try turning it on again.",
+  "@reminderCouldNotTurnOnBody": {
+    "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
+  },
+  "reminderCouldNotChangeTimeTitle": "Couldn’t change the time.",
+  "@reminderCouldNotChangeTimeTitle": {
+    "description": "Screen handoff 24 (FE-B5): schedule refused on Change time (E3)."
+  },
+  "reminderCouldNotChangeTimeBody": "The reminder stays at {time}.",
+  "@reminderCouldNotChangeTimeBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen handoff 24 (FE-B5): schedule refused on Change time; {time} is the kept HH:mm."
+  },
+  "reminderMayStillShow": "Turned off. A reminder already scheduled for today may still appear once.",
+  "@reminderMayStillShow": {
+    "description": "Screen handoff 24 (FE-B5): cancel refused after turning off (E6, spec D8)."
+  },
+  "reminderUnavailable": "Reminders are not available on this device",
+  "@reminderUnavailable": {
+    "description": "Screen handoff 24 (FE-B5): unsupported platform (E2, BR-REMINDER-012)."
+  },
+  "reminderUnavailableHint": "This build cannot deliver notifications. Nothing to turn on here.",
+  "@reminderUnavailableHint": {
+    "description": "Screen handoff 24 (FE-B5): unsupported platform (E2)."
+  },
+  "reminderReadErrorTitle": "Couldn't read the reminder setting",
+  "@reminderReadErrorTitle": {
+    "description": "Screen handoff 24 (FE-B5): the settings read failed (E7)."
+  },
+  "reminderReadErrorBody": "Nothing was changed. Try reading it again.",
+  "@reminderReadErrorBody": {
+    "description": "Screen handoff 24 (FE-B5): the settings read failed (E7)."
+  },
+  "reminderSaveFailed": "Couldn't save the reminder. Nothing changed.",
+  "@reminderSaveFailed": {
+    "description": "Screen handoff 24 (FE-B5): a save failed (E4)."
   }
 }
