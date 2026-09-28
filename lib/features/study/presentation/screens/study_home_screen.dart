@@ -60,12 +60,13 @@ class StudyHomeScreen extends ConsumerWidget {
         needsAttention(sync, ref.watch(dayClockProvider).now());
     final children = switch (home) {
       AsyncData(:final value) => _loaded(context, ref, value),
-      AsyncError() => [
+      AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.studyHomeErrorTitle,
           body: l10n.studyHomeErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(studyHomeProvider),
+          isRetrying: isLoading,
         ),
       ],
       _ => const [StudyHomeLoadingWidget()],

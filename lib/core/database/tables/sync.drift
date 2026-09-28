@@ -1,4 +1,7 @@
+import 'card.drift';
 import 'deck.drift';
+import 'settings.drift';
+import 'tags.drift';
 import 'trash.drift';
 
 -- App deck-sync spec §3: one pending operation per synced row. A write
@@ -73,6 +76,97 @@ BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
           'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- SB-S2: cards, as decks (library and study sync spec §3.1).
+CREATE TRIGGER card_sync_insert AFTER INSERT ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_sync_update AFTER UPDATE ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_sync_delete AFTER DELETE ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- SB-S3: tags, as cards; a card's links travel on the card, so a link change
+-- queues the card (library and study sync spec §3.2).
+CREATE TRIGGER tags_sync_insert AFTER INSERT ON tags
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER tags_sync_update AFTER UPDATE ON tags
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER tags_sync_delete AFTER DELETE ON tags
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'tag', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_tags_sync_insert AFTER INSERT ON card_tags
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- A link removed by the card's own delete must not turn that delete into an upsert.
+CREATE TRIGGER card_tags_sync_delete AFTER DELETE ON card_tags
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+  AND EXISTS (SELECT 1 FROM card WHERE id = old.card_id)
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', old.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- SB-S5: the study and display settings sync per account; reminders and a
+-- write that changes none of the four columns queue nothing (library and study
+-- sync spec §3.5). The entity id is the nil UUID (D2).
+CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+  AND (old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order
+    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'account_settings', '00000000-0000-0000-0000-000000000000', 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 

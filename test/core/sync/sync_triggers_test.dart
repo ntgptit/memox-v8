@@ -27,6 +27,18 @@ Future<void> _child(AppDatabase db, String id, String parent) =>
       [id, parent, parent],
     );
 
+Future<void> _card(AppDatabase db, String id, String deck) =>
+    db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
+      "VALUES (?, ?, 'f', 'b', 0, 0)",
+      [id, deck],
+    );
+
+Future<void> _tag(AppDatabase db, String id, String name) => db.customStatement(
+  'INSERT INTO tags (id, name, name_folded, created_at) VALUES (?, ?, lower(?), 0)',
+  [id, name, name],
+);
+
 void main() {
   late AppDatabase db;
   setUp(() => db = openTestDatabase());
@@ -102,6 +114,132 @@ void main() {
       ]);
     });
 
+    expect(await _outbox(db), isEmpty);
+  });
+
+  test('a card insert, update and delete queue one card entry', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await db.customStatement("UPDATE card SET front = 'g' WHERE id = 'K'");
+    var cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(cards.single['op'], 'upsert');
+
+    await db.customStatement("DELETE FROM card WHERE id = 'K'");
+    cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(cards.single['op'], 'delete');
+  });
+
+  test('a card written under applying_remote queues nothing', () async {
+    await _root(db, 'R');
+    await db.customStatement(
+      "INSERT INTO sync_state (name, value) VALUES ('$syncApplyingRemoteKey', '1')",
+    );
+    await _card(db, 'K', 'R');
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'card'),
+      isEmpty,
+    );
+  });
+
+  test('deleting a deck queues a delete for each of its cards', () async {
+    await _root(db, 'R');
+    await _card(db, 'K1', 'R');
+    await _card(db, 'K2', 'R');
+    await db.customStatement("DELETE FROM deck WHERE id = 'R'");
+    final cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(
+      {for (final e in cards) e['entity_id']: e['op']},
+      {'K1': 'delete', 'K2': 'delete'},
+    );
+  });
+
+  test('a tag insert, rename and delete queue one tag entry', () async {
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "UPDATE tags SET name = 'Verbs', name_folded = 'verbs' WHERE id = 'T'",
+    );
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'tag').single['op'],
+      'upsert',
+    );
+    await db.customStatement("DELETE FROM tags WHERE id = 'T'");
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'tag').single['op'],
+      'delete',
+    );
+  });
+
+  test('linking and unlinking a card queue the card', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    expect((await _outbox(db)).single, containsPair('entity_id', 'K'));
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement("DELETE FROM card_tags WHERE card_id = 'K'");
+    expect((await _outbox(db)).single, containsPair('op', 'upsert'));
+  });
+
+  test('a card deleted with links is queued as a delete', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    await db.customStatement("DELETE FROM card WHERE id = 'K'");
+    final card = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(card.single['op'], 'delete');
+  });
+
+  test('deleting a tag queues it and re-queues its cards', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement("DELETE FROM tags WHERE id = 'T'");
+    expect(
+      {
+        for (final e in await _outbox(db))
+          '${e['entity_type']}/${e['entity_id']}': e['op'],
+      },
+      {'tag/T': 'delete', 'card/K': 'upsert'},
+    );
+  });
+
+  test('changing a synced setting queues the account settings', () async {
+    await db.customStatement(
+      "UPDATE app_settings SET theme_mode = 'dark' WHERE id = 1",
+    );
+    final entry = (await _outbox(db)).single;
+    expect(entry['entity_type'], 'account_settings');
+    expect(entry['entity_id'], accountSettingsEntityId);
+    expect(entry['op'], 'upsert');
+  });
+
+  test('a reminder or updated_at alone queues nothing', () async {
+    await db.customStatement(
+      'UPDATE app_settings SET reminder_enabled = 1, reminder_minute_of_day = 600, updated_at = 99 WHERE id = 1',
+    );
+    await db.customStatement(
+      "UPDATE app_settings SET theme_mode = theme_mode WHERE id = 1",
+    );
+    expect(await _outbox(db), isEmpty);
+  });
+
+  test('settings written under applying_remote queue nothing', () async {
+    await db.customStatement(
+      "INSERT INTO sync_state (name, value) VALUES ('$syncApplyingRemoteKey', '1')",
+    );
+    await db.customStatement(
+      "UPDATE app_settings SET language = 'vi' WHERE id = 1",
+    );
     expect(await _outbox(db), isEmpty);
   });
 }
