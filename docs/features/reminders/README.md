@@ -20,7 +20,9 @@ id cố định, chạm mở Study Home). Hai plugin chỉ được gọi qua `R
 (guard `memox_v8.architecture.reminder_plugins_have_one_door`). `ReminderOperationGate`
 cho Enable, Disable và Reconcile chạy lần lượt; Deliver chạy trong isolate nền
 (`reminder_background_bindings.dart`) và đọc settings lúc fire. App chạy Reconcile khi
-khởi động. Web và mọi nền tảng khác giữ adapter "không hỗ trợ". FE-B5, nơi đầu tiên gọi
+khởi động. `openNotificationSettings` (FE-B6) mở trang notification của app qua channel
+`memox/notification_settings` trong `MainActivity.kt`, cũng sau `ReminderPluginsDataSource`.
+Web và mọi nền tảng khác giữ adapter "không hỗ trợ". FE-B5, nơi đầu tiên gọi
 Enable và Disable, MUST gọi chúng qua `reminderOperationGateProvider` như Reconcile.
 
 ### Kiểm chứng trên thiết bị (2026-09-28)
@@ -43,7 +45,9 @@ mới không làm nhắc bắn (A4); giờ nhắc đặt trên màn 24.
    notification hiện đúng giờ. Trên emulator, `BOOT_COMPLETED` tới app sau 1–3 phút
    vì hàng đợi broadcast lúc khởi động.
 7. E1: từ chối hai lần thì Android không hỏi nữa (`USER_FIXED`); "Try again" nhận
-   `denied` ngay và màn giữ `permDenied`. FE-B6 thêm lối mở cài đặt notification.
+   `denied` ngay và màn giữ `permDenied`. Nút "Open system settings" (FE-B6) mở
+   `AppNotificationSettingsActivity` của MemoX; cho phép ở đó, Back rồi "Try again" thì
+   nhắc học bật.
 
 Hai điều cần biết khi kiểm lại:
 

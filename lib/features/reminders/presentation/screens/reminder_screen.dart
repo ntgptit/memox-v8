@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/controllers/reminder_controller.dart';
+import 'package:memox/features/reminders/presentation/providers/open_notification_settings_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
 import 'package:memox/features/reminders/presentation/widgets/overlays/reminder_time_dialog_widget.dart';
@@ -131,6 +132,8 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           storedMinute: status.reminder.minuteOfDay,
           isBusy: action.isBusy,
           onRetry: () => unawaited(_controller.retry()),
+          onOpenSettings: () =>
+              unawaited(ref.read(openNotificationSettingsProvider)()),
         ),
         const SizedBox(height: AppSpacing.gutter),
         const ReminderPreviewSectionWidget(),

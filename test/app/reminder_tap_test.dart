@@ -45,6 +45,9 @@ final class _FakePlugins implements ReminderPluginsDataSource {
 
   @override
   Future<void> cancelNotification() async {}
+
+  @override
+  Future<bool> openNotificationSettings() async => true;
 }
 
 void main() {
