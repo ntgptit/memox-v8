@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ADR-015: sync calls Supabase. Flutter adds INTERNET to debug and
+         profile only, so a release build needs it here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- BE-B5b, the daily reminder: the notification permission (Android 13+),
          and what android_alarm_manager_plus needs to wake the app and to
          schedule again after a reboot. The alarm is inexact, so no
