@@ -5,6 +5,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/sync/sync_failure.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
@@ -16,6 +18,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import 'sync_test_support.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -24,6 +27,7 @@ final _screen = SettingsScreen(
   onOpenLanguage: () {},
   onOpenReminder: () {},
   onAppOptionsReset: () {},
+  onOpenSync: () {},
 );
 
 /// A toast or dialog in, its entrance done.
@@ -164,5 +168,41 @@ void main() {
         );
       });
     });
+    for (final (state, status) in <(String, SyncStatus Function(LibraryEnv))>[
+      (
+        'synced',
+        (env) => SyncStatus(
+          lastSuccessAt: env.clock.now().subtract(const Duration(minutes: 5)),
+        ),
+      ),
+      (
+        'failed',
+        (env) => SyncStatus(
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.network,
+            env.clock.now(),
+          ),
+        ),
+      ),
+      ('rejected', (env) => const SyncStatus(rejectedCount: 2)),
+    ]) {
+      libraryTest('settings, sync $state, $theme', (tester, env) async {
+        await withRealShadows(() async {
+          await pumpLibraryGolden(
+            tester,
+            env,
+            _screen,
+            brightness,
+            overrides: syncOverrides(status(env)),
+          );
+          await tester.scrollUntilVisible(find.text('Reset app options'), 200);
+          await tester.pump();
+          await expectBoundaryGolden(
+            tester,
+            'goldens/settings_sync_${state}_$theme.png',
+          );
+        });
+      });
+    }
   }
 }

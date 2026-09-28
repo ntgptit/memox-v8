@@ -234,6 +234,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       context.push(AppRoutes.settingsReminder),
                   // The reset turned the reminder off; the pending alarm
                   // follows through the gate (FE-B5 spec D7).
+                  onOpenSync: () => context.push(AppRoutes.settingsSync),
                   onAppOptionsReset: () => unawaited(
                     _reconcileAfterReset(ProviderScope.containerOf(context)),
                   ),
