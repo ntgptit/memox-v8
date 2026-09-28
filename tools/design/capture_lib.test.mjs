@@ -109,7 +109,9 @@ test('the committed manifest lists the V8 states of the handed-off screens', () 
     [
       ['01', 22],
       ['02', 9],
+      ['03', 10],
       ['04', 5],
+      ['05', 12],
       ['06', 15],
       ['07', 14],
       ['08', 9],
@@ -128,6 +130,7 @@ test('the committed manifest lists the V8 states of the handed-off screens', () 
       ['21', 9],
       ['22', 8],
       ['23', 8],
+      ['24', 9],
       ['25', 3],
       ['26', 3],
     ],
