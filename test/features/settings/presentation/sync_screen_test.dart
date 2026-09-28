@@ -1,0 +1,120 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/sync/sync_failure.dart';
+import 'package:memox/core/sync/sync_status.dart';
+import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
+
+import '../../../support/library_harness.dart';
+import 'sync_test_support.dart';
+
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump();
+}
+
+void main() {
+  libraryTest('Sync now runs and says Synced', (tester, env) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await _settle(tester);
+    expect(commands.syncs, 1);
+    expect(find.text('Synced'), findsOneWidget);
+  });
+
+  libraryTest('a failed Sync now says nothing was lost', (tester, env) async {
+    final commands = FakeSyncCommands()..result = false;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await _settle(tester);
+    expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
+  });
+
+  libraryTest('refused rows offer Try again and Keep on this device', (
+    tester,
+    env,
+  ) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
+    );
+    expect(find.text('3 changes are kept only on this device'), findsOneWidget);
+    await tester.tap(find.text('Keep on this device'));
+    await _settle(tester);
+    expect(commands.keeps, 1);
+    expect(find.text('Kept on this device'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await _settle(tester);
+    expect(commands.retries, 1);
+  });
+
+  libraryTest('a failure shows its sentence and no code', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        SyncStatus(
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.network,
+            env.clock.now(),
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('No connection.'), findsOneWidget);
+  });
+
+  libraryTest('a second command waits for the first', (tester, env) async {
+    final commands = FakeSyncCommands()..hold = Completer<bool>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 1), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await tester.pump();
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(commands.retries, 0);
+    commands.hold!.complete(true);
+    await _settle(tester);
+  });
+
+  libraryTest('Vietnamese at text scale 2 does not overflow', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      locale: const Locale('vi'),
+      textScale: 2,
+      overrides: syncOverrides(
+        SyncStatus(
+          rejectedCount: 1234,
+          pendingCount: 1234,
+          lastFailure: LastSyncFailure(SyncFailureKind.server, env.clock.now()),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+  });
+}

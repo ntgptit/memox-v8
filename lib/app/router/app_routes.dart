@@ -27,6 +27,11 @@ abstract final class AppRoutes {
   static const String settingsReminderChild = 'reminder';
   static const String settingsReminder = '$settings/$settingsReminderChild';
 
+  /// Sync (screen 27, SB-U1), relative to [settings], on the root
+  /// navigator like Theme and Language.
+  static const String settingsSyncChild = 'sync';
+  static const String settingsSync = '$settings/$settingsSyncChild';
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 
