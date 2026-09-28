@@ -78,12 +78,12 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Người làm | Phụ thuộc | Cỡ | Bằng chứng / ghi chú |
 |---|---|---|---|---|---|---|
-| SB-S1 | Spec và plan sync card, tags, card–tag, review log, lịch SRS và setting theo tài khoản trên Supabase, theo mô hình hàng. Chốt các câu hỏi mở ở mục "Quyết định còn mở" | chưa bắt đầu | | BE-E8 | M | Thay BE-E2, BE-E4, BE-E5 của `wbs_BE.md` |
-| SB-S2 | Sync `card` và Trash xuyên loại: (1) bảng server (CHECK và FK như Drift, `deck_id` → `deck`, tombstone, `delete_batch_id`), `sync_push`/`sync_changes` nhận loại `card`, pgTAP; Drift migration thêm `server_version` và trigger outbox cho `card`, adapter card; cơ chế đặt lại cursor pull khi app có loại mới, làm chung một lần cho mọi loại về sau (coordinator hiện bỏ qua loại lạ mà vẫn nhích `since`); (2) xoá, Undo, khôi phục và purge deck kéo theo card đồng bộ đúng; dọn Trash hết hạn chỉ ở local; (3) ghi hàng loạt: import card và starter deck sinh nhiều dòng outbox, push và pull chạy hết mà không nghẽn UI, đo trên một bộ lớn | chưa bắt đầu | | SB-S1 | XL | Gộp SB-S6 (2) và SB-S7 (3) vào đây ngày 2026-09-28. (1): luật xung đột là upsert cả hàng, thao tác server áp sau thắng (spec sync §5). (2): thay BE-E3 của `wbs_BE.md`; card có FK `deck_id`, nên đưa card lên mà xoá và purge deck chưa kéo theo card thì dữ liệu lệch hoặc bị FK chặn; `delete_batch` đã đồng bộ cho deck. (3): push chia lô 100 và pull phân trang 500 đã có trong `SyncCoordinator` (`pushBatchSize`, `pullPageSize`; spec backend Supabase §4), phần còn lại là bài đo |
-| SB-S3 | Sync `tags` và liên kết card–tag: bảng server với tên tag duy nhất theo user; khi hai máy tạo cùng tên thì gộp bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox; bài đo ghi hàng loạt của SB-S2 chạy lại với tag và liên kết | chưa bắt đầu | | SB-S2 | L | `card_tags` có PK ghép `(card_id, tag_id)` trong khi giao thức cần `entityId` là UUID: xem "Quyết định còn mở". Nếu SB-S1 chọn gửi danh sách tag như một trường của card thì liên kết chuyển sang SB-S2 |
-| SB-S4 | Sync `review_log` (chỉ thêm, insert-if-absent theo `id`) và `card_schedule` (dẫn xuất): sau pull có review mới, app phát lại review của từng thẻ theo `(reviewed_at, id)` qua scheduler của thẻ đó rồi đẩy lịch như một upsert dẫn xuất; review của generation cũ xử lý theo spec sync §6 | chưa bắt đầu | | SB-S2 | XL | Phát lại phải tất định: UTC, `Clock` tiêm vào, thứ tự toàn phần. Cần bộ test "hai máy cùng log ra cùng lịch" |
-| SB-S5 | Setting theo tài khoản: tuỳ chọn học và trình bày (`card_limit`, `new_card_order`, `theme_mode`, `language`) đồng bộ; nhắc học (`reminder_*`) giữ trên máy | chưa bắt đầu | | SB-S1 | M | `app_settings` local có `id = 1` cố định, nên cần khoá server theo user: xem "Quyết định còn mở" |
-| SB-S8 | Máy mới hoặc cài lại kéo toàn bộ dữ liệu từ `since = 0` và dựng lại Drift đúng thứ tự phụ thuộc (deck → card → tag → liên kết → review log → lịch) | chưa bắt đầu | | SB-S3, SB-S4, SB-S5 | M | Chỉ có ý nghĩa khi có login (nhóm C); với ẩn danh, cài lại là user mới. Thứ tự dựng lại qua nhiều trang pull: xem "Quyết định còn mở" |
+| SB-S1 | Spec và plan sync card, tags, card–tag, review log, lịch SRS và setting theo tài khoản trên Supabase, theo mô hình hàng. Chốt các câu hỏi mở ở mục "Quyết định còn mở" | xong | | BE-E8 | M | [Spec](superpowers/specs/2026-09-28-sync-library-and-study-design.md); [ADR-017](shared/decisions/ADR-017-lich-srs-dong-bo-nhu-mot-dong.md). Chủ dự án chốt ngày 2026-09-28: liên kết card–tag là trường `tagIds` của card; setting tài khoản một dòng mỗi user, `entityId` là nil UUID; review của generation cũ giữ làm lịch sử; cả lượt pull trong một transaction (giả định SB-S8 đã kiểm là đúng); lịch SRS đồng bộ như một dòng, lịch tiến xa hơn thắng, bỏ phát lại của spec sync §6 (ADR-017). Plan viết riêng cho từng slice khi bắt đầu slice đó. Thay BE-E2, BE-E4, BE-E5 của `wbs_BE.md` |
+| SB-S2 | Sync `card` và Trash xuyên loại: (1) bảng server (CHECK và FK như Drift, `deck_id` → `deck`, tombstone, `delete_batch_id`), `sync_push`/`sync_changes` nhận loại `card`, pgTAP; Drift migration thêm `server_version` và trigger outbox cho `card`, adapter card; cơ chế đặt lại cursor pull khi app có loại mới, làm chung một lần cho mọi loại về sau (coordinator hiện bỏ qua loại lạ mà vẫn nhích `since`); cả lượt pull trong một transaction; xoá deck kéo theo tombstone card trên server; (2) xoá, Undo, khôi phục và purge deck kéo theo card đồng bộ đúng; dọn Trash hết hạn chỉ ở local; (3) ghi hàng loạt: import card và starter deck sinh nhiều dòng outbox, push và pull chạy hết mà không nghẽn UI, đo trên một bộ lớn | chưa bắt đầu | | SB-S1 | XL | Spec SB-S1 §3.1, §4. Gộp SB-S6 (2) và SB-S7 (3) vào đây ngày 2026-09-28. (1): luật xung đột là upsert cả hàng, thao tác server áp sau thắng (spec sync §5). (2): thay BE-E3 của `wbs_BE.md`; card có FK `deck_id`, nên đưa card lên mà xoá và purge deck chưa kéo theo card thì dữ liệu lệch hoặc bị FK chặn; `delete_batch` đã đồng bộ cho deck. (3): push chia lô 100 và pull phân trang 500 đã có trong `SyncCoordinator` (`pushBatchSize`, `pullPageSize`; spec backend Supabase §4), phần còn lại là bài đo |
+| SB-S3 | Sync `tags` và liên kết card–tag: bảng server với tên tag duy nhất theo user; khi hai máy tạo cùng tên thì gộp tag local vào tag từ server bằng `TagDao.merge` và xếp lại card bị ảnh hưởng vào outbox; liên kết đi trong trường `tagIds` của card; bài đo ghi hàng loạt của SB-S2 chạy lại với tag và liên kết | chưa bắt đầu | | SB-S2 | L | Spec SB-S1 §3.2 |
+| SB-S4 | Sync `review_log` (chỉ thêm, insert-if-absent theo `id`, giữ review mọi generation làm lịch sử) và `card_schedule` như một dòng: khi pull, lịch local tiến xa hơn thì giữ và đẩy lại, không thì nhận bản server | chưa bắt đầu | | SB-S2 | L | Spec SB-S1 §3.3–3.4, ADR-017 (không phát lại log). Cần test thứ tự so sánh từng luật và "hai máy cùng ôn offline hội tụ" |
+| SB-S5 | Setting theo tài khoản: tuỳ chọn học và trình bày (`card_limit`, `new_card_order`, `theme_mode`, `language`) đồng bộ; nhắc học (`reminder_*`) giữ trên máy | chưa bắt đầu | | SB-S1 | M | Spec SB-S1 §3.5: bảng server khoá theo `user_id`, `entityId` là nil UUID, trigger chỉ khi một trong bốn cột đồng bộ đổi |
+| SB-S8 | Máy mới hoặc cài lại kéo toàn bộ dữ liệu từ `since = 0` và dựng lại Drift đúng thứ tự phụ thuộc (deck → card → tag → liên kết → review log → lịch) | chưa bắt đầu | | SB-S3, SB-S4, SB-S5 | S | Chỉ có ý nghĩa khi có login (nhóm C); với ẩn danh, cài lại là user mới. Thứ tự qua nhiều trang đã giải ở SB-S2 (cả lượt pull một transaction, spec SB-S1 §4.2); phần còn lại là kiểm trên hai máy thật |
 
 ### C. Danh tính và tài khoản (spec sync §9 bước 5)
 
@@ -105,10 +105,6 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | Hạng mục | Câu hỏi | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| SB-S3 | Liên kết card–tag đi trên dây thế nào khi giao thức cần `entityId` là UUID mà `card_tags` có PK ghép: thêm cột `id` UUID, suy UUID tất định từ `(card_id, tag_id)`, hay gửi danh sách tag như một trường của card | Schema server, trigger outbox và adapter | Chốt trong SB-S1 |
-| SB-S5 | Khoá của setting theo tài khoản trên server (một dòng mỗi `user_id`) và cách giữ `app_settings.id = 1` ở local | Schema server và adapter | Chốt trong SB-S1 |
-| SB-S4 | Khi hai máy đổi scheduler của một deck gốc (tăng `generation`) rồi cùng đẩy review, review của generation cũ bị bỏ hay giữ làm lịch sử | Phát lại lịch SRS | Chốt trong SB-S1, đối chiếu spec sync §6 |
-| SB-S8 | `sync_changes` trả mọi loại theo một thứ tự `server_version` chung, còn app chỉ hoãn kiểm FK (`deferForeignKeys`) trong một trang pull. Giả định, chưa kiểm: deck sửa sau card của nó có `server_version` lớn hơn, nên có thể rơi sang trang sau card và làm lượt kéo từ `since = 0` lỗi FK. Cách xử lý: cả lượt pull trong một transaction, hay server trả theo thứ tự phụ thuộc | Kéo toàn bộ khi cài lại hay thêm máy | Kiểm và chốt trong SB-S1 |
 | SB-A1 | Cách đăng nhập và chính sách gộp dữ liệu ẩn danh khi đăng nhập trên máy thứ hai | Toàn bộ nhóm C | Chủ dự án |
 | SB-O7 | Nơi lưu và thời hạn giữ bản sao lưu | Khôi phục khi mất dữ liệu | Chủ dự án |
 
@@ -116,7 +112,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 1. SB-O1 (chủ dự án, một lượt trên dashboard).
 2. SB-O8: chủ dự án chạy tay workflow `supabase usage` lần đầu trên `master`.
-3. SB-S1 (spec) rồi SB-S2 → SB-S3 → SB-S4; SB-S5 làm được ngay sau SB-S1.
+3. SB-S2 → SB-S3 → SB-S4; SB-S5 làm được bất cứ lúc nào (spec SB-S1 đã xong).
 4. SB-A1 có thể làm song song với nhóm B khi chủ dự án chọn cách đăng nhập; SB-A2
    trở đi sau SB-A1.
 
@@ -142,3 +138,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 - **Cập nhật ngày 2026-09-28:** SB-U1 xong: lỗi sync được ghi lại và hiện ở Settings
   (dòng Sync), màn 27 Sync và banner ở Study home; màn và banner ghi thêm ở
   `wbs_FE.md` (FE-B7).
+- **Cập nhật ngày 2026-09-28:** SB-S1 xong: spec sync card, tag, review log, lịch SRS
+  và setting tài khoản; bốn câu hỏi mở của nhóm B đã chốt và chuyển vào spec. Lịch SRS
+  đổi từ phát lại log sang đồng bộ như một dòng (ADR-017). SB-S4 giảm từ XL xuống L,
+  SB-S8 từ M xuống S.
