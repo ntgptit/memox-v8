@@ -42,7 +42,8 @@ select is(public.t_push(jsonb_build_array(
 select is(public.t_change(public.t_uuid(10))->'row',
   jsonb_build_object('id', public.t_uuid(10), 'deckId', public.t_uuid(2), 'front', '사과', 'back', 'apple',
     'isFlagged', false, 'example', null, 'hint', 'fruit', 'pronunciation', null, 'deleteBatchId', null,
-    'createdAt', '2026-09-28T00:00:00.000000Z', 'updatedAt', '2026-09-28T00:00:01.000000Z'),
+    'createdAt', '2026-09-28T00:00:00.000000Z', 'updatedAt', '2026-09-28T00:00:01.000000Z',
+    'tagIds', '[]'::jsonb),
   'a card reads back in the wire shape');
 select is(public.t_change(public.t_uuid(10))->>'entityType', 'card', 'sync_changes lists cards');
 select is(public.t_push(jsonb_build_array(public.t_op(4, 'card', public.t_uuid(11), 'upsert',
