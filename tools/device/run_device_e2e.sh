@@ -95,12 +95,20 @@ phase() {
     defines+=("--dart-define=MEMOX_E2E_$(basename "$key")=$(cat "$key")")
   done
   echo "-- phase $name"
+  # flutter test finds the app's VM service in logcat; an earlier phase's
+  # line there, or its port forward, would send it to a dead service.
+  adbs logcat -c
+  adbs forward --remove-all
   flutter_ test "integration_test/${name}_test.dart" -d "$DEVICE" --no-uninstall \
     "${defines[@]}" 2>&1 |
     while IFS= read -r line; do
       echo "$line"
       case $line in
         *"$MARK back"*) sh_ input keyevent KEYCODE_BACK >/dev/null ;;
+        *"$MARK snap"*)
+          mkdir -p build/device_e2e
+          adbs exec-out screencap -p >"build/device_e2e/$name.png"
+          echo "screenshot: build/device_e2e/$name.png" ;;
         *"$MARK value "*)
           line=${line#*"$MARK value "}
           printf '%s' "${line#*=}" >"$STATE/${line%%=*}" ;;
@@ -142,6 +150,12 @@ scenario_IT-PLAT-004() {
   reset_app && phase it_plat_004_a_seed_deck || return 1
   local deck
   deck=$(cat "$STATE/DECK_ID" 2>/dev/null) || { FAILED_AT="no DECK_ID signalled"; return 1; }
+  # The phase left its test build installed; the OS must open the app itself.
+  # install -r keeps the data.
+  echo "-- installing the app over the test build"
+  flutter_ build apk --debug >/dev/null &&
+    adbs install -r build/app/outputs/flutter-apk/app-debug.apk >/dev/null ||
+    { FAILED_AT="installing the app"; return 1; }
   english
   stop_app && deeplink "memox://app/decks/deck/$deck" && expect_text "D-EB" &&
     sh_ input keyevent KEYCODE_BACK && expect_text "1 deck" &&

@@ -36,7 +36,38 @@ Future<void> waitFor(
     await tester.pump(const Duration(milliseconds: 200));
     if (finder.evaluate().isNotEmpty) return;
   }
-  throw TestFailure('Timed out after $timeout waiting for $finder');
+  await _fail(tester, 'Timed out after $timeout waiting for $finder');
+}
+
+/// Pumps until [isMet] holds; fails naming [what] after [timeout].
+Future<void> waitUntil(
+  WidgetTester tester,
+  bool Function() isMet,
+  String what, {
+  Duration timeout = _timeout,
+}) async {
+  final end = DateTime.now().add(timeout);
+  while (DateTime.now().isBefore(end)) {
+    await tester.pump(const Duration(milliseconds: 200));
+    if (isMet()) return;
+  }
+  await _fail(tester, 'Timed out after $timeout waiting until $what');
+}
+
+/// Pumps until one of [finders] finds something, and returns it.
+Future<Finder> waitForAny(
+  WidgetTester tester,
+  List<Finder> finders, {
+  Duration timeout = _timeout,
+}) async {
+  final end = DateTime.now().add(timeout);
+  while (DateTime.now().isBefore(end)) {
+    await tester.pump(const Duration(milliseconds: 200));
+    for (final finder in finders) {
+      if (finder.evaluate().isNotEmpty) return finder;
+    }
+  }
+  return _fail(tester, 'Timed out after $timeout waiting for any of $finders');
 }
 
 /// Pumps until [finder] finds nothing; fails naming it after [timeout].
@@ -50,8 +81,25 @@ Future<void> waitGone(
     await tester.pump(const Duration(milliseconds: 200));
     if (finder.evaluate().isEmpty) return;
   }
-  throw TestFailure('Timed out after $timeout waiting for $finder to go');
+  await _fail(tester, 'Timed out after $timeout waiting for $finder to go');
 }
+
+/// Fails with [message] and the texts on screen, after the script took a
+/// screenshot (`MEMOX-E2E: snap`, saved under build/device_e2e/).
+Future<Never> _fail(WidgetTester tester, String message) async {
+  signal('snap');
+  await tester.pump(const Duration(seconds: 2));
+  throw TestFailure('$message; on screen: ${_onScreen()}');
+}
+
+/// The texts on screen, for a failure that says where the app stood.
+String _onScreen() => find
+    .byType(RichText)
+    .evaluate()
+    .map((element) => (element.widget as RichText).text.toPlainText())
+    .where((text) => text.trim().isNotEmpty)
+    .take(40)
+    .join(' | ');
 
 /// The app's strings in the device's language (spec D7).
 AppLocalizations l10nOf(WidgetTester tester) =>
