@@ -8,6 +8,7 @@ import 'package:memox/features/study_mode/domain/models/session_kind_model.dart'
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_dot_overline.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
@@ -28,8 +29,6 @@ class StudyHomeResumeWidget extends StatelessWidget {
   final bool isResuming;
   final VoidCallback onResume;
 
-  static const double _dotSize = 6;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -44,29 +43,7 @@ class StudyHomeResumeWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: AppSpacing.control,
       children: [
-        Row(
-          spacing: AppSpacing.micro,
-          children: [
-            ExcludeSemantics(
-              child: SizedBox.square(
-                dimension: _dotSize,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: context.colors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            Flexible(
-              child: Text(
-                l10n.studyHomeResumeOverline.toUpperCase(),
-                semanticsLabel: l10n.studyHomeResumeOverline,
-                style: styles.overline,
-              ),
-            ),
-          ],
-        ),
+        MxDotOverline(label: l10n.studyHomeResumeOverline),
         MxCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
