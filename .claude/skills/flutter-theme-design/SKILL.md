@@ -103,16 +103,17 @@ Chi tiết admission rule cho một Material widget mới:
 Một screen hoàn thiện tốt phải đọc gần như thế này:
 
 ```dart
-MxContentShell(
-  child: Column(
+MxAppShell(
+  appBar: MxAppBar(title: ...),
+  body: MxScreenScroll(
     children: [
       MxSearchField(...),
-      const SizedBox(height: AppSpacing.lg),
+      const SizedBox(height: AppSpacing.gutter),
       MxCard(
-        child: MxListTile(...),
+        child: MxListRow(...),
       ),
-      const SizedBox(height: AppSpacing.xl),
-      MxActionButton.primary(...),
+      const SizedBox(height: AppSpacing.section),
+      MxButton(label: ..., onPressed: ...),
     ],
   ),
 )

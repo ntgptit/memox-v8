@@ -117,7 +117,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng; job `goldens` của CI so ảnh trên mỗi pull request (BE-D2) | — |
 | FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
 | FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | bị chặn | — | M | [host-coverage-map.md](shared/testing/host-coverage-map.md); §9 dòng 18: máy phát triển không có emulator | Cần môi trường có emulator hoặc thiết bị |
-| FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | chưa bắt đầu | — | M | Tách từ BE-D7 (gói 12c, [spec](superpowers/specs/2026-09-27-skills-without-v7-design.md)), vốn chỉ gỡ phần của V7: mốc, lịch sử, câu "Đã ship" về API mà V8 không có | Làm cùng gói FE đầu tiên chạm design system |
+| FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | xong | — | M | 10 chỗ sai tên hoặc API được sửa theo code (`MxAppShell`, `MxButton` với `MxButtonTone`/`MxButtonSize`, `MxBottomNav`, `MxListRow`, `MxSelectionCheckbox`, `MxToggle`, `MxFilterChip`/`MxTagChip`/`MxChipTrigger`, `MxDialog`/`showMxDialog`, `showMxSnackbar`, `MxSpinner`/`MxSkeleton*`/`MxLinearProgress`), bảng parity ghi slot nào có trong `app_theme.dart`, `MxIcon` (không tồn tại) thay bằng `AppIcons`/`AppIconSize`, danh sách rule guard đầy đủ; checklist ThemeData của slot chưa dựng giữ nguyên vì SKILL.md ghi rõ là đích | — |
 
 ## Đã xong và đã kiểm chứng
 
@@ -171,7 +171,7 @@ và phụ thuộc giữa các màn quyết định:
 3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
    (starter) và FE-B5 (nhắc học, phần host) đã xong. Còn FE-B6 (nút Open system
    settings) và bước thiết bị của FE-B5, cả hai đi cùng BE-B5b.
-4. FE-D4 cùng gói FE đầu tiên chạm design system.
+4. FE-D4 xong (2026-09-28).
 
 ## Ước lượng effort (rà soát 2026-09-25)
 
@@ -265,3 +265,4 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   E7), hàng Daily reminder của màn 23, reset nêu nhắc học và hoà giải sau reset. Thêm FE-B6
   cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không
   làm.
+- **Cập nhật ngày 2026-09-28:** FE-D4 xong: skill `flutter-theme-design` dùng tên và API thật của V8; bảng parity theme ↔ widget ghi slot nào đã có.

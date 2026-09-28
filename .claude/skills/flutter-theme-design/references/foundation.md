@@ -96,18 +96,18 @@ không chỉ `fontWeight`.
 - [ ] Disabled icon có contract.
 - [ ] Semantic icon color không lấy trực tiếp raw colors.
 
-### Shared widget: `MxIcon`
+### Icon
 
-`Icon` trần vẫn hợp lệ trong slot đã theme (leading của button/tile); guard
-`no_raw_icon_color` cấm `Icon(color:)` mở — ngoại lệ duy nhất là màu đọc qua
-`.resolve(context)` cho size không có bậc.
+V8 không có `MxIcon`: glyph lấy từ `AppIcons`, cỡ từ `AppIconSize`
+(`lib/core/theme/foundations/`), và `Icon` trần hợp lệ trong slot đã theme
+(leading của button/tile). Guard `no_raw_icon_color` cấm `Icon(color:)` mở —
+ngoại lệ duy nhất là màu đọc qua `.resolve(context)` cho size không có bậc.
 
-- [ ] Nhận `IconData`.
-- [ ] Có semantic sizes: `sm/md/lg`.
-- [ ] Có tones: `default/accent/success/warning/danger`.
-- [ ] Không nhận arbitrary `size`.
-- [ ] Không nhận arbitrary `color`.
+- [ ] Glyph từ `AppIcons`, không `Icons.*` rải trong feature.
+- [ ] Cỡ từ `AppIconSize`, không số trần.
+- [ ] Màu từ role của theme, không raw color.
 - [ ] Decorative icon được exclude semantics đúng cách.
+- [ ] Chỉ tạo `MxIcon` khi có tone/size lặp lại mà các token trên không đủ.
 
 ## 4. Global interaction fallback
 

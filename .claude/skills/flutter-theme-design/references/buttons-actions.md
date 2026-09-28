@@ -24,9 +24,12 @@ Raw: `FilledButton`, `FilledButton.tonal`.
 - [ ] Icon-label gap.
 - [ ] Loading behavior không thay đổi geometry.
 
-### Shared widget: `MxActionButton`
+### Shared widget: `MxButton`
 
-Required variants: `primary`, `tonal`, `destructive`.
+V8 có **một** widget nút chữ, `MxButton` (`lib/shared/widgets/mx_button.dart`):
+`TextButton` + `appButtonStyle` cho mọi tone. Tone là `MxButtonTone`
+(`primary`, `secondary`, `outline`, `destructive`, `dangerSoft`, `warning`), cỡ
+là `MxButtonSize` (`regular`, `small`, `compact`, `chip`, `study`).
 
 - [ ] Variant là semantic, không phải color.
 - [ ] Optional leading icon.
@@ -54,9 +57,9 @@ Required variants: `primary`, `tonal`, `destructive`.
 - [ ] Không dùng decorative hairline nếu border là dấu hiệu chính nhận diện
       control.
 
-### Shared widget
+### Tone phụ của `MxButton`
 
-`MxActionButton.secondary`
+`MxButtonTone.secondary` và `MxButtonTone.outline`
 
 - [ ] Cùng geometry với primary.
 - [ ] Khác emphasis, không khác component language.
@@ -76,9 +79,10 @@ Required variants: `primary`, `tonal`, `destructive`.
 - [ ] Typography.
 - [ ] Nếu không có surface, state phải hiện trên text/underline/ring hợp lý.
 
-### Shared widget: `MxTextButton`
+### Nút dạng chữ
 
-Variants: default, destructive.
+V8 không có `MxTextButton` riêng: nút nhẹ là `MxButton` với tone
+`secondary`/`outline` và `size: MxButtonSize.compact`.
 
 - [ ] Có optional icon.
 - [ ] Không nhận arbitrary padding.

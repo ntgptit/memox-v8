@@ -22,9 +22,12 @@ Policy:
 
 ## XI. Raw widgets không nên có visual freedom ở feature layer
 
-Guard trực tiếp trong `lib/features/**`. **Trạng thái hiện tại:** ba rule
-phủ phần đánh dấu `[x]` — `no_raw_button`, `no_raw_widget` và
-`no_raw_style_escape`. Mỗi mục thêm phải kèm lượt chạy chứng minh
+Guard trực tiếp trong `lib/features/**`. **Trạng thái hiện tại:** các rule của
+`registries/projects/memox-v8/rules/memox-design-system-rules.yaml` phủ phần
+đánh dấu `[x]` — chủ yếu `no_raw_button`, `no_raw_widget` và
+`no_raw_style_escape`, cùng `no_raw_screen_chrome`, `no_raw_sheet_route`,
+`no_raw_loading_indicator`, `no_raw_choice_chip`, `no_flat_style_from`,
+`no_bare_font_weight`, `no_text_restyle` và `no_raw_icon_color`. Mỗi mục thêm phải kèm lượt chạy chứng minh
 **hai chiều**: rule bắn đúng site hiện có (hoặc một probe file cố ý vi phạm)
 rồi về 0 — và đếm site phải dùng `[<(]` chứ không chỉ `\(`, vì
 `RadioListTile<T>(` và `showModalBottomSheet<void>(` lọt lưới `\(` trần.
