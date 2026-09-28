@@ -99,7 +99,7 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | BE-B3 | Transfer: import card hàng loạt (parse, validate, xem trước, ghi trong một transaction) và export (UC-TRANSFER-001, UC-TRANSFER-002; BR-TRANSFER-001…BR-TRANSFER-014) | xong | BE-04, BE-05 | M–L | [spec](superpowers/specs/2026-09-26-card-transfer-design.md) và [plan](superpowers/plans/2026-09-26-card-transfer-backend.md); test trong `test/features/transfer/` và `test/features/card/data/card_transfer_test.dart` | — |
 | BE-B4 | Starter decks: thư viện template, sao chép template vào dữ liệu người dùng (UC-STARTER-001; BR-STARTER-001…BR-STARTER-010) | xong | BE-03, BE-04 | M | [spec](superpowers/specs/2026-09-26-starter-decks-backend-design.md) và [plan](superpowers/plans/2026-09-26-starter-decks-backend.md); test trong `test/features/starter_decks/` | FE-B4 dựng màn 03 trên hai use case của `starter_decks` |
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
-| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | đang làm | BE-B5a | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §8 và [plan](superpowers/plans/2026-09-27-local-backend-g5-android-reminder.md) gói G5: phần kiểm chứng được trên host đã xong — `AndroidReminderPlatformRepositoryImpl` trên `android_alarm_manager_plus` 5.1.1 và `flutter_local_notifications` 22.3.1, `ReminderOperationGate`, entry point nền, chạm mở Study Home, Reconcile lúc khởi động, manifest và gradle; test trong `test/features/reminders/` và `test/app/reminder_tap_test.dart` | Kiểm chứng trên thiết bị: `flutter build apk` (hoặc workflow `build-apk.yml`), nhắc bắn đúng giờ, chạm mở Study Home, sống qua reboot, và màn 24 của FE-B5 (hộp thoại xin quyền, E1 bị từ chối hai lần); gradle và manifest chưa build được trong container (xem Điểm chặn) |
+| BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | xong | BE-B5a | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §8 và [plan](superpowers/plans/2026-09-27-local-backend-g5-android-reminder.md) gói G5: phần kiểm chứng được trên host đã xong — `AndroidReminderPlatformRepositoryImpl` trên `android_alarm_manager_plus` 5.1.1 và `flutter_local_notifications` 22.3.1, `ReminderOperationGate`, entry point nền, chạm mở Study Home, Reconcile lúc khởi động, manifest và gradle; test trong `test/features/reminders/` và `test/app/reminder_tap_test.dart`. Kiểm trên emulator API 36 ngày 2026-09-28 ([README của reminders](features/reminders/README.md) mục "Kiểm chứng trên thiết bị"): APK build xanh, nhắc bắn đúng giờ, chạm mở Study Home (nền và cold launch), vuốt bỏ (A6), sống qua reboot, E1 bị từ chối hai lần | FE-B6: nút mở cài đặt notification ở `permDenied` |
 
 ### Đồng bộ với server (ADR-013, ADR-015)
 
@@ -202,13 +202,12 @@ giữ tiến độ sync và login từ nay; các dòng dưới đây ở lại l
 
 ## Đang làm
 
-BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết bị (xem Điểm chặn).
+Không có.
 
 ## Điểm chặn và quyết định còn mở
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Chưa build được APK với manifest và gradle mới; chưa thấy nhắc bắn, chạm và reboot trên thiết bị | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
 
 ## Trạng thái kiểm chứng
@@ -228,8 +227,7 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
 
 ## Bước tiếp theo
 
-1. BE-B5b: kiểm chứng trên thiết bị khi có Android SDK hoặc thiết bị (xem Điểm chặn), cùng màn 24 (FE-B5, đã dựng) và FE-B6.
-2. Sync và login: theo mục "Bước tiếp theo" của [`wbs_supabase.md`](wbs_supabase.md).
+1. Sync và login: theo mục "Bước tiếp theo" của [`wbs_supabase.md`](wbs_supabase.md).
 
 ## Ngữ cảnh cập nhật
 
@@ -295,6 +293,10 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
   (#123, #124, #125). Tiến độ sync và login chuyển sang
   [`wbs_supabase.md`](wbs_supabase.md); BE-E2…BE-E6 chuyển `cắt` và trỏ tới hạng mục
   thay thế ở đó.
+- **Cập nhật ngày 2026-09-28:** BE-B5b xong: kiểm trên emulator API 36 (build APK,
+  nhắc bắn, chạm mở Study Home, vuốt bỏ, reboot, E1). Điểm chặn Android SDK đóng. Tên
+  app trên Android đổi thành "MemoX" cho khớp câu chữ của màn 24 (quyết định của chủ
+  dự án).
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.
