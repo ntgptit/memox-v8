@@ -38,6 +38,10 @@ Needs Docker. From the repo root:
 - A new migration never edits one already pushed to the project.
 - The schema changes only through `migrations/`, never in the dashboard's SQL
   Editor or Table Editor: the migrations workflow fails on any other change.
+  One exemption (owner's ruling, 2026-09-28): `public.rls_auto_enable()`, the
+  event-trigger function Supabase created with the project to switch RLS on
+  for new tables. It is not in `migrations/`, and it cannot be called directly
+  (it returns `event_trigger`), so the drift check skips it.
 
 ## Workflows
 

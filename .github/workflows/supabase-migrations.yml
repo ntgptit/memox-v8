@@ -60,12 +60,23 @@ jobs:
       # change made outside a migration (for example in the SQL Editor). Checked
       # after the push because before it the pending migrations would count as
       # drift. `db diff` prints the difference as SQL on stdout and exits 0.
+      # Exempt: public.rls_auto_enable(), the event-trigger function Supabase
+      # created with the project to switch RLS on for new tables (owner's ruling
+      # 2026-09-28, supabase/README.md). Only its CREATE block and its GRANTs are
+      # dropped; any other statement, `SET` aside, is drift.
       - name: schema matches migrations
         run: |
-          drift="$(supabase db diff --linked --schema public,private)"
-          if [ -n "$drift" ]; then
+          supabase db diff --linked --schema public,private > drift.sql
+          awk '
+            /^CREATE OR REPLACE FUNCTION public\.rls_auto_enable\(\)/ { skip = 1 }
+            skip { if ($0 == "$function$;") skip = 0; next }
+            /^(GRANT|REVOKE) .* ON FUNCTION "public"\."rls_auto_enable"\(\)/ { next }
+            /^SET local check_function_bodies = off;$/ { next }
+            NF { print }
+          ' drift.sql > unexpected.sql
+          if [ -s unexpected.sql ]; then
             echo "::error::The project schema differs from supabase/migrations: a change was made outside a migration. Undo it or capture it in a migration."
-            printf '%s\n' "$drift"
+            cat drift.sql
             exit 1
           fi
           echo "The project schema matches supabase/migrations."
