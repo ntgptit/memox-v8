@@ -1,3 +1,4 @@
+import 'card.drift';
 import 'deck.drift';
 import 'trash.drift';
 
@@ -73,6 +74,34 @@ BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
           'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- SB-S2: cards, as decks (library and study sync spec §3.1).
+CREATE TRIGGER card_sync_insert AFTER INSERT ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_sync_update AFTER UPDATE ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_sync_delete AFTER DELETE ON card
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 

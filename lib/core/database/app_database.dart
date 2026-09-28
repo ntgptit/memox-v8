@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -93,6 +93,15 @@ class AppDatabase extends _$AppDatabase {
         // SB-U1: refused sync rows are recorded (sync status spec §4). A new,
         // empty table; no row changes.
         await m.createTable(schema.syncRejection);
+      },
+      from6To7: (m, schema) async {
+        // SB-S2: cards sync (library and study sync spec §3.1). Existing cards
+        // are queued, oldest first, so the first run uploads them.
+        await m.addColumn(schema.card, schema.card.serverVersion);
+        await m.createTrigger(schema.cardSyncInsert);
+        await m.createTrigger(schema.cardSyncUpdate);
+        await m.createTrigger(schema.cardSyncDelete);
+        await customStatement(_seedOutbox('card', 'card', 'created_at, id'));
       },
     ),
     beforeOpen: (details) async {

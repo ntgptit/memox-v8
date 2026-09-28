@@ -12,6 +12,11 @@ Needs Docker. From the repo root:
     npx supabase test db       # pgTAP
     npx supabase db reset      # re-apply migrations after editing one
 
+Without Docker (a cloud container), `bash tools/supabase/local_pgtap.sh` runs the same
+migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
+postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
+convenience; the CI `supabase` job is the gate.
+
 ## Owner setup (once)
 
 1. Create a project on supabase.com (Free plan).

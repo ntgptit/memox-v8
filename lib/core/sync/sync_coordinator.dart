@@ -13,6 +13,8 @@ class SyncCoordinator {
     required this._store,
     required List<EntitySyncAdapter> adapters,
     this._now = DateTime.now,
+    this._pullLimit = pullPageSize,
+    this._afterPull,
   }) : _adapters = {for (final a in adapters) a.entityType: a};
 
   static const pushBatchSize = 100;
@@ -24,6 +26,8 @@ class SyncCoordinator {
   final SyncStore _store;
   final Map<String, EntitySyncAdapter> _adapters;
   final DateTime Function() _now;
+  final int _pullLimit;
+  final Future<void> Function()? _afterPull;
 
   Future<void> runOnce() async {
     final deviceId = await _store.deviceId();
@@ -122,27 +126,38 @@ class SyncCoordinator {
     }
   }
 
+  /// Every page is fetched first, then applied in one transaction with keys
+  /// checked at commit: a child may come pages before its parent (spec §4.2).
+  /// A set of adapters other than the last pull's starts from 0, so a type
+  /// this build adds gets the rows the server already holds (spec §4.1).
   Future<void> _pull() async {
-    var since = await _store.since();
+    final types = (_adapters.keys.toList()..sort()).join(',');
+    var since = await _store.pullEntityTypes() == types
+        ? await _store.since()
+        : 0;
+    final changes = <SyncChangeModel>[];
     while (true) {
-      final page = await _api.changes(since, pullPageSize);
-      await _store.applyingRemote(deferForeignKeys: true, () async {
-        final pending = await _store.pendingKeys();
-        for (final change in page.changes) {
-          final adapter = _adapters[change.entityType];
-          if (adapter == null ||
-              pending.contains('${change.entityType}/${change.entityId}')) {
-            continue;
-          }
-          await _applyServerCopy(adapter, change.entityId, change);
-        }
-        await _store.setSince(page.nextSince);
-      });
+      final page = await _api.changes(since, _pullLimit);
+      changes.addAll(page.changes);
       since = page.nextSince;
       if (!page.hasMore) {
-        return;
+        break;
       }
     }
+    await _store.applyingRemote(deferForeignKeys: true, () async {
+      final pending = await _store.pendingKeys();
+      for (final change in changes) {
+        final adapter = _adapters[change.entityType];
+        if (adapter == null ||
+            pending.contains('${change.entityType}/${change.entityId}')) {
+          continue;
+        }
+        await _applyServerCopy(adapter, change.entityId, change);
+      }
+      await _afterPull?.call();
+      await _store.setSince(since);
+      await _store.setPullEntityTypes(types);
+    });
   }
 
   static Future<void> _applyServerCopy(

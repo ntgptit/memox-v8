@@ -27,6 +27,11 @@ class SyncStore {
 
   Future<void> setSince(int since) => _put(syncSinceKey, '$since');
 
+  Future<String?> pullEntityTypes() => _value(syncPullEntityTypesKey);
+
+  Future<void> setPullEntityTypes(String types) =>
+      _put(syncPullEntityTypesKey, types);
+
   /// Pending operations of [entityTypes], oldest first (parents before
   /// children).
   Future<List<SyncOutboxEntry>> pendingBatch(

@@ -16,6 +16,10 @@ class FakeSyncServer implements SyncApi {
   /// the device while the request is in flight.
   Future<void> Function()? duringPush;
 
+  /// When set, `changes` throws once it is asked for a page after this
+  /// cursor: simulates the network dropping in the middle of a pull.
+  int? failChangesAfter;
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
@@ -63,6 +67,10 @@ class FakeSyncServer implements SyncApi {
 
   @override
   Future<ChangesResponseModel> changes(int since, int limit) async {
+    final failAfter = failChangesAfter;
+    if (failAfter != null && since >= failAfter) {
+      throw StateError('network dropped');
+    }
     final sorted = _rows.values.where((c) => c.serverVersion > since).toList()
       ..sort((a, b) => a.serverVersion.compareTo(b.serverVersion));
     final page = sorted.take(limit).toList();

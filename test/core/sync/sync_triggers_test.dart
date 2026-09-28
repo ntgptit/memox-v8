@@ -27,6 +27,13 @@ Future<void> _child(AppDatabase db, String id, String parent) =>
       [id, parent, parent],
     );
 
+Future<void> _card(AppDatabase db, String id, String deck) =>
+    db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
+      "VALUES (?, ?, 'f', 'b', 0, 0)",
+      [id, deck],
+    );
+
 void main() {
   late AppDatabase db;
   setUp(() => db = openTestDatabase());
@@ -103,5 +110,41 @@ void main() {
     });
 
     expect(await _outbox(db), isEmpty);
+  });
+
+  test('a card insert, update and delete queue one card entry', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await db.customStatement("UPDATE card SET front = 'g' WHERE id = 'K'");
+    var cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(cards.single['op'], 'upsert');
+
+    await db.customStatement("DELETE FROM card WHERE id = 'K'");
+    cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(cards.single['op'], 'delete');
+  });
+
+  test('a card written under applying_remote queues nothing', () async {
+    await _root(db, 'R');
+    await db.customStatement(
+      "INSERT INTO sync_state (name, value) VALUES ('$syncApplyingRemoteKey', '1')",
+    );
+    await _card(db, 'K', 'R');
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'card'),
+      isEmpty,
+    );
+  });
+
+  test('deleting a deck queues a delete for each of its cards', () async {
+    await _root(db, 'R');
+    await _card(db, 'K1', 'R');
+    await _card(db, 'K2', 'R');
+    await db.customStatement("DELETE FROM deck WHERE id = 'R'");
+    final cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(
+      {for (final e in cards) e['entity_id']: e['op']},
+      {'K1': 'delete', 'K2': 'delete'},
+    );
   });
 }

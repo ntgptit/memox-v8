@@ -19,3 +19,8 @@ const syncLastFailureAtKey = 'last_failure_at';
 
 /// The `SyncFailureKind` name of the last failed run (SB-U1).
 const syncLastFailureKindKey = 'last_failure_kind';
+
+/// The sorted, comma-joined entity types of the last completed pull. A pull
+/// by a different set starts from `since = 0` (library and study sync spec
+/// §4.1).
+const syncPullEntityTypesKey = 'pull_entity_types';
