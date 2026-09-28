@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -88,6 +88,11 @@ class AppDatabase extends _$AppDatabase {
         // become one name merged; no structure changes (local backend spec
         // 2026-09-27 §4).
         await normalizeStoredText(this);
+      },
+      from5To6: (m, schema) async {
+        // SB-U1: refused sync rows are recorded (sync status spec §4). A new,
+        // empty table; no row changes.
+        await m.createTable(schema.syncRejection);
       },
     ),
     beforeOpen: (details) async {
