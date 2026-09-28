@@ -209,7 +209,7 @@ class _OpenDeck extends ConsumerWidget {
         onOpenTrash: onOpenTrash,
         cardFab: cardFab,
       ),
-      AsyncError() => MxAppShell(
+      AsyncError(:final isLoading) => MxAppShell(
         appBar: bar,
         body: MxScreenScroll(
           children: [
@@ -218,6 +218,7 @@ class _OpenDeck extends ConsumerWidget {
               body: l10n.libraryLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(provider),
+              isRetrying: isLoading,
             ),
           ],
         ),

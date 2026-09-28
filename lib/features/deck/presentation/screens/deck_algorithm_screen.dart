@@ -125,13 +125,14 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
         AsyncData() => DeckGoneStateWidget(
           onBackToLibrary: () => widget.onOpenAncestor(null),
         ),
-        AsyncError() => MxScreenScroll(
+        AsyncError(:final isLoading) => MxScreenScroll(
           children: [
             MxErrorState(
               title: l10n.deckLoadErrorTitle,
               body: l10n.libraryLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(provider),
+              isRetrying: isLoading,
             ),
           ],
         ),

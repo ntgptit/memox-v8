@@ -66,43 +66,43 @@ class DeckLevelBodyWidget extends ConsumerWidget {
       filter: query.filter,
     );
     final isReordering = ref.watch(deckReorderModeProvider(parentId));
-    return ref
-        .watch(provider)
-        .when(
-          data: (level) => isReordering
-              ? DeckReorderListWidget(tiles: level.tiles)
-              : DeckLevelListWidget(
-                  level: level,
-                  parentId: parentId,
-                  onOpenDeck: onOpenDeck,
-                  onOpenAlgorithm: onOpenAlgorithm,
-                  onOpenStudy: onOpenStudy,
-                  onOpenStudyOptions: onOpenStudyOptions,
-                  onOpenTrash: onOpenTrash,
-                  emptyState: emptyState,
-                  schedulerType: schedulerType,
-                  hasDeepestSubDecks: hasDeepestSubDecks,
-                ),
-          loading: () => MxScreenScroll(
-            clearance: MxScrollClearance.fabAboveNav,
-            children: [
-              MxSkeletonList(
-                semanticLabel: context.l10n.commonLoading,
-                rows: _skeletonRows,
-              ),
-            ],
+    final level = ref.watch(provider);
+    return level.when(
+      data: (level) => isReordering
+          ? DeckReorderListWidget(tiles: level.tiles)
+          : DeckLevelListWidget(
+              level: level,
+              parentId: parentId,
+              onOpenDeck: onOpenDeck,
+              onOpenAlgorithm: onOpenAlgorithm,
+              onOpenStudy: onOpenStudy,
+              onOpenStudyOptions: onOpenStudyOptions,
+              onOpenTrash: onOpenTrash,
+              emptyState: emptyState,
+              schedulerType: schedulerType,
+              hasDeepestSubDecks: hasDeepestSubDecks,
+            ),
+      loading: () => MxScreenScroll(
+        clearance: MxScrollClearance.fabAboveNav,
+        children: [
+          MxSkeletonList(
+            semanticLabel: context.l10n.commonLoading,
+            rows: _skeletonRows,
           ),
-          error: (_, _) => MxScreenScroll(
-            clearance: MxScrollClearance.fabAboveNav,
-            children: [
-              MxErrorState(
-                title: l10n.libraryLoadErrorTitle,
-                body: l10n.libraryLoadErrorBody,
-                retryLabel: l10n.commonRetry,
-                onRetry: () => ref.invalidate(provider),
-              ),
-            ],
+        ],
+      ),
+      error: (_, _) => MxScreenScroll(
+        clearance: MxScrollClearance.fabAboveNav,
+        children: [
+          MxErrorState(
+            title: l10n.libraryLoadErrorTitle,
+            body: l10n.libraryLoadErrorBody,
+            retryLabel: l10n.commonRetry,
+            onRetry: () => ref.invalidate(provider),
+            isRetrying: level.isLoading,
           ),
-        );
+        ],
+      ),
+    );
   }
 }
