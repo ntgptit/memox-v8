@@ -9,6 +9,7 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_delete_di
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 
 /// Kit 09 "More": moves the card being edited to the Trash after the same
 /// dialog as the list's (FE-B1 D13), then closes the editor with true, so
@@ -48,20 +49,7 @@ class CardTrashSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // The overline sits as the editor's "Optional details" does.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.micro,
-              0,
-              AppSpacing.micro,
-              AppSpacing.control,
-            ),
-            child: Text(
-              l10n.cardEditMore.toUpperCase(),
-              semanticsLabel: l10n.cardEditMore,
-              style: styles.overline,
-            ),
-          ),
+          MxListSectionHeader(label: l10n.cardEditMore),
           MxCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
