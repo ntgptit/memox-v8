@@ -116,14 +116,16 @@ Future<void> insertStudiedCard(AppDatabase db) async {
 }
 
 /// Every row outside `tags` and `card_tags`, table by table in rowid order:
-/// a Tag Management write leaves it as it was (BR-TAG-009).
+/// a Tag Management write leaves it as it was (BR-TAG-009). `sync_outbox` is
+/// left out: it is sync's bookkeeping, which the capture triggers write for
+/// every tag and link change (SB-S3), not the user's data.
 Future<Map<String, List<Map<String, Object?>>>> rowsOutsideTags(
   AppDatabase db,
 ) async {
   final tables = await db
       .customSelect(
         "SELECT name FROM sqlite_master WHERE type = 'table' "
-        "AND name NOT LIKE 'sqlite_%' AND name NOT IN ('tags', 'card_tags') "
+        "AND name NOT LIKE 'sqlite_%' AND name NOT IN ('tags', 'card_tags', 'sync_outbox') "
         'ORDER BY name',
       )
       .get();
