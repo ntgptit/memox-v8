@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 
@@ -102,8 +103,14 @@ Future<void> createSubDeck(WidgetTester tester, String name) async {
   await waitFor(tester, find.text(name));
 }
 
-/// In the open deck: a new card with [front] and [back].
-Future<void> createCard(WidgetTester tester, String front, String back) async {
+/// In the open deck: a new card with [front], [back] and, under Add
+/// details, [example].
+Future<void> createCard(
+  WidgetTester tester,
+  String front,
+  String back, {
+  String? example,
+}) async {
   final l10n = l10nOf(tester);
   // The empty deck's "New card", or the card list's FAB.
   final add = await waitForAny(tester, [
@@ -114,6 +121,7 @@ Future<void> createCard(WidgetTester tester, String front, String back) async {
   await waitFor(tester, find.byType(CardEditorScreen));
   await typeInto(tester, 0, front);
   await typeInto(tester, 1, back);
+  if (example != null) await _typeExample(tester, example);
   await tapText(tester, l10n.cardSaveCard);
   // The new-card editor stays open for the next card: a saved card empties
   // the form, then Close returns to the list.
@@ -125,6 +133,29 @@ Future<void> createCard(WidgetTester tester, String front, String back) async {
   await tester.tap(find.byTooltip(l10n.cardClose));
   await waitGone(tester, find.byType(CardEditorScreen));
   await waitFor(tester, find.text(front));
+}
+
+/// The example field, under Add details (open it unless a card saved
+/// before left it open).
+Future<void> _typeExample(WidgetTester tester, String example) async {
+  final l10n = l10nOf(tester);
+  final hint = find.text(l10n.cardExampleHint);
+  if (hint.evaluate().isEmpty) {
+    await tester.ensureVisible(find.byType(CardAddDetailsWidget));
+    await tester.tap(find.byType(CardAddDetailsWidget));
+    await tester.pump(const Duration(milliseconds: 400));
+  }
+  await waitFor(tester, hint);
+  final field = find.descendant(
+    of: find.ancestor(of: hint, matching: find.byType(TextField)),
+    matching: find.byType(EditableText),
+  );
+  await tester.ensureVisible(field);
+  await tester.tap(field);
+  await tester.pump(const Duration(milliseconds: 300));
+  await tester.enterText(field, example);
+  await tester.pump(const Duration(milliseconds: 300));
+  expect(tester.widget<EditableText>(field).controller.text, example);
 }
 
 /// Opens the card [front] from its list, then its editor.

@@ -33,8 +33,9 @@ Future<void> seedStudyDeck(WidgetTester tester) async {
   await openDeck(tester, studyRoot);
   await createSubDeck(tester, studyLeaf);
   await openDeck(tester, studyLeaf);
-  for (final MapEntry(key: front, value: (back, _)) in studyCards.entries) {
-    await createCard(tester, front, back);
+  for (final MapEntry(key: front, value: (back, example))
+      in studyCards.entries) {
+    await createCard(tester, front, back, example: example);
   }
   await goToLibraryRoot(tester);
 }
