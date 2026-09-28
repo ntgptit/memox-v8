@@ -1,6 +1,7 @@
 import 'card.drift';
 import 'deck.drift';
 import 'settings.drift';
+import 'srs.drift';
 import 'tags.drift';
 import 'trash.drift';
 
@@ -167,6 +168,36 @@ BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
           'account_settings', '00000000-0000-0000-0000-000000000000', 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- SB-S4: reviews and schedules (library and study sync spec §3.3–3.4, ADR-017).
+-- Reviews are append-only, so only inserts; a schedule is deleted only with its
+-- card, which the server handles, so neither queues a delete.
+CREATE TRIGGER review_log_sync_insert AFTER INSERT ON review_log
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'review_log', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_schedule_sync_insert AFTER INSERT ON card_schedule
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 
