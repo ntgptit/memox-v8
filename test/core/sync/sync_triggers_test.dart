@@ -212,4 +212,34 @@ void main() {
       {'tag/T': 'delete', 'card/K': 'upsert'},
     );
   });
+
+  test('changing a synced setting queues the account settings', () async {
+    await db.customStatement(
+      "UPDATE app_settings SET theme_mode = 'dark' WHERE id = 1",
+    );
+    final entry = (await _outbox(db)).single;
+    expect(entry['entity_type'], 'account_settings');
+    expect(entry['entity_id'], accountSettingsEntityId);
+    expect(entry['op'], 'upsert');
+  });
+
+  test('a reminder or updated_at alone queues nothing', () async {
+    await db.customStatement(
+      'UPDATE app_settings SET reminder_enabled = 1, reminder_minute_of_day = 600, updated_at = 99 WHERE id = 1',
+    );
+    await db.customStatement(
+      "UPDATE app_settings SET theme_mode = theme_mode WHERE id = 1",
+    );
+    expect(await _outbox(db), isEmpty);
+  });
+
+  test('settings written under applying_remote queue nothing', () async {
+    await db.customStatement(
+      "INSERT INTO sync_state (name, value) VALUES ('$syncApplyingRemoteKey', '1')",
+    );
+    await db.customStatement(
+      "UPDATE app_settings SET language = 'vi' WHERE id = 1",
+    );
+    expect(await _outbox(db), isEmpty);
+  });
 }

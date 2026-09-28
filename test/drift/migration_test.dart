@@ -11,7 +11,7 @@ import 'generated/schema.dart';
 // migrations.md). v3 is the Trash's (trash spec §5.3); v4 is sync's (ADR-013);
 // v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4); v6
 // records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2); v8
-// syncs tags and card links (SB-S3).
+// syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -111,46 +111,73 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v8', () async {
+  test('v1 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v2 upgrades to the schema of v8', () async {
+  test('v2 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v3 upgrades to the schema of v8', () async {
+  test('v3 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v4 upgrades to the schema of v8', () async {
+  test('v4 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v5 upgrades to the schema of v8', () async {
+  test('v5 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(5));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v6 upgrades to the schema of v8', () async {
+  test('v6 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(6));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
   });
 
-  test('v7 upgrades to the schema of v8', () async {
+  test('v7 upgrades to the schema of v9', () async {
     final db = AppDatabase(await verifier.startAt(7));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
+  });
+
+  test('v8 upgrades to the schema of v9', () async {
+    final db = AppDatabase(await verifier.startAt(8));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 9);
+  });
+
+  test('a v8 database queues its settings only when they are not the defaults', () async {
+    for (final (theme, queued) in [('system', 0), ('dark', 1)]) {
+      final schema = await verifier.schemaAt(8);
+      schema.rawDatabase
+        ..execute(
+          'INSERT OR IGNORE INTO app_settings (id, updated_at) VALUES (1, 0)',
+        )
+        ..execute("UPDATE app_settings SET theme_mode = '$theme' WHERE id = 1")
+        ..execute('DELETE FROM sync_outbox');
+      final db = AppDatabase(schema.newConnection());
+      await verifier.migrateAndValidate(db, 9);
+      final rows = await db
+          .customSelect(
+            "SELECT 1 FROM sync_outbox WHERE entity_type = 'account_settings'",
+          )
+          .get();
+      expect(rows, hasLength(queued), reason: theme);
+      await db.close();
+    }
   });
 
   test('a v7 database queues its tags and its tagged cards', () async {
@@ -172,7 +199,7 @@ void main() {
       ..execute('DELETE FROM sync_outbox');
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final queued = await db
         .customSelect(
@@ -203,7 +230,7 @@ void main() {
       );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 8);
+    await verifier.migrateAndValidate(db, 9);
 
     final queued = await db
         .customSelect(
@@ -227,7 +254,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 8);
+      await verifier.migrateAndValidate(db, 9);
 
       final queued = await db
           .customSelect(
@@ -244,11 +271,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v8, the one an upgrade ends at',
+    'a new database has the schema of v9, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 8);
+      await verifier.migrateAndValidate(db, 9);
     },
   );
 
@@ -266,7 +293,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 8);
+      await verifier.migrateAndValidate(db, 9);
     });
     tearDown(() => db.close());
 
@@ -329,7 +356,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 8);
+      await verifier.migrateAndValidate(db, 9);
     });
     tearDown(() => db.close());
 
