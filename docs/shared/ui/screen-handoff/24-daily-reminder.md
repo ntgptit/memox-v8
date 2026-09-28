@@ -64,6 +64,7 @@ through `reminderOperationGateProvider`, one at a time). Tests:
 | loading: skeleton sub-lines inside the rows | `MxSkeletonList` | `MxSettingsRow.subtitle` is text; UI-base ruling O3 (spec D10) |
 | The note's bell glyph | The info glyph | `MxSection.note` draws an `MxNote` with its default glyph (a shared-widget trait) |
 | permDenied's "Try again" outlined, second | Primary, the only action | One action in the banner |
+| The time button's "20:00" in weight 700 | `MxButton` compact's label weight | A shared-widget trait; the Impeccable audit after the build (2026-09-28) found nothing else to fix |
 | What it says: the deck name in Hangul ("한국어 TOPIK I · Từ vựng") | "Tiếng Hàn TOPIK I · Từ vựng", in the notification's own sentence | The test fonts have no Hangul (FE-C2 relies on the OS fallback); the sentence is built from the notification's strings so it matches what is shown, in en and vi |
 
 ## Accessibility
