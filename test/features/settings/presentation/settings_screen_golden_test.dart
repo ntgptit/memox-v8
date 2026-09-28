@@ -19,7 +19,12 @@ import '../../../support/settings_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
-final _screen = SettingsScreen(onOpenTheme: () {}, onOpenLanguage: () {});
+final _screen = SettingsScreen(
+  onOpenTheme: () {},
+  onOpenLanguage: () {},
+  onOpenReminder: () {},
+  onAppOptionsReset: () {},
+);
 
 /// A toast or dialog in, its entrance done.
 Future<void> _settle(WidgetTester tester) async {

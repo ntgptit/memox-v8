@@ -23,7 +23,7 @@ snapshot. UC-STUDY-002.
 | loaded | ![](img/13-study-home/loaded-light.png) | ![](img/13-study-home/loaded-dark.png) | As drawn, minus the "Scheduled" term and the streak colour — see Deviations. |
 | noResume | ![](img/13-study-home/noResume-light.png) | ![](img/13-study-home/noResume-dark.png) | As drawn: same workload hero and deck list, no Resume card (BR-STUDY-075 A1). |
 | zero | ![](img/13-study-home/zero-light.png) | ![](img/13-study-home/zero-dark.png) | As drawn: every root deck holds cards but nothing is due; rows still list every deck with 0/0/0 (BR-STUDY-008, BR-STUDY-077). |
-| noDecks | ![](img/13-study-home/noDecks-light.png) | ![](img/13-study-home/noDecks-dark.png) | **Deviation:** "Browse starter decks" is hidden; "Go to Library" is the only action. |
+| noDecks | ![](img/13-study-home/noDecks-light.png) | ![](img/13-study-home/noDecks-dark.png) | As drawn: "Browse starter decks" opens the Starter Library (screen 03), "Go to Library" the Library root (UC-STUDY-002 A4). |
 | noCards | ![](img/13-study-home/noCards-light.png) | ![](img/13-study-home/noCards-dark.png) | As drawn: root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
 | loading | ![](img/13-study-home/loading-light.png) | ![](img/13-study-home/loading-dark.png) | Skeletons in the hero and row shapes; simplified — see Deviations. |
 | error | ![](img/13-study-home/error-light.png) | ![](img/13-study-home/error-dark.png) | As drawn (`MxErrorState`, retry; no table/query names — BR-STUDY-077). |
@@ -36,8 +36,8 @@ Not captured: none — all seven kit states are V8-supported.
   shows the toast "This session can't be continued any more", and a failed write shows
   "Couldn't start the session."; the stream refreshes by itself.
 - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open the
-  Library root. Both navigate into the Library branch, as the summary's "Study this deck"
-  does.
+  Library root, and "Browse starter decks" the Starter Library. All navigate into the
+  Library branch, as the summary's "Study this deck" does.
 - Goldens:
   `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error,large_text}_*`.
 
@@ -48,7 +48,6 @@ Not captured: none — all seven kit states are V8-supported.
 | Hero breakdown shows three disjoint counts (overdue, today, new) | Four: "Scheduled" joins them; `MxWorkloadBreakdownLine` gains a fourth term in FE-A8 | BR-STUDY-068 |
 | Resume card's pulse dot and paused-icon tile in the kit's streak colour | Primary colour | Row 28 of the UI-base ruling ledger: `Badge` (and the palette generally) offers no `streak` tone |
 | App bar's trailing date "Tuesday, 16 Sep" | Dropped | `MxAppBar.actions` takes buttons only; no BR/UC calls for a date display here |
-| noDecks: "Browse starter decks" primary action, pointing at the Starter Library | Hidden; "Go to Library" is the only action | Spec A4 (starter decks wait under Coming soon; screen 03 is out of V8) — same ruling already applied to 01-deck-list's `rootEmpty` |
 | Resume card's linear progress track | new shared `MxLinearProgress`, a themed 4-tall track: 13 and 14 both draw it | Two screens use it (no speculative widget) |
 | The dot beside "Continue studying" pulses | Static and decorative, as on 14 | FE-A8 ruling S3: one treatment for both resume surfaces; no looping motion |
 | The zero-workload body always says "tomorrow at 00:00" | "…tomorrow." on the next local day, "…on {date}." later, "Every card is resting." with no next date | FE-A8 ruling S2; BR-STUDY-074 (the local day) |
@@ -58,7 +57,8 @@ Not captured: none — all seven kit states are V8-supported.
 | The hero's breakdown in one line; a row's breakdown on one fixed ellipsized band | Both wrap, between whole terms only, so "across {n} decks" and every row count are never cut | Kit hero style (`whiteSpace: normal`); BR-STUDY-076 for rows (after P6) |
 | Loading: a three-line hero skeleton, a section-header bar and a trailing pill on each row | A two-bar hero skeleton and the standard `MxSkeletonList` rows | UI-base ruling O3: one list skeleton shape app-wide; no BR calls for a bespoke one (Impeccable after P6) |
 | A deck row drops a zero term ("2 new"), falls back to "{n} cards · nothing due" when all three are zero, and draws no glyph | A deck with cards always states "0 overdue · 0 today · 2 new", a zero term muted; each term leads with its glyph (history, zap, sparkles) in its ink; a deck with no card still reads "No cards yet" | BR-STUDY-076 (three counts always shown, each with its own icon and label); BR-STUDY-077 (no workload stated for an empty deck). Fixed after P6 (Codex review on #85) |
-| The empty states' "Go to Library" carries a layers glyph | No glyph | `MxEmptyState`'s action takes no icon (a shared-widget trait on every screen; Impeccable after P6) |
+| The empty states' "Go to Library" carries a layers glyph; noDecks' "Browse starter decks" a sparkles glyph | No glyph | `MxEmptyState`'s action takes no icon (a shared-widget trait on every screen; Impeccable after P6) |
+| noDecks' "Go to Library" in the soft-primary tint | `MxEmptyState`'s secondary action, the neutral secondary tone | FE-A8 ruling S9: `primary-soft` is PRESERVE_ONLY in the theme binding; 01's `rootEmpty` draws its secondary action the same way |
 
 ## Accessibility
 
@@ -77,6 +77,6 @@ Not captured: none — all seven kit states are V8-supported.
 - Resume refused: "This session can't be continued any more".
 - Section: "Your decks" · "Library".
 - Row: "{n} due".
-- No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library". V8 drops the starter line: "Your library is empty. Create a deck in Library to get started."
+- No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (as drawn since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
 - Error: "Couldn't load your study overview" · "Your cards are safe on this device. You can still open Library directly."

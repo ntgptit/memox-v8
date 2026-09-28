@@ -45,7 +45,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 10 | Card detail | 7 | FE-A2 | aligned | [10-card-detail.md](10-card-detail.md) |
 | 11 | Card import | 16 | FE-B3 | aligned | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | aligned | [12-card-export.md](12-card-export.md) |
-| 13 | Study home | 7 | FE-A8 | built (P6) | [13-study-home.md](13-study-home.md) |
+| 13 | Study home | 7 | FE-A8 | aligned | [13-study-home.md](13-study-home.md) |
 | 14 | Study entry | 9 | FE-A6, FE-A7 | aligned | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | aligned | [15-study-options.md](15-study-options.md) |
 | 16 | Study · Browse | 1 | FE-A6 | aligned | [16-study-browse.md](16-study-browse.md) |
@@ -57,7 +57,7 @@ The screens of the V3 handoff. The generated handoff next to this folder
 | 21 | Session summary | 10 | FE-A6 | aligned | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 8 | FE-A9 | aligned | [22-progress.md](22-progress.md) |
 | 23 | Settings | 8 | FE-A3 | aligned | [23-settings.md](23-settings.md) |
-| 24 | Daily reminder | 9 | FE-B5 | out of V8 | — |
+| 24 | Daily reminder | 9 | FE-B5 | aligned | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 3 | FE-A3 | aligned | [25-theme.md](25-theme.md) |
 | 26 | Language | 3 | FE-A3 | aligned | [26-language.md](26-language.md) |
 

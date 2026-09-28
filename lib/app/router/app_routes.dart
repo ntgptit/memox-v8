@@ -22,6 +22,11 @@ abstract final class AppRoutes {
   static const String settingsLanguageChild = 'language';
   static const String settingsLanguage = '$settings/$settingsLanguageChild';
 
+  /// The daily reminder (screen 24), relative to [settings], on the root
+  /// navigator like Theme and Language (FE-B5 spec D5).
+  static const String settingsReminderChild = 'reminder';
+  static const String settingsReminder = '$settings/$settingsReminderChild';
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 

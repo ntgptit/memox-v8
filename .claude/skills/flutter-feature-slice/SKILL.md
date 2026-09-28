@@ -35,6 +35,14 @@ out to be open becomes rework, and the rework is always larger than the check.
       else.
 - [ ] **Dependencies identified** — which features or shared components this
       needs, and whether they exist yet.
+- [ ] **Existing code known** — what `lib/core/` (`clock`, `id`, `text`,
+      `error`, `database`, `sync`, `theme`), `lib/shared/widgets/` and the
+      touched features already offer for this slice. Routine choices, such as
+      reusing an existing helper or writing feature-local code the task asks
+      for, are the agent's own. Only adding or promoting code into
+      `lib/core/` or `lib/shared/`, or a shortcut in place of requested code,
+      is a reuse-or-write call: recommend one and ask the owner (CLAUDE.md,
+      Asking the owner).
 
 If something is missing, stop and get it. Load `flutter-product-spec` if the
 gap is a use case or business rule. Report which item is open and what you need

@@ -32,7 +32,7 @@ Màn 14, 16, 16a và 17–21 là `aligned` trong index từ phase P5 của roadm
 
 ## Tổng hợp
 
-Kit có **26 màn, 211 state**. Xong **200**; một phần **0**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **9**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
+Kit có **26 màn, 211 state**. Xong **209**; một phần **0**; đã dựng nhưng chưa đối chiếu **0**; chưa làm **0**; không làm **2**. Màn 16a (6 state, không có trong kit) đã xong và không tính vào tổng.
 
 | # | Màn | Hạng mục FE | State | Xong | Một phần / chưa đối chiếu | Chưa làm | Không làm | Detail |
 |---|---|---|---|---|---|---|---|---|
@@ -59,7 +59,7 @@ Kit có **26 màn, 211 state**. Xong **200**; một phần **0**; đã dựng nh
 | 21 | Session summary | FE-A6 | 10 | 9 | 0 | 0 | 1 | [21-session-summary.md](screen-handoff/21-session-summary.md) |
 | 22 | Progress | FE-A9 | 8 | 8 | 0 | 0 | 0 | [22-progress.md](screen-handoff/22-progress.md) |
 | 23 | Settings | FE-A3 | 8 | 8 | 0 | 0 | 0 | [23-settings.md](screen-handoff/23-settings.md) |
-| 24 | Daily reminder | FE-B5 | 9 | 0 | 0 | 9 | 0 | — |
+| 24 | Daily reminder | FE-B5 | 9 | 9 | 0 | 0 | 0 | [24-daily-reminder.md](screen-handoff/24-daily-reminder.md) |
 | 25 | Theme | FE-A3 | 3 | 3 | 0 | 0 | 0 | [25-theme.md](screen-handoff/25-theme.md) |
 | 26 | Language | FE-A3 | 3 | 3 | 0 | 0 | 0 | [26-language.md](screen-handoff/26-language.md) |
 
@@ -296,7 +296,7 @@ FE-A8 · [13-study-home.md](screen-handoff/13-study-home.md)
 | [x] | Resume + workload | `loaded` | xong | P6. |
 | [x] | Workload | `noResume` | xong | P6. |
 | [x] | Zero workload | `zero` | xong | P6. |
-| [x] | No decks | `noDecks` | xong | P6. |
+| [x] | No decks | `noDecks` | xong | P6; "Browse starter decks" theo kit và UC-STUDY-002 A4 từ audit 2026-09-28. |
 | [x] | No cards | `noCards` | xong | P6. |
 | [x] | Loading | `loading` | xong | P6. |
 | [x] | Error | `error` | xong | P6. |
@@ -440,19 +440,19 @@ FE-A3 · [23-settings.md](screen-handoff/23-settings.md)
 
 ### 24 · Daily reminder
 
-FE-B5 · chưa có detail file
+FE-B5 · [24-daily-reminder.md](screen-handoff/24-daily-reminder.md)
 
 | | State (kit) | Id ảnh | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| [ ] | Off | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Turning on | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | On | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Changing time | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Permission denied | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Could not schedule | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Off · may still show | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Unavailable | — | chưa làm | Sau V8.0; chờ BE-B5. |
-| [ ] | Loading | — | chưa làm | Sau V8.0; chờ BE-B5. |
+| [x] | Off | — | xong | FE-B5. |
+| [x] | Turning on | — | xong | FE-B5. |
+| [x] | On | — | xong | FE-B5. |
+| [x] | Changing time | — | xong | FE-B5; dialog hai stepper (spec D2). |
+| [x] | Permission denied | — | xong | FE-B5; không có Open system settings (spec D1, FE-B6). |
+| [x] | Could not schedule | — | xong | FE-B5; khi đổi giờ có câu riêng. |
+| [x] | Off · may still show | — | xong | FE-B5; banner warning có Try again (spec D8, UC E6). |
+| [x] | Unavailable | — | xong | FE-B5. |
+| [x] | Loading | — | xong | FE-B5; `MxSkeletonList` (spec D10). |
 
 ### 25 · Theme
 
