@@ -1,6 +1,6 @@
 # SB-U1: sync failures are no longer silent — design
 
-Status: draft 2026-09-28 ·
+Status: approved 2026-09-28 ·
 Path: architectural · Owner rulings 2026-09-28 (§3): R1–R7
 
 ## 1. Intent
@@ -109,6 +109,9 @@ op ids and `created_at = now`, and leaves the `sync_rejection` rows: the next pu
 or replaces them. **`forgetRejected()`** deletes every `sync_rejection` row and nothing
 else.
 
+Times are formatted `HH:mm` in every language (as screen 24, FE-B5 D9), and dates with
+`DateFormat.MMMd`, which reads "Sep 26" in English.
+
 **Presentation:**
 
 - `lib/features/settings/`: `SettingsSyncSectionWidget` (screen 23), `SyncScreen`
@@ -151,8 +154,9 @@ three runs at a time.
 Shown in every loaded state (including the empty ones) when `needsAttention` is true;
 never while loading or on a read error. Message: rule 1 of §5.1 wins —
 "{n} changes are kept only on this device." — else "Some changes haven't reached the
-server for over a day. They're safe on this device." One compact button, Details, pushes
-`/settings/sync`. `needsAttention` is re-evaluated whenever the status stream emits and
+server for over a day. They're safe on this device." One compact button, Details, opens
+`/settings/sync` with `context.go`, as Study home opens the Library; Back from screen
+27 lands on Settings. `needsAttention` is re-evaluated whenever the status stream emits and
 when the screen is rebuilt; no timer.
 
 ### 5.4 Failure sentences

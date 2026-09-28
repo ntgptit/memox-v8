@@ -585,8 +585,25 @@ Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi q
 | `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
 | `attempts` | INTEGER NOT NULL | số lần push lỗi |
 
-`sync_state(name, value)` giữ `device_id`, cursor `since` và cờ tạm
-`applying_remote`.
+`sync_state(name, value)` giữ `device_id`, cursor `since`, cờ tạm
+`applying_remote`, và từ schema 6 (SB-U1) kết quả các lượt sync: `last_success_at`,
+`last_failure_at` (UTC epoch milliseconds dạng text) và `last_failure_kind`
+(`network` \| `signIn` \| `server` \| `unknown`)
+([spec sync status](../../superpowers/specs/2026-09-28-sync-status-design.md) §4).
+
+`sync_rejection` (schema 6) ghi những hàng server từ chối mà chưa từng thấy (kết quả
+`rejected` không kèm `current`); hàng vẫn ở local:
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `entity_type` | TEXT NOT NULL | PK cùng `entity_id`; một lần từ chối sau thay dòng cũ |
+| `entity_id` | TEXT NOT NULL | |
+| `code` | TEXT NOT NULL | mã server, ví dụ `VALIDATION_FAILED`; không bao giờ hiện ra UI (BR-CORE-005) |
+| `rejected_at` | DATETIME NOT NULL | UTC |
+
+Dòng bị xoá khi entity đó được `applied` ở lần push sau, hoặc khi người dùng chọn
+"Keep on this device" (màn 27). "Try again" đưa entity lại vào outbox (upsert nếu còn
+ở local, delete nếu đã mất) và giữ dòng tới khi server trả lời.
 
 Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck` và `delete_batches` ghi outbox
 trong cùng transaction với mọi lần ghi, kể cả CTE, cascade và purge, trừ khi có
