@@ -34,4 +34,7 @@ final class UnsupportedReminderPlatformRepositoryImpl
     required ReminderDigest digest,
     required LanguageChoice language,
   }) async => const Rejected(ReminderRejection.unsupported);
+
+  @override
+  Future<bool> openNotificationSettings() async => false;
 }

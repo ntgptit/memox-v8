@@ -6455,5 +6455,9 @@
   "routeNotFoundBody": "This link doesn't lead anywhere in MemoX.",
   "@routeNotFoundBody": {
     "description": "Not-found screen body; never names the route or the error."
+  },
+  "reminderOpenSystemSettings": "Open system settings",
+  "@reminderOpenSystemSettings": {
+    "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
   }
 }

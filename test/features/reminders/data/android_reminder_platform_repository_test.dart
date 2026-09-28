@@ -55,6 +55,9 @@ final class _FakePlugins implements ReminderPluginsDataSource {
 
   @override
   Future<String?> launchPayload() async => null;
+
+  @override
+  Future<bool> openNotificationSettings() => _call('openSettings', !refuses);
 }
 
 Matcher _rejected(ReminderRejection reason) =>
@@ -209,6 +212,23 @@ void main() {
         await platform.show(digest: digest, language: LanguageChoice.en),
         _rejected(ReminderRejection.couldNotShow),
       );
+    });
+  });
+
+  group('openNotificationSettings (FE-B6)', () {
+    test('opens the app\'s notification settings', () async {
+      expect(await platform.openNotificationSettings(), isTrue);
+      expect(plugins.calls, ['openSettings']);
+    });
+
+    test('a refusal is false', () async {
+      plugins.refuses = true;
+      expect(await platform.openNotificationSettings(), isFalse);
+    });
+
+    test('a throw is false, never thrown', () async {
+      plugins.fails = true;
+      expect(await platform.openNotificationSettings(), isFalse);
     });
   });
 }

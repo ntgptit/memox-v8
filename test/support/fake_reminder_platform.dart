@@ -6,7 +6,14 @@ import 'package:memox/features/reminders/domain/repositories/reminder_platform_r
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 
 /// A call the reminder's use cases make of the platform.
-enum PlatformCall { capability, requestPermission, schedule, cancel, show }
+enum PlatformCall {
+  capability,
+  requestPermission,
+  schedule,
+  cancel,
+  show,
+  openSettings,
+}
 
 /// The operating system as the reminder's use cases see it, with the two
 /// slots a real one has: at most one pending reminder, which a schedule
@@ -85,5 +92,11 @@ final class FakeReminderPlatform implements ReminderPlatformRepository {
     shown = digest;
     shownIn = language;
     return const Ok(null);
+  }
+
+  @override
+  Future<bool> openNotificationSettings() async {
+    calls.add(PlatformCall.openSettings);
+    return !refusing.contains(PlatformCall.openSettings);
   }
 }

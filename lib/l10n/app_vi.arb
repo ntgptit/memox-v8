@@ -1212,5 +1212,6 @@
   "studyHomeSyncStale": "Một số thay đổi chưa đồng bộ hơn một ngày. Vẫn an toàn trên máy.",
   "studyHomeSyncDetails": "Chi tiết",
   "routeNotFoundTitle": "Không tìm thấy trang",
-  "routeNotFoundBody": "Liên kết này không dẫn tới đâu trong MemoX."
+  "routeNotFoundBody": "Liên kết này không dẫn tới đâu trong MemoX.",
+  "reminderOpenSystemSettings": "Mở cài đặt hệ thống"
 }

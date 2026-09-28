@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 
@@ -18,6 +19,10 @@ final class PluginReminderPluginsDataSource
   final _notifications = FlutterLocalNotificationsPlugin();
   final _taps = StreamController<String?>.broadcast();
   Future<void>? _ready;
+
+  /// `MainActivity.kt`'s channel for the app's notification settings
+  /// (FE-B6): no plugin offers them.
+  static const _settings = MethodChannel('memox/notification_settings');
 
   static const _channel = AndroidNotificationDetails(
     'daily_reminder',
@@ -105,4 +110,8 @@ final class PluginReminderPluginsDataSource
     if (details == null || !details.didNotificationLaunchApp) return null;
     return details.notificationResponse?.payload;
   }
+
+  @override
+  Future<bool> openNotificationSettings() async =>
+      await _settings.invokeMethod<bool>('open') ?? false;
 }

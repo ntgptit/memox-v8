@@ -6,7 +6,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 /// The last operation's problem, with the action that repeats it (E1, E3,
-/// E6). Kit 24's "Open system settings" is hidden (FE-B5 spec D1).
+/// E6). E1 leads with kit 24's "Open system settings" (FE-B6).
 class ReminderBannersWidget extends StatelessWidget {
   const ReminderBannersWidget({
     super.key,
@@ -14,28 +14,39 @@ class ReminderBannersWidget extends StatelessWidget {
     required this.storedMinute,
     required this.isBusy,
     required this.onRetry,
+    required this.onOpenSettings,
   });
 
   final ReminderProblem? problem;
   final int storedMinute;
   final bool isBusy;
   final VoidCallback onRetry;
+  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    Widget action(String label) => MxButton(
-      label: label,
-      size: MxButtonSize.compact,
-      onPressed: isBusy ? null : onRetry,
-    );
+    Widget action(String label, {MxButtonTone tone = MxButtonTone.primary}) =>
+        MxButton(
+          label: label,
+          tone: tone,
+          size: MxButtonSize.compact,
+          onPressed: isBusy ? null : onRetry,
+        );
     return switch (problem) {
       null => const SizedBox.shrink(),
       ReminderProblem.permissionDenied => MxInlineBanner(
         tone: MxBannerTone.warning,
         title: l10n.reminderDeniedTitle,
         message: l10n.reminderDeniedBody,
-        actions: [action(l10n.reminderTryAgain)],
+        actions: [
+          MxButton(
+            label: l10n.reminderOpenSystemSettings,
+            size: MxButtonSize.compact,
+            onPressed: onOpenSettings,
+          ),
+          action(l10n.reminderTryAgain, tone: MxButtonTone.outline),
+        ],
       ),
       ReminderProblem.couldNotTurnOn => MxInlineBanner(
         tone: MxBannerTone.danger,

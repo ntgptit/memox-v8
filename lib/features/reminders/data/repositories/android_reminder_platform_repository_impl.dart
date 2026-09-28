@@ -90,6 +90,10 @@ final class AndroidReminderPlatformRepositoryImpl
     }
   }
 
+  @override
+  Future<bool> openNotificationSettings() =>
+      _succeeds(_plugins.openNotificationSettings);
+
   /// `System` follows the device when the app speaks its language, and
   /// English otherwise, as the app itself does (BR-SETTINGS-006).
   Locale _localeOf(LanguageChoice language) => switch (language) {
