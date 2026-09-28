@@ -59,7 +59,7 @@ Future<void> createRootDeck(
   // The empty Library's button, or the FAB once decks exist.
   final create = await waitForAny(tester, [
     find.text(l10n.libraryCreateDeck),
-    find.byType(MxFab),
+    find.byType(MxFab).hitTestable(),
   ]);
   await tester.tap(create.last);
   await tester.pump(const Duration(milliseconds: 300));
@@ -91,7 +91,7 @@ Future<void> createSubDeck(WidgetTester tester, String name) async {
   final l10n = l10nOf(tester);
   final action = await waitForAny(tester, [
     find.text(l10n.deckNewSubDeck),
-    find.byType(MxFab),
+    find.byType(MxFab).hitTestable(),
   ]);
   await tester.tap(action.last);
   await tester.pump(const Duration(milliseconds: 300));
@@ -105,7 +105,12 @@ Future<void> createSubDeck(WidgetTester tester, String name) async {
 /// In the open deck: a new card with [front] and [back].
 Future<void> createCard(WidgetTester tester, String front, String back) async {
   final l10n = l10nOf(tester);
-  await tapText(tester, l10n.deckNewCard);
+  // The empty deck's "New card", or the card list's FAB.
+  final add = await waitForAny(tester, [
+    find.text(l10n.deckNewCard),
+    find.byType(MxFab).hitTestable(),
+  ]);
+  await tester.tap(add.last);
   await waitFor(tester, find.byType(CardEditorScreen));
   await typeInto(tester, 0, front);
   await typeInto(tester, 1, back);
