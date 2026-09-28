@@ -271,17 +271,19 @@ DeckAlgorithmScreen deckAlgorithmScreen({
   onOpenAncestor: onOpenAncestor ?? (_) {},
 );
 
-/// The whole app over [env] on a 1080×2400 (3x) phone, settled on the
-/// Library root.
+/// The whole app over [env] on a 1080×2400 (3x) phone, or at
+/// [physicalSize], settled on the Library root.
 Future<void> pumpMemoxApp(
   WidgetTester tester,
   LibraryEnv env, {
   AppSettingsEntity? initialSettings,
   bool isSettled = true,
   List<Override> overrides = const [],
+  Size physicalSize = const Size(1080, 2400),
+  double devicePixelRatio = 3,
 }) async {
-  tester.view.physicalSize = const Size(1080, 2400);
-  tester.view.devicePixelRatio = 3;
+  tester.view.physicalSize = physicalSize;
+  tester.view.devicePixelRatio = devicePixelRatio;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
