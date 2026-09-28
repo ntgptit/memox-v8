@@ -39,6 +39,19 @@ Future<void> _tag(AppDatabase db, String id, String name) => db.customStatement(
   [id, name, name],
 );
 
+Future<void> _schedule(AppDatabase db, String cardId) => db.customStatement(
+  "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, "
+  "answer_count, lapse_count, current_box) VALUES (?, 'eight_box', 1, 1, 0, 0, 1)",
+  [cardId],
+);
+
+Future<void> _review(AppDatabase db, String id, String cardId) =>
+    db.customStatement(
+      "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, "
+      "\"action\", answered_at) VALUES (?, ?, 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 0)",
+      [id, cardId],
+    );
+
 void main() {
   late AppDatabase db;
   setUp(() => db = openTestDatabase());
@@ -241,5 +254,51 @@ void main() {
       "UPDATE app_settings SET language = 'vi' WHERE id = 1",
     );
     expect(await _outbox(db), isEmpty);
+  });
+
+  test('a turn queues its schedule and its review', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _schedule(db, 'K');
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement(
+      "UPDATE card_schedule SET answer_count = 1 WHERE card_id = 'K'",
+    );
+    await _review(db, 'V', 'K');
+    expect(
+      {
+        for (final e in await _outbox(db))
+          '${e['entity_type']}/${e['entity_id']}': e['op'],
+      },
+      {'card_schedule/K': 'upsert', 'review_log/V': 'upsert'},
+    );
+  });
+
+  test('pulled schedules and reviews queue nothing', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement(
+      "INSERT INTO sync_state (name, value) VALUES ('$syncApplyingRemoteKey', '1')",
+    );
+    await _schedule(db, 'K');
+    await _review(db, 'V', 'K');
+    expect(await _outbox(db), isEmpty);
+  });
+
+  test('a card delete queues no schedule or review delete', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _schedule(db, 'K');
+    await _review(db, 'V', 'K');
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement("DELETE FROM card WHERE id = 'K'");
+    expect(
+      {
+        for (final e in await _outbox(db))
+          '${e['entity_type']}/${e['entity_id']}': e['op'],
+      },
+      {'card/K': 'delete'},
+    );
   });
 }

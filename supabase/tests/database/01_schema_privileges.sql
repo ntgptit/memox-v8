@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(12);
 
 select has_table('public', 'deck', 'deck exists');
 select has_table('public', 'delete_batch', 'delete_batch exists');
@@ -8,20 +8,22 @@ select has_table('public', 'card', 'card exists');
 select has_table('public', 'tags', 'tags exists');
 select has_table('public', 'card_tags', 'card_tags exists');
 select has_table('public', 'account_settings', 'account_settings exists');
+select has_table('public', 'review_log', 'review_log exists');
+select has_table('public', 'card_schedule', 'card_schedule exists');
 select is(
   (select count(*)::int from pg_class c join pg_namespace n on n.oid = c.relnamespace
    where n.nspname = 'public'
-     and c.relname in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'user_sync_version', 'sync_applied_op')
+     and c.relname in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'review_log', 'card_schedule', 'user_sync_version', 'sync_applied_op')
      and c.relrowsecurity),
-  8, 'RLS is on for every sync table');
+  10, 'RLS is on for every sync table');
 select is(
   (select count(*)::int from pg_policies where schemaname = 'public'
-     and tablename in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'user_sync_version', 'sync_applied_op')),
+     and tablename in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'review_log', 'card_schedule', 'user_sync_version', 'sync_applied_op')),
   0, 'no policy opens a table to clients');
 select is(
   (select count(*)::int from information_schema.role_table_grants
    where table_schema = 'public'
-     and table_name in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'user_sync_version', 'sync_applied_op')
+     and table_name in ('deck', 'delete_batch', 'card', 'tags', 'card_tags', 'account_settings', 'review_log', 'card_schedule', 'user_sync_version', 'sync_applied_op')
      and grantee in ('anon', 'authenticated', 'PUBLIC')),
   0, 'client roles hold no table privilege');
 select ok(not has_schema_privilege('authenticated', 'private', 'usage'),
