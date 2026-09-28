@@ -37,7 +37,7 @@ class ProgressScreen extends ConsumerWidget {
     final l10n = context.l10n;
     // Once shown, a new snapshot only replaces the numbers (FE-A9 D8).
     final children = switch (ref.watch(progressProvider)) {
-      AsyncError(:final error) => [
+      AsyncError(:final error, :final isLoading) => [
         MxErrorState(
           title: l10n.progressErrorTitle,
           // The reason by the kind of failure, never its cause
@@ -45,6 +45,7 @@ class ProgressScreen extends ConsumerWidget {
           body: error is Failure ? l10n.failure(error) : l10n.progressErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(progressProvider),
+          isRetrying: isLoading,
         ),
       ],
       AsyncValue(:final value?) => _loaded(context, value),

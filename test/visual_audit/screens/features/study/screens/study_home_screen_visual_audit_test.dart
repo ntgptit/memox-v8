@@ -13,6 +13,7 @@ StudyHomeScreen _screen() => StudyHomeScreen(
   onOpenDeck: (_) {},
   onOpenLibrary: () {},
   onOpenStarterDecks: () {},
+  onOpenSync: () {},
 );
 
 void main() {

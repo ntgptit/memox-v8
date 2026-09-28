@@ -418,7 +418,7 @@ item names where it comes from.
 | 15 | EmptyState tile→title (16) and title→body (8) gaps are UNSPECIFIED in the contract and use the spacing roles | phase 2 plan R7 |
 | 16 | EmptyState has no footnote slot until MxNote (phase 5); MxButton's loading spinner is a plain `CircularProgressIndicator` until MxSpinner (phase 6) | phase 2 plan R8 |
 | 17 | BottomNav labels and the FooterBar caption inherit the caption role's 1.2 tracking; their contracts state only size and weight, and the result reads airy | phase 2 execution |
-| 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run | phase 3 plan G3 |
+| 18 | No Android emulator on the development machine: the phase 3 visual check is app-level goldens (Library, gallery; light, dark; 3x) instead of a device run. **2026-09-28:** an API 36 emulator exists now; FE-D3 runs the `DEVICE-E2E` scenarios on it (`docs/shared/testing/device-e2e.md`) | phase 3 plan G3 |
 | 19 | The debug gallery's labels and demo copy are English literals, not ARB strings — closed by gallery l10n (FE-C7): `gallery…` keys in en and vi, and the literal-string rule covers `lib/app/` | phase 3 plan G1 |
 | 20 | FieldMessage warning text uses a derived `warningInk` (onWarning light, the amber dark), as the FieldMessage contract scopes it; this resolves row 1 for FieldMessage | phase 4 plan I1 |
 | 21 | SelectionCheckbox's check glyph is 14, below the 16 icon floor, as its contract states | phase 4 plan I2 |
@@ -545,6 +545,8 @@ item names where it comes from.
 | 140 | Screen 07's Tags chip is an `MxFilterChip`, selected with the count of tags applied, and opens the tag filter sheet, which the kit does not draw; the kit's chip is a ghost trigger that never reads as selected | owner 2026-09-27, FE-B2 D3, D14 |
 | 141 | `MasteryRamp`'s < 34% band resolves to `statusLearningInk`: 4.94:1 on the progress track in light, the kit amber itself in dark. The kit's amber is 1.73:1 on the track in light. Screen 01's bars and every `MxMasteryDonut` (screens 01, 07) follow; the donut's label in that band also clears row 57 | Deck mastery spec R4 (owner ruling, critique P1) |
 | 142 | Screen 01's mastery bar keeps the progress track (`surfaceContainerHigh`) where the kit draws `surface-container`; its fill keeps at least its height in from either end, and a percent reads 0 only at 0 and 100 only at 100 (`MasteryRamp.percent`) | Deck mastery spec D13 (critique P2a, P2b, P3) |
+| 143 | `MxFloatingNotice`, not in the kit: a standing warning notice that floats over the page's bottom (the warning card lifted by the overlay shadow; one action on the message line, more under it), placed by the new `MxAppShell.notice` slot, which pads the body below by the notice's height. Used by screen 13's and screen 27's sync notices | Owner ruling 2026-09-28 (SB-U1: "too tall, should overlay like an alert"; shared widget chosen over per-feature composition) |
+| 144 | `RouteNotFoundScreen`, not in the kit: an unknown route or deep link shows `MxEmptyState` (search-off glyph, "Page not found", one line, "Back to Library") on a bare `Scaffold`, in place of go_router's default page, which prints the exception (IT-NAV-005) | FE-D3 spec D5 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

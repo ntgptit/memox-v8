@@ -9,6 +9,10 @@ Status: approved 2026-09-27 · Path: architectural · Decision record:
 > ([Supabase backend design](2026-09-28-supabase-backend-design.md)), with `auth.uid()`
 > in place of `CurrentUserProvider`.
 
+> **Amended 2026-09-28** by [ADR-017](../../shared/decisions/ADR-017-lich-srs-dong-bo-nhu-mot-dong.md):
+> section 6 (replay) no longer holds; `card_schedule` syncs as a row and the schedule that
+> has progressed further wins ([library and study sync design](2026-09-28-sync-library-and-study-design.md) §3.4).
+
 ## 1. Intent
 
 MemoX becomes an online app with an official backend that stays fully usable

@@ -160,7 +160,7 @@ class _TrashRestoreSheetWidgetState
         emptyTitle: l10n.trashRestoreEmptyTitle,
         emptyBody: _emptyBody(l10n),
       ),
-      AsyncError() => MxBottomSheet(
+      AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(
           title: l10n.trashLoadErrorTitle,
           body: l10n.libraryLoadErrorBody,
@@ -170,6 +170,7 @@ class _TrashRestoreSheetWidgetState
                 ? cardRestoreTargetsProvider(_batchIds)
                 : deckRestoreTargetsProvider(_batchIds),
           ),
+          isRetrying: isLoading,
         ),
       ),
       _ => MxBottomSheet(

@@ -96,6 +96,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | xong | BE-B4, FE-A1 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B2); file chi tiết [03](shared/ui/screen-handoff/03-starter-decks.md); `rootEmpty` của màn 01 có "Browse starter decks"; [ui.md](features/starter-decks/ui.md) | — |
 | FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | xong | BE-B5a, BE-B5b, FE-A3 | S–M | [spec](superpowers/specs/2026-09-28-daily-reminder-ui-design.md) và [plan](superpowers/plans/2026-09-28-daily-reminder-ui.md); màn 24 [24-daily-reminder.md](shared/ui/screen-handoff/24-daily-reminder.md) `aligned`, 9/9 state của kit; bật, tắt, đổi giờ qua `ReminderOperationGate`; hàng Daily reminder của màn 23, câu chữ reset nêu nhắc học và `app/` hoà giải sau reset (dòng 123 của sổ nợ UI-base đóng); [ui.md](features/reminders/ui.md); test trong `test/features/reminders/presentation/`, `test/features/settings/presentation/`, companion `test/visual_audit/screens/features/reminders/` | — (đã kiểm trên emulator cùng BE-B5b, 2026-09-28) |
 | FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | xong | FE-B5, BE-B5b | S | Kit 24 vẽ nút này. `ReminderPlatformRepository.openNotificationSettings` qua channel `memox/notification_settings` của `MainActivity.kt`; banner E1 có "Open system settings" (primary) rồi "Try again" (outline); D1 của spec FE-B5 đóng. Test trong `test/features/reminders/`; kiểm trên emulator API 36 (2026-09-28): nút mở trang notification của MemoX, cho phép rồi Try again thì bật | — |
+| FE-B7 | Trạng thái đồng bộ trên màn hình (SB-U1): màn 27 Sync, dòng Sync ở màn 23, thẻ nổi sync ở màn 13 (`MxFloatingNotice`, quyết định của chủ dự án 2026-09-28); không có trong kit, dựng theo Impeccable `shape` ngày 2026-09-28 | xong | SB-U1 của [`wbs_supabase.md`](wbs_supabase.md) | M | [PR #138](https://github.com/ntgptit/memox-v8/pull/138); [spec](superpowers/specs/2026-09-28-sync-status-design.md) và [plan](superpowers/plans/2026-09-28-sync-status.md); màn 27 [27-sync.md](shared/ui/screen-handoff/27-sync.md) `aligned`, 7 golden light/dark; 3 golden dòng Sync ở màn 23, 2 golden thẻ nổi ở màn 13; deviation ghi ở 13, 23 và 27 | Ẩn hết khi build không có Supabase |
 
 ### Nợ của UI base (spec UI base §9)
 
@@ -116,7 +117,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 |---|---|---|---|---|---|---|
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng; job `goldens` của CI so ảnh trên mỗi pull request (BE-D2) | — |
 | FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
-| FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | bị chặn | — | M | [host-coverage-map.md](shared/testing/host-coverage-map.md); §9 dòng 18: máy phát triển không có emulator | Cần môi trường có emulator hoặc thiết bị |
+| FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | xong | — | M | [spec](superpowers/specs/2026-09-28-device-e2e-design.md) và [plan](superpowers/plans/2026-09-28-device-e2e.md); `integration_test/` và `tools/device/run_device_e2e.sh`; 8/8 PASS trên emulator API 36 ngày 2026-09-28 ([device-e2e.md](shared/testing/device-e2e.md)); kèm deep link `memox://app/<route>` và màn not-found (IT-NAV-005) | — |
 | FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | xong | — | M | 10 chỗ sai tên hoặc API được sửa theo code (`MxAppShell`, `MxButton` với `MxButtonTone`/`MxButtonSize`, `MxBottomNav`, `MxListRow`, `MxSelectionCheckbox`, `MxToggle`, `MxFilterChip`/`MxTagChip`/`MxChipTrigger`, `MxDialog`/`showMxDialog`, `showMxSnackbar`, `MxSpinner`/`MxSkeleton*`/`MxLinearProgress`), bảng parity ghi slot nào có trong `app_theme.dart`, `MxIcon` (không tồn tại) thay bằng `AppIcons`/`AppIconSize`, danh sách rule guard đầy đủ; checklist ThemeData của slot chưa dựng giữ nguyên vì SKILL.md ghi rõ là đích | — |
 
 ## Đã xong và đã kiểm chứng
@@ -134,7 +135,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 - Mọi hạng mục FE của V8.0 đã xong; FE-A1 (mastery, BR-DECK-026, BR-DECK-027) và FE-A2
   (file chi tiết 08–10, #103) không còn phần dở.
-- **FE-B5** và **FE-B6:** xong, cả bước kiểm trên thiết bị. Kế tiếp: FE-D3.
+- **FE-B5** và **FE-B6:** xong, cả bước kiểm trên thiết bị. FE-D3 cũng đã xong.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
 sinh trong công cụ kiểm kiến trúc; `study_turn_data_source.dart`) đã vào `master` ở #53.
@@ -146,7 +147,6 @@ so nội dung.
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
 | FE-C1 | Quyết định "implement the handoff as written" (spec UI base §2) giữ nguyên các token dưới ngưỡng contrast | Accessibility của toàn app | Chủ dự án quyết có sửa giá trị handoff không |
-| FE-D3 | Không có emulator hoặc thiết bị | 8 kịch bản `DEVICE-E2E` | Môi trường chạy |
 
 ## Trạng thái kiểm chứng
 
@@ -265,6 +265,10 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không
   làm.
 - **Cập nhật ngày 2026-09-28:** FE-D4 xong: skill `flutter-theme-design` dùng tên và API thật của V8; bảng parity theme ↔ widget ghi slot nào đã có.
+- **Cập nhật ngày 2026-09-28:** FE-D3 xong: tám kịch bản `DEVICE-E2E` chạy bằng
+  `tools/device/run_device_e2e.sh` (8/8 PASS trên emulator API 36). Thêm deep link
+  `memox://app/<route>` và màn not-found cho route lạ (IT-NAV-005). Điểm chặn "không có
+  emulator" đóng.
 - **Cập nhật ngày 2026-09-28:** FE-B6 xong: nút "Open system settings" ở `permDenied` của
   màn 24 qua thao tác mới `openNotificationSettings` của port (channel native trong
   `MainActivity.kt`, không thêm package); D1 của spec FE-B5 đóng; kiểm trên emulator.

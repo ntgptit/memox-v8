@@ -51,12 +51,13 @@ class CardHistoryScrollWidget extends ConsumerWidget {
     final provider = cardHistoryControllerProvider(cardId);
     final history = switch (ref.watch(provider)) {
       AsyncData(:final value) => _history(context, value, () => _loadMore(ref)),
-      AsyncError() => [
+      AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.cardHistoryLoadErrorTitle,
           body: l10n.libraryLoadErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(provider),
+          isRetrying: isLoading,
         ),
       ],
       _ => [

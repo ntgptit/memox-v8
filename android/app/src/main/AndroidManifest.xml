@@ -35,6 +35,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- FE-D3 spec D4: memox://app/<route> opens that in-app route; no
+                 route writes on open. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="memox" android:host="app"/>
+            </intent-filter>
         </activity>
         <!-- BE-B5b: android_alarm_manager_plus, as its README gives it. -->
         <service

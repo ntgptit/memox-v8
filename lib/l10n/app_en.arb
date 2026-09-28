@@ -6265,6 +6265,197 @@
     },
     "description": "Screen 21 (UC-STUDY-001 A4): the cards of the tree still due after a review cut at its limit."
   },
+  "settingsSync": "Sync",
+  "@settingsSync": {
+    "description": "Screen 23 (SB-U1): the Sync section title and its row that opens screen 27."
+  },
+  "syncTitle": "Sync",
+  "@syncTitle": {
+    "description": "Screen 27 (SB-U1): the app bar title."
+  },
+  "syncStatusRejected": "{count, plural, =1{1 change kept only on this device} other{{count} changes kept only on this device}}",
+  "@syncStatusRejected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 23 (SB-U1): the Sync row while refused rows remain (spec §5.1 rule 1)."
+  },
+  "syncStatusFailedNetwork": "Couldn't sync · no connection",
+  "@syncStatusFailedNetwork": {
+    "description": "Screen 23 (SB-U1): the Sync row after a failed run, network."
+  },
+  "syncStatusFailedSignIn": "Couldn't sync · couldn't sign in",
+  "@syncStatusFailedSignIn": {
+    "description": "Screen 23 (SB-U1): the Sync row after a failed run, sign-in."
+  },
+  "syncStatusFailedServer": "Couldn't sync · server error",
+  "@syncStatusFailedServer": {
+    "description": "Screen 23 (SB-U1): the Sync row after a failed run, server."
+  },
+  "syncStatusFailedUnknown": "Couldn't sync · something went wrong",
+  "@syncStatusFailedUnknown": {
+    "description": "Screen 23 (SB-U1): the Sync row after a failed run, unknown."
+  },
+  "syncStatusSynced": "Synced {time}",
+  "@syncStatusSynced": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 23 (SB-U1): the Sync row after a success; {time} is from syncTime*."
+  },
+  "syncStatusNever": "Not synced yet",
+  "@syncStatusNever": {
+    "description": "Screen 23 (SB-U1): the Sync row before any run ended."
+  },
+  "syncTimeToday": "Today, {time}",
+  "@syncTimeToday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "SB-U1: an absolute time today (R6); {time} is HH:mm."
+  },
+  "syncTimeYesterday": "Yesterday, {time}",
+  "@syncTimeYesterday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "SB-U1: an absolute time yesterday (R6); {time} is HH:mm."
+  },
+  "syncTimeOnDay": "{day}, {time}",
+  "@syncTimeOnDay": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "SB-U1: an absolute time on an earlier day (R6); {day} is the short month and day."
+  },
+  "syncStatusSection": "Status",
+  "@syncStatusSection": {
+    "description": "Screen 27 (SB-U1): the Status section title."
+  },
+  "syncLastSynced": "Last synced",
+  "@syncLastSynced": {
+    "description": "Screen 27 (SB-U1): the row naming the last success."
+  },
+  "syncLastSyncedNever": "Not yet",
+  "@syncLastSyncedNever": {
+    "description": "Screen 27 (SB-U1): Last synced before any success."
+  },
+  "syncWaiting": "Waiting to sync",
+  "@syncWaiting": {
+    "description": "Screen 27 (SB-U1): the row counting pending changes."
+  },
+  "syncWaitingCount": "{count, plural, =1{1 change} other{{count} changes}}",
+  "@syncWaitingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 27 (SB-U1): the pending count."
+  },
+  "syncWaitingNone": "Nothing waiting",
+  "@syncWaitingNone": {
+    "description": "Screen 27 (SB-U1): no pending change."
+  },
+  "syncNote": "MemoX syncs on its own when you're online. Your study never waits for it.",
+  "@syncNote": {
+    "description": "Screen 27 (SB-U1): the Status section note."
+  },
+  "syncNow": "Sync now",
+  "@syncNow": {
+    "description": "Screen 27 (SB-U1): the button that runs a sync."
+  },
+  "syncRejectedTitle": "{count, plural, =1{1 change is kept only on this device} other{{count} changes are kept only on this device}}",
+  "@syncRejectedTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 27 (SB-U1): the refused-rows banner title."
+  },
+  "syncTryAgain": "Try again",
+  "@syncTryAgain": {
+    "description": "Screen 27 (SB-U1): re-queues the refused rows and syncs."
+  },
+  "syncKeepOnDevice": "Keep on this device",
+  "@syncKeepOnDevice": {
+    "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
+  },
+  "syncFailedNetwork": "No connection. Your changes are safe on this device and will sync when you're back online.",
+  "@syncFailedNetwork": {
+    "description": "Screen 27 (SB-U1): the failure banner, network (spec §5.4)."
+  },
+  "syncFailedSignIn": "Couldn't sign in to sync. Your changes are safe on this device. MemoX will try again.",
+  "@syncFailedSignIn": {
+    "description": "Screen 27 (SB-U1): the failure banner, sign-in."
+  },
+  "syncFailedServer": "The server couldn't take the changes. They're safe on this device. MemoX will try again.",
+  "@syncFailedServer": {
+    "description": "Screen 27 (SB-U1): the failure banner, server."
+  },
+  "syncFailedUnknown": "Sync stopped with an error. Your changes are safe on this device. MemoX will try again.",
+  "@syncFailedUnknown": {
+    "description": "Screen 27 (SB-U1): the failure banner, unknown."
+  },
+  "syncDone": "Synced",
+  "@syncDone": {
+    "description": "Screen 27 (SB-U1): toast after Sync now or Try again succeeded."
+  },
+  "syncNotDone": "Couldn't sync. Nothing was lost.",
+  "@syncNotDone": {
+    "description": "Screen 27 (SB-U1): toast after Sync now or Try again failed."
+  },
+  "syncKept": "Kept on this device",
+  "@syncKept": {
+    "description": "Screen 27 (SB-U1): toast after Keep on this device."
+  },
+  "syncChangeFailed": "Couldn't change that. Nothing was lost.",
+  "@syncChangeFailed": {
+    "description": "Screen 27 (SB-U1): toast when Try again or Keep on this device could not write (spec §6)."
+  },
+  "syncLoadErrorTitle": "Couldn't open Sync",
+  "@syncLoadErrorTitle": {
+    "description": "Screen 27 (SB-U1): the status stream failed (spec §6)."
+  },
+  "studyHomeSyncRejected": "{count, plural, =1{1 change is kept only on this device.} other{{count} changes are kept only on this device.}}",
+  "@studyHomeSyncRejected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 13 (SB-U1): the sync banner while refused rows remain (spec §5.3)."
+  },
+  "studyHomeSyncStale": "Some changes haven't synced in over a day. They're safe here.",
+  "@studyHomeSyncStale": {
+    "description": "Screen 13 (SB-U1): the sync banner when a change waited over 24 h."
+  },
+  "studyHomeSyncDetails": "Details",
+  "@studyHomeSyncDetails": {
+    "description": "Screen 13 (SB-U1): opens screen 27."
+  },
+  "routeNotFoundTitle": "Page not found",
+  "@routeNotFoundTitle": {
+    "description": "Not-found screen title, for a route or deep link that leads nowhere (IT-NAV-005, FE-D3 spec D5)."
+  },
+  "routeNotFoundBody": "This link doesn't lead anywhere in MemoX.",
+  "@routeNotFoundBody": {
+    "description": "Not-found screen body; never names the route or the error."
+  },
   "reminderOpenSystemSettings": "Open system settings",
   "@reminderOpenSystemSettings": {
     "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."

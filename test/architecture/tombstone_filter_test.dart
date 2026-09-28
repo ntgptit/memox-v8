@@ -11,6 +11,18 @@ const _readsTombstones = <String, String>{
   'lib/core/sync/deck_sync_adapter.dart#readRow':
       'sync uploads a deck in any state: a deck in the Trash carries its '
       'delete_batch_id to the server (ADR-013)',
+  'lib/core/database/tables/sync.drift#card_tags_sync_delete':
+      'a link change queues its card in any state, a card in the Trash too; '
+      'the check only keeps a card delete from turning into an upsert (SB-S3)',
+  'lib/core/sync/card_schedule_sync_adapter.dart#_rootSchedulerType':
+      "the order of spec §3.4 compares against the card's root in any state "
+      '(SB-S4)',
+  'lib/core/sync/card_sync_adapter.dart#readRow':
+      'sync uploads a card in any state: a card in the Trash carries its '
+      'delete_batch_id to the server (SB-S2)',
+  'lib/core/sync/card_sync_adapter.dart#ensureSchedules':
+      'every card has a schedule row, a card in the Trash too, as a local '
+      'card keeps its row when trashed (BR-CARD-004, SB-S2)',
   'lib/core/database/migrations/nfc_text_migration.dart#_normalizeDecks':
       'migration v4 → v5 puts every stored name in NFC, a deck in the Trash '
       'too, since a restore brings it back (BE-C5)',

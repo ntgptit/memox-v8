@@ -16,6 +16,7 @@ void main() {
           onOpenLanguage: () {},
           onOpenReminder: () {},
           onAppOptionsReset: () {},
+          onOpenSync: () {},
           onOpenGallery: () {},
         ),
         brightness: brightness,

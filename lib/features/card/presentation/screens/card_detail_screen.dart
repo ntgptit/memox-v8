@@ -119,13 +119,14 @@ class _DetailBody extends ConsumerWidget {
         onBack: () => unawaited(Navigator.of(context).maybePop()),
         onOpenTrash: onOpenTrash,
       ),
-      AsyncError() => MxScreenScroll(
+      AsyncError(:final isLoading) => MxScreenScroll(
         children: [
           MxErrorState(
             title: l10n.cardLoadErrorEditTitle,
             body: l10n.libraryLoadErrorBody,
             retryLabel: l10n.commonRetry,
             onRetry: () => ref.invalidate(cardDetailProvider(cardId)),
+            isRetrying: isLoading,
           ),
         ],
       ),

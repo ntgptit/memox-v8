@@ -87,7 +87,7 @@ select is(public.t_push(jsonb_build_array(public.t_op(14, 'deck', public.t_uuid(
   public.t_root(public.t_uuid(40)) || '{"createdAt":"2026-13-40"}')))->0->>'code', 'VALIDATION_FAILED', 'a bad time is a validation failure');
 select is(public.t_push(jsonb_build_array(public.t_op(15, 'deck', public.t_uuid(40), 'upsert', null)))->0->>'code',
   'VALIDATION_FAILED', 'an upsert needs a row');
-select is(public.t_push(jsonb_build_array(public.t_op(16, 'card', public.t_uuid(40), 'upsert', '{}')))->0->>'code',
+select is(public.t_push(jsonb_build_array(public.t_op(16, 'no_such_type', public.t_uuid(40), 'upsert', '{}')))->0->>'code',
   'SYNC_ENTITY_UNSUPPORTED', 'an unknown entity type is rejected');
 select is((select (r->0->>'status') || '/' || (r->1->>'code') || '/' || (public.t_change(public.t_uuid(50)) is not null)::text
   from public.t_push(jsonb_build_array(

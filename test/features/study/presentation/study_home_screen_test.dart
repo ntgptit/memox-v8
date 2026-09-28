@@ -38,6 +38,7 @@ StudyHomeScreen _screen(_Taps taps) => StudyHomeScreen(
   onOpenDeck: taps.decks.add,
   onOpenLibrary: () => taps.library++,
   onOpenStarterDecks: () => taps.starterDecks++,
+  onOpenSync: () {},
 );
 
 Future<void> _settle(WidgetTester tester) async {

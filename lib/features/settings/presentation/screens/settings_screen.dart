@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/settings_reset_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_app_section_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/sections/settings_sync_section_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_study_defaults_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -31,6 +34,7 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenLanguage,
     required this.onOpenReminder,
     required this.onAppOptionsReset,
+    required this.onOpenSync,
     this.onOpenGallery,
   });
 
@@ -41,6 +45,9 @@ class SettingsScreen extends ConsumerWidget {
   /// After Reset app options landed: `app/` reconciles the reminder, which
   /// the reset turned off (FE-B5 spec D7; reminders spec §9 "For FE-A3").
   final VoidCallback onAppOptionsReset;
+
+  /// Opens screen 27 (SB-U1).
+  final VoidCallback onOpenSync;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -77,6 +84,15 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
+            // Hidden on a stream error too (sync status spec §6).
+            if (ref.watch(syncStatusProvider) case AsyncData(
+              value: final status?,
+            ))
+              SettingsSyncSectionWidget(
+                status: status,
+                now: ref.watch(dayClockProvider).now(),
+                onOpenSync: onOpenSync,
+              ),
             MxSection(
               title: l10n.settingsReset,
               note: l10n.settingsResetNote,
@@ -91,13 +107,14 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
         ),
-        AsyncError() => MxScreenScroll(
+        AsyncError(:final isLoading) => MxScreenScroll(
           children: [
             MxErrorState(
               title: l10n.settingsLoadErrorTitle,
               body: l10n.libraryLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(appSettingsProvider),
+              isRetrying: isLoading,
             ),
           ],
         ),
