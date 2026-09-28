@@ -13,6 +13,10 @@ Cần có:
 - `flutter` trên PATH;
 - `adb` trên PATH hoặc trong `ANDROID_HOME`;
 - đúng một thiết bị đang gắn, hoặc chỉ định bằng `-d`.
+- ít nhất khoảng 1,5 GB trống trên `/data` của thiết bị: APK debug nặng khoảng
+  190 MB, và Android giữ thêm một phần dự trữ khi cài. Script kiểm tra trước và
+  dừng với thông báo nếu thiếu. Emulator nên có phân vùng data 16 GB
+  (`disk.dataPartition.size = 16G` trong `config.ini` của AVD).
 
 Script xoá dữ liệu của MemoX trên thiết bị ở đầu mỗi kịch bản.
 
@@ -25,6 +29,7 @@ Có thể chạy một vài kịch bản:
 
 - Script in `PASS <ID>` hoặc `FAIL <ID> (<bước>)` cho từng kịch bản, và thoát
   khác 0 khi có kịch bản hỏng.
+- Một phase không kết thúc sau 15 phút (`PHASE_TIMEOUT_S`) thì bị dừng và tính là FAIL.
 - Khi một bước chờ hết giờ, phase chụp màn hình vào `build/device_e2e/<phase>.png`.
   Thông báo lỗi kèm các chữ đang hiện trên màn.
 
@@ -71,18 +76,23 @@ với mọi ngôn ngữ thiết bị. Fixture được dựng qua UI như
 
 ## Lần chạy gần nhất
 
-Ngày 2026-09-28, emulator Android 16 (API 36, `google_apis_playstore`, x86_64),
-nhánh `claude/fe-d3-device-e2e`: `tools/device/run_device_e2e.sh all`, 17 phút.
+Ngày 2026-09-29, sau review cuối, trên AVD `memox_e2e` (Android 16, API 36,
+`google_apis_playstore`, x86_64, data 16 GB), nhánh `claude/fe-d3-device-e2e`.
 
 | ID | Kết quả |
 |---|---|
 | IT-PLAT-001 | PASS |
-| IT-PLAT-002 | PASS |
-| IT-PLAT-003 | PASS (mốc: Browse, thẻ 바다/sea, 3 / 5) |
+| IT-PLAT-002 | PASS (lần chạy lại) |
+| IT-PLAT-003 | PASS (lần chạy lại) |
 | IT-PLAT-004 | PASS |
 | IT-PLAT-005 | PASS |
 | IT-CONT-008 | PASS (phiên Learn 21 lượt qua cả năm chế độ) |
 | IT-NAV-007 | PASS |
-| IT-PLAT-006 | PASS |
+| IT-PLAT-006 | PASS (lần chạy lại) |
 
-Chế độ máy bay tắt sau lần chạy (`airplane_mode_on` = 0).
+Lượt `all` đầu tiên hỏng IT-PLAT-002, IT-PLAT-003 và IT-PLAT-006. Nguyên nhân là
+máy host hết bộ nhớ commit: Dart và Gradle daemon không cấp phát được khi emulator
+4 GB RAM chạy cùng WSL của Docker. Sau khi hạ AVD xuống 2 GB RAM, cả ba PASS.
+Lần chạy đầu tiên (2026-09-28, AVD cũ, 17 phút) cũng 8/8 PASS.
+
+Chế độ máy bay tắt sau mỗi lần chạy (`airplane_mode_on` = 0).

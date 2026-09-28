@@ -20,6 +20,11 @@ readonly MARK='MEMOX-E2E:'
 readonly ALL=(IT-PLAT-001 IT-PLAT-002 IT-PLAT-003 IT-PLAT-004 IT-PLAT-005
   IT-CONT-008 IT-NAV-007 IT-PLAT-006)
 readonly UI_TIMEOUT_S=40
+# A phase that never connects (a stuck VM service) fails instead of hanging.
+readonly PHASE_TIMEOUT_S=${PHASE_TIMEOUT_S:-900}
+# A debug APK is about 190 MB; Android stages, unpacks and keeps a low-storage
+# reserve on top, so an install needs about this much free space on /data.
+readonly MIN_FREE_KB=1500000
 
 cd "$(dirname "$0")/../.." || exit 2
 
@@ -58,9 +63,17 @@ fi
 
 # Kotlin's incremental compile fails when the pub cache and the repo sit on
 # different drives (Windows); a full compile of the plugins costs seconds.
-flutter_() { GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.project.kotlin.incremental=false" flutter "$@"; }
+flutter_() {
+  local limit=()
+  if command -v timeout >/dev/null 2>&1; then limit=(timeout "$PHASE_TIMEOUT_S"); fi
+  GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.project.kotlin.incremental=false"     "${limit[@]}" flutter "$@"
+}
 adbs() { "$ADB" -s "$DEVICE" "$@"; }
 sh_() { adbs shell "$@" | tr -d '\r'; }
+
+free_kb=$(sh_ df -k /data | awk 'NR == 2 { print $4 }')
+[[ ${free_kb:-0} -ge $MIN_FREE_KB ]] ||
+  die "only $((${free_kb:-0} / 1024)) MB free on the device's /data; installs need about $((MIN_FREE_KB / 1024)) MB (wipe the emulator's data or give it a larger data partition)"
 
 STATE=$(mktemp -d)
 FAILED_AT=""
@@ -114,7 +127,9 @@ phase() {
           printf '%s' "${line#*=}" >"$STATE/${line%%=*}" ;;
       esac
     done
-  [[ ${PIPESTATUS[0]} -eq 0 ]] || { FAILED_AT="phase $name"; return 1; }
+  local status=${PIPESTATUS[0]}
+  ((status == 124)) && { FAILED_AT="phase $name timed out after ${PHASE_TIMEOUT_S}s"; return 1; }
+  ((status == 0)) || { FAILED_AT="phase $name"; return 1; }
 }
 
 # Waits until the screen shows [text], through a uiautomator dump.
