@@ -39,4 +39,9 @@ abstract interface class ReminderPlatformRepository {
     required ReminderDigest digest,
     required LanguageChoice language,
   });
+
+  /// Opens the app's notification settings, the way back after a refused
+  /// permission (BR-REMINDER-011, FE-B6). Changes nothing the reminder
+  /// stores; `false` when nothing could open.
+  Future<bool> openNotificationSettings();
 }

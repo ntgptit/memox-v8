@@ -144,6 +144,74 @@ void main() {
     expect(find.text(_en.reminderOnHint), findsOneWidget);
   });
 
+  libraryTest('permDenied: Open system settings first and primary, Try again '
+      'outlined (kit 24, FE-B6)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+    );
+    await _toggle(tester);
+
+    final buttons = tester
+        .widgetList<MxButton>(
+          find.descendant(
+            of: find.byType(MxInlineBanner),
+            matching: find.byType(MxButton),
+          ),
+        )
+        .toList();
+    expect(buttons.map((b) => b.label), [
+      _en.reminderOpenSystemSettings,
+      _en.reminderTryAgain,
+    ]);
+    expect(buttons.map((b) => b.tone), [
+      MxButtonTone.primary,
+      MxButtonTone.outline,
+    ]);
+  });
+
+  libraryTest('permDenied: Open system settings opens them and changes nothing '
+      'else: no permission asked, nothing written, the banner stays '
+      '(FE-B6; BR-REMINDER-011)', (tester, env) async {
+    final s = await _pump(
+      tester,
+      env,
+      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+    );
+    await _toggle(tester);
+    final asked = s.platform.calls
+        .where((c) => c == PlatformCall.requestPermission)
+        .length;
+    final writes = s.store.writes;
+
+    await tester.tap(find.text(_en.reminderOpenSystemSettings));
+    await _settle(tester);
+
+    expect(s.platform.calls.last, PlatformCall.openSettings);
+    expect(
+      s.platform.calls.where((c) => c == PlatformCall.requestPermission),
+      hasLength(asked),
+    );
+    expect(s.store.writes, writes);
+    expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
+  });
+
+  libraryTest('permDenied: settings that cannot open leave the guidance as it '
+      'is (FE-B6)', (tester, env) async {
+    final platform = FakeReminderPlatform(permission: ReminderPermission.denied)
+      ..refusing.add(PlatformCall.openSettings);
+    await _pump(tester, env, platform: platform);
+    await _toggle(tester);
+
+    await tester.tap(find.text(_en.reminderOpenSystemSettings));
+    await _settle(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
+    expect(find.text(_en.reminderDeniedBody), findsOneWidget);
+  });
+
   libraryTest('couldNotSchedule on Enable: danger banner, Retry enables (E3)', (
     tester,
     env,

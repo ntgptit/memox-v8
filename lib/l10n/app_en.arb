@@ -1804,7 +1804,8 @@
   "deckRowEmpty": "Empty · add cards or a sub-deck",
   "@deckRowEmpty": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckRowEmpty."
-  },  "deckRowMastered": "{percent}% mastered",
+  },
+  "deckRowMastered": "{percent}% mastered",
   "@deckRowMastered": {
     "placeholders": {
       "percent": {
@@ -1822,7 +1823,6 @@
     },
     "description": "Screen handoff 01: the open deck's summary overline beside the mastery donut."
   },
-
   "deckDueBadge": "{count} due",
   "@deckDueBadge": {
     "placeholders": {
@@ -6264,5 +6264,9 @@
       }
     },
     "description": "Screen 21 (UC-STUDY-001 A4): the cards of the tree still due after a review cut at its limit."
+  },
+  "reminderOpenSystemSettings": "Open system settings",
+  "@reminderOpenSystemSettings": {
+    "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
   }
 }

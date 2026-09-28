@@ -32,7 +32,7 @@ UC-REMINDER-001; spec
 | turningOn | ![](img/24-daily-reminder/turningOn-light.png) | ![](img/24-daily-reminder/turningOn-dark.png) | As drawn: the toggle is a spinner while Enable asks for the permission, schedules and saves; nothing else can start. Golden `reminder_turning_on_*`. |
 | on | ![](img/24-daily-reminder/on-light.png) | ![](img/24-daily-reminder/on-dark.png) | As drawn. Golden `reminder_on_*`. |
 | changingTime | ![](img/24-daily-reminder/changingTime-light.png) | ![](img/24-daily-reminder/changingTime-dark.png) | The time button is outlined while the dialog is open; the dialog is V8's (see Deviations). Golden `reminder_changing_time_*`. |
-| permDenied | ![](img/24-daily-reminder/permDenied-light.png) | ![](img/24-daily-reminder/permDenied-dark.png) | **Deviation:** no "Open system settings"; the guidance and Try again only. Golden `reminder_perm_denied_*`. |
+| permDenied | ![](img/24-daily-reminder/permDenied-light.png) | ![](img/24-daily-reminder/permDenied-dark.png) | As drawn (FE-B6): "Open system settings" (primary) opens the app's notification settings, then Try again (outlined). Golden `reminder_perm_denied_*`. |
 | couldNotSchedule | ![](img/24-daily-reminder/couldNotSchedule-light.png) | ![](img/24-daily-reminder/couldNotSchedule-dark.png) | As drawn for Enable. A refused schedule on Change time has its own copy (see Deviations). Golden `reminder_could_not_schedule_*`. |
 | offMayShow | ![](img/24-daily-reminder/offMayShow-light.png) | ![](img/24-daily-reminder/offMayShow-dark.png) | **Deviation:** a `warning` banner with Try again instead of a Note. Golden `reminder_off_may_show_*`. |
 | unavailable | ![](img/24-daily-reminder/unavailable-light.png) | ![](img/24-daily-reminder/unavailable-dark.png) | As drawn: one row, no toggle, no time, no preview (BR-REMINDER-012). Golden `reminder_unavailable_*`. |
@@ -53,17 +53,23 @@ through `reminderOperationGateProvider`, one at a time). Tests:
 `test/features/reminders/presentation/reminder_{controller,screen,screen_golden}_test.dart`,
 `test/visual_audit/screens/features/reminders/`.
 
+**Built (FE-B6):** "Open system settings" calls `openNotificationSettingsProvider`, over
+`ReminderPlatformRepository.openNotificationSettings`: `MainActivity.kt`'s channel
+`memox/notification_settings` opens Android's notification page for MemoX, or App info
+where a device has none. It changes nothing stored and asks for nothing; a page that
+cannot open leaves the guidance as it is. Checked on the API 36 emulator: the tap opens
+`AppNotificationSettingsActivity` for MemoX; allowing there, then Back and Try again,
+turns the reminder on.
+
 ## Deviations
 
 | Artifact | V8 | Wins |
 |---|---|---|
-| permDenied: "Open system settings" and "Try again" | Try again only, after the guidance | Owner 2026-09-28 (spec D1): the port has no such operation and adding one needs native code or a package. BR-REMINDER-011 asks for the way back and a retry, which the guidance and Try again give. FE-B6 adds the button with the device check |
 | offMayShow: a Note, no action | A `warning` `MxInlineBanner` with the same sentence and Try again, which cancels again and writes nothing | UC-REMINDER-001 E6 asks for a retry (spec D8); `MxInlineBanner` has no info tone |
 | couldNotSchedule: one copy, "It stays off" | On Change time: "Couldn't change the time. The reminder stays at {HH:mm}." | UC-REMINDER-001 E3: a refused change keeps the old time, the reminder stays on |
 | changingTime: the time button highlighted, no picker drawn | `MxDialog` with Hour and Minute `MxStepper`s | Owner 2026-09-28 (spec D2): no new component; UC A1 asks for a time dialog |
 | loading: skeleton sub-lines inside the rows | `MxSkeletonList` | `MxSettingsRow.subtitle` is text; UI-base ruling O3 (spec D10) |
 | The note's bell glyph | The info glyph | `MxSection.note` draws an `MxNote` with its default glyph (a shared-widget trait) |
-| permDenied's "Try again" outlined, second | Primary, the only action | One action in the banner |
 | The time button's "20:00" in weight 700 | `MxButton` compact's label weight | A shared-widget trait; the Impeccable audit after the build (2026-09-28) found nothing else to fix |
 | What it says: the deck name in Hangul ("한국어 TOPIK I · Từ vựng") | "Tiếng Hàn TOPIK I · Từ vựng", in the notification's own sentence | The test fonts have no Hangul (FE-C2 relies on the OS fallback); the sentence is built from the notification's strings so it matches what is shown, in en and vi |
 

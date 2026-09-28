@@ -42,5 +42,6 @@ void main() {
       await platform.show(digest: digest, language: LanguageChoice.en),
       _refusedAsUnsupported(),
     );
+    expect(await platform.openNotificationSettings(), isFalse);
   });
 }

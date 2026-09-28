@@ -1175,5 +1175,6 @@
   "deckKeepEditing": "Tiếp tục nhập",
   "deckDiscard": "Bỏ",
   "summaryReviewAtLimitMoreBody": "Bạn đã ôn {cards} — đủ giới hạn của phiên. {more}",
-  "summaryMoreDue": "Còn {count} thẻ nữa đang đến hạn."
+  "summaryMoreDue": "Còn {count} thẻ nữa đang đến hạn.",
+  "reminderOpenSystemSettings": "Mở cài đặt hệ thống"
 }

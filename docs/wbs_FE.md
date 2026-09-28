@@ -95,7 +95,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | xong | BE-B4, FE-A1 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B2); file chi tiết [03](shared/ui/screen-handoff/03-starter-decks.md); `rootEmpty` của màn 01 có "Browse starter decks"; [ui.md](features/starter-decks/ui.md) | — |
 | FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | xong | BE-B5a, BE-B5b, FE-A3 | S–M | [spec](superpowers/specs/2026-09-28-daily-reminder-ui-design.md) và [plan](superpowers/plans/2026-09-28-daily-reminder-ui.md); màn 24 [24-daily-reminder.md](shared/ui/screen-handoff/24-daily-reminder.md) `aligned`, 9/9 state của kit; bật, tắt, đổi giờ qua `ReminderOperationGate`; hàng Daily reminder của màn 23, câu chữ reset nêu nhắc học và `app/` hoà giải sau reset (dòng 123 của sổ nợ UI-base đóng); [ui.md](features/reminders/ui.md); test trong `test/features/reminders/presentation/`, `test/features/settings/presentation/`, companion `test/visual_audit/screens/features/reminders/` | — (đã kiểm trên emulator cùng BE-B5b, 2026-09-28) |
-| FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | chưa bắt đầu | FE-B5, BE-B5b | S | Kit 24 vẽ nút này; FE-B5 ẩn nó vì port không có thao tác và cần code native hoặc package (quyết định của chủ dự án 2026-09-28) | Làm tiếp sau BE-B5b: đã build được APK và có emulator |
+| FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | xong | FE-B5, BE-B5b | S | Kit 24 vẽ nút này. `ReminderPlatformRepository.openNotificationSettings` qua channel `memox/notification_settings` của `MainActivity.kt`; banner E1 có "Open system settings" (primary) rồi "Try again" (outline); D1 của spec FE-B5 đóng. Test trong `test/features/reminders/`; kiểm trên emulator API 36 (2026-09-28): nút mở trang notification của MemoX, cho phép rồi Try again thì bật | — |
 
 ### Nợ của UI base (spec UI base §9)
 
@@ -134,7 +134,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 - Mọi hạng mục FE của V8.0 đã xong; FE-A1 (mastery, BR-DECK-026, BR-DECK-027) và FE-A2
   (file chi tiết 08–10, #103) không còn phần dở.
-- **FE-B5:** xong, cả bước kiểm trên thiết bị (cùng BE-B5b). FE-B6 là việc kế tiếp.
+- **FE-B5** và **FE-B6:** xong, cả bước kiểm trên thiết bị. Kế tiếp: FE-D3.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
 sinh trong công cụ kiểm kiến trúc; `study_turn_data_source.dart`) đã vào `master` ở #53.
@@ -168,8 +168,8 @@ và phụ thuộc giữa các màn quyết định:
 1. Mọi màn của V8.0 đã dựng, không còn phần dở, và mọi màn trong index là `aligned`.
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
 3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
-   (starter) và FE-B5 (nhắc học, cả bước thiết bị) đã xong. Còn FE-B6 (nút Open
-   system settings).
+   (starter), FE-B5 (nhắc học, cả bước thiết bị) và FE-B6 (nút Open system
+   settings) đã xong.
 4. FE-D4 xong (2026-09-28).
 
 ## Ước lượng effort (rà soát 2026-09-25)
@@ -265,3 +265,6 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không
   làm.
 - **Cập nhật ngày 2026-09-28:** FE-D4 xong: skill `flutter-theme-design` dùng tên và API thật của V8; bảng parity theme ↔ widget ghi slot nào đã có.
+- **Cập nhật ngày 2026-09-28:** FE-B6 xong: nút "Open system settings" ở `permDenied` của
+  màn 24 qua thao tác mới `openNotificationSettings` của port (channel native trong
+  `MainActivity.kt`, không thêm package); D1 của spec FE-B5 đóng; kiểm trên emulator.

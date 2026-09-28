@@ -41,4 +41,8 @@ abstract interface class ReminderPluginsDataSource {
 
   /// The payload of the tap that launched the app, or null.
   Future<String?> launchPayload();
+
+  /// Opens the app's notification settings (FE-B6). `false` when no
+  /// settings page could open.
+  Future<bool> openNotificationSettings();
 }
