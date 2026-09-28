@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_home_controller.dart';
@@ -11,6 +13,7 @@ import 'package:memox/features/study/presentation/states/study_home_resume_state
 import 'package:memox/features/study/presentation/widgets/sections/study_home_decks_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_empty_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_resume_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_home_sync_banner_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -31,12 +34,16 @@ class StudyHomeScreen extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenLibrary,
     required this.onOpenStarterDecks,
+    required this.onOpenSync,
   });
 
   final ValueChanged<String> onOpenSession;
   final ValueChanged<String> onOpenDeck;
   final VoidCallback onOpenLibrary;
   final VoidCallback onOpenStarterDecks;
+
+  /// Opens screen 27 when the sync banner's Details is tapped (SB-U1).
+  final VoidCallback onOpenSync;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,7 +95,13 @@ class StudyHomeScreen extends ConsumerWidget {
         ],
       ),
     };
+    final sync = ref.watch(syncStatusProvider).value;
+    final showsSync =
+        sync != null && needsAttention(sync, ref.watch(dayClockProvider).now());
     return [
+      // The banner carries its own margin below.
+      if (showsSync)
+        StudyHomeSyncBannerWidget(status: sync, onOpenSync: onOpenSync),
       if (session != null) ...[
         StudyHomeResumeWidget(
           session: session,

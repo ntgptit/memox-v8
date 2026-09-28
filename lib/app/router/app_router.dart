@@ -189,6 +189,9 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       context.go(AppRoutes.studyEntry(deckId)),
                   onOpenLibrary: () => context.go(AppRoutes.decks),
                   onOpenStarterDecks: () => context.go(AppRoutes.starterDecks),
+                  // Screen 27 sits under the Settings branch; Back from it
+                  // lands on Settings (SB-U1).
+                  onOpenSync: () => context.go(AppRoutes.settingsSync),
                 ),
               ),
             ],

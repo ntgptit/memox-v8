@@ -3,7 +3,7 @@ import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 
 import '../../../support/library_harness.dart';
-import 'sync_test_support.dart';
+import '../../../support/sync_fakes.dart';
 
 SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
   onOpenTheme: () {},

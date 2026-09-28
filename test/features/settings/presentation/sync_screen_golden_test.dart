@@ -11,7 +11,7 @@ import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
-import 'sync_test_support.dart';
+import '../../../support/sync_fakes.dart';
 
 void main() {
   for (final brightness in Brightness.values) {

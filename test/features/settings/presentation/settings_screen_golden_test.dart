@@ -18,7 +18,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
-import 'sync_test_support.dart';
+import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
