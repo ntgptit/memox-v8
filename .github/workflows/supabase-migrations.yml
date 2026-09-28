@@ -1,4 +1,5 @@
 # ADR-015: the migrations in supabase/migrations reach the project only through this workflow.
+# pgTAP gates the push, and after it the project must match the migrations exactly (SB-O5).
 name: supabase migrations
 
 on:
@@ -17,7 +18,7 @@ concurrency:
 jobs:
   push:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       SUPABASE_PROJECT_REF: hgacyucfagsvolymlqto
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -36,6 +37,13 @@ jobs:
         with:
           version: 2.118.0
 
+      # A migration that fails pgTAP never reaches the project.
+      - name: start local database
+        run: supabase db start
+
+      - name: pgTAP
+        run: supabase test db
+
       - name: link
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
 
@@ -47,3 +55,17 @@ jobs:
 
       - name: migrations after
         run: supabase migration list
+
+      # After the push the project must equal the migrations; anything left is a
+      # change made outside a migration (for example in the SQL Editor). Checked
+      # after the push because before it the pending migrations would count as
+      # drift. `db diff` prints the difference as SQL on stdout and exits 0.
+      - name: schema matches migrations
+        run: |
+          drift="$(supabase db diff --linked --schema public,private)"
+          if [ -n "$drift" ]; then
+            echo "::error::The project schema differs from supabase/migrations: a change was made outside a migration. Undo it or capture it in a migration."
+            printf '%s\n' "$drift"
+            exit 1
+          fi
+          echo "The project schema matches supabase/migrations."
