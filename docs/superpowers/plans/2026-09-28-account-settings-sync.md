@@ -453,3 +453,18 @@ class AccountSettingsSyncAdapter implements EntitySyncAdapter {
 - [ ] Gate: `bash .claude/skills/flutter-workflow/scripts/dod_check.sh`, `bash tools/supabase/local_pgtap.sh`, `python3 tools/docs/generate.py && python3 tools/docs/check.py`. A test that snapshots every table after a settings write (like BR-TAG-009's helper) may now see `sync_outbox` change. Handle it as SB-S3 did, with a ledgered ruling.
 - [ ] WBS: SB-S5 `xong` with the PR link, this plan, the migration and tests; a dated line under "Ngữ cảnh cập nhật".
 - [ ] Execution ledger appended here; commit `SB-S5: docs, WBS and ledger`.
+
+## Execution ledger
+
+Executed inline (executing-plans) on 2026-09-28.
+
+- Spec: docs/superpowers/specs/2026-09-28-sync-library-and-study-design.md
+- Pre-flight:
+- - T1→T3: wire row keys (cardLimit, newCardOrder, themeMode, language, updatedAt) and nil id — consistent.
+- - T2→T3: accountSettingsEntityId in sync_keys.dart — consistent.
+- Task 1: complete (commits 47f44fd..d48415b, tests: bash tools/supabase/local_pgtap.sh → ok    07_account_settings_sync.sql (9))
+- Task 2: complete (commits d48415b..a200ec3, tests: flutter test test/drift/ test/core/sync/sync_triggers_test.dart → 00:03 +42: All tests passed!)
+- Task 3: complete (commits a200ec3..142bb62, tests: flutter test test/core/sync/ → 00:10 +89: All tests passed!)
+- Task 4: Ruling: app_settings_repository_test's reset-to-defaults test counted total_changes() = before + 1; the SB-S5 trigger adds the outbox row, so it now expects before + 2 and asserts exactly one account_settings outbox entry — the 'one write' intent holds for app_settings — cost if wrong: none
+
+Gate: `dod_check.sh` green (2591 tests), `tools/supabase/local_pgtap.sh` 104/104, docs check PASS.

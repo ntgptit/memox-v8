@@ -155,7 +155,16 @@ void main() {
     final result = await settings.resetToDefaults();
 
     expect(result, isA<Ok<void, SettingsRejection>>());
-    expect(await totalChanges(db), before + 1);
+    // The settings row, and the sync outbox entry its trigger writes (SB-S5).
+    expect(await totalChanges(db), before + 2);
+    expect(
+      await db
+          .customSelect(
+            "SELECT 1 FROM sync_outbox WHERE entity_type = 'account_settings'",
+          )
+          .get(),
+      hasLength(1),
+    );
     expect(await _rootStudyConfig(db), _rootOverride);
     final current = await settings.watchAppSettings().first;
     expect(
