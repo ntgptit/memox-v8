@@ -466,5 +466,8 @@ Executed inline (executing-plans) on 2026-09-28.
 - Task 2: complete (commits d48415b..a200ec3, tests: flutter test test/drift/ test/core/sync/sync_triggers_test.dart → 00:03 +42: All tests passed!)
 - Task 3: complete (commits a200ec3..142bb62, tests: flutter test test/core/sync/ → 00:10 +89: All tests passed!)
 - Task 4: Ruling: app_settings_repository_test's reset-to-defaults test counted total_changes() = before + 1; the SB-S5 trigger adds the outbox row, so it now expects before + 2 and asserts exactly one account_settings outbox entry — the 'one write' intent holds for app_settings — cost if wrong: none
+- Final review: fresh reviewer — ready; no Critical/Important.
+- Final: minor (deferred): spec §3.5 lists `deleted_at` on `account_settings`; the table has none, since settings are never deleted.
+- Final: minor (handled): the SB-S5 WBS row gets its PR link after the PR opens.
 
 Gate: `dod_check.sh` green (2591 tests), `tools/supabase/local_pgtap.sh` 104/104, docs check PASS.
