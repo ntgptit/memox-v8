@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
@@ -44,7 +45,7 @@ void main() {
     decks = DeckRepositoryImpl(db, now: () => now);
     entries = studyEntryRepository(db, () => now);
     sessions = studySessionRepository(db, () => now);
-    views = StudySessionViewRepositoryImpl(db);
+    views = StudySessionViewRepositoryImpl(db, now: () => now);
   });
   tearDown(() async {
     await expectStudyInvariants(db);
@@ -238,6 +239,50 @@ void main() {
       ),
       (2, null, 1, 2, 3),
     );
+  });
+
+  test('a review that reached its card_limit counts the cards of its tree '
+      'still due, and none below the limit (UC-STUDY-001 A4)', () async {
+    final (root, leaf) = await tree();
+    Future<void> due(String id) => insertCard(
+      db,
+      id: id,
+      deckId: leaf.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 20),
+      box: 3,
+    );
+    for (final id in ['a', 'b', 'c']) {
+      await due(id);
+    }
+    await lockScheduler(db, root.id);
+    final opened = await entries.openReviewSession(
+      deckId: leaf.id,
+      mode: StudyMode.recall,
+    );
+    final id = (opened as Ok<String, StudyRejection>).value;
+    // Two more fall due past the three the session took, at its limit.
+    for (final extra in ['d', 'e']) {
+      await due(extra);
+    }
+    await db.customStatement(
+      'UPDATE study_session SET card_limit = 3 WHERE id = ?',
+      [id],
+    );
+    for (var i = 0; i < 3; i++) {
+      await answerServed(db, sessions, id, right: true);
+    }
+
+    final summary = (await viewOf(id)).summary!;
+    expect((summary.isAtCardLimit, summary.remainingDueCount), (true, 2));
+
+    // Told to the stream store, so the watch reads the row again.
+    await db.customUpdate(
+      'UPDATE study_session SET card_limit = 20 WHERE id = ?',
+      variables: [Variable<String>(id)],
+      updates: {db.studySession},
+    );
+    expect((await viewOf(id)).summary!.remainingDueCount, 0);
   });
 
   test('a session left in Browse has answered nothing: no turn is counted '

@@ -177,4 +177,4 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống xử lý, **then** phiên thành `failed` với `end_reason = persistence_error`, và các lượt đã ghi trước đó vẫn giữ (BR-STUDY-018, BR-STUDY-019, E3).
 - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả lời hoặc Continue, **then** hệ thống từ chối ghi, phiên thành `invalidated` với `end_reason = stale_generation`, và không phần nào của lượt đó được ghi (BR-SRS-026, BR-STUDY-017, E4).
 - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hiện lỗi, và Retry đọc lại (E5).
-- [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).
+- [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạn, **when** tổng kết hiện, **then** nó nói số thẻ còn đến hạn ("34 more cards are due.") và "Study this deck" mở phiên tiếp theo; dưới giới hạn thì không nêu số này (A4).

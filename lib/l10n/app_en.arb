@@ -6243,5 +6243,26 @@
   "deckDiscard": "Discard",
   "@deckDiscard": {
     "description": "New root deck dialog (UC-DECK-001 A1): close without creating."
+  },
+  "summaryReviewAtLimitMoreBody": "You reviewed {cards} — the session limit. {more}",
+  "@summaryReviewAtLimitMoreBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      },
+      "more": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 21 (UC-STUDY-001 A4): a review cut at its card limit with cards of its tree still due; {more} is summaryMoreDue."
+  },
+  "summaryMoreDue": "{count, plural, =1{1 more card is due.} other{{count} more cards are due.}}",
+  "@summaryMoreDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 21 (UC-STUDY-001 A4): the cards of the tree still due after a review cut at its limit."
   }
 }

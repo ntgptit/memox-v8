@@ -1,3 +1,4 @@
+import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/features/study/data/repositories/study_session_view_repository_impl.dart';
 import 'package:memox/features/study/domain/repositories/study_session_view_repository.dart';
@@ -7,4 +8,8 @@ part 'study_session_view_repository_provider.g.dart';
 
 @riverpod
 StudySessionViewRepository studySessionViewRepository(Ref ref) =>
-    StudySessionViewRepositoryImpl(ref.watch(databaseProvider));
+    StudySessionViewRepositoryImpl(
+      ref.watch(databaseProvider),
+      // The day the summary counts the cards still due in (UC-STUDY-001 A4).
+      now: ref.watch(dayClockProvider).now,
+    );
