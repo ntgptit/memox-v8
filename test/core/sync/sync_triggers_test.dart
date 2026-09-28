@@ -34,6 +34,11 @@ Future<void> _card(AppDatabase db, String id, String deck) =>
       [id, deck],
     );
 
+Future<void> _tag(AppDatabase db, String id, String name) => db.customStatement(
+  'INSERT INTO tags (id, name, name_folded, created_at) VALUES (?, ?, lower(?), 0)',
+  [id, name, name],
+);
+
 void main() {
   late AppDatabase db;
   setUp(() => db = openTestDatabase());
@@ -145,6 +150,66 @@ void main() {
     expect(
       {for (final e in cards) e['entity_id']: e['op']},
       {'K1': 'delete', 'K2': 'delete'},
+    );
+  });
+
+  test('a tag insert, rename and delete queue one tag entry', () async {
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "UPDATE tags SET name = 'Verbs', name_folded = 'verbs' WHERE id = 'T'",
+    );
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'tag').single['op'],
+      'upsert',
+    );
+    await db.customStatement("DELETE FROM tags WHERE id = 'T'");
+    expect(
+      (await _outbox(db)).where((e) => e['entity_type'] == 'tag').single['op'],
+      'delete',
+    );
+  });
+
+  test('linking and unlinking a card queue the card', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    expect((await _outbox(db)).single, containsPair('entity_id', 'K'));
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement("DELETE FROM card_tags WHERE card_id = 'K'");
+    expect((await _outbox(db)).single, containsPair('op', 'upsert'));
+  });
+
+  test('a card deleted with links is queued as a delete', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    await db.customStatement("DELETE FROM card WHERE id = 'K'");
+    final card = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
+    expect(card.single['op'], 'delete');
+  });
+
+  test('deleting a tag queues it and re-queues its cards', () async {
+    await _root(db, 'R');
+    await _card(db, 'K', 'R');
+    await _tag(db, 'T', 'Verb');
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'T')",
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+    await db.customStatement("DELETE FROM tags WHERE id = 'T'");
+    expect(
+      {
+        for (final e in await _outbox(db))
+          '${e['entity_type']}/${e['entity_id']}': e['op'],
+      },
+      {'tag/T': 'delete', 'card/K': 'upsert'},
     );
   });
 }

@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -102,6 +102,22 @@ class AppDatabase extends _$AppDatabase {
         await m.createTrigger(schema.cardSyncUpdate);
         await m.createTrigger(schema.cardSyncDelete);
         await customStatement(_seedOutbox('card', 'card', 'created_at, id'));
+      },
+      from7To8: (m, schema) async {
+        // SB-S3: tags sync, and a card's links travel on the card (library
+        // and study sync spec §3.2). Tags are queued, then every tagged card,
+        // so the links reach the server; an already-queued card stays queued.
+        await m.addColumn(schema.tags, schema.tags.serverVersion);
+        await m.createTrigger(schema.tagsSyncInsert);
+        await m.createTrigger(schema.tagsSyncUpdate);
+        await m.createTrigger(schema.tagsSyncDelete);
+        await m.createTrigger(schema.cardTagsSyncInsert);
+        await m.createTrigger(schema.cardTagsSyncDelete);
+        await customStatement(_seedOutbox('tag', 'tags', 'created_at, id'));
+        await customStatement(
+          '${_seedOutbox('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
+          'ON CONFLICT (entity_type, entity_id) DO NOTHING',
+        );
       },
     ),
     beforeOpen: (details) async {
