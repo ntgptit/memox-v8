@@ -82,6 +82,7 @@ class SyncScreen extends ConsumerWidget {
               body: l10n.libraryLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(syncStatusProvider),
+              isRetrying: status.isLoading,
             ),
           ],
         ),
