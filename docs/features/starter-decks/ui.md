@@ -13,10 +13,9 @@ không có template) quay về Thư viện và mở hộp thoại tạo deck. Ng
 FE-B4](../../superpowers/specs/2026-09-27-tags-starter-ui-design.md) §3 (D5, D6, D7),
 §5.1.
 
-## Edge case chưa gắn BR
+## Edge case
 
 | Case | Expected behaviour |
 |---|---|
-| Mở app lần đầu | Hiện thư viện starter deck để chọn. Không tự chèn vào dữ liệu người dùng |
+| Mở app lần đầu | Hiện thư viện starter deck để chọn (UC-STARTER-001). Không tự chèn vào dữ liệu người dùng (BR-STARTER-001, BR-STARTER-003) |
 
-> ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)

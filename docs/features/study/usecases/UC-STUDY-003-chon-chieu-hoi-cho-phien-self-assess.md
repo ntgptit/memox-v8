@@ -51,9 +51,10 @@ nhất một thẻ đến hạn (BR-STUDY-054), và mode ôn duy nhất thuật 
 
 **Error flows:**
 - **E1 — Deck đổi scheduler hoặc bị reset trong lúc sheet đang mở:** hệ thống đọc
-  lại trước khi mở phiên; nếu `self_assess` không còn được offer thì sheet hiện
-  một dòng lỗi và **giữ nguyên lựa chọn**, để người dùng thử lại mà không phải
-  chọn lại (BR-SRS-003, BR-STUDY-015).
+  lại trước khi mở phiên; nếu `self_assess` không còn được offer thì phiên bị từ
+  chối như một thay đổi giữa chừng, không ghi gì, và màn vào học hiện banner cảnh
+  báo riêng ("Self-check is no longer offered for this deck."), như E2
+  (BR-SRS-003, BR-STUDY-015; quyết định của chủ dự án 2026-09-28).
 - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và
   không ghi dòng nào (BR-STUDY-020, BR-STUDY-054); sheet báo lỗi như E1.
 - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là
@@ -91,4 +92,4 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, **then** chiều của thẻ vẫn là chiều đã gán lúc mở phiên (BR-STUDY-005, BR-MODE-015, A4).
 - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người dùng bấm Start, **then** phiên bị từ chối kèm banner cảnh báo, không ghi gì, và footer theo số mới (BR-STUDY-054, E2).
 - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều cho một mode không dùng chiều, **when** hệ thống xử lý, **then** yêu cầu bị từ chối và không ghi gì (BR-MODE-013, BR-MODE-018, E3).
-- [ ] OPEN QUESTION: E1 nói khi `self_assess` không còn được offer lúc sheet đang mở thì sheet hiện một dòng lỗi và giữ nguyên lựa chọn, như các trường hợp "đổi giữa chừng" khác — `StudyRejection.modeNotOffered` không nằm trong `_changedMeanwhile` (`lib/features/study/presentation/controllers/study_entry_controller.dart:22-30`), nên trường hợp này hiện như một lần mở thất bại chung (BR-SRS-003, BR-STUDY-015, E1).
+- [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_box`, **when** người dùng bấm Start review, **then** phiên bị từ chối với `modeNotOffered`, không ghi gì, và màn vào học hiện banner cảnh báo riêng thay cho lỗi mở phiên chung (E1).

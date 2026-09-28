@@ -46,7 +46,10 @@ Biến thể theo meaning, không theo feature (`study`, `deck`): mỗi biến t
 - [ ] Density.
 - [ ] Selected contrast được đo.
 
-### Shared widget: `MxListTile`
+### Shared widget: `MxListRow`
+
+V8 dựng `MxListRow` (`lib/shared/widgets/mx_list_row.dart`); chưa có slot
+`listTileTheme` trong `app_theme.dart`.
 
 - [ ] Own hover/focus/press vì ThemeData không đủ toàn bộ.
 - [ ] Focus ring.

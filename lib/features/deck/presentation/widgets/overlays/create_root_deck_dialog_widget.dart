@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
@@ -6,11 +8,13 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
+import 'package:memox/features/deck/presentation/widgets/overlays/deck_discard_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -26,7 +30,9 @@ Future<DeckEntity?> showCreateRootDeckDialog(BuildContext context) =>
     );
 
 /// A root deck's name and the scheduler its cards will follow. The scheduler
-/// locks after the first review, so the choice is explained up front.
+/// locks after the first review, so the choice is explained up front and
+/// never made for the person (BR-SRS-001, E3). Leaving after typing asks
+/// first (A1).
 class CreateRootDeckDialogWidget extends ConsumerStatefulWidget {
   const CreateRootDeckDialogWidget({super.key});
 
@@ -38,8 +44,11 @@ class CreateRootDeckDialogWidget extends ConsumerStatefulWidget {
 class _CreateRootDeckDialogWidgetState
     extends ConsumerState<CreateRootDeckDialogWidget> {
   final _name = TextEditingController();
-  var _scheduler = SchedulerType.eightBox;
+  SchedulerType? _scheduler;
   DeckRejection? _rejection;
+
+  /// Create was pressed with no scheduler chosen (E3).
+  var _isSchedulerMissing = false;
 
   /// One create at a time: a second tap while the first runs does nothing.
   var _isSubmitting = false;
@@ -50,7 +59,21 @@ class _CreateRootDeckDialogWidgetState
     super.dispose();
   }
 
+  /// Something typed or chosen would be lost by leaving (A1).
+  bool get _isStarted => _name.text.isNotEmpty || _scheduler != null;
+
+  /// Cancel, Back or a tap outside: asks first once the form is started.
+  Future<void> _leave() async {
+    if (_isStarted && !await showDeckDiscardDialog(context)) return;
+    if (mounted) Navigator.of(context).pop();
+  }
+
   Future<void> _submit() async {
+    final scheduler = _scheduler;
+    if (scheduler == null) {
+      setState(() => _isSchedulerMissing = true);
+      return;
+    }
     setState(() {
       _isSubmitting = true;
       _rejection = null;
@@ -58,7 +81,7 @@ class _CreateRootDeckDialogWidgetState
     try {
       final outcome = await ref
           .read(deckActionsControllerProvider.notifier)
-          .createRootDeck(name: _name.text, schedulerType: _scheduler);
+          .createRootDeck(name: _name.text, schedulerType: scheduler);
       if (!mounted) return;
       switch (outcome) {
         case Ok(:final value):
@@ -80,7 +103,7 @@ class _CreateRootDeckDialogWidgetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return MxDialog(
+    final dialog = MxDialog(
       title: l10n.deckCreateRootTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -107,17 +130,29 @@ class _CreateRootDeckDialogWidgetState
               MxSegment(value: SchedulerType.sm2, label: l10n.deckSchedulerSm2),
             ],
             selected: _scheduler,
-            onSelected: (type) => setState(() => _scheduler = type),
+            onSelected: (type) => setState(() {
+              _scheduler = type;
+              _isSchedulerMissing = false;
+            }),
           ),
+          if (_isSchedulerMissing)
+            MxFieldMessage(message: l10n.deckSchedulerRequired),
           MxNote(text: l10n.deckSchedulerNote),
         ],
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: () => unawaited(_leave()),
         confirmLabel: l10n.deckCreateConfirm,
         onConfirm: _isSubmitting ? null : _submit,
       ),
+    );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) unawaited(_leave());
+      },
+      child: dialog,
     );
   }
 }

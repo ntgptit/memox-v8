@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/deck_progress_screen.dart';
@@ -145,5 +146,29 @@ void main() {
 
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
     expect(reads, 2);
+  });
+
+  libraryTest('a failed read says what failed, by the kind of failure, '
+      'without its cause (UC-PROGRESS-002 E1, BR-CORE-005)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen('any', _Taps()),
+      overrides: [
+        deckProgressProvider('any').overrideWith(
+          (ref) => Stream<DeckProgress>.error(
+            const DatabaseLockedFailure(cause: '/data/memox.sqlite'),
+          ),
+        ),
+      ],
+    );
+    await _settle(tester);
+
+    expect(find.text(_en.progressErrorTitle), findsOneWidget);
+    expect(find.text(_en.failureBusy), findsOneWidget);
+    expect(find.textContaining('/data/'), findsNothing);
   });
 }

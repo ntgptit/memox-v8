@@ -99,9 +99,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
     final cards = l10n.summaryCards(finished);
     return switch (outcome) {
       SummaryOutcome.reviewFinished => (
-        summary.isAtCardLimit
-            ? l10n.summaryReviewAtLimitBody(cards)
-            : l10n.summaryReviewFinishedBody(cards),
+        switch ((summary.isAtCardLimit, summary.remainingDueCount)) {
+          (true, > 0) => l10n.summaryReviewAtLimitMoreBody(
+            cards,
+            l10n.summaryMoreDue(summary.remainingDueCount),
+          ),
+          (true, _) => l10n.summaryReviewAtLimitBody(cards),
+          (false, _) => l10n.summaryReviewFinishedBody(cards),
+        },
         cards,
       ),
       SummaryOutcome.learningFinished => (

@@ -6215,5 +6215,54 @@
       }
     },
     "description": "Screen 23 (FE-B5): the Daily reminder row while on; {time} is HH:mm (spec D6, D9)."
+  },
+  "studyEntryRefusedNotOfferedTitle": "Self-check is no longer offered for this deck.",
+  "@studyEntryRefusedNotOfferedTitle": {
+    "description": "Screen 14 refusal (UC-STUDY-003 E1): the root deck scheduler changed while the direction sheet was open."
+  },
+  "studyEntryRefusedNotOfferedBody": "Its review algorithm changed. Choose a review mode again.",
+  "@studyEntryRefusedNotOfferedBody": {
+    "description": "Screen 14 refusal (UC-STUDY-003 E1); nothing was written."
+  },
+  "deckSchedulerRequired": "Choose how the cards are reviewed.",
+  "@deckSchedulerRequired": {
+    "description": "New root deck dialog (UC-DECK-001 E3, BR-SRS-001): Create without a scheduler."
+  },
+  "deckDiscardTitle": "Discard this deck?",
+  "@deckDiscardTitle": {
+    "description": "New root deck dialog (UC-DECK-001 A1): Cancel after typing."
+  },
+  "deckDiscardBody": "What you typed is not saved.",
+  "@deckDiscardBody": {
+    "description": "New root deck dialog (UC-DECK-001 A1)."
+  },
+  "deckKeepEditing": "Keep editing",
+  "@deckKeepEditing": {
+    "description": "New root deck dialog (UC-DECK-001 A1): back to the form."
+  },
+  "deckDiscard": "Discard",
+  "@deckDiscard": {
+    "description": "New root deck dialog (UC-DECK-001 A1): close without creating."
+  },
+  "summaryReviewAtLimitMoreBody": "You reviewed {cards} — the session limit. {more}",
+  "@summaryReviewAtLimitMoreBody": {
+    "placeholders": {
+      "cards": {
+        "type": "String"
+      },
+      "more": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 21 (UC-STUDY-001 A4): a review cut at its card limit with cards of its tree still due; {more} is summaryMoreDue."
+  },
+  "summaryMoreDue": "{count, plural, =1{1 more card is due.} other{{count} more cards are due.}}",
+  "@summaryMoreDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 21 (UC-STUDY-001 A4): the cards of the tree still due after a review cut at its limit."
   }
 }

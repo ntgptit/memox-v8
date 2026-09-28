@@ -112,10 +112,10 @@ Raw: `CircularProgressIndicator`, `LinearProgressIndicator`.
 
 ### Shared widgets
 
-`MxLoadingIndicator`, `MxProgressBar` — tách semantics:
+Tách semantics (guard `no_raw_loading_indicator`):
 
-- `MxLoadingIndicator` — indeterminate loading.
-- `MxProgressBar` — study/progress data.
+- `MxSpinner`, `MxSkeleton` / `MxSkeletonList` / `MxSkeletonPulse` — loading.
+- `MxLinearProgress`, `MxMasteryDonut` — study/progress data.
 
 - [ ] Progress 100% semantic variant nếu design định nghĩa.
 - [ ] Track/fill lấy semantic tokens. (Lưu ý dark của repo này:

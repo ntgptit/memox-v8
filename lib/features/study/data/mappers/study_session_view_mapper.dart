@@ -38,6 +38,7 @@ StudySessionView studySessionViewOf(
   required Set<String> modes,
   required ServedRow? served,
   required SummaryCounts? counts,
+  int remainingDueCount = 0,
 }) {
   final session = row.session;
   final kind = SessionKind.values.byName(session.sessionKind);
@@ -80,6 +81,7 @@ StudySessionView studySessionViewOf(
             answeredCardCount: counts.answeredCount,
             turnCount: counts.turnCount,
             cardLimit: session.cardLimit,
+            remainingDueCount: remainingDueCount,
           ),
     trail: [
       for (final card in served?.trail ?? const <TrailRecord>[])

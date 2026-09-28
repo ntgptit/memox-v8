@@ -61,12 +61,16 @@ Không cần shared widget.
 - [ ] Shape.
 - [ ] Hit target.
 
-### Shared widget: `MxCheckbox`
+### Shared widget: `MxSelectionCheckbox`
 
-- [ ] Optional label nên dùng composition có semantics merge.
-- [ ] Có indeterminate nếu product cần.
+V8 dựng `MxSelectionCheckbox` (`lib/shared/widgets/mx_selection_checkbox.dart`):
+chỉ vẽ ô chọn, hàng chứa nó sở hữu vùng chạm; không có label, không có
+indeterminate, không có `*Tile` wrapper.
+
+- [ ] Label và semantics là của hàng chứa nó (merge semantics).
+- [ ] Indeterminate chỉ thêm khi product cần.
 - [ ] Không cho feature truyền activeColor.
-- [ ] `CheckboxListTile` raw bị guard; dùng `MxCheckboxTile`.
+- [ ] `CheckboxListTile` raw bị guard; hàng dùng `MxListRow` + `MxSelectionCheckbox`.
 
 ## 24. `RadioThemeData`
 
@@ -104,9 +108,12 @@ Tương tự checkbox:
 - [ ] Track outline.
 - [ ] Hit target.
 
-### Shared widget: `MxSwitch`
+### Shared widget: `MxToggle`
 
-- [ ] `MxSwitchTile` cho setting rows.
+V8 dựng `MxToggle` (`lib/shared/widgets/mx_toggle.dart`); hàng setting đặt nó
+vào `trailing` của `MxSettingsRow`, không có `MxSwitchTile`.
+
+- [ ] Setting row dùng `MxSettingsRow` + `MxToggle`.
 - [ ] Entire row tap semantics thống nhất.
 - [ ] Không có feature-specific color.
 
@@ -141,9 +148,9 @@ Raw: `ChoiceChip`, `FilterChip`, `ActionChip`, `InputChip`.
 
 Không nên ép bốn raw chip vào một API nếu semantics khác. Nên có:
 
-- `MxPillButton` — filter/sort/select.
-- `MxActionChip` — compact command nếu product cần.
-- `MxInputChip` — removable entity/tag nếu product cần.
+- `MxFilterChip` — pick-one filter/sort/select (guard `no_raw_choice_chip`).
+- `MxChipTrigger` — ghost chip mở menu hay sheet.
+- `MxTagChip` — tag, có thể gỡ.
 
 Mỗi wrapper:
 

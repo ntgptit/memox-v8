@@ -62,7 +62,11 @@ Raw: `NavigationBar`.
 - [ ] Height.
 - [ ] Selected state không chỉ khác bằng hue khó nhận biết.
 
-### Shared widget: `MxNavigationBar`
+### Shared widget: `MxBottomNav`
+
+V8 dựng `MxBottomNav` (`lib/shared/widgets/mx_bottom_nav.dart`), thanh pill tự
+vẽ, không dùng `NavigationBar` của Flutter; `app_theme.dart` không đặt slot
+`navigationBarTheme`. Checklist dưới là hợp đồng của `MxBottomNav`.
 
 - [ ] Nhận semantic destinations.
 - [ ] Nhận selected index.
@@ -115,7 +119,7 @@ Raw: `NavigationRail`.
 Chỉ build nếu tablet/desktop layout support rail. (Lưu ý: ADR-001 hiện không
 ship large-screen layout — mục này chờ quyết định đó đổi.)
 
-- [ ] Destination API giống `MxNavigationBar`.
+- [ ] Destination API giống `MxBottomNav`.
 - [ ] Không tạo vocabulary selected mới.
 - [ ] Có parity tests giữa rail và bar.
 
