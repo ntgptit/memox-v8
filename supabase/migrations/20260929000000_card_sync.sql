@@ -276,3 +276,7 @@ begin
   return jsonb_build_object('changes', v_changes, 'nextSince', coalesce(v_next, v_since), 'hasMore', v_more);
 end
 $$;
+
+-- New functions get EXECUTE for PUBLIC by default; the first migration's blanket revoke ran
+-- before these existed. Clients reach data only through sync_push and sync_changes (spec §2).
+revoke all on all functions in schema private from public, anon, authenticated;
