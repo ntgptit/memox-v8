@@ -114,14 +114,16 @@ Raw: `NavigationRail`.
 - [ ] Group alignment.
 - [ ] Elevation.
 
-### Shared widget: `MxNavigationRail`
+### Shared widget: `MxNavRail`
 
-Chỉ build nếu tablet/desktop layout support rail. (Lưu ý: ADR-001 hiện không
-ship large-screen layout — mục này chờ quyết định đó đổi.)
+V8 có (FE-C5, spec `2026-09-28-tablet-rail-design.md`): từ 600 dp `AppTabShell`
+dùng rail thay `MxBottomNav`. Rail không dùng `NavigationRailThemeData`; nó tự vẽ
+bằng token của bottom nav.
 
-- [ ] Destination API giống `MxBottomNav`.
-- [ ] Không tạo vocabulary selected mới.
-- [ ] Có parity tests giữa rail và bar.
+- [x] Destination API giống `MxBottomNav` (`MxNavDestination`, `selectedIndex`,
+  `onSelected`).
+- [x] Không tạo vocabulary selected mới: cùng pill tint, `primaryInk`, `navLabel`.
+- [x] Test riêng (`mx_nav_rail_test.dart`) theo cùng các khẳng định của bar.
 
 ## 13. `BottomAppBarThemeData`
 

@@ -19,28 +19,7 @@ class GalleryChromeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final destinations = [
-      MxNavDestination(
-        icon: AppIcons.library,
-        selectedIcon: AppIcons.librarySelected,
-        label: context.l10n.navLibrary,
-      ),
-      MxNavDestination(
-        icon: AppIcons.study,
-        selectedIcon: AppIcons.studySelected,
-        label: context.l10n.navStudy,
-      ),
-      MxNavDestination(
-        icon: AppIcons.progress,
-        selectedIcon: AppIcons.progressSelected,
-        label: context.l10n.navProgress,
-      ),
-      MxNavDestination(
-        icon: AppIcons.settings,
-        selectedIcon: AppIcons.settingsSelected,
-        label: context.l10n.navSettings,
-      ),
-    ];
+    final destinations = _destinations(context);
     return GallerySection(
       title: context.l10n.galleryAChromeNavigation,
       children: [
@@ -122,4 +101,27 @@ class GalleryChromeSection extends StatelessWidget {
       ],
     );
   }
+
+  static List<MxNavDestination> _destinations(BuildContext context) => [
+    MxNavDestination(
+      icon: AppIcons.library,
+      selectedIcon: AppIcons.librarySelected,
+      label: context.l10n.navLibrary,
+    ),
+    MxNavDestination(
+      icon: AppIcons.study,
+      selectedIcon: AppIcons.studySelected,
+      label: context.l10n.navStudy,
+    ),
+    MxNavDestination(
+      icon: AppIcons.progress,
+      selectedIcon: AppIcons.progressSelected,
+      label: context.l10n.navProgress,
+    ),
+    MxNavDestination(
+      icon: AppIcons.settings,
+      selectedIcon: AppIcons.settingsSelected,
+      label: context.l10n.navSettings,
+    ),
+  ];
 }
