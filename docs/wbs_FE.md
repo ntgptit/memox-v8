@@ -94,9 +94,9 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-B2 | Danh mục tag và lọc card theo tag (UC-TAG-001) | xong | BE-B2, FE-A2 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B4); file chi tiết [05](shared/ui/screen-handoff/05-tags.md), bộ lọc tag ở [07](shared/ui/screen-handoff/07-card-list.md); [ui.md](features/tags/ui.md), [kịch bản IT](features/tags/it-scenarios.md) | — |
 | FE-B3 | Import card vào deck và export card ra file (UC-TRANSFER-001, UC-TRANSFER-002) | xong | BE-B3, FE-A2 | M | [spec](superpowers/specs/2026-09-26-card-transfer-design.md), [plan import](superpowers/plans/2026-09-26-card-import-ui.md), [plan export](superpowers/plans/2026-09-26-card-export-ui.md), [màn 11](shared/ui/screen-handoff/11-card-import.md), [màn 12](shared/ui/screen-handoff/12-card-export.md); test trong `test/features/transfer/presentation/` | — |
 | FE-B4 | Thư viện starter: child flow trong Thư viện, kèm empty state khi chưa có deck (UC-STARTER-001) | xong | BE-B4, FE-A1 | M | [spec](superpowers/specs/2026-09-27-tags-starter-ui-design.md) và [plan](superpowers/plans/2026-09-27-tags-starter-ui.md) (chung với FE-B2); file chi tiết [03](shared/ui/screen-handoff/03-starter-decks.md); `rootEmpty` của màn 01 có "Browse starter decks"; [ui.md](features/starter-decks/ui.md) | — |
-| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | xong | BE-B5a, BE-B5b, FE-A3 | S–M | [spec](superpowers/specs/2026-09-28-daily-reminder-ui-design.md) và [plan](superpowers/plans/2026-09-28-daily-reminder-ui.md); màn 24 [24-daily-reminder.md](shared/ui/screen-handoff/24-daily-reminder.md) `aligned`, 9/9 state của kit; bật, tắt, đổi giờ qua `ReminderOperationGate`; hàng Daily reminder của màn 23, câu chữ reset nêu nhắc học và `app/` hoà giải sau reset (dòng 123 của sổ nợ UI-base đóng); [ui.md](features/reminders/ui.md); test trong `test/features/reminders/presentation/`, `test/features/settings/presentation/`, companion `test/visual_audit/screens/features/reminders/` | Kiểm trên thiết bị (hộp thoại xin quyền, E1 bị từ chối hai lần) đi cùng bước thiết bị của BE-B5b |
-| FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | chưa bắt đầu | FE-B5, BE-B5b | S | Kit 24 vẽ nút này; FE-B5 ẩn nó vì port không có thao tác và cần code native hoặc package (quyết định của chủ dự án 2026-09-28) | Làm cùng bước thiết bị của BE-B5b, khi build được APK |
-| FE-B7 | Trạng thái đồng bộ trên màn hình (SB-U1): màn 27 Sync, dòng Sync ở màn 23, banner sync ở màn 13; không có trong kit, dựng theo Impeccable `shape` ngày 2026-09-28 | xong | SB-U1 của [`wbs_supabase.md`](wbs_supabase.md) | M | [spec](superpowers/specs/2026-09-28-sync-status-design.md) và [plan](superpowers/plans/2026-09-28-sync-status.md); màn 27 [27-sync.md](shared/ui/screen-handoff/27-sync.md) `aligned`, 7 golden light/dark; 3 golden dòng Sync ở màn 23, 2 golden banner ở màn 13; deviation ghi ở 13, 23 và 27 | Ẩn hết khi build không có Supabase |
+| FE-B5 | Nhắc học hằng ngày trong Cài đặt; chỉ xin quyền notification sau khi người dùng bật (UC-REMINDER-001; BR-REMINDER-011) | xong | BE-B5a, BE-B5b, FE-A3 | S–M | [spec](superpowers/specs/2026-09-28-daily-reminder-ui-design.md) và [plan](superpowers/plans/2026-09-28-daily-reminder-ui.md); màn 24 [24-daily-reminder.md](shared/ui/screen-handoff/24-daily-reminder.md) `aligned`, 9/9 state của kit; bật, tắt, đổi giờ qua `ReminderOperationGate`; hàng Daily reminder của màn 23, câu chữ reset nêu nhắc học và `app/` hoà giải sau reset (dòng 123 của sổ nợ UI-base đóng); [ui.md](features/reminders/ui.md); test trong `test/features/reminders/presentation/`, `test/features/settings/presentation/`, companion `test/visual_audit/screens/features/reminders/` | — (đã kiểm trên emulator cùng BE-B5b, 2026-09-28) |
+| FE-B6 | Nút "Open system settings" ở state `permDenied` của màn 24 (D1 của [spec FE-B5](superpowers/specs/2026-09-28-daily-reminder-ui-design.md)): thao tác mới của `ReminderPlatformRepository` mở cài đặt notification của app | chưa bắt đầu | FE-B5, BE-B5b | S | Kit 24 vẽ nút này; FE-B5 ẩn nó vì port không có thao tác và cần code native hoặc package (quyết định của chủ dự án 2026-09-28) | Làm tiếp sau BE-B5b: đã build được APK và có emulator |
+| FE-B7 | Trạng thái đồng bộ trên màn hình (SB-U1): màn 27 Sync, dòng Sync ở màn 23, thẻ nổi sync ở màn 13 (`MxFloatingNotice`, quyết định của chủ dự án 2026-09-28); không có trong kit, dựng theo Impeccable `shape` ngày 2026-09-28 | xong | SB-U1 của [`wbs_supabase.md`](wbs_supabase.md) | M | [spec](superpowers/specs/2026-09-28-sync-status-design.md) và [plan](superpowers/plans/2026-09-28-sync-status.md); màn 27 [27-sync.md](shared/ui/screen-handoff/27-sync.md) `aligned`, 7 golden light/dark; 3 golden dòng Sync ở màn 23, 2 golden thẻ nổi ở màn 13; deviation ghi ở 13, 23 và 27 | Ẩn hết khi build không có Supabase |
 
 ### Nợ của UI base (spec UI base §9)
 
@@ -135,8 +135,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 - Mọi hạng mục FE của V8.0 đã xong; FE-A1 (mastery, BR-DECK-026, BR-DECK-027) và FE-A2
   (file chi tiết 08–10, #103) không còn phần dở.
-- **FE-B5:** xong phần host (màn 24 `aligned`); bước kiểm trên thiết bị đi cùng BE-B5b.
-  FE-B6 chờ cùng bước đó.
+- **FE-B5:** xong, cả bước kiểm trên thiết bị (cùng BE-B5b). FE-B6 là việc kế tiếp.
 
 Nhánh `claude/study-large-files` không còn gì để merge: cả hai commit của nó (bỏ qua file
 sinh trong công cụ kiểm kiến trúc; `study_turn_data_source.dart`) đã vào `master` ở #53.
@@ -170,8 +169,8 @@ và phụ thuộc giữa các màn quyết định:
 1. Mọi màn của V8.0 đã dựng, không còn phần dở, và mọi màn trong index là `aligned`.
 2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
 3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
-   (starter) và FE-B5 (nhắc học, phần host) đã xong. Còn FE-B6 (nút Open system
-   settings) và bước thiết bị của FE-B5, cả hai đi cùng BE-B5b.
+   (starter) và FE-B5 (nhắc học, cả bước thiết bị) đã xong. Còn FE-B6 (nút Open
+   system settings).
 4. FE-D4 xong (2026-09-28).
 
 ## Ước lượng effort (rà soát 2026-09-25)
