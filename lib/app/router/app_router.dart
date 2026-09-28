@@ -27,6 +27,7 @@ import 'package:memox/features/search/presentation/screens/library_search_screen
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
+import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
@@ -188,6 +189,9 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       context.go(AppRoutes.studyEntry(deckId)),
                   onOpenLibrary: () => context.go(AppRoutes.decks),
                   onOpenStarterDecks: () => context.go(AppRoutes.starterDecks),
+                  // Screen 27 sits under the Settings branch; Back from it
+                  // lands on Settings (SB-U1).
+                  onOpenSync: () => context.go(AppRoutes.settingsSync),
                 ),
               ),
             ],
@@ -233,6 +237,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       context.push(AppRoutes.settingsReminder),
                   // The reset turned the reminder off; the pending alarm
                   // follows through the gate (FE-B5 spec D7).
+                  onOpenSync: () => context.push(AppRoutes.settingsSync),
                   onAppOptionsReset: () => unawaited(
                     _reconcileAfterReset(ProviderScope.containerOf(context)),
                   ),
@@ -255,6 +260,11 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     path: AppRoutes.settingsReminderChild,
                     parentNavigatorKey: rootNavigator,
                     builder: (context, state) => const ReminderScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsSyncChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const SyncScreen(),
                   ),
                 ],
               ),

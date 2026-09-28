@@ -185,6 +185,49 @@ void main() {
     expect(await _name(b.db, 'R'), isNull);
     expect(await _name(b.db, 'C'), isNull);
   });
+
+  test(
+    'a refusal without a server copy is recorded; a later apply clears it',
+    () async {
+      await _root(a.db, 'R', name: 'offline only');
+      server.rejectNext['deck/R'] = 'VALIDATION_FAILED';
+
+      await a.coordinator.runOnce();
+      final store = SyncStore(a.db);
+      expect((await store.rejections()).map((r) => '${r.entityId}:${r.code}'), [
+        'R:VALIDATION_FAILED',
+      ]);
+
+      await a.coordinator.requeueRejected();
+      await a.coordinator.runOnce();
+      expect(await store.rejections(), isEmpty);
+    },
+  );
+
+  test('a refusal with a server copy is not recorded', () async {
+    await _root(a.db, 'R');
+    await a.coordinator.runOnce();
+    await a.db.customStatement("UPDATE deck SET name = 'x' WHERE id = 'R'");
+    server.rejectNext['deck/R'] = 'SYNC_ENTITY_CONFLICT';
+
+    await a.coordinator.runOnce();
+
+    expect(await SyncStore(a.db).rejections(), isEmpty);
+  });
+
+  test('requeue turns a vanished entity into a delete', () async {
+    await _root(a.db, 'R');
+    server.rejectNext['deck/R'] = 'VALIDATION_FAILED';
+    await a.coordinator.runOnce();
+    await SyncStore(a.db).applyingRemote(
+      () => a.db.customStatement("DELETE FROM deck WHERE id = 'R'"),
+    );
+
+    await a.coordinator.requeueRejected();
+
+    final queued = await SyncStore(a.db).pendingBatch({'deck'}, 10);
+    expect(queued.single.op, 'delete');
+  });
 }
 
 Future<Map<String, Object?>> _wireRoot(String id) async => {

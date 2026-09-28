@@ -24,6 +24,7 @@ bar (D2).
 | Study defaults | `MxSection` + `MxSettingsRow` × 2 | "Cards per session" / "1 to 200 · default 20", with an `MxStepper` under the label: −/+, a hold repeats, a tap on the number types one (D6). "New-card order" / "How new cards enter a learning session", with an `MxSegmentedTray` Created · Random. The note: "Apply to sessions started from now on. A deck with its own study options keeps them." |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
 | App | `MxSection` + `MxSettingsRow` × 2 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt". Both open their page. |
+| Sync | `MxSection` + `MxSettingsRow` | SB-U1, V8 addition: "Sync", one row with the cloud-sync tile; its sub-line is the first that applies of "{n} changes kept only on this device", "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1). Opens screen 27. Hidden when the build has no Supabase. |
 | Reset | `MxSection` + `MxSettingsRow` | "Reset app options" / "Theme, language, study defaults". The note: "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." |
 | Reset dialog | `MxDialog` + `MxNote` + `MxSheetActions.custom` | "Reset app options?", "Theme, language, cards per session and new-card order go back to their defaults.", the shield note "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.", then Cancel (outline) · "Reset options" (primary, spinning while it runs), stacked when a label cannot fit (UI-base row 118). Back and Cancel do nothing while it runs. |
 | Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order." · Retry; "App options reset to defaults"; "Couldn't reset the app options. Nothing changed." · Retry. |
@@ -43,9 +44,12 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | saveFailed | ![](img/23-settings/saveFailed-light.png) | ![](img/23-settings/saveFailed-dark.png) | As drawn; the stepper shows the stored value again. |
 | resetConfirm | ![](img/23-settings/resetConfirm-light.png) | ![](img/23-settings/resetConfirm-dark.png) | As drawn. |
 | resetDone | ![](img/23-settings/resetDone-light.png) | ![](img/23-settings/resetDone-dark.png) | As drawn. |
+| syncSynced | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_dark.png) | **V8 addition (SB-U1):** the Sync row after a success. |
+| syncFailed | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_dark.png) | **V8 addition (SB-U1):** the Sync row after a failed run. |
+| syncRejected | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_dark.png) | **V8 addition (SB-U1):** the Sync row with refused rows. |
 | read error | — | — | **V8 addition (UC E3):** `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
 
-Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,saving,saved,invalid_limit,save_failed,reset_confirm,reset_done}_{light,dark}.png`.
+Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,saving,saved,invalid_limit,save_failed,reset_confirm,reset_done,sync_synced,sync_failed,sync_rejected}_{light,dark}.png`.
 
 ## Deviations
 
@@ -58,6 +62,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 | Loading as skeleton sub-lines inside the sections | `MxSkeletonList` | UI-base row 125 |
 | No read-error state | `MxErrorState` with Retry | UC E3; UI-base row 125 |
 | The tray on one line at any size | The options stack when their labels do not fit | UI-base row 127 |
+| No Sync section (kit v3 has no network UI) | A Sync section with one row opening screen 27 | ADR-015; SB-U1 (owner rulings R1, R5; Impeccable shape 2026-09-28) |
 | The tile centred on a row with a wide control | The tile beside the label, as the kit draws it | UI-base row 128 |
 
 ## Copy
@@ -65,5 +70,6 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - Study defaults: "Study defaults" · "Cards per session" · "1 to {max} · default {n}" · "Fewer cards per session" · "More cards per session" · "Enter a number from {min} to {max}" · "New-card order" · "How new cards enter a learning session" · "Created" · "Random" · "Apply to sessions started from now on. A deck with its own study options keeps them."
 - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt".
 - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session and new-card order go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset options".
+- Sync (SB-U1): "Sync" · "{n} changes kept only on this device" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".
 - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order." · "App options reset to defaults" · "Couldn't reset the app options. Nothing changed." · "Retry".
 - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · "Retry".

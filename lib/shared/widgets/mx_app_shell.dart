@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -17,6 +18,7 @@ class MxAppShell extends StatelessWidget {
     this.bottomBar,
     this.footer,
     this.fab,
+    this.notice,
   }) : assert(
          fab == null || footer == null,
          'the Fab contract anchors a FAB to the bottom or above the nav, '
@@ -37,6 +39,11 @@ class MxAppShell extends StatelessWidget {
   /// The pinned action (MxFab), anchored by the contract's placement rule.
   final Widget? fab;
 
+  /// A standing MxFloatingNotice over the bottom of the body, 16 in from
+  /// each side and above the bottom edge (SB-U1). The body is padded below
+  /// by its height, so the end of a scroll clears it.
+  final Widget? notice;
+
   @override
   Widget build(BuildContext context) {
     final appBar = this.appBar;
@@ -55,9 +62,12 @@ class MxAppShell extends StatelessWidget {
                 context: bodyContext,
                 removeTop: appBar != null,
                 removeBottom: footer != null,
-                child: appBar == null
-                    ? SafeArea(bottom: false, child: body)
-                    : body,
+                child: _NoticeLayer(
+                  notice: notice,
+                  child: appBar == null
+                      ? SafeArea(bottom: false, child: body)
+                      : body,
+                ),
               ),
             ),
             ?footer,
@@ -105,4 +115,87 @@ final class _MxFabLocation extends FloatingActionButtonLocation {
 
   @override
   int get hashCode => hasBottomBar.hashCode;
+}
+
+/// Floats [notice] over the bottom of [child] and pads [child] below by the
+/// notice's height, measured after each layout.
+class _NoticeLayer extends StatefulWidget {
+  const _NoticeLayer({required this.notice, required this.child});
+
+  final Widget? notice;
+  final Widget child;
+
+  @override
+  State<_NoticeLayer> createState() => _NoticeLayerState();
+}
+
+class _NoticeLayerState extends State<_NoticeLayer> {
+  double _noticeHeight = 0;
+
+  void _measured(Size size) {
+    if (size.height == _noticeHeight) return;
+    setState(() => _noticeHeight = size.height);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final notice = widget.notice;
+    if (notice == null) return widget.child;
+    final media = MediaQuery.of(context);
+    final inset = media.padding.bottom;
+    final reserve = _noticeHeight == 0
+        ? 0.0
+        : _noticeHeight + AppSpacing.gutter;
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: MediaQuery(
+            data: media.copyWith(
+              padding: media.padding.copyWith(bottom: inset + reserve),
+            ),
+            child: widget.child,
+          ),
+        ),
+        PositionedDirectional(
+          start: AppSpacing.gutter,
+          end: AppSpacing.gutter,
+          bottom: AppSpacing.gutter + inset,
+          child: _SizeReporter(onSize: _measured, child: notice),
+        ),
+      ],
+    );
+  }
+}
+
+/// Reports its child's size after each layout that changes it.
+class _SizeReporter extends SingleChildRenderObjectWidget {
+  const _SizeReporter({required this.onSize, required super.child});
+
+  final ValueChanged<Size> onSize;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderSizeReporter(onSize);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderSizeReporter renderObject,
+  ) => renderObject.onSize = onSize;
+}
+
+class _RenderSizeReporter extends RenderProxyBox {
+  _RenderSizeReporter(this.onSize);
+
+  ValueChanged<Size> onSize;
+  Size? _reported;
+
+  @override
+  void performLayout() {
+    super.performLayout();
+    if (size == _reported) return;
+    _reported = size;
+    final measured = size;
+    WidgetsBinding.instance.addPostFrameCallback((_) => onSize(measured));
+  }
 }

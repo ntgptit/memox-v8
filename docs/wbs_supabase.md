@@ -99,7 +99,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Người làm | Phụ thuộc | Cỡ | Bằng chứng / ghi chú |
 |---|---|---|---|---|---|---|
-| SB-U1 | Lỗi sync không còn im lặng: ghi lại lần sync gần nhất và lỗi gần nhất (mạng, đăng nhập, RPC bị từ chối), và hiện trạng thái đó ở một chỗ người dùng xem được | chưa bắt đầu | | — | M | Bài học 2026-09-28: bản release thiếu `INTERNET` làm `signInAnonymously` thất bại mà app không báo gì. Phần màn hình ghi thêm ở `wbs_FE.md` |
+| SB-U1 | Lỗi sync không còn im lặng: ghi lại lần sync gần nhất và lỗi gần nhất (mạng, đăng nhập, RPC bị từ chối), và hiện trạng thái đó ở một chỗ người dùng xem được | xong | | — | M | [PR #138](https://github.com/ntgptit/memox-v8/pull/138); [Spec](superpowers/specs/2026-09-28-sync-status-design.md) và [plan](superpowers/plans/2026-09-28-sync-status.md). Drift schema 6: bảng `sync_rejection` và các key `last_success_at`, `last_failure_at`, `last_failure_kind`; scheduler ghi từng lượt, coordinator ghi dòng bị từ chối; màn 27 [27-sync.md](shared/ui/screen-handoff/27-sync.md), dòng Sync ở màn 23, banner ở màn 13 (hiện khi có thay đổi chờ quá 24 giờ hoặc dòng bị từ chối); test trong `test/core/sync/`, `test/drift/`, `test/features/settings/presentation/`, `test/features/study/presentation/`. Bài học 2026-09-28: bản release thiếu `INTERNET` làm `signInAnonymously` thất bại mà app không báo gì |
 
 ## Quyết định còn mở
 
@@ -116,9 +116,8 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 1. SB-O1 (chủ dự án, một lượt trên dashboard).
 2. SB-O8: chủ dự án chạy tay workflow `supabase usage` lần đầu trên `master`.
-3. SB-U1: để lỗi sync lộ ra trước khi mở rộng thêm loại dữ liệu.
-4. SB-S1 (spec) rồi SB-S2 → SB-S3 → SB-S4; SB-S5 làm được ngay sau SB-S1.
-5. SB-A1 có thể làm song song với nhóm B khi chủ dự án chọn cách đăng nhập; SB-A2
+3. SB-S1 (spec) rồi SB-S2 → SB-S3 → SB-S4; SB-S5 làm được ngay sau SB-S1.
+4. SB-A1 có thể làm song song với nhóm B khi chủ dự án chọn cách đăng nhập; SB-A2
    trở đi sau SB-A1.
 
 ## Ngữ cảnh cập nhật
@@ -140,3 +139,6 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
   trên project thật, miễn trừ `public.rls_auto_enable()` theo quyết định của chủ dự
   án). SB-O8 có workflow `supabase usage`, chờ lần chạy đầu sau merge vì GitHub chỉ
   cho chạy tay workflow đã có trên nhánh mặc định.
+- **Cập nhật ngày 2026-09-28:** SB-U1 xong: lỗi sync được ghi lại và hiện ở Settings
+  (dòng Sync), màn 27 Sync và banner ở Study home; màn và banner ghi thêm ở
+  `wbs_FE.md` (FE-B7).
