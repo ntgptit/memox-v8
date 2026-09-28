@@ -29,11 +29,18 @@ class SettingsScreen extends ConsumerWidget {
     super.key,
     required this.onOpenTheme,
     required this.onOpenLanguage,
+    required this.onOpenReminder,
+    required this.onAppOptionsReset,
     this.onOpenGallery,
   });
 
   final VoidCallback onOpenTheme;
   final VoidCallback onOpenLanguage;
+  final VoidCallback onOpenReminder;
+
+  /// After Reset app options landed: `app/` reconciles the reminder, which
+  /// the reset turned off (FE-B5 spec D7; reminders spec §9 "For FE-A3").
+  final VoidCallback onAppOptionsReset;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -68,6 +75,7 @@ class SettingsScreen extends ConsumerWidget {
               stored: value,
               onOpenTheme: onOpenTheme,
               onOpenLanguage: onOpenLanguage,
+              onOpenReminder: onOpenReminder,
             ),
             MxSection(
               title: l10n.settingsReset,
@@ -109,6 +117,9 @@ class SettingsScreen extends ConsumerWidget {
   /// Language pages say their own.
   void _say(BuildContext context, WidgetRef ref, SettingsNotice? notice) {
     if (notice == null) return;
+    if (notice is SettingsSaved && notice.kind == SettingsSubmit.reset) {
+      onAppOptionsReset();
+    }
     final l10n = context.l10n;
     void retry() => unawaited(
       ref.read(settingsControllerProvider.notifier).retry(notice.kind),

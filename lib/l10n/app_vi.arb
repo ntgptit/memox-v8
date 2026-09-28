@@ -993,9 +993,9 @@
   "settingsReset": "Đặt lại",
   "settingsResetNote": "Chỉ các tuỳ chọn ứng dụng này trở về mặc định. Bộ thẻ, thẻ, tuỳ chọn học của từng bộ thẻ và tiến độ học không bị đụng tới.",
   "settingsResetRow": "Đặt lại tuỳ chọn ứng dụng",
-  "settingsResetRowHint": "Giao diện, ngôn ngữ, mặc định khi học",
+  "settingsResetRowHint": "Giao diện, ngôn ngữ, mặc định khi học, nhắc học",
   "settingsResetTitle": "Đặt lại tuỳ chọn ứng dụng?",
-  "settingsResetBody": "Giao diện, ngôn ngữ, số thẻ mỗi phiên và thứ tự thẻ mới trở về mặc định.",
+  "settingsResetBody": "Giao diện, ngôn ngữ, số thẻ mỗi phiên, thứ tự thẻ mới và nhắc học hằng ngày (tắt, 20:00) trở về mặc định.",
   "settingsResetSafe": "Bộ thẻ, thẻ, lịch ôn và lịch sử học của bạn giữ nguyên. Đây không phải là “Đặt lại tiến độ học”.",
   "settingsResetConfirm": "Đặt lại tuỳ chọn",
   "settingsResetDone": "Đã đặt lại tuỳ chọn ứng dụng về mặc định",
@@ -1163,5 +1163,8 @@
   "reminderLaterHour": "Giờ muộn hơn",
   "reminderEarlierMinute": "Phút sớm hơn",
   "reminderLaterMinute": "Phút muộn hơn",
-  "reminderTimeSave": "Lưu"
+  "reminderTimeSave": "Lưu",
+  "settingsReminder": "Nhắc học hằng ngày",
+  "settingsReminderOff": "Tắt",
+  "settingsReminderOn": "Bật · {time}"
 }

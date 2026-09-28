@@ -5281,17 +5281,17 @@
   "@settingsResetRow": {
     "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
   },
-  "settingsResetRowHint": "Theme, language, study defaults",
+  "settingsResetRowHint": "Theme, language, study defaults, reminder",
   "@settingsResetRowHint": {
-    "description": "Line under Reset app options."
+    "description": "Line under Reset app options; names the reminder (register row 123, closed by FE-B5)."
   },
   "settingsResetTitle": "Reset app options?",
   "@settingsResetTitle": {
     "description": "Reset confirmation title."
   },
-  "settingsResetBody": "Theme, language, cards per session and new-card order go back to their defaults.",
+  "settingsResetBody": "Theme, language, cards per session, new-card order and the daily reminder (off, 20:00) go back to their defaults.",
   "@settingsResetBody": {
-    "description": "Reset confirmation body; names what the app shows (FE-A3 D4)."
+    "description": "Reset confirmation body; names what the app shows, the reminder included (FE-A3 D4; register row 123, closed by FE-B5)."
   },
   "settingsResetSafe": "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.",
   "@settingsResetSafe": {
@@ -6198,5 +6198,22 @@
   "reminderTimeSave": "Save",
   "@reminderTimeSave": {
     "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the confirm."
+  },
+  "settingsReminder": "Daily reminder",
+  "@settingsReminder": {
+    "description": "Screen 23 (FE-B5): the App section row that opens screen 24."
+  },
+  "settingsReminderOff": "Off",
+  "@settingsReminderOff": {
+    "description": "Screen 23 (FE-B5): the Daily reminder row while off."
+  },
+  "settingsReminderOn": "On · {time}",
+  "@settingsReminderOn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 23 (FE-B5): the Daily reminder row while on; {time} is HH:mm (spec D6, D9)."
   }
 }
