@@ -10,7 +10,7 @@ import 'generated/schema.dart';
 // their values intact (spec §5.3; .claude/skills/flutter-drift/references/
 // migrations.md). v3 is the Trash's (trash spec §5.3); v4 is sync's (ADR-013);
 // v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4); v6
-// records refused sync rows (SB-U1, sync status spec §4).
+// records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -110,34 +110,65 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v6', () async {
+  test('v1 upgrades to the schema of v7', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
   });
 
-  test('v2 upgrades to the schema of v6', () async {
+  test('v2 upgrades to the schema of v7', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
   });
 
-  test('v3 upgrades to the schema of v6', () async {
+  test('v3 upgrades to the schema of v7', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
   });
 
-  test('v4 upgrades to the schema of v6', () async {
+  test('v4 upgrades to the schema of v7', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
   });
 
-  test('v5 upgrades to the schema of v6', () async {
+  test('v5 upgrades to the schema of v7', () async {
     final db = AppDatabase(await verifier.startAt(5));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
+  });
+
+  test('v6 upgrades to the schema of v7', () async {
+    final db = AppDatabase(await verifier.startAt(6));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 7);
+  });
+
+  test('a v6 database queues its cards for the first card sync', () async {
+    final schema = await verifier.schemaAt(6);
+    schema.rawDatabase
+      ..execute(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+        "scheduler_version, generation, sibling_position, created_at, updated_at) "
+        "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+      )
+      ..execute('DELETE FROM sync_outbox')
+      ..execute(
+        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES "
+        "('K2', 'R', 'f', 'b', 2, 2), ('K1', 'R', 'f', 'b', 1, 1)",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 7);
+
+    final queued = await db
+        .customSelect(
+          "SELECT entity_id FROM sync_outbox WHERE entity_type = 'card' ORDER BY created_at, rowid",
+        )
+        .get();
+    expect(queued.map((r) => r.read<String>('entity_id')), ['K1', 'K2']);
   });
 
   test(
@@ -154,7 +185,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 6);
+      await verifier.migrateAndValidate(db, 7);
 
       final queued = await db
           .customSelect(
@@ -171,11 +202,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v6, the one an upgrade ends at',
+    'a new database has the schema of v7, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 6);
+      await verifier.migrateAndValidate(db, 7);
     },
   );
 
@@ -193,7 +224,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 6);
+      await verifier.migrateAndValidate(db, 7);
     });
     tearDown(() => db.close());
 
@@ -256,7 +287,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 6);
+      await verifier.migrateAndValidate(db, 7);
     });
     tearDown(() => db.close());
 

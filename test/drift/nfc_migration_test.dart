@@ -43,7 +43,7 @@ void main() {
         ...raw.select("SELECT * FROM card WHERE id = 'n'").single,
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 6);
+      await verifier.migrateAndValidate(db, 5);
     });
     tearDown(() => db.close());
 
@@ -140,7 +140,7 @@ void main() {
     );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 6);
+    await verifier.migrateAndValidate(db, 7);
 
     final tags = await db
         .customSelect('SELECT id, name, name_folded FROM tags ORDER BY id')
