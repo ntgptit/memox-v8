@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_home_controller.dart';
@@ -11,6 +13,7 @@ import 'package:memox/features/study/presentation/states/study_home_resume_state
 import 'package:memox/features/study/presentation/widgets/sections/study_home_decks_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_empty_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_resume_widget.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_home_sync_banner_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -31,6 +34,7 @@ class StudyHomeScreen extends ConsumerWidget {
     required this.onOpenDeck,
     required this.onOpenLibrary,
     required this.onOpenStarterDecks,
+    required this.onOpenSync,
   });
 
   final ValueChanged<String> onOpenSession;
@@ -38,23 +42,40 @@ class StudyHomeScreen extends ConsumerWidget {
   final VoidCallback onOpenLibrary;
   final VoidCallback onOpenStarterDecks;
 
+  /// Opens screen 27 when the sync banner's Details is tapped (SB-U1).
+  final VoidCallback onOpenSync;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final children = switch (ref.watch(studyHomeProvider)) {
+    final home = ref.watch(studyHomeProvider);
+    // Only over a loaded page and a readable status (spec §5.3, §6).
+    final sync = switch (ref.watch(syncStatusProvider)) {
+      AsyncData(:final value) => value,
+      _ => null,
+    };
+    final showsSync =
+        home is AsyncData &&
+        sync != null &&
+        needsAttention(sync, ref.watch(dayClockProvider).now());
+    final children = switch (home) {
       AsyncData(:final value) => _loaded(context, ref, value),
-      AsyncError() => [
+      AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.studyHomeErrorTitle,
           body: l10n.studyHomeErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(studyHomeProvider),
+          isRetrying: isLoading,
         ),
       ],
       _ => const [StudyHomeLoadingWidget()],
     };
     return MxAppShell(
       appBar: MxAppBar(title: l10n.studyHomeTitle),
+      notice: showsSync
+          ? StudyHomeSyncBannerWidget(status: sync, onOpenSync: onOpenSync)
+          : null,
       body: MxScreenScroll(children: children),
     );
   }

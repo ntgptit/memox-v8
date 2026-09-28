@@ -101,7 +101,7 @@ class _EditLoader extends ConsumerWidget {
           onOpenTrash: onOpenTrash,
         ),
       ),
-      AsyncError() => MxAppShell(
+      AsyncError(:final isLoading) => MxAppShell(
         appBar: bar,
         body: MxScreenScroll(
           children: [
@@ -110,6 +110,7 @@ class _EditLoader extends ConsumerWidget {
               body: l10n.libraryLoadErrorBody,
               retryLabel: l10n.commonRetry,
               onRetry: () => ref.invalidate(provider),
+              isRetrying: isLoading,
             ),
           ],
         ),

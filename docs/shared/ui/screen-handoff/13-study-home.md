@@ -14,6 +14,7 @@ snapshot. UC-STUDY-002.
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
+| Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1, V8 addition: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
 | Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); trailing `MxBadge` "{n} due" when due > 0, else a chevron. A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
 
 ## States
@@ -27,6 +28,8 @@ snapshot. UC-STUDY-002.
 | noCards | ![](img/13-study-home/noCards-light.png) | ![](img/13-study-home/noCards-dark.png) | As drawn: root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
 | loading | ![](img/13-study-home/loading-light.png) | ![](img/13-study-home/loading-dark.png) | Skeletons in the hero and row shapes; simplified — see Deviations. |
 | error | ![](img/13-study-home/error-light.png) | ![](img/13-study-home/error-dark.png) | As drawn (`MxErrorState`, retry; no table/query names — BR-STUDY-077). |
+| syncRejected | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_dark.png) | **V8 addition (SB-U1):** the sync banner, refused rows. Golden `study_home_sync_rejected_*`. |
+| syncStale | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_dark.png) | **V8 addition (SB-U1):** the sync banner, a change waiting over a day. Golden `study_home_sync_stale_*`. |
 
 Not captured: none — all seven kit states are V8-supported.
 
@@ -58,6 +61,7 @@ Not captured: none — all seven kit states are V8-supported.
 | Loading: a three-line hero skeleton, a section-header bar and a trailing pill on each row | A two-bar hero skeleton and the standard `MxSkeletonList` rows | UI-base ruling O3: one list skeleton shape app-wide; no BR calls for a bespoke one (Impeccable after P6) |
 | A deck row drops a zero term ("2 new"), falls back to "{n} cards · nothing due" when all three are zero, and draws no glyph | A deck with cards always states "0 overdue · 0 today · 2 new", a zero term muted; each term leads with its glyph (history, zap, sparkles) in its ink; a deck with no card still reads "No cards yet" | BR-STUDY-076 (three counts always shown, each with its own icon and label); BR-STUDY-077 (no workload stated for an empty deck). Fixed after P6 (Codex review on #85) |
 | The empty states' "Go to Library" carries a layers glyph; noDecks' "Browse starter decks" a sparkles glyph | No glyph | `MxEmptyState`'s action takes no icon (a shared-widget trait on every screen; Impeccable after P6) |
+| No offline or sync banner (kit v3 removed `OfflineBanner`: the product had no network then) | A floating sync notice under sync status spec R2 (UI-base register row 143) | ADR-015 brought the server; SB-U1 (owner rulings R1, R2, R7; Impeccable shape 2026-09-28) |
 | noDecks' "Go to Library" in the soft-primary tint | `MxEmptyState`'s secondary action, the neutral secondary tone | FE-A8 ruling S9: `primary-soft` is PRESERVE_ONLY in the theme binding; 01's `rootEmpty` draws its secondary action the same way |
 
 ## Accessibility
@@ -79,4 +83,5 @@ Not captured: none — all seven kit states are V8-supported.
 - Row: "{n} due".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (as drawn since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
+- Sync notice (SB-U1): "{n} changes are kept only on this device." · "Some changes haven't synced in over a day. They're safe here." · "Details".
 - Error: "Couldn't load your study overview" · "Your cards are safe on this device. You can still open Library directly."

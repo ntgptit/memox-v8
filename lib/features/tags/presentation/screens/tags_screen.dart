@@ -149,12 +149,13 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
           const SizedBox(height: AppSpacing.grouped),
           ...switch (catalog) {
             AsyncData(:final value) => _catalog(l10n, value),
-            AsyncError() => [
+            AsyncError(:final isLoading) => [
               MxErrorState(
                 title: l10n.tagsLoadErrorTitle,
                 body: l10n.libraryLoadErrorBody,
                 retryLabel: l10n.commonRetry,
                 onRetry: () => ref.invalidate(tagCatalogProvider),
+                isRetrying: isLoading,
               ),
             ],
             _ => [

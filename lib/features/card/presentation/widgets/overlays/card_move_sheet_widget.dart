@@ -103,12 +103,13 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
         emptyTitle: l10n.cardMoveEmptyTitle,
         emptyBody: l10n.cardMoveEmptyBody,
       ),
-      AsyncError() => MxBottomSheet(
+      AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(
           title: l10n.libraryLoadErrorTitle,
           body: l10n.libraryLoadErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(provider),
+          isRetrying: isLoading,
         ),
       ),
       _ => MxBottomSheet(

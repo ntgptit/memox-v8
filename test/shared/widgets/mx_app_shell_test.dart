@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import '../../support/widget_harness.dart';
@@ -213,5 +214,44 @@ void main() {
         reason: '$direction',
       );
     }
+  });
+
+  testWidgets('a notice floats over the bottom of the body', (tester) async {
+    await pumpMxPage(
+      tester,
+      const MxAppShell(
+        appBar: MxAppBar(title: 'Study'),
+        body: SizedBox.expand(key: _bodyKey),
+        notice: MxFloatingNotice(message: 'Some changes wait'),
+      ),
+    );
+    final body = tester.getRect(find.byKey(_bodyKey));
+    final notice = tester.getRect(find.byType(MxFloatingNotice));
+
+    expect(body.bottom, 800);
+    expect(notice.bottom, 800 - 16);
+    expect((notice.left, notice.right), (16, 344));
+  });
+
+  testWidgets('the body is padded below so its end clears the notice', (
+    tester,
+  ) async {
+    late double bottomPadding;
+    await pumpMxPage(
+      tester,
+      MxAppShell(
+        body: Builder(
+          builder: (context) {
+            bottomPadding = MediaQuery.paddingOf(context).bottom;
+            return const SizedBox.expand();
+          },
+        ),
+        notice: const MxFloatingNotice(message: 'Some changes wait'),
+      ),
+    );
+    await tester.pump();
+    final notice = tester.getRect(find.byType(MxFloatingNotice));
+
+    expect(bottomPadding, 800 - notice.top);
   });
 }

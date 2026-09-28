@@ -12,6 +12,9 @@ class SyncCoordinator {
     required this._api,
     required this._store,
     required List<EntitySyncAdapter> adapters,
+    this._now = DateTime.now,
+    this._pullLimit = pullPageSize,
+    this._afterPull,
   }) : _adapters = {for (final a in adapters) a.entityType: a};
 
   static const pushBatchSize = 100;
@@ -22,6 +25,9 @@ class SyncCoordinator {
   final SyncApi _api;
   final SyncStore _store;
   final Map<String, EntitySyncAdapter> _adapters;
+  final DateTime Function() _now;
+  final int _pullLimit;
+  final Future<void> Function()? _afterPull;
 
   Future<void> runOnce() async {
     final deviceId = await _store.deviceId();
@@ -29,10 +35,27 @@ class SyncCoordinator {
     await _pull();
   }
 
+  /// Try again (sync status spec §4): each refused entity goes back to the
+  /// outbox, as an upsert while it exists locally and as a delete once it
+  /// is gone. The records stay until the next push answers.
+  Future<void> requeueRejected() => _store.inTransaction(() async {
+    for (final rejection in await _store.rejections()) {
+      final adapter = _adapters[rejection.entityType];
+      if (adapter == null) continue;
+      final exists = await adapter.readRow(rejection.entityId) != null;
+      await _store.enqueue(
+        rejection.entityType,
+        rejection.entityId,
+        exists ? _upsert : _delete,
+        _now(),
+      );
+    }
+  });
+
   Future<void> _push(String deviceId) async {
     while (true) {
       final batch = await _store.pendingBatch(
-        _adapters.keys.toSet(),
+        _adapters.keys.toList(),
         pushBatchSize,
       );
       if (batch.isEmpty) {
@@ -77,11 +100,19 @@ class SyncCoordinator {
               entry.entityId,
               result.serverVersion!,
             );
+            await _store.clearRejection(entry.entityType, entry.entityId);
           } else if (result.current == null) {
             // The server never saw this row: keep it (and its cards) rather
-            // than delete data that exists nowhere else.
+            // than delete data that exists nowhere else, and list it on
+            // screen 27 (sync status spec §4).
             log(
               'Sync rejected ${entry.entityType}/${entry.entityId}: ${result.code}',
+            );
+            await _store.recordRejection(
+              entry.entityType,
+              entry.entityId,
+              result.code ?? 'UNKNOWN',
+              _now(),
             );
           } else {
             await _applyServerCopy(adapter, entry.entityId, result.current);
@@ -95,27 +126,39 @@ class SyncCoordinator {
     }
   }
 
+  /// Every page is fetched first, then applied in one transaction with keys
+  /// checked at commit: a child may come pages before its parent (spec §4.2).
+  /// A set of adapters other than the last pull's starts from 0, so a type
+  /// this build adds gets the rows the server already holds (spec §4.1).
   Future<void> _pull() async {
-    var since = await _store.since();
+    final types = (_adapters.keys.toList()..sort()).join(',');
+    var since = await _store.pullEntityTypes() == types
+        ? await _store.since()
+        : 0;
+    final changes = <SyncChangeModel>[];
     while (true) {
-      final page = await _api.changes(since, pullPageSize);
-      await _store.applyingRemote(deferForeignKeys: true, () async {
-        final pending = await _store.pendingKeys();
-        for (final change in page.changes) {
-          final adapter = _adapters[change.entityType];
-          if (adapter == null ||
-              pending.contains('${change.entityType}/${change.entityId}')) {
-            continue;
-          }
-          await _applyServerCopy(adapter, change.entityId, change);
-        }
-        await _store.setSince(page.nextSince);
-      });
+      final page = await _api.changes(since, _pullLimit);
+      changes.addAll(page.changes);
       since = page.nextSince;
       if (!page.hasMore) {
-        return;
+        break;
       }
     }
+    await _store.applyingRemote(deferForeignKeys: true, () async {
+      for (final change in changes) {
+        final adapter = _adapters[change.entityType];
+        // Asked per change: a tag merge earlier in this pull may have queued
+        // a card that a later change would overwrite (tag sync plan R7).
+        if (adapter == null ||
+            await _store.isPendingEntity(change.entityType, change.entityId)) {
+          continue;
+        }
+        await _applyServerCopy(adapter, change.entityId, change);
+      }
+      await _afterPull?.call();
+      await _store.setSince(since);
+      await _store.setPullEntityTypes(types);
+    });
   }
 
   static Future<void> _applyServerCopy(

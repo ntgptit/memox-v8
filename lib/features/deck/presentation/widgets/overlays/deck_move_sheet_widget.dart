@@ -95,12 +95,13 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
         emptyTitle: l10n.deckMoveEmptyTitle,
         emptyBody: l10n.deckMoveEmptyBody,
       ),
-      AsyncError() => MxBottomSheet(
+      AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(
           title: l10n.libraryLoadErrorTitle,
           body: l10n.libraryLoadErrorBody,
           retryLabel: l10n.commonRetry,
           onRetry: () => ref.invalidate(provider),
+          isRetrying: isLoading,
         ),
       ),
       _ => MxBottomSheet(

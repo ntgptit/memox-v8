@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
@@ -6,6 +8,7 @@ import 'package:memox/features/progress/presentation/providers/deck_progress_pro
 import 'package:memox/features/progress/presentation/screens/deck_progress_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
@@ -146,6 +149,34 @@ void main() {
 
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
     expect(reads, 2);
+  });
+
+  libraryTest('while a Retry reloads, the error stays and its Retry spins', (
+    tester,
+    env,
+  ) async {
+    var reads = 0;
+    final pending = StreamController<DeckProgress>();
+    addTearDown(pending.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen('any', _Taps()),
+      overrides: [
+        deckProgressProvider('any').overrideWith((ref) {
+          reads++;
+          return reads == 1
+              ? Stream<DeckProgress>.error(StateError('read failed'))
+              : pending.stream;
+        }),
+      ],
+    );
+    await _settle(tester);
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+
+    expect(find.text(_en.progressErrorTitle), findsOneWidget);
+    expect(tester.widget<MxButton>(find.byType(MxButton)).isLoading, isTrue);
   });
 
   libraryTest('a failed read says what failed, by the kind of failure, '

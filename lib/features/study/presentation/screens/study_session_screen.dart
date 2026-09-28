@@ -229,9 +229,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
       // The deck is gone: the listener leaves.
       AsyncData() => const MxAppShell(body: SizedBox.shrink()),
-      AsyncError() => StudySessionErrorWidget(
+      AsyncError(:final isLoading) => StudySessionErrorWidget(
         onClose: () => widget.onLeave(null),
         onRetry: _reload,
+        isRetrying: isLoading,
       ),
       _ => const StudySessionLoadingWidget(),
     };

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
@@ -18,6 +19,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/sync_fakes.dart';
 
 // Screen 13 (FE-A8 P6) against the kit's frames: its decks, with the Korean
 // name in Vietnamese (goldens render Latin and Vietnamese only).
@@ -31,6 +33,7 @@ StudyHomeScreen _screen() => StudyHomeScreen(
   onOpenDeck: (_) {},
   onOpenLibrary: () {},
   onOpenStarterDecks: () {},
+  onOpenSync: () {},
 );
 
 final _overdue = DateTime(2026, 9, 20);
@@ -188,6 +191,32 @@ void main() {
     libraryTest('study home, large text, $theme', (tester, env) async {
       await _resume(env, await _library(env));
       await shoot(tester, env, 'large_text', textScale: 2);
+    });
+    libraryTest('study home, sync rejected, $theme', (tester, env) async {
+      await _library(env);
+      await shoot(
+        tester,
+        env,
+        'sync_rejected',
+        overrides: syncOverrides(const SyncStatus(rejectedCount: 2)),
+      );
+    });
+
+    libraryTest('study home, sync stale, $theme', (tester, env) async {
+      await _library(env);
+      await shoot(
+        tester,
+        env,
+        'sync_stale',
+        overrides: syncOverrides(
+          SyncStatus(
+            pendingCount: 3,
+            oldestPendingAt: env.clock.now().subtract(
+              const Duration(hours: 30),
+            ),
+          ),
+        ),
+      );
     });
   }
 }

@@ -34,6 +34,7 @@ SettingsScreen _screen({
   onOpenLanguage: onOpenLanguage ?? () {},
   onOpenReminder: onOpenReminder ?? () {},
   onAppOptionsReset: onAppOptionsReset ?? () {},
+  onOpenSync: () {},
 );
 
 Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(

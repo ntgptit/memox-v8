@@ -29,6 +29,7 @@ abstract final class AppIcons {
   static const IconData reminderOff =
       Icons.notifications_off_outlined; // bell-off
   static const IconData offline = Icons.cloud_off_outlined; // cloud-off
+  static const IconData sync = Icons.cloud_sync_outlined; // cloud-sync
   static const IconData reorder = Icons.reorder; // list-ordered
   static const IconData dragHandle = Icons.drag_handle; // grip-horizontal
   static const IconData scheduler =
