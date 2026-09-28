@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
+import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
@@ -26,9 +27,13 @@ const _valueKey = ValueKey('mx-stepper-value');
 SettingsScreen _screen({
   VoidCallback? onOpenTheme,
   VoidCallback? onOpenLanguage,
+  VoidCallback? onOpenReminder,
+  VoidCallback? onAppOptionsReset,
 }) => SettingsScreen(
   onOpenTheme: onOpenTheme ?? () {},
   onOpenLanguage: onOpenLanguage ?? () {},
+  onOpenReminder: onOpenReminder ?? () {},
+  onAppOptionsReset: onAppOptionsReset ?? () {},
 );
 
 Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
@@ -36,8 +41,8 @@ Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
 ).watchAppSettings().first).studyDefaults.cardLimit;
 
 void main() {
-  libraryTest('the three sections show the stored values; the reminder row '
-      'is hidden until FE-B5', (tester, env) async {
+  libraryTest('the three sections show the stored values, the reminder row '
+      'included', (tester, env) async {
     await pumpLibraryScreen(tester, env, _screen());
 
     // Section titles show in capitals; their semantics keep the words.
@@ -49,7 +54,57 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
-    expect(find.textContaining('eminder'), findsNothing);
+    expect(find.text(_en.settingsReminder), findsOneWidget);
+    expect(find.text(_en.settingsReminderOff), findsOneWidget);
+  });
+
+  libraryTest('the reminder row names the time when on, and opens screen 24', (
+    tester,
+    env,
+  ) async {
+    await SettingsRepositoryImpl(env.db).saveReminder(
+      reminder: const ReminderSettings(isEnabled: true, minuteOfDay: 21 * 60),
+    );
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onOpenReminder: () => opened++),
+    );
+
+    expect(find.text(_en.settingsReminderOn('21:00')), findsOneWidget);
+    await tester.tap(find.text(_en.settingsReminder));
+    expect(opened, 1);
+  });
+
+  libraryTest('reset: onAppOptionsReset runs once on success, never on '
+      'failure', (tester, env) async {
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
+    var resets = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onAppOptionsReset: () => resets++),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+
+    store.isFailing = true;
+    await tester.tap(find.text(_en.settingsResetRow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.settingsResetConfirm));
+    await tester.pumpAndSettle();
+    expect(resets, 0);
+
+    store.isFailing = false;
+    // The failure's toast sits over the bottom row: bring the row above it.
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.settingsResetRow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.settingsResetConfirm));
+    await tester.pumpAndSettle();
+    expect(resets, 1);
+    expect(find.text(_en.settingsResetBody), findsNothing, reason: 'closed');
   });
 
   libraryTest('steps settle into one save, then "Saved" (D1)', (

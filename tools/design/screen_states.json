@@ -358,6 +358,22 @@
       ]
     },
     {
+      "num": "24",
+      "dir": "24-daily-reminder",
+      "title": "Daily reminder",
+      "states": [
+        { "id": "off", "label": "Off" },
+        { "id": "turningOn", "label": "Turning on" },
+        { "id": "on", "label": "On" },
+        { "id": "changingTime", "label": "Changing time" },
+        { "id": "permDenied", "label": "Permission denied" },
+        { "id": "couldNotSchedule", "label": "Could not schedule" },
+        { "id": "offMayShow", "label": "Off · may still show" },
+        { "id": "unavailable", "label": "Unavailable" },
+        { "id": "loading", "label": "Loading" }
+      ]
+    },
+    {
       "num": "25",
       "dir": "25-theme",
       "title": "Theme",

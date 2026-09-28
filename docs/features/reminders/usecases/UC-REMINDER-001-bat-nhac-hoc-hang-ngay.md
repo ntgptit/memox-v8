@@ -3,13 +3,14 @@ id: UC-REMINDER-001
 title: Bật nhắc học hằng ngày
 status: ready
 rules: [BR-DECK-003, BR-CORE-001, BR-CORE-002, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-003, BR-REMINDER-004, BR-REMINDER-005, BR-REMINDER-006, BR-REMINDER-007, BR-REMINDER-008, BR-REMINDER-009, BR-REMINDER-010, BR-REMINDER-011, BR-REMINDER-012, BR-STUDY-051, BR-STUDY-067, BR-STUDY-074]
-code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart, lib/features/reminders/data/repositories/android_reminder_platform_repository_impl.dart, lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart]
+code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart, lib/features/reminders/data/repositories/android_reminder_platform_repository_impl.dart, lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart, lib/features/reminders/presentation/screens/reminder_screen.dart, lib/features/reminders/presentation/controllers/reminder_controller.dart]
 ---
 ## Mục tiêu / Actor / Precondition
 
 **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở BE-B5a
 ([spec](../../../superpowers/specs/2026-09-26-reminders-backend-design.md)); adapter Android (lịch nền, notification, quyền) là BE-B5b; màn
-24 thuộc FE-B5.
+24 dựng ở FE-B5 ([spec](../../../superpowers/specs/2026-09-28-daily-reminder-ui-design.md),
+[handoff 24](../../../shared/ui/screen-handoff/24-daily-reminder.md)).
 
 **Actor:** Người dùng
 **Trigger:** Mở `Settings → Daily reminder`

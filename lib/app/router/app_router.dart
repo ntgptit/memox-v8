@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
+import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
@@ -174,14 +178,16 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
             routes: [
               GoRoute(
                 path: AppRoutes.study,
-                // Screen 13 (FE-A8): a deck and the Library open in the
-                // Library branch, as the summary's "Study this deck" does.
+                // Screen 13 (FE-A8): a deck, the Library and the Starter
+                // Library open in the Library branch, as the summary's "Study
+                // this deck" does.
                 builder: (context, state) => StudyHomeScreen(
                   onOpenSession: (sessionId) =>
                       context.go(AppRoutes.studySession(sessionId)),
                   onOpenDeck: (deckId) =>
                       context.go(AppRoutes.studyEntry(deckId)),
                   onOpenLibrary: () => context.go(AppRoutes.decks),
+                  onOpenStarterDecks: () => context.go(AppRoutes.starterDecks),
                 ),
               ),
             ],
@@ -223,6 +229,13 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                   onOpenTheme: () => context.push(AppRoutes.settingsTheme),
                   onOpenLanguage: () =>
                       context.push(AppRoutes.settingsLanguage),
+                  onOpenReminder: () =>
+                      context.push(AppRoutes.settingsReminder),
+                  // The reset turned the reminder off; the pending alarm
+                  // follows through the gate (FE-B5 spec D7).
+                  onAppOptionsReset: () => unawaited(
+                    _reconcileAfterReset(ProviderScope.containerOf(context)),
+                  ),
                   onOpenGallery: hasGallery
                       ? () => context.push(AppRoutes.gallery)
                       : null,
@@ -237,6 +250,11 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     path: AppRoutes.settingsLanguageChild,
                     parentNavigatorKey: rootNavigator,
                     builder: (context, state) => const LanguageScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsReminderChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const ReminderScreen(),
                   ),
                 ],
               ),
@@ -449,5 +467,16 @@ class _TabShell extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Reconcile after Reset app options. A refusal or a read that fails
+/// changes nothing on screen; the next start or resume reconciles again, as
+/// `app.dart` does.
+Future<void> _reconcileAfterReset(ProviderContainer container) async {
+  try {
+    await container.read(reconcileReminderProvider)();
+  } on Failure {
+    // Retried at the next start or resume.
   }
 }

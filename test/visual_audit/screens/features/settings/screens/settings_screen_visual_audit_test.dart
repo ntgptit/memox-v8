@@ -14,6 +14,8 @@ void main() {
         SettingsScreen(
           onOpenTheme: () {},
           onOpenLanguage: () {},
+          onOpenReminder: () {},
+          onAppOptionsReset: () {},
           onOpenGallery: () {},
         ),
         brightness: brightness,
