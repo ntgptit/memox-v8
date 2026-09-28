@@ -512,5 +512,9 @@ Executed inline (executing-plans) on 2026-09-28.
 - Task 5: Ruling: case 2 needs six runs (b,a,b,a,b,a), not four: B keeps its more advanced schedule and pushes it on its next run, A takes it on the run after (spec §3.4 'after at most one more push'); case 3 likewise six runs; times compared as UTC — cost if wrong: none, the test counted rounds too low
 - Task 5: complete (commits 4f69eec..1f518e4, tests: flutter test test/core/sync/ → 00:12 +106: All tests passed!)
 - Task 6: Ruling: test/drift/migration_test.dart passed the guard's 400-line limit, so the sync seed tests (v6–v9 steps) moved to test/drift/sync_seed_migration_test.dart, unchanged — cost if wrong: none
+- Task 4: note: a 16th pgTAP assertion checks that a schedule row names its own card (the `cardId` ruling).
+- Final review: fresh reviewer — ready to merge; no Critical/Important.
+- Final: minor (deferred): the R14 pgTAP case does not re-count the tombstoned card's reviews after the push.
+- Final: minor (fixed in docs): a missing full stop in the SB-S8 row; the pgTAP total below.
 
-Gate: `dod_check.sh` green (2610 tests), `tools/supabase/local_pgtap.sh` 121/121, docs check PASS.
+Gate: `dod_check.sh` green (2610 tests), `tools/supabase/local_pgtap.sh` 125/125, docs check PASS.
