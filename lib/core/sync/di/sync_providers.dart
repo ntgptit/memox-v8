@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
+import 'package:memox/core/sync/card_sync_adapter.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
@@ -41,11 +42,13 @@ SyncStore syncStore(Ref ref) => SyncStore(ref.watch(databaseProvider));
 @Riverpod(keepAlive: true)
 SyncCoordinator syncCoordinator(Ref ref) {
   final db = ref.watch(databaseProvider);
+  final cards = CardSyncAdapter(db);
   return SyncCoordinator(
     api: ref.watch(syncApiProvider),
     store: ref.watch(syncStoreProvider),
-    adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db)],
+    adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db), cards],
     now: ref.watch(dayClockProvider).now,
+    afterPull: cards.ensureSchedules,
   );
 }
 

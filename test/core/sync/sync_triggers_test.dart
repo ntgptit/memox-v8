@@ -27,11 +27,12 @@ Future<void> _child(AppDatabase db, String id, String parent) =>
       [id, parent, parent],
     );
 
-Future<void> _card(AppDatabase db, String id, String deck) => db.customStatement(
-  "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
-  "VALUES (?, ?, 'f', 'b', 0, 0)",
-  [id, deck],
-);
+Future<void> _card(AppDatabase db, String id, String deck) =>
+    db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) "
+      "VALUES (?, ?, 'f', 'b', 0, 0)",
+      [id, deck],
+    );
 
 void main() {
   late AppDatabase db;
@@ -141,9 +142,9 @@ void main() {
     await _card(db, 'K2', 'R');
     await db.customStatement("DELETE FROM deck WHERE id = 'R'");
     final cards = (await _outbox(db)).where((e) => e['entity_type'] == 'card');
-    expect({for (final e in cards) e['entity_id']: e['op']}, {
-      'K1': 'delete',
-      'K2': 'delete',
-    });
+    expect(
+      {for (final e in cards) e['entity_id']: e['op']},
+      {'K1': 'delete', 'K2': 'delete'},
+    );
   });
 }
