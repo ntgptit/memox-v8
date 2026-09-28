@@ -6093,9 +6093,9 @@
   "@reminderPreviewTitle": {
     "description": "Screen handoff 24 (FE-B5): the preview section's title."
   },
-  "reminderPreviewDeck": "한국어 TOPIK I · Từ vựng",
+  "reminderPreviewDeck": "Tiếng Hàn TOPIK I · Từ vựng",
   "@reminderPreviewDeck": {
-    "description": "Screen handoff 24 (FE-B5): the sample deck name in the preview, as the kit draws it."
+    "description": "Screen handoff 24 (FE-B5): the sample deck name in the preview; the kit writes it in Hangul, which the test fonts lack (FE-C2), so it reads as the fixtures do."
   },
   "reminderPreviewQuoted": "“{text}”",
   "@reminderPreviewQuoted": {

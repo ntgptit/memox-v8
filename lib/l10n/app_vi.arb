@@ -1140,7 +1140,7 @@
   "reminderTimeOffHint": "Bật nhắc học để chọn giờ",
   "reminderTimeButton": "Giờ nhắc, {time}",
   "reminderPreviewTitle": "Nội dung thông báo",
-  "reminderPreviewDeck": "한국어 TOPIK I · Từ vựng",
+  "reminderPreviewDeck": "Tiếng Hàn TOPIK I · Từ vựng",
   "reminderPreviewQuoted": "“{text}”",
   "reminderPreviewHint": "Chỉ tên bộ thẻ và số lượng — không bao giờ có thẻ, tag hay lịch sử, kể cả trên màn hình khoá. Mở thông báo sẽ vào tab Học.",
   "reminderDeniedTitle": "Thông báo của MemoX đang bị chặn",
