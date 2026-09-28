@@ -191,6 +191,7 @@ trả lời được mọi lookup cũ, giữ cả hai chỉ khiến mỗi insert
 | `delete_batch_id` | TEXT NULL | NULL = card đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_card_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
+| `server_version` | INTEGER NULL | Version server đã xác nhận (schema 7, SB-S2); NULL là chưa |
 
 **Hai cột `_folded` tồn tại vì `lower()` của SQLite chỉ hạ hoa ASCII.** Nó không
 đụng tới `Ô`, `Ê`, `Đ`. Search từng so `instr(lower(front), :term)` với `:term`
@@ -579,7 +580,7 @@ Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi q
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
-| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` |
+| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` \| `card` (schema 7) |
 | `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
 | `op` | TEXT NOT NULL | `upsert` \| `delete` |
 | `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
@@ -605,11 +606,18 @@ Dòng bị xoá khi entity đó được `applied` ở lần push sau, hoặc kh
 "Keep on this device" (màn 27). "Try again" đưa entity lại vào outbox (upsert nếu còn
 ở local, delete nếu đã mất) và giữ dòng tới khi server trả lời.
 
-Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck` và `delete_batches` ghi outbox
-trong cùng transaction với mọi lần ghi, kể cả CTE, cascade và purge, trừ khi có
-`applying_remote` (dữ liệu từ server). `deck.server_version` và
-`delete_batches.server_version` là version server đã xác nhận; NULL là chưa
-từng được xác nhận.
+Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck`, `delete_batches` và từ schema 7
+`card` (SB-S2) ghi outbox trong cùng transaction với mọi lần ghi, kể cả CTE, cascade
+và purge, trừ khi có `applying_remote` (dữ liệu từ server). `deck.server_version`,
+`delete_batches.server_version` và `card.server_version` là version server đã xác
+nhận; NULL là chưa từng được xác nhận.
+
+Khoá `pull_entity_types` của `sync_state` (từ SB-S2, không cần DDL) giữ các loại entity
+của lượt pull gần nhất, xếp và nối bằng dấu phẩy; lượt pull với tập loại khác bắt đầu
+lại từ `since = 0`
+([spec sync thư viện và học](../../superpowers/specs/2026-09-28-sync-library-and-study-design.md)
+§4.1). Mỗi lượt pull áp mọi trang trong một transaction, khoá ngoại kiểm khi commit
+(§4.2).
 
 ## Bất biến — phải kiểm tra được bằng query
 
