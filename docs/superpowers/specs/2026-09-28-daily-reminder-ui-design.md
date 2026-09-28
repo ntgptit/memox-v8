@@ -1,6 +1,6 @@
 # FE-B5: the Daily reminder UI — design
 
-Status: approved in chat 2026-09-28 (sections 1 and 2), written spec awaiting review ·
+Status: approved 2026-09-28 ·
 Path: architectural · Owner rulings 2026-09-28 (§3): D1, D2
 
 ## 1. Intent
