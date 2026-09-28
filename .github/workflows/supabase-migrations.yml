@@ -1,0 +1,49 @@
+# ADR-015: the migrations in supabase/migrations reach the project only through this workflow.
+name: supabase migrations
+
+on:
+  push:
+    branches: [master]
+    paths: ['supabase/migrations/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-migrations
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_PROJECT_REF: hgacyucfagsvolymlqto
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - name: secrets are set
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN or SUPABASE_DB_PASSWORD is not set; the migrations were not pushed."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: link
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: migrations before
+        run: supabase migration list
+
+      - name: push
+        run: supabase db push
+
+      - name: migrations after
+        run: supabase migration list

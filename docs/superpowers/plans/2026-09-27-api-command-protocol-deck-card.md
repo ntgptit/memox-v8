@@ -1,5 +1,9 @@
 # memox-api-services Command Protocol, Deck and Card (API-A2) Implementation Plan
 
+> **Superseded 2026-09-28** by [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md)
+> and the [Supabase backend design](../specs/2026-09-28-supabase-backend-design.md): the
+> backend is Supabase and business rules stay in the app. Kept as history.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the row-sync server into the business backend for decks and cards: push carries commands and field-group patches, and every deck and card operation runs in one service reached by both REST and replayed sync commands.

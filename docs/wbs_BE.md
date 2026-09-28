@@ -27,9 +27,9 @@
   starter decks. Media, thống kê mở rộng và iOS/web nằm ngoài V8 nên không có hạng mục
   ở đây.
 - **Đồng bộ với server:** [ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)
-  và [ADR-014](shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) đưa
-  sync và login vào V8. Phần phía app ở nhóm "Đồng bộ với server"; phần server ở
-  [`wbs_API.md`](wbs_API.md).
+  và [ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md) đưa
+  sync và login vào V8, với server là Supabase (`supabase/`). Cả phần app lẫn phần
+  server ở nhóm "Đồng bộ với server"; [`wbs_API.md`](wbs_API.md) đóng băng.
 - **Thứ tự nghiệp vụ:** [`navigation.md`](shared/ui/navigation.md) chọn luồng ôn tập
   làm vertical slice nên xây đầu tiên; foundation spec xếp lõi V8.0 theo thứ tự
   deck/card → study/review → progress.
@@ -101,18 +101,21 @@ Không còn hạng mục nào: BE-A8, hạng mục cuối, xong trong gói 5 và
 | BE-B5a | Nhắc học hằng ngày, phần logic (UC-REMINDER-001; BR-REMINDER-001…BR-REMINDER-012, BR-SETTINGS-008): giá trị nhắc trong settings, reset sáu giá trị, port tới nền tảng với adapter "không hỗ trợ", workload đọc lúc fire, digest và thứ tự BR-REMINDER-006, giờ nhắc theo giờ địa phương, sáu use case | xong | BE-03, BE-A4 | M | [spec](superpowers/specs/2026-09-26-reminders-backend-design.md) và [plan](superpowers/plans/2026-09-26-reminders-backend.md); test trong `test/features/reminders/` và `test/features/settings/` | FE-B5 dựng màn 24 trên sáu use case, sau BE-B5b |
 | BE-B5b | Nhắc học hằng ngày, phần Android: adapter của `ReminderPlatformRepository` (lịch inexact, notification id cố định, quyền Android 13+, chạm mở Study Home), manifest và gradle, entry point nền gọi `DeliverReminderUseCase`, hoà giải lúc app khởi động | đang làm | BE-B5a | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §8 và [plan](superpowers/plans/2026-09-27-local-backend-g5-android-reminder.md) gói G5: phần kiểm chứng được trên host đã xong — `AndroidReminderPlatformRepositoryImpl` trên `android_alarm_manager_plus` 5.1.1 và `flutter_local_notifications` 22.3.1, `ReminderOperationGate`, entry point nền, chạm mở Study Home, Reconcile lúc khởi động, manifest và gradle; test trong `test/features/reminders/` và `test/app/reminder_tap_test.dart` | Kiểm chứng trên thiết bị: `flutter build apk` (hoặc workflow `build-apk.yml`), nhắc bắn đúng giờ, chạm mở Study Home, sống qua reboot; gradle và manifest chưa build được trong container (xem Điểm chặn) |
 
-### Đồng bộ với server (ADR-013, ADR-014)
+### Đồng bộ với server (ADR-013, ADR-015)
 
-Phía app của §9 trong
-[spec API authority](superpowers/specs/2026-09-27-api-authority-command-sync-design.md):
-outbox đẩy lệnh và patch, pull nhận trạng thái chính thức. Mỗi hạng mục cần hạng
-mục server tương ứng trong [`wbs_API.md`](wbs_API.md). Use case vẫn chạy trên Drift
-như hiện nay; chỉ repository và tầng `data/` biết tới sync.
+Server là Supabase (`supabase/`), giao thức là mô hình hàng của
+[spec sync](superpowers/specs/2026-09-27-server-sync-design.md), và nghiệp vụ cùng
+SRS chỉ ở app ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)). Use
+case vẫn chạy trên Drift như hiện nay; chỉ repository và tầng `data/` biết tới sync.
+BE-E2…BE-E6 được viết theo mô hình lệnh của ADR-014: mỗi hạng mục sẽ được lập lại
+theo mô hình hàng trên Supabase khi tới lượt, và các phụ thuộc `API-*` của chúng
+không còn hiệu lực.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | BE-E1 | Sync deck phía app theo mô hình hàng (ADR-013 bước 3): Drift v4 với `sync_outbox`, `sync_state`, `server_version` và trigger SQLite ghi outbox trong transaction của người ghi; `Dio` dùng chung và Retrofit `SyncApi` (ADR-012); `SyncCoordinator` push rồi pull, backoff, `connectivity_plus`; adapter cho `deck` và `delete_batches`; chỉ chạy khi có `API_BASE_URL` | xong | BE-D1, API-A1 | XL | [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [spec](superpowers/specs/2026-09-27-app-deck-sync-design.md), [plan](superpowers/plans/2026-09-27-app-deck-sync.md) | Chuyển sang lệnh ở BE-E7 |
-| BE-E7 | Chuyển sync của app sang mô hình lệnh (ADR-014) cho deck **và card**: `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case sinh id deck, card, batch và ghi lệnh vào outbox; patch `study_options`, `content`, `flag`; lệnh không gộp, patch gộp theo nhóm trường; `current` là danh sách; adapter card, và đặt lại cursor pull khi thêm nó (coordinator hiện bỏ qua entity lạ mà vẫn nhích `since`); cả lượt pull trong một transaction | chưa bắt đầu | BE-E1, API-A2 | XL | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) §9; spec API authority §4 | Sau API-A2; spec của hạng mục chốt cách bắt thay đổi (xem Điểm chặn) |
+| BE-E8 | Backend Supabase cho sync deck (ADR-015): bảng và RPC `sync_push`/`sync_changes`/`ping` trong `supabase/migrations/`, RLS không policy, pgTAP; `SupabaseSyncApi` và đăng nhập ẩn danh; job CI `supabase`, workflow keep-alive | đang làm | BE-E1 | L | [spec](superpowers/specs/2026-09-28-supabase-backend-design.md), [plan](superpowers/plans/2026-09-28-supabase-backend.md) | Chủ dự án tạo project và `supabase db push` ([README](../supabase/README.md)) |
+| BE-E7 | Chuyển sync của app sang mô hình lệnh (ADR-014) cho deck **và card**: `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case sinh id deck, card, batch và ghi lệnh vào outbox; patch `study_options`, `content`, `flag`; lệnh không gộp, patch gộp theo nhóm trường; `current` là danh sách; adapter card, và đặt lại cursor pull khi thêm nó (coordinator hiện bỏ qua entity lạ mà vẫn nhích `since`); cả lượt pull trong một transaction | hoãn | BE-E1, API-A2 | XL | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) §9; spec API authority §4 | Bị thay bởi ADR-015: không làm mô hình lệnh |
 | BE-E2 | Card và Tags: lệnh card, tag và patch `content`/`flag` vào outbox; import và starter deck tách thành lệnh tạo; khi `TAG_NAME_TAKEN`, gộp tag bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox | chưa bắt đầu | BE-E7, API-B1, API-B2 | L | Spec API authority §5 | Sau BE-E7 |
 | BE-E3 | Trash: lệnh xoá, Undo, khôi phục và purge vào outbox; dọn Trash hết hạn chỉ ở local, không đẩy lên | chưa bắt đầu | BE-E2, API-B3 | M | Spec API authority §5 "Expired Trash purge" | Sau BE-E2 |
 | BE-E4 | SRS: phía Dart của bộ dữ liệu test dùng chung; `RECORD_REVIEW` (đủ trường của `ReviewTurn`), `COMPLETE_LEARNING`, `RESET_LEARNING_PROGRESS`, `CHANGE_DECK_SCHEDULER` vào outbox; `card_schedule` local là bản tạm, bị ghi đè khi pull; review của generation cũ bị từ chối thì xoá dòng local | chưa bắt đầu | BE-E2, API-B4, API-B5 | L | Spec API authority §6 | Làm cùng API-B4 |

@@ -987,14 +987,15 @@ class WorkflowContractTest(unittest.TestCase):
         )
         self.assertGreater(int(counted.group(2)), 0, "a floor of 0 lets a run of no test pass")
 
-    def test_the_api_job_runs_the_maven_gate(self) -> None:
-        """The backend is checked on every run: unit and integration tests
-        against PostgreSQL, format and coverage, all behind `./mvnw verify`."""
+    def test_the_supabase_job_runs_pgtap(self) -> None:
+        """The backend is checked on every run: the migrations apply to a
+        local Postgres and pgTAP proves the sync functions (ADR-015)."""
         _, jobs = self._workflow()
-        self.assertIn("api", jobs, "no job verifies memox-api-services")
-        api = jobs["api"]
-        self.assertIn("working-directory: memox-api-services", api)
-        self.assertIn("./mvnw -B verify", api)
+        self.assertIn("supabase", jobs, "no job verifies supabase/")
+        supabase = jobs["supabase"]
+        self.assertIn("supabase db start", supabase)
+        self.assertIn("supabase test db", supabase)
+        self.assertNotIn("api", jobs, "memox-api-services is frozen (ADR-015)")
 
     def test_ci_gate_judges_every_other_job_whatever_happened_to_it(self) -> None:
         """A job that the required check does not cover can fail without

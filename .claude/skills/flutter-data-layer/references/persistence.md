@@ -26,18 +26,17 @@ remote — that policy belongs in one place, or it will drift per screen.
 
 ## Sync and conflicts
 
-Decided once for every synced entity by ADR-013 and ADR-014, which replaced
-its push, conflict and SRS rows; a feature does not pick its own conflict
-policy. The designs are
-`docs/superpowers/specs/2026-09-27-api-authority-command-sync-design.md` and,
-for the deck slice as built,
-`docs/superpowers/specs/2026-09-27-app-deck-sync-design.md`. What a repository
+Decided once for every synced entity by ADR-013, with ADR-015 putting the
+server on Supabase and business rules and SRS in the app only; a feature does
+not pick its own conflict policy. The designs are
+`docs/superpowers/specs/2026-09-27-server-sync-design.md`, for the deck slice as
+built `docs/superpowers/specs/2026-09-27-app-deck-sync-design.md`, and for the
+server `docs/superpowers/specs/2026-09-28-supabase-backend-design.md`. What a repository
 has to know:
 
 - **A write queues itself.** Today triggers in `sync.drift` add a synced row's
   write to `sync_outbox` in the same statement, so the repository writes its
-  row and nothing else (BE-E1); ADR-014 replaces the row upserts with commands
-  and field patches (BE-E7). An entry leaves the outbox only once the server
+  row and nothing else (BE-E1); the push carries whole rows. An entry leaves the outbox only once the server
   has answered, so a push that fails loses nothing.
 - **The server settles conflicts.** An operation it refuses comes back with
   the server's copy, which replaces the local one. No device clock takes part.

@@ -34,6 +34,7 @@ fails until it does.
 | `retrofit` | 4.x | An interface per endpoint group over the shared `Dio` (ADR-012); `SyncApi` is the first. |
 | `json_annotation` | 4.x | Annotations for the `json_serializable` DTOs (ADR-012), such as `lib/core/sync/sync_models.dart`. |
 | `connectivity_plus` | 7.x | Tells sync the connection is back, so a pending push runs. It reports link state, not reachability — a captive portal reads as online. |
+| `supabase_flutter` | 2.x | The Supabase backend (ADR-015): anonymous auth and the `sync_push`/`sync_changes` RPCs, used only by `lib/core/sync/di/sync_providers.dart` and `main.dart`. |
 | `android_alarm_manager_plus` | 5.x | The daily reminder's inexact alarm on Android, rescheduled after a reboot, running a Dart callback in the background (BE-B5b). Imported only by `plugin_reminder_plugins_data_source.dart`. |
 | `flutter_local_notifications` | 22.x | Shows the daily reminder under one fixed id and carries the tap that opens Study Home (BE-B5b). Imported only by `plugin_reminder_plugins_data_source.dart`; needs core-library desugaring in gradle. |
 | ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. The row is struck rather than deleted because a session that has seen the old advice will look for it here. |

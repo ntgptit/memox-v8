@@ -114,7 +114,7 @@ Drift is the app's durable store, not a cache in front of the server, so a
 cache layer here would be a guess at a requirement that does not exist. Nor is
 sync built per feature: triggers in `sync.drift` queue a synced table's
 writes, and one app-wide `SyncCoordinator` in `lib/core/sync/` pushes and
-pulls (ADR-013, ADR-014).
+pulls (ADR-013, ADR-015).
 
 SQL goes in `.drift` files under `lib/core/database/` so `drift_dev` type-checks
 it at build time. No business SQL in Dart. Multi-step writes run inside

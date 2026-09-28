@@ -9,7 +9,7 @@ The authority for tables, columns and invariants is
 [`docs/shared/data/schema.md`](../../../../docs/shared/data/schema.md); the
 decisions behind this file are ADR-001 (the platforms), ADR-002 (sensitive
 data, no encryption), ADR-007 (UUID keys), ADR-008 (UTC), ADR-010/ADR-011 (the
-layout), and ADR-013 with ADR-014 (the server is canonical, Drift is the
+layout), and ADR-013 with ADR-015 (the server is canonical, Drift is the
 durable local store), in `docs/shared/decisions/`. Where this file and
 `schema.md` differ, `schema.md` wins.
 
@@ -157,20 +157,21 @@ possible, and each one would be expensive to retrofit:
   which is what makes adding sync's tables and columns a routine change rather
   than a gamble.
 
-ADR-013 and ADR-014 make the sync decisions once, so no feature makes them
+ADR-013 and ADR-015 make the sync decisions once, so no feature makes them
 again. Two of them shape the schema:
 
 - **The server orders conflicts, not a device clock.** Every synced row
   carries the `server_version` the server gave it; last-write-wins keyed on a
   local `updated_at` is not a policy.
 - **Not every table syncs.** `review_log` only grows and never conflicts;
-  `card_schedule` is derived and never a sync input, because the server is
-  canonical for SRS (ADR-014); the study-session tables and the reminder
+  `card_schedule` is derived: only the app computes it, replaying the review
+  log (ADR-013 #8, ADR-015); the study-session tables and the reminder
   settings stay on the device.
 
-How a change travels (commands and field patches pushed through the outbox,
-state pulled after a `server_version` cursor) is ADR-014's, with its design in
-`docs/superpowers/specs/2026-09-27-api-authority-command-sync-design.md`; the
+How a change travels (whole rows pushed through the outbox, changes pulled
+after a `server_version` cursor) is ADR-013's, with its design in
+`docs/superpowers/specs/2026-09-27-server-sync-design.md` and the Supabase
+server in `docs/superpowers/specs/2026-09-28-supabase-backend-design.md`; the
 deck slice as built is
 `docs/superpowers/specs/2026-09-27-app-deck-sync-design.md`. The database's
 part is only to make those states representable.

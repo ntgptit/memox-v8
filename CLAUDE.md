@@ -101,33 +101,20 @@ names and the Flutter version follow
 Preserve V7 business behavior and required data compatibility unless an
 approved V8 specification explicitly changes them.
 
-## Backend API: memox-api-services
+## Backend: Supabase
 
-`memox-api-services/` is the API target: the server-side sub-project of this
-monorepo. Backend work (REST endpoints, server persistence, Flyway migrations,
-API security) goes there; the Flutter app at the repo root stays the client.
+The server is a Supabase project ([ADR-015](docs/shared/decisions/ADR-015-supabase-lam-backend.md)).
+Business rules and SRS live only in the app; the server checks integrity.
 
-- **Stack**, per its `pom.xml`, which is the source of truth: Spring Boot 3
-  (3.5.x), Java 17, Maven wrapper, PostgreSQL (`compose.yaml` through
-  `spring-boot-docker-compose`) and H2, Flyway, Spring Security, Bean
-  Validation, springdoc OpenAPI 2.x, Spring REST Docs; base package
-  `com.memox`. MyBatis is not a dependency yet. Moving to Spring Boot 4 or
-  changing the stack needs an ADR.
-- **Conventions:** `spring-boot-mybatis-review` owns the layering, SQL, review
-  checklist and finding format.
-- **Package layout:** by domain, then by layer; the folder contract lives in
-  [memox-api-services/README.md](memox-api-services/README.md). Its feature
-  packages were created up front at the owner's request, an exception to
-  [No speculative structure](#no-speculative-structure).
-- **Service/ServiceImpl:** the `XxxService` interface plus `XxxServiceImpl`
-  pair is this project's convention. It is the concrete reason
-  [No speculative structure](#no-speculative-structure) asks for, so it is
-  not a speculative single-implementation interface.
-- **Gate:** `./mvnw verify` from `memox-api-services/` (`mvnw.cmd verify` in
-  PowerShell): tests, format (palantir-java-format; fix with
-  `./mvnw spotless:apply`) and line coverage ≥ 80%. CI runs it in the `api`
-  job. The Flutter gates (`dod_check.sh`, `flutter test`) do not cover it, and
-  it does not cover the app.
+- **Code:** `supabase/migrations/` (SQL and PL/pgSQL). Clients call only
+  `sync_push`, `sync_changes` and `ping`; tables have RLS on, no policy and
+  no client privilege; helpers live in the unexposed `private` schema.
+- **Gate:** `npx supabase db start` then `npx supabase test db` (pgTAP in
+  `supabase/tests/`; needs Docker). CI runs it in the `supabase` job.
+- **Owner setup:** [supabase/README.md](supabase/README.md).
+- **`memox-api-services/` is frozen:** kept as a reference for server logic
+  that may come later (sharing, secrets, heavy batch, AI), out of CI, not
+  developed. Its conventions stay in `spring-boot-mybatis-review`.
 
 ## UI source of truth
 
@@ -169,8 +156,8 @@ Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
   (ADR-010, ADR-011, ADR-012) and the guard. For example, V8 uses Riverpod
   and Drift, not BLoC or Freezed, and calls APIs through Retrofit on one shared
   Dio client (ADR-012), never with hand-written Dio calls.
-- **Java/Spring skills apply to `memox-api-services/` only**
-  ([Backend API](#backend-api-memox-api-services)), never to the Flutter app.
+- **Java/Spring skills apply to the frozen `memox-api-services/` only**
+  ([Backend](#backend-supabase)), never to the Flutter app.
   The repo's own `spring-boot-mybatis-review` skill wins over the ECC
   `springboot-*` and `jpa-patterns` skills.
 - **Skills only.** ECC's agents, rules, hooks, commands and memory are not
