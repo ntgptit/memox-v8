@@ -6,7 +6,7 @@ tên hoặc comment, nên kịch bản nào đã có test thì tìm bằng id c�
 
 ```bash
 for id in $(grep -oE '^\| IT-[A-Z]+-[0-9]+' docs/shared/testing/host-coverage-map.md | cut -c3-); do
-  grep -rqF "$id" test/ && echo "$id"
+  grep -rqF "$id" test/ integration_test/ && echo "$id"
 done | wc -l
 ```
 
@@ -15,6 +15,10 @@ nào (`HOST-FLOW`, `HOST-WIDGET` hay `DEVICE-E2E` — định nghĩa ở
 [`agent-execution-guide.md`](agent-execution-guide.md) mục 3) và truy
 vết tới UC/BR nào. `—` nghĩa là kịch bản không truy vết tới một UC/BR cụ thể
 (thường là một ranh giới nền tảng thuần tuý, không phải một luật nghiệp vụ).
+
+Tám kịch bản `DEVICE-E2E` chạy trên thiết bị bằng `tools/device/run_device_e2e.sh`
+(`integration_test/`); cách chạy và lần chạy gần nhất ở
+[device-e2e.md](device-e2e.md).
 
 | ID | Profile | Truy vết (UC/BR) |
 |---|---|---|

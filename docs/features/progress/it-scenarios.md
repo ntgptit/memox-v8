@@ -11,10 +11,11 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 - **Liên kết:** UC-DECK-003 cho cold start; UC-PROGRESS-001 và BR-PROGRESS-009 cho branch Tiến độ.
 - **Phạm vi deep link:** các bước 4–5 là điều hướng **in-process** — router phân
   giải `/progress`/`/settings` làm initial location (URL development, cùng cơ
-  chế IT-NAV-005). App **chưa** khai báo `ACTION_VIEW` intent filter, nên OS
-  handoff của một deep link lạnh chưa tồn tại để kiểm; khi intent được wiring,
-  phần đó MUST tách thành một kịch bản `DEVICE-E2E` riêng như cặp
-  IT-NAV-005 · IT-PLAT-004.
+  chế IT-NAV-005). OS handoff của deep link `memox://app/<route>` (FE-D3,
+  [spec](../../superpowers/specs/2026-09-28-device-e2e-design.md) D4) được kiểm
+  ở IT-PLAT-004 cho màn deck; `/progress` và `/settings` đi cùng đường đó. Nếu
+  cần chứng minh riêng cho hai route này, MUST tách thành một kịch bản
+  `DEVICE-E2E` như cặp IT-NAV-005 · IT-PLAT-004.
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|

@@ -222,8 +222,10 @@ Không có.
   - Test hiện có nhắc tới 68 ID: IT-CARD (1), IT-CONT (12), IT-DISC (5), IT-LEARN (10), IT-MODE (13), IT-NAV (4), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
-- **Chưa chạy:** kịch bản `DEVICE-E2E` (cần emulator hoặc thiết bị), thuộc
-  [`wbs_FE.md`](wbs_FE.md) (FE-D3). Goldens chạy trên Linux ở job `goldens` của CI.
+- **Thiết bị:** tám kịch bản `DEVICE-E2E` chạy tay bằng
+  `tools/device/run_device_e2e.sh` (FE-D3 trong [`wbs_FE.md`](wbs_FE.md);
+  [device-e2e.md](shared/testing/device-e2e.md)). Goldens chạy trên Linux ở job
+  `goldens` của CI.
 
 ## Bước tiếp theo
 
