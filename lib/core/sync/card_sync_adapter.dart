@@ -35,14 +35,18 @@ class CardSyncAdapter implements EntitySyncAdapter {
       'deleteBatchId': card.deleteBatchId,
       'createdAt': _time(card.createdAt),
       'updatedAt': _time(card.updatedAt),
+      'tagIds': await _tagIds(card.id),
     };
   }
 
   @override
-  Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) {
+  Future<void> upsertFromServer(
+    Map<String, Object?> row,
+    int serverVersion,
+  ) async {
     final front = row['front'] as String;
     final back = row['back'] as String;
-    return _db
+    await _db
         .into(_db.card)
         .insertOnConflictUpdate(
           CardCompanion.insert(
@@ -62,6 +66,19 @@ class CardSyncAdapter implements EntitySyncAdapter {
             serverVersion: Value(serverVersion),
           ),
         );
+    // R10: a row without tagIds leaves the links as they are.
+    if (row.containsKey('tagIds')) {
+      final id = row['id'] as String;
+      await (_db.delete(_db.cardTags)..where((l) => l.cardId.equals(id))).go();
+      for (final tagId in (row['tagIds'] as List).cast<String>()) {
+        await _db
+            .into(_db.cardTags)
+            .insert(
+              CardTagsCompanion.insert(cardId: id, tagId: tagId),
+              mode: InsertMode.insertOrIgnore,
+            );
+      }
+    }
   }
 
   @override
@@ -73,6 +90,15 @@ class CardSyncAdapter implements EntitySyncAdapter {
       (_db.update(_db.card)..where((c) => c.id.equals(id))).write(
         CardCompanion(serverVersion: Value(serverVersion)),
       );
+
+  Future<List<String>> _tagIds(String cardId) async => [
+    for (final link
+        in await (_db.select(_db.cardTags)
+              ..where((l) => l.cardId.equals(cardId))
+              ..orderBy([(l) => OrderingTerm(expression: l.tagId)]))
+            .get())
+      link.tagId,
+  ];
 
   /// Gives every card without a schedule the row a new card starts with
   /// (BR-CARD-004): its root's scheduler at the root's generation, nothing

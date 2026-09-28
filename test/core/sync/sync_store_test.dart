@@ -41,11 +41,12 @@ void main() {
     },
   );
 
-  test('pending keys and the since cursor', () async {
+  test('a pending entity and the since cursor', () async {
     await _root(db, 'R');
     await store.setSince(42);
 
-    expect(await store.pendingKeys(), {'deck/R'});
+    expect(await store.isPendingEntity('deck', 'R'), isTrue);
+    expect(await store.isPendingEntity('deck', 'S'), isFalse);
     expect(await store.since(), 42);
   });
 

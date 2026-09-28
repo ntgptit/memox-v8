@@ -73,11 +73,6 @@ class SyncStore {
       )..where((o) => o.opId.equals(opId))).getSingleOrNull() !=
       null;
 
-  Future<Set<String>> pendingKeys() async => {
-    for (final entry in await _db.select(_db.syncOutbox).get())
-      '${entry.entityType}/${entry.entityId}',
-  };
-
   /// Removes the entry only if no later write replaced its op id.
   Future<void> removeIfUnchanged(String opId) =>
       (_db.delete(_db.syncOutbox)..where((o) => o.opId.equals(opId))).go();

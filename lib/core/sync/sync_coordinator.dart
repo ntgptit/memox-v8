@@ -145,11 +145,12 @@ class SyncCoordinator {
       }
     }
     await _store.applyingRemote(deferForeignKeys: true, () async {
-      final pending = await _store.pendingKeys();
       for (final change in changes) {
         final adapter = _adapters[change.entityType];
+        // Asked per change: a tag merge earlier in this pull may have queued
+        // a card that a later change would overwrite (tag sync plan R7).
         if (adapter == null ||
-            pending.contains('${change.entityType}/${change.entityId}')) {
+            await _store.isPendingEntity(change.entityType, change.entityId)) {
           continue;
         }
         await _applyServerCopy(adapter, change.entityId, change);

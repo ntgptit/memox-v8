@@ -35,6 +35,7 @@ Map<String, Object?> _wire(String id, String deckId) => {
   'deleteBatchId': null,
   'createdAt': '2026-09-28T01:02:03Z',
   'updatedAt': '2026-09-28T01:02:04Z',
+  'tagIds': <String>[],
 };
 
 void main() {
@@ -104,4 +105,26 @@ void main() {
       },
     );
   }
+
+  test('tagIds read and write the card links', () async {
+    await _root(db, 'R', 'sm2');
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('b', 'b', 'b', 0), ('a', 'a', 'a', 0)",
+    );
+    await adapter.upsertFromServer({
+      ..._wire('K', 'R'),
+      'tagIds': ['b', 'a'],
+    }, 1);
+    expect((await adapter.readRow('K'))!['tagIds'], ['a', 'b']);
+
+    await adapter.upsertFromServer({
+      ..._wire('K', 'R'),
+      'tagIds': ['a'],
+    }, 2);
+    expect((await adapter.readRow('K'))!['tagIds'], ['a']);
+
+    final withoutKey = _wire('K', 'R')..remove('tagIds');
+    await adapter.upsertFromServer(withoutKey, 3);
+    expect((await adapter.readRow('K'))!['tagIds'], ['a'], reason: 'R10');
+  });
 }

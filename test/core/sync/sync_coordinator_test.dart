@@ -6,6 +6,7 @@ import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/core/sync/tag_sync_adapter.dart';
 
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
@@ -44,7 +45,12 @@ class _Device {
       store: SyncStore(db),
       adapters:
           adapters?.call(db) ??
-          [DeleteBatchSyncAdapter(db), DeckSyncAdapter(db), cards],
+          [
+            DeleteBatchSyncAdapter(db),
+            DeckSyncAdapter(db),
+            TagSyncAdapter(db, SyncStore(db)),
+            cards,
+          ],
       pullLimit: pullLimit,
       afterPull: cards.ensureSchedules,
     );
