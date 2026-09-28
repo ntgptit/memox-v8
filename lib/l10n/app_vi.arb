@@ -1155,5 +1155,13 @@
   "reminderUnavailableHint": "Bản ứng dụng này không gửi được thông báo. Không có gì để bật ở đây.",
   "reminderReadErrorTitle": "Không đọc được cài đặt nhắc học",
   "reminderReadErrorBody": "Chưa có gì thay đổi. Hãy thử đọc lại.",
-  "reminderSaveFailed": "Không lưu được nhắc học. Chưa có gì thay đổi."
+  "reminderSaveFailed": "Không lưu được nhắc học. Chưa có gì thay đổi.",
+  "reminderTimeDialogTitle": "Giờ nhắc",
+  "reminderHour": "Giờ",
+  "reminderMinute": "Phút",
+  "reminderEarlierHour": "Giờ sớm hơn",
+  "reminderLaterHour": "Giờ muộn hơn",
+  "reminderEarlierMinute": "Phút sớm hơn",
+  "reminderLaterMinute": "Phút muộn hơn",
+  "reminderTimeSave": "Lưu"
 }

@@ -10,6 +10,7 @@ import 'package:memox/features/reminders/presentation/screens/reminder_screen.da
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -248,4 +249,81 @@ void main() {
     expect(find.byType(MxToggle), findsNothing);
     expect(find.text(_en.commonRetry), findsOneWidget);
   });
+
+  libraryTest('off: the time row is disabled', (tester, env) async {
+    await _pump(tester, env);
+    await tester.tap(find.text('20:00'));
+    await _settle(tester);
+    expect(find.text(_en.reminderTimeDialogTitle), findsNothing);
+  });
+
+  libraryTest(
+    'A1: Cancel changes nothing; Save stores and schedules the new minute',
+    (tester, env) async {
+      final s = await _pump(tester, env);
+      await _toggle(tester);
+      final scheduledBefore = s.platform.pending;
+
+      await tester.tap(find.text('20:00'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.pump();
+      await tester.tap(find.text(_en.commonCancel));
+      await _settle(tester);
+      expect(find.text('20:00'), findsOneWidget);
+      expect(s.platform.pending, scheduledBefore);
+
+      await tester.tap(find.text('20:00'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.pump();
+      expect(
+        find.text('21:00'),
+        findsOneWidget,
+        reason: 'the dialog reads the chosen time',
+      );
+      await tester.tap(find.text(_en.reminderTimeSave));
+      await _settle(tester);
+      expect(find.text('21:00'), findsOneWidget);
+      expect(s.platform.pending, isNot(scheduledBefore));
+    },
+  );
+
+  libraryTest('a typed minute outside 0–59 disables Save', (tester, env) async {
+    await _pump(tester, env);
+    await _toggle(tester);
+    await tester.tap(find.text('20:00'));
+    await _settle(tester);
+
+    // The minute stepper's value; a tap makes it typeable (MxStepper).
+    await tester.tap(find.text('0').last);
+    await tester.pump();
+    await tester.enterText(find.byType(EditableText).last, '75');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+
+    final save = find.widgetWithText(MxButton, _en.reminderTimeSave);
+    expect(tester.widget<MxButton>(save).onPressed, isNull);
+  });
+
+  libraryTest(
+    'couldNotChangeTime: the old time stands, the banner names it (E3)',
+    (tester, env) async {
+      final s = await _pump(tester, env);
+      await _toggle(tester);
+      s.platform.refusing.add(PlatformCall.schedule);
+
+      await tester.tap(find.text('20:00'));
+      await _settle(tester);
+      await tester.tap(find.byTooltip(_en.reminderLaterHour));
+      await tester.tap(find.text(_en.reminderTimeSave));
+      await _settle(tester);
+
+      expect(find.text(_en.reminderCouldNotChangeTimeTitle), findsOneWidget);
+      expect(
+        find.text(_en.reminderCouldNotChangeTimeBody('20:00')),
+        findsOneWidget,
+      );
+    },
+  );
 }

@@ -9,6 +9,7 @@ import 'package:memox/features/reminders/domain/models/reminder_status_model.dar
 import 'package:memox/features/reminders/presentation/controllers/reminder_controller.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
+import 'package:memox/features/reminders/presentation/widgets/overlays/reminder_time_dialog_widget.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_banners_widget.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_preview_section_widget.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
@@ -136,6 +137,17 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     );
   }
 
-  /// Task 3 replaces this body with the dialog.
-  Future<void> _pickTime(int minuteOfDay) async {}
+  /// A1: the dialog opens on the stored time; Save changes it, Cancel
+  /// changes nothing.
+  Future<void> _pickTime(int minuteOfDay) async {
+    setState(() => _isPickingTime = true);
+    final chosen = await showReminderTimeDialog(
+      context,
+      minuteOfDay: minuteOfDay,
+    );
+    if (!mounted) return;
+    setState(() => _isPickingTime = false);
+    if (chosen == null || chosen == minuteOfDay) return;
+    await _controller.changeTime(chosen);
+  }
 }

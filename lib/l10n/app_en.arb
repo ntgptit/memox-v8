@@ -6166,5 +6166,37 @@
   "reminderSaveFailed": "Couldn't save the reminder. Nothing changed.",
   "@reminderSaveFailed": {
     "description": "Screen handoff 24 (FE-B5): a save failed (E4)."
+  },
+  "reminderTimeDialogTitle": "Reminder time",
+  "@reminderTimeDialogTitle": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): its title."
+  },
+  "reminderHour": "Hour",
+  "@reminderHour": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the hour stepper."
+  },
+  "reminderMinute": "Minute",
+  "@reminderMinute": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the minute stepper."
+  },
+  "reminderEarlierHour": "Earlier hour",
+  "@reminderEarlierHour": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the hour stepper's −."
+  },
+  "reminderLaterHour": "Later hour",
+  "@reminderLaterHour": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the hour stepper's +."
+  },
+  "reminderEarlierMinute": "Earlier minute",
+  "@reminderEarlierMinute": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the minute stepper's −."
+  },
+  "reminderLaterMinute": "Later minute",
+  "@reminderLaterMinute": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the minute stepper's +."
+  },
+  "reminderTimeSave": "Save",
+  "@reminderTimeSave": {
+    "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the confirm."
   }
 }
