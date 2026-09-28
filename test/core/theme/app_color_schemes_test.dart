@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 
 // Every V3_DEFINED role from 02-theme-binding.md, light then dark. The dark
-// primary pair follows spec 2026-09-27 D1, not the kit.
+// primary pair follows spec 2026-09-27 D1, not the kit; the light error and
+// both inversePrimary values follow FE-C1 (§9 rows 2 and 66), not the kit.
 const _v3Roles = <String, (int, int)>{
   'primary': (0xFF5265F5, 0xFF5265F5),
   'onPrimary': (0xFFFFFFFF, 0xFFFFFFFF),
@@ -17,7 +18,7 @@ const _v3Roles = <String, (int, int)>{
   'onTertiary': (0xFFFFFFFF, 0xFF240B63),
   'tertiaryContainer': (0xFFEBE3FE, 0xFF443078),
   'onTertiaryContainer': (0xFF33177E, 0xFFE6DCFF),
-  'error': (0xFFDC2D4E, 0xFFFF8FA3),
+  'error': (0xFFC02447, 0xFFFF8FA3),
   'onError': (0xFFFFFFFF, 0xFF52061B),
   'errorContainer': (0xFFFBDDE3, 0xFF7A2036),
   'onErrorContainer': (0xFF7A0A23, 0xFFFFD9DF),
@@ -35,7 +36,7 @@ const _v3Roles = <String, (int, int)>{
   'outlineVariant': (0xFFC5CBE3, 0xFF2A3267),
   'inverseSurface': (0xFF34395D, 0xFF34395D),
   'onInverseSurface': (0xFFE8EAFC, 0xFFE8EAFC),
-  'inversePrimary': (0xFF8B9AFF, 0xFF5265F5),
+  'inversePrimary': (0xFFA0ACFF, 0xFFA0ACFF),
   'scrim': (0xFF0A0E27, 0xFF000000),
   'shadow': (0xFF0F1638, 0xFF000000),
 };

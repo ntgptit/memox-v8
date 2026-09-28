@@ -294,9 +294,15 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ),
         closeLabel: l10n.studySessionClose,
         onClose: _abandon,
-        // Recall and Fill carry the mastery accent (kit; FE-A6 P4 R3).
+        // Recall and Fill carry the mastery accent (kit; FE-A6 P4 R3); its
+        // chip text is the mastered ink, as the green is 3.65:1 there (FE-C1).
         accent: switch (view.currentMode) {
           StudyMode.recall || StudyMode.fill => context.semanticColors.mastery,
+          _ => null,
+        },
+        accentInk: switch (view.currentMode) {
+          StudyMode.recall ||
+          StudyMode.fill => context.derivedColors.statusMasteredInk,
           _ => null,
         },
       ),

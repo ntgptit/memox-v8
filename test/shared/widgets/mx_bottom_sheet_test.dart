@@ -55,9 +55,8 @@ void main() {
     expect(shadow, AppShadows.chrome(scheme));
   });
 
-  testWidgets('a 36×4 outlineVariant grabber, 8 above and 4 below', (
-    tester,
-  ) async {
+  testWidgets('a 36×4 onSurfaceVariant grabber, 8 above and 4 below '
+      '(FE-C1)', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(1)));
     final bar = find.descendant(
       of: find.byKey(_grabberKey),
@@ -67,7 +66,7 @@ void main() {
     expect(tester.getSize(bar), const Size(36, 4));
     expect(
       (tester.widget<DecoratedBox>(bar).decoration as BoxDecoration).color,
-      scheme.outlineVariant,
+      scheme.onSurfaceVariant,
     );
     expect(tester.getSize(find.byKey(_grabberKey)).height, 16);
 

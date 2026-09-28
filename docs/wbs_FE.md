@@ -101,7 +101,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | bị chặn | — | M | §2 chốt "implement the handoff as written"; §9; khi quyết xong, `textContrastGuideline` vào `auditProductionScreen` | Chủ dự án quyết có sửa giá trị token của handoff không, rồi Impeccable làm |
+| FE-C1 | Contrast đạt ngưỡng: token của handoff đang dưới ngưỡng (dòng 1–4) và các phát hiện audit (dòng 30, 57–60) | xong | — | M | Chủ dự án duyệt 2026-09-28 (ảnh trước/sau): `error` sáng `#C02447`, `inversePrimary` `#A0ACFF`, chữ mastery dùng `statusMasteredInk`, glyph banner cảnh báo dùng `warningInk`, toggle tắt có viền và núm `outline`, track tiến độ `surfaceContainerLow`, grabber `onSurfaceVariant`; viền ô nhập và viền nút outline giữ như kit (miễn trừ). §9 dòng 1–4, 30, 57–60 đóng, dòng 143 ghi độ lệch; phần contrast của dòng 66 (skeleton, viền banner) nằm ngoài phạm vi đã duyệt. `textContrastGuideline` không vào `auditProductionScreen` vì đọc sai chữ 12px và nút tô nền; thay bằng `test/core/theme/token_contrast_test.dart` | — |
 | FE-C2 | Typography tiếng Việt: line-height 1.0–1.2 có thể cắt dấu chồng (dòng 5); chưa có fallback cho chữ Hangul | xong | — | M | Typography tiếng Việt: text một dòng có ellipsis dùng line-height 1.5 (`screenTitle`, `listRowTitle`, `rowSubtitle`, `tagLabel`); Hangul dùng font fallback của hệ điều hành; §9 dòng 5 đã đóng, dòng 102 ghi độ lệch | — |
 | FE-C3 | Accessibility: `MxSpinner` và `MxSkeleton` không có semantics, `MxMasteryDonut` chỉ đọc phần trăm (dòng 61); grabber của sheet không có action cho screen reader (dòng 65) | xong | — | S | UI-base debt, đợt 1: `MxSkeletonList`, tên cho spinner và donut, grabber có action đóng; §9 dòng 61, 65 đã đóng | — |
 | FE-C4 | Predictive Back trên Android 14+: đặt `android:enableOnBackInvokedCallback` (dòng 62) | xong | — | S | UI-base debt, đợt 1: `android:enableOnBackInvokedCallback`; §9 dòng 62 đã đóng | — |
@@ -146,7 +146,6 @@ so nội dung.
 
 | Hạng mục | Điểm chặn | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| FE-C1 | Quyết định "implement the handoff as written" (spec UI base §2) giữ nguyên các token dưới ngưỡng contrast | Accessibility của toàn app | Chủ dự án quyết có sửa giá trị handoff không |
 | FE-D3 | Không có emulator hoặc thiết bị | 8 kịch bản `DEVICE-E2E` | Môi trường chạy |
 
 ## Trạng thái kiểm chứng
@@ -167,7 +166,7 @@ Mọi hạng mục FE của V8.0 đã có backend (BE-A1…BE-A10 xong). Thứ t
 và phụ thuộc giữa các màn quyết định:
 
 1. Mọi màn của V8.0 đã dựng, không còn phần dở, và mọi màn trong index là `aligned`.
-2. FE-C1 sau khi có quyết định; FE-C5 khi mở lại phạm vi tablet.
+2. FE-C1 xong (2026-09-28); FE-C5 theo phương án navigation rail (chủ dự án chọn 2026-09-28).
 3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
    (starter) và FE-B5 (nhắc học, phần host) đã xong. Còn FE-B6 (nút Open system
    settings) và bước thiết bị của FE-B5, cả hai đi cùng BE-B5b.

@@ -50,11 +50,10 @@ void main() {
     expect(_ink(tester, '23 due'), scheme.onPrimary);
   });
 
-  testWidgets('each tone; a tonal warning reads in warning-ink (S3)', (
-    tester,
-  ) async {
+  testWidgets('each tone; a tonal warning reads in warning-ink (S3), a '
+      'tonal mastery in the mastered ink (FE-C1)', (tester) async {
     for (final (tone, fill, ink) in [
-      (MxBadgeTone.mastery, semantic.mastery, semantic.mastery),
+      (MxBadgeTone.mastery, semantic.mastery, derived.statusMasteredInk),
       (MxBadgeTone.danger, scheme.error, scheme.error),
       (MxBadgeTone.neutral, scheme.onSurfaceVariant, scheme.onSurfaceVariant),
       (MxBadgeTone.warning, semantic.warning, derived.warningInk),

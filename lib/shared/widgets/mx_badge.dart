@@ -47,11 +47,13 @@ class MxBadge extends StatelessWidget {
       MxBadgeTone.neutral => colors.onSurfaceVariant,
     };
     // Ruling S3: tonal warning text reads in warning-ink, because the amber
-    // fails as 12px text on a light surface.
+    // fails as 12px text on a light surface; the mastery green likewise
+    // reads in its ink (3.56:1 on its tint in light, FE-C1).
     final ink = switch ((isSolid, tone)) {
       (true, _) => colors.onPrimary,
       (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
       (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
+      (false, MxBadgeTone.mastery) => context.derivedColors.statusMasteredInk,
       (false, _) => toneColor,
     };
     return DecoratedBox(

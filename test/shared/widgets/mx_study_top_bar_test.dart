@@ -68,7 +68,7 @@ void main() {
           .first,
     );
 
-    expect(track.color, AppColorSchemes.light.surfaceContainerHigh);
+    expect(track.color, AppColorSchemes.light.surfaceContainerLow);
   });
 
   testWidgets('the fill animates over 200ms unless motion is reduced', (

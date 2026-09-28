@@ -31,9 +31,8 @@ void main() {
   final semantic = MxSemanticColors.light;
   final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('warning: amber ground, warning border, amber 16 glyph', (
-    tester,
-  ) async {
+  testWidgets('warning: amber ground, warning border, warning-ink 16 glyph '
+      '(FE-C1)', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -45,7 +44,7 @@ void main() {
     expect(_ground(tester).color, derived.warningSoft);
     expect(_ground(tester).border, Border.all(color: derived.warningBorder));
     expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, semantic.warning));
+    expect((glyph.size, glyph.color), (16, derived.warningInk));
   });
 
   testWidgets('danger: red ground, danger border, error glyph', (tester) async {

@@ -15,8 +15,9 @@ const List<double> auditTextScales = [1, 2];
 ///
 /// Each theme at each text scale must show [screen], lay out without an
 /// exception (an overflow fails the test), and meet Android's 48 dp and iOS's
-/// 44 pt tap targets, with a label on every tappable node. Text contrast joins
-/// when FE-C1 settles the palette.
+/// 44 pt tap targets, with a label on every tappable node. Contrast is checked
+/// from the tokens (`test/core/theme/token_contrast_test.dart`, FE-C1): the
+/// pixel-sampling textContrastGuideline misreads 12px text and filled buttons.
 Future<void> auditProductionScreen(
   WidgetTester tester, {
   required Type screen,

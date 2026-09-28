@@ -48,7 +48,8 @@ class MxInlineBanner extends StatelessWidget {
       MxBannerTone.warning => (
         derived.warningSoft,
         derived.warningBorder,
-        context.semanticColors.warning,
+        // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
+        derived.warningInk,
       ),
       MxBannerTone.danger => (
         derived.dangerSoft,

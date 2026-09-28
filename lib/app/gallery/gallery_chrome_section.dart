@@ -56,6 +56,7 @@ class GalleryChromeSection extends StatelessWidget {
         closeLabel: context.l10n.galleryClose,
         onClose: () {},
         accent: context.semanticColors.mastery,
+        accentInk: context.derivedColors.statusMasteredInk,
       ),
       MxBreadcrumb(
         segments: [
