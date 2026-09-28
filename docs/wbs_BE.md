@@ -107,20 +107,20 @@ Server là Supabase (`supabase/`), giao thức là mô hình hàng của
 [spec sync](superpowers/specs/2026-09-27-server-sync-design.md), và nghiệp vụ cùng
 SRS chỉ ở app ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)). Use
 case vẫn chạy trên Drift như hiện nay; chỉ repository và tầng `data/` biết tới sync.
-BE-E2…BE-E6 được viết theo mô hình lệnh của ADR-014: mỗi hạng mục sẽ được lập lại
-theo mô hình hàng trên Supabase khi tới lượt, và các phụ thuộc `API-*` của chúng
-không còn hiệu lực.
+BE-E2…BE-E6 được viết theo mô hình lệnh của ADR-014. Từ 2026-09-28 chúng được lập
+lại theo mô hình hàng trên Supabase trong [`wbs_supabase.md`](wbs_supabase.md), file
+giữ tiến độ sync và login từ nay; các dòng dưới đây ở lại làm lịch sử.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
 | BE-E1 | Sync deck phía app theo mô hình hàng (ADR-013 bước 3): Drift v4 với `sync_outbox`, `sync_state`, `server_version` và trigger SQLite ghi outbox trong transaction của người ghi; `Dio` dùng chung và Retrofit `SyncApi` (ADR-012); `SyncCoordinator` push rồi pull, backoff, `connectivity_plus`; adapter cho `deck` và `delete_batches`; chỉ chạy khi có `API_BASE_URL` | xong | BE-D1, API-A1 | XL | [PR #114](https://github.com/ntgptit/memox-v8/pull/114); [spec](superpowers/specs/2026-09-27-app-deck-sync-design.md), [plan](superpowers/plans/2026-09-27-app-deck-sync.md) | Chuyển sang lệnh ở BE-E7 |
-| BE-E8 | Backend Supabase cho sync deck (ADR-015): bảng và RPC `sync_push`/`sync_changes`/`ping` trong `supabase/migrations/`, RLS không policy, pgTAP; `SupabaseSyncApi` và đăng nhập ẩn danh; job CI `supabase`, workflow keep-alive | đang làm | BE-E1 | L | [spec](superpowers/specs/2026-09-28-supabase-backend-design.md), [plan](superpowers/plans/2026-09-28-supabase-backend.md) | Chủ dự án tạo project và `supabase db push` ([README](../supabase/README.md)) |
+| BE-E8 | Backend Supabase cho sync deck (ADR-015): bảng và RPC `sync_push`/`sync_changes`/`ping` trong `supabase/migrations/`, RLS không policy, pgTAP; `SupabaseSyncApi` và đăng nhập ẩn danh; job CI `supabase`, workflow keep-alive | xong | BE-E1 | L | [PR #123](https://github.com/ntgptit/memox-v8/pull/123); [spec](superpowers/specs/2026-09-28-supabase-backend-design.md), [plan](superpowers/plans/2026-09-28-supabase-backend.md); kiểm trên project thật ở [`wbs_supabase.md`](wbs_supabase.md) | Theo dõi tiếp ở [`wbs_supabase.md`](wbs_supabase.md) |
 | BE-E7 | Chuyển sync của app sang mô hình lệnh (ADR-014) cho deck **và card**: `sync_outbox` mang `seq`, `kind`, `type`, `payload`, `affected`; use case sinh id deck, card, batch và ghi lệnh vào outbox; patch `study_options`, `content`, `flag`; lệnh không gộp, patch gộp theo nhóm trường; `current` là danh sách; adapter card, và đặt lại cursor pull khi thêm nó (coordinator hiện bỏ qua entity lạ mà vẫn nhích `since`); cả lượt pull trong một transaction | hoãn | BE-E1, API-A2 | XL | [spec](superpowers/specs/2026-09-27-api-command-protocol-deck-card-design.md) §9; spec API authority §4 | Bị thay bởi ADR-015: không làm mô hình lệnh |
-| BE-E2 | Card và Tags: lệnh card, tag và patch `content`/`flag` vào outbox; import và starter deck tách thành lệnh tạo; khi `TAG_NAME_TAKEN`, gộp tag bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox | chưa bắt đầu | BE-E7, API-B1, API-B2 | L | Spec API authority §5 | Sau BE-E7 |
-| BE-E3 | Trash: lệnh xoá, Undo, khôi phục và purge vào outbox; dọn Trash hết hạn chỉ ở local, không đẩy lên | chưa bắt đầu | BE-E2, API-B3 | M | Spec API authority §5 "Expired Trash purge" | Sau BE-E2 |
-| BE-E4 | SRS: phía Dart của bộ dữ liệu test dùng chung; `RECORD_REVIEW` (đủ trường của `ReviewTurn`), `COMPLETE_LEARNING`, `RESET_LEARNING_PROGRESS`, `CHANGE_DECK_SCHEDULER` vào outbox; `card_schedule` local là bản tạm, bị ghi đè khi pull; review của generation cũ bị từ chối thì xoá dòng local | chưa bắt đầu | BE-E2, API-B4, API-B5 | L | Spec API authority §6 | Làm cùng API-B4 |
-| BE-E5 | Setting theo tài khoản: patch `appearance`, `study_defaults`, `study_options` của root; nhắc học giữ local | chưa bắt đầu | BE-E7, API-B6 | S | Spec API authority §5 | Sau API-B6 |
-| BE-E6 | Login phía app: interceptor auth của `Dio`, gắn dữ liệu local (`owner_id` đang `NULL`) vào tài khoản | bị chặn | BE-E7, API-C1, API-C2 | L | Spec sync §3 | Cần spec auth |
+| BE-E2 | Card và Tags: lệnh card, tag và patch `content`/`flag` vào outbox; import và starter deck tách thành lệnh tạo; khi `TAG_NAME_TAKEN`, gộp tag bằng luồng gộp sẵn có (BR-TAG-003…BR-TAG-011) và sửa id tag trong outbox | cắt | BE-E7, API-B1, API-B2 | L | Thay bởi SB-S1, SB-S3 của [`wbs_supabase.md`](wbs_supabase.md) (mô hình hàng, ADR-015) | — |
+| BE-E3 | Trash: lệnh xoá, Undo, khôi phục và purge vào outbox; dọn Trash hết hạn chỉ ở local, không đẩy lên | cắt | BE-E2, API-B3 | M | Thay bởi SB-S6 của [`wbs_supabase.md`](wbs_supabase.md) (mô hình hàng, ADR-015) | — |
+| BE-E4 | SRS: phía Dart của bộ dữ liệu test dùng chung; `RECORD_REVIEW` (đủ trường của `ReviewTurn`), `COMPLETE_LEARNING`, `RESET_LEARNING_PROGRESS`, `CHANGE_DECK_SCHEDULER` vào outbox; `card_schedule` local là bản tạm, bị ghi đè khi pull; review của generation cũ bị từ chối thì xoá dòng local | cắt | BE-E2, API-B4, API-B5 | L | Thay bởi SB-S4 của [`wbs_supabase.md`](wbs_supabase.md) (mô hình hàng, ADR-015) | — |
+| BE-E5 | Setting theo tài khoản: patch `appearance`, `study_defaults`, `study_options` của root; nhắc học giữ local | cắt | BE-E7, API-B6 | S | Thay bởi SB-S5 của [`wbs_supabase.md`](wbs_supabase.md) (mô hình hàng, ADR-015) | — |
+| BE-E6 | Login phía app: interceptor auth của `Dio`, gắn dữ liệu local (`owner_id` đang `NULL`) vào tài khoản | cắt | BE-E7, API-C1, API-C2 | L | Thay bởi SB-A1…SB-A3 của [`wbs_supabase.md`](wbs_supabase.md) (Supabase Auth, ADR-015) | — |
 
 ### Tồn đọng từ backend deck/card
 
@@ -210,7 +210,6 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
 |---|---|---|---|
 | BE-B5b | Container của agent không có Android SDK (`dl.google.com` bị chặn trong network policy) và không có thiết bị | Chưa build được APK với manifest và gradle mới; chưa thấy nhắc bắn, chạm và reboot trên thiết bị | Chủ dự án mở `dl.google.com` cho môi trường, hoặc làm BE-B5b trên máy có SDK và thiết bị |
 | BE-E7 | #114 bắt thay đổi bằng trigger vì hàng deck đổi từ nhiều nơi (repository deck, card, srs, starter, CTE cây, cascade, purge) và trigger không thể bị quên. Lệnh thì phải do use case ghi, nên có thể bị quên | Một thao tác quên ghi lệnh sẽ không bao giờ lên server | Chốt trong spec của BE-E7: use case ghi lệnh, kèm test hoặc guard bắt thay đổi không có lệnh; hay giữ trigger làm lưới an toàn |
-| BE-E6 | Chưa có spec auth | Login, gắn dữ liệu vào tài khoản | Chủ dự án mở spec auth |
 
 ## Trạng thái kiểm chứng
 
@@ -230,8 +229,7 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
 ## Bước tiếp theo
 
 1. BE-B5b: kiểm chứng trên thiết bị khi có Android SDK hoặc thiết bị (xem Điểm chặn); FE-B5 dựng màn 24 trên các use case và provider có sẵn.
-2. BE-E7 sau API-A2; rồi BE-E2…BE-E5 theo nhịp của các hạng mục server
-   trong [`wbs_API.md`](wbs_API.md).
+2. Sync và login: theo mục "Bước tiếp theo" của [`wbs_supabase.md`](wbs_supabase.md).
 
 ## Ngữ cảnh cập nhật
 
@@ -293,6 +291,10 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
   của chủ dự án, skill được sửa theo ngay trong gói. `master` cũng nhận G3 (#117);
   chủ dự án chọn giữ phần rộng hơn của 12c, cùng check V7 của G3 trong
   `tools/docs/check.py`.
+- **Cập nhật ngày 2026-09-28:** BE-E8 xong: sync deck chạy trên project Supabase thật
+  (#123, #124, #125). Tiến độ sync và login chuyển sang
+  [`wbs_supabase.md`](wbs_supabase.md); BE-E2…BE-E6 chuyển `cắt` và trỏ tới hạng mục
+  thay thế ở đó.
 - **Cập nhật cùng commit:** sửa file này trong cùng commit với việc nó mô tả.
 - **Khi nào đánh `xong`:** hạng mục đã merge; gate trong `README.md` gốc pass;
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.

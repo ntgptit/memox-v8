@@ -85,6 +85,7 @@ docs/
 ├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
 ├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
 ├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
+├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
