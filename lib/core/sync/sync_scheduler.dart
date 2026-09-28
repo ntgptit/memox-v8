@@ -9,6 +9,8 @@ class SyncScheduler {
     required this._run,
     required this._triggers,
     this._reconnects = const Stream.empty(),
+    this._onSucceeded,
+    this._onFailed,
     this.debounce = const Duration(seconds: 2),
     this.minBackoff = const Duration(seconds: 5),
     this.maxBackoff = const Duration(minutes: 5),
@@ -19,6 +21,12 @@ class SyncScheduler {
 
   /// The network came back: retry at once and forget the backoff.
   final Stream<void> _reconnects;
+
+  /// Records a run that ended without an error (sync status spec §4).
+  final Future<void> Function()? _onSucceeded;
+
+  /// Records a run's error; the scheduler still backs off.
+  final Future<void> Function(Object error)? _onFailed;
   final Duration debounce;
   final Duration minBackoff;
   final Duration maxBackoff;
@@ -28,6 +36,9 @@ class SyncScheduler {
   var _running = false;
   var _rerun = false;
   var _failures = 0;
+
+  /// Callers of [syncNow] waiting for the next run to end.
+  final _waiters = <Completer<bool>>[];
 
   void start() {
     _subscriptions
@@ -49,11 +60,29 @@ class SyncScheduler {
     _schedule(Duration.zero);
   }
 
+  /// Sync now (screen 27): forget the backoff and run at once, or right after
+  /// the run in progress. True when that run succeeded.
+  Future<bool> syncNow() {
+    final waiter = Completer<bool>();
+    _waiters.add(waiter);
+    _failures = 0;
+    if (_running) {
+      _rerun = true;
+    } else {
+      _schedule(Duration.zero);
+    }
+    return waiter.future;
+  }
+
   void dispose() {
     _timer?.cancel();
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
+    for (final waiter in _waiters) {
+      waiter.complete(false);
+    }
+    _waiters.clear();
   }
 
   Duration backoffFor(int failures) {
@@ -73,19 +102,38 @@ class SyncScheduler {
       return;
     }
     _running = true;
+    final waiting = [..._waiters];
+    _waiters.clear();
+    var succeeded = false;
     try {
       await _run();
+      succeeded = true;
       _failures = 0;
-      if (_rerun) {
-        _schedule(Duration.zero);
-      }
+      await _report(() async => _onSucceeded?.call());
     } catch (error, stackTrace) {
       _failures++;
       log('Sync failed; retrying', error: error, stackTrace: stackTrace);
-      _schedule(backoffFor(_failures));
+      await _report(() async => _onFailed?.call(error));
     } finally {
       _running = false;
+      for (final waiter in waiting) {
+        waiter.complete(succeeded);
+      }
+      if (_waiters.isNotEmpty || (succeeded && _rerun)) {
+        _schedule(Duration.zero);
+      } else if (!succeeded) {
+        _schedule(backoffFor(_failures));
+      }
       _rerun = false;
+    }
+  }
+
+  /// A report that fails is logged; it never stops sync.
+  Future<void> _report(Future<void> Function() report) async {
+    try {
+      await report();
+    } catch (error, stackTrace) {
+      log('Sync status not recorded', error: error, stackTrace: stackTrace);
     }
   }
 }
