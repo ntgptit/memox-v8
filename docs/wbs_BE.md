@@ -132,7 +132,7 @@ giữ tiến độ sync và login từ nay; các dòng dưới đây ở lại l
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | xong | — | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §7 và [plan](superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md) gói G4: 18 UC có tiêu chí Given/When/Then, mỗi tiêu chí đối chiếu với code và test; `tools/docs/check.py` báo lỗi khi một UC `ready` không có dòng Given/When/Then (`tools/docs/test_check.py`); 8 `OPEN QUESTION` ghi lệch giữa UC và code | Chủ dự án quyết 8 `OPEN QUESTION` (xem Ngữ cảnh cập nhật) |
+| BE-D4 | Acceptance criteria dạng Given/When/Then cho 22 UC; dùng chung với FE | xong | — | M | [spec](superpowers/specs/2026-09-27-local-backend-completion-design.md) §7 và [plan](superpowers/plans/2026-09-27-local-backend-g4-acceptance-criteria.md) gói G4: 18 UC có tiêu chí Given/When/Then, mỗi tiêu chí đối chiếu với code và test; `tools/docs/check.py` báo lỗi khi một UC `ready` không có dòng Given/When/Then (`tools/docs/test_check.py`); 8 `OPEN QUESTION` ghi lệch giữa UC và code | — (8 `OPEN QUESTION` đã quyết ngày 2026-09-28, xem Ngữ cảnh cập nhật) |
 
 ## Đã xong và đã kiểm chứng
 
@@ -300,3 +300,4 @@ BE-B5b: phần host xong ở gói G5; còn bước kiểm chứng trên thiết 
   `tools/docs/check.py` không có lỗi; UC liên quan có `code:` và có test chứa ID.
 - **Hoãn hoặc cắt:** giữ nguyên dòng, đổi trạng thái và ghi lý do.
 - **ID hạng mục:** không đánh số lại; hạng mục mới lấy số tiếp theo trong nhóm của nó.
+- **Cập nhật ngày 2026-09-28:** chủ dự án quyết 8 `OPEN QUESTION` của BE-D4 và 2 dòng edge case chưa gắn BR. Sửa UC theo app: UC-DECK-006 (Reorder kéo thả, Move up/down là action TalkBack), UC-STUDY-001 A5 (tổng kết trước khi về danh sách). Sửa app theo UC/BR: UC-DECK-001 A1 (hỏi trước khi bỏ deck đang tạo) và E3 (không chọn sẵn scheduler, BR-SRS-001), UC-STUDY-001 A4 (tổng kết nêu số thẻ còn đến hạn), UC-STUDY-003 E1 (`modeNotOffered` là thay đổi giữa chừng, có banner riêng), UC-PROGRESS-002 E1 (lỗi đọc theo kiểu failure). Hai edge case trích BR-DECK-014/015, BR-STUDY-008/054 và UC-STARTER-001, BR-STARTER-001/003.

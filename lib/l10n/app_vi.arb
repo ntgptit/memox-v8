@@ -1166,5 +1166,14 @@
   "reminderTimeSave": "Lưu",
   "settingsReminder": "Nhắc học hằng ngày",
   "settingsReminderOff": "Tắt",
-  "settingsReminderOn": "Bật · {time}"
+  "settingsReminderOn": "Bật · {time}",
+  "studyEntryRefusedNotOfferedTitle": "Bộ thẻ này không còn chế độ Tự đánh giá.",
+  "studyEntryRefusedNotOfferedBody": "Thuật toán ôn tập của bộ thẻ đã đổi. Hãy chọn lại chế độ ôn.",
+  "deckSchedulerRequired": "Hãy chọn cách ôn các thẻ.",
+  "deckDiscardTitle": "Bỏ bộ thẻ đang tạo?",
+  "deckDiscardBody": "Những gì bạn đã nhập sẽ không được lưu.",
+  "deckKeepEditing": "Tiếp tục nhập",
+  "deckDiscard": "Bỏ",
+  "summaryReviewAtLimitMoreBody": "Bạn đã ôn {cards} — đủ giới hạn của phiên. {more}",
+  "summaryMoreDue": "Còn {count} thẻ nữa đang đến hạn."
 }

@@ -44,7 +44,7 @@ void main() {
     decks = DeckRepositoryImpl(db, now: () => now);
     entries = studyEntryRepository(db, () => now);
     sessions = studySessionRepository(db, () => now);
-    views = StudySessionViewRepositoryImpl(db);
+    views = StudySessionViewRepositoryImpl(db, now: () => now);
   });
   tearDown(() async {
     await expectStudyInvariants(db);

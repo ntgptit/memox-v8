@@ -2,36 +2,6 @@
 
 # Open questions
 
-## [features/deck/ui.md](../features/deck/ui.md)
-
-- L79: > ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)
-
-## [features/deck/usecases/UC-DECK-001-tao-root-deck.md](../features/deck/usecases/UC-DECK-001-tao-root-deck.md)
-
-- L64: - [ ] OPEN QUESTION: A1 nói huỷ khi đã nhập dữ liệu thì hỏi xác nhận trước khi bỏ — nút Cancel đóng dialog ngay, không hỏi (`lib/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart:117`) (A1).
-- L65: - [ ] OPEN QUESTION: bước 2 và E3 nói chế độ ôn tập bắt buộc chọn, không có mặc định ngầm, và chưa chọn thì báo lỗi — dialog chọn sẵn `eight_box` (`create_root_deck_dialog_widget.dart:41`), nên người dùng tạo được deck mà không chọn và E3 không xảy ra được (BR-SRS-001, E3).
-
-## [features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md)
-
-- L63: - [ ] OPEN QUESTION: Trigger và UI nói action sheet có Move up và Move down, ẩn riêng ở deck đầu và deck cuối — action sheet có một mục Reorder mở chế độ kéo thả (`lib/features/deck/presentation/widgets/overlays/deck_action_sheet_widget.dart:163`), move up và move down chỉ là action của TalkBack (`test/features/deck/presentation/deck_reorder_test.dart`).
-
-## [features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md](../features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md)
-
-- L95: - [ ] OPEN QUESTION: E1 nói lý do hiện ra được localize theo kiểu failure — code luôn hiện cùng một tiêu đề và thân lỗi chung (`progressErrorTitle`, `progressErrorBody`) bất kể kiểu failure (`lib/features/progress/presentation/screens/deck_progress_screen.dart:47-54`) (E1).
-
-## [features/starter-decks/ui.md](../features/starter-decks/ui.md)
-
-- L22: > ⚠️ OPEN QUESTION: 1 dòng edge case trên không trích BR nào trong nguồn. (Plan Q5)
-
-## [features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md)
-
-- L172: - [ ] OPEN QUESTION: A5 nói xoá deck đang ôn dở thì kết thúc phiên và quay về danh sách — app hiện màn tổng kết "Ended — content moved to Trash" trước (`lib/features/study/presentation/states/session_ending_state.dart:61`, `summaryContentDeleted`) (A5).
-- L178: - [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).
-
-## [features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md](../features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md)
-
-- L94: - [ ] OPEN QUESTION: E1 nói khi `self_assess` không còn được offer lúc sheet đang mở thì sheet hiện một dòng lỗi và giữ nguyên lựa chọn, như các trường hợp "đổi giữa chừng" khác — `StudyRejection.modeNotOffered` không nằm trong `_changedMeanwhile` (`lib/features/study/presentation/controllers/study_entry_controller.dart:22-30`), nên trường hợp này hiện như một lần mở thất bại chung (BR-SRS-003, BR-STUDY-015, E1).
-
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions

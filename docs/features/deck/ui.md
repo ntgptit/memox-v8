@@ -70,10 +70,9 @@ Không thao tác nào của deck ghi cột này.
 
 Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại — client validation là trải nghiệm, không phải bảo mật.
 
-## Edge case chưa gắn BR
+## Edge case
 
 | Case | Expected behaviour |
 |---|---|
-| Deck rỗng (0 card) | Empty state với hành động phù hợp `content_type`; không vào được phiên nào |
+| Deck rỗng (0 card) | Empty state với hành động phù hợp `content_type` (BR-DECK-014, BR-DECK-015); không vào được phiên nào (BR-STUDY-008, BR-STUDY-054) |
 
-> ⚠️ OPEN QUESTION: dòng edge case trên không trích BR nào trong nguồn (`business-rules/deck.md` mục Edge cases). (Plan Q5)

@@ -146,25 +146,28 @@ Mỗi shared widget:
 Cho mỗi component pair:
 
 ```
-FilledButtonTheme       ↔ MxActionButton
-OutlinedButtonTheme     ↔ MxActionButton.secondary
-TextButtonTheme         ↔ MxTextButton
+TextButtonTheme         ↔ MxButton (mọi tone: primary, secondary, outline,
+                          destructive, dangerSoft, warning; TextButton +
+                          appButtonStyle)
+FilledButtonTheme       ↔ — (slot có trong app_theme.dart; V8 không có Mx riêng,
+OutlinedButtonTheme     ↔    MxButton phủ cả hai)
 IconButtonTheme         ↔ MxIconButton
-CardTheme               ↔ MxCard
-ListTileTheme           ↔ MxListTile
-ChipTheme               ↔ MxPillButton / chips
-InputDecorationTheme    ↔ MxTextField
-NavigationBarTheme      ↔ MxNavigationBar
-CheckboxTheme           ↔ MxCheckbox
-RadioTheme              ↔ MxRadio
-SwitchTheme             ↔ MxSwitch
-DialogTheme             ↔ Mx*Dialog
-BottomSheetTheme        ↔ MxActionSheet
-PopupMenuTheme          ↔ MxPopupMenu
-ProgressIndicatorTheme  ↔ MxLoadingIndicator
-SegmentedButtonTheme    ↔ MxSegmentedControl
-SliderTheme             ↔ MxSlider
-TabBarTheme             ↔ MxTabs
+InputDecorationTheme    ↔ MxTextField / MxSearchField
+DialogTheme             ↔ MxDialog + showMxDialog
+BottomSheetTheme        ↔ MxBottomSheet
+SnackBarTheme           ↔ showMxSnackbar
+CardTheme               ↔ MxCard            (chưa có slot trong app_theme.dart)
+ListTileTheme           ↔ MxListRow         (chưa có slot)
+ChipTheme               ↔ MxFilterChip / MxTagChip / MxChipTrigger (chưa có slot)
+NavigationBarTheme      ↔ MxBottomNav       (không dùng NavigationBar; chưa có slot)
+CheckboxTheme           ↔ MxSelectionCheckbox (chưa có slot)
+RadioTheme              ↔ MxOptionRow       (chưa có slot)
+SwitchTheme             ↔ MxToggle          (chưa có slot)
+ProgressIndicatorTheme  ↔ MxSpinner / MxLinearProgress / MxSkeleton* (chưa có slot)
+SegmentedButtonTheme    ↔ MxSegmentedTray   (chưa có slot)
+PopupMenuTheme          ↔ — (chưa dựng)
+SliderTheme             ↔ — (chưa dựng)
+TabBarTheme             ↔ — (chưa dựng)
 ```
 
 Test:

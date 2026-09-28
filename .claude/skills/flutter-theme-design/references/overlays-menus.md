@@ -27,7 +27,8 @@ Raw: `Dialog`, `AlertDialog`.
 
 ### Shared widgets
 
-`MxAlertDialog`, `MxConfirmDialog`, `MxAsyncConfirmDialog`.
+`MxDialog` (`MxDialogWidth.small/medium/large`) mở bằng `showMxDialog<T>()`;
+hành động dưới dialog là `MxSheetActions` (cặp Cancel/Confirm, hoặc `.custom`).
 
 - [ ] Width metrics centralized.
 - [ ] Header/body/footer spacing centralized.
@@ -210,15 +211,15 @@ cầu tooltip/accessibility label khi necessary.
 - [ ] Error/success không tạo tùy ý một snack family khác nếu design chưa
       định nghĩa.
 
-### Shared API: `MxSnackBar` hoặc `MxMessenger`
+### Shared API: `showMxSnackbar`
 
-Nên ưu tiên service/helper API:
+V8 dùng một hàm helper (`lib/shared/widgets/mx_snackbar.dart`):
 
 ```dart
-MxMessenger.success(...)
-MxMessenger.error(...)
-MxMessenger.info(...)
+showMxSnackbar(context, message: ..., actionLabel: ..., onAction: ...);
 ```
+
+Chưa có biến thể theo tone (success/error/info); thêm khi product cần.
 
 - [ ] Duration policy.
 - [ ] Semantic announcements.

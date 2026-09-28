@@ -46,7 +46,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 ## Capabilities and Constraints
 
-- **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with the MemoX backend (`memox-api-services`) when connectivity is available. The backend is the canonical cross-device store; the local database is the device's operational store, online or offline (`ADR-013`). Login comes later; deck sharing and role permissions remain out of scope.
+- **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with a Supabase project when connectivity is available (`ADR-013`, `ADR-015`). The server is the canonical cross-device store and checks integrity only; business rules and SRS live in the app alone. Decks sync today; each install signs in anonymously until login lands. Deck sharing and role permissions remain out of scope. `memox-api-services/` is frozen as a reference (`ADR-015`).
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
 - **Phones only, for now.** Tablet layouts (navigation rail, two-pane, wide layouts) are deferred by the owner (2026-09-24). On a tablet the app only needs to stay usable; the adaptive gap stays recorded in spec §9 row 63 until tablets are picked up.
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
@@ -58,7 +58,7 @@ This is not a market product. It is a personal app its owner builds so they can 
   - Datetimes are stored in UTC (`ADR-008`).
 - **Cards are text only.** Audio and images are out of MVP.
 - **In scope for V8.0 (`docs/features/*/README.md`):** deck, card, srs, study-mode, study, progress, settings, search (`ADR-009`), card tags (`ADR-009`).
-- **Deferred sub-projects:** full tag management, starter decks, daily reminders (opt-in, off by default), CSV/TSV/XLSX import and export, and Trash (today a delete cascades permanently).
+- **Built after V8.0:** full tag management, starter decks (development fixtures, not production content), daily reminders (opt-in, off by default; Android only, the on-device check pending), CSV/TSV/XLSX import and export, and Trash (a delete is recoverable for 30 days, `BR-TRASH-009`). Progress: `docs/wbs_FE.md`, `docs/wbs_BE.md`; sync and login: `docs/wbs_supabase.md`.
 - **No V7 data compatibility or migration.** V7 is an architecture reference only (`CLAUDE.md`).
 
 ## Brand Commitments
@@ -72,7 +72,8 @@ This is not a market product. It is a personal app its owner builds so they can 
 ## Evidence on Hand
 
 - The V3 design handoff: foundations, theme binding and 46 widget contracts (`docs/shared/ui/design-handoff/`).
-- Component goldens for the implemented UI, light and dark, at 3x (`test/shared/widgets/goldens/`, `test/app/goldens/`).
+- Goldens for the implemented UI, light and dark, at 3x: components (`test/shared/widgets/goldens/`, `test/app/goldens/`) and every screen (`test/features/*/presentation/goldens/`), written on Linux.
+- The kit's screens and states as images (`docs/shared/ui/screen-handoff/img/`), and each screen's detail file with its deviations (`docs/shared/ui/screen-handoff/`).
 - The phase 6 native audit: score 13/20, findings in spec §9 rows 56–66 (`docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`).
 - There are no testimonials, users, pricing, monetization, marketing screenshots, press, or production starter-deck content. Future work must not fabricate any of them.
 

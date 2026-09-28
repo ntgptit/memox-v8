@@ -1,25 +1,32 @@
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
+import 'package:memox/features/study/data/datasources/study_session_dao.dart';
 import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/data/mappers/study_session_view_mapper.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/repositories/study_session_view_repository.dart';
 import 'package:memox/features/study_mode/domain/models/match_mode.dart';
+import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 /// Reads the session screen (UC-STUDY-001 steps 6–13): one Drift `watch()` on
 /// the session row, and the rest of the screen read in the same emission.
 final class StudySessionViewRepositoryImpl
     implements StudySessionViewRepository {
-  StudySessionViewRepositoryImpl(AppDatabase db)
+  StudySessionViewRepositoryImpl(AppDatabase db, {DateTime Function()? now})
     : _queue = StudyQueueDao(db),
-      _views = StudyViewDao(db);
+      _views = StudyViewDao(db),
+      _sessions = StudySessionDao(db),
+      _now = now ?? DateTime.now;
 
   final StudyQueueDao _queue;
   final StudyViewDao _views;
+  final StudySessionDao _sessions;
+  final DateTime Function() _now;
 
   @override
   Stream<StudySessionView?> watchSession(String sessionId) => _views
@@ -41,15 +48,34 @@ final class StudySessionViewRepositoryImpl
         counts: null,
       );
     }
+    final counts = await _views.summaryCounts(
+      session.id,
+      lapseActions: lapseActionsOf(SchedulerType.fromCode(row.schedulerType)),
+    );
     return studySessionViewOf(
       row,
       modes: modes,
       served: null,
-      counts: await _views.summaryCounts(
-        session.id,
-        lapseActions: lapseActionsOf(SchedulerType.fromCode(row.schedulerType)),
-      ),
+      counts: counts,
+      remainingDueCount: await _remainingDueOf(session, counts),
     );
+  }
+
+  /// UC-STUDY-001 A4: a review cut at its card_limit counts the cards of its
+  /// tree still due now; anything else is zero, with no read.
+  Future<int> _remainingDueOf(
+    StudySession session,
+    SummaryCounts counts,
+  ) async {
+    if (session.sessionKind != SessionKind.reviewing.name) return 0;
+    if (counts.cardCount < session.cardLimit) return 0;
+    final now = _now();
+    final subtree = await _sessions.subtreeCounts(
+      session.deckId,
+      now,
+      startOfToday: startOfLocalDay(now),
+    );
+    return subtree.dueCount;
   }
 
   /// The row [session] serves, with its card and the counts of its round,

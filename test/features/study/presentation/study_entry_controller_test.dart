@@ -81,6 +81,32 @@ void main() {
     expect(env.entries.opened, 1);
   });
 
+  test('self-assess no longer offered is refused as a change meanwhile, '
+      'not a failed start (UC-STUDY-003 E1)', () async {
+    final leaf = await sm2Leaf(env.db, env.decks, dueCards: 2);
+    final controller = controllerOf(leaf);
+    // The root's scheduler changed while the direction sheet was open.
+    await env.db.customStatement(
+      "UPDATE deck SET scheduler_type = 'eight_box' "
+      'WHERE scheduler_type IS NOT NULL',
+    );
+
+    final id = await controller.start(
+      const ReviewStart(
+        mode: StudyMode.selfAssess,
+        direction: DirectionChoice.mixed,
+      ),
+    );
+
+    expect(id, isNull);
+    expect(stateOf(leaf).status, StudyStartStatus.refused);
+    expect(stateOf(leaf).refusal, StudyRejection.modeNotOffered);
+    // Back to the scheduler its cards follow, for the teardown's invariants.
+    await env.db.customStatement(
+      "UPDATE deck SET scheduler_type = 'sm2' WHERE scheduler_type IS NOT NULL",
+    );
+  });
+
   test('nothing left to review is refused, with its reason', () async {
     final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
     final controller = controllerOf(leaf);

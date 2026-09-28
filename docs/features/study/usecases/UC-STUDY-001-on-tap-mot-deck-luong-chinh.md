@@ -104,7 +104,9 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
   đúng nhánh này, và nó khác `user_exit`: người dùng không hề bỏ cuộc.
 - **A4 — Còn card quá hạn ngoài giới hạn 50:** ở tổng kết nói rõ còn bao nhiêu và
   cho phép bắt đầu phiên tiếp theo ngay.
-- **A5 — Xoá deck đang ôn dở:** kết thúc phiên, quay về danh sách.
+- **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng kết
+  "Ended — content moved to Trash", rồi người dùng về danh sách (quyết định của chủ
+  dự án 2026-09-28, như D8 của spec study UI: thoát giữa phiên hiện tổng kết).
 
 **Error flows:**
 - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUDY-008),
@@ -169,10 +171,10 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** người dùng thoát giữa phiên, **when** thoát, **then** phiên thành `abandoned` với `end_reason = user_exit`, và mọi lượt đã ghi vẫn giữ (BR-STUDY-004, BR-STUDY-014, BR-STUDY-019, A3).
 - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng ngày học, **then** Continue phục hồi đúng thẻ, thứ tự và số lượt đã dùng; mở lại ở ngày học khác thì phiên cũ thành `abandoned` với `end_reason = interrupted` (BR-STUDY-021, BR-STUDY-072, A3b).
 - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, **then** phiên kết thúc với `end_reason = content_deleted`, và Continue trên phiên đó bị từ chối (A5).
-- [ ] OPEN QUESTION: A5 nói xoá deck đang ôn dở thì kết thúc phiên và quay về danh sách — app hiện màn tổng kết "Ended — content moved to Trash" trước (`lib/features/study/presentation/states/session_ending_state.dart:61`, `summaryContentDeleted`) (A5).
+- [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xoá, **then** màn tổng kết nói phiên đã kết thúc vì nội dung vào Trash, và từ đó người dùng về danh sách (A5).
 - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lối Ôn tập không mở được, hệ thống hiện thời điểm thẻ gần nhất đến hạn như một trạng thái bình thường, và không tạo phiên (BR-STUDY-008, E1).
 - [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đúng action đó, **then** lượt được ghi đúng một lần, không chuyển thẻ trước khi ghi được, và phiên vẫn `in_progress` (BR-STUDY-004, E2).
 - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống xử lý, **then** phiên thành `failed` với `end_reason = persistence_error`, và các lượt đã ghi trước đó vẫn giữ (BR-STUDY-018, BR-STUDY-019, E3).
 - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả lời hoặc Continue, **then** hệ thống từ chối ghi, phiên thành `invalidated` với `end_reason = stale_generation`, và không phần nào của lượt đó được ghi (BR-SRS-026, BR-STUDY-017, E4).
 - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hiện lỗi, và Retry đọc lại (E5).
-- [ ] OPEN QUESTION: A4 nói tổng kết nói rõ còn bao nhiêu card quá hạn ngoài giới hạn phiên — tổng kết chỉ nói phiên đã chạm giới hạn (`summaryReviewAtLimitBody`, `lib/l10n/app_en.arb`), không nêu số thẻ còn lại (A4).
+- [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạn, **when** tổng kết hiện, **then** nó nói số thẻ còn đến hạn ("34 more cards are due.") và "Study this deck" mở phiên tiếp theo; dưới giới hạn thì không nêu số này (A4).

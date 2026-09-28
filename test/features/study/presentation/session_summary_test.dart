@@ -213,6 +213,37 @@ void main() {
     );
   });
 
+  libraryTest('a review at its card_limit says how many cards are still '
+      'due (UC-STUDY-001 A4)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        summary: const SessionSummary(
+          cardCount: 20,
+          learnedCardCount: null,
+          wrongTurnCount: 2,
+          answeredCardCount: 20,
+          turnCount: 22,
+          cardLimit: 20,
+          remainingDueCount: 34,
+        ),
+      ),
+      SummaryOutcome.reviewFinished,
+    );
+
+    expect(
+      find.text(
+        _en.summaryReviewAtLimitMoreBody(
+          _en.summaryCards(20),
+          _en.summaryMoreDue(34),
+        ),
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+  });
+
   libraryTest('a review under its card_limit keeps the plain body', (
     tester,
     env,

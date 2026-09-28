@@ -33,6 +33,12 @@ class StudyEntryBannerWidget extends StatelessWidget {
           l10n.studyEntryRefusedModeTitle,
           l10n.studyEntryRefusedModeBody,
         ),
+        // The root's scheduler changed under the direction sheet
+        // (UC-STUDY-003 E1).
+        StudyRejection.modeNotOffered => (
+          l10n.studyEntryRefusedNotOfferedTitle,
+          l10n.studyEntryRefusedNotOfferedBody,
+        ),
         // A Continue on a session that ended, expired or was reset.
         _ => (
           l10n.studyEntryRefusedSessionTitle,

@@ -198,6 +198,7 @@ final class SessionSummary {
     required this.answeredCardCount,
     required this.turnCount,
     required this.cardLimit,
+    this.remainingDueCount = 0,
   });
 
   /// The distinct cards of the queue.
@@ -220,6 +221,11 @@ final class SessionSummary {
   /// The ceiling on the queue, fixed when the session opened
   /// (BR-STUDY-024).
   final int cardLimit;
+
+  /// A review cut at [cardLimit]: the cards of its tree still due when the
+  /// summary is read, so the person knows another session has work
+  /// (UC-STUDY-001 A4). Zero otherwise.
+  final int remainingDueCount;
 
   /// Nothing was answered: the summary shows no stats (FE-A6 D18).
   bool get hasAnswers => turnCount > 0;
