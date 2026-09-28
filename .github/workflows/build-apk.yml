@@ -42,11 +42,21 @@ jobs:
       - name: generate
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # ADR-015: sync runs only when the build defines both values
+      # (lib/core/network/supabase_config.dart); the file lives outside the checkout.
       - name: build APK
         id: build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
         run: |
           set -euo pipefail
-          flutter build apk --release
+          if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_PUBLISHABLE_KEY" ]]; then
+            echo "::warning::SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is not set; this APK builds without sync."
+          fi
+          defines="$RUNNER_TEMP/dart-defines.json"
+          jq -n '{SUPABASE_URL: env.SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY: env.SUPABASE_PUBLISHABLE_KEY}' > "$defines"
+          flutter build apk --release --dart-define-from-file="$defines"
           sha8="${GITHUB_SHA:0:8}"
           name="memox-${GITHUB_RUN_NUMBER}-${sha8}.apk"
           mv build/app/outputs/flutter-apk/app-release.apk "$name"
