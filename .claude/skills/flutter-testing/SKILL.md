@@ -195,6 +195,13 @@ Three defect classes deserve a test of their own:
 Deep links and cold start are the highest-value cases here, because they are the
 ones nobody exercises during development — you already have the app open.
 
+Device scenarios (`DEVICE-E2E`) live in `integration_test/`, one file per phase,
+and run by hand with `tools/device/run_device_e2e.sh` on an Android emulator or
+phone (`docs/shared/testing/device-e2e.md`). A phase finds text through the
+running tree's `AppLocalizations`, never a literal; it builds its fixture through
+the UI; and it talks to the runner with `MEMOX-E2E:` lines (a real system Back, a
+value for a later phase, a screenshot before a failure).
+
 Flutter Web plus Playwright is a reasonable way to run flows early and cheaply,
 but it is not a substitute: platform channels, secure storage, SQLite and deep
 links all behave differently. Run the suite on a real Android and iOS device

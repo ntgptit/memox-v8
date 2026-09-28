@@ -24,4 +24,21 @@ void main() {
       contains('<uses-permission android:name="android.permission.INTERNET"/>'),
     );
   });
+
+  // FE-D3 spec D4: memox://app/<route> opens the route from the OS.
+  test('MainActivity takes memox://app deep links', () {
+    final manifest = File('android/app/src/main/AndroidManifest.xml')
+        .readAsStringSync();
+    final filter = RegExp(
+      r'<intent-filter>(?:(?!</intent-filter>).)*android\.intent\.action\.VIEW'
+      r'(?:(?!</intent-filter>).)*</intent-filter>',
+      dotAll: true,
+    ).firstMatch(manifest)?.group(0);
+
+    expect(filter, isNotNull);
+    expect(filter, contains('android.intent.category.DEFAULT'));
+    expect(filter, contains('android.intent.category.BROWSABLE'));
+    expect(filter, contains('android:scheme="memox"'));
+    expect(filter, contains('android:host="app"'));
+  });
 }

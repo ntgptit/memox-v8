@@ -1804,7 +1804,8 @@
   "deckRowEmpty": "Empty · add cards or a sub-deck",
   "@deckRowEmpty": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckRowEmpty."
-  },  "deckRowMastered": "{percent}% mastered",
+  },
+  "deckRowMastered": "{percent}% mastered",
   "@deckRowMastered": {
     "placeholders": {
       "percent": {
@@ -1822,7 +1823,6 @@
     },
     "description": "Screen handoff 01: the open deck's summary overline beside the mastery donut."
   },
-
   "deckDueBadge": "{count} due",
   "@deckDueBadge": {
     "placeholders": {
@@ -6447,5 +6447,13 @@
   "studyHomeSyncDetails": "Details",
   "@studyHomeSyncDetails": {
     "description": "Screen 13 (SB-U1): opens screen 27."
+  },
+  "routeNotFoundTitle": "Page not found",
+  "@routeNotFoundTitle": {
+    "description": "Not-found screen title, for a route or deep link that leads nowhere (IT-NAV-005, FE-D3 spec D5)."
+  },
+  "routeNotFoundBody": "This link doesn't lead anywhere in MemoX.",
+  "@routeNotFoundBody": {
+    "description": "Not-found screen body; never names the route or the error."
   }
 }
