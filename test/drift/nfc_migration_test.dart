@@ -140,7 +140,7 @@ void main() {
     );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final tags = await db
         .customSelect('SELECT id, name, name_folded FROM tags ORDER BY id')

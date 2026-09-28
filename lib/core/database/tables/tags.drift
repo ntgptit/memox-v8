@@ -9,7 +9,9 @@ CREATE TABLE tags (
   -- lower(trim(name)), written by Dart: SQLite NOCASE/lower() are ASCII-only.
   name_folded TEXT NOT NULL,
   owner_id TEXT,
-  created_at DATETIME NOT NULL
+  created_at DATETIME NOT NULL,
+  -- The version the server acknowledged; NULL until then (SB-S3).
+  server_version INTEGER
 ) AS Tag;
 
 -- COALESCE: SQLite treats NULLs as distinct in a unique index, and the local

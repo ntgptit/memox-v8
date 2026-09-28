@@ -5,6 +5,7 @@ import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/core/sync/tag_sync_adapter.dart';
 
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
@@ -16,7 +17,12 @@ class _Device {
     coordinator = SyncCoordinator(
       api: server,
       store: SyncStore(db),
-      adapters: [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db), cards],
+      adapters: [
+        DeleteBatchSyncAdapter(db),
+        DeckSyncAdapter(db),
+        TagSyncAdapter(db, SyncStore(db)),
+        cards,
+      ],
       pullLimit: pullLimit,
       afterPull: cards.ensureSchedules,
     );
@@ -177,6 +183,27 @@ void main() {
         isNull,
         reason: 'purge cascades to the card',
       );
+    },
+  );
+
+  test(
+    'a card moved into a deck made after its pending edit follows that deck',
+    () async {
+      await _root(a.db, 'R');
+      await _card(a.db, 'K', 'R');
+      await a.coordinator.runOnce();
+      await a.db.customStatement(
+        "UPDATE card SET front = 'edited' WHERE id = 'K'",
+      );
+      await _root(a.db, 'R2');
+      await a.db.customStatement(
+        "UPDATE card SET deck_id = 'R2' WHERE id = 'K'",
+      );
+      server.pushed.clear();
+
+      await a.coordinator.runOnce();
+
+      expect(server.pushed, ['deck/R2', 'card/K']);
     },
   );
 }

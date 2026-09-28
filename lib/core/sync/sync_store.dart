@@ -34,31 +34,44 @@ class SyncStore {
 
   /// Pending operations of [entityTypes], oldest first (parents before
   /// children).
+  /// Parents before children: by the position of the entity type in
+  /// [entityTypes] (the coordinator's adapter order), then by first queued.
+  /// A card queued before the deck it moved into still follows that deck.
   Future<List<SyncOutboxEntry>> pendingBatch(
-    Set<String> entityTypes,
+    List<String> entityTypes,
     int limit,
-  ) =>
-      (_db.select(_db.syncOutbox)
-            ..where((o) => o.entityType.isIn(entityTypes))
-            ..orderBy([
-              (o) => OrderingTerm(expression: o.createdAt),
-              (o) => OrderingTerm(
-                expression: const CustomExpression<int>('rowid'),
-              ),
-            ])
-            ..limit(limit))
-          .get();
+  ) {
+    // Entity types are adapter constants, never user input.
+    final rank = CustomExpression<int>(
+      'CASE entity_type '
+      '${[for (var i = 0; i < entityTypes.length; i++) "WHEN '${entityTypes[i]}' THEN $i"].join(' ')} '
+      'END',
+    );
+    return (_db.select(_db.syncOutbox)
+          ..where((o) => o.entityType.isIn(entityTypes))
+          ..orderBy([
+            (o) => OrderingTerm(expression: rank),
+            (o) => OrderingTerm(expression: o.createdAt),
+            (o) =>
+                OrderingTerm(expression: const CustomExpression<int>('rowid')),
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  Future<bool> isPendingEntity(String entityType, String entityId) async =>
+      await (_db.select(_db.syncOutbox)..where(
+            (o) =>
+                o.entityType.equals(entityType) & o.entityId.equals(entityId),
+          ))
+          .getSingleOrNull() !=
+      null;
 
   Future<bool> isPending(String opId) async =>
       await (_db.select(
         _db.syncOutbox,
       )..where((o) => o.opId.equals(opId))).getSingleOrNull() !=
       null;
-
-  Future<Set<String>> pendingKeys() async => {
-    for (final entry in await _db.select(_db.syncOutbox).get())
-      '${entry.entityType}/${entry.entityId}',
-  };
 
   /// Removes the entry only if no later write replaced its op id.
   Future<void> removeIfUnchanged(String opId) =>
