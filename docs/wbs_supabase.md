@@ -71,7 +71,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 |---|---|---|---|---|---|---|
 | SB-O1 | Dọn và khoá project trên dashboard, một lượt: (1) thay secret key và mật khẩu database đã lộ trong phiên chat ngày 2026-09-28, cập nhật secret `SUPABASE_DB_PASSWORD` của repo và biến User env trên máy; (2) xoá dữ liệu test: user ẩn danh `208b8bc6-…` (deck "AB isolation check") và `dd6d7a13-…`, rồi xoá tay các dòng của hai user trong `deck`, `user_sync_version`, `sync_applied_op`; (3) chống tạo user ẩn danh hàng loạt: giữ giới hạn tần suất mặc định cho anonymous sign-ins, hoặc bật CAPTCHA | chưa bắt đầu | chủ dự án | — | M | Làm trước mọi hạng mục khác. Gộp SB-O2 (2) và SB-O3 (3) vào đây ngày 2026-09-28. Xác nhận (1): workflow `supabase migrations` chạy tay (`workflow_dispatch`) vẫn xanh với mật khẩu mới. (2): `deck.user_id` không có FK tới `auth.users` (spec backend Supabase §3), nên xoá user **không** kéo theo dữ liệu. (3): README `supabase/` bước 2; bật CAPTCHA thì app phải gửi token CAPTCHA khi `signInAnonymously`, là việc phía app chưa có hạng mục, nên đề xuất giữ giới hạn mặc định |
 | SB-O5 | Gate và phát hiện lệch schema trong workflow `supabase migrations`: (1) chạy `supabase db start` và `supabase test db` (pgTAP) trước `db push`, để một migration hỏng không lên project; (2) một bước `supabase db diff --linked` báo lỗi khi project có thay đổi schema làm tay trên dashboard | xong | | — | M | Gộp SB-O6 (2) vào đây ngày 2026-09-28: cùng một file workflow, và `db diff` cần Docker mà bước (1) đã khởi động. `migration list` không thay được `db diff`: nó chỉ so lịch sử migration, không thấy DDL chạy trong SQL Editor. Hiện CI (có job `supabase`) chỉ chạy tay nên không chặn được merge. Quy tắc: không sửa schema bằng SQL Editor; migration là đường duy nhất. Code: `.github/workflows/supabase-migrations.yml` (bước `pgTAP` trước `link`, bước `schema matches migrations` sau `db push`). Lần chạy đầu ([run 36388782572](https://github.com/ntgptit/memox-v8/actions/runs/36388782572)) bắt được `public.rls_auto_enable()`, hàm event trigger Supabase tạo cùng project để tự bật RLS; chủ dự án quyết miễn trừ nó (README `supabase/`). Xanh ở [run 36389329856](https://github.com/ntgptit/memox-v8/actions/runs/36389329856) (2026-09-28) |
-| SB-O7 | Sao lưu: chốt cách giữ bản sao dữ liệu trên gói Free, ví dụ workflow hằng tuần `supabase db dump --data-only` lưu thành artifact có hạn | bị chặn | chủ dự án | SB-O1 | M | Giả định: gói Free không có bản sao lưu tải được. Cần chủ dự án chọn nơi lưu và thời hạn; dump chứa dữ liệu người dùng nên không để ở chỗ công khai |
+| SB-O7 | Sao lưu: chốt cách giữ bản sao dữ liệu trên gói Free, ví dụ workflow hằng tuần `supabase db dump --data-only` lưu thành artifact có hạn | tạm dừng | chủ dự án | SB-O1 | M | Ngày 2026-09-28 chủ dự án quyết chưa sao lưu, làm khi có người dùng thật; repo đang public nên bản dump phải mã hoá (đề xuất: workflow hằng tuần, gpg với secret `BACKUP_PASSPHRASE`, artifact giữ 30 ngày). Giả định: gói Free không có bản sao lưu tải được. Cần chủ dự án chọn nơi lưu và thời hạn; dump chứa dữ liệu người dùng nên không để ở chỗ công khai |
 | SB-O8 | Theo dõi hạn mức Free (500 MB database, 50.000 MAU, pause sau một tuần không hoạt động): một truy vấn hoặc bước CI báo cỡ database và số user | đang làm | | — | S | Số liệu hạn mức từ ADR-015 (kiểm ngày 2026-09-28). Code: `.github/workflows/supabase-usage.yml` (thứ Hai hằng tuần và chạy tay; `db query --linked` chỉ cần `SUPABASE_ACCESS_TOKEN`; đỏ ở 80% hạn mức). Số user hoạt động 30 ngày là xấp xỉ MAU. Chờ lần chạy tay đầu tiên sau merge |
 
 ### B. Mở rộng sync (spec sync §9 bước 4)
@@ -89,7 +89,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Người làm | Phụ thuộc | Cỡ | Bằng chứng / ghi chú |
 |---|---|---|---|---|---|---|
-| SB-A1 | Spec auth: cách đăng nhập (email OTP, magic link, mật khẩu hay Google), gắn danh tính vào **cùng** user ẩn danh để không phải chuyển dữ liệu, đăng xuất, và cách xử lý `owner_id` local đang `NULL` | bị chặn | chủ dự án | — | M | Thay BE-E6 của `wbs_BE.md`. Cần chủ dự án chọn cách đăng nhập |
+| SB-A1 | Spec auth: cách đăng nhập (email OTP, magic link, mật khẩu hay Google), gắn danh tính vào **cùng** user ẩn danh để không phải chuyển dữ liệu, đăng xuất, và cách xử lý `owner_id` local đang `NULL` | tạm dừng | chủ dự án | — | M | Thay BE-E6 của `wbs_BE.md`. Ngày 2026-09-28 chủ dự án tạm dừng việc đăng nhập để cân nhắc lại chuyện tài khoản người dùng; sẽ bàn lại trước khi viết spec. Ý kiến ban đầu, **chưa chốt**: đăng nhập bằng email OTP và Google; máy thứ hai có dữ liệu ẩn danh thì hỏi người dùng, mặc định gộp. Chưa bàn: đăng xuất, `owner_id` local |
 | SB-A2 | Login phía app: màn đăng nhập, gắn danh tính, giữ session; không đổi `user_id` của dữ liệu đã đồng bộ; báo cho người dùng rằng dữ liệu đang gắn với lần cài này (ẩn danh) và mời gắn email, làm lối vào màn đăng nhập | chưa bắt đầu | | SB-A1 | L | Gộp SB-U2 (lời báo và lời mời) vào đây ngày 2026-09-28: nó là lối vào của màn này nên cùng một lượt `shape` và plan. Màn này không có trong kit: dùng Impeccable `shape` trước khi plan (`CLAUDE.md`); ghi thêm hạng mục ở `wbs_FE.md` |
 | SB-A3 | Nhiều máy cùng tài khoản: máy thứ hai đăng nhập thì kéo dữ liệu về; dữ liệu ẩn danh đã có trên máy đó được gộp hay bỏ theo spec auth | chưa bắt đầu | | SB-A2, SB-S8 | L | Đây là lúc sync giữa các máy của cùng một người bắt đầu có tác dụng |
 | SB-A4 | Cấu hình Auth cho Android: redirect URL và deep link cho email, mẫu email, SMTP riêng nếu cần | chưa bắt đầu | chủ dự án | SB-A1 | S | Giả định: email dựng sẵn của Supabase có giới hạn gửi rất thấp, không đủ cho người dùng thật |
@@ -105,8 +105,8 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | Hạng mục | Câu hỏi | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| SB-A1 | Cách đăng nhập và chính sách gộp dữ liệu ẩn danh khi đăng nhập trên máy thứ hai | Toàn bộ nhóm C | Chủ dự án |
-| SB-O7 | Nơi lưu và thời hạn giữ bản sao lưu | Khôi phục khi mất dữ liệu | Chủ dự án |
+| SB-A1 | Cách đăng nhập và chính sách gộp dữ liệu ẩn danh khi đăng nhập trên máy thứ hai | Toàn bộ nhóm C | Chủ dự án (tạm dừng 2026-09-28, sẽ bàn lại) |
+| SB-O7 | Nơi lưu và thời hạn giữ bản sao lưu | Khôi phục khi mất dữ liệu | Chủ dự án (tạm dừng 2026-09-28: chưa sao lưu tới khi có người dùng thật) |
 
 ## Bước tiếp theo
 
@@ -150,3 +150,6 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
   nhắc học ở lại trên máy; cài đặt mặc định không đẩy lên.
 - **Cập nhật ngày 2026-09-28:** SB-S4 xong: review log và lịch SRS đồng bộ, lịch tiến xa hơn
   thắng (ADR-017). Nhóm B chỉ còn SB-S8, chờ login.
+- **Cập nhật ngày 2026-09-28:** chủ dự án tạm dừng SB-A1 (đăng nhập, tài khoản) để cân nhắc
+  lại; nhóm C chờ buổi bàn tiếp. SB-O7 tạm dừng tới khi có người dùng thật. Còn lại cần chủ
+  dự án: SB-O1 (dashboard) và SB-O8 (chạy tay `supabase usage` lần đầu).
