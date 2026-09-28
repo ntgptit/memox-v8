@@ -9,7 +9,8 @@ import 'package:memox/shared/widgets/mx_card.dart';
 
 /// An inline load failure with a Retry. It has EmptyState's anatomy at a
 /// smaller scale and a danger tone. The body says first that nothing was
-/// lost, then offers the retry. Without [onRetry] it is the "not found" form.
+/// lost, then offers the retry. Without [onRetry] it is the "not found" form;
+/// [actionIcon] swaps Retry's glyph when the action is not a retry.
 class MxErrorState extends StatelessWidget {
   const MxErrorState({
     super.key,
@@ -19,6 +20,7 @@ class MxErrorState extends StatelessWidget {
     this.retryLabel,
     this.onRetry,
     this.isRetrying = false,
+    this.actionIcon = AppIcons.retry,
   }) : assert(
          (retryLabel == null) == (onRetry == null),
          'retryLabel and onRetry come together',
@@ -32,6 +34,10 @@ class MxErrorState extends StatelessWidget {
 
   /// The Retry holds a spinner while the reload runs.
   final bool isRetrying;
+
+  /// The action's glyph: Retry by default; Close where nothing can be
+  /// retried (study Guess, BR-STUDY-040).
+  final IconData actionIcon;
 
   static const double _verticalPadding = 40;
   static const double _tileSize = 52;
@@ -83,7 +89,7 @@ class MxErrorState extends StatelessWidget {
               const SizedBox(height: AppSpacing.gutter),
               MxButton(
                 label: label,
-                icon: AppIcons.retry,
+                icon: actionIcon,
                 onPressed: onPressed,
                 isLoading: isRetrying,
               ),
