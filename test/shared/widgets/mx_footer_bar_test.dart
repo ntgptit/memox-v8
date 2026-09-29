@@ -93,4 +93,21 @@ void main() {
       TextAlign.center,
     );
   });
+  testWidgets('the caption steps aside while the keyboard is up', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MediaQuery(
+        data: const MediaQueryData(viewInsets: EdgeInsets.only(bottom: 300)),
+        child: MxFooterBar(
+          caption: 'Front and back are required to save.',
+          child: MxButton(label: 'Save', onPressed: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('Front and back are required to save.'), findsNothing);
+    expect(find.text('Save'), findsOneWidget);
+  });
 }
