@@ -56,7 +56,11 @@ class SessionSummaryWidget extends StatelessWidget {
               summary: summary,
               outcome: outcome,
             ),
-            if (outcome.drawsFacts && summary.hasAnswers) ...[
+            // The facts restate the hero's numbers; they stand in only where
+            // the hero draws none (critique 2026-09-30, R3).
+            if (outcome.drawsFacts &&
+                summary.hasAnswers &&
+                !outcome.drawsStats) ...[
               const SizedBox(height: AppSpacing.grouped),
               SessionSummaryFactsWidget(view: view, summary: summary),
             ],
