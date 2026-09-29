@@ -216,6 +216,7 @@ DeckLevelScreen deckScreen({
   VoidCallback? onOpenTrash,
   VoidCallback? onOpenStarterDecks,
   VoidCallback? onOpenTags,
+  VoidCallback? onOpenStudyHome,
 }) => DeckLevelScreen(
   deckId: deckId,
   onOpenDeck: onOpenDeck ?? (_) {},
@@ -230,6 +231,7 @@ DeckLevelScreen deckScreen({
   onOpenTrash: onOpenTrash ?? () {},
   onOpenStarterDecks: onOpenStarterDecks ?? () {},
   onOpenTags: onOpenTags ?? () {},
+  onOpenStudyHome: onOpenStudyHome,
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??

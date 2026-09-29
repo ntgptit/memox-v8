@@ -28,6 +28,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     required this.onOpenStudy,
     required this.onOpenStudyOptions,
     required this.onOpenTrash,
+    this.onOpenStudyHome,
     required this.onOpenStarterDecks,
     required this.onOpenTags,
   });
@@ -44,6 +45,9 @@ class DeckLibraryRootWidget extends ConsumerWidget {
 
   /// Opens the Trash (screen 06) from the app bar (FE-B1 D1).
   final VoidCallback onOpenTrash;
+
+  /// The due strip's tap: Study home.
+  final VoidCallback? onOpenStudyHome;
 
   /// Opens Starter decks (screen 03) from the app bar and the empty
   /// Library (FE-B4 spec D2, §5.4).
@@ -127,6 +131,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
               onOpenStudy: onOpenStudy,
               onOpenStudyOptions: onOpenStudyOptions,
               onOpenTrash: onOpenTrash,
+              onOpenStudyHome: onOpenStudyHome,
               schedulerType: null,
               hasDeepestSubDecks: false,
               emptyState: MxEmptyState(

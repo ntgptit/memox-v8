@@ -47,6 +47,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onImportCards,
     required this.onExportCards,
     required this.onOpenTrash,
+    this.onOpenStudyHome,
     required this.onOpenStarterDecks,
     required this.onOpenTags,
     required this.cardFab,
@@ -97,6 +98,9 @@ class DeckLevelScreen extends StatelessWidget {
   /// refused Undo (FE-B1).
   final VoidCallback onOpenTrash;
 
+  /// The Library root's due strip opens Study home (critique 2026-09-30).
+  final VoidCallback? onOpenStudyHome;
+
   /// Opens Starter decks (screen 03): the Library's app bar and its empty
   /// state (FE-B4 spec D2).
   final VoidCallback onOpenStarterDecks;
@@ -117,6 +121,7 @@ class DeckLevelScreen extends StatelessWidget {
       onOpenStudy: onOpenStudy,
       onOpenStudyOptions: onOpenStudyOptions,
       onOpenTrash: onOpenTrash,
+      onOpenStudyHome: onOpenStudyHome,
       onOpenStarterDecks: onOpenStarterDecks,
       onOpenTags: onOpenTags,
     ),

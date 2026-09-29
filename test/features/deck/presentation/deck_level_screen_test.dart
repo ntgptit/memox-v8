@@ -411,4 +411,24 @@ void main() {
     expect(top('Korean'), lessThan(top('Hangul')));
     expect(top('Hangul'), lessThan(top('Kanji')));
   });
+
+  libraryTest('the due strip is a button to Study home (critique 2026-09-30, '
+      'R4)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await _seed(env);
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(onOpenStudyHome: () => opened++),
+    );
+
+    await tester.tap(find.text(_en.libraryDueTitle(2)));
+    expect(opened, 1);
+    expect(
+      tester.getSemantics(find.text(_en.libraryDueTitle(2))),
+      containsSemantics(isButton: true, hasTapAction: true),
+    );
+    handle.dispose();
+  });
 }
