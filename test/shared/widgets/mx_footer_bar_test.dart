@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
@@ -101,6 +102,24 @@ void main() {
       MediaQuery(
         data: const MediaQueryData(viewInsets: EdgeInsets.only(bottom: 300)),
         child: MxFooterBar(
+          caption: 'Front and back are required to save.',
+          child: MxButton(label: 'Save', onPressed: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('Front and back are required to save.'), findsNothing);
+    expect(find.text('Save'), findsOneWidget);
+  });
+  testWidgets('the caption steps aside in a real shell, whose Scaffold '
+      'strips the keyboard inset from its body', (tester) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    addTearDown(tester.view.resetViewInsets);
+    await pumpMxPage(
+      tester,
+      MxAppShell(
+        body: const SizedBox.expand(),
+        footer: MxFooterBar(
           caption: 'Front and back are required to save.',
           child: MxButton(label: 'Save', onPressed: () {}),
         ),

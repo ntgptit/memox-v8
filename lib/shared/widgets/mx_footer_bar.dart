@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 
 /// The in-flow commit bar (Save, Done, bulk actions): a sibling of the
 /// scroll, so it never overlaps content. It owns the gesture inset below
@@ -23,7 +24,7 @@ class MxFooterBar extends StatelessWidget {
     final inset = MediaQuery.paddingOf(context).bottom;
     // While the keyboard is up the field needs the height; the caption is a
     // calm restatement of the rule and waits (audit 2026-09-29, pattern 1).
-    final isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final isTyping = MxAppShell.isTypingOf(context);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: context.colors.surface,
