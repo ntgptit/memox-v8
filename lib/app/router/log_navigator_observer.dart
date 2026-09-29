@@ -8,22 +8,22 @@ final class LogNavigatorObserver extends NavigatorObserver {
   final AppLogger? _logger;
 
   @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+  void didPush(Route<Object?> route, Route<Object?>? previousRoute) =>
       _log('nav.push', route, previousRoute);
 
   @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+  void didPop(Route<Object?> route, Route<Object?>? previousRoute) =>
       _log('nav.pop', route, previousRoute);
 
   @override
-  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) =>
+  void didReplace({Route<Object?>? newRoute, Route<Object?>? oldRoute}) =>
       _log('nav.replace', newRoute, oldRoute);
 
   @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+  void didRemove(Route<Object?> route, Route<Object?>? previousRoute) =>
       _log('nav.remove', route, previousRoute);
 
-  void _log(String event, Route<dynamic>? route, Route<dynamic>? other) =>
+  void _log(String event, Route<Object?>? route, Route<Object?>? other) =>
       (_logger ?? appLogger).info(
         event,
         category: LogCategory.navigation,
