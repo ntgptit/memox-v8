@@ -64,11 +64,16 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           icon: AppIcons.library,
           text: l10n.studyOptionsBelongTo(rootName),
         ),
-        if (stored.source == StudyOptionsSource.unreadableRootOverride)
+        // MxSection keeps its own 16 below; a note or banner above needs the
+        // same (audit P1, pattern 4).
+        const SizedBox(height: AppSpacing.gutter),
+        if (stored.source == StudyOptionsSource.unreadableRootOverride) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.studyOptionsUnreadable,
           ),
+          const SizedBox(height: AppSpacing.gutter),
+        ],
         MxSection(
           children: [
             MxSettingsRow(

@@ -105,6 +105,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     if (status.capability == ReminderCapability.unsupported) {
       return MxScreenScroll(
         children: [
+          const SizedBox(height: AppSpacing.control),
           MxSection(
             children: [
               MxSettingsRow(
@@ -119,6 +120,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     }
     return MxScreenScroll(
       children: [
+        const SizedBox(height: AppSpacing.control),
         ReminderSettingsSectionWidget(
           reminder: status.reminder,
           action: action,
