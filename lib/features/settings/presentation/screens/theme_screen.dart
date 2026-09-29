@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -15,6 +14,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -88,11 +88,13 @@ class ThemeScreen extends ConsumerWidget {
                 );
               },
             ),
-            const SizedBox(height: AppSpacing.gutter),
-            Text(
-              l10n.settingsAppliesAtOnce,
-              style: context.textStyles.noteText,
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: AppSpacing.micro,
+                end: AppSpacing.micro,
+                top: AppSpacing.control,
+              ),
+              child: MxNote(text: l10n.settingsAppliesAtOnce),
             ),
           ],
         ),
