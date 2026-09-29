@@ -8,7 +8,8 @@ import 'package:memox/core/logging/app_logger.dart';
 /// Logs every request the Supabase client sends (spec
 /// 2026-09-29-network-logging-design.md): the whole exchange at `debug`, an
 /// HTTP error as a warning, no connection at `info`, anything else as an
-/// error. The log push is never logged: each push would log the next one.
+/// error. The log RPCs are never logged: a push would log the next one, and
+/// Monitoring's reads would copy logs into logs.
 final class LoggingHttpClient extends http.BaseClient {
   LoggingHttpClient({
     required this._inner,
@@ -19,7 +20,14 @@ final class LoggingHttpClient extends http.BaseClient {
   /// A body past this many bytes is logged as its head (spec D6).
   static const maxBodyBytes = 65536;
 
-  static const _logPushPath = '/rpc/log_push';
+  /// The RPCs that move logs: the device's push, and the admin's reads and
+  /// change (ADR-018). Each request would log a response full of other logs.
+  static const _unlogged = {
+    '/rpc/log_push',
+    '/rpc/log_query',
+    '/rpc/log_get',
+    '/rpc/log_set_status',
+  };
   static final _stopwatch = Stopwatch()..start();
 
   final http.Client _inner;
@@ -30,7 +38,7 @@ final class LoggingHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    if (request.url.path.endsWith(_logPushPath)) return _inner.send(request);
+    if (_unlogged.any(request.url.path.endsWith)) return _inner.send(request);
     final sent = request is http.Request ? request.bodyBytes : null;
     final start = _micros();
     final http.StreamedResponse response;
