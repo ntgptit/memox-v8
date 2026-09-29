@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
-import 'package:memox/shared/widgets/mx_note.dart';
 
 /// A deck that holds nothing yet (UC-DECK-004, kit 01 `deckEmpty`): what it
-/// can take next, as buttons, and while both fit, the note on what the first
-/// one decides (ruling P4a-L9).
+/// can take next, as the empty state's block actions (ruling M3-D5), and
+/// while both fit, the note on what the first one decides (ruling P4a-L9).
 class DeckUnsetStateWidget extends StatelessWidget {
   const DeckUnsetStateWidget({
     super.key,
@@ -32,53 +29,31 @@ class DeckUnsetStateWidget extends StatelessWidget {
     final l10n = context.l10n;
     final onAddCard = this.onAddCard;
     final onCreateSubDeck = this.onCreateSubDeck;
-    final onImportCards = this.onImportCards;
     final isOpen = onAddCard != null && onCreateSubDeck != null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.gutter,
-      children: [
-        MxEmptyState(
-          icon: AppIcons.folder,
-          title: onAddCard == null
-              ? l10n.deckRootEmptyTitle
-              : l10n.deckUnsetTitle,
-          body: switch ((onAddCard, onCreateSubDeck)) {
-            (null, _) => l10n.deckRootEmptyBody,
-            (_, null) => l10n.deckUnsetDeepestBody,
-            _ => l10n.deckUnsetBody,
-          },
-        ),
-        OverflowBar(
-          alignment: MainAxisAlignment.center,
-          spacing: AppSpacing.control,
-          overflowSpacing: AppSpacing.control,
-          overflowAlignment: OverflowBarAlignment.center,
-          children: [
-            if (onAddCard != null)
-              MxButton(
-                label: l10n.deckNewCard,
-                icon: AppIcons.add,
-                onPressed: onAddCard,
-              ),
-            if (onCreateSubDeck != null)
-              MxButton(
-                label: l10n.deckNewSubDeck,
-                icon: AppIcons.library,
-                tone: isOpen ? MxButtonTone.secondary : MxButtonTone.primary,
-                onPressed: onCreateSubDeck,
-              ),
-            if (onImportCards != null)
-              MxButton(
-                label: l10n.deckUnsetImport,
-                icon: AppIcons.fileUp,
-                tone: MxButtonTone.outline,
-                onPressed: onImportCards,
-              ),
-          ],
-        ),
-        if (isOpen) MxNote(text: l10n.deckUnsetNote),
-      ],
+    // The first way in leads; a sub-deck is second only when a card also
+    // fits (ruling P4a-L9).
+    final (String? leadLabel, VoidCallback? onLead) = switch (onAddCard) {
+      final onAdd? => (l10n.deckNewCard, onAdd),
+      null => (
+        onCreateSubDeck == null ? null : l10n.deckNewSubDeck,
+        onCreateSubDeck,
+      ),
+    };
+    return MxEmptyState(
+      icon: AppIcons.folder,
+      title: onAddCard == null ? l10n.deckRootEmptyTitle : l10n.deckUnsetTitle,
+      body: switch ((onAddCard, onCreateSubDeck)) {
+        (null, _) => l10n.deckRootEmptyBody,
+        (_, null) => l10n.deckUnsetDeepestBody,
+        _ => l10n.deckUnsetBody,
+      },
+      actionLabel: leadLabel,
+      onAction: onLead,
+      secondaryActionLabel: isOpen ? l10n.deckNewSubDeck : null,
+      onSecondaryAction: isOpen ? onCreateSubDeck : null,
+      tertiaryActionLabel: onImportCards == null ? null : l10n.deckUnsetImport,
+      onTertiaryAction: onImportCards,
+      footnote: isOpen ? l10n.deckUnsetNote : null,
     );
   }
 }

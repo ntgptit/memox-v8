@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
@@ -220,6 +222,14 @@ void main() {
       await pumpLibraryScreen(tester, env, _screen(id));
 
       expect(find.text(_en.studyGuessBlockedTitle), findsOneWidget);
+      // M3-D6: Close is the error state's own action.
+      expect(
+        find.descendant(
+          of: find.byType(MxErrorState),
+          matching: find.widgetWithText(MxButton, _en.studySessionClose),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('apple'), findsNothing);
       // Close ends the session; it is not a retry.
       expect(find.byIcon(AppIcons.retry), findsNothing);
