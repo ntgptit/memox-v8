@@ -24,7 +24,9 @@ class MonitoringFilterBarWidget extends StatelessWidget {
   });
 
   final LogFilter filter;
-  final ValueChanged<LogFilter> onChanged;
+
+  /// A change, applied to the filter as it is when the sheet closes.
+  final ValueChanged<LogFilter Function(LogFilter)> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +99,7 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       context,
       selected: filter.levels,
     );
-    if (picked != null) onChanged(filter.withLevels(picked));
+    if (picked != null) onChanged((current) => current.withLevels(picked));
   }
 
   Future<void> _pickStatuses(BuildContext context) async {
@@ -105,7 +107,7 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       context,
       selected: filter.statuses,
     );
-    if (picked != null) onChanged(filter.withStatuses(picked));
+    if (picked != null) onChanged((current) => current.withStatuses(picked));
   }
 
   Future<void> _pickCategories(BuildContext context) async {
@@ -113,7 +115,7 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       context,
       selected: filter.categories,
     );
-    if (picked != null) onChanged(filter.withCategories(picked));
+    if (picked != null) onChanged((current) => current.withCategories(picked));
   }
 
   Future<void> _pickWindow(BuildContext context) async {
@@ -122,7 +124,7 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       selected: filter.window,
     );
     if (picked != null && picked.isNotEmpty) {
-      onChanged(filter.withWindow(picked.single));
+      onChanged((current) => current.withWindow(picked.single));
     }
   }
 
@@ -132,7 +134,9 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       initial: (device: filter.deviceId ?? '', user: filter.userId ?? ''),
     );
     if (picked != null) {
-      onChanged(filter.withDevice(picked.device).withUser(picked.user));
+      onChanged(
+        (current) => current.withDevice(picked.device).withUser(picked.user),
+      );
     }
   }
 }

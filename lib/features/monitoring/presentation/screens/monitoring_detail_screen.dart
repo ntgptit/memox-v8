@@ -28,7 +28,7 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// warning or an error of the server, Mark fixed or Reopen. [isLocal] reads
 /// the device buffer instead of the server. Not in the kit; shaped with
 /// Impeccable 2026-09-29.
-class MonitoringDetailScreen extends ConsumerWidget {
+class MonitoringDetailScreen extends ConsumerStatefulWidget {
   const MonitoringDetailScreen({
     super.key,
     required this.logId,
@@ -38,10 +38,30 @@ class MonitoringDetailScreen extends ConsumerWidget {
   final String logId;
   final bool isLocal;
 
+  @override
+  ConsumerState<MonitoringDetailScreen> createState() =>
+      _MonitoringDetailScreenState();
+}
+
+class _MonitoringDetailScreenState
+    extends ConsumerState<MonitoringDetailScreen> {
   static const int _skeletonRows = 6;
 
+  /// The failed-change toast while it shows. Its Retry acts on this page, so
+  /// it leaves with the page (final review I1).
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? _failureToast;
+
+  String get logId => widget.logId;
+  bool get isLocal => widget.isLocal;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _failureToast?.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final provider = monitoringDetailControllerProvider(logId, isLocal);
     ref.listen(
@@ -195,7 +215,7 @@ class MonitoringDetailScreen extends ConsumerWidget {
               : l10n.monitoringReopened,
         );
       case StatusChangeFailed(:final status, :final note):
-        showMxSnackbar(
+        final toast = showMxSnackbar(
           context,
           message: l10n.monitoringStatusChangeFailed,
           actionLabel: l10n.commonRetry,
@@ -206,6 +226,12 @@ class MonitoringDetailScreen extends ConsumerWidget {
                 )
                 .setStatus(status, note: note),
           ),
+        );
+        _failureToast = toast;
+        unawaited(
+          toast.closed.then((_) {
+            if (identical(_failureToast, toast)) _failureToast = null;
+          }),
         );
     }
   }

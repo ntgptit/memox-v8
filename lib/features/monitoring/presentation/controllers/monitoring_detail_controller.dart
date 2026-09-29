@@ -42,6 +42,9 @@ class MonitoringDetailController extends _$MonitoringDetailController {
       return;
     }
     state = MonitoringDetailState(content: current, changing: status);
+    // The page may close before the server answers; the answer still
+    // reaches the list (final review I1).
+    final alive = ref.keepAlive();
     try {
       final outcome = await ref.read(setLogStatusUseCaseProvider)(
         id,
@@ -61,6 +64,8 @@ class MonitoringDetailController extends _$MonitoringDetailController {
         content: current,
         notice: StatusChangeFailed(status, note),
       );
+    } finally {
+      alive.close();
     }
   }
 

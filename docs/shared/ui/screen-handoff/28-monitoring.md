@@ -36,7 +36,7 @@ FE-B8; ADR-018 §6 to §8; spec
 | Not sent | `MxNote` + one `MxChipTrigger` (Level, default warning + error) + rows | "{n} logs wait on this device. They are sent when MemoX is online." The rows are the device buffer, watched, without a status. |
 | Filter sheets | `MxBottomSheet` | Level, Status and Category: a toggle per value (`MxSettingsRow` + `MxToggle`). Time: an `MxOptionRow` per window (last hour, 24 hours, 7 days, 30 days, all time). Device / user: two `MxTextField`s and an `MxNote`. Each has Reset (outline) and Apply. |
 
-Choosing Debug or Info clears the status filter: those rows have no status and it would
+Choosing Debug or Info, or no level at all (every level), clears the status filter: those rows have no status and it would
 hide them. Category rows show the stored code (`db`, `sync`, `network`) and come from
 `LogCategory.values`. A pull down on the Server tab, and any filter or search change,
 reload from the first page.

@@ -326,6 +326,45 @@ void main() {
     expect(find.widgetWithText(MxButton, 'Reopen'), findsOneWidget);
   });
 
+  // Final review I1: the toast's Retry belongs to the page; it leaves with it.
+  libraryTest('leaving the page takes its failed-change toast with it', (
+    tester,
+    env,
+  ) async {
+    final repository = FakeMonitoringRepository()
+      ..servers['a'] = record('a')
+      ..statusError = const OfflineFailure(cause: 'x');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: Builder(
+          builder: (context) => MxButton(
+            label: 'Go',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    const MonitoringDetailScreen(logId: 'a', isLocal: false),
+              ),
+            ),
+          ),
+        ),
+      ),
+      overrides: _overrides(repository),
+    );
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+    await _markFixed(tester);
+    expect(find.text("Couldn't change that. Nothing changed."), findsOneWidget);
+
+    tester.state<NavigatorState>(find.byType(Navigator).first).pop();
+    await tester.pumpAndSettle();
+
+    expect(find.text("Couldn't change that. Nothing changed."), findsNothing);
+    expect(find.text('Retry'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   libraryTest('Copy puts the whole log on the clipboard as JSON', (
     tester,
     env,

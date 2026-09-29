@@ -67,7 +67,7 @@ class MonitoringServerTabWidget extends ConsumerWidget {
         ),
         MonitoringFilterBarWidget(
           filter: filter,
-          onChanged: controller.setFilter,
+          onChanged: controller.updateFilter,
         ),
         Expanded(child: list),
       ],

@@ -33,21 +33,39 @@ class MonitoringListController extends _$MonitoringListController {
     return const MonitoringListState();
   }
 
+  /// The search text typed but not yet asked: every other ask carries it
+  /// instead of dropping it (final review M3).
+  String? _pendingSearch;
+
+  /// The filter with the pending search applied.
+  LogFilter get _intended {
+    final text = _pendingSearch;
+    return text == null ? state.filter : state.filter.withSearch(text);
+  }
+
   /// A new filter: the first page of it, at once.
   void setFilter(LogFilter next) {
     _debounce?.cancel();
+    _pendingSearch = null;
     if (next == state.filter) return;
     state = MonitoringListState(filter: next);
     unawaited(_loadFirst());
   }
+
+  /// A change to the filter as it is now, the pending search included, not
+  /// as it was when a sheet opened.
+  void updateFilter(LogFilter Function(LogFilter current) change) =>
+      setFilter(change(_intended));
 
   /// Every filter and the search back to the default.
   void clearFilters() => setFilter(const LogFilter());
 
   /// After a failure: the first page again, the failure gone at once.
   void retry() {
+    final filter = _intended;
     _debounce?.cancel();
-    state = MonitoringListState(filter: state.filter);
+    _pendingSearch = null;
+    state = MonitoringListState(filter: filter);
     unawaited(_loadFirst());
   }
 
@@ -55,15 +73,17 @@ class MonitoringListController extends _$MonitoringListController {
   /// last change.
   void search(String text) {
     _debounce?.cancel();
-    _debounce = Timer(
-      monitoringSearchDebounce,
-      () => setFilter(state.filter.withSearch(text)),
-    );
+    _pendingSearch = text;
+    _debounce = Timer(monitoringSearchDebounce, () => setFilter(_intended));
   }
 
   /// Pull to refresh: the first page again, the rows kept until it lands.
+  /// A search still waiting is asked now.
   Future<void> refresh() {
+    final filter = _intended;
     _debounce?.cancel();
+    _pendingSearch = null;
+    if (filter != state.filter) state = MonitoringListState(filter: filter);
     return _loadFirst();
   }
 

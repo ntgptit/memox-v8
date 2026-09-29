@@ -40,11 +40,13 @@ final class LogFilter {
   bool get isDefault => this == const LogFilter();
 
   /// A debug or info row has no status, so a status filter would hide it:
-  /// choosing one of those levels clears the status filter (the admin can set
-  /// it again after).
+  /// choosing one of those levels, or none (every level), clears the status
+  /// filter (the admin can set it again after).
   LogFilter withLevels(Set<LogLevel> next) {
     final hasStatusless =
-        next.contains(LogLevel.debug) || next.contains(LogLevel.info);
+        next.isEmpty ||
+        next.contains(LogLevel.debug) ||
+        next.contains(LogLevel.info);
     return _copy(levels: next, statuses: hasStatusless ? const {} : statuses);
   }
 

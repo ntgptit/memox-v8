@@ -44,6 +44,14 @@ void main() {
     expect(filter.levels, {LogLevel.error, LogLevel.info});
   });
 
+  // Final review M4: no level chosen is every level, debug and info included.
+  test('no level chosen clears the status filter too', () {
+    final filter = const LogFilter().withLevels({});
+
+    expect(filter.levels, isEmpty);
+    expect(filter.statuses, isEmpty);
+  });
+
   test('warning and error keep the status filter', () {
     final filter = const LogFilter().withLevels({LogLevel.error});
 

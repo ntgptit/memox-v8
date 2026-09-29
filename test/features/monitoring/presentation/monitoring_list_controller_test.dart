@@ -245,6 +245,37 @@ void main() {
     });
   });
 
+  // Final review M3: a filter applied while the search waits keeps the
+  // search, and reads the filter as it is at apply time.
+  test('a filter change before the search fires keeps the search', () {
+    _run((async, controller, state, repository) {
+      repository.lastQuery.answer(pageOf(1));
+      async.flushMicrotasks();
+
+      controller.search('timeout');
+      controller.updateFilter((filter) => filter.withLevels({LogLevel.error}));
+      async.elapse(monitoringSearchDebounce * 2);
+
+      expect(repository.lastQuery.filter.search, 'timeout');
+      expect(repository.lastQuery.filter.levels, {LogLevel.error});
+      expect(state().filter.search, 'timeout');
+    });
+  });
+
+  test('a refresh before the search fires asks with the search', () {
+    _run((async, controller, state, repository) {
+      repository.lastQuery.answer(pageOf(1));
+      async.flushMicrotasks();
+
+      controller.search('timeout');
+      unawaited(controller.refresh());
+      async.elapse(monitoringSearchDebounce * 2);
+
+      expect(repository.lastQuery.filter.search, 'timeout');
+      expect(state().filter.search, 'timeout');
+    });
+  });
+
   test('a pull to refresh keeps the rows until the first page lands', () {
     _run((async, controller, state, repository) {
       repository.lastQuery.answer(pageOf(2));

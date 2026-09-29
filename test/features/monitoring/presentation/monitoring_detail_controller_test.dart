@@ -129,6 +129,31 @@ void main() {
     expect([for (final item in list.items) item.id], ['b']);
   });
 
+  // Final review I1: leaving the page mid-change must not lose the answer.
+  test(
+    'a change that lands after the page is left still updates the list',
+    () async {
+      repository.servers['a'] = record('a');
+      repository.autoPage = LogPage(items: [summary('a'), summary('b')]);
+      container.listen(monitoringListControllerProvider, (_, _) {});
+      await pumpEventQueue();
+      final page = container.listen(server, (_, _) {});
+      await pumpEventQueue();
+      repository.statusGate = Completer<void>();
+
+      final change = container.read(server.notifier).setStatus(LogStatus.fixed);
+      page.close();
+      await pumpEventQueue();
+      repository.statusGate!.complete();
+      await change;
+
+      final list =
+          container.read(monitoringListControllerProvider).content
+              as MonitoringListLoaded;
+      expect([for (final item in list.items) item.id], ['b']);
+    },
+  );
+
   test('a change with no list open does not open one', () async {
     repository.servers['a'] = record('a');
     await open(server);
