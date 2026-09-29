@@ -228,7 +228,7 @@ Golden folders: 15, 23, 25, 26, 27 → `test/features/settings/presentation/gold
 - [ ] **Step 1:** Apply rules 1–5 of Task 3 to 15 and 22–27. In `27-sync.md` replace "not in the kit" with "Shaped by Impeccable before the plan".
 - [ ] **Step 2: Rewrite `00-index.md`:**
   - Rename the title `# MemoX V3 screen handoff — index` to `# MemoX screen index`.
-  - Replace the intro and the Source/Authority/Detail files/Images/State checklist bullets with: the index lists every screen; each detail file records the screen's layout, states with their goldens, rulings and copy; the visual system is in [`DESIGN.md`](../../../../DESIGN.md) and the authority order is ADR-019 (plain text until Task 6 adds the ADR).
+  - Replace the intro and the Source/Authority/Detail files/Images/State checklist bullets with: the index lists every screen; each detail file records the screen's layout, states with their goldens, rulings and copy; the visual system is in `[DESIGN.md](../../../../DESIGN.md)` and the authority order is ADR-019 (plain text until Task 6 adds the ADR).
   - `## Status values`: keep only `built` (the app has the screen and its detail file describes it) and `out of V8`.
   - Every row's Status becomes `built`; row 16a and 27 drop "(not in the kit)" / "(shape brief)" qualifiers.
   - `## Rules shared by every screen`: reword "built as the artifact draws them" to "built as follows" and "Copy is the artifact's English" to "Copy is written in English first".
@@ -324,7 +324,13 @@ The visual authority for every V8 screen is the app itself, recorded in
 
 - [ ] **Step 3: `PRODUCT.md`** — Brand Commitments: the copy-voice bullet's source becomes `(\`DESIGN.md\`, Copy voice)`; `- The visual system is the V3 design handoff (…) , implemented by the Flutter UI base. It is recorded there, not here.` → `- The visual system is recorded in \`DESIGN.md\`, generated from the Flutter UI base (ADR-019). It is recorded there, not here.` Evidence on Hand: replace the "V3 design handoff" bullet with `- \`DESIGN.md\`: foundations, theme binding, shared widgets and copy voice, generated from the code.` and the "kit's screens and states as images" bullet with `- Each screen's detail file with its states, goldens and rulings (\`docs/shared/ui/screen-handoff/\`).`
 
-- [ ] **Step 4: `docs/README.md`** — in the tree delete the `design-handoff.json` and `design-handoff/` lines (and `screen-state-checklist.md` if listed); replace the paragraph starting ``\`shared/ui/design-handoff/\` là bản tách nguyên văn`` through its end, and the paragraph `Thư mục cạnh đó, \`shared/ui/screen-handoff/\`, …`, with: `` `shared/ui/screen-handoff/` ghi từng màn của app: layout, state kèm golden, ruling và copy ([index](shared/ui/screen-handoff/00-index.md)). Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md); thứ tự ưu tiên theo [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md). `` Turn the plain-text "ADR-019" added in Task 1 into that same link. Add ADR-019 wherever the file lists ADRs.
+- [ ] **Step 4: `docs/README.md`** — in the tree delete the `design-handoff.json` and `design-handoff/` lines (and `screen-state-checklist.md` if listed). Replace the paragraph that starts with `shared/ui/design-handoff/ là bản tách nguyên văn` (through its end) and the paragraph that starts with `Thư mục cạnh đó, shared/ui/screen-handoff/` with the text below. Turn the plain-text "ADR-019" added in Task 1 into the same ADR link. Add ADR-019 wherever the file lists ADRs.
+
+```markdown
+`shared/ui/screen-handoff/` ghi từng màn của app: layout, state kèm golden, ruling và copy
+([index](shared/ui/screen-handoff/00-index.md)). Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md);
+thứ tự ưu tiên theo [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md).
+```
 
 - [ ] **Step 5: `docs/wbs_FE.md`** — line 11: replace `[handoff V3](shared/ui/design-handoff/00-index.md)` with `[\`DESIGN.md\`](../DESIGN.md)`; lines 37–38: replace the checklist bullet with `- Mỗi màn có file chi tiết trong [screen-handoff](shared/ui/screen-handoff/00-index.md), liệt kê state kèm golden.`; line 121 (FE-D4): replace `[design handoff](shared/ui/design-handoff/00-index.md)` with `design handoff (đã retire theo ADR-019)`. Add a row after FE-D4:
 
