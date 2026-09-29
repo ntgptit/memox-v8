@@ -33,7 +33,7 @@ Success means:
 - `DESIGN.md` describes the visual system the app ships today;
 - every screen detail file describes the app, and its States table names goldens;
 - `python tools/docs/check.py`, the `tools/docs` Python tests and the guard pass;
-- nothing under `docs/superpowers/` or `.impeccable/critique/` changes.
+- nothing under `docs/superpowers/` or `.impeccable/critique/` changes, apart from this spec and its plan.
 
 ## 2. Current state
 
@@ -176,10 +176,9 @@ in a live document still fails.
 ### 4.7 Verification
 
 - `python tools/docs/check.py` exits 0.
-- `python -m unittest discover -s tools/docs -p "test_*.py"` passes; `test_check.py` gains a case showing a broken link under `docs/superpowers/` is not reported while one elsewhere still is
-  without `test_split_handoff.py`.
+- `python -m unittest discover -s tools/docs -p "test_*.py"` passes; `test_check.py` gains a case showing a broken link under `docs/superpowers/` is not reported while one elsewhere still is (with `test_split_handoff.py` deleted).
 - The guard runs clean.
-- `git diff --stat master -- docs/superpowers .impeccable` is empty.
+- `git diff --stat master -- docs/superpowers .impeccable` lists only this spec and its plan.
 - A final grep finds no live reference (outside `docs/superpowers/` and
   `.impeccable/critique/`) to `UCesgHkzYHKsZwhwVshKRE`, `UI Kit v3`, `design-handoff`,
   `screen-handoff/img`, `screen-state-checklist`, `tools/design`.
