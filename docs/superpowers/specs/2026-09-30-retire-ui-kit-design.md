@@ -1,6 +1,6 @@
 # SP1: retire the UI kit, make DESIGN.md the UI authority — design
 
-Status: draft 2026-09-30, awaiting owner review ·
+Status: approved 2026-09-30 ·
 Path: architectural (sub-project 1 of 4) · Owner rulings 2026-09-30 (§3): R1–R6
 
 ## 1. Intent
