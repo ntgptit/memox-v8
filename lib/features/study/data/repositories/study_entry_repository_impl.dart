@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -73,7 +74,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final scope = await _scope(deckId);
       if (scope == null) return const Rejected(StudyRejection.notFound);
       final (root, options) = scope;
@@ -110,7 +111,7 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final scope = await _scope(deckId);
       if (scope == null) return const Rejected(StudyRejection.notFound);
       final (root, options) = scope;
@@ -243,16 +244,6 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
     }
     await _rounds.prepare(id, root.id, queues.first.mode, 1);
     return id;
-  }
-
-  /// One transaction. An unexpected database error leaves as the [Failure]
-  /// `mapDatabaseError` makes of it, with its stack trace, after the rollback.
-  Future<T> _write<T>(Future<T> Function() body) async {
-    try {
-      return await _db.transaction(body);
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -28,7 +29,7 @@ final class TagRepositoryImpl implements TagRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (TagEntity.checkName(name) case Rejected(:final reason)) {
         return Rejected(reason);
       }
@@ -57,7 +58,7 @@ final class TagRepositoryImpl implements TagRepository {
   Future<Outcome<void, TagRejection>> detach({
     required Set<String> cardIds,
     required String tagId,
-  }) => _write(() async {
+  }) => _db.mappedTransaction(() async {
     if (cardIds.isEmpty) return const Ok(null);
     if (await _dao.liveCardCount(cardIds) != cardIds.length) {
       return const Rejected(TagRejection.notFound);
@@ -76,7 +77,7 @@ final class TagRepositoryImpl implements TagRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       for (final name in names) {
         if (TagEntity.checkName(name) case Rejected(:final reason)) {
           return Rejected(reason);
@@ -135,14 +136,14 @@ final class TagRepositoryImpl implements TagRepository {
   Future<Outcome<TagRenamePlan, TagRejection>> planRename({
     required String tagId,
     required String name,
-  }) => _write(() => _planRename(tagId, name));
+  }) => _db.mappedTransaction(() => _planRename(tagId, name));
 
   @override
   Future<Outcome<void, TagRejection>> renameTag({
     required String tagId,
     required String name,
     String? mergeIntoTagId,
-  }) => _write(() async {
+  }) => _db.mappedTransaction(() async {
     switch (await _planRename(tagId, name)) {
       case Rejected(:final reason):
         return Rejected(reason);
@@ -166,7 +167,7 @@ final class TagRepositoryImpl implements TagRepository {
 
   @override
   Future<Outcome<void, TagRejection>> deleteTag({required String tagId}) =>
-      _write(() async {
+      _db.mappedTransaction(() async {
         if (await _dao.findById(tagId) == null) {
           return const Rejected(TagRejection.notFound);
         }
@@ -214,15 +215,5 @@ final class TagRepositoryImpl implements TagRepository {
       ),
     );
     return id;
-  }
-
-  /// One transaction, joining the caller's. An unexpected database error
-  /// leaves as the [Failure] `mapDatabaseError` makes of it.
-  Future<T> _write<T>(Future<T> Function() body) async {
-    try {
-      return await _db.transaction(body);
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
   }
 }

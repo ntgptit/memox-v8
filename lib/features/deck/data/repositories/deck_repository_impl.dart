@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -43,7 +44,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (_refusal(DeckEntity.checkName(name)) case final reason?) {
         return Rejected(reason);
       }
@@ -76,7 +77,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (_refusal(DeckEntity.checkName(name)) case final reason?) {
         return Rejected(reason);
       }
@@ -114,7 +115,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final moving = await _dao.findRow(deckId);
       final target = await _dao.findRow(newParentId);
       if (moving == null || target == null) {
@@ -150,7 +151,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (_refusal(DeckEntity.checkName(name)) case final reason?) {
         return Rejected(reason);
       }
@@ -170,7 +171,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final deck = await _dao.findRow(deckId);
       final anchor = await _dao.findRow(anchorId);
       if (deck == null || anchor == null) {
@@ -200,7 +201,7 @@ final class DeckRepositoryImpl implements DeckRepository {
   @override
   Future<Outcome<DeckDeletionSummary, DeckRejection>> deletionSummary(
     String deckId,
-  ) => _mapped(() async {
+  ) => guardDatabase(() async {
     final row = await _dao.deletionSummary(deckId);
     if (row == null) return const Rejected(DeckRejection.notFound);
     return Ok(
@@ -217,7 +218,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final deck = await _dao.findRow(deckId);
       if (deck == null) return const Rejected(DeckRejection.notFound);
       // The rows stay where they are, marked: only a purge deletes them, by
@@ -240,7 +241,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final items = <String, Deck>{};
       for (final batchId in batchIds) {
         final item = await _dao.itemRootOf(batchId);
@@ -290,7 +291,7 @@ final class DeckRepositoryImpl implements DeckRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final item = await _dao.itemRootOf(batchId);
       if (item == null) return const Rejected(DeckRejection.notFound);
       final parentId = item.parentId;
@@ -318,7 +319,7 @@ final class DeckRepositoryImpl implements DeckRepository {
   }
 
   @override
-  Future<DeckEntity?> findById(String id) => _mapped(() async {
+  Future<DeckEntity?> findById(String id) => guardDatabase(() async {
     final row = await _dao.findRow(id);
     return row == null ? null : deckEntityOf(row);
   });
@@ -379,20 +380,6 @@ final class DeckRepositoryImpl implements DeckRepository {
       _moveTargetsOf(
         await _dao.restoreTargetRows(item.id, maxDepth: DeckEntity.maxDepth),
       );
-
-  /// One transaction; see [_mapped] for what leaves it on an error.
-  Future<T> _write<T>(Future<T> Function() body) =>
-      _mapped(() => _db.transaction(body));
-
-  /// An unexpected database error leaves as the [Failure] `mapDatabaseError`
-  /// makes of it, with its stack trace. A transaction has rolled back by then.
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
-  }
 }
 
 List<DeckMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>

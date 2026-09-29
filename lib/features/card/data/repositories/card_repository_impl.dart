@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -51,7 +52,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (draft.check() case Rejected(:final reason)) return Rejected(reason);
       final deck = await _dao.deckRow(deckId);
       if (deck == null) return const Rejected(CardRejection.notFound);
@@ -78,7 +79,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (draft.check() case Rejected(:final reason)) return Rejected(reason);
       if (await _dao.findRow(cardId) == null) {
         return const Rejected(CardRejection.notFound);
@@ -95,7 +96,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (cardIds.isEmpty) return const Ok([]);
       final rows = await _dao.liveRows(cardIds);
       if (rows.length != cardIds.length) {
@@ -124,7 +125,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (batchIds.isEmpty) return const Ok(null);
       final cards = <String, CardRow>{};
       for (final batchId in batchIds) {
@@ -142,7 +143,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final card = await _dao.itemOf(batchId);
       if (card == null) return const Rejected(CardRejection.notFound);
       // Back into its own deck with its own updated_at: an Undo is not a
@@ -158,7 +159,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (cardIds.isEmpty) return const Ok(null);
       final rows = await _dao.liveRows(cardIds);
       if (rows.length != cardIds.length) {
@@ -204,7 +205,7 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (cardIds.isEmpty) return const Ok(null);
       if ((await _dao.liveRows(cardIds)).length != cardIds.length) {
         return const Rejected(CardRejection.notFound);
@@ -299,7 +300,8 @@ final class CardRepositoryImpl implements CardRepository {
     required String deckId,
     required CardListQuery query,
     required DateTime now,
-  }) => _mapped(() => _listDao.ids(deckId: deckId, query: query, now: now));
+  }) =>
+      guardDatabase(() => _listDao.ids(deckId: deckId, query: query, now: now));
 
   @override
   Stream<CardDetail?> watchDetail(String cardId) => _detailDao
@@ -311,7 +313,7 @@ final class CardRepositoryImpl implements CardRepository {
   Future<ReviewHistoryPage?> historyPage({
     required String cardId,
     ReviewHistoryCursor? after,
-  }) => _mapped(() async {
+  }) => guardDatabase(() async {
     final rows = await _detailDao.historyRows(
       cardId,
       afterAnsweredAt: after?.answeredAt,
@@ -435,20 +437,6 @@ final class CardRepositoryImpl implements CardRepository {
     for (final deckId in deckIds) {
       if (await _dao.holdsCards(deckId)) continue;
       await _dao.setDeckContentType(deckId, DeckContentType.unset.name, at);
-    }
-  }
-
-  /// One transaction. Nothing inside catches: a throw leaves it, Drift rolls
-  /// every row of the write back together, and the error leaves as
-  /// `mapDatabaseError`'s [Failure].
-  Future<T> _write<T>(Future<T> Function() body) =>
-      _mapped(() => _db.transaction(body));
-
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }

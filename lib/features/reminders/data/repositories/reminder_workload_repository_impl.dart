@@ -16,17 +16,8 @@ final class ReminderWorkloadRepositoryImpl
   Future<List<ReminderDeckWorkload>> rootWorkloads({
     required DateTime now,
     required DateTime startOfToday,
-  }) async {
-    try {
-      final rows = await _dao.rootDeckRows(
-        now: now,
-        startOfToday: startOfToday,
-      );
-      return [
-        for (final row in rows) reminderDeckWorkloadOf(row, startOfToday),
-      ];
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
-  }
+  }) => guardDatabase(() async {
+    final rows = await _dao.rootDeckRows(now: now, startOfToday: startOfToday);
+    return [for (final row in rows) reminderDeckWorkloadOf(row, startOfToday)];
+  });
 }

@@ -56,6 +56,18 @@ Failure mapDatabaseError(Object error) {
   };
 }
 
+/// [body], with an unexpected database error leaving as the [Failure]
+/// [mapDatabaseError] makes of it, with its original stack trace. The Future
+/// twin of [DatabaseErrorStream.mapDatabaseErrors]; a closure, so a throw
+/// before the body's first await is mapped too.
+Future<T> guardDatabase<T>(Future<T> Function() body) async {
+  try {
+    return await body();
+  } on Object catch (error, stackTrace) {
+    Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
+  }
+}
+
 /// A watch reports its database errors the way a one-shot read does.
 extension DatabaseErrorStream<T> on Stream<T> {
   Stream<T> mapDatabaseErrors() => transform(
