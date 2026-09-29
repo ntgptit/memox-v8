@@ -42,6 +42,10 @@ class MxSettingsRow extends StatelessWidget {
   /// False dims the row while the setting is unavailable.
   final bool isEnabled;
 
+  /// From this text scale on, a trailing control moves under the text, so
+  /// the label keeps its width (audit 2026-09-29, screen 24).
+  static const double stackTextScale = 1.5;
+
   static const double _leadColumn = 40;
   static const double _subtitleGap = 4;
 
@@ -50,6 +54,10 @@ class MxSettingsRow extends StatelessWidget {
     final styles = context.textStyles;
     final isNavigable =
         onTap != null && trailing == null && wideControl == null;
+    final isStacked =
+        trailing != null &&
+        MediaQuery.textScalerOf(context).scale(1) >= stackTextScale;
+    final below = isStacked ? trailing : wideControl;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
@@ -60,14 +68,14 @@ class MxSettingsRow extends StatelessWidget {
           child: Row(
             spacing: AppSpacing.gutter,
             // Kit 23: beside a wide control the tile stays with the label.
-            crossAxisAlignment: wideControl == null
+            crossAxisAlignment: below == null
                 ? CrossAxisAlignment.center
                 : CrossAxisAlignment.start,
             children: [
               if (icon case final glyph?)
                 Padding(
                   padding: EdgeInsets.only(
-                    top: wideControl == null ? 0 : AppSpacing.grouped,
+                    top: below == null ? 0 : AppSpacing.grouped,
                   ),
                   child: SizedBox(
                     width: _leadColumn,
@@ -96,7 +104,7 @@ class MxSettingsRow extends StatelessWidget {
                         const SizedBox(height: _subtitleGap),
                         Text(text, style: styles.rowDescription),
                       ],
-                      if (wideControl case final control?) ...[
+                      if (below case final control?) ...[
                         const SizedBox(height: AppSpacing.grouped),
                         control,
                       ],
@@ -104,7 +112,7 @@ class MxSettingsRow extends StatelessWidget {
                   ),
                 ),
               ),
-              ?trailing,
+              if (!isStacked) ?trailing,
               if (isNavigable)
                 Icon(
                   AppIcons.chevronRight,

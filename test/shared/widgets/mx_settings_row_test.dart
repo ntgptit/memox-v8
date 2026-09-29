@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -169,6 +170,73 @@ void main() {
           )
           .opacity,
       0.38,
+    );
+  });
+  testWidgets('at large text a trailing control moves under the label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxSettingsRow(
+        label: 'Daily reminder',
+        subtitle: 'One notification a day, only when cards are due.',
+        icon: AppIcons.reminder,
+        trailing: MxToggle(
+          isOn: true,
+          semanticLabel: 'Daily reminder',
+          onChanged: (_) {},
+        ),
+      ),
+      textScale: 2,
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxToggle)).dy,
+      greaterThan(tester.getBottomLeft(find.text('Daily reminder')).dy),
+    );
+  });
+
+  testWidgets('a trailing button stacks too and keeps its 48 target', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxSettingsRow(
+        label: 'Time',
+        trailing: MxButton(
+          label: '20:00',
+          size: MxButtonSize.compact,
+          onPressed: () {},
+        ),
+      ),
+      textScale: 2,
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxButton)).dy,
+      greaterThan(tester.getBottomLeft(find.text('Time')).dy),
+    );
+    await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('at normal text the trailing control stays beside the label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxSettingsRow(
+        label: 'Daily reminder',
+        trailing: MxToggle(
+          isOn: true,
+          semanticLabel: 'Daily reminder',
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxToggle)).dy,
+      lessThan(tester.getBottomLeft(find.text('Daily reminder')).dy),
     );
   });
 }
