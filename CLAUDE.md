@@ -36,7 +36,8 @@ Each layer answers one question; none takes over another's.
    the kit.
    - Fix everything found in one batch, then confirm once. Never loop on
      polish.
-6. Run the final whole-branch review, then complete the branch.
+6. Run the final whole-branch review, then complete the branch. If goldens
+   changed, the owner gets the [golden review](#golden-review) page first.
 
 ### Where knowledge lives
 
@@ -85,6 +86,19 @@ handoffs under `docs/shared/ui/`. Write one when the owner asks for a handoff.
   Goldens render in the Linux container only
   (`.claude/skills/flutter-testing/scripts/golden.Dockerfile`); on Windows the
   gate runs `flutter test --exclude-tags golden` and never `--update-goldens`.
+
+### Golden review
+
+The owner reviews golden changes as pictures.
+
+- **When:** a branch adds, updates or deletes any `test/**/goldens/*.png`.
+- **What:** a private Artifact page showing each changed golden as Before ·
+  After · Diff side by side, with a sentence on what changed and why, built with
+  the `golden-compare` skill. Its link goes in the reply that asks the owner to
+  review, approve or merge. Changed images on their own do not count as a
+  review.
+- **Where:** the page and its images live in the scratchpad and on claude.ai,
+  never in the repo.
 
 ## V7 is a reference, not a template
 
