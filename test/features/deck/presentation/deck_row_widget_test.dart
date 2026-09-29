@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -136,5 +138,40 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the structure line wraps at text scale 2, never cut '
+      '(critique 2026-09-30)', (tester, env) async {
+    await pump(tester, env, _tile(), textScale: 2);
+    final meta = tester.widget<Text>(
+      find.text(
+        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+      ),
+    );
+
+    expect((meta.maxLines, meta.overflow), (null, null));
+  });
+
+  libraryTest('the workload line wraps between terms (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: DeckWorkloadLineWidget(
+          overdueCount: 3,
+          todayCount: 1,
+          newCount: 2,
+          cardCount: 6,
+        ),
+      ),
+    );
+
+    final line = tester.widget<MxWorkloadBreakdownLine>(
+      find.byType(MxWorkloadBreakdownLine),
+    );
+    expect(line.canWrap, isTrue);
   });
 }

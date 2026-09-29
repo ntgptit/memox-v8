@@ -27,7 +27,13 @@ import '../../../support/widget_harness.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));
 
-Finder _rich(String text) => find.text(text, findRichText: true);
+/// A rich line as read, with the wrap glue (non-breaking spaces) read as
+/// spaces.
+Finder _rich(String text) => find.byWidgetPredicate(
+  (widget) =>
+      widget is RichText &&
+      widget.text.toPlainText().replaceAll(' ', ' ') == text,
+);
 
 /// Korean holds one overdue, one due-today and one new card; Kanji is empty.
 Future<void> _seed(LibraryEnv env) async {

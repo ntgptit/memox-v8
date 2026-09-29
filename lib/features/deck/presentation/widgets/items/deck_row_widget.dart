@@ -89,8 +89,6 @@ class DeckRowWidget extends StatelessWidget {
                         ),
                         Text(
                           _meta(l10n),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           style: context.textStyles.rowSubtitle,
                         ),
                       ],
