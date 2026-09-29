@@ -26,7 +26,9 @@ class RecallCountdownBarWidget extends StatelessWidget {
   final int remainingMs;
   final bool isTimedOut;
 
-  static const double _trackHeight = 6;
+  /// The app's thin track (MxLinearProgress, MxStudyTopBar), M3's 4dp
+  /// (ruling M3-F2).
+  static const double _trackHeight = 4;
   static const int _msPerSecond = 1000;
 
   @override

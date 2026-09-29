@@ -41,6 +41,8 @@ void main() {
     expect(node.label, 'Time to recall');
     expect(node.value, '14 seconds left');
     expect(_fillOf(tester), closeTo(13400 / 20000, 1e-9));
+    // M3-F2: the app's thin track, M3's 4dp.
+    expect(tester.getSize(find.byType(FractionallySizedBox)).height, 4);
     handle.dispose();
   });
 

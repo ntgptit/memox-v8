@@ -249,10 +249,14 @@ class _Tile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: AppSpacing.micro,
           children: [
-            if (tile.isMatched)
+            if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
               IconTheme(
                 data: IconThemeData(color: ink, size: AppIconSize.inline),
-                child: const Icon(AppIcons.check),
+                child: Icon(
+                  tone == StudyChoiceTone.right
+                      ? AppIcons.check
+                      : AppIcons.close,
+                ),
               ),
             Flexible(
               child: StudyWholeWordTextWidget(

@@ -88,6 +88,14 @@ void main() {
 
     expect(find.text(_en.studyBrowseTerm.toUpperCase()), findsOneWidget);
     expect(find.text(_en.studyBrowseMeaning.toUpperCase()), findsOneWidget);
+    // M3-F3: the face label sits in flow above the content, never over it.
+    expect(
+      find.ancestor(
+        of: find.text(_en.studyBrowseTerm.toUpperCase()),
+        matching: find.byType(Positioned),
+      ),
+      findsNothing,
+    );
     expect(find.textContaining(RegExp(r'^back ')), findsOneWidget);
     expect(find.byType(ElevatedButton), findsNothing);
     expect(find.text(_en.studyBrowseHint), findsOneWidget);
