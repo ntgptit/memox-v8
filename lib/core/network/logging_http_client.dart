@@ -46,7 +46,7 @@ final class LoggingHttpClient extends http.BaseClient {
     return http.StreamedResponse(
       Stream.value(received),
       response.statusCode,
-      contentLength: received.length,
+      contentLength: response.contentLength,
       request: response.request,
       headers: response.headers,
       isRedirect: response.isRedirect,
@@ -125,19 +125,19 @@ final class LoggingHttpClient extends http.BaseClient {
     'duration_ms': (_micros() - start) ~/ 1000,
   };
 
-  /// The body as text, its head past [maxBodyBytes] (cut on a character
-  /// boundary), or its size when it is not UTF-8.
+  /// The body as text, its head past [maxBodyBytes] (cut before the character
+  /// the limit falls in), or its size when it is not UTF-8.
   static Map<String, Object?> _body(String side, List<int> bytes) {
     final cut = bytes.length > maxBodyBytes;
-    final head = cut ? bytes.sublist(0, maxBodyBytes) : bytes;
+    final head = cut ? bytes.sublist(0, _charBoundary(bytes)) : bytes;
     final String text;
     try {
-      text = utf8.decode(head, allowMalformed: cut);
+      text = utf8.decode(head);
     } on FormatException {
       return {'${side}_body': '<${bytes.length} bytes, binary>'};
     }
     return {
-      '${side}_body': cut ? text.replaceAll('�', '') : text,
+      '${side}_body': text,
       'bytes_${side == 'request' ? 'sent' : 'received'}': bytes.length,
       if (cut) ...{
         '${side}_body_bytes': bytes.length,
@@ -145,6 +145,22 @@ final class LoggingHttpClient extends http.BaseClient {
       },
     };
   }
+
+  /// Where to cut [bytes] at [maxBodyBytes] without splitting a UTF-8
+  /// character: back past at most three continuation bytes to the lead byte.
+  /// Bytes that are not UTF-8 leave the cut where it is, and fail to decode.
+  static int _charBoundary(List<int> bytes) {
+    var end = maxBodyBytes;
+    while (end > maxBodyBytes - _maxContinuation &&
+        bytes[end] & _continuationMask == _continuationBits) {
+      end--;
+    }
+    return end;
+  }
+
+  static const _maxContinuation = 3;
+  static const _continuationMask = 0xC0;
+  static const _continuationBits = 0x80;
 
   static bool _isUnreachable(Object error) =>
       error is SocketException ||

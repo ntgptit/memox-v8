@@ -152,7 +152,7 @@ void main() {
     await c.get(_url);
 
     final body = sink.entries.single.context['response_body']! as String;
-    expect(() => utf8.encode(body), returnsNormally);
+    expect(body.contains('\uFFFD'), isFalse);
     expect(body.endsWith('a'), isTrue);
   });
 
@@ -185,4 +185,145 @@ void main() {
     expect(utf8.decode(received!), 'chunk');
     expect(sink.entries.single.context['request_body'], '<streamed>');
   });
+
+  test('send hands back the original response fields', () async {
+    final inner = MockClient.streaming(
+      (request, body) async => http.StreamedResponse(
+        const Stream.empty(),
+        200,
+        contentLength: 500,
+        request: request,
+        isRedirect: true,
+        persistentConnection: false,
+        reasonPhrase: 'OK',
+      ),
+    );
+    final c = LoggingHttpClient(
+      inner: inner,
+      logger: AppLogger(sinks: [sink]),
+    );
+    final request = http.Request('HEAD', _url);
+
+    final response = await c.send(request);
+
+    expect(response.contentLength, 500);
+    expect(response.request, same(request));
+    expect(response.isRedirect, isTrue);
+    expect(response.persistentConnection, isFalse);
+    expect(response.reasonPhrase, 'OK');
+  });
+
+  test('a body over 64 KB that is not UTF-8 is logged as its size', () async {
+    final bytes = List.filled(LoggingHttpClient.maxBodyBytes + 10, 0xff);
+    final c = client((request) async => http.Response.bytes(bytes, 200));
+
+    await c.get(_url);
+
+    expect(
+      sink.entries.single.context['response_body'],
+      '<${bytes.length} bytes, binary>',
+    );
+  });
+
+  for (final (name, char) in [('3-byte', '€'), ('4-byte', '😀')]) {
+    test(
+      'a 64 KB cut inside a $name character keeps whole characters only',
+      () async {
+        final big = '${'a' * (LoggingHttpClient.maxBodyBytes - 1)}$char tail';
+        final c = client(
+          (request) async => http.Response.bytes(utf8.encode(big), 200),
+        );
+
+        await c.get(_url);
+
+        final body = sink.entries.single.context['response_body']! as String;
+        expect(body, 'a' * (LoggingHttpClient.maxBodyBytes - 1));
+      },
+    );
+  }
+
+  test('a real U+FFFD in a cut body is kept', () async {
+    final big = '�${'a' * LoggingHttpClient.maxBodyBytes}';
+    final c = client(
+      (request) async => http.Response.bytes(utf8.encode(big), 200),
+    );
+
+    await c.get(_url);
+
+    final body = sink.entries.single.context['response_body']! as String;
+    expect(body.startsWith('�'), isTrue);
+  });
+
+  test('a failure while reading the body is logged and rethrown', () async {
+    final inner = MockClient.streaming(
+      (request, body) async => http.StreamedResponse(
+        Stream<List<int>>.error(const SocketException('reset')),
+        200,
+      ),
+    );
+    final c = LoggingHttpClient(
+      inner: inner,
+      logger: AppLogger(sinks: [sink]),
+    );
+
+    await expectLater(c.get(_url), throwsA(isA<SocketException>()));
+
+    expect(sink.entries.single.event, 'net.unreachable');
+  });
+
+  test('a 3xx is logged at debug', () async {
+    final c = client((request) async => http.Response('', 304));
+
+    await c.get(_url);
+
+    expect(
+      (sink.entries.single.level, sink.entries.single.event),
+      (LogLevel.debug, 'net.request'),
+    );
+  });
+
+  test('the byte counts and response headers are logged', () async {
+    final c = client(
+      (request) async => http.Response('abc', 200, headers: {'x-h': 'v'}),
+    );
+
+    await c.post(_url, body: 'hello');
+
+    final context = sink.entries.single.context;
+    expect(context['bytes_sent'], 5);
+    expect(context['bytes_received'], 3);
+    expect((context['response_headers']! as Map)['x-h'], 'v');
+  });
+
+  test('close closes the inner client', () {
+    final inner = _ClosingClient();
+
+    LoggingHttpClient(inner: inner).close();
+
+    expect(inner.closed, isTrue);
+  });
+
+  test('without a logger it logs through the installed appLogger', () async {
+    final previous = appLogger;
+    addTearDown(() => AppLogger.install(previous));
+    AppLogger.install(AppLogger(sinks: [sink]));
+    final c = LoggingHttpClient(
+      inner: MockClient((request) async => http.Response('', 200)),
+    );
+
+    await c.get(_url);
+
+    expect(sink.events, ['net.request']);
+  });
+}
+
+final class _ClosingClient extends http.BaseClient {
+  var closed = false;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) =>
+      throw UnimplementedError();
+
+  @override
+  void close() => closed = true;
 }

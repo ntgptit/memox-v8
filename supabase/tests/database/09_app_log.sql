@@ -42,11 +42,12 @@ select is(public.log_push(jsonb_build_array(
     public.t_entry('11111111-0000-0000-0000-000000000004', 'loud'),
     public.t_entry('11111111-0000-0000-0000-000000000005', 'info') - 'level',
     public.t_entry('11111111-0000-0000-0000-000000000006', 'info') || '{"occurredAt": "not a time"}',
+    public.t_entry('11111111-0000-0000-0000-000000000009', 'info') || '{"category": "bogus"}',
     '"not an object"'::jsonb)),
   jsonb_build_object('accepted', jsonb_build_array('11111111-0000-0000-0000-000000000003',
     '11111111-0000-0000-0000-000000000004', '11111111-0000-0000-0000-000000000005',
-    '11111111-0000-0000-0000-000000000006'), 'rejected', 4),
-  'bad rows are skipped and reported, the good one is kept');
+    '11111111-0000-0000-0000-000000000006', '11111111-0000-0000-0000-000000000009'), 'rejected', 5),
+  'bad rows (level, missing level, time, category, shape) are skipped and reported, the good one is kept');
 select is((public.log_push(jsonb_build_array(
     public.t_entry('11111111-0000-0000-0000-000000000007', 'debug') || jsonb_build_object('context',
       jsonb_build_object('kind', 'batch', 'sql', 'INSERT',
@@ -69,7 +70,7 @@ select is((select array_agg(id::text order by id) from public.app_log where id::
 select is((select category from public.app_log where id = '11111111-0000-0000-0000-000000000008'),
   'network', 'and stored as network');
 select is((select count(*)::int from public.app_log where source = 'server' and event = 'server.log_rejected'
-    and (context->>'rejected')::int = 4), 1, 'the server logs the rows it skipped');
+    and (context->>'rejected')::int = 5), 1, 'the server logs the rows it skipped');
 select is((select context - 'bytes' from public.app_log where id = '11111111-0000-0000-0000-000000000007'),
   '{"sql": "INSERT", "kind": "batch", "truncated": true}'::jsonb,
   'a context over 256 kB keeps its kind and SQL and says it was cut');
