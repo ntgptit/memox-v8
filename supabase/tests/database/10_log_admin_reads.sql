@@ -82,9 +82,9 @@ select is(jsonb_array_length(public.log_query('{"search": "%"}'::jsonb)->'items'
 -- A list row is compact.
 select is((select array_agg(k order by k) from jsonb_object_keys(
     public.log_query('{"search": "t10.long"}'::jsonb)->'items'->0) k),
-  array['app_version', 'category', 'device_id', 'error_type', 'event', 'id', 'level', 'message',
-    'occurred_at', 'platform', 'source', 'status', 'user_id'],
-  'a list row has no context, stack trace or error message');
+  array['app_version', 'category', 'device_id', 'error_message', 'error_type', 'event', 'id', 'level',
+    'message', 'occurred_at', 'platform', 'source', 'status', 'user_id'],
+  'a list row has no context or stack trace, and keeps the error (most error rows have no message)');
 select is(length(public.log_query('{"search": "t10.long"}'::jsonb)->'items'->0->>'message'), 300,
   'a list row cuts the message at 300 characters');
 

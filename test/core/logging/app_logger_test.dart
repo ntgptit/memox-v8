@@ -183,6 +183,55 @@ void main() {
     void fail([Object? error]) =>
         logger.error('sync.failed', error: error ?? StateError('down'));
 
+    test('warnings without an error are never merged: each keeps its own '
+        'context', () {
+      logger
+        ..warning('db.slow_query', context: {'sql': 'SELECT 1'})
+        ..warning('db.slow_query', context: {'sql': 'SELECT 2'});
+
+      expect(
+        [for (final e in sink.entries) e.context['sql']],
+        ['SELECT 1', 'SELECT 2'],
+      );
+    });
+
+    test('a flush writes the count of a storm that stopped', () async {
+      fail();
+      tick(const Duration(seconds: 1));
+      fail();
+      fail();
+
+      await logger.flush();
+
+      expect(sink.entries, hasLength(2));
+      expect(sink.entries.last.event, 'sync.failed');
+      expect(sink.entries.last.level, LogLevel.error);
+      expect(sink.entries.last.errorType, 'StateError');
+      expect(sink.entries.last.context['repeated'], 2);
+    });
+
+    test('a count written by a flush is not written again', () async {
+      fail();
+      fail();
+      await logger.flush();
+      await logger.flush();
+      tick(const Duration(seconds: 6));
+      fail();
+
+      expect(
+        [for (final e in sink.entries) e.context['repeated']],
+        [null, 1, null],
+      );
+    });
+
+    test('a clock set back does not hide the next error', () {
+      fail();
+      tick(const Duration(hours: -2));
+      fail();
+
+      expect(sink.entries, hasLength(2));
+    });
+
     test('the same error within 5 s is written once', () {
       fail();
       tick(const Duration(seconds: 1));

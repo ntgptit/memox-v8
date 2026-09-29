@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,91 +11,100 @@ void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   group('the log scheduler', () {
-    late StreamController<void> periodic;
-    late StreamController<void> reconnects;
-    late int runs;
-    late bool foreground;
+    /// Runs [body] on a fake clock with a started scheduler, past its run at
+    /// start; `settle` elapses the debounce.
+    void withScheduler(
+      void Function(
+        StreamController<void> periodic,
+        StreamController<void> reconnects,
+        void Function(bool) setForeground,
+        int Function() runs,
+        void Function() settle,
+      )
+      body,
+    ) {
+      fakeAsync((async) {
+        final periodic = StreamController<void>.broadcast();
+        final reconnects = StreamController<void>.broadcast();
+        var runs = 0;
+        var foreground = true;
+        final scheduler = startLogScheduler(
+          run: () async => runs++,
+          periodic: periodic.stream,
+          reconnects: reconnects.stream,
+          isForeground: () => foreground,
+          debounce: const Duration(milliseconds: 10),
+        );
+        void settle() => async.elapse(const Duration(milliseconds: 60));
+        settle();
+        expect(runs, 1);
 
-    setUp(() {
-      periodic = StreamController<void>.broadcast();
-      reconnects = StreamController<void>.broadcast();
-      runs = 0;
-      foreground = true;
-    });
+        body(
+          periodic,
+          reconnects,
+          (value) => foreground = value,
+          () => runs,
+          settle,
+        );
 
-    tearDown(() async {
-      await periodic.close();
-      await reconnects.close();
-    });
-
-    Future<void> settle() =>
-        Future<void>.delayed(const Duration(milliseconds: 60));
-
-    /// Started, and past its run at start.
-    Future<void> start() async {
-      final scheduler = startLogScheduler(
-        run: () async => runs++,
-        periodic: periodic.stream,
-        reconnects: reconnects.stream,
-        isForeground: () => foreground,
-        debounce: const Duration(milliseconds: 10),
-      );
-      addTearDown(scheduler.dispose);
-      await settle();
-      expect(runs, 1);
+        scheduler.dispose();
+        periodic.close();
+        reconnects.close();
+        async.flushMicrotasks();
+      });
     }
 
-    test('the periodic push runs while the app is in front', () async {
-      await start();
+    test('the periodic push runs while the app is in front', () {
+      withScheduler((periodic, _, _, runs, settle) {
+        periodic.add(null);
+        settle();
 
-      periodic.add(null);
-      await settle();
-
-      expect(runs, 2);
+        expect(runs(), 2);
+      });
     });
 
-    test(
-      'the periodic push is dropped while the app is not in front',
-      () async {
-        await start();
-        foreground = false;
+    test('the periodic push is dropped while the app is not in front', () {
+      withScheduler((periodic, _, setForeground, runs, settle) {
+        setForeground(false);
 
         periodic.add(null);
-        await settle();
+        settle();
 
-        expect(runs, 1);
-      },
-    );
-
-    test('a reconnect runs while the app is in front', () async {
-      await start();
-
-      reconnects.add(null);
-      await settle();
-
-      expect(runs, 2);
+        expect(runs(), 1);
+      });
     });
 
-    test('a reconnect is dropped while the app is not in front', () async {
-      await start();
-      foreground = false;
+    test('a reconnect runs while the app is in front', () {
+      withScheduler((_, reconnects, _, runs, settle) {
+        reconnects.add(null);
+        settle();
 
-      reconnects.add(null);
-      await settle();
+        expect(runs(), 2);
+      });
+    });
 
-      expect(runs, 1);
+    test('a reconnect is dropped while the app is not in front', () {
+      withScheduler((_, reconnects, setForeground, runs, settle) {
+        setForeground(false);
+
+        reconnects.add(null);
+        settle();
+
+        expect(runs(), 1);
+      });
     });
 
     test('a dropped push is not queued for the return to the front (the '
-        'resume calls syncNow)', () async {
-      await start();
-      foreground = false;
-      periodic.add(null);
-      await settle();
-      foreground = true;
-      await settle();
+        'resume calls syncNow)', () {
+      withScheduler((periodic, _, setForeground, runs, settle) {
+        setForeground(false);
+        periodic.add(null);
+        settle();
+        setForeground(true);
+        settle();
 
-      expect(runs, 1);
+        expect(runs(), 1);
+      });
     });
   });
 

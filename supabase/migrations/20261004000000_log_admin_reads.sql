@@ -3,7 +3,7 @@
 --   * log_query checks the admin first: a non-admin never reaches a cast of the filter.
 --   * A JSON null, or a value of the wrong type, counts as absent.
 --   * search matches literally: `%`, `_` and `\` are text, not wildcards.
---   * A list row is compact (no context, no stack trace, a message cut at 300 characters);
+--   * A list row is compact (no context, no stack trace; message and error message cut at 300 characters);
 --     log_get returns the whole row of one log.
 
 create or replace function public.log_query(filter jsonb) returns jsonb
@@ -21,7 +21,8 @@ begin
   select coalesce(jsonb_agg(to_jsonb(l) order by l.occurred_at desc, l.id desc), '[]') into v_items
   from (
     select a.id, a.occurred_at, a.level, a.source, a.category, a.event,
-      left(a.message, 300) as message, a.error_type, a.status, a.user_id, a.device_id,
+      left(a.message, 300) as message, a.error_type, left(a.error_message, 300) as error_message,
+      a.status, a.user_id, a.device_id,
       a.app_version, a.platform
     from public.app_log a
     where (jsonb_typeof(filter->'levels') is distinct from 'array'

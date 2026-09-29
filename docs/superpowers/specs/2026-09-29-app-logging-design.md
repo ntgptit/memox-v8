@@ -75,10 +75,14 @@ AppLogger ──► ConsoleSink (dart:developer, every level; debug builds only)
   installed, the console sink is there in a debug build only (`kDebugMode`), and a
   build with no Supabase project installs no `BufferSink`, since its logs could never
   be shipped.
-- **Error storms:** a `warning` or `error` with the same event, error type and error
-  message as one written less than 5 s earlier is counted, not written; the next one
-  after the window is written with `context.repeated` set to the count suppressed.
-  `debug` and `info` are never held back.
+- **Error storms:** a `warning` or `error` that carries an error, with the same event,
+  error type and error message as one written less than 5 s earlier, is counted, not
+  written; the next one after the window is written with `context.repeated` set to the
+  count suppressed, and a flush (the app pausing) writes any count still pending as one
+  more entry. `debug`, `info` and a warning without an error (a slow query, a refused
+  row: told apart by its context) are never held back. A clock set back ends the
+  window. A release build with no Supabase project logs nowhere (no console, no
+  buffer).
 - **`BufferSink`** queues entries in memory and writes them in one batch every 2 s, or
   at 50 entries, or when the app pauses. A failed write falls back to the console and
   never logs itself.

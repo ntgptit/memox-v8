@@ -93,8 +93,10 @@ final class AppLogger {
     context,
   );
 
-  /// Queued entries to their stores; called when the app pauses.
+  /// Queued entries to their stores; called when the app pauses. A storm's
+  /// count not yet written goes first, so a pause never loses it.
   Future<void> flush() async {
+    _writeStormCounts();
     for (final sink in _sinks) {
       try {
         await sink.flush();
@@ -116,7 +118,8 @@ final class AppLogger {
     final at = _now().toUtc();
     final errorType = error?.runtimeType.toString();
     final errorMessage = _storable(_describe(error));
-    final repeated = _repeated(level, at, (event, errorType, errorMessage));
+    final key = (event, errorType, errorMessage);
+    final repeated = _repeated(level, error, at, key);
     if (repeated == null) return;
     final entry = LogEntry(
       id: _uuid.v4(),
@@ -135,6 +138,11 @@ final class AppLogger {
       },
       stamp: stamp,
     );
+    _storms[key]?.last = entry;
+    _write(entry);
+  }
+
+  void _write(LogEntry entry) {
     for (final sink in _sinks) {
       try {
         sink.write(entry);
@@ -145,15 +153,49 @@ final class AppLogger {
     }
   }
 
+  /// One entry per storm with a count not yet written: the last entry written
+  /// again, now, with `repeated`.
+  void _writeStormCounts() {
+    final at = _now().toUtc();
+    for (final storm in _storms.values) {
+      final last = storm.last;
+      if (storm.suppressed == 0 || last == null) continue;
+      _write(
+        LogEntry(
+          id: _uuid.v4(),
+          occurredAt: at,
+          level: last.level,
+          category: last.category,
+          event: last.event,
+          message: last.message,
+          errorType: last.errorType,
+          errorMessage: last.errorMessage,
+          stackTrace: last.stackTrace,
+          context: {...last.context, 'repeated': storm.suppressed},
+          stamp: last.stamp,
+        ),
+      );
+      storm.suppressed = 0;
+    }
+  }
+
   /// Error-storm dedupe: null when this warning or error repeats one written
   /// less than [stormWindow] ago (it is counted); otherwise how many it
-  /// suppressed since the last one written (0 for none). Debug and info are
-  /// never held back. The window runs from the last entry written, so a storm
-  /// that never stops still shows up once per window.
-  int? _repeated(LogLevel level, DateTime at, (String, String?, String?) key) {
-    if (level.index < LogLevel.warning.index) return 0;
+  /// suppressed since the last one written (0 for none). Only entries that
+  /// carry an error are held back: a warning without one (a slow query, a
+  /// refused row) is told apart by its context, which the key does not see.
+  /// The window runs from the last entry written, so a storm that never stops
+  /// still shows up once per window; a clock set back ends the window.
+  int? _repeated(
+    LogLevel level,
+    Object? error,
+    DateTime at,
+    (String, String?, String?) key,
+  ) {
+    if (level.index < LogLevel.warning.index || error == null) return 0;
     final storm = _storms[key];
-    if (storm != null && at.difference(storm.writtenAt) < stormWindow) {
+    final since = storm == null ? null : at.difference(storm.writtenAt);
+    if (storm != null && !since!.isNegative && since < stormWindow) {
       storm.suppressed++;
       return null;
     }
@@ -227,6 +269,9 @@ final class _Storm {
 
   final DateTime writtenAt;
   int suppressed = 0;
+
+  /// The entry written at [writtenAt], for the count a flush writes.
+  LogEntry? last;
 }
 
 /// The installed logger; console-only until the app installs its own.
