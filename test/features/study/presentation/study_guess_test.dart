@@ -118,7 +118,7 @@ void main() {
           )
           .first,
     );
-    expect(cherry.opacity, AppOpacity.disabled);
+    expect(cherry.opacity, AppOpacity.muted);
     expect(tester.takeAnnouncements().map((a) => a.message), [
       _en.studyGuessAnnounceWrong('apple'),
     ]);

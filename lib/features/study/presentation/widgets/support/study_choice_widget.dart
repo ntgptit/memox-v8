@@ -88,7 +88,7 @@ class StudyChoiceWidget extends StatelessWidget {
         excludeFromSemantics: true,
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
-          opacity: isFaded ? AppOpacity.disabled : 1,
+          opacity: isFaded ? AppOpacity.muted : 1,
           duration: motion,
           child: surface,
         ),

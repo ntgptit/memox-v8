@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_decorations.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
@@ -179,5 +182,24 @@ void main() {
     await tester.pump();
 
     expect(find.text('Type it'), findsNothing);
+  });
+
+  libraryTest('an option out of play stays readable: it fades to the muted '
+      'opacity, not the disabled one (critique 2026-09-30)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        StudyChoiceWidget(
+          tone: StudyChoiceTone.idle,
+          isFaded: true,
+          semanticsLabel: 'a',
+          builder: (ink) => const Text('a'),
+        ),
+      ),
+    );
+
+    final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
+    expect(fade.opacity, AppOpacity.muted);
   });
 }
