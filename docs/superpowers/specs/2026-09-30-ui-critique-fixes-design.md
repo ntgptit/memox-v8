@@ -1,6 +1,6 @@
 # SP2 + SP3: fix the 2026-09-30 UI critique — design
 
-Status: draft 2026-09-30, awaiting owner review ·
+Status: approved 2026-09-30 ·
 Path: architectural (sub-projects 2–4 of 4, one plan) · Owner rulings 2026-09-30 (§3): R1–R6
 
 ## 1. Intent
