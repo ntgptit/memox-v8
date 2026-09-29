@@ -7,10 +7,10 @@ superseded_by:
 ---
 ## Rule
 
-Nội dung notification MAY nêu **tên root deck cấp bách nhất**, **tổng số thẻ đến hạn** và **số deck còn lại**. Nội dung MUST NOT chứa mặt trước/sau của thẻ, ví dụ, gợi ý, phiên âm, tag, lịch sử ôn hay bất kỳ dữ liệu học nào của từng thẻ, kể cả trên lock screen. Log ở mọi level MUST NOT chứa nội dung thẻ, tên deck hay bản thân chuỗi copy; diagnostic chỉ MAY ghi lý do có kiểu và số đếm.
+Nội dung notification MAY nêu **tên root deck cấp bách nhất**, **tổng số thẻ đến hạn** và **số deck còn lại**. Nội dung MUST NOT chứa mặt trước/sau của thẻ, ví dụ, gợi ý, phiên âm, tag, lịch sử ôn hay bất kỳ dữ liệu học nào của từng thẻ, kể cả trên lock screen. Quy tắc riêng tư này áp cho nội dung notification, kể cả trên lock screen. Log thì theo [ADR-018](../../../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) (2026-09-29, thay vế "MUST NOT log nội dung thẻ, tên deck" cũ): log ghi mọi thứ, không che.
 
 **Enforced by:** store + UI
-**Liên quan:** BR-CORE-001
+**Liên quan:** BR-CORE-001, ADR-018
 
 ## Lý do
 
