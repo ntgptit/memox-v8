@@ -134,4 +134,93 @@ void main() {
     expect(sink.events, ['db.query']);
     expect(await logs.count(), 2);
   });
+
+  test(
+    'insert, update, delete, custom and batch statements log their kind',
+    () async {
+      final db = await open(const []);
+
+      await db.customStatement('CREATE TEMP TABLE t (x INTEGER)');
+      await db.customInsert(
+        'INSERT INTO t VALUES (?)',
+        variables: [Variable.withInt(1)],
+      );
+      await db.customUpdate('UPDATE t SET x = 2');
+      await db.customUpdate('DELETE FROM t', updateKind: UpdateKind.delete);
+      await db.batch((b) => b.customStatement('INSERT INTO t VALUES (?)', [3]));
+
+      expect([
+        for (final e in sink.entries) e.context['kind'],
+      ], containsAllInOrder(['custom', 'insert', 'update', 'batch']));
+      expect([
+        for (final e in sink.entries) e.context['sql'],
+      ], contains('DELETE FROM t'));
+      final batch = sink.entries.lastWhere((e) => e.context['kind'] == 'batch');
+      expect(batch.context['args'], [
+        [3],
+      ]);
+    },
+  );
+
+  test('a transaction that throws logs db.transaction with rollback', () async {
+    final db = await open(const []);
+
+    await expectLater(
+      db.transaction<void>(() async {
+        await db.customSelect('SELECT 1').get();
+        throw StateError('abort');
+      }),
+      throwsStateError,
+    );
+
+    final ends = [
+      for (final e in sink.entries)
+        if (e.event == 'db.transaction') e.context['outcome'],
+    ];
+    expect(ends, ['rollback']);
+  });
+
+  test(
+    'the thrown error is the original one, and the log describes it',
+    () async {
+      final db = await open(const []);
+
+      final thrown = await db
+          .customSelect('SELECT * FROM missing')
+          .get()
+          .then<Object?>((_) => null, onError: (Object error) => error);
+
+      expect(thrown, isA<SqliteException>());
+      expect(sink.entries.single.errorType, thrown.runtimeType.toString());
+      expect(sink.entries.single.errorMessage, thrown.toString());
+    },
+  );
+
+  test('the default clock measures real time', () async {
+    final db = AppDatabase(
+      NativeDatabase.memory()
+          .interceptWith(_Sleeps())
+          .interceptWith(TracingInterceptor(logger: logger)),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    final entry = sink.entries.single;
+    expect(entry.event, 'db.slow_query');
+    expect(entry.context['duration_ms'], greaterThanOrEqualTo(50));
+  });
+}
+
+/// Takes 60 ms of wall time on every select.
+final class _Sleeps extends QueryInterceptor {
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) async {
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    return super.runSelect(executor, statement, args);
+  }
 }

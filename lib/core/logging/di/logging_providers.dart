@@ -21,14 +21,14 @@ LogDatabase logDatabase(Ref ref) {
 }
 
 /// `log_push` through the Supabase project; main.dart has initialized it.
+/// It waits for sync's session instead of signing in.
 @Riverpod(keepAlive: true)
 LogApi logApi(Ref ref) {
   final client = Supabase.instance.client;
   return LogApi(
-    ensureSession: () async {
-      if (client.auth.currentSession != null) return;
-      await client.auth.signInAnonymously();
-    },
+    ensureSession: existingSessionOnly(
+      () => client.auth.currentSession != null,
+    ),
     rpc: (function, params) => client.rpc<Object?>(function, params: params),
   );
 }

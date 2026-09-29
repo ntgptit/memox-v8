@@ -9,7 +9,7 @@ import 'package:memox/core/logging/app_logger.dart';
 /// never logs.
 final class TracingInterceptor extends QueryInterceptor {
   TracingInterceptor({this._logger, int Function()? micros})
-    : _micros = micros ?? _stopwatch.elapsedMicroseconds.toInt;
+    : _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
 
   static const slowMs = 50;
   static const verySlowMs = 150;

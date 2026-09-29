@@ -18,3 +18,18 @@ final class LogApi {
     return {for (final id in accepted) id! as String};
   }
 }
+
+/// The log push has no session of its own yet: sync signs in.
+final class LogSessionMissing implements Exception {
+  const LogSessionMissing();
+
+  @override
+  String toString() => 'LogSessionMissing: sync has not signed in yet';
+}
+
+/// A guard that lets the push go only on a session sync already has. The log
+/// never signs in itself: two anonymous sign-ins racing on a first run would
+/// leave sync's rows under one user and later ones under another.
+SessionGuard existingSessionOnly(bool Function() hasSession) => () async {
+  if (!hasSession()) throw const LogSessionMissing();
+};

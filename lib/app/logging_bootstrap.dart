@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/database/log/log_database.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/buffer_sink.dart';
 import 'package:memox/core/logging/console_sink.dart';
@@ -14,13 +16,30 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// first in `main`, so what starts after it logs to the buffer. Nothing here
 /// stops the app from starting: a part that fails leaves its field empty.
 Future<void> installAppLogger(ProviderContainer container) async {
-  final logs = container.read(logDatabaseProvider);
+  _routeUncaughtErrors();
+  final LogDatabase logs;
+  try {
+    logs = container.read(logDatabaseProvider);
+  } on Object catch (error, stackTrace) {
+    appLogger.warning(
+      'lifecycle.log_buffer_unavailable',
+      category: LogCategory.lifecycle,
+      error: error,
+      stackTrace: stackTrace,
+    );
+    return;
+  }
   AppLogger.install(
     AppLogger(
       sinks: [const ConsoleSink(), BufferSink(logs)],
       stamp: await _stamp(container),
     ),
   );
+  // After the first frame's reads, not before them.
+  unawaited(_prune(logs));
+}
+
+void _routeUncaughtErrors() {
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     appLogger.error(
@@ -44,6 +63,9 @@ Future<void> installAppLogger(ProviderContainer container) async {
     );
     return true;
   };
+}
+
+Future<void> _prune(LogDatabase logs) async {
   try {
     await logs.prune(now: DateTime.now());
   } on Object catch (error, stackTrace) {

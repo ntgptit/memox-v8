@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
+
+import '../../support/recording_log_sink.dart';
 
 void main() {
   test('runs at start, then once per debounced burst of triggers', () {
@@ -226,6 +230,30 @@ void main() {
       clock.elapse(Duration.zero);
       clock.elapse(const Duration(seconds: 5));
       expect(runs, 2);
+      scheduler.dispose();
+    });
+  });
+
+  test('a run that fails offline is logged at info, any other failure as an '
+      'error (ADR-018: offline is a normal state, not an open error)', () {
+    fakeAsync((clock) {
+      final sink = RecordingLogSink();
+      Object failure = const SocketException('offline');
+      final scheduler = SyncScheduler(
+        run: () async => throw failure,
+        triggers: const Stream.empty(),
+        logger: AppLogger(sinks: [sink]),
+      )..start();
+
+      clock.elapse(Duration.zero);
+      failure = StateError('bug');
+      scheduler.syncNow();
+      clock.elapse(Duration.zero);
+
+      expect(
+        [for (final e in sink.entries) (e.event, e.level)],
+        [('sync.failed', LogLevel.info), ('sync.failed', LogLevel.error)],
+      );
       scheduler.dispose();
     });
   });

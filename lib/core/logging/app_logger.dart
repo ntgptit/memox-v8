@@ -103,11 +103,14 @@ final class AppLogger {
       level: level,
       category: category,
       event: event,
-      message: message,
+      message: _storable(message),
       errorType: error?.runtimeType.toString(),
-      errorMessage: _describe(error),
-      stackTrace: stackTrace?.toString(),
-      context: context,
+      errorMessage: _storable(_describe(error)),
+      stackTrace: _storable(stackTrace?.toString()),
+      context: {
+        for (final MapEntry(:key, :value) in context.entries)
+          key: _storableValue(value),
+      },
       stamp: stamp,
     );
     for (final sink in _sinks) {
@@ -120,11 +123,51 @@ final class AppLogger {
     }
   }
 
-  static String? _describe(Object? error) => switch (error) {
-    null => null,
-    Failure(:final cause?) => '$error cause: $cause',
-    _ => error.toString(),
-  };
+  static String? _describe(Object? error) {
+    try {
+      return switch (error) {
+        null => null,
+        Failure(:final cause?) => '$error cause: $cause',
+        _ => error.toString(),
+      };
+    } on Object catch (describeError) {
+      return '<toString failed: ${describeError.runtimeType}>';
+    }
+  }
+
+  /// Past [_maxDepth] nesting — a context that holds itself — a value is kept
+  /// as its text.
+  static Object? _storableValue(Object? value, [int depth = 0]) {
+    if (depth > _maxDepth && (value is List || value is Map)) {
+      return _storable(value.toString());
+    }
+    return switch (value) {
+      String() => _storable(value),
+      List<Object?>() => [
+        for (final item in value) _storableValue(item, depth + 1),
+      ],
+      Map<Object?, Object?>() => {
+        for (final MapEntry(:key, :value) in value.entries)
+          '$key': _storableValue(value, depth + 1),
+      },
+      _ => value,
+    };
+  }
+
+  static const _maxDepth = 16;
+
+  /// Postgres text and jsonb refuse NUL and a lone UTF-16 surrogate (text cut
+  /// mid-emoji); one such entry would fail every push of its batch. NUL goes,
+  /// a lone surrogate becomes U+FFFD.
+  static String? _storable(String? text) {
+    if (text == null || !_unstorable.hasMatch(text)) return text;
+    return text.replaceAll('\u0000', '').replaceAll(_loneSurrogate, '\uFFFD');
+  }
+
+  static final _unstorable = RegExp(r'[\u0000\uD800-\uDFFF]');
+  static final _loneSurrogate = RegExp(
+    r'[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]',
+  );
 }
 
 /// The installed logger; console-only until the app installs its own.

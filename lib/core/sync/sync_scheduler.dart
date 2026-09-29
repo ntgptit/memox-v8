@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/sync/sync_failure.dart';
 
 /// When a sync runs: at start, after a debounced burst of triggers, and on
 /// backoff after a failure. At most one run at a time (app deck-sync spec §5).
@@ -122,13 +123,7 @@ class SyncScheduler {
       _failures = 0;
     } catch (error, stackTrace) {
       _failures++;
-      _log.error(
-        'sync.failed',
-        category: LogCategory.sync,
-        error: error,
-        stackTrace: stackTrace,
-        context: {'failures': _failures},
-      );
+      _logFailure(error, stackTrace);
       await _report(() async => _onFailed?.call(error));
     } finally {
       _running = false;
@@ -142,6 +137,28 @@ class SyncScheduler {
       }
       _rerun = false;
     }
+  }
+
+  /// Offline is a normal state here; only another failure is an error an
+  /// admin has to look at (ADR-018 §6).
+  void _logFailure(Object error, StackTrace stackTrace) {
+    final context = {'failures': _failures};
+    if (classifySyncFailure(error) == SyncFailureKind.network) {
+      _log.info(
+        'sync.failed',
+        category: LogCategory.sync,
+        message: '$error',
+        context: context,
+      );
+      return;
+    }
+    _log.error(
+      'sync.failed',
+      category: LogCategory.sync,
+      error: error,
+      stackTrace: stackTrace,
+      context: context,
+    );
   }
 
   /// A failure that cannot be recorded is logged; the run already failed and

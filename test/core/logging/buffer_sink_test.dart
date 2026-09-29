@@ -30,17 +30,75 @@ final class _CountingDatabase extends LogDatabase {
 
 // Spec §3: the buffer batches, so a burst is a few writes, not one per log.
 void main() {
-  test('120 logs inside two seconds are at most three writes', () {
+  test(
+    '120 logs inside two seconds are at most three writes, and all land',
+    () {
+      fakeAsync((async) {
+        final db = _CountingDatabase();
+        final sink = BufferSink(db);
+        for (var n = 0; n < 120; n++) {
+          sink.write(_entry(n));
+        }
+        async.elapse(const Duration(seconds: 2));
+        async.flushMicrotasks();
+
+        expect(db.inserts, inInclusiveRange(1, 3));
+        int? rows;
+        db.count().then((n) => rows = n);
+        async.flushMicrotasks();
+        expect(rows, 120);
+        sink.dispose();
+        db.close();
+      });
+    },
+  );
+
+  test(
+    'a warning or an error is written at once, with what waits before it',
+    () {
+      fakeAsync((async) {
+        final db = _CountingDatabase();
+        final sink = BufferSink(db)
+          ..write(_entry(1))
+          ..write(_entry(2, LogLevel.error));
+        async.flushMicrotasks();
+
+        expect(db.inserts, 1);
+        int? rows;
+        db.count().then((n) => rows = n);
+        async.flushMicrotasks();
+        expect(rows, 2);
+        sink.dispose();
+        db.close();
+      });
+    },
+  );
+
+  test('after a failed write, logging does not retry at once; the retry '
+      'waits, then writes everything', () {
     fakeAsync((async) {
-      final db = _CountingDatabase();
+      final db = _CountingDatabase()..fail = true;
       final sink = BufferSink(db);
-      for (var n = 0; n < 120; n++) {
+      for (var n = 0; n < 50; n++) {
         sink.write(_entry(n));
       }
+      async.flushMicrotasks();
+      expect(db.inserts, 1);
+
+      for (var n = 50; n < 160; n++) {
+        sink.write(_entry(n, n.isEven ? LogLevel.error : LogLevel.debug));
+      }
+      async.flushMicrotasks();
+      expect(db.inserts, 1);
+
+      db.fail = false;
       async.elapse(const Duration(seconds: 2));
       async.flushMicrotasks();
-
-      expect(db.inserts, lessThanOrEqualTo(3));
+      expect(db.inserts, 2);
+      int? rows;
+      db.count().then((n) => rows = n);
+      async.flushMicrotasks();
+      expect(rows, 160);
       sink.dispose();
       db.close();
     });

@@ -30,6 +30,7 @@ create table public.app_log (
 create index app_log_occurred_at on public.app_log (occurred_at desc, id desc);
 create index app_log_level_status on public.app_log (level, status, occurred_at desc);
 create index app_log_user on public.app_log (user_id, occurred_at desc);
+create index app_log_received_at on public.app_log (level, received_at);
 
 alter table public.app_log enable row level security;
 revoke all on table public.app_log from public, anon, authenticated;
@@ -41,23 +42,55 @@ language sql stable set search_path = '' as $$
   select coalesce(auth.jwt()->'app_metadata'->>'role', '') = 'admin'
 $$;
 
+-- Never fails its caller: a server log that cannot be written (a full table, a bad
+-- value) must not roll back the sync it describes.
 create function private.log_server(p_level text, p_category text, p_event text, p_message text,
   p_context jsonb default '{}') returns void
-language sql security definer set search_path = '' as $$
+language plpgsql security definer set search_path = '' as $$
+begin
   insert into public.app_log (id, occurred_at, level, source, category, event, message, context,
     user_id, status)
   values (gen_random_uuid(), now(), p_level, 'server', p_category, p_event, p_message,
     coalesce(p_context, '{}'), auth.uid(),
-    case when p_level in ('warning', 'error') then 'open' end)
+    case when p_level in ('warning', 'error') then 'open' end);
+exception when others then
+  null;
+end
+$$;
+
+create function private.try_timestamptz(p_text text) returns timestamptz
+language plpgsql stable set search_path = '' as $$
+begin
+  return p_text::timestamptz;
+exception when others then
+  return null;
+end
+$$;
+
+-- One device log row the table can take.
+create function private.log_entry_valid(e jsonb) returns boolean
+language sql stable set search_path = '' as $$
+  select coalesce(jsonb_typeof(e) = 'object'
+    and e->>'level' in ('debug', 'info', 'warning', 'error')
+    and e->>'category' in ('ui', 'navigation', 'state', 'db', 'sync', 'reminder', 'lifecycle', 'server')
+    and private.try_uuid(e->>'id') is not null
+    and coalesce(e->>'event', '') <> ''
+    and private.try_timestamptz(e->>'occurredAt') is not null
+    and coalesce(jsonb_typeof(e->'context'), 'object') = 'object', false)
 $$;
 
 -- A device's buffered logs. user_id is the session's, never the payload's; a repeated
--- id is ignored, so a push retried after a lost reply keeps one row.
+-- id is ignored, so a push retried after a lost reply keeps one row. A row the table
+-- cannot take is skipped, not the call: one bad row would otherwise block every later
+-- log of the device. Its id still comes back accepted, so the device drops it, and the
+-- server logs how many it skipped. A context over 256 kB (a bulk batch's arguments)
+-- keeps its kind and SQL and says it was cut, so one import cannot fill the table.
 create function public.log_push(entries jsonb) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
   v_user uuid := auth.uid();
   v_accepted jsonb;
+  v_rejected int;
 begin
   if v_user is null then
     raise exception 'NOT_AUTHENTICATED';
@@ -65,29 +98,29 @@ begin
   if jsonb_typeof(entries) is distinct from 'array' or jsonb_array_length(entries) > 500 then
     raise exception 'VALIDATION_FAILED';
   end if;
-  if exists (
-    select 1 from jsonb_array_elements(entries) e
-    where e->>'level' not in ('debug', 'info', 'warning', 'error')
-      or e->>'category' not in ('ui', 'navigation', 'state', 'db', 'sync', 'reminder', 'lifecycle', 'server')
-      or private.try_uuid(e->>'id') is null
-      or coalesce(e->>'event', '') = ''
-      or e->>'occurredAt' is null
-  ) then
-    raise exception 'VALIDATION_FAILED';
-  end if;
   insert into public.app_log (id, occurred_at, level, source, category, event, message, error_type,
     error_message, stack_trace, context, user_id, device_id, app_version, build_number, platform,
     os_version, status)
   select (e->>'id')::uuid, (e->>'occurredAt')::timestamptz, e->>'level', 'app', e->>'category',
     e->>'event', e->>'message', e->>'errorType', e->>'errorMessage', e->>'stackTrace',
-    coalesce(e->'context', '{}'), v_user, e->>'deviceId', e->>'appVersion', e->>'buildNumber',
-    e->>'platform', e->>'osVersion',
+    case when octet_length(e->>'context') > 262144 then
+      jsonb_build_object('truncated', true, 'bytes', octet_length(e->>'context'),
+        'kind', e->'context'->'kind', 'sql', left(e->'context'->>'sql', 65536))
+    else coalesce(e->'context', '{}') end,
+    v_user, e->>'deviceId', e->>'appVersion', e->>'buildNumber', e->>'platform', e->>'osVersion',
     case when e->>'level' in ('warning', 'error') then 'open' end
   from jsonb_array_elements(entries) e
+  where private.log_entry_valid(e)
   on conflict (id) do nothing;
-  -- Accepted: every id of the call, new or already here.
-  select coalesce(jsonb_agg(e->>'id'), '[]') into v_accepted from jsonb_array_elements(entries) e;
-  return jsonb_build_object('accepted', v_accepted);
+  select coalesce(jsonb_agg(e->>'id' order by n) filter (where jsonb_typeof(e) = 'object' and e ? 'id'), '[]'),
+    count(*) filter (where not private.log_entry_valid(e))
+  into v_accepted, v_rejected
+  from jsonb_array_elements(entries) with ordinality as t(e, n);
+  if v_rejected > 0 then
+    perform private.log_server('warning', 'server', 'server.log_rejected',
+      format('%s log rows refused', v_rejected), jsonb_build_object('rejected', v_rejected));
+  end if;
+  return jsonb_build_object('accepted', v_accepted, 'rejected', v_rejected);
 end
 $$;
 
@@ -149,12 +182,13 @@ end
 $$;
 
 -- ADR-018 §5: debug and info live 7 days, warning and error 180 days ("6 months",
--- fixed at 180 so the device buffer and the server agree).
+-- fixed at 180 so the device buffer and the server agree). Age counts from arrival:
+-- a device clock set years ahead cannot keep a row forever.
 create function private.purge_app_log() returns void
 language sql security definer set search_path = '' as $$
   delete from public.app_log
-  where (level in ('debug', 'info') and occurred_at < now() - interval '7 days')
-     or (level in ('warning', 'error') and occurred_at < now() - interval '180 days')
+  where (level in ('debug', 'info') and received_at < now() - interval '7 days')
+     or (level in ('warning', 'error') and received_at < now() - interval '180 days')
 $$;
 
 -- Daily at 03:41 UTC, where pg_cron exists (Supabase preloads it).

@@ -140,6 +140,25 @@ void main() {
     expect(row.context['argument'], Duration.zero.toString());
   });
 
+  test('a context JSON cannot encode at all is stored as its text', () async {
+    final cyclic = <String, Object?>{};
+    cyclic['self'] = cyclic;
+
+    await db.insertAll([
+      LogEntry(
+        id: 'cyclic',
+        occurredAt: now,
+        level: LogLevel.error,
+        category: LogCategory.state,
+        event: 'state.provider_failed',
+        context: cyclic,
+      ),
+    ]);
+
+    final row = (await db.oldest(1)).single;
+    expect(row.context['unencodable'], isA<String>());
+  });
+
   test('count watches the pending rows', () async {
     expect(await db.count(), 0);
     await db.insertAll([_entry('a', LogLevel.info, now)]);

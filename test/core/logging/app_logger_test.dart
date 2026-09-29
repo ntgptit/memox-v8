@@ -123,4 +123,50 @@ void main() {
     expect(copy.toJson(), entry.toJson());
     expect(copy.context['args'], [1, 'a']);
   });
+
+  test('NUL and lone surrogates, which the server cannot store, are replaced',
+      () {
+    final sink = _RecordingSink();
+    final logger = AppLogger(sinks: [sink], now: () => at);
+    final halfEmoji = '😀'.substring(0, 1);
+
+    logger.info(
+      'db.query',
+      message: 'a\u0000b$halfEmoji',
+      context: {
+        'args': ['x\u0000', halfEmoji, 7],
+        'nested': {'k': 'ok😀'},
+      },
+    );
+
+    final entry = sink.entries.single;
+    expect(entry.message, 'ab\uFFFD');
+    expect(entry.context['args'], ['x', '\uFFFD', 7]);
+    expect(entry.context['nested'], {'k': 'ok😀'});
+  });
+
+  test('a context that holds itself still logs', () {
+    final sink = _RecordingSink();
+    final logger = AppLogger(sinks: [sink], now: () => at);
+    final cyclic = <String, Object?>{};
+    cyclic['self'] = cyclic;
+
+    logger.info('state.x', context: {'value': cyclic});
+
+    expect(sink.entries, hasLength(1));
+  });
+
+  test('an error whose toString throws still logs', () {
+    final sink = _RecordingSink();
+    final logger = AppLogger(sinks: [sink], now: () => at);
+
+    logger.error('state.provider_failed', error: _Unprintable());
+
+    expect(sink.entries.single.errorType, '_Unprintable');
+  });
+}
+
+final class _Unprintable {
+  @override
+  String toString() => throw StateError('no');
 }

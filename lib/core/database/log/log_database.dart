@@ -130,9 +130,7 @@ class LogDatabase extends _$LogDatabase {
         errorType: Value(entry.errorType),
         errorMessage: Value(entry.errorMessage),
         stackTrace: Value(entry.stackTrace),
-        context: Value(
-          jsonEncode(entry.context, toEncodable: (value) => value.toString()),
-        ),
+        context: Value(_encodeContext(entry.context)),
         deviceId: Value(entry.stamp.deviceId),
         appVersion: Value(entry.stamp.appVersion),
         buildNumber: Value(entry.stamp.buildNumber),
@@ -164,4 +162,15 @@ class LogDatabase extends _$LogDatabase {
       osVersion: row.osVersion,
     ),
   );
+}
+
+/// A value JSON cannot encode is stored as its text; a context that cannot be
+/// encoded at all (a cycle) as one text field. Either way the entry is kept:
+/// one failing entry would otherwise fail every write of its batch.
+String _encodeContext(Map<String, Object?> context) {
+  try {
+    return jsonEncode(context, toEncodable: (value) => value.toString());
+  } on Object {
+    return jsonEncode({'unencodable': context.toString()});
+  }
 }

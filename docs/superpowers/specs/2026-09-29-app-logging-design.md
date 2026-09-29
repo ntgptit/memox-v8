@@ -113,10 +113,21 @@ forbids `dart:developer` imports outside `lib/core/logging/`.
   `(occurred_at desc)`, `(level, status, occurred_at desc)` and `(user_id, occurred_at desc)`.
 - **`private.is_admin()`**: `coalesce(auth.jwt()->'app_metadata'->>'role', '') = 'admin'`.
 - **`public.log_push(entries jsonb) returns jsonb`**, for authenticated users:
-  - validates at most 500 entries and the level, source and category values;
+  - refuses a call of more than 500 entries;
+  - skips, rather than refuses, a row it cannot take (bad level, category, id,
+    time or shape), returns its id as accepted so the device drops it, and logs
+    `warning server.log_rejected` with the count: one bad row must not block every
+    later log of a device;
+  - keeps a context over 256 kB as its `kind` and `sql` plus `truncated: true`, so
+    one bulk import cannot fill the Free-tier database;
   - inserts with `user_id = auth.uid()` and `status = 'open'` for `warning`/`error`;
   - uses `on conflict (id) do nothing`;
-  - returns the accepted ids.
+  - returns the accepted ids and the number skipped.
+- **Client, the same concern:** `AppLogger` replaces NUL and lone UTF-16 surrogates,
+  which Postgres cannot store; `LogShipper` halves a batch the server refuses whole
+  until the refused row is alone, and drops it (at most one between two successful
+  pushes, so a broken RPC cannot empty the buffer); the log push never signs in
+  itself, it waits for sync's session.
 - **`public.log_query(filter jsonb) returns jsonb`**, admin only (otherwise `FORBIDDEN`):
   - filters on level, source, category, status, text search on `event`/`message`, a
     date range and user;
@@ -127,7 +138,9 @@ forbids `dart:developer` imports outside `lib/core/logging/`.
   `source = 'server'` row. The sync RPCs call it where they reject an operation
   (`warning sync.rejected`) and in `exception` blocks (`error server.exception`).
 - **`private.purge_app_log()`** deletes `debug`/`info` older than 7 days and
-  `warning`/`error` older than 6 months. `cron.schedule('app-log-retention', '41 3 * * *', ...)`
+  `warning`/`error` older than 180 days, counted from `received_at`: a device clock
+  set years ahead cannot keep a row forever. `private.log_server` never fails its
+  caller, so a log that cannot be written does not roll back a sync. `cron.schedule('app-log-retention', '41 3 * * *', ...)`
   runs it daily; the migration enables `pg_cron` if it is off.
 - **pgTAP** (`supabase/tests/database/09_app_log.sql`) covers:
   - privileges and admin checks;
