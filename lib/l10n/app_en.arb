@@ -6455,5 +6455,17 @@
   "failureServer": "The server couldn't answer. Nothing was lost. Try again in a moment.",
   "@failureServer": {
     "description": "A failure sentence (ADR-016 D3): the server answered with an error or an answer this build cannot read."
+  },
+  "settingsAdmin": "Admin",
+  "@settingsAdmin": {
+    "description": "Screen 23 (Monitoring): the section title of the admin-only entry."
+  },
+  "settingsMonitoring": "Monitoring",
+  "@settingsMonitoring": {
+    "description": "Screen 23 (Monitoring): the row that opens screen 28."
+  },
+  "settingsMonitoringHint": "Logs of the app and the server",
+  "@settingsMonitoringHint": {
+    "description": "Screen 23 (Monitoring): the Monitoring row subtitle."
   }
 }

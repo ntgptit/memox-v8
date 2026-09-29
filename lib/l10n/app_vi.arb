@@ -1212,5 +1212,8 @@
   "reminderOpenSystemSettings": "Mở cài đặt hệ thống",
   "failureNotAdmin": "Chỉ quản trị viên mới xem được mục này.",
   "failureOffline": "Không kết nối được máy chủ. Không mất gì cả.",
-  "failureServer": "Máy chủ chưa trả lời được. Không mất gì cả, thử lại sau một lát."
+  "failureServer": "Máy chủ chưa trả lời được. Không mất gì cả, thử lại sau một lát.",
+  "settingsAdmin": "Quản trị",
+  "settingsMonitoring": "Giám sát",
+  "settingsMonitoringHint": "Nhật ký của ứng dụng và máy chủ"
 }
