@@ -21,9 +21,9 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| default | ![](img/18-study-guess/default-light.png) | ![](img/18-study-guess/default-dark.png) | As drawn. |
+| default | `study_guess_idle_light.png` | `study_guess_idle_dark.png` | — |
 
 Not captured: the pre-tap idle appearance of the five options is an
 interaction inside `default`, not a separate capture.
@@ -35,14 +35,12 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 1200 ms or until a tap. Goldens:
 `test/features/study/presentation/goldens/study_guess_{idle,wrong,right,large_text,blocked}_*`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| The right option in the kit's `mastery` green | The `success` semantic (`successSoft`/`successBorder`/`successInk`) | FE-A6 spec D14: green is mastery-only (P3 ruling C1) |
-| No state for a question that cannot be built | A notice, "This question can't be shown", whose Close ends the session; nothing is written or skipped | BR-STUDY-040 (P3 ruling C2) |
-| The answered state advances by itself | With TalkBack on, a "Next" button waits instead | P3 ruling C6: an announcement is not cut short |
-| The idle footer hint is not drawn | "Only your first pick counts" before the pick | BR-STUDY-042 |
+- **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semantic (`successSoft`/`successBorder`/`successInk`); green is mastery-only.
+- **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This question can't be shown", whose Close ends the session; nothing is written or skipped.
+- **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" button instead of advancing by itself.
+- **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick counts".
 
 ## Accessibility
 

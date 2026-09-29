@@ -3,9 +3,9 @@
 # 16a · Study · Self-check
 
 The `self_assess` session: `sm2`'s review mode, and the second stage of an `sm2`
-learning session (BR-MODE-004). The kit draws no screen for it. This file is its
-Impeccable `shape` brief (FE-A5, 2026-09-25), built from the kit's session
-language (screens 16 and 19) and the rules. UC-STUDY-001, UC-STUDY-003.
+learning session (BR-MODE-004). Shaped by Impeccable before the plan: this file is its
+`shape` brief (FE-A5, 2026-09-25), built from the session language of screens 16 and
+19 and the rules. UC-STUDY-001, UC-STUDY-003.
 
 ## Job
 
@@ -20,8 +20,8 @@ with the prompt, and no grade should ever be committed by accident.
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Close, mode badge "Self-check", counter "{n} / {total}". Shared with 16–20 (see [16](16-study-browse.md#shared-by-the-session-screens)). |
 | Context line | as 16–20 | "{deck} · Review · Self-check" (learning session: "Learn"). |
-| Prompt card | the kit's study face card (as 19's term card) | The prompt side for this queue row's direction (BR-MODE-014): the term for `korean_to_meaning`, the meaning for `meaning_to_korean`; a `mixed` row carries its own (BR-MODE-015). The whole card is a button: tapping it reveals, same as "Show answer". |
-| Answer card | the kit's study face card, answer tone | Hidden until revealed (BR-MODE-006), then shown under the prompt; the prompt stays in place. |
+| Prompt card | the study face card (as 19's term card) | The prompt side for this queue row's direction (BR-MODE-014): the term for `korean_to_meaning`, the meaning for `meaning_to_korean`; a `mixed` row carries its own (BR-MODE-015). The whole card is a button: tapping it reveals, same as "Show answer". |
+| Answer card | the study face card, answer tone | Hidden until revealed (BR-MODE-006), then shown under the prompt; the prompt stays in place. |
 | Action area, before reveal | primary block `MxButton` | "Show answer". |
 | Action area, after reveal | four `MxButton`s in one row, new: `StudyGradeRow` | Again · Hard · Good · Easy, in that order, from `supportedActions` (BR-STUDY-009). Again is error-tinted; Hard, Good and Easy share one tonal treatment. The label always names the grade, so colour never carries it alone. Under each label is the interval it would give, e.g. "1d", "6d", "15d" (see [Interval preview](#interval-preview)). Each button is at least 48 tall; at large text the row becomes a 2 × 2 grid instead of shrinking type. |
 
@@ -52,15 +52,15 @@ with the prompt, and no grade should ever be committed by accident.
 | saveFailed | The session ends as `failed` and the summary (21, Save error) opens (BR-STUDY-018). |
 | stale | A reset or algorithm change elsewhere invalidates the session on the next write, and the summary (21) opens with its reason (BR-STUDY-015, BR-STUDY-016, BR-STUDY-017). |
 
-No images: the kit has no frames for this screen. Build it from 16 and 19 and this brief;
-the goldens become its record.
+The goldens `study_self_assess_*` in `test/features/study/presentation/goldens/` are its
+record.
 
 **Built (FE-A6 P2):** `StudySelfAssessWidget` in the session route's mode switch. Two
 `StudyFaceCardWidget`s (the prompt raised, the answer on `MxCard.isRecessed`), each with
 its label in flow above the face, so a face grown by large text never slides under it.
-The two faces share the height equally, as the kit's `StudyFaceCard` owns its `flex: 1`
+The two faces share the height equally, as `StudyFaceCard` owns its `flex: 1`
 growth; a short face is centred in its half.
-"Show answer" is the kit's study action (`MxButtonSize.study`); the grades are
+"Show answer" is the study action (`MxButtonSize.study`); the grades are
 `StudyGradeRowWidget`: four `MxButton`s, Again in the `dangerSoft` tone and the rest
 `secondary`, each with the interval as `MxButton.detail`, one semantics node "{grade},
 next in {interval}", and a 2 × 2 grid from text scale 1.3. The preview is
@@ -71,14 +71,12 @@ grade how well you remembered". After "Show answer" leaves, the answer face is t
 node TalkBack reads. Goldens:
 `test/features/study/presentation/goldens/study_self_assess_{prompt,revealed,relearning,meaning_first,large_text}_*`.
 
-## Deviations
+## Rulings
 
-| Brief | V8 | Why |
-|---|---|---|
-| Mode badge and context line "Self-check" | "Self-assess" | The kit's resume banner names the mode "Self-assess", as the card screens do; the kit beats the brief (FE-A6 P2 plan R1) |
-| The answer card hidden until revealed | The recessed answer face is always laid out, with the kit's still placeholder bar until the reveal; the answer fades in inside it | Kit 19's anatomy, which this brief builds from; the prompt never moves (plan R2) |
-| saving: "locked on the tapped grade, with no spinner under 300 ms" | The row takes no tap while the write runs and draws no change; a write slower than 300 ms shows nothing extra | A local write is well under 300 ms (plan R3) |
-| The preview read for the current turn | Read when the card is served, so the grades have it at the reveal | No placeholder needed (plan R4) |
+- **FE-A6 P2 plan R1:** the mode badge and context line read "Self-assess", as the resume banner and the card screens name the mode.
+- **Plan R2:** the recessed answer face is always laid out, with a still placeholder bar until the reveal; the answer fades in inside it, so the prompt never moves.
+- **Plan R3:** while the grade is written the row takes no tap and draws no change; a local write is well under 300 ms.
+- **Plan R4:** the interval preview is read when the card is served, so the grades have it at the reveal.
 
 ## Accessibility
 
@@ -90,9 +88,9 @@ node TalkBack reads. Goldens:
 
 - No colour-coded rainbow of four grades, and no new rating tokens.
 - No swipe-to-grade, no auto-advance timer, and no per-answer toast or confetti.
-- No editing a card mid-session (kit 19 dropped it too).
+- No editing a card mid-session (as 19 and 20).
 
 ## Copy
 
-- "Self-assess" (see Deviations) · "Show answer" · "Again" · "Hard" · "Good" · "Easy" · "{n}d" · "{n}mo" · "{n}y".
+- "Self-assess" (see Rulings) · "Show answer" · "Again" · "Hard" · "Good" · "Easy" · "{n}d" · "{n}mo" · "{n}y".
 - TalkBack: "{grade}, next in {interval}".

@@ -14,7 +14,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 | Region | Widget | Design |
 |---|---|---|
-| Top bar | `MxStudyTopBar` | Mastery accent (kit choice; ruled in 16). |
+| Top bar | `MxStudyTopBar` | Mastery accent (ruled in 16). |
 | Context line | `SessionContextLine` | "{deck} · Review · Recall · round {n}". |
 | Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a 4dp fill that drains to 0. |
 | Term face | `StudyFaceCard` (label "Term") | The prompt; always visible. |
@@ -24,11 +24,11 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| countingDown | ![](img/19-study-recall/countingDown-light.png) | ![](img/19-study-recall/countingDown-dark.png) | As drawn. |
-| revealed | ![](img/19-study-recall/revealed-light.png) | ![](img/19-study-recall/revealed-dark.png) | As drawn; clock is stopped, not zeroed (BR-STUDY-036). |
-| timedOut | ![](img/19-study-recall/timedOut-light.png) | ![](img/19-study-recall/timedOut-dark.png) | As drawn; the outcome is already committed (wrong) before this paints (BR-STUDY-063). |
+| countingDown | `study_recall_counting_light.png` | `study_recall_counting_dark.png` | — |
+| revealed | `study_recall_revealed_light.png` | `study_recall_revealed_dark.png` | Clock is stopped, not zeroed (BR-STUDY-036). |
+| timedOut | `study_recall_timed_out_light.png` | `study_recall_timed_out_dark.png` | The outcome is already committed (wrong) before this paints (BR-STUDY-063). |
 
 **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, over
 `RecallCountdownBarWidget` and `StudyCtaRowWidget`. The clock is the widget's own
@@ -40,16 +40,12 @@ and the next card follows; at zero the turn answers timed out and is held until
 Continue (spec D5). Goldens:
 `test/features/study/presentation/goldens/study_recall_{counting,revealed,timed_out,large_text}_*`.
 
-## Deviations
+## Rulings
 
-The two-branch ending (self-check auto-advances, timeout waits for Continue) matches
-BR-STUDY-032, BR-STUDY-033 and BR-STUDY-066 as drawn.
-
-| Artifact | V8 | Wins |
-|---|---|---|
-| The clock's fill and caption in the mastery accent while counting down | A neutral `onSurfaceVariant` fill and caption; `warning`/`warningInk` once timed out. The top bar keeps the mastery accent | FE-A6 spec D14: green is mastery-only; the clock is a turn signal, not mastery (P4 ruling V2) |
-| A 6-tall clock track | 4dp, the app's thin track and M3's | M3 review 2026-09-28 F2 |
-| The answer face has no label | "Meaning", as every study face carries its label in flow | 16/16a's `StudyFaceCard` (P2 face-label fix) |
+- **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a self-check advances by itself, a timeout waits for Continue.
+- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningInk` once timed out; the top bar keeps the mastery accent.
+- **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track.
+- **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 
 ## Accessibility
 

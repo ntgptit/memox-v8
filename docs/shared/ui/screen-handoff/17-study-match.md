@@ -15,14 +15,14 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Primary accent (default); see the shared section. |
 | Context line | `SessionContextLine` | "{deck} · {Learning/Review} · Match · round {n} · {n} pairs left". |
-| Board | grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; not `MxCard` — a small grid tile, not a padded card) | Term tile (front) and meaning tile (back) per pair; states `idle` / `selected` / `matched`, plus a wrong-pair state V8 adds (see Deviations). A board with an odd remainder may hold one pair (BR-STUDY-049). |
+| Board | grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; not `MxCard` — a small grid tile, not a padded card) | Term tile (front) and meaning tile (back) per pair; states `idle` / `selected` / `matched`, plus a wrong-pair state (see Rulings). A board with an odd remainder may hold one pair (BR-STUDY-049). |
 | Footer hint | `SessionFooterHint` | "Tap a term, then its meaning to match". |
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| default | ![](img/17-study-match/default-light.png) | ![](img/17-study-match/default-dark.png) | As drawn. |
+| default | `study_match_board_light.png` | `study_match_board_dark.png` | — |
 
 Not captured: the tile's `idle`/`selected`/`matched` micro-states and the
 wrong-pair flash are interactions inside `default`, not separate screen
@@ -34,14 +34,12 @@ terms on the left and its meanings on the right, in their stored order, as
 through the session controller, on any pending pair of the board (BR-STUDY-049). Goldens:
 `test/features/study/presentation/goldens/study_match_{board,wrong,large_text}_*`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| A matched tile in the kit's `mastery` green | The `success` semantic | FE-A6 spec D14 (P3 ruling C1) |
-| The footer hint never changes | During a wrong pair's flash it reads "Not a match — this pair comes back next round" | P3 ruling C7 |
-| Only `idle`/`selected`/`matched` tile states are drawn; no feedback for a wrong pair | V8 adds a brief error-tone flash on both tiles after the write commits, then both settle back to `idle` and stay pending on the board | BR-STUDY-063 (paint an outcome only after commit), BR-STUDY-070 (a non-correct outcome must read as wrong) |
-| — | A wrong pair keeps its row `pending` for this board **and** is guaranteed one slot in the next round, even if it is matched correctly later in this same round | BR-STUDY-060, BR-STUDY-062 |
+- **FE-A6 spec D14 (P3 ruling C1):** a matched tile uses the `success` semantic; green is mastery-only.
+- **P3 ruling C7:** during a wrong pair's flash the footer hint reads "Not a match — this pair comes back next round".
+- **BR-STUDY-063, BR-STUDY-070:** a wrong pair flashes the error tone on both tiles after the write commits, then both settle back to `idle` and stay pending on the board.
+- **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this board and is guaranteed one slot in the next round, even if matched correctly later in this round.
 
 ## Accessibility
 

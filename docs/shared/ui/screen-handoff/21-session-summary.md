@@ -3,7 +3,7 @@
 # 21 · Session summary
 
 The terminal screen of a study session: shown once `StudySessionView.status` leaves
-`in_progress` and `summary` is set (spec D11; kit `StudyResultScreenV3`, A19).
+`in_progress` and `summary` is set (spec D11, A19).
 UC-STUDY-001 (steps 13, A3, E3, E4).
 
 ## Layout
@@ -19,20 +19,20 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| loaded | ![](img/21-session-summary/loaded-light.png) | ![](img/21-session-summary/loaded-dark.png) | As drawn: `completed`, a reviewing session (BR-STUDY-013). |
-| learning | ![](img/21-session-summary/learning-light.png) | ![](img/21-session-summary/learning-dark.png) | As drawn: `completed`, a learning session — finishing the stage sequence is the event, not a graded turn (BR-STUDY-053). |
-| large | ![](img/21-session-summary/large-light.png) | ![](img/21-session-summary/large-dark.png) | As drawn: `completed` at the `card_limit` ceiling fixed when the session opened (BR-STUDY-024). |
-| leftEarly | ![](img/21-session-summary/leftEarly-light.png) | ![](img/21-session-summary/leftEarly-dark.png) | `abandoned`/`user_exit` (BR-STUDY-014); turns already answered are kept (BR-STUDY-019). |
-| interrupted | ![](img/21-session-summary/interrupted-light.png) | ![](img/21-session-summary/interrupted-dark.png) | `abandoned`/`interrupted`: yesterday's session, not resumed today (BR-STUDY-072; UC-STUDY-001 A3b). |
-| reset | ![](img/21-session-summary/reset-light.png) | ![](img/21-session-summary/reset-dark.png) | `invalidated`/`scheduler_reset`: reset while the session was open, reached on returning to it (BR-STUDY-015). |
-| schedulerChanged | ![](img/21-session-summary/schedulerChanged-light.png) | ![](img/21-session-summary/schedulerChanged-dark.png) | `invalidated`/`scheduler_changed` (BR-STUDY-016). No Facts card — the kit draws none here either. |
-| saveError | ![](img/21-session-summary/saveError-light.png) | ![](img/21-session-summary/saveError-dark.png) | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
-| loading | ![](img/21-session-summary/loading-light.png) | ![](img/21-session-summary/loading-dark.png) | As drawn. |
+| loaded | `summary_review_light.png` | `summary_review_dark.png` | `completed`, a reviewing session (BR-STUDY-013). |
+| learning | `summary_learning_light.png` | `summary_learning_dark.png` | `completed`, a learning session — finishing the stage sequence is the event, not a graded turn (BR-STUDY-053). |
+| large | `summary_large_light.png` | `summary_large_dark.png` | `completed` at the `card_limit` ceiling fixed when the session opened (BR-STUDY-024). |
+| leftEarly | `summary_left_early_light.png` | `summary_left_early_dark.png` | `abandoned`/`user_exit` (BR-STUDY-014); turns already answered are kept (BR-STUDY-019). |
+| interrupted | `summary_interrupted_light.png` | `summary_interrupted_dark.png` | `abandoned`/`interrupted`: yesterday's session, not resumed today (BR-STUDY-072; UC-STUDY-001 A3b). |
+| reset | `summary_reset_light.png` | `summary_reset_dark.png` | `invalidated`/`scheduler_reset`: reset while the session was open, reached on returning to it (BR-STUDY-015). |
+| schedulerChanged | `summary_scheduler_changed_light.png` | `summary_scheduler_changed_dark.png` | `invalidated`/`scheduler_changed` (BR-STUDY-016). No Facts card. |
+| saveError | `summary_save_error_light.png` | `summary_save_error_dark.png` | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
+| loading | no golden | no golden | — |
 
 `contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash backend (BE-B1,
-BR-TRASH-004) and is built with the kit's copy: "Ended — content moved to Trash", the facts, and the
+BR-TRASH-004) and reads "Ended — content moved to Trash", the facts, and the
 note "Restore the card from Trash to include it in the next review."
 
 **Built (FE-A6 P1c):** every state above but `loading`, drawn by `SessionSummaryWidget` on
@@ -41,7 +41,7 @@ reads "— the session limit" when a completed review's queue reached the `card_
 opened with (`SessionSummary.cardLimit`, read from `study_session.card_limit`).
 `loading` is not reachable: the summary arrives with the session's view, and the route's first load
 is a spinner. A session left early from a review reads "The {n} cards you reviewed are kept. The
-other {m} are still due." (a V8 addition; the kit draws only the learning case).
+other {m} are still due." (also for a review session).
 
 ## Accessibility
 
@@ -53,29 +53,22 @@ other {m} are still due." (a V8 addition; the kit draws only the learning case).
 A session that ended before its first turn shows the hero without stats and no Facts card, as
 `schedulerChanged` does (FE-A6 spec D18).
 
-## Deviations
-
-| Artifact | V8 | Wins |
-|---|---|---|
-| App bar title in muted 14/600 | The content bar's title role | `MxAppBar` has no muted title; its density sets the role |
-| Hero glyph tile 60 at radius 20 | `MxIconTile` large (44) | No shared tile size is 60; the tile keeps the tone |
-| The wrong-turns sub-line in the row's subtitle | It wraps, in the note role, in `MxListRow`'s sub-line slot | The row subtitle is one line; the kit wraps it |
-| `SessionFactRows`, marked `SCREEN_LOCAL` in the kit source (deliberately not a shared row) | `MxListRow`: the shape already fits "a content row that is not a setting and not a command" | Guard: no new row widget where a shared one covers the shape |
-| Hero's three stats: finished, answered, wrong/total | As drawn: FE-A6 adds "answered" and "total turns" to `SessionSummary`, which has `cardCount`, `learnedCardCount`, `wrongTurnCount` today | The kit; no BR limits the summary |
-
 ## Rulings (FE-A5)
 
 - `stale_generation` never reaches this screen: the write is refused, the session closes, and
-  the app returns to the deck list (UC-STUDY-001 E4 beats the kit's folding it into `reset`).
+  the app returns to the deck list (UC-STUDY-001 E4; it is not folded into `reset`).
   `reset` here is `scheduler_reset` only.
 - "Study this deck" opens Study entry (14); both ship in FE-A6.
+- The app bar title uses the content bar's title role; the hero glyph is `MxIconTile` large (44) in the outcome tone.
+- Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in the row's sub-line slot.
+- `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's three stats: finished, answered, wrong/total.
 
 ## Copy
 
 - App bar: "Session summary".
 - Hero titles: "Review finished" · "Learning finished" · "You left early" · "Session interrupted" ·
   "Ended by a reset" · "Ended by an algorithm change" · "Stopped by a save error".
-- Hero bodies (counts as drawn): "You reviewed {n} cards. Their next due dates are set." ·
+- Hero bodies: "You reviewed {n} cards. Their next due dates are set." ·
   "{n} cards finished learning. They come back tomorrow at 00:00." · "You reviewed {n} cards — the
   session limit." · "The {n} cards you finished are kept. The other {n} stay new and will be offered
   again." · "This session from yesterday was closed by the system and could not be resumed today. Every
