@@ -149,10 +149,7 @@ void main() {
     expect(line.semanticsLabel, text);
   });
 
-  libraryTest('the footer hint takes at most two lines, glyph on the first', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the footer hint takes at most two lines', (tester, env) async {
     const text =
         'Swipe left for next, right to look back · nothing is graded here';
     await pumpLibraryScreen(
@@ -161,19 +158,9 @@ void main() {
       _host(const SessionFooterHintWidget(icon: AppIcons.check, text: text)),
       textScale: 2,
     );
+    final hint = tester.widget<Text>(find.text(text));
 
-    expect(tester.widget<Text>(find.text(text)).maxLines, 2);
-    expect(
-      tester
-          .widget<Row>(
-            find.descendant(
-              of: find.byType(SessionFooterHintWidget),
-              matching: find.byType(Row),
-            ),
-          )
-          .crossAxisAlignment,
-      CrossAxisAlignment.start,
-    );
+    expect((hint.maxLines, hint.overflow), (2, TextOverflow.ellipsis));
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '

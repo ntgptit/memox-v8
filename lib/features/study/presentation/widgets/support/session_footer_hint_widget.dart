@@ -5,9 +5,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
 /// The centred glyph and caption stating a turn's rule (kit
-/// SessionFooterHint). Study-local, not shared. Two lines at most, glyph on
-/// the first; it steps aside while the keyboard is up so the answer field
-/// keeps the room.
+/// SessionFooterHint). Study-local, not shared. Two lines at most, the
+/// glyph centred on the row (the row-marks rule); it steps aside while the
+/// keyboard is up so the answer field keeps the room.
 class SessionFooterHintWidget extends StatelessWidget {
   const SessionFooterHintWidget({
     super.key,
@@ -33,7 +33,6 @@ class SessionFooterHintWidget extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSpacing.control,
         children: [
           IconTheme.merge(
