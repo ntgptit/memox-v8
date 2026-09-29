@@ -75,7 +75,7 @@ class ProgressScreen extends ConsumerWidget {
         overview: progress.overview,
         onStartStudying: onStartStudying,
       ),
-      const SizedBox(height: AppSpacing.grouped),
+      const SizedBox(height: AppSpacing.gutter),
       ProgressStreakWidget(overview: progress.overview),
       const SizedBox(height: AppSpacing.gutter),
       // Above the list it changes; Today and Streak never do (FE-A9 D10).

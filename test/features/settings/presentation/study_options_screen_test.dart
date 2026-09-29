@@ -13,6 +13,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
@@ -82,7 +84,7 @@ void main() {
     expect(find.text(_en.studyOptionsThisDeck.toUpperCase()), findsOneWidget);
     await tester.tap(find.byTooltip(_en.settingsMoreCards));
     await tester.pump();
-    await tester.tap(find.text(_en.studyOptionsRandomHint));
+    await tester.tap(find.text(_en.settingsOrderRandom));
     await tester.pump();
     await tester.tap(find.text(_en.cardSave));
     await tester.pumpAndSettle();
@@ -92,6 +94,20 @@ void main() {
     expect(stored!.source, StudyOptionsSource.rootOverride);
     expect(stored.options.cardLimit, 21);
     expect(stored.options.newCardOrder, NewCardOrder.random);
+  });
+
+  libraryTest('while app defaults are on the order tray is read-only (E1)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _screen(ids.subId));
+
+    final tray = tester.widget<MxSegmentedTray<NewCardOrder>>(
+      find.byType(MxSegmentedTray<NewCardOrder>),
+    );
+    expect(tray.onSelected, isNull);
+    expect(find.byType(MxOptionRow), findsNothing);
   });
 
   libraryTest('a typed 250 is refused under the stepper and Save waits '

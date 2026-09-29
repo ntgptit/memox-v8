@@ -19,7 +19,6 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Asks where [entries], all of one kind, go back to, then restores them
@@ -173,15 +172,10 @@ class _TrashRestoreSheetWidgetState
           isRetrying: isLoading,
         ),
       ),
-      _ => MxBottomSheet(
-        child: Column(
-          children: [
-            MxSkeletonList(
-              semanticLabel: l10n.commonLoading,
-              rows: _skeletonRows,
-            ),
-          ],
-        ),
+      _ => MxDeckPickerLoadingSheet(
+        title: _title(l10n),
+        semanticLabel: l10n.commonLoading,
+        rows: _skeletonRows,
       ),
     };
   }

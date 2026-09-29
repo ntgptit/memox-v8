@@ -15,7 +15,6 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Picks the deck [deck] moves under (UC-DECK-005).
@@ -104,15 +103,11 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
           isRetrying: isLoading,
         ),
       ),
-      _ => MxBottomSheet(
-        child: Column(
-          children: [
-            MxSkeletonList(
-              semanticLabel: context.l10n.commonLoading,
-              rows: _skeletonRows,
-            ),
-          ],
-        ),
+      _ => MxDeckPickerLoadingSheet(
+        title: l10n.deckMoveTitle,
+        rule: l10n.deckMoveRule,
+        semanticLabel: l10n.commonLoading,
+        rows: _skeletonRows,
       ),
     };
   }

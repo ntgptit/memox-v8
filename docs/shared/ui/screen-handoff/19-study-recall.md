@@ -16,7 +16,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Mastery accent (kit choice; ruled in 16). |
 | Context line | `SessionContextLine` | "{deck} · Review · Recall · round {n}". |
-| Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a thin fill that drains to 0. |
+| Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a 4dp fill that drains to 0. |
 | Term face | `StudyFaceCard` (label "Term") | The prompt; always visible. |
 | Meaning face | `StudyFaceCard` (`role: answer`) | Blurred placeholder before reveal; the meaning once revealed or timed out, with a "Counted as forgot" tag when timed out. |
 | CTA row | new: `StudyCtaRow` (feature-local) | `countingDown`: one "Show the meaning" button. `revealed`: "Forgot" (outline) and "Remembered" (filled) — the only recorded input, at most once a turn (BR-STUDY-032, BR-STUDY-065). `timedOut`: one "Continue" button that only advances, records nothing (BR-STUDY-033, BR-STUDY-066). |
@@ -48,6 +48,7 @@ BR-STUDY-032, BR-STUDY-033 and BR-STUDY-066 as drawn.
 | Artifact | V8 | Wins |
 |---|---|---|
 | The clock's fill and caption in the mastery accent while counting down | A neutral `onSurfaceVariant` fill and caption; `warning`/`warningInk` once timed out. The top bar keeps the mastery accent | FE-A6 spec D14: green is mastery-only; the clock is a turn signal, not mastery (P4 ruling V2) |
+| A 6-tall clock track | 4dp, the app's thin track and M3's | M3 review 2026-09-28 F2 |
 | The answer face has no label | "Meaning", as every study face carries its label in flow | 16/16a's `StudyFaceCard` (P2 face-label fix) |
 
 ## Accessibility

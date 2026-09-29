@@ -14,6 +14,7 @@ import 'package:memox/features/settings/presentation/screens/settings_screen.dar
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -92,6 +93,11 @@ void main() {
     store.isFailing = true;
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
+    // M3-B3: the dialog's footer is the stock MxSheetActions pair.
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).confirmLabel,
+      _en.settingsResetConfirm,
+    );
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(resets, 0);

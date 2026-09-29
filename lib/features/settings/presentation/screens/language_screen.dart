@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -13,11 +12,11 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -109,15 +108,9 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         AsyncData(:final value) => MxScreenScroll(
           children: [
             const SizedBox(height: AppSpacing.control),
-            MxCard(
-              isFullBleed: true,
-              child: Column(children: _rows(l10n, value.language)),
-            ),
-            const SizedBox(height: AppSpacing.gutter),
-            Text(
-              l10n.settingsLanguageNote,
-              style: context.textStyles.noteText,
-              textAlign: TextAlign.center,
+            MxSection(
+              note: l10n.settingsLanguageNote,
+              children: _rows(l10n, value.language),
             ),
           ],
         ),
@@ -160,6 +153,7 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         description: phoneLine,
         isSelected: selected == LanguageChoice.system,
         onSelected: () => _choose(LanguageChoice.system),
+        hasDivider: false,
       ),
       MxOptionRow(
         title: l10n.languageEnglish,
@@ -169,6 +163,7 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         ),
         isSelected: selected == LanguageChoice.en,
         onSelected: () => _choose(LanguageChoice.en),
+        hasDivider: false,
       ),
       MxOptionRow(
         title: l10n.languageVietnamese,

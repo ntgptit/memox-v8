@@ -66,7 +66,7 @@ class ThemeChoiceCardWidget extends StatelessWidget {
     final check = textScaler.scale(AppIconSize.compact) + AppSpacing.micro;
     final text = [
       for (final name in names) widest(name, styles.rowTitle) + check,
-      for (final hint in hints) widest(hint, styles.rowSubtitle),
+      for (final hint in hints) widest(hint, styles.rowDescription),
     ].reduce(math.max);
     return text + _padding * 2;
   }
@@ -116,7 +116,7 @@ class ThemeChoiceCardWidget extends StatelessWidget {
                       ),
                   ],
                 ),
-                Text(hint, style: styles.rowSubtitle),
+                Text(hint, style: styles.rowDescription),
               ],
             ),
           ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -44,6 +47,17 @@ void main() {
     expect(find.text('meaning 1'), findsOneWidget);
     expect(find.text('example 1'), findsOneWidget);
     expect(find.text(_en.studySelfAssessShowAnswer), findsNothing);
+    // M3-C3: the grades sit in the shared CTA row, at its full inner width.
+    final grades = find.byType(StudyGradeRowWidget);
+    expect(
+      find.ancestor(of: grades, matching: find.byType(StudyCtaRowWidget)),
+      findsOneWidget,
+    );
+    expect(
+      tester.getSize(grades).width,
+      tester.getSize(find.byType(StudyCtaRowWidget)).width -
+          AppSpacing.gutter * 2,
+    );
     expect(await turnKindsOf(env.db, 'R1'), isEmpty);
   });
 

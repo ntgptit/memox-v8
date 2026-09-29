@@ -175,4 +175,50 @@ void main() {
     expect(button.onPressed, isNull);
     expect(button.tone, MxButtonTone.secondary);
   });
+  testWidgets('a third action is an outline block button, 8 under the second', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.folder,
+        title: 'Empty deck',
+        actionLabel: 'New card',
+        onAction: () {},
+        secondaryActionLabel: 'New sub-deck',
+        onSecondaryAction: () {},
+        tertiaryActionLabel: 'Import cards',
+        onTertiaryAction: () => taps++,
+      ),
+    );
+    final buttons = tester.widgetList<MxButton>(find.byType(MxButton)).toList();
+
+    expect(buttons.map((b) => b.tone), [
+      MxButtonTone.primary,
+      MxButtonTone.secondary,
+      MxButtonTone.outline,
+    ]);
+    expect(buttons.every((b) => b.isBlock), isTrue);
+    expect(
+      tester.getTopLeft(find.widgetWithText(MxButton, 'Import cards')).dy -
+          tester
+              .getBottomLeft(find.widgetWithText(MxButton, 'New sub-deck'))
+              .dy,
+      8,
+    );
+    await tester.tap(find.text('Import cards'));
+    expect(taps, 1);
+  });
+
+  test('a tertiary label without its callback is a programming error', () {
+    expect(
+      () => MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'x',
+        tertiaryActionLabel: 'Import',
+      ),
+      throwsAssertionError,
+    );
+  });
 }

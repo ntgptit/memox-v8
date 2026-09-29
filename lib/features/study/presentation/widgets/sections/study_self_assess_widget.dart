@@ -6,6 +6,7 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -87,26 +88,21 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
-            AppSpacing.gutter,
-            AppSpacing.gutter,
-            0,
-          ),
-          child: _isRevealed
-              ? StudyGradeRowWidget(
-                  intervals: widget.intervals,
-                  isBusy: widget.isBusy,
-                  onGrade: widget.onGrade,
-                )
-              : Center(
-                  child: MxButton(
-                    label: l10n.studySelfAssessShowAnswer,
-                    size: MxButtonSize.study,
-                    onPressed: _reveal,
-                  ),
-                ),
+        StudyCtaRowWidget(
+          children: [
+            if (_isRevealed)
+              StudyGradeRowWidget(
+                intervals: widget.intervals,
+                isBusy: widget.isBusy,
+                onGrade: widget.onGrade,
+              )
+            else
+              MxButton(
+                label: l10n.studySelfAssessShowAnswer,
+                size: MxButtonSize.study,
+                onPressed: _reveal,
+              ),
+          ],
         ),
         SessionFooterHintWidget(
           icon: AppIcons.check,

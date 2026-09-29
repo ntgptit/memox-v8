@@ -237,37 +237,39 @@ class _Half extends StatelessWidget {
   Widget build(BuildContext context) {
     final styles = context.textStyles;
     final detail = this.detail;
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Positioned(
-          top: AppSpacing.gutter,
-          left: AppSpacing.card,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.card,
+            AppSpacing.gutter,
+            AppSpacing.card,
+            0,
+          ),
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
             style: styles.overline,
           ),
         ),
-        Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.major,
-              AppSpacing.gutter,
-              AppSpacing.gutter,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: AppSpacing.control,
-              children: [
-                main,
-                if (detail != null)
-                  Text(
-                    detail,
-                    textAlign: TextAlign.center,
-                    style: styles.studyDetail,
-                  ),
-              ],
+        Expanded(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.gutter),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: AppSpacing.control,
+                children: [
+                  main,
+                  if (detail != null)
+                    Text(
+                      detail,
+                      textAlign: TextAlign.center,
+                      style: styles.studyDetail,
+                    ),
+                ],
+              ),
             ),
           ),
         ),

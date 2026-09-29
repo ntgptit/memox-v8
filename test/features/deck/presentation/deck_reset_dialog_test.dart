@@ -16,6 +16,8 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -254,7 +256,7 @@ void main() {
     expect(find.text(_en.resetConfirm(3)), findsOneWidget);
   });
 
-  libraryTest('while the reset runs the dialog says so and Cancel waits', (
+  libraryTest('while the reset runs the confirm spins and Cancel is off', (
     tester,
     env,
   ) async {
@@ -271,7 +273,11 @@ void main() {
 
     await tester.tap(find.text(_en.resetConfirm(2)));
     await tester.pump();
-    expect(find.text(_en.resetRunning), findsOneWidget);
+    expect(find.byType(MxSpinner), findsOneWidget);
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).onCancel,
+      isNull,
+    );
     expect(
       _option(tester, _en.resetSwitchTo(_en.deckSchedulerEightBox)).onSelected,
       isNull,

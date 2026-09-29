@@ -109,4 +109,21 @@ void main() {
       throwsAssertionError,
     );
   });
+  testWidgets('the action can carry another icon, as Close does', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxErrorState(
+        title: _title,
+        body: _body,
+        retryLabel: 'Close',
+        onRetry: () {},
+        actionIcon: AppIcons.close,
+      ),
+    );
+
+    expect(tester.widget<MxButton>(find.byType(MxButton)).icon, AppIcons.close);
+    expect(find.byIcon(AppIcons.retry), findsNothing);
+  });
 }

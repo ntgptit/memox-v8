@@ -131,8 +131,7 @@ class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
               MxButton(
                 label: l10n.importChooseAnother,
                 icon: AppIcons.folderOpen,
-                tone: MxButtonTone.outline,
-                size: MxButtonSize.small,
+                size: MxButtonSize.compact,
                 onPressed: widget.onChooseFile,
               ),
           ],

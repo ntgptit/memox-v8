@@ -25,6 +25,8 @@ class MxEmptyState extends StatelessWidget {
     this.onAction,
     this.secondaryActionLabel,
     this.onSecondaryAction,
+    this.tertiaryActionLabel,
+    this.onTertiaryAction,
     this.footnote,
   }) : assert(
          (actionLabel == null) == (onAction == null),
@@ -33,6 +35,10 @@ class MxEmptyState extends StatelessWidget {
        assert(
          onSecondaryAction == null || secondaryActionLabel != null,
          'onSecondaryAction needs secondaryActionLabel',
+       ),
+       assert(
+         (tertiaryActionLabel == null) == (onTertiaryAction == null),
+         'tertiaryActionLabel and onTertiaryAction come together',
        );
 
   final IconData icon;
@@ -49,6 +55,10 @@ class MxEmptyState extends StatelessWidget {
   /// null.
   final String? secondaryActionLabel;
   final VoidCallback? onSecondaryAction;
+
+  /// A third, quietest action (outline), as the unset deck's "Import cards".
+  final String? tertiaryActionLabel;
+  final VoidCallback? onTertiaryAction;
 
   /// A product rule under the action, drawn as an MxNote (ruling S19).
   final String? footnote;
@@ -124,6 +134,18 @@ class MxEmptyState extends StatelessWidget {
                   label: label,
                   tone: MxButtonTone.secondary,
                   onPressed: onSecondaryAction,
+                  isBlock: true,
+                ),
+              ],
+              if ((tertiaryActionLabel, onTertiaryAction) case (
+                final label?,
+                final onPressed?,
+              )) ...[
+                const SizedBox(height: AppSpacing.control),
+                MxButton(
+                  label: label,
+                  tone: MxButtonTone.outline,
+                  onPressed: onPressed,
                   isBlock: true,
                 ),
               ],

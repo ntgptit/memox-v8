@@ -18,6 +18,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_whole_wo
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// Screen 18, Guess: the term and five meanings; only the first pick counts
 /// (BR-STUDY-037, BR-STUDY-042). Once its write commits, the pick and the
@@ -109,21 +110,15 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
     final question = widget.item.guess!;
     if (question.isBlocked) {
       // Close ends the session: nothing here can be retried (BR-STUDY-040).
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      return MxScreenScroll(
         children: [
           MxErrorState(
             title: l10n.studyGuessBlockedTitle,
             body: l10n.studyGuessBlockedBody,
             icon: AppIcons.close,
-          ),
-          const SizedBox(height: AppSpacing.gutter),
-          Center(
-            child: MxButton(
-              label: l10n.studySessionClose,
-              icon: AppIcons.close,
-              onPressed: widget.onClose,
-            ),
+            retryLabel: l10n.studySessionClose,
+            onRetry: widget.onClose,
+            actionIcon: AppIcons.close,
           ),
         ],
       );
