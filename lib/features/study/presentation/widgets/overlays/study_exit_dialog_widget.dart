@@ -19,7 +19,6 @@ class StudyExitDialogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxDialog(
-      width: MxDialogWidth.medium,
       title: l10n.studyExitTitle,
       body: l10n.studyExitBody,
       actions: MxSheetActions(

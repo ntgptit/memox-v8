@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_action_pair.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -30,10 +30,6 @@ class SettingsResetDialogWidget extends ConsumerStatefulWidget {
 
 class _SettingsResetDialogWidgetState
     extends ConsumerState<SettingsResetDialogWidget> {
-  // MxSheetActions' shares: the confirm keeps its line first.
-  static const int _cancelShare = 10;
-  static const int _confirmShare = 13;
-
   var _isResetting = false;
 
   Future<void> _reset() async {
@@ -49,36 +45,15 @@ class _SettingsResetDialogWidgetState
     return PopScope(
       canPop: !_isResetting,
       child: MxDialog(
-        width: MxDialogWidth.medium,
         title: l10n.settingsResetTitle,
         body: l10n.settingsResetBody,
         content: MxNote(icon: AppIcons.safe, text: l10n.settingsResetSafe),
-        // The pair of MxSheetActions, with Cancel off while it runs.
-        actions: MxSheetActions.custom(
-          children: [
-            Expanded(
-              child: MxActionPair(
-                leading: MxButton(
-                  label: l10n.commonCancel,
-                  tone: MxButtonTone.outline,
-                  isBlock: true,
-                  isSingleLine: true,
-                  onPressed: _isResetting
-                      ? null
-                      : () => Navigator.of(context).pop(),
-                ),
-                trailing: MxButton(
-                  label: l10n.settingsResetConfirm,
-                  isBlock: true,
-                  isSingleLine: true,
-                  isLoading: _isResetting,
-                  onPressed: _reset,
-                ),
-                leadingFlex: _cancelShare,
-                trailingFlex: _confirmShare,
-              ),
-            ),
-          ],
+        actions: MxSheetActions(
+          cancelLabel: l10n.commonCancel,
+          onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
+          confirmLabel: l10n.settingsResetConfirm,
+          onConfirm: () => unawaited(_reset()),
+          isConfirmLoading: _isResetting,
         ),
       ),
     );

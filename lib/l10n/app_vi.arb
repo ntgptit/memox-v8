@@ -425,7 +425,6 @@
   "resetKeep": "Giữ {algorithm}",
   "resetSwitchTo": "Chuyển sang {algorithm}",
   "resetConfirm": "Đặt lại và bắt đầu chu kỳ {cycle}",
-  "resetRunning": "Đang đặt lại…",
   "resetDoneToast": "Đã bắt đầu chu kỳ {cycle} · {count} thẻ trở lại thẻ mới",
   "cardDeckProgress": "Tiến độ bộ thẻ · {algorithm}",
   "cardMasteredOf": "{mastered}/{total} thẻ đã thuộc",

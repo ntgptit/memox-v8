@@ -2312,10 +2312,6 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): resetConfirm."
   },
-  "resetRunning": "Resetting…",
-  "@resetRunning": {
-    "description": "Screen handoff 02 (library alignment phase D): resetRunning."
-  },
   "resetDoneToast": "Cycle {cycle} started · {count, plural, =1{1 card is new again} other{{count} cards are new again}}",
   "@resetDoneToast": {
     "placeholders": {

@@ -48,7 +48,6 @@ class CardDiscardDialogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxDialog(
-      width: MxDialogWidth.medium,
       title: isNew ? l10n.cardDiscardNewTitle : l10n.cardDiscardTitle,
       body: _body(l10n),
       actions: MxSheetActions(
