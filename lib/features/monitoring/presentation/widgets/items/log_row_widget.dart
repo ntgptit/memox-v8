@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 /// One log of a list (monitoring spec §3.2): the level as a glyph on a tile,
 /// the event, the message's first line, the time and, for a warning or an
 /// error of the server, its status. A screen reader hears one sentence.
+/// The time column keeps the pill's room on every row, so the times line up.
 class LogRowWidget extends StatelessWidget {
   const LogRowWidget({
     super.key,
@@ -55,7 +56,14 @@ class LogRowWidget extends StatelessWidget {
           children: [
             Text(time, style: context.textStyles.counter),
             if (status != null && statusLabel != null)
-              MxBadge(label: statusLabel, tone: monitoringStatusTone(status)),
+              MxBadge(label: statusLabel, tone: monitoringStatusTone(status))
+            else
+              // Holds the pill's height, so every row's time sits at one
+              // height (Impeccable 2026-09-29 F5).
+              Visibility.maintain(
+                visible: false,
+                child: MxBadge(label: l10n.monitoringStatusOpen),
+              ),
           ],
         ),
         onTap: onTap,

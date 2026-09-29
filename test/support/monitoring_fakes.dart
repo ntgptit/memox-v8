@@ -73,6 +73,7 @@ LogRecordEntity record(
   String? statusNote,
   String? statusChangedBy,
   DateTime? statusChangedAt,
+  String? userId = '00000000-0000-0000-0000-00000000dead',
 }) => LogRecordEntity(
   id: id,
   occurredAt: DateTime.utc(2026, 9, 26, 8, 30, 15),
@@ -85,7 +86,7 @@ LogRecordEntity record(
   errorMessage: errorMessage,
   stackTrace: stackTrace,
   context: context,
-  userId: '00000000-0000-0000-0000-00000000dead',
+  userId: userId,
   deviceId: 'device-1',
   appVersion: '8.0.0',
   buildNumber: '12',

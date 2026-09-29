@@ -90,12 +90,17 @@ Each row:
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` + back, action `MxIconButton` copy | Title: `event`. Copy puts the whole row as JSON on the clipboard; `MxSnackbar` "Copied" |
-| Summary | `MxSection` of key/value `MxSettingsRow`s | Level, status, time (full date and `HH:mm:ss`), category, source, device, app version and build, platform and OS, user |
+| Head | `MxIconTile` + level + `MxBadge` | The level's glyph tile and name, the full time (date and `HH:mm:ss`) under it, and the open/fixed pill for a warning or error |
 | Message | `MxCard` | Selectable text |
-| Error | `MxCard` | Type, then the message |
-| Stack trace | `MxCard`, `code` style | Selectable; long lines wrap. Hidden when empty |
+| Error | `MxCard` | The type on its own line in the row-title weight, then the message |
+| Stack trace | `MxCard`, `code` style | Selectable; long lines wrap. Each frame's `#n` is in the primary ink, so a new frame reads apart from a wrapped line. Hidden when empty |
 | Context | `MxCard`, `code` style | Pretty-printed JSON, selectable |
-| Triage | `MxFooterBar` + `MxButton` primary | Warnings and errors only, server rows only. The button is **Mark fixed**, or **Reopen** when fixed. It opens an `MxBottomSheet` with an optional note (`MxTextField`) and Confirm. A fixed row shows "Fixed by {user} · {date}" and its note in the summary |
+| Details | `MxSection` of label/value rows, last | Fixed by and Fixed at (a fixed log only), note, category, source, device, app version and build, platform and OS, user. A short value sits beside its label on one 48 row; the note sits under its label; an id sits under its label in the `code` style, wraps between its groups, and has a copy button of its own. No event row: the app bar shows it |
+| Triage | `MxFooterBar` + `MxButton` primary | Warnings and errors only, server rows only. The button is **Mark fixed**, or **Reopen** when fixed. It opens an `MxBottomSheet` with an optional note (`MxTextField`) and Confirm |
+
+The head, then what triage reads, then the details: the owner reordered the page
+after the Impeccable audit (2026-09-29, F1), so the message, error and trace show
+without scrolling.
 
 Changing the status:
 

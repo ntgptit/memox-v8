@@ -35,6 +35,20 @@ void main() {
     expect(find.text('Status'), findsOneWidget);
   });
 
+  // Impeccable 2026-09-29 F8: "Level · 2" names the levels when read.
+  libraryTest('a chip with several choices names them to a screen reader', (
+    tester,
+    env,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
+    await pumpMonitoring(tester, env, repository);
+
+    expect(find.bySemanticsLabel('Level · Warning, Error'), findsOneWidget);
+    expect(find.bySemanticsLabel('Status · Open'), findsOneWidget);
+    semantics.dispose();
+  });
+
   libraryTest('Reset puts a sheet back to its default, Apply keeps it', (
     tester,
     env,

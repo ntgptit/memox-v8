@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
@@ -43,7 +44,16 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byType(MxBadge), findsNothing, reason: 'no status');
+    // A row keeps an invisible pill for the time column's height (F5).
+    final shown = find
+        .byType(MxBadge)
+        .evaluate()
+        .where(
+          (badge) =>
+              badge.findAncestorWidgetOfExactType<Visibility>()?.visible !=
+              false,
+        );
+    expect(shown, isEmpty, reason: 'no status');
     await tester.tap(find.text('sync.failed'));
     expect(opened, 'p1');
   });

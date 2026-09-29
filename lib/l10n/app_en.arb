@@ -6743,25 +6743,17 @@
   "@monitoringCopied": {
     "description": "Screen 28 detail: the toast after Copy log."
   },
+  "monitoringCopyDevice": "Copy device ID",
+  "@monitoringCopyDevice": {
+    "description": "Screen 28 detail: the copy button name on the device row."
+  },
+  "monitoringCopyUser": "Copy user ID",
+  "@monitoringCopyUser": {
+    "description": "Screen 28 detail: the copy button name on the user and fixed-by rows."
+  },
   "monitoringSummary": "Details",
   "@monitoringSummary": {
     "description": "Screen 28 detail: the summary section title."
-  },
-  "monitoringFieldEvent": "Event",
-  "@monitoringFieldEvent": {
-    "description": "Screen 28 detail: the event row label."
-  },
-  "monitoringFieldLevel": "Level",
-  "@monitoringFieldLevel": {
-    "description": "Screen 28 detail: the level row label."
-  },
-  "monitoringFieldStatus": "Status",
-  "@monitoringFieldStatus": {
-    "description": "Screen 28 detail: the status row label."
-  },
-  "monitoringFieldTime": "Time",
-  "@monitoringFieldTime": {
-    "description": "Screen 28 detail: the time row label."
   },
   "monitoringFieldCategory": "Category",
   "@monitoringFieldCategory": {
@@ -6791,17 +6783,13 @@
   "@monitoringFieldNote": {
     "description": "Screen 28 detail: the triage note row label."
   },
-  "monitoringFixedBy": "Fixed by {user} · {date}",
-  "@monitoringFixedBy": {
-    "placeholders": {
-      "user": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String"
-      }
-    },
-    "description": "Screen 28 detail: the status row of a fixed log."
+  "monitoringFieldFixedBy": "Fixed by",
+  "@monitoringFieldFixedBy": {
+    "description": "Screen 28 detail: the row label of the admin who marked the log fixed."
+  },
+  "monitoringFieldFixedAt": "Fixed at",
+  "@monitoringFieldFixedAt": {
+    "description": "Screen 28 detail: the row label of when the log was marked fixed."
   },
   "monitoringMessage": "Message",
   "@monitoringMessage": {

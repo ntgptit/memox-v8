@@ -1,15 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
+import 'package:memox/features/monitoring/presentation/widgets/items/monitoring_detail_row_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
-import 'package:memox/shared/widgets/mx_settings_row.dart';
 
-/// The detail's key/value rows (monitoring spec §3.3). A row whose value the
-/// log does not have is left out: a buffered log has no user, an info has no
-/// status.
+/// The detail's Details, last on the page (monitoring spec §3.3; Impeccable
+/// 2026-09-29 F1): who fixed it and when, the note, then where the log came
+/// from. The level, status and time head the page, and the event is the app
+/// bar's title, so none repeats here. A row whose value the log does not have
+/// is left out: a buffered log may have no user, an open one no fixer (a
+/// reopened log keeps who reopened it, which is not a fix).
 class MonitoringDetailSummaryWidget extends StatelessWidget {
   const MonitoringDetailSummaryWidget({super.key, required this.record});
 
@@ -18,38 +20,56 @@ class MonitoringDetailSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final rows = <(String, String?)>[
-      (l10n.monitoringFieldEvent, record.event),
-      (l10n.monitoringFieldLevel, monitoringLevelLabel(l10n, record.level)),
-      (l10n.monitoringFieldStatus, _status(l10n)),
-      (l10n.monitoringFieldNote, _nonBlank(record.statusNote)),
-      (l10n.monitoringFieldTime, monitoringFullTime(l10n, record.occurredAt)),
-      (l10n.monitoringFieldCategory, record.category),
-      (l10n.monitoringFieldSource, record.source),
-      (l10n.monitoringFieldDevice, record.deviceId),
-      (l10n.monitoringFieldApp, _app),
-      (l10n.monitoringFieldPlatform, _platform),
-      (l10n.monitoringFieldUser, record.userId),
+    final isFixed = record.status == LogStatus.fixed;
+    final fixedBy = isFixed ? record.statusChangedBy : null;
+    final changedAt = isFixed ? record.statusChangedAt : null;
+    final rows = [
+      if (fixedBy != null)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldFixedBy,
+          value: fixedBy,
+          copyLabel: l10n.monitoringCopyUser,
+        ),
+      if (changedAt != null)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldFixedAt,
+          value: monitoringFullTime(l10n, changedAt),
+        ),
+      if (_nonBlank(record.statusNote) case final note?)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldNote,
+          value: note,
+          isStacked: true,
+        ),
+      MonitoringDetailRowWidget(
+        label: l10n.monitoringFieldCategory,
+        value: record.category,
+      ),
+      MonitoringDetailRowWidget(
+        label: l10n.monitoringFieldSource,
+        value: record.source,
+      ),
+      if (_nonBlank(record.deviceId) case final device?)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldDevice,
+          value: device,
+          copyLabel: l10n.monitoringCopyDevice,
+        ),
+      if (_app case final app?)
+        MonitoringDetailRowWidget(label: l10n.monitoringFieldApp, value: app),
+      if (_platform case final platform?)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldPlatform,
+          value: platform,
+        ),
+      if (_nonBlank(record.userId) case final user?)
+        MonitoringDetailRowWidget(
+          label: l10n.monitoringFieldUser,
+          value: user,
+          copyLabel: l10n.monitoringCopyUser,
+        ),
     ];
-    return MxSection(
-      title: l10n.monitoringSummary,
-      children: [
-        for (final (label, value) in rows)
-          if (value != null) MxSettingsRow(label: label, subtitle: value),
-      ],
-    );
-  }
-
-  /// "Open", or "Fixed by {user} · {date}" once someone marked it.
-  String? _status(AppLocalizations l10n) {
-    final status = record.status;
-    if (status == null) return null;
-    final by = record.statusChangedBy;
-    final at = record.statusChangedAt;
-    if (status == LogStatus.fixed && by != null && at != null) {
-      return l10n.monitoringFixedBy(by, monitoringFullTime(l10n, at));
-    }
-    return monitoringStatusLabel(l10n, status);
+    return MxSection(title: l10n.monitoringSummary, children: rows);
   }
 
   String? get _app {

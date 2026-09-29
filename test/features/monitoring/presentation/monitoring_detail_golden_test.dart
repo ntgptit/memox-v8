@@ -102,6 +102,7 @@ void main() {
             statusChangedBy: '00000000-0000-0000-0000-0000000000ad',
             statusChangedAt: DateTime.utc(2026, 9, 27, 9, 30, 5),
           ),
+        isScrolled: true,
       );
     });
 
@@ -111,7 +112,12 @@ void main() {
         env,
         'local',
         FakeMonitoringRepository()
-          ..pendings['a'] = record('a', status: null, stackTrace: _trace),
+          ..pendings['a'] = record(
+            'a',
+            status: null,
+            stackTrace: _trace,
+            userId: null,
+          ),
         isLocal: true,
       );
     });

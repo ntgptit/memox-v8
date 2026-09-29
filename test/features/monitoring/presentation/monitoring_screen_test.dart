@@ -6,8 +6,10 @@ import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/library_harness.dart';
@@ -185,6 +187,9 @@ void main() {
     await settleMonitoring(tester);
 
     expect(find.text('Only an admin can see this'), findsOneWidget);
+    // Impeccable 2026-09-29 F7: nothing to search or filter on this page.
+    expect(find.byType(MxSearchField), findsNothing);
+    expect(find.byType(MxChipTrigger), findsNothing);
   });
 
   libraryTest('the next page loads near the end, and the end says so', (
@@ -313,5 +318,39 @@ void main() {
     expect(find.widgetWithText(MxBadge, 'Fixed'), findsOneWidget);
     expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
     expect(find.byIcon(Icons.info_outline), findsOneWidget);
+  });
+
+  // Impeccable 2026-09-29 F5: the time column reads at one height.
+  libraryTest('a row sets its time at the same height with or without a '
+      'status', (tester, env) async {
+    final repository = FakeMonitoringRepository()
+      ..autoPage = LogPage(
+        items: [
+          summary('a', level: LogLevel.info, status: null, event: 'a.event'),
+          summary('b', event: 'b.event'),
+        ],
+      );
+
+    await pumpMonitoring(tester, env, repository);
+
+    double timeBelowTitle(String event) {
+      final row = find.ancestor(
+        of: find.text(event),
+        matching: find.byType(MxListRow),
+      );
+      final time = find.descendant(
+        of: row,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Text &&
+              RegExp(r'^(\d\d:\d\d|[A-Z][a-z]{2} \d{1,2})$')
+                  .hasMatch(widget.data ?? ''),
+        ),
+      );
+      return tester.getTopLeft(time).dy -
+          tester.getTopLeft(find.text(event)).dy;
+    }
+
+    expect(timeBelowTitle('a.event'), timeBelowTitle('b.event'));
   });
 }

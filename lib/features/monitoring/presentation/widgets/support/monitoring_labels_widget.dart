@@ -67,6 +67,20 @@ String monitoringChipLabel(
   final count => l10n.monitoringChipValue(label, '$count'),
 };
 
+/// An id as shown: a break is allowed after each hyphen, so a 36-character
+/// UUID that does not fit wraps between its groups instead of mid-group
+/// (Impeccable 2026-09-29 F3). Copying uses the id itself.
+String monitoringIdText(String id) => id.replaceAll('-', '-\u200B');
+
+/// What a screen reader hears for a chip: every choice by name, where the
+/// chip shows only how many (Impeccable 2026-09-29 F8).
+String monitoringChipSemantics(
+  AppLocalizations l10n,
+  String label,
+  List<String> chosen,
+) =>
+    chosen.isEmpty ? label : l10n.monitoringChipValue(label, chosen.join(', '));
+
 /// A row's time (monitoring spec §3.2): 24-hour `HH:mm` for today, else the
 /// short month and day, in local time.
 String monitoringRowTime(AppLocalizations l10n, DateTime at, DateTime now) {

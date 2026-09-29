@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_list_controller.dart';
+import 'package:memox/features/monitoring/presentation/states/monitoring_list_state.dart';
+import 'package:memox/features/monitoring/presentation/states/monitoring_load_failure_state.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_filter_bar_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_server_list_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -31,6 +33,22 @@ class MonitoringServerTabWidget extends ConsumerWidget {
     final filter = ref.watch(
       monitoringListControllerProvider.select((state) => state.filter),
     );
+    // Nothing on a refused page can be searched or filtered (Impeccable
+    // 2026-09-29 F7); offline keeps them, a change being the way to retry.
+    final isRefused = ref.watch(
+      monitoringListControllerProvider.select(
+        (state) => switch (state.content) {
+          MonitoringListFailed(failure: MonitoringLoadFailure.notAdmin) => true,
+          _ => false,
+        },
+      ),
+    );
+    final list = MonitoringServerListWidget(
+      onOpenLog: onOpenLog,
+      onOpenNotSent: onOpenNotSent,
+      onClearFilters: onClearFilters,
+    );
+    if (isRefused) return list;
     return Column(
       children: [
         Padding(
@@ -51,13 +69,7 @@ class MonitoringServerTabWidget extends ConsumerWidget {
           filter: filter,
           onChanged: controller.setFilter,
         ),
-        Expanded(
-          child: MonitoringServerListWidget(
-            onOpenLog: onOpenLog,
-            onOpenNotSent: onOpenNotSent,
-            onClearFilters: onClearFilters,
-          ),
-        ),
+        Expanded(child: list),
       ],
     );
   }

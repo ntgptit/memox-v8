@@ -46,9 +46,10 @@ reload from the first page.
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` + back, action `MxIconButton` | Title: the event. The action copies the whole log as JSON; `MxSnackbar` "Copied". |
-| Summary | `MxSection` + `MxSettingsRow`s | Event, Level, Status ("Open", or "Fixed by {user} · {date}"), Note, Time (full date and `HH:mm:ss`, local), Category, Source, Device, App ("8.0.0 (12)"), Platform, User. A row the log does not have is left out. |
-| Message, Error | `MxListSectionHeader` + `MxCard` | Selectable text. Error: the type, then its message. |
-| Stack trace, Context | `MxListSectionHeader` + `MxCard`, `code` style | Selectable, long lines wrap; the context is pretty-printed JSON. Hidden when empty. A context can be 256 kB. |
+| Head | `MxIconTile` + text + `MxBadge` | The level's glyph tile and name, the full time (date and `HH:mm:ss`, local) under it, and "Open" / "Fixed" for a warning or error. |
+| Message, Error | `MxListSectionHeader` + `MxCard` | Selectable text. Error: the type on its own line in the row-title weight, then its message. |
+| Stack trace, Context | `MxListSectionHeader` + `MxCard`, `code` style | Selectable, long lines wrap; each frame's `#n` in the primary ink; the context is pretty-printed JSON. Hidden when empty. A context can be 256 kB. |
+| Details | `MxSection` of label/value rows, last | Fixed by, Fixed at (a fixed log only), Note, Category, Source, Device, App ("8.0.0 (12)"), Platform, User. A short value sits beside its caption label on one 48 row; the note under its label; an id under its label in the `code` style, wrapping between its groups, with its own copy button ("Copy device ID", "Copy user ID"; `MxSnackbar` "Copied"). A row the log does not have is left out. |
 | Triage | `MxFooterBar` + `MxButton` (primary, block) | "Mark fixed", or "Reopen" for a fixed one; for a warning or error of the server only. It opens an `MxBottomSheet` with an optional note (`MxTextField`) and the confirm. |
 | Toasts | `MxSnackbar` | "Marked fixed"; "Reopened"; "Couldn't change that. Nothing changed." · Retry. |
 
@@ -65,8 +66,8 @@ Every state is a V8 addition; the images are the goldens.
 | Not sent | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_not_sent_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_not_sent_dark.png) | Golden `monitoring_not_sent_*`. |
 | Level sheet | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_level_sheet_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_level_sheet_dark.png) | Golden `monitoring_level_sheet_*`. |
 | detail, open error | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_dark.png) | Golden `monitoring_detail_open_*`. |
-| detail, its trace and context | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_dark.png) | Golden `monitoring_detail_open_trace_*`: the `code` style. |
-| detail, fixed with a note | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png) | Golden `monitoring_detail_fixed_*`: "Fixed by {user} · {date}", the note, Reopen. |
+| detail, scrolled to the end | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_dark.png) | Golden `monitoring_detail_open_trace_*`: the context in the `code` style and the Details. |
+| detail, fixed with a note | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png) | Golden `monitoring_detail_fixed_*`, scrolled to the Details: Fixed by, Fixed at, the note, Reopen. |
 | detail, a row of the buffer | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png) | Golden `monitoring_detail_local_*`: no triage, no user. |
 | list, loading | — | — | `MxSkeletonList`, six rows. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
@@ -88,6 +89,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 | The offline state's one action, Not sent | Retry above it | Plan ruling 12 |
 | A card around the rows | Rows directly in the page's scroll | Plan ruling 13 |
 | No monospace in the type scale | `MxTextStyles.code`: the system monospace, `bodySmall` size, tabular figures | Owner 2026-09-29; UI-base row 147 |
+| The spec's detail order, summary first, with a key/value `MxSettingsRow` each and an Event row | The level and status first, then the message, error, trace and context, then compact Details without the Event row | Owner 2026-09-29 after the Impeccable audit (F1); spec §3.3 updated; UI-base row 147 |
 | Times of the sync screens ("Today, 14:32") | `HH:mm` today, "Sep 26" before, on a row; the full date and `HH:mm:ss` in the detail | Spec §3.2, §3.5 (24-hour in every language, ADR-008 local time) |
 
 ## Copy
@@ -97,6 +99,6 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 - List: "{n} open" · "{n}+ open" · "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs." · "Retry".
 - States: "No open problems" · "Warnings and errors will show here." · "Nothing matches" · "Clear filters" · "Can't reach the server" · "Monitoring reads the logs online. The ones this device hasn't sent are under Not sent." · "Not sent" · "Couldn't load logs" · "Nothing was lost. Try again in a moment." · "Only an admin can see this".
 - Not sent: "{n} logs wait on this device. They are sent when MemoX is online." · "Nothing waiting" · "Every log on this device has been sent." · "No logs at these levels" · "Try another level."
-- Detail: "Log" · "Copy log" · "Copied" · "Details" · "Event" · "Level" · "Status" · "Note" · "Time" · "Category" · "Source" · "Device" · "App" · "Platform" · "User" · "Fixed by {user} · {date}" · "Message" · "Error" · "Stack trace" · "Context".
+- Detail: "Log" · "Copy log" · "Copied" · "Copy device ID" · "Copy user ID" · "Details" · "Fixed by" · "Fixed at" · "Note" · "Category" · "Source" · "Device" · "App" · "Platform" · "User" · "Message" · "Error" · "Stack trace" · "Context".
 - Triage: "Mark fixed" · "Reopen" · "Note (optional)" · "What did you do?" · "Marked fixed" · "Reopened" · "Couldn't change that. Nothing changed." · "Retry".
 - Detail states: "Couldn't load this log" · "Nothing was lost. Try again when you're online." · "This log is gone" · "It may have been cleaned up."

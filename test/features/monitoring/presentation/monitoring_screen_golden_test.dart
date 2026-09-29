@@ -206,6 +206,8 @@ void main() {
           await _settle(tester);
           await tester.tap(find.textContaining('Not sent ('));
           await _settle(tester);
+          // Lets the tap's ink ripple fade out of the picture (F4).
+          await tester.pump(const Duration(seconds: 2));
         },
       );
     });
