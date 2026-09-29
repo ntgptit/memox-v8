@@ -17,6 +17,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
@@ -414,4 +415,22 @@ void main() {
       expect(opened, hasLength(1));
     },
   );
+
+  libraryTest('the list ends clear of the FAB, and drops that clearance while '
+      'selecting, when there is no FAB (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.pumpAndSettle();
+    MxScrollClearance clearance() =>
+        tester.widget<MxScreenScroll>(find.byType(MxScreenScroll)).clearance;
+
+    expect(clearance(), MxScrollClearance.fabAboveNav);
+
+    await tester.longPress(find.byType(CardRowWidget).first);
+    await tester.pump();
+    expect(clearance(), MxScrollClearance.base);
+  });
 }
