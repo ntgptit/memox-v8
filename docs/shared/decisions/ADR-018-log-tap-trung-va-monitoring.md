@@ -28,7 +28,7 @@ Trước ADR này, V8 có:
 | 2 | Nơi log sống lâu dài | Bảng `public.app_log` trên Supabase, là nguồn sự thật. Log của client và log của server dùng chung schema, phân biệt bằng cột `source` |
 | 3 | Đường đi của log trên client | `AppLogger` → các sink. Sink console (`dart:developer`) cho dev. Sink bộ đệm ghi vào một database Drift **riêng** (`memox_logs`); `LogShipper` đẩy bộ đệm lên bằng RPC `log_push` theo lô và xoá bản ghi đã đẩy. Tách database để ghi log không sinh log (không vòng lặp với tracing Drift), không tranh khoá với giao dịch học, không dính trigger sync |
 | 4 | Offline | Log chờ trong bộ đệm cho tới khi có mạng; `id` là UUID sinh ở client, nên đẩy lại không tạo bản ghi trùng |
-| 5 | Thời gian giữ | `pg_cron` chạy mỗi ngày: `debug` và `info` quá 7 ngày thì xoá; `warning` và `error` quá 6 tháng thì xoá. Bộ đệm trên máy áp cùng mốc cho bản ghi chưa đẩy được |
+| 5 | Thời gian giữ | `pg_cron` chạy mỗi ngày: `debug` và `info` quá 7 ngày thì xoá; `warning` và `error` quá 180 ngày (khoảng 6 tháng) thì xoá. Bộ đệm trên máy áp cùng mốc cho bản ghi chưa đẩy được |
 | 6 | Theo dõi xử lý | `warning` và `error` có trạng thái `open`/`fixed`, kèm thời điểm, người đổi và ghi chú. Admin đổi trạng thái qua RPC |
 | 7 | Admin | Vai trò `admin` trong `app_metadata` của user trên Supabase. Chủ dự án đặt vai trò này một lần cho user id trên máy mình. RPC đọc log và RPC đổi trạng thái kiểm tra vai trò này; bảng không có policy và client không có quyền trên bảng, đúng mẫu của [ADR-015](ADR-015-supabase-lam-backend.md) |
 | 8 | Xem log | Mục Monitoring trong Settings, chỉ hiện với admin. Tab chính đọc từ Supabase; tab "Chưa gửi" đọc bộ đệm trên máy, để xem được cả lúc offline |
