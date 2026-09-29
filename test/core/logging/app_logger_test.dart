@@ -166,6 +166,18 @@ void main() {
 
     expect(sink.entries.single.errorType, '_Unprintable');
   });
+  test('a network entry round-trips through JSON', () {
+    final sink = _RecordingSink();
+    AppLogger(
+      sinks: [sink],
+      now: () => at,
+    ).debug('net.request', category: LogCategory.network);
+
+    final json = sink.entries.single.toJson();
+
+    expect(json['category'], 'network');
+    expect(LogEntry.fromJson(json).category, LogCategory.network);
+  });
 }
 
 final class _Unprintable {

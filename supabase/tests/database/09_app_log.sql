@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(33);
 
 -- ADR-018; spec 2026-09-29-app-logging-design.md §4.
 create function public.t_entry(p_id text, p_level text, p_at timestamptz default now()) returns jsonb
@@ -52,6 +52,9 @@ select is((public.log_push(jsonb_build_array(
       jsonb_build_object('kind', 'batch', 'sql', 'INSERT',
         'args', (select jsonb_agg(repeat('x', 1000)) from generate_series(1, 300))))))->>'rejected')::int,
   0, 'an oversized context is accepted');
+select is((public.log_push(jsonb_build_array(
+    public.t_entry('11111111-0000-0000-0000-000000000008', 'debug') || '{"category": "network"}'))->>'rejected')::int,
+  0, 'a network entry is accepted');
 select throws_ok($$ select public.log_query('{}'::jsonb) $$, 'P0001', 'FORBIDDEN', 'a user cannot read logs');
 select throws_ok($$ select public.log_set_status('11111111-0000-0000-0000-000000000002', 'fixed', null) $$,
   'P0001', 'FORBIDDEN', 'a user cannot triage logs');
@@ -63,6 +66,8 @@ select is((select count(*)::int from public.app_log where id in
 select is((select array_agg(id::text order by id) from public.app_log where id::text like '11111111-0000-0000-0000-00000000000_'
     and id::text between '11111111-0000-0000-0000-000000000003' and '11111111-0000-0000-0000-000000000006'),
   array['11111111-0000-0000-0000-000000000003'], 'only the valid row of a mixed push is stored');
+select is((select category from public.app_log where id = '11111111-0000-0000-0000-000000000008'),
+  'network', 'and stored as network');
 select is((select count(*)::int from public.app_log where source = 'server' and event = 'server.log_rejected'
     and (context->>'rejected')::int = 4), 1, 'the server logs the rows it skipped');
 select is((select context - 'bytes' from public.app_log where id = '11111111-0000-0000-0000-000000000007'),
@@ -85,7 +90,8 @@ select is(public.log_query(jsonb_build_object('limit', 1, 'sources', jsonb_build
 select is((select array_agg(i->>'id') from jsonb_array_elements(public.log_query(jsonb_build_object(
     'userId', 'aaaaaaaa-0000-0000-0000-000000000001', 'search', 'db.que',
     'from', now() - interval '1 minute', 'to', now() + interval '1 minute'))->'items') i),
-  array['11111111-0000-0000-0000-000000000007', '11111111-0000-0000-0000-000000000003',
+  array['11111111-0000-0000-0000-000000000008', '11111111-0000-0000-0000-000000000007',
+    '11111111-0000-0000-0000-000000000003',
     '11111111-0000-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001'],
   'an admin filters by user, text and time, newest first (then by id)');
 select is((select array_agg(i->>'id') from jsonb_array_elements(public.log_query(jsonb_build_object(
