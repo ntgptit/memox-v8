@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -37,7 +38,10 @@ class MxSegmentedTray<T> extends StatelessWidget {
   /// Null draws no option as chosen: a choice the person must make, with no
   /// default (BR-SRS-001).
   final T? selected;
-  final ValueChanged<T> onSelected;
+
+  /// Null disables the tray: no option takes a tap, and it dims like a
+  /// disabled MxStepper (ruling M3-E1).
+  final ValueChanged<T>? onSelected;
 
   /// The Progress range tray's wider option padding (16 instead of 12).
   final bool isWide;
@@ -48,12 +52,22 @@ class MxSegmentedTray<T> extends StatelessWidget {
   static const double _segmentGap = 2;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) =>
-        _naturalWidth(context) > constraints.maxWidth
-        ? _stacked(context)
-        : _inline(context),
-  );
+  Widget build(BuildContext context) {
+    final tray = LayoutBuilder(
+      builder: (context, constraints) =>
+          _naturalWidth(context) > constraints.maxWidth
+          ? _stacked(context)
+          : _inline(context),
+    );
+    if (onSelected != null) return tray;
+    return Opacity(opacity: AppOpacity.disabled, child: tray);
+  }
+
+  VoidCallback? _select(T value) {
+    final onSelected = this.onSelected;
+    if (onSelected == null) return null;
+    return () => onSelected(value);
+  }
 
   double get _padding => isWide ? AppSpacing.gutter : AppSpacing.grouped;
 
@@ -95,7 +109,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
               isSelected: segment.value == selected,
               padding: _padding,
               isStretched: true,
-              onTap: () => onSelected(segment.value),
+              onTap: _select(segment.value),
             ),
         ],
       ),
@@ -133,7 +147,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
                   label: segment.label,
                   isSelected: segment.value == selected,
                   padding: _padding,
-                  onTap: () => onSelected(segment.value),
+                  onTap: _select(segment.value),
                 ),
             ],
           ),
@@ -155,7 +169,7 @@ class _Segment extends StatelessWidget {
   final String label;
   final bool isSelected;
   final double padding;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   /// Stacked: the thumb spans the tray's width.
   final bool isStretched;
@@ -168,6 +182,7 @@ class _Segment extends StatelessWidget {
       child: Semantics(
         selected: isSelected,
         button: true,
+        enabled: onTap != null,
         inMutuallyExclusiveGroup: true,
         child: InkWell(
           onTap: onTap,

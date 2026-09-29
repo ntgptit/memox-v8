@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/core/theme/app_decorations.dart';
@@ -104,6 +105,14 @@ void main() {
 
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.wrong);
     expect(_tile(tester, 'banana').tone, StudyChoiceTone.wrong);
+    // M3-F1: a wrong tile carries the cross, as a wrong Guess option does.
+    expect(
+      find.descendant(
+        of: find.byType(StudyChoiceWidget),
+        matching: find.byIcon(AppIcons.close),
+      ),
+      findsNWidgets(2),
+    );
     // The same cards' other sides are not part of the wrong pair.
     expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);

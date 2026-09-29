@@ -5,6 +5,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -110,5 +111,23 @@ void main() {
     );
     await tester.tap(find.text('Cancel'));
     expect(dismissed, 1);
+  });
+  testWidgets('loading keeps the head where the loaded sheet draws it', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxDeckPickerLoadingSheet(
+        title: 'Move to deck',
+        semanticLabel: 'Loading',
+      ),
+    );
+    final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
+
+    expect(find.byType(MxSkeletonList), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Move to deck')) - sheet,
+      const Offset(20, 20),
+    );
   });
 }

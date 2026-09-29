@@ -14,7 +14,6 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Picks the deck the cards of [cardIds] move to (UC-CARD-001 A5).
@@ -112,15 +111,11 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
           isRetrying: isLoading,
         ),
       ),
-      _ => MxBottomSheet(
-        child: Column(
-          children: [
-            MxSkeletonList(
-              semanticLabel: context.l10n.commonLoading,
-              rows: _skeletonRows,
-            ),
-          ],
-        ),
+      _ => MxDeckPickerLoadingSheet(
+        title: l10n.cardMoveTitle,
+        rule: l10n.cardMoveRule,
+        semanticLabel: l10n.commonLoading,
+        rows: _skeletonRows,
       ),
     };
   }

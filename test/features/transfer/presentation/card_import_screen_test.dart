@@ -157,6 +157,14 @@ void main() {
     final read = find.widgetWithText(MxButton, _en.importReadAction);
     expect(tester.widget<MxButton>(read).onPressed, isNull);
     expect(find.text(_en.importCaptionProblemFile), findsOneWidget);
+    // M3-C2: a banner action is a compact primary button, as elsewhere.
+    final choose = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.importChooseAnother),
+    );
+    expect(
+      (choose.tone, choose.size),
+      (MxButtonTone.primary, MxButtonSize.compact),
+    );
   });
 
   libraryTest('pasted text is read on the device, and the caption says text', (

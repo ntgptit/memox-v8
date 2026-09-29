@@ -265,7 +265,6 @@ class _Actions extends StatelessWidget {
             child: MxButton(
               label: l10n.exportClose,
               onPressed: close,
-              tone: MxButtonTone.outline,
               isBlock: true,
             ),
           ),

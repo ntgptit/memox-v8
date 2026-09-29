@@ -97,11 +97,12 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
     ),
     itemCount: _order.length,
     onReorderItem: (oldIndex, newIndex) => unawaited(_drop(oldIndex, newIndex)),
-    itemBuilder: (context, index) => DeckReorderRowWidget(
+    itemBuilder: (context, index) => Padding(
       key: ValueKey(_order[index].id),
-      tile: _order[index],
-      index: index,
-      hasDivider: index < _order.length - 1,
+      padding: EdgeInsets.only(
+        bottom: index < _order.length - 1 ? AppSpacing.control : 0,
+      ),
+      child: DeckReorderRowWidget(tile: _order[index], index: index),
     ),
   );
 }

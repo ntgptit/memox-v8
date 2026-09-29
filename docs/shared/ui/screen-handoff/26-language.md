@@ -17,7 +17,7 @@ and the page stays open. UC-SETTINGS-001 step 5, BR-SETTINGS-006; spec
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | Back and "Language". |
-| Rows | `MxCard` + `MxOptionRow` × 3 | "Follow the system" with what it resolves to now: "Phone is set to English", "Phone is set to Tiếng Việt", or "Your phone's language isn't available · English" (D8). "English", and "Tiếng Việt" with its name in the current language ("Vietnamese"); a sub-line that repeats the title is left out. |
+| Rows | `MxSection` + `MxOptionRow` × 3, the note as its `MxNote` | "Follow the system" with what it resolves to now: "Phone is set to English", "Phone is set to Tiếng Việt", or "Your phone's language isn't available · English" (D8). "English", and "Tiếng Việt" with its name in the current language ("Vietnamese"); a sub-line that repeats the title is left out. |
 | Note | Text | "Applies at once — no restart, and you stay where you are. Your cards stay in their own language." |
 | Toasts | `MxSnackbar` | After a switch, in the new language: "Switched to English" or "Đã chuyển sang Tiếng Việt". "Couldn't change the language." · Retry; the stored choice stays selected. |
 
@@ -38,6 +38,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_language_{english
 |---|---|---|
 | "Phone is set to Tiếng Việt · falls back to English" | "Phone is set to Tiếng Việt"; the fallback line only for a language the app lacks | D8, BR-SETTINGS-006 |
 | A tinted selected row with a trailing check | `MxOptionRow` radios, the app's single-choice list | The shared option row |
+| A centred plain-text note under the card | The `MxSection` note (`MxNote`) | M3 review 2026-09-28 D4 |
 | English over "English" | No sub-line when it repeats the title | Critique 2026-09-26 (minor) |
 
 ## Copy

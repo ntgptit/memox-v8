@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_streak_widget.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_today_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -61,6 +64,12 @@ void main() {
     expect(find.text(_en.progressTodaySplit(5, 12)), findsOneWidget);
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
+    // M3-D3: every section gap on the overview is AppSpacing.gutter.
+    expect(
+      tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -
+          tester.getBottomLeft(find.byType(ProgressTodayWidget)).dy,
+      AppSpacing.gutter,
+    );
     final total = await _row(tester, _en.progressAllDecks);
     expect(
       find.descendant(of: total, matching: find.text('26')),

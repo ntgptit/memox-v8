@@ -272,6 +272,11 @@ void main() {
 
     expect(find.text(_en.exportEmptyTitle), findsOneWidget);
     expect(_button(_en.exportClose), findsOneWidget);
+    // M3-C1: the only action of a final problem is primary, as on import.
+    expect(
+      tester.widget<MxButton>(_button(_en.exportClose)).tone,
+      MxButtonTone.primary,
+    );
   });
 
   libraryTest('the sheet meets the target guidelines at 1x and 2x text', (

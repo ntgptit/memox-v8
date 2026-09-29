@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -66,6 +67,22 @@ void main() {
     expect(find.text(_en.cardMoreTags(2)), findsOneWidget);
     expect(find.text(_en.cardDueOverdue(30)), findsOneWidget);
     expect(find.byIcon(Icons.flag), findsOneWidget);
+    // M3-D1: the row pads 16 across and 12 down, as every MxListRow.
+    expect(
+      find.descendant(
+        of: find.byType(CardRowWidget),
+        matching: find.byWidgetPredicate(
+          (w) =>
+              w is Padding &&
+              w.padding ==
+                  const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                    vertical: AppSpacing.grouped,
+                  ),
+        ),
+      ),
+      findsOneWidget,
+    );
   });
 
   libraryTest('the row names its status once to a screen reader', (

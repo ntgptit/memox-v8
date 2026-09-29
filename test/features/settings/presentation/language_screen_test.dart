@@ -6,7 +6,9 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
@@ -23,6 +25,12 @@ void main() {
       '(UC-SETTINGS-001 step 5)', (tester, env) async {
     await pumpLibraryScreen(tester, env, const LanguageScreen());
     expect(_row(tester, _en.settingsLanguageSystem).isSelected, isTrue);
+    // M3-D4: the rows sit in an MxSection whose note is an MxNote.
+    expect(find.byType(MxSection), findsOneWidget);
+    expect(
+      find.widgetWithText(MxNote, _en.settingsLanguageNote),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text(_en.languageVietnamese));
     await tester.pumpAndSettle();

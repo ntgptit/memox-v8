@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
@@ -111,6 +112,19 @@ void main() {
 
     expect(find.text(_en.deckUnsetTitle), findsOneWidget);
     expect(find.text(_en.deckUnsetNote), findsOneWidget);
+    // M3-D5: the actions are the empty state's own block buttons.
+    expect(find.byType(OverflowBar), findsNothing);
+    final buttons = tester
+        .widgetList<MxButton>(
+          find.descendant(
+            of: find.byType(MxEmptyState),
+            matching: find.byType(MxButton),
+          ),
+        )
+        .toList();
+    expect(buttons, isNotEmpty);
+    expect(buttons.every((b) => b.isBlock), isTrue);
+    expect(buttons.first.label, _en.deckNewCard);
     await tester.tap(_unsetButton(_en.deckNewCard));
     expect(added, [words.id]);
 
@@ -122,6 +136,23 @@ void main() {
 
     expect(find.byType(MxDialog), findsNothing);
     expect(find.text('Verbs'), findsOneWidget);
+  });
+
+  libraryTest('the unset actions fit at twice the text size (M3-D5)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(deckId: words.id, onAddCard: (_) {}),
+      textScale: 2,
+    );
+
+    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   libraryTest('an empty sub-deck imports cards from a file (UC-TRANSFER-001)', (

@@ -19,7 +19,6 @@ class DeckDiscardDialogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxDialog(
-      width: MxDialogWidth.medium,
       title: l10n.deckDiscardTitle,
       body: l10n.deckDiscardBody,
       actions: MxSheetActions(

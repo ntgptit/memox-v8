@@ -27,7 +27,7 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 | Note | `MxNote` (layers) | "These options belong to {root} and every sub-deck in it." |
 | Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." |
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
-| Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" and two `MxOptionRow`s: "Creation order" / "Oldest cards first — the order you added or imported them", "Random" / "Shuffled each learning session". Read-only and dimmed while the toggle is on. The note: "Changes apply to sessions started from now on. A session already open keeps the options it started with." |
+| Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("Creation order" · "Random"), as screen 23 draws it; each row carries its icon, as on screen 23. Read-only and dimmed while the toggle is on. The note: "Changes apply to sessions started from now on. A session already open keeps the options it started with." |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper (UC E1). |
 | Footer | `MxFooterBar` + `MxButton` | "Save", enabled only for a valid change (D9); spinning while it runs; "Retry save" after a failure. The caption: "Saved to this device only.", "Fix the limit to enable save." or "Couldn't save. The deck still uses {n} cards, {order}." |
 | Toast | `MxSnackbar` | "Saved · applies to the next session". |
@@ -60,6 +60,7 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 | Save enabled in override and defaults | Enabled only for a valid change | D9 |
 | A spinner and "Saving…" in the button | The button spins | `MxButton.isLoading` |
 | No gone state | The Library's gone state with Back | Spec §6; UI-base row 129 |
+| New-card order as two `MxOptionRow`s with descriptions; rows without icons | One `MxSettingsRow` + `MxSegmentedTray`, icons on every row | M3 review 2026-09-28 E1, E2 |
 
 ## Copy
 
