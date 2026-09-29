@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math' as math;
+
+import 'package:memox/core/logging/app_logger.dart';
 
 /// When a sync runs: at start, after a debounced burst of triggers, and on
 /// backoff after a failure. At most one run at a time (app deck-sync spec §5).
@@ -14,6 +15,7 @@ class SyncScheduler {
     this.debounce = const Duration(seconds: 2),
     this.minBackoff = const Duration(seconds: 5),
     this.maxBackoff = const Duration(minutes: 5),
+    this._logger,
   });
 
   final Future<void> Function() _run;
@@ -30,6 +32,12 @@ class SyncScheduler {
   final Duration debounce;
   final Duration minBackoff;
   final Duration maxBackoff;
+
+  /// Where a failed run is logged; [appLogger] unless the run itself empties
+  /// the log buffer (ADR-018 §3), which must not log into what it ships.
+  final AppLogger? _logger;
+
+  AppLogger get _log => _logger ?? appLogger;
 
   final _subscriptions = <StreamSubscription<void>>[];
   Timer? _timer;
@@ -114,7 +122,13 @@ class SyncScheduler {
       _failures = 0;
     } catch (error, stackTrace) {
       _failures++;
-      log('Sync failed; retrying', error: error, stackTrace: stackTrace);
+      _log.error(
+        'sync.failed',
+        category: LogCategory.sync,
+        error: error,
+        stackTrace: stackTrace,
+        context: {'failures': _failures},
+      );
       await _report(() async => _onFailed?.call(error));
     } finally {
       _running = false;
@@ -136,7 +150,12 @@ class SyncScheduler {
     try {
       await report();
     } catch (error, stackTrace) {
-      log('Sync status not recorded', error: error, stackTrace: stackTrace);
+      _log.warning(
+        'sync.status_not_recorded',
+        category: LogCategory.sync,
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 }

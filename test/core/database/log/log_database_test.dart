@@ -123,6 +123,23 @@ void main() {
     },
   );
 
+  test('a context value JSON cannot encode is stored as its text', () async {
+    await db.insertAll([
+      LogEntry(
+        id: 'odd',
+        occurredAt: now,
+        level: LogLevel.error,
+        category: LogCategory.state,
+        event: 'state.provider_failed',
+        context: {'argument': Duration.zero},
+      ),
+    ]);
+
+    final row = (await db.oldest(1)).single;
+
+    expect(row.context['argument'], Duration.zero.toString());
+  });
+
   test('count watches the pending rows', () async {
     expect(await db.count(), 0);
     await db.insertAll([_entry('a', LogLevel.info, now)]);

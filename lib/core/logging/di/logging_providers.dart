@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/database/connection.dart';
 import 'package:memox/core/database/log/log_database.dart';
+import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_api.dart';
 import 'package:memox/core/logging/log_shipper.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
@@ -47,6 +49,9 @@ SyncScheduler? logScheduler(Ref ref) {
     run: shipper.runOnce,
     triggers: Stream<void>.periodic(_every),
     reconnects: online,
+    // A failed push logs to the console only: into the buffer, it would grow
+    // what it failed to empty (ADR-018 §3).
+    logger: AppLogger(sinks: const [ConsoleSink()]),
   )..start();
   ref.onDispose(scheduler.dispose);
   return scheduler;

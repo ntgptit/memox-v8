@@ -130,7 +130,9 @@ class LogDatabase extends _$LogDatabase {
         errorType: Value(entry.errorType),
         errorMessage: Value(entry.errorMessage),
         stackTrace: Value(entry.stackTrace),
-        context: Value(jsonEncode(entry.context)),
+        context: Value(
+          jsonEncode(entry.context, toEncodable: (value) => value.toString()),
+        ),
         deviceId: Value(entry.stamp.deviceId),
         appVersion: Value(entry.stamp.appVersion),
         buildNumber: Value(entry.stamp.buildNumber),

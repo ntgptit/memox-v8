@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_api.dart';
 import 'package:memox/core/sync/sync_models.dart';
@@ -15,6 +14,7 @@ class SyncCoordinator {
     this._now = DateTime.now,
     this._pullLimit = pullPageSize,
     this._afterPull,
+    this._logger,
   }) : _adapters = {for (final a in adapters) a.entityType: a};
 
   static const pushBatchSize = 100;
@@ -28,11 +28,26 @@ class SyncCoordinator {
   final DateTime Function() _now;
   final int _pullLimit;
   final Future<void> Function()? _afterPull;
+  final AppLogger? _logger;
+
+  AppLogger get _log => _logger ?? appLogger;
 
   Future<void> runOnce() async {
     final deviceId = await _store.deviceId();
-    await _push(deviceId);
-    await _pull();
+    final watch = Stopwatch()..start();
+    final pushed = await _push(deviceId);
+    _log.info(
+      'sync.push',
+      category: LogCategory.sync,
+      context: {'operations': pushed, 'duration_ms': watch.elapsedMilliseconds},
+    );
+    watch.reset();
+    final pulled = await _pull();
+    _log.info(
+      'sync.pull',
+      category: LogCategory.sync,
+      context: {'changes': pulled, 'duration_ms': watch.elapsedMilliseconds},
+    );
   }
 
   /// Try again (sync status spec §4): each refused entity goes back to the
@@ -52,15 +67,18 @@ class SyncCoordinator {
     }
   });
 
-  Future<void> _push(String deviceId) async {
+  /// The number of operations sent.
+  Future<int> _push(String deviceId) async {
+    var pushed = 0;
     while (true) {
       final batch = await _store.pendingBatch(
         _adapters.keys.toList(),
         pushBatchSize,
       );
       if (batch.isEmpty) {
-        return;
+        return pushed;
       }
+      pushed += batch.length;
       final operations = <SyncOperationModel>[];
       for (final entry in batch) {
         final row = entry.op == _upsert
@@ -105,8 +123,18 @@ class SyncCoordinator {
             // The server never saw this row: keep it (and its cards) rather
             // than delete data that exists nowhere else, and list it on
             // screen 27 (sync status spec §4).
-            log(
-              'Sync rejected ${entry.entityType}/${entry.entityId}: ${result.code}',
+            _log.warning(
+              'sync.rejected',
+              category: LogCategory.sync,
+              message:
+                  '${entry.entityType}/${entry.entityId} refused: '
+                  '${result.code}',
+              context: {
+                'entityType': entry.entityType,
+                'entityId': entry.entityId,
+                'code': result.code,
+                'opId': result.opId,
+              },
             );
             await _store.recordRejection(
               entry.entityType,
@@ -121,7 +149,7 @@ class SyncCoordinator {
         }
       });
       if (batch.length < pushBatchSize) {
-        return;
+        return pushed;
       }
     }
   }
@@ -130,7 +158,8 @@ class SyncCoordinator {
   /// checked at commit: a child may come pages before its parent (spec §4.2).
   /// A set of adapters other than the last pull's starts from 0, so a type
   /// this build adds gets the rows the server already holds (spec §4.1).
-  Future<void> _pull() async {
+  /// The number of changes fetched.
+  Future<int> _pull() async {
     final types = (_adapters.keys.toList()..sort()).join(',');
     var since = await _store.pullEntityTypes() == types
         ? await _store.since()
@@ -159,6 +188,7 @@ class SyncCoordinator {
       await _store.setSince(since);
       await _store.setPullEntityTypes(types);
     });
+    return changes.length;
   }
 
   static Future<void> _applyServerCopy(

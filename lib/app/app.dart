@@ -9,6 +9,8 @@ import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
@@ -50,7 +52,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   late final GoRouter _router = buildAppRouter(hasGallery: widget.hasGallery);
 
   /// A resume after a day away purges what expired meanwhile (UC-TRASH-001
-  /// A4).
+  /// A4); a resume and a pause are logged (ADR-018).
   late final AppLifecycleListener _lifecycle;
 
   /// Taps on the daily reminder while the app runs (BR-REMINDER-008).
@@ -70,10 +72,19 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     unawaited(_purgeExpiredTrash());
     _lifecycle = AppLifecycleListener(
       onResume: () {
+        appLogger.info('lifecycle.resume', category: LogCategory.lifecycle);
         unawaited(_purgeExpiredTrash());
         // The local offset may have changed while the app slept
         // (BR-REMINDER-009); Reconcile schedules from the offset now.
         unawaited(_reconcileReminder());
+        // The logs of the last session go up while the app is in front
+        // (ADR-018 §3).
+        unawaited(ref.read(logSchedulerProvider)?.syncNow());
+      },
+      onPause: () {
+        appLogger.info('lifecycle.pause', category: LogCategory.lifecycle);
+        // What is still queued reaches the buffer before the app may die.
+        unawaited(appLogger.flush());
       },
     );
     _followReminderTaps();
