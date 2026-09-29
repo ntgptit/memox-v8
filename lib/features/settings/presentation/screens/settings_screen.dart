@@ -35,6 +35,7 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenReminder,
     required this.onAppOptionsReset,
     required this.onOpenSync,
+    this.adminSection,
     this.onOpenGallery,
   });
 
@@ -48,6 +49,10 @@ class SettingsScreen extends ConsumerWidget {
 
   /// Opens screen 27 (SB-U1).
   final VoidCallback onOpenSync;
+
+  /// The Admin section, which `app/` composes from Monitoring (monitoring
+  /// spec §3.1): a widget that draws nothing unless the account is an admin.
+  final Widget? adminSection;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -93,6 +98,7 @@ class SettingsScreen extends ConsumerWidget {
                 now: ref.watch(dayClockProvider).now(),
                 onOpenSync: onOpenSync,
               ),
+            ?adminSection,
             MxSection(
               title: l10n.settingsReset,
               note: l10n.settingsResetNote,

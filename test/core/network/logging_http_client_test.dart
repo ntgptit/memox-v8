@@ -13,6 +13,13 @@ import '../../support/recording_log_sink.dart';
 final _url = Uri.parse('https://x.supabase.co/rest/v1/rpc/sync_push?a=1');
 final _logPush = Uri.parse('https://x.supabase.co/rest/v1/rpc/log_push');
 
+/// The admin's log RPCs (ADR-018 §7): Monitoring's reads and its status
+/// change. Their answers are logs, so logging them would copy logs into logs.
+final _adminLogRpcs = {
+  for (final name in ['log_query', 'log_get', 'log_set_status'])
+    name: Uri.parse('https://x.supabase.co/rest/v1/rpc/$name'),
+};
+
 // Spec 2026-09-29-network-logging-design.md §2, §5.
 void main() {
   late RecordingLogSink sink;
@@ -126,6 +133,40 @@ void main() {
     );
 
     expect(sink.entries, isEmpty);
+  });
+
+  for (final MapEntry(key: name, value: url) in _adminLogRpcs.entries) {
+    test('$name logs nothing and still returns', () async {
+      final c = client((request) async => http.Response('{"items":[]}', 200));
+
+      final response = await c.post(url, body: '{}');
+
+      expect(response.statusCode, 200);
+      expect(response.body, '{"items":[]}');
+      expect(sink.entries, isEmpty);
+    });
+
+    test('a failing $name logs nothing and still throws', () async {
+      final c = client((request) async => throw const SocketException('down'));
+
+      await expectLater(
+        c.post(url, body: '{}'),
+        throwsA(isA<SocketException>()),
+      );
+
+      expect(sink.entries, isEmpty);
+    });
+  }
+
+  test('another RPC that only starts like a log one is still logged', () async {
+    final c = client((request) async => http.Response('{}', 200));
+
+    await c.post(
+      Uri.parse('https://x.supabase.co/rest/v1/rpc/log_queryable'),
+      body: '{}',
+    );
+
+    expect(sink.entries, hasLength(1));
   });
 
   test('a body over 64 KB keeps its first 64 KB and says it was cut', () async {
