@@ -427,7 +427,7 @@ void main() {
     expect(opened, 1);
     expect(
       tester.getSemantics(find.text(_en.libraryDueTitle(2))),
-      containsSemantics(isButton: true, hasTapAction: true),
+      isSemantics(isButton: true, hasTapAction: true),
     );
     handle.dispose();
   });
