@@ -15,7 +15,7 @@ Owner rulings (2026-09-29):
 - Log everything, including card content, SQL arguments and tokens. BR-CORE-002 is
   superseded (ADR-018 §1).
 - Logs live on Supabase; the device only buffers them until it can push.
-- Retention: `debug`/`info` for 7 days; `warning`/`error` for 6 months.
+- Retention: `debug`/`info` for 7 days; `warning`/`error` for 180 days.
 - `warning`/`error` carry a status, `open` or `fixed`, that an admin sets.
 - For now only the admin uses the app. Monitoring lives in Settings and is shown only
   to an admin.
@@ -59,7 +59,7 @@ buffer; the same fields):
 ## 3. Client
 
 ```
-AppLogger ──► ConsoleSink (dart:developer, every level)
+AppLogger ──► ConsoleSink (dart:developer, every level; debug builds only)
           └─► BufferSink ──► LogDatabase (memox_logs, own Drift file)
                                    │
                          LogShipper ── log_push(entries) ──► Supabase public.app_log
@@ -71,7 +71,18 @@ AppLogger ──► ConsoleSink (dart:developer, every level)
   bootstrap (`AppLogger.install`) and read through `appLogger` (top level), because
   logging happens where there is no `Ref`: the Drift interceptor, the reminder
   background isolate and `main`. A `Provider` exposes the same instance for code that
-  has a `Ref`. Before `install`, and in tests, it has the console sink only.
+  has a `Ref`. Before `install`, and in tests, it has the console sink only. Once
+  installed, the console sink is there in a debug build only (`kDebugMode`), and a
+  build with no Supabase project installs no `BufferSink`, since its logs could never
+  be shipped.
+- **Error storms:** a `warning` or `error` that carries an error, with the same event,
+  error type and error message as one written less than 5 s earlier, is counted, not
+  written; the next one after the window is written with `context.repeated` set to the
+  count suppressed, and a flush (the app pausing) writes any count still pending as one
+  more entry. `debug`, `info` and a warning without an error (a slow query, a refused
+  row: told apart by its context) are never held back. A clock set back ends the
+  window. A release build with no Supabase project logs nowhere (no console, no
+  buffer).
 - **`BufferSink`** queues entries in memory and writes them in one batch every 2 s, or
   at 50 entries, or when the app pauses. A failed write falls back to the console and
   never logs itself.
@@ -82,7 +93,8 @@ AppLogger ──► ConsoleSink (dart:developer, every level)
   rows go first, then `info`, and `warning`/`error` last.
 - **`LogShipper`** (`core/logging/log_shipper.dart`) runs at start, on resume, when a
   push succeeds after the connection returns, and every 5 minutes while the app is in
-  the foreground. It sends up to 500 entries per `log_push` call, oldest first, and
+  the foreground (the periodic and reconnect triggers are dropped while the app is
+  not `resumed`; resume calls `syncNow`). It sends up to 500 entries per `log_push` call, oldest first, and
   deletes the ids the server accepted. On failure it keeps the rows and backs off like
   `SyncScheduler`; the failure goes to the console only.
 - **Every level is persisted and pushed, `debug` included** (owner ruling 2026-09-29).
@@ -95,7 +107,7 @@ AppLogger ──► ConsoleSink (dart:developer, every level)
 
 | Where | Level · event | Context |
 |---|---|---|
-| Drift `QueryInterceptor` on `AppDatabase` (`core/database/tracing_interceptor.dart`) | every statement `debug db.query`; ≥ 50 ms `info db.slow_query`; ≥ 150 ms `warning db.slow_query`; a failing statement `error db.query_failed` | `sql`, `args`, `duration_ms`, `kind` (select/insert/…/transaction/batch) |
+| Drift `QueryInterceptor` on `AppDatabase` (`core/database/tracing_interceptor.dart`) | every statement `debug db.query`; ≥ 50 ms `info db.slow_query`; ≥ 150 ms `warning db.slow_query`; a failing statement `error db.query_failed` | `sql`, `args`, `duration_ms`, `kind` (select/insert/…/transaction/batch). A batch keeps the `args` of its first 50 runs and adds `runs`, the real count. `db.transaction` (`debug`) has `outcome`, `duration_ms` from begin to the end of the commit or rollback, and `commit_ms` (`rollback_ms`) for that last call alone. A statement's time includes the wait for Drift's lock on the connection, so a `db.slow_query` can mean a busy connection |
 | `FlutterError.onError`, `PlatformDispatcher.instance.onError` | `error ui.uncaught` | library, widget context |
 | Riverpod `ProviderObserver.providerDidFail` | `error state.provider_failed` (a `Failure`: `warning`) | provider name, argument |
 | GoRouter `NavigatorObserver` | `info nav.push` / `nav.pop` / `nav.replace` | route location, arguments |
@@ -130,10 +142,18 @@ forbids `dart:developer` imports outside `lib/core/logging/`.
   through (a broken RPC refuses both, so it never empties the buffer); the log push
   never signs in itself, it waits for sync's session. The reminder's background
   isolate logs to the same buffer and writes it before the fire ends.
-- **`public.log_query(filter jsonb) returns jsonb`**, admin only (otherwise `FORBIDDEN`):
+- **`public.log_query(filter jsonb) returns jsonb`**, admin only (otherwise `FORBIDDEN`,
+  checked before the filter is read):
   - filters on level, source, category, status, text search on `event`/`message`, a
-    date range and user;
-  - keyset pagination on `(occurred_at, id)`, 100 per page.
+    date range and user; a JSON null or a value of the wrong type counts as absent;
+  - the search is literal: `%`, `_` and `\` in it are plain characters;
+  - keyset pagination on `(occurred_at, id)`, 100 per page;
+  - returns `{items}` of compact rows: `id`, `occurred_at`, `level`, `source`,
+    `category`, `event`, `message` (the first 300 characters), `error_type`, `status`,
+    `user_id`, `device_id`, `app_version`, `platform`. No `context` or `stack_trace`.
+- **`public.log_get(log_id uuid) returns jsonb`**, admin only: the whole row of one log
+  (message, error message, stack trace, context), or `NOT_FOUND`. The Monitoring detail
+  view reads it.
 - **`public.log_set_status(log_id uuid, new_status text, note text)`**, admin only:
   `open` ↔ `fixed`, stamps `status_changed_at` and `status_changed_by`.
 - **`private.log_server(level, category, event, message, context)`** writes a

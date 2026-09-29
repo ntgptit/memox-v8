@@ -15,8 +15,20 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// with this device and build, and every uncaught error routed to it. Runs
 /// first in `main`, so what starts after it logs to the buffer. Nothing here
 /// stops the app from starting: a part that fails leaves its field empty.
-Future<void> installAppLogger(ProviderContainer container) async {
+///
+/// The console gets the logs in a debug build only ([console]); a release
+/// build writes them to the buffer. A build with no Supabase project has no
+/// buffer either: its logs could never be shipped.
+Future<void> installAppLogger(
+  ProviderContainer container, {
+  bool console = kDebugMode,
+}) async {
   _routeUncaughtErrors();
+  if (!container.read(supabaseConfigProvider).isEnabled) {
+    // Nothing carries the stamp: only the buffer's rows do.
+    AppLogger.install(AppLogger(sinks: [if (console) const ConsoleSink()]));
+    return;
+  }
   final LogDatabase logs;
   try {
     logs = container.read(logDatabaseProvider);
@@ -31,7 +43,7 @@ Future<void> installAppLogger(ProviderContainer container) async {
   }
   AppLogger.install(
     AppLogger(
-      sinks: [const ConsoleSink(), BufferSink(logs)],
+      sinks: [if (console) const ConsoleSink(), BufferSink(logs)],
       stamp: await _stamp(container),
     ),
   );

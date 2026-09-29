@@ -11,9 +11,9 @@ const _sqliteLocked = 6;
 const _sqliteConstraint = 19;
 
 /// Unexpected failures from the database boundary. Never rendered directly —
-/// [message] is safe to show, [cause] is for logs only and must never
-/// contain card content (card content is never logged, per CLAUDE.md /
-/// the spec's error rules).
+/// [message] is safe to show; [cause] is for logs only and is never shown to
+/// the user (BR-CORE-005). It is logged whole, card content included
+/// (ADR-018: nothing is redacted).
 sealed class Failure {
   const Failure({required this.message, this.cause});
   final String message;

@@ -44,15 +44,15 @@ convenience; the CI `supabase` job is the gate.
        where id = '<uuid>';
 
    The role reaches the app with its next token refresh (up to an hour) or
-   sign-in. Only an admin can call `log_query` and `log_set_status`; everyone
+   sign-in. Only an admin can call `log_query`, `log_get` and `log_set_status`; everyone
    else gets `FORBIDDEN`. This changes data, not schema, so the drift check
    does not see it.
 
 ## Rules
 
 - Clients reach data only through `sync_push`, `sync_changes`, `ping` and the
-  log RPCs: `log_push` for everyone, `log_query` and `log_set_status` for an
-  admin (ADR-018).
+  log RPCs: `log_push` for everyone, `log_query`, `log_get` and `log_set_status`
+  for an admin (ADR-018).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - A new migration never edits one already pushed to the project.
