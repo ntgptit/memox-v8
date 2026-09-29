@@ -7,6 +7,7 @@ import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../../support/library_harness.dart';
@@ -209,6 +210,14 @@ void main() {
     expect(find.text('apple'), findsOneWidget);
     expect(find.text(_en.studyRecallForgot), findsOneWidget);
     expect(find.text(_en.studyRecallRemembered), findsOneWidget);
+    // Critique 2026-09-30: an honest grade; neither answer is the loud one.
+    for (final label in [_en.studyRecallForgot, _en.studyRecallRemembered]) {
+      expect(
+        tester.widget<MxButton>(find.widgetWithText(MxButton, label)).tone,
+        MxButtonTone.secondary,
+        reason: label,
+      );
+    }
   });
 
   libraryTest('closing the screen mid-turn saves the time left (D12)', (

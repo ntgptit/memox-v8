@@ -8,7 +8,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
 /// Screen 16, Browse (handoff 16): both faces of the card at once, nothing
@@ -120,6 +122,18 @@ class _StudyBrowseWidgetState extends State<StudyBrowseWidget> {
               ),
             ),
           ),
+        ),
+        // Critique 2026-09-30: a visible Next beside the swipe, for a thumb
+        // or a switch; the swipe and the TalkBack actions stay.
+        StudyCtaRowWidget(
+          children: [
+            MxButton(
+              label: l10n.studyBrowseNext,
+              size: MxButtonSize.study,
+              isBlock: true,
+              onPressed: _forward,
+            ),
+          ],
         ),
         SessionFooterHintWidget(
           icon: AppIcons.swipe,

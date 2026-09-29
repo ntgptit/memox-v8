@@ -246,7 +246,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
       return [
         MxButton(
           label: l10n.studyRecallForgot,
-          tone: MxButtonTone.outline,
+          tone: MxButtonTone.secondary,
           size: MxButtonSize.study,
           isBlock: true,
           onPressed: isBusy
@@ -255,6 +255,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
         ),
         MxButton(
           label: l10n.studyRecallRemembered,
+          tone: MxButtonTone.secondary,
           size: MxButtonSize.study,
           isBlock: true,
           onPressed: isBusy

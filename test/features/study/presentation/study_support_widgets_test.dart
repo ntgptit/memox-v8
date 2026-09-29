@@ -5,6 +5,7 @@ import 'package:memox/features/study/presentation/widgets/support/session_contex
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
@@ -204,5 +205,23 @@ void main() {
 
     final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
     expect(fade.opacity, AppOpacity.muted);
+  });
+
+  libraryTest('one action spans the width of a two-action row, not its own '
+      'label (critique 2026-09-30, S6)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        const StudyCtaRowWidget(
+          children: [MxButton(label: 'Continue', onPressed: null)],
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(MxButton)).width,
+      2 * 160 + AppSpacing.control,
+    );
   });
 }
