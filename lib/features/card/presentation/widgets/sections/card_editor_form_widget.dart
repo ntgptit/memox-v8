@@ -15,7 +15,6 @@ import 'package:memox/features/card/presentation/widgets/overlays/card_discard_d
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_required_legend_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
@@ -26,7 +25,6 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -365,13 +363,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
             ),
           ),
         ),
-      if (!_isGone)
-        MxButton(
-          label: l10n.cardSave,
-          size: MxButtonSize.compact,
-          isLoading: _isSaving,
-          onPressed: _onSave,
-        ),
     ],
   );
 
@@ -385,7 +376,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       ),
     if (widget.detail case final detail?)
       CardEditSummaryWidget(detail: detail, onOpenDetails: _close),
-    const CardRequiredLegendWidget(),
     CardFieldWidget(
       label: l10n.cardFieldFront,
       hint: l10n.cardFrontHint,

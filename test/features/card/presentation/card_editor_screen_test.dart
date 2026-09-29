@@ -18,7 +18,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
-import 'package:memox/features/card/presentation/widgets/sections/card_required_legend_widget.dart';
+import 'package:memox/shared/widgets/mx_dot_overline.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/card_fixtures.dart';
@@ -430,12 +430,18 @@ void main() {
     expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
   });
 
-  libraryTest('create and edit show the shared Required legend above the '
-      'fields (kit 08, 09)', (tester, env) async {
+  libraryTest('create and edit save from the footer only, and mark the '
+      'required fields without a separate legend (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId));
     await tester.pumpAndSettle();
-    expect(find.byType(CardRequiredLegendWidget), findsOneWidget);
+    expect(find.widgetWithText(MxButton, _en.cardSave), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.cardSaveCard), findsOneWidget);
+    expect(find.byType(MxDotOverline), findsNothing);
+    expect(find.text(_en.cardRequiredLegend), findsNWidgets(2));
 
     final card = await env.cards.card(
       deckId,
@@ -443,7 +449,9 @@ void main() {
     );
     await pumpLibraryScreen(tester, env, _edit(card.id));
     await tester.pumpAndSettle();
-    expect(find.byType(CardRequiredLegendWidget), findsOneWidget);
+    expect(find.widgetWithText(MxButton, _en.cardSave), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.cardSaveChanges), findsOneWidget);
+    expect(find.byType(MxDotOverline), findsNothing);
   });
 
   libraryTest('leaving an edited card names what was edited (kit 09 '
