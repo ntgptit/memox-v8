@@ -37,6 +37,8 @@ touch the study state or history).
 | saveFailed | no golden | no golden | — |
 | discard | no golden | no golden | The body names what was edited ("You edited the meaning and the hint…"). |
 | delConfirm | `card_editor_trash_dialog_light.png` | `card_editor_trash_dialog_dark.png` | Minus the glyph beside the title (§9 row 108) and the answer count in the note (§9 row 110); spins while the move commits (FE-B1 D15). |
+Other goldens: `card_editor_more_light.png` / `card_editor_more_dark.png` (the More card with Move to Trash).
+
 
 Every state above is built.
 

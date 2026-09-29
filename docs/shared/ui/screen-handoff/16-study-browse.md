@@ -77,6 +77,8 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_browse_light.png` | `study_browse_dark.png` | — |
+Other goldens: `study_browse_looking_back_light.png` / `study_browse_looking_back_dark.png` (after swiping back to an earlier card).
+
 
 Not captured: the swipe-back preview of an earlier card in the round
 (BR-STUDY-048) is an interaction inside `default`, not a separate state.

@@ -39,6 +39,8 @@ submits nothing (BR-STUDY-029).
 | input | `study_fill_input_light.png` | `study_fill_input_dark.png` | No edit button (see Rulings). |
 | hint | `study_fill_hint_light.png` | `study_fill_hint_dark.png` | "Show hint" is gone once used, "Check" remains. |
 | wrong | `study_fill_wrong_light.png` | `study_fill_wrong_dark.png` | With the corrected footer copy. |
+Other goldens: `study_fill_large_text_light.png` / `study_fill_large_text_dark.png` (input at large text).
+
 
 Not captured: the correct-answer path has no dedicated visual — the turn
 commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).

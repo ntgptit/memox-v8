@@ -14,7 +14,7 @@ snapshot. UC-STUDY-002.
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
-| Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1, V8 addition: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
+| Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
 | Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); trailing `MxBadge` "{n} due" when due > 0, else a chevron. A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
 
 ## States
@@ -28,8 +28,10 @@ snapshot. UC-STUDY-002.
 | noCards | `study_home_no_cards_light.png` | `study_home_no_cards_dark.png` | Root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
 | loading | `study_home_loading_light.png` | `study_home_loading_dark.png` | A two-bar hero skeleton and `MxSkeletonList` rows (see Rulings). |
 | error | `study_home_error_light.png` | `study_home_error_dark.png` | `MxErrorState` with Retry; no table or query names (BR-STUDY-077). |
-| syncRejected | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_dark.png) | **V8 addition (SB-U1):** the sync banner, refused rows. Golden `study_home_sync_rejected_*`. |
-| syncStale | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_dark.png) | **V8 addition (SB-U1):** the sync banner, a change waiting over a day. Golden `study_home_sync_stale_*`. |
+| syncRejected | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_dark.png) | (SB-U1) the sync banner, refused rows. Golden `study_home_sync_rejected_*`. |
+| syncStale | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_dark.png) | (SB-U1) the sync banner, a change waiting over a day. Golden `study_home_sync_stale_*`. |
+Other goldens: `study_home_large_text_light.png` / `study_home_large_text_dark.png` (loaded at large text).
+
 
 Every state above is built.
 

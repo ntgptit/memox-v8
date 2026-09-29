@@ -49,10 +49,12 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2). |
 | loading | `progress_loading_light.png` | `progress_loading_dark.png` | Skeleton rows (UI-base row 125). |
 | error | `progress_error_light.png` | `progress_error_dark.png` | With Retry. |
-| quiet range | — | — | **V8 addition (UC-PROGRESS-002 A3):** the note under the list. |
-| no decks | — | — | **V8 addition (A2):** only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
-| no sub-decks | — | — | **V8 addition (A1):** the total row and its note. |
-| deck gone | — | — | **V8 addition (E2):** "This deck is no longer here" with Back, no Retry (UI-base row 129). |
+| quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
+| no decks | — | — | (A2) only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
+| no sub-decks | — | — | (A1) the total row and its note. |
+| deck gone | — | — | (E2) "This deck is no longer here" with Back, no Retry (UI-base row 129). |
+Other goldens: `deck_progress_leaf_light.png` / `deck_progress_leaf_dark.png` (a deck's progress, leaf deck); `deck_progress_gone_light.png` / `deck_progress_gone_dark.png` (a deck's progress, deck gone); `progress_no_decks_light.png` / `progress_no_decks_dark.png` (no decks); `progress_quiet_light.png` / `progress_quiet_dark.png` (a quiet range).
+
 
 Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,lost,never,quiet,no_decks,loading,error}_{light,dark}.png` and `deck_progress_{deck,leaf,gone}_{light,dark}.png`.
 

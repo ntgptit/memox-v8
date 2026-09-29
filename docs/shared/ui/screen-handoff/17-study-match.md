@@ -23,6 +23,8 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_match_board_light.png` | `study_match_board_dark.png` | — |
+Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the wrong-pair flash); `study_match_large_text_light.png` / `study_match_large_text_dark.png` (the board at large text).
+
 
 Not captured: the tile's `idle`/`selected`/`matched` micro-states and the
 wrong-pair flash are interactions inside `default`, not separate screen

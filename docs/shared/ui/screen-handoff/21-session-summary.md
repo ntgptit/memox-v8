@@ -30,6 +30,8 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | schedulerChanged | `summary_scheduler_changed_light.png` | `summary_scheduler_changed_dark.png` | `invalidated`/`scheduler_changed` (BR-STUDY-016). No Facts card. |
 | saveError | `summary_save_error_light.png` | `summary_save_error_dark.png` | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
 | loading | no golden | no golden | — |
+Other goldens: `summary_content_deleted_light.png` / `summary_content_deleted_dark.png` (ended because content moved to Trash).
+
 
 `contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash backend (BE-B1,
 BR-TRASH-004) and reads "Ended — content moved to Trash", the facts, and the

@@ -42,6 +42,8 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 | refused | `study_entry_refused_light.png` | `study_entry_refused_dark.png` | Inline warning banner; the footer stays usable (plan R5). |
 | startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again". |
 | loading | `study_entry_loading_light.png` | `study_entry_loading_dark.png` | Skeletons in the hero and option-list shapes. |
+Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_sheet_dark.png` (the Direction sheet).
+
 
 Every state above is built.
 

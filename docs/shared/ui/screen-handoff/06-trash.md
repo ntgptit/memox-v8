@@ -50,7 +50,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | selection | `trash_selection_light.png` | `trash_selection_dark.png` | "Restore ({n})" · "Delete ({n})" as a filled destructive button, the note hidden, the other kind dimmed (owner 2026-09-26). |
 | purgeConfirm | `trash_purge_confirm_light.png` | `trash_purge_confirm_dark.png` | No glyph, left-aligned (UI-base row 108). |
 | purged | no golden | no golden | — |
-| youngerInside | no golden | no golden | "deleted earlier", in a warning banner (D6). |
+| youngerInside | `trash_purge_blocked_light.png` | `trash_purge_blocked_dark.png` | "deleted earlier", in a warning banner (D6). |
 | empty | `trash_empty_light.png` | `trash_empty_dark.png` | — |
 | loading | no golden | no golden | Skeleton rows. |
 | error | `trash_error_light.png` | `trash_error_dark.png` | The app's local-first body, "Nothing was lost. Try again in a moment." |

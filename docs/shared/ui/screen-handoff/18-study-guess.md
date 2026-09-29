@@ -24,6 +24,8 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_guess_idle_light.png` | `study_guess_idle_dark.png` | — |
+Other goldens: `study_guess_right_light.png` / `study_guess_right_dark.png` (answered right); `study_guess_wrong_light.png` / `study_guess_wrong_dark.png` (answered wrong); `study_guess_blocked_light.png` / `study_guess_blocked_dark.png` (a question that can't be shown); `study_guess_large_text_light.png` / `study_guess_large_text_dark.png` (answered at large text).
+
 
 Not captured: the pre-tap idle appearance of the five options is an
 interaction inside `default`, not a separate capture.

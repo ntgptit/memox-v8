@@ -255,7 +255,7 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 
 **Display, Body and Label Font:** Plus Jakarta Sans (variable, bundled as `PlusJakartaSans`; weight also moves the variable `wght` axis).
 
-**Character:** One friendly geometric sans throughout. Headings and figures are tight-tracked (-0.64px) and heavy; running text is relaxed at 1.5 line height.
+**Character:** One friendly geometric sans throughout. Theme headings and figures are tight-tracked (-0.64px) and heavy; component titles set their own tighter-than-body tracking (-0.3px titles, -0.5px screen titles, -0.1px row titles); running text is relaxed at 1.5 line height.
 
 ### Hierarchy
 - **Stat** (600, 40px, 1.0, -0.64px, tabular numerals): large metrics.

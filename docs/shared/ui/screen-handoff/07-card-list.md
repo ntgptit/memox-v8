@@ -42,11 +42,13 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
+Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open with matches).
+
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
 editor (screen 09) moves its card to the Trash from its "More" card with the same dialog
 (FE-B1 D13):
-`card_editor_trash_dialog_light.png`
+`card_editor_trash_dialog_light.png` / `card_editor_trash_dialog_dark.png`
 
 ## Tag filter
 

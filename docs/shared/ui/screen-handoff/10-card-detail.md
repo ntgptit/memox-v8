@@ -31,6 +31,8 @@ current schedule), BR-CARD-015/017 (paginated, generation-grouped history).
 | loading | no golden | no golden | A single generic `MxSkeletonList` (4 rows) replaces the whole body (see Rulings). |
 | error | no golden | no golden | Full-screen `MxErrorState`, "Couldn't load this card" — the body is the shared "Nothing was lost. Try again in a moment." |
 | notFound | no golden | no golden | `CardGoneWidget` (shared with the editor's gone state); both actions live now that Trash exists (§9 row 87, closed by FE-B1 D11). The deck path is hidden here. |
+Other goldens: `card_detail_history_light.png` / `card_detail_history_dark.png` (the history scrolled into view).
+
 
 Every state above is built.
 

@@ -13,7 +13,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 | Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today · new. Display-only until Study home (FE-A8). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
-| Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on the `progress-track` colour; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
+| Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on `surfaceContainerLow`; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
 | FAB | `MxFab` | "New deck". |
 
 ## Layout — open deck
@@ -79,6 +79,8 @@ One `MxBottomSheet`, "Sort & filter":
 | deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
 | deckDelete | no golden | no golden | As rootDelete. |
 | deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
+Other goldens: `library_decks_2x_light.png` / `library_decks_2x_dark.png` (the root at text scale 2); `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
+
 
 ## Rulings
 
@@ -86,7 +88,7 @@ One `MxBottomSheet`, "Sort & filter":
   "Can't undo. {reason} Restore it from Trash and choose a deck."; it carries no deck name.
 - **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band uses
   `statusLearningInk` in light (4.94:1 on the track) and the amber in dark.
-- **§9 row 142:** the mastery bar's track is `progress-track` (`surfaceContainerHigh`).
+- **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`, so the fill keeps 3:1 against it in dark too.
 - **Library spec D7:** Reorder is in the root deck's action sheet too.
 - **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so its header
   is the name alone.

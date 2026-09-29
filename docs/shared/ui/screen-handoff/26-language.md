@@ -28,7 +28,7 @@ and the page stays open. UC-SETTINGS-001 step 5, BR-SETTINGS-006; spec
 | english | `settings_language_english_light.png` | `settings_language_english_dark.png` | Radio rows; English has no sub-line. |
 | vietnamese | `settings_language_switched_light.png` | `settings_language_switched_dark.png` | The toast reads in Vietnamese. |
 | system | `settings_language_system_light.png` | `settings_language_system_dark.png` | The line names what `system` resolves to (D8). |
-| read error | — | — | **V8 addition (UC E3):** `MxErrorState` "Couldn't open Settings" with Retry. |
+| read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with Retry. |
 
 Goldens: `test/features/settings/presentation/goldens/settings_language_{english,switched,system}_{light,dark}.png`.
 

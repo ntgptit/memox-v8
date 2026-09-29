@@ -44,7 +44,9 @@ not to Tags (plan C4).
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
 | opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). |
 | tagGone | `tags_tag_gone_light.png` | `tags_tag_gone_dark.png` | The gone state (E3), from an action or from the rename dialog, which closes when its plan finds the tag gone. |
-| read error | — | — | **V8 addition (E1, D10):** `MxErrorState` "Couldn't load tags" with Retry. |
+| read error | — | — | (E1, D10) `MxErrorState` "Couldn't load tags" with Retry. |
+Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag list could not be read).
+
 
 Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,search_empty,sheet,rename,rename_merge,name_too_long,del,busy,op_error,tag_gone,read_error}_{light,dark}.png`.
 

@@ -31,7 +31,7 @@ are disabled meanwhile.
 
 ## States
 
-Every state is a V8 addition; the images are the goldens.
+The images are the goldens.
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|

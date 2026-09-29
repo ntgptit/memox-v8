@@ -29,6 +29,8 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | countingDown | `study_recall_counting_light.png` | `study_recall_counting_dark.png` | — |
 | revealed | `study_recall_revealed_light.png` | `study_recall_revealed_dark.png` | Clock is stopped, not zeroed (BR-STUDY-036). |
 | timedOut | `study_recall_timed_out_light.png` | `study_recall_timed_out_dark.png` | The outcome is already committed (wrong) before this paints (BR-STUDY-063). |
+Other goldens: `study_recall_large_text_light.png` / `study_recall_large_text_dark.png` (revealed at large text).
+
 
 **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, over
 `RecallCountdownBarWidget` and `StudyCtaRowWidget`. The clock is the widget's own
