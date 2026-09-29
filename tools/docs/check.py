@@ -16,8 +16,6 @@ ERROR
 - a UC / BR / feature README missing a required `##` section
 - a BR carrying a hand-written "used by" section (it is generated)
 - docs/_generated/ stale compared with a fresh `generate.py` run
-- docs/shared/ui/design-handoff/ not exactly what `split_handoff.py` makes of
-  docs/shared/ui/design-handoff.json (a file missing, edited or extra)
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -26,7 +24,7 @@ WARNING
 
 Id, invariant and link checks ignore ``` fences and `inline code`. Id checks
 skip docs/superpowers/ (historical documents keep old ids) and _generated/;
-links are checked everywhere. See generate.py for the frontmatter
+links are checked everywhere except docs/superpowers/. See generate.py for the frontmatter
 limits.
 """
 from __future__ import annotations
@@ -40,7 +38,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import generate as g  # noqa: E402
-import split_handoff as sh  # noqa: E402
 
 BR_ID = re.compile(r"^BR-[A-Z]+-\d{3}$")
 UC_ID = re.compile(r"^UC-[A-Z]+-\d{3}$")
@@ -80,6 +77,9 @@ REQUIRED_SECTIONS = {
     "FEATURE": ("Phạm vi", "Màn hình → Use case", "Không thuộc phạm vi"),
 }
 SKIP_ID_CHECK = ("superpowers", "_generated")
+# Historical plans and specs keep links to files later retired (ADR-019); they are
+# records, not maintained docs, so their links are not checked.
+SKIP_LINK_CHECK = ("superpowers",)
 
 
 class Report:
@@ -256,18 +256,24 @@ def is_skipped_for_ids(path: Path) -> bool:
     return path.relative_to(g.DOCS).parts[0] in SKIP_ID_CHECK
 
 
+def is_skipped_for_links(path: Path) -> bool:
+    return path.relative_to(g.DOCS).parts[0] in SKIP_LINK_CHECK
+
+
 def check_text(docs: list[g.Doc], report: Report) -> None:
     ids = defined_ids(docs)
     invariants = defined_invariants()
     for path in markdown_files():
         check_ids = not is_skipped_for_ids(path)
+        skip_links = is_skipped_for_links(path)
         text = path.read_text(encoding="utf-8")
         body_start = frontmatter_end(text)
         for line_no, raw in g.iter_unfenced(text):
             where = f"{show(path)}:{line_no}"
             # `inline code` holds examples and markers, not citations or links.
             line = g.INLINE_CODE.sub("", raw)
-            check_links(path, line, where, report)
+            if not skip_links:
+                check_links(path, line, where, report)
             # Frontmatter ids are checked as fields (`rules`, `superseded_by`).
             if not check_ids or line_no <= body_start:
                 continue
@@ -311,29 +317,6 @@ def check_generated(report: Report) -> None:
             expected = {p.name for p in Path(tmp).iterdir()}
             for extra in sorted(p.name for p in g.GENERATED.iterdir() if p.name not in expected):
                 report.error(g.GENERATED / extra, "not produced by generate.py")
-
-
-SPLIT = "run `python tools/docs/split_handoff.py`"
-HANDOFF_DRIFT = {
-    "missing": f"missing, though a fresh split of the JSON produces it — {SPLIT}",
-    "changed": f"differs from a fresh split of the JSON (edited by hand, or not regenerated) — {SPLIT}",
-    "extra": "not produced by the JSON — move a hand-written file out of this folder; "
-    f"for a file an older JSON produced, {SPLIT}",
-}
-
-
-def check_design_handoff(report: Report) -> None:
-    """Compare design-handoff/ with a fresh split of its JSON, the way check_generated
-    does for _generated/. Nothing to check while neither exists."""
-    if not (sh.DEFAULT_INPUT.exists() or sh.DEFAULT_OUTPUT.exists()):
-        return
-    try:
-        files = sh.load_files(sh.DEFAULT_INPUT)
-    except (OSError, ValueError, sh.SplitError) as error:
-        report.error(sh.DEFAULT_INPUT, f"cannot split the design handoff: {error}")
-        return
-    for path, kind in sh.find_drift(sh.DEFAULT_OUTPUT, files):
-        report.error(sh.DEFAULT_OUTPUT / path, HANDOFF_DRIFT[kind])
 
 
 # ------------------------------------------------------------ plan mapping
@@ -516,7 +499,6 @@ def run(plan: Path | None) -> Report:
     check_references(docs, by_id, report)
     check_text(docs, report)
     check_generated(report)
-    check_design_handoff(report)
     check_v7_residue(report)
     if plan is not None:
         check_plan(plan, report)

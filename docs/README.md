@@ -371,15 +371,13 @@ thật: phiên sau đọc nó, tin nó, và xây tiếp trên một điều khô
 Chạy từ root repo, Python 3, không cần thư viện ngoài:
 
 ```sh
-python tools/docs/split_handoff.py                             # khi JSON đổi: sinh lại docs/shared/ui/design-handoff/
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
 ```
 
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
 mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
-`invariant Qn` được trích, section bắt buộc, `_generated/` có lỗi thời không, và
-`shared/ui/design-handoff/` có khớp từng byte với bản sinh lại từ JSON không (thiếu,
-bị sửa tay hay thừa file đều là ERROR). WARNING (không fail): BR active không UC nào
-dùng, UC ready có `code: []` hoặc chưa có test chứa ID. Chi tiết ở docstring của ba
-script.
+`invariant Qn` được trích, section bắt buộc, `_generated/` có lỗi thời không. Link trong
+`docs/superpowers/` không được kiểm (tài liệu lịch sử, ADR-019). WARNING (không fail):
+BR active không UC nào dùng, UC ready có `code: []` hoặc chưa có test chứa ID. Chi tiết
+ở docstring của hai script.
