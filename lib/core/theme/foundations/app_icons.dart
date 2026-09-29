@@ -55,6 +55,13 @@ abstract final class AppIcons {
   static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off
   static const IconData calendar = Icons.event; // calendar
+  // Monitoring (screen 28): one glyph per log level, so colour is never the
+  // only cue; info and error are [info] and [alert].
+  static const IconData levelDebug = Icons.bug_report_outlined; // bug
+  static const IconData levelWarning =
+      Icons.warning_amber_outlined; // triangle-alert
+  static const IconData copy = Icons.content_copy_outlined; // copy
+  static const IconData monitoring = Icons.monitor_heart_outlined; // activity
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;

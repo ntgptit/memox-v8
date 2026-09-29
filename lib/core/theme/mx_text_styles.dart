@@ -37,6 +37,8 @@ final class MxTextStyles {
   static const double _compactTitleTracking = -0.2;
   static const double _bannerHeight = 1.55;
   static const double _snackbarHeight = 1.4;
+  static const String _codeFamily = 'monospace';
+  static const List<String> _codeFallback = ['Menlo', 'Courier New'];
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
   static const double _termTracking = -0.4;
   static const double _badgeTracking = 1.2;
@@ -59,6 +61,7 @@ final class MxTextStyles {
   static const double _optionTracking = -0.1;
   static const double _choiceHeight = 1.25;
   static const double _studyPassageHeight = 1.55;
+  static const double _codeHeight = 1.5;
 
   /// Button label: 14/600, 0.1 tracking (regular, small, study action).
   TextStyle get buttonLabel => AppTypography.withWeight(
@@ -328,6 +331,20 @@ final class MxTextStyles {
     height: _singleLineHeight,
     letterSpacing: _labelTracking,
     color: _scheme.onSurfaceVariant,
+  );
+
+  /// Code, a stack trace or JSON (Monitoring, owner 2026-09-29): the system
+  /// monospace at bodySmall's size with no tracking, tabular figures, at the
+  /// single-line height. It sets no weight and no `wght` axis: the axis is
+  /// Plus Jakarta Sans's, and a system face has none.
+  TextStyle get code => _texts.bodySmall!.copyWith(
+    fontFamily: _codeFamily,
+    fontFamilyFallback: _codeFallback,
+    fontVariations: const <FontVariation>[],
+    height: _codeHeight,
+    letterSpacing: 0,
+    fontFeatures: _tabular,
+    color: _scheme.onSurface,
   );
 
   /// Note text: the caption role at line-height 1.5 (S5).
