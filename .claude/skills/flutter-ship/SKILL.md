@@ -26,6 +26,8 @@ problems:
 - **Sanitize any HTML** before rendering it.
 - **Nothing sensitive in logs**, at any level, including crash reports. Redact by
   key in the logging interceptor so it cannot be forgotten per call site.
+  **V8 exception:** the owner ruled to log everything, tokens included, into a
+  table only an admin reads (ADR-018); do not add redaction without a new ruling.
 - **Token expiry handled** without a refresh storm — see `flutter-data-layer`.
 - **Remote logout** if the product needs it: a server-side revocation the client
   respects on the next 401.
@@ -70,7 +72,21 @@ than argued about.
 One logging abstraction in `core/logging/`, with debug/info/warning/error. Every
 layer uses it; nothing calls `print` (the architecture check enforces this).
 
-Level comes from `EnvConfig`, so production stays quiet without code changes.
+In V8 ([ADR-018](../../../docs/shared/decisions/ADR-018-log-tap-trung-va-monitoring.md)):
+
+- Log through `appLogger` (`core/logging/app_logger.dart`) with a dotted event
+  name and a `LogCategory`; put ids, SQL and values in `context`. Outside
+  `lib/core/logging/`, nothing imports `dart:developer`
+  (`test/architecture/logging_rules_test.dart`).
+- Entries go to the console and to the device buffer (`memox_logs`), and
+  `LogShipper` pushes the buffer to Supabase `public.app_log` through
+  `log_push`. Every level is kept; `LogConfig.persistMinLevel` is the knob if
+  the volume grows.
+- Already captured: every Drift statement (`TracingInterceptor`), uncaught
+  errors, failing providers, navigation, lifecycle, sync and reminders. Add a
+  call only for an event none of these sees.
+- A log sink or the log shipper never logs through `appLogger`: that would
+  loop.
 
 Crash reporting (Sentry or Crashlytics) goes in when release approaches, not at
 project start — before there are users it only adds noise and a dependency.

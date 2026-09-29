@@ -10,7 +10,7 @@ superseded_by:
 Nội dung người dùng gõ ở `fill` MUST NOT được lưu. Chỉ kết cục, phiên bản chính sách và cờ dùng gợi ý được ghi.
 
 **Enforced by:** db
-**Liên quan:** BR-CORE-001, BR-CORE-002, BR-CORE-004
+**Liên quan:** BR-CORE-001, BR-CORE-004
 
 ## Lý do
 

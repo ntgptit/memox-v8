@@ -36,8 +36,10 @@ Trước ADR này, V8 có:
 
 ## Hệ quả
 
-- [BR-CORE-002](../rules/BR-CORE-002-khong-log-noi-dung.md) chuyển sang `superseded`,
-  thay bằng ADR này.
+- [BR-CORE-002](../rules/BR-CORE-002-khong-log-noi-dung.md) chuyển sang `deprecated`
+  (`superseded_by: ADR-018`), và ra khỏi `rules` của UC-PROGRESS-001, UC-REMINDER-001,
+  UC-TRANSFER-002. Vế "MUST NOT log" của BR-TRASH-012 và BR-TRANSFER-006 bỏ theo; rule
+  guard `memox.privacy.no_card_content_in_logs` tắt.
 - [ADR-002](ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md): các ô "không log nội
   dung" và "không xuất hiện trong log" (token) hết hiệu lực với log. Phần lưu trữ của
   ADR-002 (không mã hoá DB, token trong `flutter_secure_storage`, media trong thư mục

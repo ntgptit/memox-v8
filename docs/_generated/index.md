@@ -9,7 +9,7 @@
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
 | [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | UC-PROGRESS-002, UC-REMINDER-001, UC-TRANSFER-002 |
-| [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | active | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | UC-PROGRESS-001, UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
 | [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
 | [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
 | [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | UC-CARD-002 |
@@ -35,6 +35,7 @@
 | [ADR-015](../shared/decisions/ADR-015-supabase-lam-backend.md) | Supabase làm backend, nghiệp vụ ở app | active | — |
 | [ADR-016](../shared/decisions/ADR-016-mo-hinh-xu-ly-loi.md) | Mô hình xử lý lỗi — không có handler lỗi toàn cục | active | — |
 | [ADR-017](../shared/decisions/ADR-017-lich-srs-dong-bo-nhu-mot-dong.md) | Lịch SRS đồng bộ như một dòng, lịch tiến xa hơn thắng | active | — |
+| [ADR-018](../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) | Log tập trung và monitoring cho admin | active | — |
 
 ## [card](../features/card/README.md)
 
@@ -434,7 +435,7 @@
 | [BR-TRANSFER-003](../features/transfer/rules/BR-TRANSFER-003-khoa-trung-lap-khi-import.md) | Khoá trùng lặp khi import | active | Trùng lặp đo bằng `front_folded + back_folded` trong deck đích và trong cùng nguồn import. | UC-TRANSFER-001 |
 | [BR-TRANSFER-004](../features/transfer/rules/BR-TRANSFER-004-import-mot-transaction.md) | Import trong một transaction | active | Một lần import ghi toàn bộ card, study state và tag trong đúng một transaction. | UC-TRANSFER-001 |
 | [BR-TRANSFER-005](../features/transfer/rules/BR-TRANSFER-005-deck-unset-thanh-card-khi-import.md) | Deck unset thành card khi import | active | Deck đích `unset` thành `card` cùng transaction nếu ghi được ít nhất một card. | UC-TRANSFER-001 |
-| [BR-TRANSFER-006](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md) | Nội dung import là dữ liệu riêng tư | active | Không log nội dung card, văn bản đã dán, tên file hay hàng dữ liệu thô của import. | UC-TRANSFER-001 |
+| [BR-TRANSFER-006](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md) | Nội dung import là dữ liệu riêng tư | active | File import xử lý trong bộ nhớ ứng dụng, chỉ nhận UTF-8, không đoán encoding. | UC-TRANSFER-001 |
 | [BR-TRANSFER-007](../features/transfer/rules/BR-TRANSFER-007-hai-scope-export.md) | Hai scope export | active | Export có đúng hai scope `all` và `selected`. | UC-TRANSFER-002 |
 | [BR-TRANSFER-008](../features/transfer/rules/BR-TRANSFER-008-sau-field-noi-dung-canonical.md) | Sáu field nội dung canonical | active | Artifact export chỉ mang sáu field: front, back, example, hint, pronunciation, tags. | UC-TRANSFER-002 |
 | [BR-TRANSFER-009](../features/transfer/rules/BR-TRANSFER-009-mot-codec-cho-o-tags.md) | Một codec cho ô tags | active | Ô `tags` đi qua đúng một codec dùng chung cho Import và Export. | UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
@@ -468,7 +469,7 @@
 | [BR-TRASH-009](../features/trash/rules/BR-TRASH-009-retention-30-ngay.md) | Retention 30 ngày | active | Retention là 30 × 24 giờ từ `deleted_at`; auto-purge chạy khi khởi động, resume và mở Trash. | UC-TRASH-001 |
 | [BR-TRASH-010](../features/trash/rules/BR-TRASH-010-purge-xoa-cung-batch-eligible.md) | Purge xoá cứng batch eligible | active | Purge xoá cứng đúng các hàng của batch eligible và cascade sang dữ liệu liên quan. | UC-TRASH-001 |
 | [BR-TRASH-011](../features/trash/rules/BR-TRASH-011-chon-nhieu-trong-trash.md) | Chọn nhiều trong Trash | active | Chọn nhiều trong Trash tách theo loại item; Purge vĩnh viễn cần xác nhận mạnh. | UC-TRASH-001 |
-| [BR-TRASH-012](../features/trash/rules/BR-TRASH-012-noi-dung-trash-la-du-lieu-rieng-tu.md) | Nội dung Trash là dữ liệu riêng tư | active | Nội dung trong Trash là dữ liệu riêng tư; không log nội dung card. | UC-TRASH-001 |
+| [BR-TRASH-012](../features/trash/rules/BR-TRASH-012-noi-dung-trash-la-du-lieu-rieng-tu.md) | Nội dung Trash là dữ liệu riêng tư | active | Nội dung trong Trash là dữ liệu riêng tư; đường dẫn gốc chỉ là thông tin. | UC-TRASH-001 |
 
 ### Use cases
 
