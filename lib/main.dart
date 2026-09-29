@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:memox/app/app.dart';
 import 'package:memox/app/logging_bootstrap.dart';
 import 'package:memox/app/startup_settings.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/logging/log_provider_observer.dart';
+import 'package:memox/core/network/logging_http_client.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,6 +31,9 @@ Future<void> main() async {
     await Supabase.initialize(
       url: supabase.url,
       publishableKey: supabase.publishableKey,
+      // Every request, auth and RPC, is logged (ADR-018; spec
+      // 2026-09-29-network-logging-design.md).
+      httpClient: LoggingHttpClient(inner: http.Client()),
     );
   }
   container
