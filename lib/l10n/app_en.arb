@@ -6467,5 +6467,268 @@
   "settingsMonitoringHint": "Logs of the app and the server",
   "@settingsMonitoringHint": {
     "description": "Screen 23 (Monitoring): the Monitoring row subtitle."
+  },
+  "monitoringTitle": "Monitoring",
+  "@monitoringTitle": {
+    "description": "Screen 28: the app bar title."
+  },
+  "monitoringTabServer": "Server",
+  "@monitoringTabServer": {
+    "description": "Screen 28: the first tab, the logs on the server."
+  },
+  "monitoringTabNotSent": "Not sent ({count})",
+  "@monitoringTabNotSent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the second tab, the logs still on this device; {count} is how many wait."
+  },
+  "monitoringSearchHint": "Search event or message",
+  "@monitoringSearchHint": {
+    "description": "Screen 28: the search field placeholder."
+  },
+  "monitoringSearchClear": "Clear search",
+  "@monitoringSearchClear": {
+    "description": "Screen 28: the search clear button name."
+  },
+  "monitoringChipLevel": "Level",
+  "@monitoringChipLevel": {
+    "description": "Screen 28: the level filter chip and its sheet title."
+  },
+  "monitoringChipStatus": "Status",
+  "@monitoringChipStatus": {
+    "description": "Screen 28: the status filter chip and its sheet title."
+  },
+  "monitoringChipCategory": "Category",
+  "@monitoringChipCategory": {
+    "description": "Screen 28: the category filter chip and its sheet title."
+  },
+  "monitoringChipTime": "Time",
+  "@monitoringChipTime": {
+    "description": "Screen 28: the time filter chip and its sheet title."
+  },
+  "monitoringChipDevice": "Device / user",
+  "@monitoringChipDevice": {
+    "description": "Screen 28: the device and user filter chip and its sheet title."
+  },
+  "monitoringChipValue": "{label} · {value}",
+  "@monitoringChipValue": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 28: a filter chip that holds a choice; {value} is its name or how many are chosen."
+  },
+  "monitoringLevelDebug": "Debug",
+  "@monitoringLevelDebug": {
+    "description": "Screen 28: the debug level."
+  },
+  "monitoringLevelInfo": "Info",
+  "@monitoringLevelInfo": {
+    "description": "Screen 28: the info level."
+  },
+  "monitoringLevelWarning": "Warning",
+  "@monitoringLevelWarning": {
+    "description": "Screen 28: the warning level."
+  },
+  "monitoringLevelError": "Error",
+  "@monitoringLevelError": {
+    "description": "Screen 28: the error level."
+  },
+  "monitoringStatusOpen": "Open",
+  "@monitoringStatusOpen": {
+    "description": "Screen 28: a warning or error not yet handled."
+  },
+  "monitoringStatusFixed": "Fixed",
+  "@monitoringStatusFixed": {
+    "description": "Screen 28: a warning or error marked fixed."
+  },
+  "monitoringWindowHour": "Last hour",
+  "@monitoringWindowHour": {
+    "description": "Screen 28: the time filter, one hour."
+  },
+  "monitoringWindowDay": "Last 24 hours",
+  "@monitoringWindowDay": {
+    "description": "Screen 28: the time filter, 24 hours."
+  },
+  "monitoringWindowWeek": "Last 7 days",
+  "@monitoringWindowWeek": {
+    "description": "Screen 28: the time filter, 7 days."
+  },
+  "monitoringWindowMonth": "Last 30 days",
+  "@monitoringWindowMonth": {
+    "description": "Screen 28: the time filter, 30 days."
+  },
+  "monitoringWindowAll": "All time",
+  "@monitoringWindowAll": {
+    "description": "Screen 28: the time filter, no limit."
+  },
+  "monitoringReset": "Reset",
+  "@monitoringReset": {
+    "description": "Screen 28: a filter sheet button that clears its choice."
+  },
+  "monitoringApply": "Apply",
+  "@monitoringApply": {
+    "description": "Screen 28: a filter sheet button that applies its choice."
+  },
+  "monitoringDeviceLabel": "Device ID",
+  "@monitoringDeviceLabel": {
+    "description": "Screen 28: the device field of the device and user sheet."
+  },
+  "monitoringUserLabel": "User ID",
+  "@monitoringUserLabel": {
+    "description": "Screen 28: the user field of the device and user sheet."
+  },
+  "monitoringDeviceUserNote": "Paste an ID from a log's details.",
+  "@monitoringDeviceUserNote": {
+    "description": "Screen 28: the note of the device and user sheet."
+  },
+  "monitoringUserInvalid": "That isn't a valid user ID.",
+  "@monitoringUserInvalid": {
+    "description": "Screen 28: the user field error when the text is not a uuid."
+  },
+  "monitoringCountOpen": "{count} open",
+  "@monitoringCountOpen": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the list header for the default filter; {count} is what has loaded."
+  },
+  "monitoringCountOpenMore": "{count}+ open",
+  "@monitoringCountOpenMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the list header for the default filter while more pages exist."
+  },
+  "monitoringCountLogs": "{count, plural, =1{1 log} other{{count} logs}}",
+  "@monitoringCountLogs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the list header for another filter; {count} is what has loaded."
+  },
+  "monitoringCountLogsMore": "{count}+ logs",
+  "@monitoringCountLogsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the list header for another filter while more pages exist."
+  },
+  "monitoringNoMore": "No more logs",
+  "@monitoringNoMore": {
+    "description": "Screen 28: the end of the list."
+  },
+  "monitoringLoadMoreFailed": "Couldn't load more logs.",
+  "@monitoringLoadMoreFailed": {
+    "description": "Screen 28: the end of the list when the next page failed."
+  },
+  "monitoringEmptyTitle": "No open problems",
+  "@monitoringEmptyTitle": {
+    "description": "Screen 28: the Server tab with the default filter and no row."
+  },
+  "monitoringEmptyBody": "Warnings and errors will show here.",
+  "@monitoringEmptyBody": {
+    "description": "Screen 28: the body of the empty Server tab."
+  },
+  "monitoringNoMatchTitle": "Nothing matches",
+  "@monitoringNoMatchTitle": {
+    "description": "Screen 28: a filter that matches no log."
+  },
+  "monitoringClearFilters": "Clear filters",
+  "@monitoringClearFilters": {
+    "description": "Screen 28: resets every filter and the search."
+  },
+  "monitoringOfflineTitle": "Can't reach the server",
+  "@monitoringOfflineTitle": {
+    "description": "Screen 28: the server could not be reached."
+  },
+  "monitoringOfflineBody": "Monitoring reads the logs online. The ones this device hasn't sent are under Not sent.",
+  "@monitoringOfflineBody": {
+    "description": "Screen 28: the body of the offline Server tab."
+  },
+  "monitoringOpenNotSent": "Not sent",
+  "@monitoringOpenNotSent": {
+    "description": "Screen 28: the offline state action that opens the Not sent tab."
+  },
+  "monitoringErrorTitle": "Couldn't load logs",
+  "@monitoringErrorTitle": {
+    "description": "Screen 28: the Server tab failed to load."
+  },
+  "monitoringNotAdminTitle": "Only an admin can see this",
+  "@monitoringNotAdminTitle": {
+    "description": "Screen 28 and its detail: the server refused the call (FORBIDDEN)."
+  },
+  "monitoringPendingNote": "{count, plural, =1{1 log waits on this device. It is sent when MemoX is online.} other{{count} logs wait on this device. They are sent when MemoX is online.}}",
+  "@monitoringPendingNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 28: the note of the Not sent tab; {count} is every row of the buffer."
+  },
+  "monitoringPendingNoneTitle": "Nothing waiting",
+  "@monitoringPendingNoneTitle": {
+    "description": "Screen 28: the Not sent tab with an empty buffer."
+  },
+  "monitoringPendingNoneBody": "Every log on this device has been sent.",
+  "@monitoringPendingNoneBody": {
+    "description": "Screen 28: the body of the empty Not sent tab."
+  },
+  "monitoringPendingFilteredTitle": "No logs at these levels",
+  "@monitoringPendingFilteredTitle": {
+    "description": "Screen 28: the Not sent tab where the chosen levels match no row."
+  },
+  "monitoringPendingFilteredBody": "Try another level.",
+  "@monitoringPendingFilteredBody": {
+    "description": "Screen 28: the body of the Not sent tab where the levels match no row."
+  },
+  "monitoringRowLabel": "{level}, {event}, {time}, {status}",
+  "@monitoringRowLabel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "event": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 28: what a screen reader says for a row with a status."
+  },
+  "monitoringRowLabelNoStatus": "{level}, {event}, {time}",
+  "@monitoringRowLabelNoStatus": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "event": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 28: what a screen reader says for a row with no status."
   }
 }
