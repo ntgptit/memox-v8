@@ -82,8 +82,8 @@ In V8 ([ADR-018](../../../docs/shared/decisions/ADR-018-log-tap-trung-va-monitor
   `LogShipper` pushes the buffer to Supabase `public.app_log` through
   `log_push`. Every level is kept; `LogConfig.persistMinLevel` is the knob if
   the volume grows.
-- Already captured: every Drift statement (`TracingInterceptor`), uncaught
-  errors, failing providers, navigation, lifecycle, sync and reminders. Add a
+- Already captured: every Drift statement (`TracingInterceptor`), every
+  Supabase request (`LoggingHttpClient`), uncaught errors, failing providers, navigation, lifecycle, sync and reminders. Add a
   call only for an event none of these sees.
 - A log sink or the log shipper never logs through `appLogger`: that would
   loop.
