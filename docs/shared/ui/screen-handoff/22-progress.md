@@ -23,7 +23,7 @@ The library level, top to bottom:
 |---|---|---|
 | App bar | `MxAppBar` (screen) | "Progress". |
 | Today | `MxCard` | The overline "Today", the day's card-days, and "{l} learning · {r} reviewing · a card counts once per day", "No cards studied yet today" or "Nothing studied yet". Below, `MxStackedDayBars`: the last seven days, learning over reviewing, today at full strength, labelled by narrow weekday and "Today", with the legend. |
-| Streak | `MxCard` | Two tiles: "Current" (the flame in the `streak` colour, "{n} days", and "includes today", "held from yesterday" or "no study yesterday") and "Today" ("{n} cards", "counted once each" or "nothing yet"). A held streak adds "Study one card today and the streak continues at {n}."; a lost one "The streak ended on {day}. It starts again with the next card you study." When a tile's label or count would break its line (large text, Vietnamese), the tiles stack, one per line. |
+| Streak | `MxCard` | One tile, "Current" (the flame in the `streak` colour, "{n} days", and "includes today", "held from yesterday" or "no study yesterday"); Today's figure is the Today card's alone (critique 2026-09-30). A held streak adds "Study one card today and the streak continues at {n}."; a lost one "The streak ended on {day}. It starts again with the next card you study." |
 | Range | `MxSegmentedTray` (wide) | "Last 7 days" · "Last 30 days", directly above the list (D10). |
 | List | `MxListSectionHeader` + `MxCard` + `MxListRow`s | "By deck · last 7 days"; the total row "All decks" (D2), then a row per root deck: the name, "{d} active days · {l} learning · {r} reviewing" (learning in the learning ink, reviewing in the primary ink), and the active cards over "cards". An idle deck reads "No activity in this range", its 0 muted, nothing dimmed (D11). |
 | Note | `MxNote` | A quiet range: "Nothing studied in the last 7 days. Switch to Last 30 days to see older study." (at 30 days, the first sentence only). |
@@ -46,9 +46,9 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | held | `progress_held_light.png` | `progress_held_dark.png` | — |
 | lost | `progress_lost_light.png` | `progress_lost_dark.png` | The note names the weekday within six days, else a short date. |
 | deck | `deck_progress_deck_light.png` | `deck_progress_deck_dark.png` | "Whole deck" total row (D2). |
-| never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2). |
+| never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2); no range and no by-deck list, which would read 0 everywhere (critique 2026-09-30). |
 | loading | `progress_loading_light.png` | `progress_loading_dark.png` | Skeleton rows (UI-base row 125). |
-| error | `progress_error_light.png` | `progress_error_dark.png` | With Retry. |
+| error | `progress_error_light.png` | `progress_error_dark.png` | With Retry, under the alert glyph: a local read failed, not the network (critique 2026-09-30). |
 | quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
 | no decks | — | — | (A2) only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
 | no sub-decks | — | — | (A1) the total row and its note. |

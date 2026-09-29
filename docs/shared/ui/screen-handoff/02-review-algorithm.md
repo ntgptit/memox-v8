@@ -12,13 +12,13 @@ sheet. UC-DECK-002 (change scheduler), UC-SRS-001 (reset learning progress).
 | App bar, breadcrumb | `MxAppBar`, `MxBreadcrumb` | Back, "Review algorithm"; Library › root › Review algorithm. |
 | Lock strip | `MxCard` + `MxIconTile` | Unlocked: hero ground, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: warning-soft ground, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
 | ALGORITHM | `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s | The current algorithm selected; both disabled when locked. |
-| Note | `MxNote` | Unlocked: "Switching re-initialises every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing." Locked (lock icon): "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle." |
+| Note | `MxNote`, above the options (critique 2026-09-30) | Unlocked: "Switching resets every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing." Locked (lock icon): "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle." |
 | START OVER | `MxListSectionHeader`, `MxCard`, `MxButton` (outline) | "Reset learning progress" / "Every card in this tree becomes new and a new cycle begins. You choose the algorithm for it. Decks, cards, tags and past history are kept." / "Reset learning progress…". |
 
 Algorithm descriptions:
 
-- **Eight boxes:** "Remembered → one box up (1 · 2 · 4 · 8 · 16 · 32 · 64 · 128 days). Forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill."
-- **SM-2:** "Intervals adapt to how well you recall each card; you grade yourself again · hard · good · easy. One review mode: self-assess."
+- **Eight boxes:** "Remembered → one box up; forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill."
+- **SM-2:** "Intervals adapt to how well you recall each card. You grade yourself: again, hard, good or easy. Review mode: self-assess."
 
 ## States
 

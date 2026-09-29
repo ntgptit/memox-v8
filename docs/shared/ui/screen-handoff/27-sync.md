@@ -23,7 +23,7 @@ last failed run, and the rows the server refused. Shaped by Impeccable before th
 | App bar | `MxAppBar` (content density) + back `MxIconButton` | "Sync". |
 | Notice | `MxFloatingNotice` in `MxAppShell.notice` | Floats over the bottom of the page (owner ruling 2026-09-28; UI-base register row 143). Refused rows win: "{n} changes are kept only on this device", then Keep on this device (outline) · Try again (primary) under it. Otherwise the last failed run's sentence (spec §5.4), local-first, with no code, id or message. None when all is well. |
 | Status | `MxSection` + two `MxSettingsRow`s + note | "Last synced" · "{Today, 14:32}" or "Not yet"; "Waiting to sync" · "{n} changes" or "Nothing waiting"; the note "MemoX syncs on its own when you're online. Your study never waits for it." |
-| Sync now | `MxButton` (primary, block, cloud-sync glyph) | Spins and is disabled while a run it started is going. |
+| Sync now | `MxButton` (block, cloud-sync glyph): primary while changes wait, a run failed or rows were refused; outline otherwise, since sync is automatic (critique 2026-09-30) | Spins and is disabled while a run it started is going. |
 | Toasts | `MxSnackbar` | "Synced"; "Couldn't sync. Nothing was lost."; "Kept on this device"; "Couldn't change that. Nothing was lost." · Retry. |
 
 Only one of Sync now, Try again and Keep on this device runs at a time; the other two

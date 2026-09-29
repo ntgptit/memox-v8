@@ -15,11 +15,11 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Mastery accent (ruled in 16). |
-| Context line | `SessionContextLine` | "{deck} · Review · Fill · round {n}". |
+| Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
 | Prompt face | `StudyFaceCard` | The card's meaning. |
 | Answer face | `StudyFaceCard` (`role: answer`); the typed text itself: `MxTextField` (borderless, no visible chrome, the study answer text style) — its style comes from `MxTextStyles`, settled in the FE-A6 plan against the no-per-site-text-styling guard | `input`/`hint`: what has been typed so far with a blinking caret. `wrong`: the typed answer struck through, the correct term below it, tagged "Wrong · comes back next round" (see Rulings). |
 | Hint row | inline row inside the answer face, shown only in `hint` | Lightbulb glyph + the card's own hint text; only offered when the card has one (BR-STUDY-028). |
-| CTA row | `StudyCtaRow` | `input`: "Show hint" (only if the card has a hint) + "Check". `hint`: "Check" only. `wrong`: one "Continue" button. |
+| CTA row | `StudyCtaRow` | `input`: "Show hint" (only if the card has a hint) + "Check". `hint`: "Check" only. `wrong`: one "Continue" button, as wide as a two-button row (critique 2026-09-30). |
 | Footer hint | `SessionFooterHint` | Varies by state; see Copy. |
 
 ## Keyboard / IME
@@ -69,7 +69,7 @@ until Continue, the typed text struck through in the error ink beside the right 
 
 ## Copy
 
-- Context line: "{deck} · Review · Fill · round {n}".
+- Context line: "{deck} · Review · round {n}".
 - CTAs: "Show hint" · "Check" · "Continue".
 - Wrong tag: "Wrong · comes back next round" (see Rulings).
 - Footer hint: "Type the term for this meaning, then check" (`input`) · "Using the hint is noted; it changes nothing" (`hint`) · "Case and spaces are ignored, accents are not" (`wrong`).

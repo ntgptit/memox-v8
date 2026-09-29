@@ -15,7 +15,7 @@ snapshot. UC-STUDY-002.
 | Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
 | Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
-| Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); trailing `MxBadge` "{n} due" when due > 0, else a chevron. A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
+| Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); a chevron on every row that can be studied; the due counts are in the meta line, so there is no due badge (critique 2026-09-30). A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
 
 ## States
 
@@ -65,7 +65,7 @@ Every state above is built.
 
 - The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
 - A deck with no card is shown dimmed and read as a disabled button (S4); every row is at least 48 tall.
-- The hero title, "across {n} decks" and "{n} due" are plurals (S5).
+- The hero title and "across {n} decks" are plurals (S5).
 - A row's breakdown wraps between whole terms (glyph, count, word and dot stay together) instead of ellipsizing, so all three counts show at any text size (BR-STUDY-076; replaces S6's one-line ellipsis). The hero's breakdown wraps the same way.
 
 ## Copy
@@ -77,7 +77,6 @@ Every state above is built.
 - Workload hero: "{n} scheduled" joins the breakdown, muted (BR-STUDY-068).
 - Resume refused: "This session can't be continued any more".
 - Section: "Your decks" · "Library".
-- Row: "{n} due".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
 - Sync notice (SB-U1): "{n} changes are kept only on this device." · "Some changes haven't synced in over a day. They're safe here." · "Details".

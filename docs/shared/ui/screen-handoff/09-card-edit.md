@@ -14,7 +14,6 @@ touch the study state or history).
 | App bar | `MxAppBar` (content density) | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); trailing compact `MxButton` "Save". |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
-| Required legend | `CardRequiredLegendWidget` | A primary dot and "Required" above the fields, as in 08. |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card. |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
 | Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create. |

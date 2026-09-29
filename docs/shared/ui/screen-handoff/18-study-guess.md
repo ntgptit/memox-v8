@@ -14,7 +14,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Primary accent (default); see the shared section. |
-| Context line | `SessionContextLine` | "{deck} · Review · Guess · round {n} · first pick counts". |
+| Context line | `SessionContextLine` | "{deck} · Review · round {n} · first pick counts". |
 | Prompt | new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted to shared — a session face is meaningless outside a session) | Overline "What is this?" in flow placement, the term below it. |
 | Options | 5 rows, new: `GuessOptionRow` (feature-local) | Lettered A–E badge + meaning text. After the first tap: the chosen and the correct row switch to their tone (correct/wrong), the rest fade; matched by card id, never by display string (BR-STUDY-041). |
 | Footer hint | `SessionFooterHint` | "Answer shown — the correct option is highlighted" once answered. |
@@ -54,7 +54,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 
 ## Copy
 
-- Context line: "{deck} · Review · Guess · round {n} · first pick counts".
+- Context line: "{deck} · Review · round {n} · first pick counts".
 - Prompt overline: "What is this?".
 - Footer hint: "Only your first pick counts" (before the pick) · "Answer shown — the correct option is highlighted".
 - Blocked: "This question can't be shown" · "Its options could not be built. Close the session; every answer so far is kept." · "Close the session".

@@ -14,7 +14,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Primary accent (default); see the shared section. |
-| Context line | `SessionContextLine` | "{deck} · {Learning/Review} · Match · round {n} · {n} pairs left". |
+| Context line | `SessionContextLine` | "{deck} · {Learning/Review} · round {n}". |
 | Board | grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; not `MxCard` — a small grid tile, not a padded card) | Term tile (front) and meaning tile (back) per pair; states `idle` / `selected` / `matched`, plus a wrong-pair state (see Rulings). A board with an odd remainder may hold one pair (BR-STUDY-049). |
 | Footer hint | `SessionFooterHint` | "Tap a term, then its meaning to match". |
 
@@ -53,6 +53,6 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 
 ## Copy
 
-- Context line: "{deck} · {Learning/Review} · Match · round {n} · {n} pairs left".
+- Context line: "{deck} · {Learning/Review} · round {n}".
 - Footer hint: "Tap a term, then its meaning to match" · "Not a match — this pair comes back next round" (during a wrong pair's flash).
 - TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, matched" · "{tile}, not a match" · "Matched".

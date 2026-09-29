@@ -24,10 +24,10 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 |---|---|---|
 | App bar | `MxAppBar` (content) | Back and "Study options". |
 | Breadcrumb | `MxBreadcrumb` | Library › the deck's path › the deck › "Study options". |
-| Note | `MxNote` (layers) | "These options belong to {root} and every sub-deck in it." |
+| Note | `MxNote` (layers) | The screen's one note (critique 2026-09-30): "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options." |
 | Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." |
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
-| Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("Creation order" · "Random"), as screen 23 draws it; each row carries its icon, as on screen 23. Read-only and dimmed while the toggle is on. The note: "Changes apply to sessions started from now on. A session already open keeps the options it started with." |
+| Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("Creation order" · "Random"), as screen 23 draws it; each row carries its icon, as on screen 23. While the toggle is on, the two rows show their values as plain text at full contrast, with no stepper or tray (critique 2026-09-30); turning it off brings the controls back with the same values. |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper (UC E1). |
 | Footer | `MxFooterBar` + `MxButton` | "Save", enabled only for a valid change (D9); spinning while it runs; "Retry save" after a failure. The caption: "Saved to this device only.", "Fix the limit to enable save." or "Couldn't save. The deck still uses {n} cards, {order}." |
 | Toast | `MxSnackbar` | "Saved · applies to the next session". |
@@ -61,7 +61,7 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 
 ## Copy
 
-"Study options" · "These options belong to {root} and every sub-deck in it." · "This
+"Study options" · "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options." · "This
 deck's options could not be read. Saving replaces them." · "Use app defaults" ·
 "Following Settings · {n} cards, {order}" · "created order" · "random order" · "Off · this
 deck has its own options" · "App defaults (read-only here)" · "This deck" · "Cards per

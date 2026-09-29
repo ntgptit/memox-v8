@@ -290,6 +290,10 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Column Rule.** Content never grows wider than 720dp; wide windows gain empty ground, not longer lines.
 
+**The Wrap Rule.** At large text a meta line, a breakdown line, a session context line or a hint wraps between whole terms; it is never cut with an ellipsis. Only a title keeps one line.
+
+**The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
+
 ## Elevation & Depth
 
 Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px ghost hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.
@@ -313,30 +317,31 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity, pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line.
+- **MxButton**: tones primary, secondary, outline, destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
 - **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
-- **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card), **MxNote** (one calm info line), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar).
+- **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card), **MxNote** (one calm info line), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
 - **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
 - **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
-- **MxAppBar** (56, content or screen density), **MxStudyTopBar** (close, mode badge, thin progress), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb**, **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
+- **MxAppBar** (56, content or screen density; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress; the session context line under it names deck, kind, stage and round, never the mode again), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
 - **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice**, **MxInlineBanner** (warning or danger), **MxEmptyState** (tones primary, neutral, success, warning, danger), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, warning, danger, neutral), **MxStatusBadge** (new, learning, reviewing, mastered).
 
 ### Study-specific
 - **MxMasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
-- **MxOutcomeTile** (what a reset keeps or loses), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong) and the recessed answer face.
+- **MxOutcomeTile** (what a reset keeps or loses), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face.
+- **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone.
 
 ### Data Display
-- **MxListRow** (48 minimum, grows to two title lines), **MxSettingsRow**, **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted), **MxStackedDayBars**, **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
+- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted), **MxStackedDayBars**, **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
 
 ## Do's and Don'ts
 
@@ -346,6 +351,8 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
+- **Do** state a number once per screen: a hero figure is not repeated in a list, a legend or a second tile.
+- **Do** make a hero card that leads somewhere tappable, with a trailing chevron (the Library's due strip opens Study).
 - **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.

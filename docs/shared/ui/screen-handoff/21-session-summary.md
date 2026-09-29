@@ -12,7 +12,7 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 |---|---|---|
 | App bar | `MxAppBar` (screen density) | Title only, muted ink: "Session summary". No back control, no actions — v1's minimal bar, Share removed. |
 | Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × 3 | Icon and tone by outcome — ok `success`, paused tinted, ended `warning`, error `danger` (FE-A6 spec D14) — a title, one body sentence with the headline count bold, and — where the session has facts — three stats side by side. |
-| Facts | `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 | "This session"; rows: finished (label depends on session kind), cards answered, wrong turns — leading a small tinted `MxIconTile`, trailing the value in tabular numerals, warning ink when wrong > 0. Omitted where the session has no facts (`schedulerChanged`). |
+| Facts | `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 | "This session"; rows: finished (label depends on session kind), cards answered, wrong turns — leading a small tinted `MxIconTile`, trailing the value in tabular numerals, warning ink when wrong > 0. Shown only where the hero draws no stats (reset, content deleted, save error); with stats it would repeat them (critique 2026-09-30, R3). Omitted where the session has no facts (`schedulerChanged`). |
 | End note | `MxNote` | One calm info line, only for the states that need it. |
 | Footer | `MxFooterBar` + `MxButton` × 2 | Outline "Study this deck" (hidden once the outcome is `ended`/`error`) + primary "Done" (disabled while loading); a caption line under them. |
 | Loading | `MxSkeleton` | Hero and fact-row shapes while the summary is read. |

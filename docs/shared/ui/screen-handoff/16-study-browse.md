@@ -12,9 +12,9 @@ against the schedule (BR-MODE-005, BR-MODE-006). FE-A6; UC-STUDY-001 (steps
 | Region | Widget | Design |
 |---|---|---|
 | Top bar | `MxStudyTopBar` | See [Shared by the session screens](#shared-by-the-session-screens). |
-| Context line | new: `SessionContextLine` (feature-local, deliberately not a shared widget) | Centred overline: "{deck} · Learning · stage {n} of {total} · Browse" (BR-MODE-004 orders the stage). |
+| Context line | new: `SessionContextLine` (feature-local, deliberately not a shared widget) | Centred overline: "{deck} · Learning · stage {n} of {total}" (BR-MODE-004 orders the stage). |
 | Card | `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is a different composition from this one) | Term half on top with its label and pronunciation, a hairline divider, meaning half below with its label and example when the card has one; both halves always visible (BR-MODE-006). |
-| Navigation | swipe on the card, no visible control | Left advances, right looks back one card already shown in this round (BR-STUDY-048); looking back does not re-record the card or move `cursor`. |
+| Navigation | swipe on the card, and a "Next card" button (`StudyCtaRow`, critique 2026-09-30) | Left advances, right looks back one card already shown in this round (BR-STUDY-048); looking back does not re-record the card or move `cursor`. |
 | Footer hint | new: `SessionFooterHint` (feature-local) | "Swipe left for next, right to look back · nothing is graded here" (BR-MODE-005). |
 
 ## Shared by the session screens
@@ -97,5 +97,5 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 
 ## Copy
 
-- Context line: "{deck} · Learning · stage {n} of {total} · Browse".
+- Context line: "{deck} · Learning · stage {n} of {total}".
 - Footer hint: "Swipe left for next, right to look back · nothing is graded here".
