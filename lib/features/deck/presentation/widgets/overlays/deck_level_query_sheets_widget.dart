@@ -9,7 +9,10 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_settings_row.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 /// One sheet for the level's order and its due-only filter (screen 01). A
@@ -50,24 +53,30 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
           AppSpacing.card,
           AppSpacing.micro,
           AppSpacing.card,
-          AppSpacing.control,
+          AppSpacing.grouped,
         ),
         child: Text(l10n.deckSortFilterTitle, style: styles.compactTitle),
       ),
-      footer: Padding(
-        padding: const EdgeInsets.all(AppSpacing.gutter),
-        child: MxButton(
-          label: l10n.commonDone,
-          isBlock: true,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      footer: MxSheetActions.custom(
+        isInSheet: true,
+        children: [
+          Expanded(
+            child: MxButton(
+              label: l10n.commonDone,
+              isBlock: true,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.card),
-            child: Text(l10n.deckSortByHeader, style: styles.overline),
+            padding:
+                const EdgeInsets.only(top: AppSpacing.micro) +
+                const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+            child: MxListSectionHeader(label: l10n.deckSortByHeader),
           ),
           for (final sort in _sorts)
             MxOptionRow(
@@ -77,33 +86,15 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
               onSelected: () => _query(ref).sortBy(sort),
               hasDivider: sort != _sorts.last,
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.card,
-              vertical: AppSpacing.grouped,
-            ),
-            child: Row(
-              spacing: AppSpacing.grouped,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.deckFilterDueOnlyTitle, style: styles.rowTitle),
-                      Text(
-                        l10n.deckFilterDueOnlyBody,
-                        style: styles.rowDescription,
-                      ),
-                    ],
-                  ),
-                ),
-                MxToggle(
-                  isOn: query.filter == DeckLevelFilter.due,
-                  semanticLabel: l10n.deckFilterDueOnlyTitle,
-                  onChanged: (isOn) => _query(ref)
+          MxSettingsRow(
+            label: l10n.deckFilterDueOnlyTitle,
+            subtitle: l10n.deckFilterDueOnlyBody,
+            trailing: MxToggle(
+              isOn: query.filter == DeckLevelFilter.due,
+              semanticLabel: l10n.deckFilterDueOnlyTitle,
+              onChanged: (isOn) =>
+                  _query(ref)
                       .show(isOn ? DeckLevelFilter.due : DeckLevelFilter.all),
-                ),
-              ],
             ),
           ),
         ],
