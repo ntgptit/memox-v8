@@ -5380,18 +5380,6 @@
     },
     "description": "Screen handoff 15 (FE-A3 plan 2): the card limit sub-line."
   },
-  "studyOptionsCreationOrder": "Creation order",
-  "@studyOptionsCreationOrder": {
-    "description": "Screen handoff 15 (FE-A3 plan 2): order option."
-  },
-  "studyOptionsCreationOrderHint": "Oldest cards first — the order you added or imported them",
-  "@studyOptionsCreationOrderHint": {
-    "description": "Screen handoff 15 (FE-A3 plan 2): order option description."
-  },
-  "studyOptionsRandomHint": "Shuffled each learning session",
-  "@studyOptionsRandomHint": {
-    "description": "Screen handoff 15 (FE-A3 plan 2): order option description."
-  },
   "studyOptionsApplyNote": "Changes apply to sessions started from now on. A session already open keeps the options it started with.",
   "@studyOptionsApplyNote": {
     "description": "Screen handoff 15 (FE-A3 plan 2): the note under the options (BR-SETTINGS-004)."

@@ -11,9 +11,9 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -25,8 +25,9 @@ String studyOptionsOrderName(AppLocalizations l10n, NewCardOrder order) =>
       NewCardOrder.random => l10n.studyOptionsOrderRandomShort,
     };
 
-/// Screen 15's options (kit 15): Use app defaults, then the card limit and
-/// the new-card order, read-only while the deck follows Settings (A1).
+/// Screen 15's options: Use app defaults, then the card limit and the
+/// new-card order, drawn as Settings draws them (ruling M3-E1), read-only
+/// while the deck follows Settings (A1).
 class StudyOptionsFormWidget extends ConsumerWidget {
   const StudyOptionsFormWidget({
     super.key,
@@ -72,6 +73,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           children: [
             MxSettingsRow(
               label: l10n.studyOptionsUseAppDefaults,
+              icon: AppIcons.studyOptions,
               subtitle: form.isUsingAppDefaults
                   ? l10n.studyOptionsFollowing(
                       options.cardLimit,
@@ -95,6 +97,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           children: [
             MxSettingsRow(
               label: l10n.settingsCardLimit,
+              icon: AppIcons.library,
               subtitle: l10n.studyOptionsCardLimitRange(
                 StudyOptions.maxCardLimit,
               ),
@@ -133,29 +136,26 @@ class StudyOptionsFormWidget extends ConsumerWidget {
             ),
             MxSettingsRow(
               label: l10n.settingsNewCardOrder,
+              subtitle: l10n.settingsNewCardOrderHint,
+              icon: AppIcons.shuffle,
               isEnabled: !form.isUsingAppDefaults,
-            ),
-            for (final (order, title, hint) in [
-              (
-                NewCardOrder.created,
-                l10n.studyOptionsCreationOrder,
-                l10n.studyOptionsCreationOrderHint,
-              ),
-              (
-                NewCardOrder.random,
-                l10n.settingsOrderRandom,
-                l10n.studyOptionsRandomHint,
-              ),
-            ])
-              MxOptionRow(
-                title: title,
-                description: hint,
-                isSelected: options.newCardOrder == order,
-                hasDivider: order != NewCardOrder.random,
+              wideControl: MxSegmentedTray<NewCardOrder>(
+                segments: [
+                  MxSegment(
+                    value: NewCardOrder.created,
+                    label: l10n.settingsOrderCreated,
+                  ),
+                  MxSegment(
+                    value: NewCardOrder.random,
+                    label: l10n.settingsOrderRandom,
+                  ),
+                ],
+                selected: options.newCardOrder,
                 onSelected: isEditable
-                    ? () => _controller(ref).chooseNewCardOrder(order)
+                    ? (order) => _controller(ref).chooseNewCardOrder(order)
                     : null,
               ),
+            ),
           ],
         ),
       ],
