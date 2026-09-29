@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/router/app_routes.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/monitoring/di/is_admin_provider.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
@@ -108,21 +107,36 @@ void main() {
     expect(find.byType(MonitoringScreen), findsOneWidget);
   });
 
-  libraryTest('a deep link from an account the server refuses says only an '
-      'admin can see this', (tester, env) async {
-    final repository = FakeMonitoringRepository();
-    await pumpMemoxApp(
+  // Codex review on PR #160: the entry is hidden, but a deep link must not
+  // reach the device buffer either, which no server check guards.
+  for (final (name, path) in [
+    ('the list', AppRoutes.settingsMonitoring),
+    ('a buffered log', AppRoutes.settingsMonitoringLog('a', isLocal: true)),
+  ]) {
+    libraryTest('a deep link to $name from an account that is not an admin '
+        'builds nothing and says only an admin can see this', (
       tester,
       env,
-      overrides: [monitoringRepositoryProvider.overrideWithValue(repository)],
-    );
+    ) async {
+      final repository = FakeMonitoringRepository()
+        ..pendings['a'] = record('a', status: null);
+      await pumpMemoxApp(
+        tester,
+        env,
+        overrides: [
+          isAdminProvider.overrideWithValue(false),
+          monitoringRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
 
-    GoRouter.of(tester.element(find.byType(MxBottomNav)))
-        .go(AppRoutes.settingsMonitoring);
-    await _settle(tester);
-    repository.lastQuery.fail(const NotAdminFailure(cause: 'x'));
-    await _settle(tester);
+      GoRouter.of(tester.element(find.byType(MxBottomNav))).go(path);
+      await _settle(tester);
 
-    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
-  });
+      expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
+      expect(find.byType(MonitoringScreen), findsNothing);
+      expect(find.byType(MonitoringDetailScreen), findsNothing);
+      expect(find.text('sync.push_failed'), findsNothing);
+      expect(repository.queries, isEmpty);
+    });
+  }
 }

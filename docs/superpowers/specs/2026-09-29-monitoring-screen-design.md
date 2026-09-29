@@ -55,6 +55,9 @@ in the UI-base register (§9).
   §4.4). Not shown at all when the build has no Supabase project.
 - Route `/settings/monitoring`, on the root navigator like Sync. Back returns to
   23.
+- Both routes (the list and a log) open only for an admin: any other account,
+  by deep link, gets "Only an admin can see this" and nothing is read, the
+  device buffer included (review on PR #160).
 
 ### 3.2 List (`/settings/monitoring`)
 

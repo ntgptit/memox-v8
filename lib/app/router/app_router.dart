@@ -11,6 +11,7 @@ import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
+import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_entry_section_widget.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
@@ -283,13 +284,17 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,
-                    builder: (context, state) => MonitoringScreen(
-                      onOpenServerLog: (id) => unawaited(
-                        context.push(AppRoutes.settingsMonitoringLog(id)),
-                      ),
-                      onOpenPendingLog: (id) => unawaited(
-                        context.push(
-                          AppRoutes.settingsMonitoringLog(id, isLocal: true),
+                    // A deep link reaches these for anyone: the gate lets
+                    // only an admin in (Codex review on PR #160).
+                    builder: (context, state) => MonitoringAdminGateWidget(
+                      child: MonitoringScreen(
+                        onOpenServerLog: (id) => unawaited(
+                          context.push(AppRoutes.settingsMonitoringLog(id)),
+                        ),
+                        onOpenPendingLog: (id) => unawaited(
+                          context.push(
+                            AppRoutes.settingsMonitoringLog(id, isLocal: true),
+                          ),
                         ),
                       ),
                     ),
@@ -297,11 +302,14 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                       GoRoute(
                         path: AppRoutes.monitoringLogChild,
                         parentNavigatorKey: rootNavigator,
-                        builder: (context, state) => MonitoringDetailScreen(
-                          logId: state
-                              .pathParameters[AppRoutes.monitoringLogIdParam]!,
-                          isLocal: AppRoutes.isLocalLog(
-                            state.uri.queryParameters,
+                        builder: (context, state) => MonitoringAdminGateWidget(
+                          child: MonitoringDetailScreen(
+                            logId:
+                                state.pathParameters[AppRoutes
+                                    .monitoringLogIdParam]!,
+                            isLocal: AppRoutes.isLocalLog(
+                              state.uri.queryParameters,
+                            ),
                           ),
                         ),
                       ),

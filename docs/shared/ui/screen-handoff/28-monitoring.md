@@ -19,8 +19,10 @@ FE-B8; ADR-018 §6 to §8; spec
   buffer), nested under the list, so Back climbs one page at a time and the list keeps its
   pages and scroll position.
 - The row exists only while the session's account has `app_metadata.role = admin`, and not
-  at all in a build with no Supabase. A deep link from another account gets "Only an admin
-  can see this", the server's `FORBIDDEN`.
+  at all in a build with no Supabase. A deep link from any other account, to the list or to
+  a log (`?local=1` included), gets "Only an admin can see this" before anything is read:
+  the device buffer has no server check behind it. The server still refuses the RPCs with
+  `FORBIDDEN`.
 
 ## Layout: the list
 
