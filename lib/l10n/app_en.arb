@@ -6730,5 +6730,137 @@
       }
     },
     "description": "Screen 28: what a screen reader says for a row with no status."
+  },
+  "monitoringDetailTitle": "Log",
+  "@monitoringDetailTitle": {
+    "description": "Screen 28 detail: the app bar title while the log loads."
+  },
+  "monitoringCopy": "Copy log",
+  "@monitoringCopy": {
+    "description": "Screen 28 detail: the copy button name; it copies the log as JSON."
+  },
+  "monitoringCopied": "Copied",
+  "@monitoringCopied": {
+    "description": "Screen 28 detail: the toast after Copy log."
+  },
+  "monitoringSummary": "Details",
+  "@monitoringSummary": {
+    "description": "Screen 28 detail: the summary section title."
+  },
+  "monitoringFieldEvent": "Event",
+  "@monitoringFieldEvent": {
+    "description": "Screen 28 detail: the event row label."
+  },
+  "monitoringFieldLevel": "Level",
+  "@monitoringFieldLevel": {
+    "description": "Screen 28 detail: the level row label."
+  },
+  "monitoringFieldStatus": "Status",
+  "@monitoringFieldStatus": {
+    "description": "Screen 28 detail: the status row label."
+  },
+  "monitoringFieldTime": "Time",
+  "@monitoringFieldTime": {
+    "description": "Screen 28 detail: the time row label."
+  },
+  "monitoringFieldCategory": "Category",
+  "@monitoringFieldCategory": {
+    "description": "Screen 28 detail: the category row label."
+  },
+  "monitoringFieldSource": "Source",
+  "@monitoringFieldSource": {
+    "description": "Screen 28 detail: the source row label."
+  },
+  "monitoringFieldDevice": "Device",
+  "@monitoringFieldDevice": {
+    "description": "Screen 28 detail: the device row label."
+  },
+  "monitoringFieldApp": "App",
+  "@monitoringFieldApp": {
+    "description": "Screen 28 detail: the app version row label."
+  },
+  "monitoringFieldPlatform": "Platform",
+  "@monitoringFieldPlatform": {
+    "description": "Screen 28 detail: the platform row label."
+  },
+  "monitoringFieldUser": "User",
+  "@monitoringFieldUser": {
+    "description": "Screen 28 detail: the user row label."
+  },
+  "monitoringFieldNote": "Note",
+  "@monitoringFieldNote": {
+    "description": "Screen 28 detail: the triage note row label."
+  },
+  "monitoringFixedBy": "Fixed by {user} · {date}",
+  "@monitoringFixedBy": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 28 detail: the status row of a fixed log."
+  },
+  "monitoringMessage": "Message",
+  "@monitoringMessage": {
+    "description": "Screen 28 detail: the message card title."
+  },
+  "monitoringError": "Error",
+  "@monitoringError": {
+    "description": "Screen 28 detail: the error card title."
+  },
+  "monitoringStackTrace": "Stack trace",
+  "@monitoringStackTrace": {
+    "description": "Screen 28 detail: the stack trace card title."
+  },
+  "monitoringContext": "Context",
+  "@monitoringContext": {
+    "description": "Screen 28 detail: the context card title."
+  },
+  "monitoringMarkFixed": "Mark fixed",
+  "@monitoringMarkFixed": {
+    "description": "Screen 28 detail: the triage button of an open log."
+  },
+  "monitoringReopen": "Reopen",
+  "@monitoringReopen": {
+    "description": "Screen 28 detail: the triage button of a fixed log."
+  },
+  "monitoringNoteLabel": "Note (optional)",
+  "@monitoringNoteLabel": {
+    "description": "Screen 28 detail: the note field of the triage sheet."
+  },
+  "monitoringNoteHint": "What did you do?",
+  "@monitoringNoteHint": {
+    "description": "Screen 28 detail: the note field placeholder."
+  },
+  "monitoringMarkedFixed": "Marked fixed",
+  "@monitoringMarkedFixed": {
+    "description": "Screen 28 detail: the toast after Mark fixed."
+  },
+  "monitoringReopened": "Reopened",
+  "@monitoringReopened": {
+    "description": "Screen 28 detail: the toast after Reopen."
+  },
+  "monitoringStatusChangeFailed": "Couldn't change that. Nothing changed.",
+  "@monitoringStatusChangeFailed": {
+    "description": "Screen 28 detail: the toast when the status change failed; it offers Retry."
+  },
+  "monitoringDetailErrorTitle": "Couldn't load this log",
+  "@monitoringDetailErrorTitle": {
+    "description": "Screen 28 detail: the detail failed to load."
+  },
+  "monitoringDetailOfflineBody": "Nothing was lost. Try again when you're online.",
+  "@monitoringDetailOfflineBody": {
+    "description": "Screen 28 detail: the body of the offline detail."
+  },
+  "monitoringGoneTitle": "This log is gone",
+  "@monitoringGoneTitle": {
+    "description": "Screen 28 detail: the log no longer exists."
+  },
+  "monitoringGoneBody": "It may have been cleaned up.",
+  "@monitoringGoneBody": {
+    "description": "Screen 28 detail: the body of the gone log."
   }
 }
