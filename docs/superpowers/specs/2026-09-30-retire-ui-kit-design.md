@@ -179,7 +179,7 @@ in a live document still fails.
 - `python -m unittest discover -s tools/docs -p "test_*.py"` passes; `test_check.py` gains a case showing a broken link under `docs/superpowers/` is not reported while one elsewhere still is (with `test_split_handoff.py` deleted).
 - The guard runs clean.
 - `git diff --stat master -- docs/superpowers .impeccable` lists only this spec and its plan.
-- A final grep finds no live reference (outside `docs/superpowers/` and
+- A final grep finds no live reference (outside `docs/superpowers/`, ADR-019, which names the kit as history, and
   `.impeccable/critique/`) to `UCesgHkzYHKsZwhwVshKRE`, `UI Kit v3`, `design-handoff`,
   `screen-handoff/img`, `screen-state-checklist`, `tools/design`.
 - No Dart or golden file changes, so no Flutter gate is needed.
