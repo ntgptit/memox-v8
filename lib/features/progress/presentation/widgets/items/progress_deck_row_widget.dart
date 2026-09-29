@@ -35,6 +35,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
     final caption = styles.footerCaption;
     final isActive = numbers.hasActivity;
     return MxListRow(
+      titleMaxLines: 2,
       title: name,
       meta: isActive
           ? Text.rich(

@@ -25,6 +25,7 @@ class TagRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxListRow(
+      titleMaxLines: 2,
       leading: const MxIconTile(icon: AppIcons.tag),
       title: tag.name,
       subtitle: l10n.tagsCardCount(tag.cardCount),
