@@ -9,11 +9,11 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05) and Trash (screen 06), as the kit draws them (FE-B2 + FE-B4 D2). |
+| App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05) and Trash (screen 06) (FE-B2 + FE-B4 D2). |
 | Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today · new. Display-only until Study home (FE-A8). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
-| Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
+| Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on the `progress-track` colour; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
 | FAB | `MxFab` | "New deck". |
 
 ## Layout — open deck
@@ -25,18 +25,18 @@ One recursive screen for the Library root (`/decks`) and any open deck
 | Summary card | `MxCard` (hero) | For a deck holding sub-decks: `MxMasteryDonut` of the level (BR-DECK-026) beside "MASTERED · {algorithm}", "N sub-decks · N cards", overdue · today · new · N scheduled. "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the subtree holds no card to study. |
 | List | as root | Header "N sub-decks" with the sort pill. |
 | FAB | `MxFab` | "New sub-deck"; none at level 10 (BR-DECK-001). |
-| By content type | — | `unset`: empty state with the two create choices (BR-DECK-007) and "Import cards from a file" (screen 11). `card`: the card list, screen 07. |
+| By content type | — | `unset`: empty state with the two create choices (BR-DECK-007) and "Import cards from a file" (screen 11), all text-only block actions, Import as the outline third. `card`: the card list, screen 07. |
 
 ## Action sheet
 
-`MxBottomSheet` with a header (tile, name, "N sub-decks · N cards · {algorithm}") and
-`MxActionSheetCommandRow`s:
+`MxBottomSheet` headed by the deck's name, and `MxActionSheetCommandRow`s without count
+subtitles (ruling C-L6):
 
 - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study options
   ("Cards per session · new-card order") → screen 15 · Review algorithm
   ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
   Move to Trash ("Recoverable for 30 days").
-- **Sub-deck:** Open ("N sub-decks · N cards") · Study this deck → screen 14 · Rename ·
+- **Sub-deck:** Open · Study this deck → screen 14 · Rename ·
   Study options → screen 15 (its root's options) ·
   Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
@@ -55,51 +55,43 @@ One `MxBottomSheet`, "Sort & filter":
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| rootLoaded | ![](img/01-deck-list/rootLoaded-light.png) | ![](img/01-deck-list/rootLoaded-dark.png) | As drawn: every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). |
-| rootLoading | ![](img/01-deck-list/rootLoading-light.png) | ![](img/01-deck-list/rootLoading-dark.png) | Skeletons in the row's shape; header kept. |
-| rootEmpty | ![](img/01-deck-list/rootEmpty-light.png) | ![](img/01-deck-list/rootEmpty-dark.png) | As drawn: "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
-| rootError | ![](img/01-deck-list/rootError-light.png) | ![](img/01-deck-list/rootError-dark.png) | As drawn, with Retry. |
-| rootSearch | ![](img/01-deck-list/rootSearch-light.png) | ![](img/01-deck-list/rootSearch-dark.png) | The field is a trigger: a tap opens screen 04 instead of typing here. |
-| rootSortFilter | ![](img/01-deck-list/rootSortFilter-light.png) | ![](img/01-deck-list/rootSortFilter-dark.png) | As drawn: Progress orders least mastered first, decks with no card last (BR-DECK-027). |
-| rootDueEmpty | ![](img/01-deck-list/rootDueEmpty-light.png) | ![](img/01-deck-list/rootDueEmpty-dark.png) | As drawn. |
-| rootOverflow | ![](img/01-deck-list/rootOverflow-light.png) | ![](img/01-deck-list/rootOverflow-dark.png) | Rows as in "Action sheet"; Reorder added. |
-| rootCreate | ![](img/01-deck-list/rootCreate-light.png) | ![](img/01-deck-list/rootCreate-dark.png) | As drawn (BR-SRS-001). |
-| rootRename | ![](img/01-deck-list/rootRename-light.png) | ![](img/01-deck-list/rootRename-dark.png) | As drawn. |
-| rootDelete | ![](img/01-deck-list/rootDelete-light.png) | ![](img/01-deck-list/rootDelete-dark.png) | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
-| rootTrashed | ![](img/01-deck-list/rootTrashed-light.png) | ![](img/01-deck-list/rootTrashed-dark.png) | As drawn: Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
-| deckLoaded | ![](img/01-deck-list/deckLoaded-light.png) | ![](img/01-deck-list/deckLoaded-dark.png) | As drawn: the level's donut beside "MASTERED · {algorithm}"; the breakdown line ends in an ellipsis when it does not fit, as the kit's does. |
-| deckEmpty | ![](img/01-deck-list/deckEmpty-light.png) | ![](img/01-deck-list/deckEmpty-dark.png) | `unset` deck: both create choices and "Import cards from a file" (screen 11). |
-| deckMaxDepth | ![](img/01-deck-list/deckMaxDepth-light.png) | ![](img/01-deck-list/deckMaxDepth-dark.png) | No FAB. |
-| deckLoading | ![](img/01-deck-list/deckLoading-light.png) | ![](img/01-deck-list/deckLoading-dark.png) | As drawn. |
-| deckError | ![](img/01-deck-list/deckError-light.png) | ![](img/01-deck-list/deckError-dark.png) | As drawn. |
-| deckNotFound | ![](img/01-deck-list/deckNotFound-light.png) | ![](img/01-deck-list/deckNotFound-dark.png) | The kit's body, Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
-| deckOverflow | ![](img/01-deck-list/deckOverflow-light.png) | ![](img/01-deck-list/deckOverflow-dark.png) | As drawn. |
-| deckMove | ![](img/01-deck-list/deckMove-light.png) | ![](img/01-deck-list/deckMove-dark.png) | As drawn (UC-DECK-005 checks). |
-| deckDelete | ![](img/01-deck-list/deckDelete-light.png) | ![](img/01-deck-list/deckDelete-dark.png) | As rootDelete. |
-| deckTrashed | ![](img/01-deck-list/deckTrashed-light.png) | ![](img/01-deck-list/deckTrashed-dark.png) | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
+| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). |
+| rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. |
+| rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
+| rootError | no golden | no golden | "Couldn't load your library" with Retry. |
+| rootSearch | no golden | no golden | The field is a trigger: a tap opens screen 04 instead of typing here. |
+| rootSortFilter | `library_sort_light.png` | `library_sort_dark.png` | Progress orders least mastered first, decks with no card last (BR-DECK-027). |
+| rootDueEmpty | no golden | no golden | "Nothing due right now" with "Show all decks". |
+| rootOverflow | `library_deck_actions_light.png` | `library_deck_actions_dark.png` | Rows as in "Action sheet"; Reorder added. |
+| rootCreate | no golden | no golden | The create dialog; no algorithm chosen up front (BR-SRS-001). |
+| rootRename | no golden | no golden | The rename dialog. |
+| rootDelete | `library_deck_delete_light.png` | `library_deck_delete_dark.png` | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
+| rootTrashed | `library_deck_trashed_light.png` | `library_deck_trashed_dark.png` | Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
+| deckLoaded | `library_deck_open_light.png` | `library_deck_open_dark.png` | The level's donut beside "MASTERED · {algorithm}"; the breakdown line ends in an ellipsis when it does not fit. |
+| deckEmpty | `library_deck_unset_light.png` | `library_deck_unset_dark.png` | `unset` deck: both create choices and "Import cards from a file" (screen 11). |
+| deckMaxDepth | no golden | no golden | No FAB. |
+| deckLoading | no golden | no golden | Skeletons under the summary card. |
+| deckError | no golden | no golden | Error state with Retry. |
+| deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
+| deckOverflow | no golden | no golden | The sub-deck action sheet. |
+| deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
+| deckDelete | no golden | no golden | As rootDelete. |
+| deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| A trash glyph over the Move to Trash dialog's title, the deck's name in bold | No glyph; the name in quotes | `MxDialog` has no glyph slot; no per-site text styling |
-| "Can't undo — “{deck}” is in Trash too. Restore it from here and choose a deck." on screen 06 | "Can't undo. {reason} Restore it from Trash and choose a deck." where the deck was deleted | An Undo happens where the item was deleted; the rejection carries no deck name (FE-B1 D7) |
-| The mastery bar's track is `surface-container` | `progress-track` (`surfaceContainerHigh`) | Foundations name progress-track for progress and mastery; the more visible of the two on the white card (§9 row 142) |
-| The < 34% band in the kit's amber | `statusLearningInk` in light (4.94:1 on the track); the amber itself in dark | Owner ruling R4, deck mastery spec (§9 row 141) |
-| Root search hint "Search decks, cards, tags" | "Search decks" | Spec A11 (waits for FE-A10) |
-| No reorder entry at the root | Reorder in the root deck's action sheet | Library spec D7 |
-| Layers and copy glyphs in the row's meta | Text only: "4 sub-decks · 1,248 cards" | Guard: no `Icon(color:)` in feature code |
-| Solid primary tile on the due strip | Tinted `MxIconTile` | Guard: no `Icon(color:)` in feature code |
-| Row name 14/700 | `rowTitle`, 14/600 | Guard: no per-site text styling |
-| "Review algorithm" opens screen 02 | Opens the scheduler sheet until phase D | Spec §9 row D |
-| Row meta and the first-run footnote in plain 12/500 | The caption role (`rowSubtitle`, `noteText`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
-| Sort pill "⇅ Manual ⌄" | `MxChipTrigger`: "Manual" with the sort glyph after it | The shared chip trigger's anatomy |
-| "Create deck" and "Browse starter decks" carry glyphs | Text-only `MxEmptyState` actions | The shared empty state's anatomy |
-| Reorder mode as a divided list | One `MxCard` per deck, 8 apart, as in browse mode | M3 review 2026-09-28 D2 (spec `2026-09-28-ui-consistency-m3-review.md`) |
-| An empty deck's actions in a row outside the card, with glyphs | The empty state's own block actions, text only; Import as the outline third | M3 review 2026-09-28 D5 |
-| Action sheet header with the deck's tile and "N sub-decks · N cards · {algorithm}"; Open and Study rows with count subtitles | The deck's name only; no count subtitles | `DeckView` carries no counts; the sheet reads only the view (ruling C-L6) |
+- **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says
+  "Can't undo. {reason} Restore it from Trash and choose a deck."; it carries no deck name.
+- **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band uses
+  `statusLearningInk` in light (4.94:1 on the track) and the amber in dark.
+- **§9 row 142:** the mastery bar's track is `progress-track` (`surfaceContainerHigh`).
+- **Library spec D7:** Reorder is in the root deck's action sheet too.
+- **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so its header
+  is the name alone.
+- **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart, as in
+  browse mode.
 
 ## Pending
 

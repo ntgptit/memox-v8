@@ -21,27 +21,25 @@ and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-sear
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| emptyQuery | ![](img/04-library-search/emptyQuery-light.png) | ![](img/04-library-search/emptyQuery-dark.png) | As drawn, without the fill arrows. |
-| loading | ![](img/04-library-search/loading-light.png) | ![](img/04-library-search/loading-dark.png) | As drawn. |
-| results | ![](img/04-library-search/results-light.png) | ![](img/04-library-search/results-dark.png) | As drawn, colours per the deviations. |
-| noResults | ![](img/04-library-search/noResults-light.png) | ![](img/04-library-search/noResults-dark.png) | As drawn. |
-| error | ![](img/04-library-search/error-light.png) | ![](img/04-library-search/error-dark.png) | As drawn. |
-| loadMoreFailed | — (not in the kit) | — | Extrapolated from `MxInlineBanner` (spec D24); golden `test/features/search/presentation/goldens/search_load_more_failed_{light,dark}.png`. |
+| emptyQuery | `search_empty_query_light.png` | `search_empty_query_dark.png` | Without the fill arrows. |
+| loading | `search_loading_light.png` | `search_loading_dark.png` | — |
+| results | `search_results_light.png` | `search_results_dark.png` | Colours per the deviations. |
+| noResults | `search_no_results_light.png` | `search_no_results_dark.png` | — |
+| error | `search_error_light.png` | `search_error_dark.png` | — |
+| loadMoreFailed | `search_load_more_failed_light.png` | `search_load_more_failed_dark.png` | An `MxInlineBanner` with Retry under the loaded rows (spec D24). |
 
 ## Pending
 
 Nothing pending since FE-A10.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| Hint rows with a fill arrow | Read-only rows, no arrow: a row with two examples cannot say which one a tap would fill | Owner, 2026-09-26 (spec D9) |
-| Card tiles green, tag tile and tag chip glyph orange | Every tile tinted primary; the matched tag is the neutral `MxTagChip` with no glyph | Green means mastery, amber is the warning tone (spec D19) |
-| Match emphasised in primary 700 with a tinted mark | `rowTitleMatch` (primary, 700), no background mark | Guard: no per-site decoration of text |
-| A card's title shows the match wherever it lies | One line with a trailing ellipsis: a match in a long card's back can be clipped; the row's screen-reader label names both faces, the tag and the path | `MxListRow` keeps every row one height (spec D22) |
-| A 40-tall field in the app bar | `MxSearchField` at its 52 input floor inside the 56 bar | The shared field's touch floor |
-| Group label and the "SEARCH FINDS" label with a tinted glyph, a small count beside the group label | `MxListSectionHeader` with no glyph; the count is a neutral `MxBadge` at the end | Guard: no `Icon(color:)` in feature code; the shared header's anatomy (spec D26) |
-| Subtitle and hint lines in plain 12/500 | The caption role, tracked 1.2 | Guard: no per-site text styling |
+- **Spec D9 (owner 2026-09-26):** hint rows are read-only with no fill arrow; a row with two examples cannot say which one a tap would fill.
+- **Spec D19:** every result tile is tinted primary and a matched tag is the neutral `MxTagChip` with no glyph, because green means mastery and amber is the warning tone.
+- **Spec D22:** every row is one height (`MxListRow`); a card's title is one line with a trailing ellipsis, so a match deep in a long back can be clipped, and the row's screen-reader label names both faces, the tag and the path.
+- **Spec D26:** group labels are `MxListSectionHeader` without a glyph, with the count as a neutral `MxBadge` at the end.
+- The match is emphasised with `rowTitleMatch` (primary, 700) and no background mark.
+- The field in the app bar is `MxSearchField` at its 52 input floor inside the 56 bar.
+

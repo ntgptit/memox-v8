@@ -29,30 +29,27 @@ person's language too; any other source shows as written.
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| list | ![](img/03-starter-decks/list-light.png) | ![](img/03-starter-decks/list-dark.png) | As drawn; the badge and the suggestion wrap instead of truncating (UI-base row 135). |
-| choose | ![](img/03-starter-decks/choose-light.png) | ![](img/03-starter-decks/choose-dark.png) | As drawn. |
-| adding | ![](img/03-starter-decks/adding-light.png) | ![](img/03-starter-decks/adding-dark.png) | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add deck" spins with no "Adding…" text (D13). A second add is ignored. |
-| added | ![](img/03-starter-decks/added-light.png) | ![](img/03-starter-decks/added-dark.png) | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
-| alreadyPresent | ![](img/03-starter-decks/alreadyPresent-light.png) | ![](img/03-starter-decks/alreadyPresent-dark.png) | As drawn: a copy made meanwhile copies nothing more. |
-| secondCopy | ![](img/03-starter-decks/secondCopy-light.png) | ![](img/03-starter-decks/secondCopy-dark.png) | As drawn; "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
-| addFailed | ![](img/03-starter-decks/addFailed-light.png) | ![](img/03-starter-decks/addFailed-dark.png) | The sheet stays with the choice; the danger banner's lead "Couldn't add the deck." sits above "Nothing was copied — try again."; the button reads "Try again". `templateNotFound` reads the same (spec §6). |
-| loading | ![](img/03-starter-decks/loading-light.png) | ![](img/03-starter-decks/loading-dark.png) | The note, then skeleton rows (UI-base row 125). |
-| none | ![](img/03-starter-decks/none-light.png) | ![](img/03-starter-decks/none-dark.png) | As drawn; "Create a deck" returns to the Library and opens its create dialog. |
-| loadFailed | ![](img/03-starter-decks/loadFailed-light.png) | ![](img/03-starter-decks/loadFailed-dark.png) | As drawn, titled "Couldn't load starter decks" (the kit drops "load"), with Retry. |
+| list | `starter_list_light.png` | `starter_list_dark.png` | The badge and the suggestion wrap instead of truncating (UI-base row 135). |
+| choose | `starter_choose_light.png` | `starter_choose_dark.png` | — |
+| adding | `starter_adding_light.png` | `starter_adding_dark.png` | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add deck" spins with no "Adding…" text (D13). A second add is ignored. |
+| added | `starter_added_light.png` | `starter_added_dark.png` | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
+| alreadyPresent | `starter_already_present_light.png` | `starter_already_present_dark.png` | A copy made meanwhile copies nothing more. |
+| secondCopy | `starter_second_copy_light.png` | `starter_second_copy_dark.png` | "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
+| addFailed | `starter_add_failed_light.png` | `starter_add_failed_dark.png` | The sheet stays with the choice; the danger banner's lead "Couldn't add the deck." sits above "Nothing was copied — try again."; the button reads "Try again". `templateNotFound` reads the same (spec §6). |
+| loading | `starter_loading_light.png` | `starter_loading_dark.png` | The note, then skeleton rows (UI-base row 125). |
+| none | `starter_none_light.png` | `starter_none_dark.png` | "Create a deck" returns to the Library and opens its create dialog. |
+| loadFailed | `starter_load_failed_light.png` | `starter_load_failed_dark.png` | Titled "Couldn't load starter decks", with Retry. |
 
 Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,adding,added,already_present,second_copy,add_failed,loading,none,load_failed}_{light,dark}.png`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| "In library" pinned beside the title's first line | It follows the title, on the next line when the title wraps | No overflow at text scale 2 (critique P3) |
-| "Suggests…" cut beside "Add another copy" | The suggestion drops below the button, whole | Critique P2a |
-| "Adding…" beside the spinner | The spinner alone | D13 (FE-A3 C8) |
-| A skeleton in each card's shape | The note, then skeleton rows | UI-base row 125 |
-| "Couldn't starter decks" | "Couldn't load starter decks" | The kit's typo |
+- **Critique P3:** "In library" follows the title and moves to the next line when the title wraps, so nothing overflows at text scale 2.
+- **Critique P2a:** "Suggests {algorithm}" drops below the add button, whole, rather than being cut.
+- **D13 (FE-A3 C8):** the add button shows the spinner alone, no "Adding…" text.
+- **UI-base row 125:** loading shows the note, then generic skeleton rows.
 
 ## Copy
 

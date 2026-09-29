@@ -26,31 +26,31 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| loaded | ![](img/07-card-list/loaded-light.png) | ![](img/07-card-list/loaded-dark.png) | As drawn; the Tags chip reads as selected while tags are applied (D14; UI-base row 140). |
-| empty | ![](img/07-card-list/empty-light.png) | ![](img/07-card-list/empty-dark.png) | The deck is unset again (E-L1): screen 01's unset state. |
-| searchEmpty | ![](img/07-card-list/searchEmpty-light.png) | ![](img/07-card-list/searchEmpty-dark.png) | As drawn. |
-| loading | ![](img/07-card-list/loading-light.png) | ![](img/07-card-list/loading-dark.png) | As drawn. |
-| error | ![](img/07-card-list/error-light.png) | ![](img/07-card-list/error-dark.png) | As drawn. |
-| notFound | ![](img/07-card-list/notFound-light.png) | ![](img/07-card-list/notFound-dark.png) | As screen 01 deckNotFound. |
-| deckActions | ![](img/07-card-list/deckActions-light.png) | ![](img/07-card-list/deckActions-dark.png) | As drawn. |
-| selection | ![](img/07-card-list/selection-light.png) | ![](img/07-card-list/selection-dark.png) | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
-| moveTargets | ![](img/07-card-list/moveTargets-light.png) | ![](img/07-card-list/moveTargets-dark.png) | As drawn. |
-| noMoveTarget | ![](img/07-card-list/noMoveTarget-light.png) | ![](img/07-card-list/noMoveTarget-dark.png) | As drawn. |
-| bulkFailed | ![](img/07-card-list/bulkFailed-light.png) | ![](img/07-card-list/bulkFailed-dark.png) | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
-| delCard | ![](img/07-card-list/delCard-light.png) | ![](img/07-card-list/delCard-dark.png) | One selected card, as drawn, without the glyph. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
-| delDeck | ![](img/07-card-list/delDeck-light.png) | ![](img/07-card-list/delDeck-dark.png) | As screen 01 deckDelete. |
-| trashed | ![](img/07-card-list/trashed-light.png) | ![](img/07-card-list/trashed-dark.png) | One card: as drawn, Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
+| loaded | `card_list_light.png` | `card_list_dark.png` | The Tags chip reads as selected while tags are applied (D14; UI-base row 140). |
+| empty | no golden | no golden | The deck is unset again (E-L1): screen 01's unset state. |
+| searchEmpty | no golden | no golden | — |
+| loading | no golden | no golden | — |
+| error | no golden | no golden | — |
+| notFound | no golden | no golden | As screen 01 deckNotFound. |
+| deckActions | no golden | no golden | — |
+| selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
+| moveTargets | no golden | no golden | — |
+| noMoveTarget | no golden | no golden | — |
+| bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
+| delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
+| delDeck | no golden | no golden | As screen 01 deckDelete. |
+| trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
 editor (screen 09) moves its card to the Trash from its "More" card with the same dialog
 (FE-B1 D13):
-![](img/09-card-edit/delConfirm-light.png)
+`card_editor_trash_dialog_light.png`
 
 ## Tag filter
 
-Not in the kit; shaped by Impeccable before the plan (FE-B2 D3,
+Shaped by Impeccable before the plan (FE-B2 D3,
 `.impeccable/critique/2026-09-27T06-00-00Z__tags-starter-kit.md`).
 
 - **The sheet:** `MxBottomSheet`, "Filter by tags" over "Show cards with any of the chosen
@@ -77,17 +77,14 @@ Not in the kit; shaped by Impeccable before the plan (FE-B2 D3,
 
 The goldens are in `test/features/card/presentation/goldens/`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| A trash glyph beside the Move to Trash dialog's title | No glyph | `MxDialog` has no glyph slot |
-| "Recoverable for 30 days with its 7 answers of history" | "Recoverable from Trash for 30 days, with its schedule and history" | The dialog reads no history count |
-| The Tags chip as a ghost trigger | A filter chip, selected while tags are applied | FE-B2 D14 (critique P1b) |
-| An empty card list | The deck is unset again: screen 01's unset state | BR-DECK-015, ruling E-L1 |
-| The flag in the streak colour | The flag in the warning colour; the theme has no streak token | Ruling E-L2 |
-| "Select all" as a text link | A compact secondary `MxButton` | Ruling E-L3 |
-| The due chip as a bespoke pill | `MxBadge`: overdue warning, today primary, else neutral | Ruling E-L4 |
+- **Move to Trash dialog:** no glyph (`MxDialog` has no glyph slot); the body reads "Recoverable from Trash for 30 days, with its schedule and history", since the dialog reads no history count.
+- **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are applied.
+- **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 01's unset state shows.
+- **E-L2:** the flag uses the warning colour; the theme has no streak token.
+- **E-L3:** "Select all" is a compact secondary `MxButton`.
+- **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
 
 ## Copy
 

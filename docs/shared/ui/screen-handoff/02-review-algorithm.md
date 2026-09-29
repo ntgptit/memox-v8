@@ -22,19 +22,19 @@ Algorithm descriptions:
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| locked | ![](img/02-review-algorithm/locked-light.png) | ![](img/02-review-algorithm/locked-dark.png) | As drawn; date from `firstAnsweredAt`, local time. |
-| unlocked | ![](img/02-review-algorithm/unlocked-light.png) | ![](img/02-review-algorithm/unlocked-dark.png) | As drawn. |
-| switching | ![](img/02-review-algorithm/switching-light.png) | ![](img/02-review-algorithm/switching-dark.png) | Reached **after** the confirmation dialog (deviation). |
-| switched | ![](img/02-review-algorithm/switched-light.png) | ![](img/02-review-algorithm/switched-dark.png) | Snackbar "Switched to {algorithm} · every card starts fresh". |
-| switchFailed | ![](img/02-review-algorithm/switchFailed-light.png) | ![](img/02-review-algorithm/switchFailed-dark.png) | Danger banner with Retry (UC-DECK-002 E2). |
-| resetConfirm | ![](img/02-review-algorithm/resetConfirm-light.png) | ![](img/02-review-algorithm/resetConfirm-dark.png) | "Kept" in `statusMasteredInk` (spec A10); "the open session" only when a session is open. |
-| resetting | ![](img/02-review-algorithm/resetting-light.png) | ![](img/02-review-algorithm/resetting-dark.png) | As drawn. |
-| resetDone | ![](img/02-review-algorithm/resetDone-light.png) | ![](img/02-review-algorithm/resetDone-dark.png) | Then the unlocked state. |
-| nothingToLose | ![](img/02-review-algorithm/nothingToLose-light.png) | ![](img/02-review-algorithm/nothingToLose-dark.png) | When `hasProgressToLose` is false (UC-SRS-001 A2). |
+| locked | `library_algorithm_locked_light.png` | `library_algorithm_locked_dark.png` | Date from `firstAnsweredAt`, local time. |
+| unlocked | `library_algorithm_unlocked_light.png` | `library_algorithm_unlocked_dark.png` | — |
+| switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
+| switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
+| switchFailed | no golden | no golden | Danger banner with Retry (UC-DECK-002 E2). |
+| resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `statusMasteredInk` (spec A10); "the open session" only when a session is open. |
+| resetting | no golden | no golden | The confirm spins and Cancel is off (M3 review B2). |
+| resetDone | no golden | no golden | Then the unlocked state. |
+| nothingToLose | no golden | no golden | When `hasProgressToLose` is false (UC-SRS-001 A2). |
 
-Not in the artifact, required by V8:
+Beyond the states above:
 
 - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" / "Every card's schedule in this tree starts over and any open study session closes. No history is lost." / Cancel · Switch (UC-DECK-002 steps 3–4).
 - **Refused because the tree just locked:** the locked state and the reason (UC-DECK-002 E4).
@@ -52,13 +52,10 @@ Not in the artifact, required by V8:
 - Done: "Cycle {n+1} started · {count} cards are new again"
 - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry"
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| A tap on the other algorithm switches at once | A confirmation dialog first | UC-DECK-002 steps 3–4 |
-| "Resetting…" in the confirm while it runs | The confirm spins (`MxSheetActions.isConfirmLoading`), as every other async confirm | M3 review 2026-09-28 B2 |
-| "Kept" coloured with the mastery token | `statusMasteredInk`, 4.5:1 | Spec A10, WCAG 2.2 AA |
-| Refused because the tree just locked: a message on the screen | The locked state from the stream, and the reason as a snackbar | Ruling D-L1 |
-| Strip body, algorithm descriptions and the Kept/Lost bodies in plain 12/500 | The caption role (`rowDescription`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
-| "Kept" tile tinted like the status badges (12%) | An 8% mastery tint | Contrast: the mastered ink reaches 4.6:1 on the dialog surface over 8%, 4.4:1 over 12% (Task 2 ruling) |
+- **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation first; it never switches on the tap.
+- **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxSheetActions.isConfirmLoading`), with no "Resetting…" text, as every async confirm.
+- **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) on an 8% mastery tint; over 12% the ink falls to 4.4:1.
+- **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
+

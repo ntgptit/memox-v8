@@ -30,32 +30,30 @@ The overline, the banner and the note line up with the title (20 dp).
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| wholeDeck | ![](img/12-card-export/wholeDeck-light.png) | ![](img/12-card-export/wholeDeck-dark.png) | CSV carries "Recommended"; the action reads "Export {n} cards". |
-| selection | ![](img/12-card-export/selection-light.png) | ![](img/12-card-export/selection-dark.png) | As wholeDeck. |
-| preparing | ![](img/12-card-export/preparing-light.png) | ![](img/12-card-export/preparing-dark.png) | As drawn; Cancel closes the sheet and nothing is shared. |
-| handedOver | ![](img/12-card-export/handedOver-light.png) | ![](img/12-card-export/handedOver-dark.png) | The toast names no file. |
-| shareClosed | ![](img/12-card-export/shareClosed-light.png) | ![](img/12-card-export/shareClosed-dark.png) | **Deviation:** the export sheet stays open, as it was. |
-| failed | ![](img/12-card-export/failed-light.png) | ![](img/12-card-export/failed-dark.png) | For a read or encode failure. A share failure has its own copy, also with Try again. |
-| noShareTarget | ![](img/12-card-export/noShareTarget-light.png) | ![](img/12-card-export/noShareTarget-dark.png) | As drawn; the banner shows the warning glyph. |
-| staleSelection | ![](img/12-card-export/staleSelection-light.png) | ![](img/12-card-export/staleSelection-dark.png) | As drawn (FE-B1 D12 closes X11). |
-| nothingToExport | ![](img/12-card-export/nothingToExport-light.png) | ![](img/12-card-export/nothingToExport-dark.png) | Reached only by a deck emptied between the count and the export, or by a count of 0. |
+| wholeDeck | `export_deck_light.png` | `export_deck_dark.png` | CSV carries "Recommended"; the action reads "Export {n} cards". |
+| selection | no golden | no golden | As wholeDeck. |
+| preparing | no golden | no golden | Cancel closes the sheet and nothing is shared. |
+| handedOver | no golden | no golden | The toast names no file. |
+| shareClosed | no golden | no golden | the export sheet stays open, as it was. |
+| failed | `export_failed_light.png` | `export_failed_dark.png` | For a read or encode failure. A share failure has its own copy, also with Try again. |
+| noShareTarget | no golden | no golden | The banner shows the warning glyph. |
+| staleSelection | `export_stale_light.png` | `export_stale_dark.png` | The selection changed since the sheet opened (FE-B1 D12 closes X11). |
+| nothingToExport | no golden | no golden | Reached only by a deck emptied between the count and the export, or by a count of 0. |
 
 Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}_{light,dark}.png`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| Closing the share sheet closes the export sheet | The export sheet stays open with its scope and format | UC-TRANSFER-002 A3 (ruling E1) |
-| "Handed 12 cards to the system as nha-hang-2026-09-16.csv" | "Handed 12 cards to the system." | Spec §7, BR-TRANSFER-014 (ruling E2) |
-| CSV without a label | CSV carries a "Recommended" badge | UC-TRANSFER-002 step 2 (ruling E3) |
-| One "Couldn't prepare the file" for every failure | Read and encode failures share it; a share failure has its own copy; both offer Try again | UC-TRANSFER-002 E2–E4 (ruling E4) |
-| `deckActions` offers "Export all N cards" on every deck | "Export cards" on a deck of cards only; Coming soon no longer lists export | UC-TRANSFER-002 E5 (ruling E5) |
-| "Export and share" | "Export {n} cards" | UC-TRANSFER-002 step 3 (owner 2026-09-26) |
-| A file name folded to ASCII (`nha-hang-…`) | The deck's own letters (`Nhà-hàng-2026-09-26.csv`) | BR-TRANSFER-013, backend plan C5 |
-| A glyph per banner (share, copy) | The banner's tone glyph | `MxInlineBanner` has no glyph slot |
+- **UC-TRANSFER-002 A3 (E1):** closing the share sheet keeps the export sheet open with its scope and format.
+- **Spec §7, BR-TRANSFER-014 (E2):** the result reads "Handed {n} cards to the system." without the file name.
+- **UC-TRANSFER-002 step 2 (E3):** CSV carries a "Recommended" badge.
+- **UC-TRANSFER-002 E2–E4 (E4):** read and encode failures share "Couldn't prepare the file"; a share failure has its own copy; both offer Try again.
+- **UC-TRANSFER-002 E5 (E5):** "Export cards" appears on a deck of cards only.
+- **UC-TRANSFER-002 step 3 (owner 2026-09-26):** the action reads "Export {n} cards".
+- **BR-TRANSFER-013, backend plan C5:** the file name keeps the deck's own letters (`Nhà-hàng-2026-09-26.csv`).
+- Banners use their tone glyph; `MxInlineBanner` has no glyph slot.
 
 ## Copy
 

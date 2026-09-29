@@ -37,42 +37,37 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 
 ## States
 
-| State | Light | Dark | V8 |
+| State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| all | ![](img/06-trash/all-light.png) | ![](img/06-trash/all-dark.png) | As drawn; the tile is tinted, and "Was in" has no glyph. |
-| cards | ![](img/06-trash/cards-light.png) | ![](img/06-trash/cards-dark.png) | As drawn. |
-| decks | ![](img/06-trash/decks-light.png) | ![](img/06-trash/decks-dark.png) | As drawn. |
-| actions | ![](img/06-trash/actions-light.png) | ![](img/06-trash/actions-dark.png) | As drawn; a row tap opens it too. |
-| restoreTarget | ![](img/06-trash/restoreTarget-light.png) | ![](img/06-trash/restoreTarget-dark.png) | Targets read as paths, without counts or "where it was". |
-| noTarget | ![](img/06-trash/noTarget-light.png) | ![](img/06-trash/noTarget-dark.png) | As the move sheets draw it: the neutral folder, and a filled OK. |
-| restored | ![](img/06-trash/restored-light.png) | ![](img/06-trash/restored-dark.png) | As drawn. |
-| undoRefused | ![](img/06-trash/undoRefused-light.png) | ![](img/06-trash/undoRefused-dark.png) | Shown where the item was deleted, with Open Trash (UI-base row 109). |
-| selection | ![](img/06-trash/selection-light.png) | ![](img/06-trash/selection-dark.png) | **Deviation:** "Restore ({n})" · "Delete ({n})" as a filled destructive button, the note hidden, the other kind dimmed (owner 2026-09-26). |
-| purgeConfirm | ![](img/06-trash/purgeConfirm-light.png) | ![](img/06-trash/purgeConfirm-dark.png) | No glyph, left-aligned (UI-base row 108). |
-| purged | ![](img/06-trash/purged-light.png) | ![](img/06-trash/purged-dark.png) | As drawn. |
-| youngerInside | ![](img/06-trash/youngerInside-light.png) | ![](img/06-trash/youngerInside-dark.png) | **Deviation:** "deleted earlier", in a warning banner (D6). |
-| empty | ![](img/06-trash/empty-light.png) | ![](img/06-trash/empty-dark.png) | As drawn. |
-| loading | ![](img/06-trash/loading-light.png) | ![](img/06-trash/loading-dark.png) | Skeleton rows. |
-| error | ![](img/06-trash/error-light.png) | ![](img/06-trash/error-dark.png) | The app's local-first body, "Nothing was lost. Try again in a moment." |
+| all | `trash_all_light.png` | `trash_all_dark.png` | The tile is tinted, and "Was in" has no glyph. |
+| cards | no golden | no golden | — |
+| decks | no golden | no golden | — |
+| actions | `trash_actions_light.png` | `trash_actions_dark.png` | A row tap opens it too. |
+| restoreTarget | `trash_restore_target_light.png` | `trash_restore_target_dark.png` | Targets read as paths, without counts or "where it was". |
+| noTarget | `trash_no_target_light.png` | `trash_no_target_dark.png` | As the move sheets draw it: the neutral folder, and a filled OK. |
+| restored | no golden | no golden | — |
+| undoRefused | no golden | no golden | Shown where the item was deleted, with Open Trash (UI-base row 109). |
+| selection | `trash_selection_light.png` | `trash_selection_dark.png` | "Restore ({n})" · "Delete ({n})" as a filled destructive button, the note hidden, the other kind dimmed (owner 2026-09-26). |
+| purgeConfirm | `trash_purge_confirm_light.png` | `trash_purge_confirm_dark.png` | No glyph, left-aligned (UI-base row 108). |
+| purged | no golden | no golden | — |
+| youngerInside | no golden | no golden | "deleted earlier", in a warning banner (D6). |
+| empty | `trash_empty_light.png` | `trash_empty_dark.png` | — |
+| loading | no golden | no golden | Skeleton rows. |
+| error | `trash_error_light.png` | `trash_error_dark.png` | The app's local-first body, "Nothing was lost. Try again in a moment." |
 
 Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_target,no_target,selection,purge_confirm,purge_blocked,empty,error}_{light,dark}.png`.
 
-## Deviations
+## Rulings
 
-| Artifact | V8 | Wins |
-|---|---|---|
-| "“X” still contains a card deleted later" | "“X” still contains an entry deleted earlier (“Y”)", in a warning banner, one per blocked batch | Invariant 36 (spec D6) |
-| A restore target with its name, path, card count and "where it was" | The path, as the move sheets show targets | `CardMoveTarget` and `DeckMoveTarget` carry no counts (ruling P3-L8) |
-| A card's restore sheet only | A deck's sheet with its own rule, and "Top level" for a top-level deck | BR-TRASH-006 |
-| "Select" as a text link | A compact secondary `MxButton` | Ruling E-L3 |
-| A neutral grey kind tile; "Was in" after a corner glyph | The tinted `MxIconTile`; the text alone | The shared tile's tones; no per-site glyph ink |
-| "Delete for good" as a red outline | A filled destructive `MxButton` | `MxButton` has no destructive outline |
-| noTarget's tree glyph in a tinted tile, and an outline OK | The neutral folder, and a filled OK | `MxDeckPickerSheet`'s empty state, shared with the move sheets (ruling O11) |
-| A refusal inside the restore sheet | The sheet closes and the refusal is a toast; the list follows the store | As the move sheets (spec §6) |
-| "Restore {n}…" · "Delete for good" | "Restore ({n})" · "Delete ({n})": the "…" read as truncation, and "Delete for good" did not fit half the bar | Owner, 2026-09-26 (UI refinements phase 2) |
-| The time left in warning ink under 3 days | A warning `MxBadge`: the dark ink read as plain text | Owner, 2026-09-26 |
-| The meta line on one line, ellipsized; lines 4 apart | Up to two lines; lines 8 apart | Owner, 2026-09-26 |
-| The note shown while selecting; the other kind at full strength; a two-clause kind lock | The note hidden while selecting; the other kind dimmed to 0.38; "Cards and decks can't be selected together." | Owner, 2026-09-26; BR-TRASH-011 needs no note |
+- **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
+- **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
+- **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.
+- **E-L3:** "Select" is a compact secondary `MxButton`.
+- **O11:** the no-target state is `MxDeckPickerSheet`'s empty state (the neutral folder, a filled OK), shared with the move sheets.
+- **Spec §6:** a refused restore closes the sheet and shows a toast; the list follows the store.
+- **Owner 2026-09-26 (UI refinements phase 2):** the selection bar reads "Restore ({n})" · "Delete ({n})"; "Delete" is a filled destructive `MxButton`.
+- **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the meta line wraps to two lines, 8 apart.
+- **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other kind dims to 0.38, and "Cards and decks can't be selected together." shows.
 
 ## Copy
 
