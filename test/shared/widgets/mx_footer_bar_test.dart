@@ -129,4 +129,25 @@ void main() {
     expect(find.text('Front and back are required to save.'), findsNothing);
     expect(find.text('Save'), findsOneWidget);
   });
+  testWidgets('the caption steps aside in a shell nested in a tab shell', (
+    tester,
+  ) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    addTearDown(tester.view.resetViewInsets);
+    await pumpMxPage(
+      tester,
+      MxAppShell(
+        body: MxAppShell(
+          body: const SizedBox.expand(),
+          footer: MxFooterBar(
+            caption: 'Front and back are required to save.',
+            child: MxButton(label: 'Save', onPressed: () {}),
+          ),
+        ),
+        bottomBar: const SizedBox(height: 80),
+      ),
+    );
+
+    expect(find.text('Front and back are required to save.'), findsNothing);
+  });
 }

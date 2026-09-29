@@ -55,8 +55,10 @@ class MxAppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appBar = this.appBar;
+    // An outer shell (the tab shell) has already stripped the inset from
+    // this shell's MediaQuery, so its scope answers first.
     return _TypingScope(
-      isTyping: MediaQuery.viewInsetsOf(context).bottom > 0,
+      isTyping: isTypingOf(context),
       child: _scaffold(context, appBar),
     );
   }
