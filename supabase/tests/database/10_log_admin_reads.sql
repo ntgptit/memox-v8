@@ -3,7 +3,7 @@ create extension if not exists pgtap with schema extensions;
 select plan(23);
 
 -- ADR-018 §7; spec 2026-09-29-app-logging-design.md §4: the admin's reads of app_log
--- (20261004000000_log_admin_reads.sql).
+-- (20261007000000_log_admin_reads.sql).
 create function public.t_as(p_sub text, p_admin boolean) returns void language sql as $$
   select set_config('request.jwt.claims', jsonb_build_object('sub', p_sub, 'role', 'authenticated',
     'app_metadata', case when p_admin then jsonb_build_object('role', 'admin') else '{}'::jsonb end)::text, true) $$;
