@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/srs/domain/models/due_date_model.dart';
@@ -57,7 +57,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       switch (await _live(await _dao.sessionRow(sessionId), at)) {
         case Rejected(:final reason):
           return Rejected(reason);
@@ -113,7 +113,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final session = await _dao.sessionRow(sessionId);
       if (session == null) return const Rejected(StudyRejection.notFound);
       if (session.status != SessionStatus.inProgress.code) {
@@ -135,7 +135,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final session = await _dao.sessionRow(sessionId);
       if (session != null &&
           session.status == SessionStatus.inProgress.code &&
@@ -166,7 +166,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
   @override
   Future<void> abandonStaleSessions({DateTime? now}) {
     final at = now ?? _now();
-    return _write(
+    return _db.mappedTransaction(
       () => _dao.closeStaleSessions(now: at, startOfToday: startOfLocalDay(at)),
     );
   }
@@ -174,7 +174,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
   @override
   Future<void> failSession({required String sessionId, DateTime? now}) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final session = await _dao.sessionRow(sessionId);
       if (session?.status != SessionStatus.inProgress.code) return;
       await _dao.endSession(
@@ -197,7 +197,7 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
     Future<Outcome<void, StudyRejection>> Function(StudyQueueItem row) write,
   ) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       switch (await _live(await _dao.sessionRow(sessionId), at)) {
         case Rejected(:final reason):
           return Rejected(reason);
@@ -287,16 +287,6 @@ final class StudySessionRepositoryImpl implements StudySessionRepository {
       StudyMode.fromCode(session.currentMode),
       round,
     );
-  }
-
-  /// One transaction. An unexpected database error leaves as the [Failure]
-  /// `mapDatabaseError` makes of it, with its stack trace, after the rollback.
-  Future<T> _write<T>(Future<T> Function() body) async {
-    try {
-      return await _db.transaction(body);
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
   }
 }
 

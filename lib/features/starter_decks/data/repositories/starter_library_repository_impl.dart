@@ -64,7 +64,7 @@ final class StarterLibraryRepositoryImpl implements StarterLibraryRepository {
     if (template == null) {
       return const Rejected(StarterRejection.templateNotFound);
     }
-    return _mapped(
+    return guardDatabase(
       () => _db.transaction(() async {
         final isInLibrary = await _dao.hasCopy(
           template.templateId,
@@ -127,16 +127,6 @@ final class StarterLibraryRepositoryImpl implements StarterLibraryRepository {
           ),
         );
       }
-    }
-  }
-
-  /// A throw rolls every row back and leaves as `mapDatabaseError`'s
-  /// [Failure].
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -55,7 +56,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
 
   @override
   Future<Outcome<void, SrsRejection>> recordTurn(ReviewTurn turn) =>
-      _write(() async {
+      _db.mappedTransaction(() async {
         switch (await _studied(turn.cardId, turn.generation)) {
           case Rejected(:final reason):
             return Rejected(reason);
@@ -88,7 +89,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       switch (await _studied(cardId, generation)) {
         case Rejected(:final reason):
           return Rejected(reason);
@@ -172,7 +173,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
     SchedulerType? schedulerType,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final root = await _dao.deckRow(rootDeckId);
       if (root == null) return const Rejected(SrsRejection.notFound);
       if (root.parentId != null) {
@@ -216,7 +217,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   @override
   Future<Outcome<ResetLearningSummary, SrsRejection>> resetSummary({
     required String rootDeckId,
-  }) => _mapped(() async {
+  }) => guardDatabase(() async {
     final row = await _dao.resetSummaryRow(rootDeckId);
     if (row == null) return const Rejected(SrsRejection.notFound);
     final root = row.deck;
@@ -238,7 +239,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
     required SchedulerType newType,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final root = await _dao.deckRow(rootDeckId);
       if (root == null) return const Rejected(SrsRejection.notFound);
       if (root.parentId != null) {
@@ -275,20 +276,6 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       );
       return const Ok(null);
     });
-  }
-
-  /// One transaction. An unexpected database error leaves as the [Failure]
-  /// `mapDatabaseError` makes of it, with its stack trace, after the rollback.
-  Future<T> _write<T>(Future<T> Function() body) =>
-      _mapped(() => _db.transaction(body));
-
-  /// [body], with an unexpected database error leaving as its [Failure].
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
   }
 }
 

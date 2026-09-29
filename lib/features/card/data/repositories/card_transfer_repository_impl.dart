@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/text/folded_text.dart';
@@ -31,7 +32,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
 
   @override
   Future<Set<CardFoldedPair>> foldedPairs(String deckId) =>
-      _mapped(() => _dao.foldedPairs(deckId));
+      guardDatabase(() => _dao.foldedPairs(deckId));
 
   @override
   Future<Outcome<CardImportResult, CardRejection>> importCards({
@@ -41,7 +42,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
     DateTime? now,
   }) {
     final at = now ?? _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       for (final draft in drafts) {
         if (draft.check() case Rejected(:final reason)) return Rejected(reason);
       }
@@ -76,13 +77,13 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
 
   @override
   Future<int> countCards(String deckId) =>
-      _mapped(() => _dao.liveCount(deckId));
+      guardDatabase(() => _dao.liveCount(deckId));
 
   @override
   Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
     required String deckId,
     Set<String>? cardIds,
-  }) => _mapped(
+  }) => guardDatabase(
     () => _db.transaction(() async {
       final deck = await _dao.deckRow(deckId);
       if (deck == null) return const Rejected(CardRejection.notFound);
@@ -111,17 +112,4 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       );
     }),
   );
-
-  /// One transaction; a throw rolls every row back and leaves as
-  /// `mapDatabaseError`'s [Failure].
-  Future<T> _write<T>(Future<T> Function() body) =>
-      _mapped(() => _db.transaction(body));
-
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
-  }
 }

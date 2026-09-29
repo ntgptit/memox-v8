@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/data/datasources/settings_dao.dart';
@@ -35,7 +36,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
     required StudyOptions options,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (options.check() case Rejected(:final reason)) return Rejected(reason);
       await _dao.updateRow(
         AppSettingsCompanion(
@@ -76,7 +77,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
     required ReminderSettings reminder,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (reminder.check() case Rejected(:final reason)) {
         return Rejected(reason);
       }
@@ -89,10 +90,10 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<ReminderSnapshot> reminderSnapshot() =>
-      _mapped(() async => reminderSnapshotOf(await _dao.row()));
+      guardDatabase(() async => reminderSnapshotOf(await _dao.row()));
 
   @override
-  Future<void> recordReminderDelivered({required DateTime at}) => _mapped(
+  Future<void> recordReminderDelivered({required DateTime at}) => guardDatabase(
     () => _dao.updateRow(
       AppSettingsCompanion(reminderLastDeliveredAt: Value(at)),
     ),
@@ -104,7 +105,9 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<EffectiveStudyOptions?> studyOptionsOf({required String deckId}) =>
-      _mapped(() async => _effectiveOf(await _dao.rootAndSettings(deckId)));
+      guardDatabase(
+        () async => _effectiveOf(await _dao.rootAndSettings(deckId)),
+      );
 
   @override
   Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({
@@ -112,7 +115,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
     required StudyOptions options,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       if (options.check() case Rejected(:final reason)) return Rejected(reason);
       final root = await _dao.deckRow(rootDeckId);
       if (root == null) return const Rejected(SettingsRejection.deckNotFound);
@@ -129,7 +132,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
     required String rootDeckId,
   }) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       final root = await _dao.deckRow(rootDeckId);
       if (root == null) return const Rejected(SettingsRejection.deckNotFound);
       if (root.parentId != null) {
@@ -144,22 +147,10 @@ final class SettingsRepositoryImpl implements SettingsRepository {
   /// [values] and `updated_at`, in one transaction of their own.
   Future<Outcome<void, SettingsRejection>> _save(AppSettingsCompanion values) {
     final at = _now();
-    return _write(() async {
+    return _db.mappedTransaction(() async {
       await _dao.updateRow(values.copyWith(updatedAt: Value(at)));
       return const Ok(null);
     });
-  }
-
-  Future<T> _write<T>(Future<T> Function() body) =>
-      _mapped(() => _db.transaction(body));
-
-  /// [body], with an unexpected database error leaving as its [Failure].
-  Future<T> _mapped<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
   }
 }
 
