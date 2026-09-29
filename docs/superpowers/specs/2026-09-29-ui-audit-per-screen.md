@@ -1,5 +1,7 @@
 # MemoX — UI/UX audit theo từng màn
 
+**Status:** P1 (patterns 1, 2, 4, 6, study chrome, MxSettingsRow large text) fixed by plan 2026-09-29-ui-audit-p1-robustness; density items open.
+
 ## Tóm tắt
 
 **Không có màn nào ở mức Critical.** Có 16 màn/khu vực Major và 14 Minor. Hầu hết lỗi Major không nằm riêng ở màn nào. Chúng đến từ 9 pattern lặp lại, phần lớn nên sửa một lần ở shared component.
