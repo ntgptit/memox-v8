@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/library_harness.dart';
@@ -88,5 +89,42 @@ void main() {
       tester.getCenter(find.text('Forgot')).dy,
       lessThan(tester.getCenter(find.text('Remembered')).dy),
     );
+  });
+  libraryTest('a face with more below fades its bottom edge (audit P1)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        SizedBox(
+          height: 200,
+          child: StudyFaceCardWidget(
+            label: 'Meaning',
+            child: Text(List.filled(30, 'a long meaning line').join('\n')),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('study-scroll-fade')), findsOneWidget);
+  });
+
+  libraryTest('a face that fits shows no fade', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        const SizedBox(
+          height: 400,
+          child: StudyFaceCardWidget(label: 'Term', child: Text('reserve')),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
   });
 }

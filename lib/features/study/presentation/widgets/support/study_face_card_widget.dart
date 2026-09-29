@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
 /// One face of the card under study (kit StudyFaceCard): the label at the
@@ -45,10 +46,16 @@ class StudyFaceCardWidget extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.gutter),
-                child: child,
+            // A face longer than its half says so at its edge (audit P1).
+            child: StudyScrollFadeWidget(
+              ground: isAnswer
+                  ? context.colors.surfaceContainerLow
+                  : context.colors.surfaceContainerLowest,
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppSpacing.gutter),
+                  child: child,
+                ),
               ),
             ),
           ),
