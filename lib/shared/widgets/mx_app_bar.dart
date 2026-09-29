@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 
 /// Content bar (a back control and a deck/card name) or screen bar (a screen
 /// name). Both are 56 tall.
@@ -29,7 +30,9 @@ class MxAppBar extends StatelessWidget {
   final String? title;
 
   /// Takes the title's place and its width, such as the search field of
-  /// screen 04. It brings its own semantics; no header flag is added.
+  /// screen 04. It brings its own semantics; no header flag is added. A
+  /// search field keeps 8 above and below it, so the bar grows to 68 rather
+  /// than pressing a 52 field against its edges.
   final Widget? titleWidget;
   final MxAppBarDensity density;
 
@@ -47,6 +50,7 @@ class MxAppBar extends StatelessWidget {
     final styles = context.textStyles;
     final side = isContent ? AppSpacing.control : AppSpacing.gutter;
     final endsOnText = actions.lastOrNull is MxButton;
+    final holdsField = titleWidget is MxSearchField;
     return ColoredBox(
       color: context.colors.surface,
       child: SafeArea(
@@ -56,7 +60,9 @@ class MxAppBar extends StatelessWidget {
           child: Padding(
             padding: EdgeInsetsDirectional.only(
               start: side,
+              top: holdsField ? AppSpacing.control : 0,
               end: endsOnText ? AppSpacing.gutter : side,
+              bottom: holdsField ? AppSpacing.control : 0,
             ),
             child: Row(
               spacing: AppSpacing.micro,
