@@ -134,7 +134,7 @@ void main() {
 
     expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
   });
-  libraryTest('the context line takes at most two lines and is heard whole', (
+  libraryTest('the context line wraps, never cut, and is heard whole', (
     tester,
     env,
   ) async {
@@ -148,11 +148,11 @@ void main() {
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
-    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
+    expect((line.maxLines, line.overflow), (null, null));
     expect(line.semanticsLabel, text);
   });
 
-  libraryTest('the footer hint takes at most two lines', (tester, env) async {
+  libraryTest('the footer hint wraps, never cut', (tester, env) async {
     const text =
         'Swipe left for next, right to look back · nothing is graded here';
     await pumpLibraryScreen(
@@ -163,7 +163,7 @@ void main() {
     );
     final hint = tester.widget<Text>(find.text(text));
 
-    expect((hint.maxLines, hint.overflow), (2, TextOverflow.ellipsis));
+    expect((hint.maxLines, hint.overflow), (null, null));
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -185,7 +185,10 @@ void main() {
   });
 
   libraryTest('an option out of play stays readable: it fades to the muted '
-      'opacity, not the disabled one (critique 2026-09-30)', (tester, env) async {
+      'opacity, not the disabled one (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
     await pumpLibraryScreen(
       tester,
       env,

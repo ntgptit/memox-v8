@@ -260,11 +260,7 @@ void main() {
       find.bySemanticsLabel(
         _en.studyContextFirstPick(
           _en.studyContextRound(
-            _en.studyContextReview(
-              'Lesson',
-              _en.studyKindReview,
-              _en.cardModeGuess,
-            ),
+            _en.studyContextReview('Lesson', _en.studyKindReview),
             1,
           ),
         ),

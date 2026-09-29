@@ -310,7 +310,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SessionContextLineWidget(text: sessionContextOf(l10n, view, mode)),
+          SessionContextLineWidget(text: sessionContextOf(l10n, view)),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(

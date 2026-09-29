@@ -207,29 +207,22 @@ void main() {
     expect(lastTerm, lessThan(firstMeaning));
   });
 
-  libraryTest('the context line names the round and the pairs left, which '
-      'count down (M3)', (tester, env) async {
+  libraryTest('the context line names the round; the board, not the line, '
+      'shows the pairs left (critique 2026-09-30)', (tester, env) async {
     final handle = tester.ensureSemantics();
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
-    String line(int left) => _en.studyContextPairsLeft(
-      _en.studyContextRound(
-        _en.studyContextReview(
-          'Lesson',
-          _en.studyKindReview,
-          _en.cardModeMatch,
-        ),
-        1,
-      ),
-      left,
+    final line = _en.studyContextRound(
+      _en.studyContextReview('Lesson', _en.studyKindReview),
+      1,
     );
 
-    expect(find.bySemanticsLabel(line(5)), findsOneWidget);
+    expect(find.bySemanticsLabel(line), findsOneWidget);
 
     await _pair(tester, 'term 1', 'apple');
     await tester.pumpAndSettle();
 
-    expect(find.bySemanticsLabel(line(4)), findsOneWidget);
+    expect(find.bySemanticsLabel(line), findsOneWidget);
     handle.dispose();
   });
 

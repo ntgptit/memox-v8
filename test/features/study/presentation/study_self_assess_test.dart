@@ -169,11 +169,7 @@ void main() {
 
     expect(
       find.bySemanticsLabel(
-        _en.studyContextReview(
-          'Lesson',
-          _en.studyKindReview,
-          _en.cardModeSelfAssess,
-        ),
+        _en.studyContextReview('Lesson', _en.studyKindReview),
       ),
       findsOneWidget,
     );

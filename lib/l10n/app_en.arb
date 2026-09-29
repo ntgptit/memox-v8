@@ -4063,7 +4063,7 @@
   "@studyKindLearning": {
     "description": "Study session shell (FE-A6 P1c): the session kind in the context line."
   },
-  "studyContextLearning": "{deck} · {kind} · stage {stage} of {stages} · {mode}",
+  "studyContextLearning": "{deck} · {kind} · stage {stage} of {stages}",
   "@studyContextLearning": {
     "placeholders": {
       "deck": {
@@ -4077,12 +4077,9 @@
       },
       "stages": {
         "type": "int"
-      },
-      "mode": {
-        "type": "String"
       }
     },
-    "description": "Study session shell (FE-A6 P1c): the context line of a learning session (BR-MODE-004)."
+    "description": "Study session shell (FE-A6 P1c): the context line of a learning session (BR-MODE-004); the mode is in the top bar's pill (critique 2026-09-30)."
   },
   "studyBrowseTerm": "Term",
   "@studyBrowseTerm": {
@@ -4132,7 +4129,7 @@
   "@studyKindReview": {
     "description": "Study session shell (FE-A6 P2): the kind of a review session in the context line."
   },
-  "studyContextReview": "{deck} · {kind} · {mode}",
+  "studyContextReview": "{deck} · {kind}",
   "@studyContextReview": {
     "placeholders": {
       "deck": {
@@ -4140,12 +4137,9 @@
       },
       "kind": {
         "type": "String"
-      },
-      "mode": {
-        "type": "String"
       }
     },
-    "description": "Study session shell (FE-A6 P2): the context line of a review session."
+    "description": "Study session shell (FE-A6 P2): the context line of a review session; the mode is in the top bar's pill (critique 2026-09-30)."
   },
   "studySelfAssessShowAnswer": "Show answer",
   "@studySelfAssessShowAnswer": {
@@ -4236,18 +4230,6 @@
       }
     },
     "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
-  },
-  "studyContextPairsLeft": "{context} · {count, plural, =1{1 pair left} other{{count} pairs left}}",
-  "@studyContextPairsLeft": {
-    "placeholders": {
-      "context": {
-        "type": "String"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 17 (FE-A6 P3): the context line with the board's pairs left."
   },
   "studyContextFirstPick": "{context} · first pick counts",
   "@studyContextFirstPick": {
