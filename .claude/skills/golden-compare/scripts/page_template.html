@@ -1,0 +1,152 @@
+<title>Golden Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a review sheet — sticky filter bar, then one card per golden, each holding Trước | Sau | Diff side by side */
+:root{
+  --bg:#f3f4f8; --surface:#ffffff; --ink:#161a2e; --muted:#5b6078; --line:#dde0ec;
+  --accent:#4a5ae8; --accent-soft:#e6e9fd; --before:#8a6d1f; --before-soft:#fbf2dc;
+  --after:#1f7a52; --after-soft:#dff3ea; --diff:#c9283e; --diff-soft:#fbe3e7;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1220; --surface:#181c2e; --ink:#e7e9f5; --muted:#9aa0bd; --line:#2a2f47;
+  --accent:#8f9bff; --accent-soft:#252b4d; --before:#e0bf6a; --before-soft:#3a3120;
+  --after:#6fd3a3; --after-soft:#173528; --diff:#ff7d8f; --diff-soft:#3d1b23; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#181c2e; --ink:#e7e9f5; --muted:#9aa0bd; --line:#2a2f47;
+  --accent:#8f9bff; --accent-soft:#252b4d; --before:#e0bf6a; --before-soft:#3a3120;
+  --after:#6fd3a3; --after-soft:#173528; --diff:#ff7d8f; --diff-soft:#3d1b23; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+h1{font-size:clamp(24px,3.4vw,32px);line-height:1.2;margin:0 0 8px;text-wrap:balance;font-weight:700;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:68ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font:13px var(--f-mono);color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.t-before{background:var(--before-soft);color:var(--before)}
+.t-after{background:var(--after-soft);color:var(--after)}
+.t-diff{background:var(--diff-soft);color:var(--diff)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-top:22px;padding-block:12px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#0f1220}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#0f1220}}
+.chip:focus-visible,.zoom:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.family{margin-top:34px}
+.family>h2{font-size:19px;margin:0 0 4px;font-weight:700}
+.family>p{margin:0 0 14px;color:var(--muted);max-width:75ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}
+.head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.head h3{font:600 15px var(--f-mono);margin:0;word-break:break-all}
+.ids{display:flex;gap:6px;flex-wrap:wrap}
+.id{font:600 12px var(--f-mono);background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:6px}
+.pct{margin-left:auto;font:12px var(--f-mono);color:var(--muted)}
+.why{margin:8px 0 14px;max-width:80ch}
+.why b{font-weight:600}
+.shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.shots.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+figure{margin:0;min-width:0}
+figcaption{margin-bottom:6px}
+.zoom{display:block;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);cursor:zoom-in;width:100%}
+.zoom img{display:block;width:100%;height:auto}
+.empty{color:var(--muted);margin-top:30px}
+.missing{display:flex;align-items:center;justify-content:center;aspect-ratio:9/20;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:13px;text-align:center;padding:8px}
+dialog{border:none;padding:0;background:transparent;max-width:min(96vw,1400px);max-height:94vh}
+dialog::backdrop{background:rgba(8,10,20,.78)}
+.lb{display:flex;gap:10px;overflow:auto;max-height:90vh}
+.lb figure{flex:1 1 0;min-width:240px}
+.lb img{width:100%;height:auto;border-radius:8px;display:block}
+.lb figcaption{color:#fff}
+.close{position:fixed;top:14px;right:18px;font:inherit;background:#fff;color:#111;border:none;border-radius:999px;padding:6px 14px;cursor:pointer}
+@media (max-width:640px){.shots,.shots.two{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.card{padding:12px}.pct{margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <p class="lede" id="intro"></p>
+  <div class="meta" id="meta"></div>
+  <div class="legend"><span class="tag t-before">Trước</span><span class="tag t-after">Sau</span><span class="tag t-diff">Diff (pixel đổi)</span></div>
+
+  <div class="bar" role="toolbar" aria-label="Bộ lọc">
+    <span class="lbl" id="theme-lbl">Theme ảnh</span>
+    <div class="group" id="theme"></div>
+    <span class="lbl">Hiển thị</span>
+    <div class="group" id="mode"><button class="chip" id="md-3" aria-pressed="true" data-v="3">Trước · Sau · Diff</button><button class="chip" id="md-2" aria-pressed="false" data-v="2">Trước · Sau</button></div>
+    <span class="lbl">Nhóm</span>
+    <div class="group" id="fam"></div>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<dialog id="lb" aria-label="Phóng to"><button class="close" id="lb-close">Đóng</button><div class="lb" id="lb-body"></div></dialog>
+
+<script>
+const NOTES = __NOTES__;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const $ = s => document.querySelector(s);
+const SHOTS = Object.entries(NOTES.shots).map(([name, s]) => ({name, ...s}));
+const THEMES = ["light","dark","default"].filter(t => SHOTS.some(s => s.themes[t]));
+let theme = THEMES[0], mode = "3", fam = "all";
+
+$("#title").textContent = NOTES.title;
+$("#intro").textContent = NOTES.intro || `Mỗi thẻ là một ảnh golden đã đổi. Trước: ${NOTES.base}. Sau: ${NOTES.head}. Diff tô đỏ mọi pixel khác nhau trên nền ảnh Sau đã làm mờ. Bấm vào ảnh để phóng to.`;
+const pngs = SHOTS.reduce((n, s) => n + Object.keys(s.themes).length, 0);
+$("#meta").innerHTML = `<span><b>${SHOTS.length}</b> màn/state</span><span><b>${pngs}</b> ảnh</span><span>trước: ${esc(NOTES.base)}</span><span>sau: ${esc(NOTES.head)}</span>`;
+if (THEMES.length < 2) { $("#theme").hidden = true; $("#theme-lbl").hidden = true; }
+$("#theme").innerHTML = THEMES.map(t => `<button class="chip" id="th-${t}" data-v="${t}" aria-pressed="${t===theme}">${t==="default"?"Mặc định":t[0].toUpperCase()+t.slice(1)}</button>`).join("");
+$("#fam").innerHTML = [{key:"all",title:"Tất cả"}, ...NOTES.families].map(f => `<button class="chip" id="fm-${esc(f.key)}" data-v="${esc(f.key)}" aria-pressed="${f.key===fam}">${esc(f.short || f.title)}</button>`).join("");
+
+function cell(s, kind, label, cls){
+  const info = s.themes[theme];
+  const tag = `<figcaption><span class="tag ${cls}">${label}</span></figcaption>`;
+  const has = info && (kind==="after" ? info.status!=="deleted" : kind==="before" ? info.status!=="added" : info.pct!=null);
+  if (!has) {
+    const why = !info ? "Không có ảnh ở theme này" : info.status==="added" ? "Golden mới, chưa có ảnh trước" : info.status==="deleted" ? "Golden đã bị xoá" : "Kích thước đổi, không tính được diff";
+    return `<figure>${tag}<div class="missing">${why}</div></figure>`;
+  }
+  return `<figure>${tag}<button class="zoom" data-name="${esc(s.name)}" aria-label="Phóng to ${esc(s.name)}"><img loading="lazy" src="img/${esc(s.name)}_${theme}_${kind}.webp" alt="${label}: ${esc(s.name)} (${theme})" width="480" height="1067"></button></figure>`;
+}
+function render(){
+  const out = [];
+  for (const f of NOTES.families){
+    if (fam !== "all" && fam !== f.key) continue;
+    const items = SHOTS.filter(s => s.family === f.key);
+    if (!items.length) continue;
+    out.push(`<section class="family"><h2>${esc(f.title)}</h2>${f.intro?`<p>${esc(f.intro)}</p>`:""}`);
+    for (const s of items){
+      const info = s.themes[theme] || {};
+      const pct = info.pct==null ? (info.status && info.status!=="changed" ? info.status : "") : `${info.pct.toFixed(2)}% pixel đổi`;
+      const cols = [["before","Trước","t-before"],["after","Sau","t-after"]].concat(mode==="3"?[["diff","Diff","t-diff"]]:[]);
+      out.push(`<article class="card"><div class="head"><h3>${esc(s.name)}</h3><div class="ids">${(s.ids||[]).map(i=>`<span class="id">${esc(i)}</span>`).join("")}</div><span class="pct">${pct}</span></div><p class="why">${esc(s.why)}</p><div class="shots ${mode==="2"?"two":""}">${cols.map(([k,l,c]) => cell(s,k,l,c)).join("")}</div></article>`);
+    }
+    out.push(`</section>`);
+  }
+  $("#list").innerHTML = out.join("") || `<p class="empty">Không có ảnh trong nhóm này.</p>`;
+}
+function bind(id, set){
+  $(id).addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    set(b.dataset.v);
+    for (const x of $(id).querySelectorAll("button")) x.setAttribute("aria-pressed", String(x===b));
+    render();
+  });
+}
+bind("#theme", v => theme = v); bind("#mode", v => mode = v); bind("#fam", v => fam = v);
+render();
+const lb = $("#lb");
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest(".zoom"); if(!b) return;
+  const s = SHOTS.find(x => x.name === b.dataset.name);
+  $("#lb-body").innerHTML = [["before","Trước"],["after","Sau"],["diff","Diff"]].map(([k,l]) => cell(s,k,l,"")).join("").replaceAll('class="zoom"','class="zoom" tabindex="-1"');
+  if (lb.showModal) lb.showModal();
+});
+$("#lb-close").addEventListener("click", () => lb.close());
+lb.addEventListener("click", e => { if (e.target === lb) lb.close(); });
+</script>
