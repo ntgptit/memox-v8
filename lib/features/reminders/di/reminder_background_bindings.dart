@@ -1,11 +1,13 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/buffer_sink.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/features/reminders/presentation/providers/deliver_reminder_use_case_provider.dart';
 
 /// What the alarm runs, in its own background isolate (UC-REMINDER-001 step
@@ -23,9 +25,12 @@ Future<void> deliverReminderInBackground() async {
 /// and the next Reconcile schedules again. The isolate logs to the device's
 /// log buffer as the app does, and writes it before the container closes, so
 /// a failed fire reaches monitoring.
-Future<void> runReminderDelivery(ProviderContainer container) async {
+Future<void> runReminderDelivery(
+  ProviderContainer container, {
+  bool console = kDebugMode,
+}) async {
   final previous = appLogger;
-  final buffer = _installBufferedLogger(container);
+  final buffer = _installBufferedLogger(container, console: console);
   try {
     await container.read(deliverReminderUseCaseProvider)();
   } on Object catch (error, stackTrace) {
@@ -43,12 +48,20 @@ Future<void> runReminderDelivery(ProviderContainer container) async {
   }
 }
 
-/// The console and the log buffer; the console alone when the buffer cannot
-/// open.
-BufferSink? _installBufferedLogger(ProviderContainer container) {
+/// The log buffer, and the console in a debug build ([console]); the console
+/// alone when the buffer cannot open. A build with no Supabase project has no
+/// buffer: its logs could never be shipped.
+BufferSink? _installBufferedLogger(
+  ProviderContainer container, {
+  required bool console,
+}) {
   try {
-    final buffer = BufferSink(container.read(logDatabaseProvider));
-    AppLogger.install(AppLogger(sinks: [const ConsoleSink(), buffer]));
+    final buffer = container.read(supabaseConfigProvider).isEnabled
+        ? BufferSink(container.read(logDatabaseProvider))
+        : null;
+    AppLogger.install(
+      AppLogger(sinks: [if (console) const ConsoleSink(), ?buffer]),
+    );
     return buffer;
   } on Object {
     return null;

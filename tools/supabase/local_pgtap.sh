@@ -8,7 +8,7 @@ set -euo pipefail
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 BIN=/usr/lib/postgresql/16/bin
 DATA=$(mktemp -d)
-PORT=54329
+PORT=${PGTAP_PORT:-54329}  # override when two runs share the machine
 RUN_AS=()
 if [ "$(id -u)" = 0 ]; then chown postgres "$DATA"; RUN_AS=(su postgres -c); fi
 run() { if [ ${#RUN_AS[@]} -gt 0 ]; then "${RUN_AS[@]}" "$*"; else bash -c "$*"; fi; }

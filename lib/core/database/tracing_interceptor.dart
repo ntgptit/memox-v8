@@ -7,6 +7,11 @@ import 'package:memox/core/logging/app_logger.dart';
 ///
 /// The log buffer has its own database without this tracer, so writing a log
 /// never logs.
+///
+/// A statement's time is what its caller waits for: it starts when the tracer
+/// sees the call, so it includes the wait for Drift's lock on the connection
+/// (statements queue behind each other). A `db.slow_query` can therefore mean
+/// a busy connection, not a slow statement; read its neighbours in the log.
 final class TracingInterceptor extends QueryInterceptor {
   TracingInterceptor({this._logger, int Function()? micros})
     : _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
@@ -14,11 +19,20 @@ final class TracingInterceptor extends QueryInterceptor {
   static const slowMs = 50;
   static const verySlowMs = 150;
 
+  /// A batch keeps the arguments of its first runs only: a bulk import is
+  /// thousands of runs of one statement. Its context carries `runs`, the real
+  /// count.
+  static const maxBatchArgs = 50;
+
   // Elapsed time only: the database layer never reads the wall clock.
   static final _stopwatch = Stopwatch()..start();
 
   final AppLogger? _logger;
   final int Function() _micros;
+
+  /// When each open transaction began, on [_micros]'s clock. Drift hands the
+  /// commit or rollback the executor [beginTransaction] returned.
+  final _transactionStarts = Expando<int>('transaction start');
 
   AppLogger get _log => _logger ?? appLogger;
 
@@ -86,31 +100,53 @@ final class TracingInterceptor extends QueryInterceptor {
   Future<void> runBatched(
     QueryExecutor executor,
     BatchedStatements statements,
-  ) => _trace('batch', statements.statements.join(';\n'), [
-    for (final run in statements.arguments) run.arguments,
-  ], () => executor.runBatched(statements));
+  ) => _trace(
+    'batch',
+    statements.statements.join(';\n'),
+    [for (final run in statements.arguments.take(maxBatchArgs)) run.arguments],
+    () => executor.runBatched(statements),
+    runs: statements.arguments.length,
+  );
+
+  @override
+  TransactionExecutor beginTransaction(QueryExecutor parent) {
+    final transaction = super.beginTransaction(parent);
+    _transactionStarts[transaction] = _micros();
+    return transaction;
+  }
 
   @override
   Future<void> commitTransaction(TransactionExecutor inner) =>
-      _transaction('commit', inner.send);
+      _transaction('commit', inner, inner.send);
 
   @override
   Future<void> rollbackTransaction(TransactionExecutor inner) =>
-      _transaction('rollback', inner.rollback);
+      _transaction('rollback', inner, inner.rollback);
 
   /// One `debug db.transaction` as it ends; its statements log on their own.
-  Future<void> _transaction(String outcome, Future<void> Function() end) async {
-    final start = _micros();
+  /// `duration_ms` runs from the begin to the end of the commit or rollback;
+  /// `commit_ms` (`rollback_ms`) is that last call alone.
+  Future<void> _transaction(
+    String outcome,
+    TransactionExecutor transaction,
+    Future<void> Function() end,
+  ) async {
+    final endStart = _micros();
+    final begin = _transactionStarts[transaction] ?? endStart;
     try {
       await end();
     } on Object catch (error, stackTrace) {
-      _failed('transaction', outcome, const [], start, error, stackTrace);
+      _failed('transaction', outcome, const [], endStart, error, stackTrace);
       rethrow;
     }
     _log.debug(
       'db.transaction',
       category: LogCategory.db,
-      context: {'outcome': outcome, 'duration_ms': _elapsedMs(start)},
+      context: {
+        'outcome': outcome,
+        'duration_ms': _elapsedMs(begin),
+        '${outcome}_ms': _elapsedMs(endStart),
+      },
     );
   }
 
@@ -118,17 +154,18 @@ final class TracingInterceptor extends QueryInterceptor {
     String kind,
     String sql,
     List<Object?> args,
-    Future<T> Function() run,
-  ) async {
+    Future<T> Function() run, {
+    int? runs,
+  }) async {
     final start = _micros();
     final T result;
     try {
       result = await run();
     } on Object catch (error, stackTrace) {
-      _failed(kind, sql, args, start, error, stackTrace);
+      _failed(kind, sql, args, start, error, stackTrace, runs: runs);
       rethrow;
     }
-    _done(kind, sql, args, _elapsedMs(start));
+    _done(kind, sql, args, _elapsedMs(start), runs: runs);
     return result;
   }
 
@@ -138,17 +175,18 @@ final class TracingInterceptor extends QueryInterceptor {
     List<Object?> args,
     int start,
     Object error,
-    StackTrace stackTrace,
-  ) => _log.error(
+    StackTrace stackTrace, {
+    int? runs,
+  }) => _log.error(
     'db.query_failed',
     category: LogCategory.db,
     error: error,
     stackTrace: stackTrace,
-    context: _context(kind, sql, args, _elapsedMs(start)),
+    context: _context(kind, sql, args, _elapsedMs(start), runs),
   );
 
-  void _done(String kind, String sql, List<Object?> args, int ms) {
-    final context = _context(kind, sql, args, ms);
+  void _done(String kind, String sql, List<Object?> args, int ms, {int? runs}) {
+    final context = _context(kind, sql, args, ms, runs);
     if (ms >= verySlowMs) {
       _log.warning('db.slow_query', category: LogCategory.db, context: context);
     } else if (ms >= slowMs) {
@@ -165,11 +203,13 @@ final class TracingInterceptor extends QueryInterceptor {
     String sql,
     List<Object?> args,
     int ms,
+    int? runs,
   ) => {
     'kind': kind,
     'sql': sql,
     'args': [for (final arg in args) _arg(arg)],
     'duration_ms': ms,
+    'runs': ?runs,
   };
 
   // A blob is logged by its size; everything else as it is.

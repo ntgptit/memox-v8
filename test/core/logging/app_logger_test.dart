@@ -166,6 +166,186 @@ void main() {
 
     expect(sink.entries.single.errorType, '_Unprintable');
   });
+
+  group('an error storm', () {
+    late _RecordingSink sink;
+    late DateTime clock;
+    late AppLogger logger;
+
+    setUp(() {
+      sink = _RecordingSink();
+      clock = at;
+      logger = AppLogger(sinks: [sink], now: () => clock);
+    });
+
+    void tick(Duration by) => clock = clock.add(by);
+
+    void fail([Object? error]) =>
+        logger.error('sync.failed', error: error ?? StateError('down'));
+
+    test('warnings without an error are never merged: each keeps its own '
+        'context', () {
+      logger
+        ..warning('db.slow_query', context: {'sql': 'SELECT 1'})
+        ..warning('db.slow_query', context: {'sql': 'SELECT 2'});
+
+      expect(
+        [for (final e in sink.entries) e.context['sql']],
+        ['SELECT 1', 'SELECT 2'],
+      );
+    });
+
+    test('a flush writes the count of a storm that stopped', () async {
+      fail();
+      tick(const Duration(seconds: 1));
+      fail();
+      fail();
+
+      await logger.flush();
+
+      expect(sink.entries, hasLength(2));
+      expect(sink.entries.last.event, 'sync.failed');
+      expect(sink.entries.last.level, LogLevel.error);
+      expect(sink.entries.last.errorType, 'StateError');
+      expect(sink.entries.last.context['repeated'], 2);
+    });
+
+    test('a count written by a flush is not written again', () async {
+      fail();
+      fail();
+      await logger.flush();
+      await logger.flush();
+      tick(const Duration(seconds: 6));
+      fail();
+
+      expect(
+        [for (final e in sink.entries) e.context['repeated']],
+        [null, 1, null],
+      );
+    });
+
+    test('a clock set back does not hide the next error', () {
+      fail();
+      tick(const Duration(hours: -2));
+      fail();
+
+      expect(sink.entries, hasLength(2));
+    });
+
+    test('the same error within 5 s is written once', () {
+      fail();
+      tick(const Duration(seconds: 1));
+      fail();
+      tick(const Duration(seconds: 3));
+      fail();
+
+      expect(sink.entries, hasLength(1));
+      expect(sink.entries.single.context.containsKey('repeated'), isFalse);
+    });
+
+    test('the next one after the window is written with the count it '
+        'suppressed', () {
+      fail();
+      tick(const Duration(seconds: 1));
+      fail();
+      fail();
+      tick(const Duration(seconds: 4));
+      fail();
+
+      expect(sink.entries, hasLength(2));
+      expect(sink.entries.last.context['repeated'], 2);
+    });
+
+    test('the window counts from the last entry written, so a steady storm '
+        'still shows up every 5 s', () {
+      fail();
+      for (var i = 0; i < 12; i++) {
+        tick(const Duration(seconds: 1));
+        fail();
+      }
+
+      expect(sink.entries, hasLength(3));
+      expect(sink.entries[1].context['repeated'], 4);
+      expect(sink.entries[2].context['repeated'], 4);
+    });
+
+    test('a warning is deduped like an error', () {
+      logger
+        ..warning('db.slow_query', error: StateError('x'))
+        ..warning('db.slow_query', error: StateError('x'));
+
+      expect(sink.entries, hasLength(1));
+    });
+
+    test('a different event, error type or message is another storm', () {
+      fail();
+      logger
+        ..error('sync.other', error: StateError('down'))
+        ..error('sync.failed', error: ArgumentError('down'))
+        ..error('sync.failed', error: StateError('up'));
+
+      expect(sink.entries, hasLength(4));
+    });
+
+    test('debug and info are never deduped', () {
+      logger
+        ..debug('db.query')
+        ..debug('db.query')
+        ..info('lifecycle.resume')
+        ..info('lifecycle.resume');
+
+      expect(sink.entries, hasLength(4));
+    });
+
+    test('an entry with the same key after the count was written starts a '
+        'new window', () {
+      fail();
+      fail();
+      tick(const Duration(seconds: 6));
+      fail();
+      fail();
+
+      expect(sink.entries, hasLength(2));
+      tick(const Duration(seconds: 6));
+      fail();
+      expect(sink.entries.last.context['repeated'], 1);
+    });
+
+    test('a caller context is kept next to repeated', () {
+      fail();
+      fail();
+      tick(const Duration(seconds: 6));
+      logger.error(
+        'sync.failed',
+        error: StateError('down'),
+        context: {'failures': 3},
+      );
+
+      expect(sink.entries.last.context, {'failures': 3, 'repeated': 1});
+    });
+
+    test('keys of storms long over do not pile up', () {
+      for (var i = 0; i < 1000; i++) {
+        logger.error('x.$i', error: StateError('e'));
+        tick(const Duration(seconds: 6));
+      }
+
+      expect(logger.dedupeKeysForTest, lessThanOrEqualTo(256));
+    });
+  });
+
+  test('a network entry round-trips through JSON', () {
+    final sink = _RecordingSink();
+    AppLogger(
+      sinks: [sink],
+      now: () => at,
+    ).debug('net.request', category: LogCategory.network);
+
+    final json = sink.entries.single.toJson();
+
+    expect(json['category'], 'network');
+    expect(LogEntry.fromJson(json).category, LogCategory.network);
+  });
 }
 
 final class _Unprintable {

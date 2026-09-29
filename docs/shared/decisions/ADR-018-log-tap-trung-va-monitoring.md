@@ -30,8 +30,8 @@ Trước ADR này, V8 có:
 | 4 | Offline | Log chờ trong bộ đệm cho tới khi có mạng; `id` là UUID sinh ở client, nên đẩy lại không tạo bản ghi trùng |
 | 5 | Thời gian giữ | `pg_cron` chạy mỗi ngày: `debug` và `info` quá 7 ngày thì xoá; `warning` và `error` quá 180 ngày (khoảng 6 tháng) thì xoá. Tuổi tính từ lúc server nhận (`received_at`), không theo đồng hồ của máy. Bộ đệm trên máy áp cùng mốc cho bản ghi chưa đẩy được |
 | 6 | Theo dõi xử lý | `warning` và `error` có trạng thái `open`/`fixed`, kèm thời điểm, người đổi và ghi chú. Admin đổi trạng thái qua RPC |
-| 7 | Admin | Vai trò `admin` trong `app_metadata` của user trên Supabase. Chủ dự án đặt vai trò này một lần cho user id trên máy mình. RPC đọc log và RPC đổi trạng thái kiểm tra vai trò này; bảng không có policy và client không có quyền trên bảng, đúng mẫu của [ADR-015](ADR-015-supabase-lam-backend.md) |
-| 8 | Xem log | Mục Monitoring trong Settings, chỉ hiện với admin. Tab chính đọc từ Supabase; tab "Chưa gửi" đọc bộ đệm trên máy, để xem được cả lúc offline |
+| 7 | Admin | Vai trò `admin` trong `app_metadata` của user trên Supabase. Chủ dự án đặt vai trò này một lần cho user id trên máy mình. RPC đọc log (`log_query` cho danh sách gọn, `log_get` cho một bản ghi đầy đủ) và RPC đổi trạng thái (`log_set_status`) kiểm tra vai trò này; bảng không có policy và client không có quyền trên bảng, đúng mẫu của [ADR-015](ADR-015-supabase-lam-backend.md) |
+| 8 | Xem log | Mục Monitoring trong Settings, chỉ hiện với admin. Tab chính đọc danh sách từ Supabase bằng `log_query` (hàng gọn, không có `context` và `stack_trace`), mở một dòng thì gọi `log_get`; tab "Chưa gửi" đọc bộ đệm trên máy, để xem được cả lúc offline |
 | 9 | Log của server | Hàm `private.log_server(...)` ghi thẳng vào `app_log` với `source = 'server'`. RPC gọi nó ở những chỗ từ chối hoặc lỗi |
 
 ## Hệ quả
@@ -51,6 +51,7 @@ Trước ADR này, V8 có:
 - Không ảnh hưởng: [BR-REMINDER-005](../../features/reminders/rules/BR-REMINDER-005-noi-dung-notification-rieng-tu.md)
   (nội dung trên màn khoá), [BR-STUDY-030](../../features/study/rules/BR-STUDY-030-khong-luu-noi-dung-go-o-fill.md)
   (luật lưu trữ, không phải luật log).
+- Log mạng: mọi request của Supabase client (trừ `log_push`) được ghi với category `network` (spec [`2026-09-29-network-logging-design.md`](../../superpowers/specs/2026-09-29-network-logging-design.md)).
 - Khi app có người dùng thật ngoài admin, phải xem lại quyết định 1.
 
 Chi tiết thiết kế: spec

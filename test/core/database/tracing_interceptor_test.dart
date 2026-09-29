@@ -162,6 +162,94 @@ void main() {
     },
   );
 
+  test('a batch of more than 50 runs keeps the arguments of the first 50 and '
+      'says how many runs there were', () async {
+    final db = await open(const []);
+    await db.customStatement('CREATE TEMP TABLE t (x INTEGER)');
+    sink.entries.clear();
+
+    await db.batch((b) {
+      for (var i = 0; i < 60; i++) {
+        b.customStatement('INSERT INTO t VALUES (?)', [i]);
+      }
+    });
+
+    final batch = sink.entries.singleWhere((e) => e.context['kind'] == 'batch');
+    final args = batch.context['args']! as List<Object?>;
+    expect(args, hasLength(50));
+    expect(args.first, [0]);
+    expect(args.last, [49]);
+    expect(batch.context['runs'], 60);
+    expect(batch.context['sql'], 'INSERT INTO t VALUES (?)');
+  });
+
+  test('a batch of 50 runs or fewer keeps every run', () async {
+    final db = await open(const []);
+    await db.customStatement('CREATE TEMP TABLE t (x INTEGER)');
+    sink.entries.clear();
+
+    await db.batch((b) {
+      for (var i = 0; i < 50; i++) {
+        b.customStatement('INSERT INTO t VALUES (?)', [i]);
+      }
+    });
+
+    final batch = sink.entries.singleWhere((e) => e.context['kind'] == 'batch');
+    expect(batch.context['args'], hasLength(50));
+    expect(batch.context['runs'], 50);
+  });
+
+  test('a transaction measures from its start to the end of the commit, '
+      'and keeps the commit call apart', () async {
+    final db = await open([10, 20]);
+
+    await db.transaction(() async {
+      await db.customSelect('SELECT 1').get();
+      await db.customSelect('SELECT 2').get();
+    });
+
+    final end = sink.entries.singleWhere((e) => e.event == 'db.transaction');
+    expect(end.context['outcome'], 'commit');
+    expect(end.context['duration_ms'], 30);
+    expect(end.context['commit_ms'], 0);
+  });
+
+  test('a rolled back transaction measures from its start too', () async {
+    final db = await open([15]);
+
+    await expectLater(
+      db.transaction<void>(() async {
+        await db.customSelect('SELECT 1').get();
+        throw StateError('abort');
+      }),
+      throwsStateError,
+    );
+
+    final end = sink.entries.singleWhere((e) => e.event == 'db.transaction');
+    expect(end.context['outcome'], 'rollback');
+    expect(end.context['duration_ms'], 15);
+  });
+
+  test('a slow commit shows in commit_ms, and in duration_ms', () async {
+    final takes = _Takes();
+    final db = AppDatabase(
+      NativeDatabase.memory()
+          .interceptWith(_SlowCommit(takes, 40))
+          .interceptWith(
+            TracingInterceptor(logger: logger, micros: () => takes.micros),
+          ),
+    );
+    addTearDown(db.close);
+    await db.customSelect('SELECT 1').get();
+    sink.entries.clear();
+
+    await db.transaction(() => db.customSelect('SELECT 1').get());
+
+    final end = sink.entries.singleWhere((e) => e.event == 'db.transaction');
+    expect(end.context['commit_ms'], 40);
+    expect(end.context['duration_ms'], 40);
+  });
+
   test('a transaction that throws logs db.transaction with rollback', () async {
     final db = await open(const []);
 
@@ -210,6 +298,20 @@ void main() {
     expect(entry.event, 'db.slow_query');
     expect(entry.context['duration_ms'], greaterThanOrEqualTo(50));
   });
+}
+
+/// Makes each commit take [ms] on the tracer's clock.
+final class _SlowCommit extends QueryInterceptor {
+  _SlowCommit(this._takes, this.ms);
+
+  final _Takes _takes;
+  final int ms;
+
+  @override
+  Future<void> commitTransaction(TransactionExecutor inner) {
+    _takes.micros += ms * 1000;
+    return super.commitTransaction(inner);
+  }
 }
 
 /// Takes 60 ms of wall time on every select.
