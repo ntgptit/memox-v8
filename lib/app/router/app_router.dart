@@ -10,6 +10,9 @@ import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
+import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_entry_section_widget.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -246,6 +249,9 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                   // The reset turned the reminder off; the pending alarm
                   // follows through the gate (FE-B5 spec D7).
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
+                  adminSection: MonitoringEntrySectionWidget(
+                    onOpen: () => context.push(AppRoutes.settingsMonitoring),
+                  ),
                   onAppOptionsReset: () => unawaited(
                     _reconcileAfterReset(ProviderScope.containerOf(context)),
                   ),
@@ -273,6 +279,33 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
                     path: AppRoutes.settingsSyncChild,
                     parentNavigatorKey: rootNavigator,
                     builder: (context, state) => const SyncScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsMonitoringChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => MonitoringScreen(
+                      onOpenServerLog: (id) => unawaited(
+                        context.push(AppRoutes.settingsMonitoringLog(id)),
+                      ),
+                      onOpenPendingLog: (id) => unawaited(
+                        context.push(
+                          AppRoutes.settingsMonitoringLog(id, isLocal: true),
+                        ),
+                      ),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.monitoringLogChild,
+                        parentNavigatorKey: rootNavigator,
+                        builder: (context, state) => MonitoringDetailScreen(
+                          logId: state
+                              .pathParameters[AppRoutes.monitoringLogIdParam]!,
+                          isLocal: AppRoutes.isLocalLog(
+                            state.uri.queryParameters,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

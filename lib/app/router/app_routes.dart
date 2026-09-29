@@ -32,6 +32,31 @@ abstract final class AppRoutes {
   static const String settingsSyncChild = 'sync';
   static const String settingsSync = '$settings/$settingsSyncChild';
 
+  /// Monitoring (screen 28, ADR-018 §8), relative to [settings]: an admin's
+  /// page on the root navigator like Sync, and one log's detail under it.
+  static const String settingsMonitoringChild = 'monitoring';
+  static const String settingsMonitoring = '$settings/$settingsMonitoringChild';
+
+  /// The path parameter that names a log, and the query parameter that says
+  /// it is read from the device buffer (`?local=1`).
+  static const String monitoringLogIdParam = 'logId';
+  static const String monitoringLocalParam = 'local';
+  static const String monitoringLogChild = ':$monitoringLogIdParam';
+  static const String _monitoringLocalOn = '1';
+
+  /// One log's detail, from the server or, when [isLocal], the buffer.
+  static String settingsMonitoringLog(String logId, {bool isLocal = false}) =>
+      Uri(
+        path: '$settingsMonitoring/$logId',
+        queryParameters: isLocal
+            ? {monitoringLocalParam: _monitoringLocalOn}
+            : null,
+      ).toString();
+
+  /// Whether [query] asks for the device buffer.
+  static bool isLocalLog(Map<String, String> query) =>
+      query[monitoringLocalParam] == _monitoringLocalOn;
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 
