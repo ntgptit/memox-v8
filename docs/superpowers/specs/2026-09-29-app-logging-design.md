@@ -51,7 +51,7 @@ buffer; the same fields):
 | `context` | jsonb | Any key/values: ids, SQL, arguments, `duration_ms`, route, provider name |
 | `user_id` | uuid? | Set by the server from `auth.uid()`, never trusted from the client |
 | `device_id` | text? | The sync device id (`SyncStore.deviceId`) |
-| `app_version`, `build_number`, `platform`, `os_version` | text? | `platform`/`os_version` from `dart:io` `Platform`; version and build from `package_info_plus` (new dependency, owner decision D-dep in §8) |
+| `app_version`, `build_number`, `platform`, `os_version` | text? | `platform`/`os_version` from `dart:io` `Platform`; version and build from `package_info_plus` (owner approved the dependency, §8) |
 | `status` | text? | `open` for `warning`/`error` on arrival, null otherwise; `fixed` when an admin marks it |
 | `status_changed_at`, `status_changed_by`, `status_note` | | Set by `log_set_status` |
 | `received_at` | timestamptz | Server time of insert |
@@ -78,16 +78,18 @@ AppLogger ──► ConsoleSink (dart:developer, every level)
 - **`LogDatabase`** (`core/logging/log_database.dart`): its own Drift database, file
   `memox_logs`, one table `log_entry` with §2's fields (no status columns), and no
   interceptor. Pruning runs at start: `debug`/`info` older than 7 days, `warning`/`error`
-  older than 180 days, and a hard cap of 50 000 rows, oldest first.
+  older than 180 days, and a hard cap of 50 000 rows. Past the cap, the oldest `debug`
+  rows go first, then `info`, and `warning`/`error` last.
 - **`LogShipper`** (`core/logging/log_shipper.dart`) runs at start, on resume, when a
   push succeeds after the connection returns, and every 5 minutes while the app is in
   the foreground. It sends up to 500 entries per `log_push` call, oldest first, and
   deletes the ids the server accepted. On failure it keeps the rows and backs off like
   `SyncScheduler`; the failure goes to the console only.
-- **Minimum persisted level: `info`.** `debug` goes to the console only. This is the
-  one throttle in the design: the Drift tracer sees every statement, and watch
-  streams re-run their queries on every write, so persisting `debug` would write
-  thousands of rows a minute during study.
+- **Every level is persisted and pushed, `debug` included** (owner ruling 2026-09-29).
+  The tracer logs every statement, and watch streams re-run their queries on each write,
+  so study produces many `debug` rows. Three things keep this affordable: the
+  `BufferSink` batches, the log database is separate, and `debug` lives 7 days. When
+  the local cap bites, `debug` rows go first.
 
 ### What is logged (the capture points)
 
@@ -164,8 +166,9 @@ Two plans, each a PR:
 
 ## 7. Risks
 
-- **Volume:** `info` and above only (§3). The tracer's `debug` stays on the console. If
-  `info` proves too chatty, raise the thresholds, not the architecture.
+- **Volume:** every statement is persisted at `debug` (owner ruling). If the upload or
+  the table grows too much, the knob is `LogConfig.persistMinLevel` (default `debug`),
+  not the architecture.
 - **Push cost:** it is batched and runs only when the app is in the foreground; a
   failure never blocks study or sync.
 - **Tokens in logs:** accepted by the owner (ADR-018 §1). Nothing logs the Supabase
@@ -174,9 +177,8 @@ Two plans, each a PR:
   - B1: revert the PR. The `memox_logs` file stays on the device, harmless.
   - B2: revert the PR.
 
-## 8. Open for the owner
+## 8. Owner rulings on the open points
 
-- **D-dep:** add `package_info_plus` (the Flutter team's plus plugin, no transitive
-  weight) to stamp `app_version`/`build_number`. The alternative is a `--dart-define`
-  at build time, which a forgotten flag leaves empty.
-
+- **D-dep (2026-09-29):** add `package_info_plus` to stamp `app_version` and
+  `build_number`.
+- **Persisted level (2026-09-29):** `debug` and above, not `info` and above.
