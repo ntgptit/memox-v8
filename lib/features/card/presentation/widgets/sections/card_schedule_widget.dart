@@ -95,21 +95,25 @@ class CardScheduleWidget extends StatelessWidget {
         label: l10n.cardFactLearned,
         value: date(schedule.learnedAt),
       ),
-      _Fact(
-        icon: AppIcons.history,
-        label: l10n.cardFactLastAnswered,
-        value: dateTime(schedule.lastAnsweredAt),
-      ),
-      _Fact(
-        icon: AppIcons.repeat,
-        label: l10n.cardFactAnswers,
-        value: number(schedule.answerCount),
-      ),
-      _Fact(
-        icon: AppIcons.lapses,
-        label: l10n.cardFactLapses,
-        value: number(schedule.lapseCount),
-      ),
+      // With no answer yet these would only state nothing (critique
+      // 2026-09-30).
+      if (schedule.answerCount > 0) ...[
+        _Fact(
+          icon: AppIcons.history,
+          label: l10n.cardFactLastAnswered,
+          value: dateTime(schedule.lastAnsweredAt),
+        ),
+        _Fact(
+          icon: AppIcons.repeat,
+          label: l10n.cardFactAnswers,
+          value: number(schedule.answerCount),
+        ),
+        _Fact(
+          icon: AppIcons.lapses,
+          label: l10n.cardFactLapses,
+          value: number(schedule.lapseCount),
+        ),
+      ],
       _Fact(
         icon: AppIcons.scheduler,
         label: l10n.cardFactScheduler,

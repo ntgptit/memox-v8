@@ -857,7 +857,6 @@
   "studyHomeCaughtUpResting": "Mọi thẻ đang nghỉ.",
   "studyHomeDecks": "Bộ thẻ của bạn",
   "studyHomeLibrary": "Thư viện",
-  "studyHomeRowDue": "{count} đến hạn",
   "progressTitle": "Tiến độ",
   "progressToday": "Hôm nay",
   "progressTodaySplit": "{learning} học mới · {reviewing} ôn tập · mỗi thẻ tính một lần mỗi ngày",

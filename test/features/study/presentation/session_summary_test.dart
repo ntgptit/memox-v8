@@ -7,7 +7,6 @@ import 'package:memox/features/study/presentation/widgets/sections/session_summa
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';

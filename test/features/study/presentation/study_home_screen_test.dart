@@ -100,10 +100,14 @@ void main() {
         row.title,
     ];
     expect(titles, ['Korean', 'Spanish', 'Empty']);
-    expect(
-      find.widgetWithText(MxBadge, _en.studyHomeRowDue(5)),
-      findsOneWidget,
-    );
+    // Every row that can be studied ends alike, in a chevron; its counts are
+    // in its breakdown line (critique 2026-09-30).
+    expect(find.byType(MxBadge), findsNothing);
+    final chevrons = {
+      for (final row in tester.widgetList<MxListRow>(find.byType(MxListRow)))
+        row.title: row.hasChevron,
+    };
+    expect(chevrons, {'Korean': true, 'Spanish': true, 'Empty': false});
   });
 
   libraryTest('noResume: the same body with no Resume card', (

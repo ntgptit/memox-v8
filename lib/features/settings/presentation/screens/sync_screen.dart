@@ -9,6 +9,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/presentation/controllers/sync_controller.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_notice_widget.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_status_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -27,6 +28,12 @@ class SyncScreen extends ConsumerWidget {
   const SyncScreen({super.key});
 
   static const int _skeletonRows = 2;
+
+  /// Something waits, went wrong or was refused.
+  static bool _needsSync(SyncStatus status) =>
+      status.pendingCount > 0 ||
+      status.rejectedCount > 0 ||
+      status.lastFailure != null;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,6 +74,11 @@ class SyncScreen extends ConsumerWidget {
             MxButton(
               label: l10n.syncNow,
               icon: AppIcons.sync,
+              // Sync is automatic; the manual run leads only when something
+              // waits or went wrong (critique 2026-09-30).
+              tone: _needsSync(value)
+                  ? MxButtonTone.primary
+                  : MxButtonTone.outline,
               isBlock: true,
               isLoading: task == SyncTask.syncNow,
               onPressed: task == null

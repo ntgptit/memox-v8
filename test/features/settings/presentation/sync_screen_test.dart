@@ -153,4 +153,41 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  libraryTest('Sync now steps back when nothing waits (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), FakeSyncCommands()),
+    );
+    await _settle(tester);
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
+      MxButtonTone.outline,
+    );
+  });
+
+  libraryTest('Sync now leads while changes wait (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        const SyncStatus(pendingCount: 3),
+        FakeSyncCommands(),
+      ),
+    );
+    await _settle(tester);
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
+      MxButtonTone.primary,
+    );
+  });
 }

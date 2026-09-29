@@ -4557,15 +4557,6 @@
   "@studyHomeLibrary": {
     "description": "Screen handoff 13 (FE-A8): opens the Library root."
   },
-  "studyHomeRowDue": "{count} due",
-  "@studyHomeRowDue": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 13 (FE-A8): a deck row's badge."
-  },
   "progressTitle": "Progress",
   "@progressTitle": {
     "description": "Screen handoff 22 (FE-A9): the Progress tab's app bar title."
