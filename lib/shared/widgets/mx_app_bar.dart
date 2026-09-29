@@ -32,7 +32,8 @@ class MxAppBar extends StatelessWidget {
   /// Takes the title's place and its width, such as the search field of
   /// screen 04. It brings its own semantics; no header flag is added. A
   /// search field keeps 8 above and below it, so the bar grows to 68 rather
-  /// than pressing a 52 field against its edges.
+  /// than pressing a 52 field against its edges, and ends on the gutter so
+  /// its border lines up with the content below.
   final Widget? titleWidget;
   final MxAppBarDensity density;
 
@@ -61,7 +62,7 @@ class MxAppBar extends StatelessWidget {
             padding: EdgeInsetsDirectional.only(
               start: side,
               top: holdsField ? AppSpacing.control : 0,
-              end: endsOnText ? AppSpacing.gutter : side,
+              end: endsOnText || holdsField ? AppSpacing.gutter : side,
               bottom: holdsField ? AppSpacing.control : 0,
             ),
             child: Row(

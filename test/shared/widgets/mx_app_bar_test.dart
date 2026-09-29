@@ -166,29 +166,32 @@ void main() {
       );
     }
   });
-  testWidgets('a search field in the bar keeps 8 above and below it', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxAppBar(
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: 'Back',
-          onPressed: () {},
+  testWidgets(
+    'a search field in the bar keeps 8 above and below it and ends on the gutter',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxAppBar(
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: 'Back',
+            onPressed: () {},
+          ),
+          titleWidget: MxSearchField(
+            controller: TextEditingController(),
+            hintText: 'Search',
+            clearLabel: 'Clear',
+          ),
         ),
-        titleWidget: MxSearchField(
-          controller: TextEditingController(),
-          hintText: 'Search',
-          clearLabel: 'Clear',
-        ),
-      ),
-    );
-    final bar = tester.getRect(find.byType(MxAppBar));
-    final field = tester.getRect(find.byType(MxSearchField));
+      );
+      final bar = tester.getRect(find.byType(MxAppBar));
+      final field = tester.getRect(find.byType(MxSearchField));
 
-    expect(field.top - bar.top, 8);
-    expect(bar.bottom - field.bottom, 8);
-  });
+      expect(field.top - bar.top, 8);
+      expect(bar.bottom - field.bottom, 8);
+      // A bordered field lines up with the content's 16 gutter below it.
+      expect(bar.right - field.right, 16);
+    },
+  );
 }
