@@ -4,6 +4,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -165,4 +166,32 @@ void main() {
       );
     }
   });
+  testWidgets(
+    'a search field in the bar keeps 8 above and below it and ends on the gutter',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxAppBar(
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: 'Back',
+            onPressed: () {},
+          ),
+          titleWidget: MxSearchField(
+            controller: TextEditingController(),
+            hintText: 'Search',
+            clearLabel: 'Clear',
+          ),
+        ),
+      );
+      final bar = tester.getRect(find.byType(MxAppBar));
+      final field = tester.getRect(find.byType(MxSearchField));
+
+      expect(field.top - bar.top, 8);
+      expect(bar.bottom - field.bottom, 8);
+      // A bordered field lines up with the content's 16 gutter below it.
+      expect(bar.right - field.right, 16);
+    },
+  );
 }
