@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -89,6 +90,15 @@ void main() {
     expect(find.byType(MxSegmentedTray<NewCardOrder>), findsNothing);
     expect(find.text('20'), findsOneWidget);
     expect(find.text(_en.settingsOrderCreated), findsOneWidget);
+    // Full contrast: the value reads like the row's label, not a muted count.
+    final styles = tester.element(find.text('20')).textStyles;
+    for (final value in ['20', _en.settingsOrderCreated]) {
+      expect(
+        tester.widget<Text>(find.text(value)).style,
+        styles.settingsLabel,
+        reason: value,
+      );
+    }
   });
 
   libraryTest('turning app defaults off, stepping and saving writes the '

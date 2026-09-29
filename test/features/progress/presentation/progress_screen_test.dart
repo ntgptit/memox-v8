@@ -65,7 +65,7 @@ void main() {
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
     // Critique 2026-09-30: Today's figure is stated once, in the Today card.
-    expect(find.byIcon(AppIcons.studiedToday), findsNothing);
+    expect(find.text(_en.progressToday.toUpperCase()), findsOneWidget);
     // M3-D3: every section gap on the overview is AppSpacing.gutter.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -

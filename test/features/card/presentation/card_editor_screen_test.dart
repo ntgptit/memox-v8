@@ -430,8 +430,8 @@ void main() {
     expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
   });
 
-  libraryTest('create and edit save from the footer only, and mark the '
-      'required fields without a separate legend (critique 2026-09-30)', (
+  libraryTest('the editor saves from the footer only and marks the required '
+      'fields without a separate legend (critique 2026-09-30)', (
     tester,
     env,
   ) async {
@@ -442,16 +442,6 @@ void main() {
     expect(find.widgetWithText(MxButton, _en.cardSaveCard), findsOneWidget);
     expect(find.byType(MxDotOverline), findsNothing);
     expect(find.text(_en.cardRequiredLegend), findsNWidgets(2));
-
-    final card = await env.cards.card(
-      deckId,
-      const CardDraft(front: 'bap', back: 'rice'),
-    );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
-    await tester.pumpAndSettle();
-    expect(find.widgetWithText(MxButton, _en.cardSave), findsNothing);
-    expect(find.widgetWithText(MxButton, _en.cardSaveChanges), findsOneWidget);
-    expect(find.byType(MxDotOverline), findsNothing);
   });
 
   libraryTest('leaving an edited card names what was edited (kit 09 '

@@ -117,7 +117,10 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               // (critique 2026-09-30); the controls come with an override.
               trailing: isEditable
                   ? null
-                  : Text('${options.cardLimit}', style: styles.counter),
+                  : Text(
+                      l10n.studyCount(options.cardLimit),
+                      style: styles.settingsLabel,
+                    ),
               wideControl: !isEditable
                   ? null
                   : Column(
@@ -162,7 +165,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                   ? null
                   : Text(
                       _orderLabel(l10n, options.newCardOrder),
-                      style: styles.counter,
+                      style: styles.settingsLabel,
                     ),
               wideControl: !isEditable
                   ? null

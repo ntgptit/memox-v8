@@ -4640,23 +4640,6 @@
   "@progressStreakLost": {
     "description": "Screen handoff 22 (FE-A9): the streak tile when the streak is lost."
   },
-  "progressTodayCards": "{count, plural, =1{1 card} other{{count} cards}}",
-  "@progressTodayCards": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 22 (FE-A9): the Today tile's count."
-  },
-  "progressTodayCounted": "counted once each",
-  "@progressTodayCounted": {
-    "description": "Screen handoff 22 (FE-A9): the Today tile when today has activity."
-  },
-  "progressTodayNothing": "nothing yet",
-  "@progressTodayNothing": {
-    "description": "Screen handoff 22 (FE-A9): the Today tile when today has no activity."
-  },
   "progressHeldNote": "Study one card today and the streak continues at {next}.",
   "@progressHeldNote": {
     "placeholders": {
