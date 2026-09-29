@@ -5283,7 +5283,7 @@
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it.",
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options.",
   "@studyOptionsBelongTo": {
     "placeholders": {
       "root": {
@@ -5340,10 +5340,6 @@
       }
     },
     "description": "Screen handoff 15 (FE-A3 plan 2): the card limit sub-line."
-  },
-  "studyOptionsApplyNote": "Changes apply to sessions started from now on. A session already open keeps the options it started with.",
-  "@studyOptionsApplyNote": {
-    "description": "Screen handoff 15 (FE-A3 plan 2): the note under the options (BR-SETTINGS-004)."
   },
   "studyOptionsFixLimit": "Fix the limit to enable save.",
   "@studyOptionsFixLimit": {

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_decorations.dart';
@@ -60,7 +58,6 @@ class ProgressStreakWidget extends StatelessWidget {
   Widget _tiles(BuildContext context) {
     final l10n = context.l10n;
     final streak = overview.streak;
-    final todayCount = overview.today.total;
     final current = _StreakTile(
       icon: AppIcons.streak,
       tint: streak.days > 0
@@ -74,38 +71,8 @@ class ProgressStreakWidget extends StatelessWidget {
         StreakState.lost || StreakState.never => l10n.progressStreakLost,
       },
     );
-    final today = _StreakTile(
-      icon: AppIcons.studiedToday,
-      label: l10n.progressToday,
-      value: l10n.progressTodayCards(todayCount),
-      sub: todayCount == 0
-          ? l10n.progressTodayNothing
-          : l10n.progressTodayCounted,
-    );
-    // Side by side as the kit draws them, until a label or a count would
-    // break its line (large text, Vietnamese): then one tile per line.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final share = (constraints.maxWidth - AppSpacing.control) / 2;
-        final isStacked =
-            share < _StreakTile.minWidth(context, current) ||
-            share < _StreakTile.minWidth(context, today);
-        if (isStacked) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.control,
-            children: [current, today],
-          );
-        }
-        return Row(
-          spacing: AppSpacing.control,
-          children: [
-            Expanded(child: current),
-            Expanded(child: today),
-          ],
-        );
-      },
-    );
+    // Today's figure is the Today card's alone (critique 2026-09-30).
+    return current;
   }
 
   String _lastDay(BuildContext context) => progressLostStreakDay(
@@ -143,34 +110,6 @@ class _StreakTile extends StatelessWidget {
   });
 
   final IconData icon;
-
-  /// The narrowest [tile] that keeps its label and its count on one line
-  /// each: the inset, the icon tile, the gap and the wider of the two.
-  static double minWidth(BuildContext context, _StreakTile tile) {
-    final styles = context.textStyles;
-    final textScaler = MediaQuery.textScalerOf(context);
-    final direction = Directionality.of(context);
-    double widthOf(String text, TextStyle style) {
-      final painter = TextPainter(
-        text: TextSpan(text: text, style: style),
-        textDirection: direction,
-        textScaler: textScaler,
-        maxLines: 1,
-      )..layout();
-      final width = painter.width;
-      painter.dispose();
-      return width;
-    }
-
-    final text = math.max(
-      widthOf(tile.label.toUpperCase(), styles.compactOverline),
-      widthOf(tile.value, styles.summaryBodyStrong),
-    );
-    return AppSpacing.grouped * 2 +
-        MxIconTile.smallBox +
-        AppSpacing.control +
-        text;
-  }
 
   /// Null tints with primary.
   final Color? tint;

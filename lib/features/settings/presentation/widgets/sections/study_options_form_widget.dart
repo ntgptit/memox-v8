@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
@@ -48,9 +49,16 @@ class StudyOptionsFormWidget extends ConsumerWidget {
   StudyOptionsController _controller(WidgetRef ref) =>
       ref.read(studyOptionsControllerProvider(deckId).notifier);
 
+  static String _orderLabel(AppLocalizations l10n, NewCardOrder order) =>
+      switch (order) {
+        NewCardOrder.created => l10n.settingsOrderCreated,
+        NewCardOrder.random => l10n.settingsOrderRandom,
+      };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final styles = context.textStyles;
     final isSaving = ref.watch(
       studyOptionsControllerProvider(deckId).select((s) => s.isSaving),
     );
@@ -98,7 +106,6 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           title: form.isUsingAppDefaults
               ? l10n.studyOptionsAppDefaultsHeader
               : l10n.studyOptionsThisDeck,
-          note: l10n.studyOptionsApplyNote,
           children: [
             MxSettingsRow(
               label: l10n.settingsCardLimit,
@@ -106,60 +113,76 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               subtitle: l10n.studyOptionsCardLimitRange(
                 StudyOptions.maxCardLimit,
               ),
-              isEnabled: !form.isUsingAppDefaults,
-              wideControl: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.micro,
-                children: [
-                  MxStepper(
-                    value: options.cardLimit,
-                    decrementLabel: l10n.settingsFewerCards,
-                    incrementLabel: l10n.settingsMoreCards,
-                    valueLabel: l10n.settingsCardLimit,
-                    editHint: l10n.commonEdit,
-                    isEnabled: isEditable,
-                    isBusy: isSaving,
-                    isInvalid: form.isCardLimitInvalid,
-                    onDecrement: options.cardLimit > StudyOptions.minCardLimit
-                        ? () => _controller(ref).stepCardLimit(-1)
-                        : null,
-                    onIncrement: options.cardLimit < StudyOptions.maxCardLimit
-                        ? () => _controller(ref).stepCardLimit(1)
-                        : null,
-                    onValueSubmitted: (text) =>
-                        _controller(ref).typeCardLimit(text),
-                  ),
-                  if (form.isCardLimitInvalid)
-                    MxFieldMessage(
-                      message: l10n.settingsCardLimitInvalid(
-                        StudyOptions.minCardLimit,
-                        StudyOptions.maxCardLimit,
-                      ),
+              // Following the defaults, the value reads at full contrast
+              // (critique 2026-09-30); the controls come with an override.
+              trailing: isEditable
+                  ? null
+                  : Text('${options.cardLimit}', style: styles.counter),
+              wideControl: !isEditable
+                  ? null
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: AppSpacing.micro,
+                      children: [
+                        MxStepper(
+                          value: options.cardLimit,
+                          decrementLabel: l10n.settingsFewerCards,
+                          incrementLabel: l10n.settingsMoreCards,
+                          valueLabel: l10n.settingsCardLimit,
+                          editHint: l10n.commonEdit,
+                          isEnabled: isEditable,
+                          isBusy: isSaving,
+                          isInvalid: form.isCardLimitInvalid,
+                          onDecrement:
+                              options.cardLimit > StudyOptions.minCardLimit
+                              ? () => _controller(ref).stepCardLimit(-1)
+                              : null,
+                          onIncrement:
+                              options.cardLimit < StudyOptions.maxCardLimit
+                              ? () => _controller(ref).stepCardLimit(1)
+                              : null,
+                          onValueSubmitted: (text) =>
+                              _controller(ref).typeCardLimit(text),
+                        ),
+                        if (form.isCardLimitInvalid)
+                          MxFieldMessage(
+                            message: l10n.settingsCardLimitInvalid(
+                              StudyOptions.minCardLimit,
+                              StudyOptions.maxCardLimit,
+                            ),
+                          ),
+                      ],
                     ),
-                ],
-              ),
             ),
             MxSettingsRow(
               label: l10n.settingsNewCardOrder,
               subtitle: l10n.settingsNewCardOrderHint,
               icon: AppIcons.shuffle,
-              isEnabled: !form.isUsingAppDefaults,
-              wideControl: MxSegmentedTray<NewCardOrder>(
-                segments: [
-                  MxSegment(
-                    value: NewCardOrder.created,
-                    label: l10n.settingsOrderCreated,
-                  ),
-                  MxSegment(
-                    value: NewCardOrder.random,
-                    label: l10n.settingsOrderRandom,
-                  ),
-                ],
-                selected: options.newCardOrder,
-                onSelected: isEditable
-                    ? (order) => _controller(ref).chooseNewCardOrder(order)
-                    : null,
-              ),
+              trailing: isEditable
+                  ? null
+                  : Text(
+                      _orderLabel(l10n, options.newCardOrder),
+                      style: styles.counter,
+                    ),
+              wideControl: !isEditable
+                  ? null
+                  : MxSegmentedTray<NewCardOrder>(
+                      segments: [
+                        MxSegment(
+                          value: NewCardOrder.created,
+                          label: l10n.settingsOrderCreated,
+                        ),
+                        MxSegment(
+                          value: NewCardOrder.random,
+                          label: l10n.settingsOrderRandom,
+                        ),
+                      ],
+                      selected: options.newCardOrder,
+                      onSelected: isEditable
+                          ? (order) =>
+                                _controller(ref).chooseNewCardOrder(order)
+                          : null,
+                    ),
             ),
           ],
         ),

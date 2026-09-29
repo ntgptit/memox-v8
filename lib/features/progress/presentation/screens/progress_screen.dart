@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
+import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_level_list_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_range_widget.dart';
@@ -39,6 +40,8 @@ class ProgressScreen extends ConsumerWidget {
     final children = switch (ref.watch(progressProvider)) {
       AsyncError(:final error, :final isLoading) => [
         MxErrorState(
+          // A local read failed, not the network (critique 2026-09-30).
+          icon: AppIcons.alert,
           title: l10n.progressErrorTitle,
           // The reason by the kind of failure, never its cause
           // (UC-PROGRESS-001 E1, BR-CORE-005).
@@ -77,15 +80,19 @@ class ProgressScreen extends ConsumerWidget {
       ),
       const SizedBox(height: AppSpacing.gutter),
       ProgressStreakWidget(overview: progress.overview),
-      const SizedBox(height: AppSpacing.gutter),
-      // Above the list it changes; Today and Streak never do (FE-A9 D10).
-      const ProgressRangeWidget(),
-      const SizedBox(height: AppSpacing.gutter),
-      ProgressLevelListWidget(
-        level: progress.level,
-        isDeckLevel: false,
-        onOpenDeck: onOpenDeck,
-      ),
+      // Never studied, every row would read 0: the list waits for the first
+      // study day (critique 2026-09-30).
+      if (progress.overview.streak.state != StreakState.never) ...[
+        const SizedBox(height: AppSpacing.gutter),
+        // Above the list it changes; Today and Streak never do (FE-A9 D10).
+        const ProgressRangeWidget(),
+        const SizedBox(height: AppSpacing.gutter),
+        ProgressLevelListWidget(
+          level: progress.level,
+          isDeckLevel: false,
+          onOpenDeck: onOpenDeck,
+        ),
+      ],
     ];
   }
 }

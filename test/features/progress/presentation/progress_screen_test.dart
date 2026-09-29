@@ -64,6 +64,8 @@ void main() {
     expect(find.text(_en.progressTodaySplit(5, 12)), findsOneWidget);
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
+    // Critique 2026-09-30: Today's figure is stated once, in the Today card.
+    expect(find.byIcon(AppIcons.studiedToday), findsNothing);
     // M3-D3: every section gap on the overview is AppSpacing.gutter.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -
@@ -169,9 +171,9 @@ void main() {
     expect(find.text(_en.progressStreakDays(0)), findsOneWidget);
   });
 
-  libraryTest('never studied: the places of the chart and the streak, every '
-      'deck at 0, and Start studying opens the Study tab (UC-PROGRESS-001 A2, '
-      'D1)', (tester, env) async {
+  libraryTest('never studied: the places of the chart and the streak, no '
+      'by-deck list of zeros, and Start studying opens the Study tab '
+      '(UC-PROGRESS-001 A2, D1; critique 2026-09-30)', (tester, env) async {
     final taps = _Taps();
     await studiedDeck(env, 'IELTS Academic Word List');
     await pumpLibraryScreen(tester, env, _screen(taps));
@@ -180,11 +182,8 @@ void main() {
     expect(find.byType(MxDashedNote), findsNWidgets(2));
     await tester.tap(find.text(_en.progressStartStudying));
     expect(taps.study, 1);
-    final ielts = await _row(tester, 'IELTS Academic Word List');
-    expect(
-      find.descendant(of: ielts, matching: find.text(_en.progressNoActivity)),
-      findsOneWidget,
-    );
+    expect(find.text(_en.progressAllDecks), findsNothing);
+    expect(find.text('IELTS Academic Word List'), findsNothing);
   });
 
   libraryTest('a quiet week says so and points to 30 days; at 30 days only '
@@ -255,6 +254,9 @@ void main() {
 
     expect(reads, 2);
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
+    // A local read failure is not a network fault (critique 2026-09-30).
+    expect(find.byIcon(AppIcons.alert), findsOneWidget);
+    expect(find.byIcon(AppIcons.offline), findsNothing);
   });
 
   libraryTest('a failed read says what failed, by the kind of failure '
@@ -275,37 +277,6 @@ void main() {
 
     expect(find.text(_en.failureBusy), findsOneWidget);
     expect(find.textContaining('/data/'), findsNothing);
-  });
-
-  libraryTest('at large text in Vietnamese the streak tiles stack, so a label '
-      'or a count keeps its line; at 1x they sit side by side', (
-    tester,
-    env,
-  ) async {
-    await progressLibrary(env, today: false);
-    Future<(Offset, Offset)> tiles(double scale) async {
-      await pumpLibraryScreen(
-        tester,
-        env,
-        _screen(_Taps()),
-        textScale: scale,
-        locale: const Locale('vi'),
-      );
-      await _settle(tester);
-      final flame = find.byIcon(AppIcons.streak);
-      await tester.scrollUntilVisible(flame, 200);
-      return (
-        tester.getTopLeft(flame),
-        tester.getTopLeft(find.byIcon(AppIcons.studiedToday)),
-      );
-    }
-
-    final (current, today) = await tiles(2);
-    expect(today.dy, greaterThan(current.dy));
-    expect(today.dx, current.dx);
-
-    final (current1x, today1x) = await tiles(1);
-    expect(today1x.dx, greaterThan(current1x.dx));
   });
 
   libraryTest('loading is labelled for TalkBack', (tester, env) async {
