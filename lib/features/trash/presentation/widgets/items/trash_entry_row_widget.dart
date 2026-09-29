@@ -41,8 +41,6 @@ class TrashEntryRowWidget extends StatelessWidget {
   final bool isSelecting;
   final bool isSelected;
 
-  static const double _rowPadding = 12;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -98,7 +96,10 @@ class TrashEntryRowWidget extends StatelessWidget {
                 child: MxRowInk(
                   onTap: onTap,
                   child: Padding(
-                    padding: const EdgeInsets.all(_rowPadding),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.gutter,
+                      vertical: AppSpacing.grouped,
+                    ),
                     child: lines,
                   ),
                 ),

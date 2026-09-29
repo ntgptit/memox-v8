@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -159,6 +160,14 @@ void main() {
     await _startReorder(tester);
 
     expect(find.byType(MxFab), findsNothing);
+    // M3-D2: reorder keeps the browse shape, one card per deck.
+    expect(
+      find.descendant(
+        of: find.byType(DeckReorderRowWidget).first,
+        matching: find.byType(MxCard),
+      ),
+      findsOneWidget,
+    );
     await _dragPastNext(tester, 'A');
 
     expect(await _rootOrder(env), ['B', 'A', 'C']);
