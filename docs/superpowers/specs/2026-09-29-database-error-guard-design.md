@@ -22,6 +22,10 @@ Today:
   `starter_library_repository_impl` (only `_mapped`), `study_entry_repository_impl`,
   `study_session_repository_impl`, `tag_repository_impl` (only `_write`, inlined).
   About 67 call sites.
+- Three more repositories inline the same `try … mapDatabaseError` without a helper:
+  `reminder_workload_repository_impl` (`rootWorkloads`), `schedule_repository_impl`
+  (`scheduleOf`) and `trash_repository_impl` (`_purge`, around a transaction). Found by the
+  D5 test during the build; they move to the same helpers.
 
 Success: the nine private helpers are gone; each call site uses one shared helper;
 every existing test passes unchanged; no repository constructor, provider or DI file
@@ -43,7 +47,7 @@ changes.
 |---|---|
 | `lib/core/error/failure.dart` | Add `guardDatabase` (D1, D3) |
 | `lib/core/database/mapped_transaction.dart` | New: `MappedTransaction` (D2) |
-| The nine repositories | Delete `_write`/`_mapped`; `_write(x)` → `_db.mappedTransaction(x)`, `_mapped(x)` → `guardDatabase(x)`; drop imports no longer used |
+| The nine repositories, and the three inline sites | Delete `_write`/`_mapped`; `_write(x)` → `_db.mappedTransaction(x)`, `_mapped(x)` → `guardDatabase(x)`; drop imports no longer used |
 | `test/core/error/failure_test.dart` | `guardDatabase`: a `SqliteException` leaves as its `Failure` with the original stack trace; a value passes through; a synchronous throw in the body is mapped too |
 | `test/core/database/mapped_transaction_test.dart` | New: a throw inside rolls the transaction back and leaves as a `Failure`; a success commits |
 | `test/architecture/` | D5 |

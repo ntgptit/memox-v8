@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/trash/data/datasources/trash_dao.dart';
 import 'package:memox/features/trash/data/mappers/trash_mapper.dart';
@@ -41,9 +42,8 @@ final class TrashRepositoryImpl implements TrashRepository {
   /// Passes in ascending `deleted_at` until one purges nothing: an inner
   /// batch is older than its deck's (invariant 36), and a pass after it takes
   /// the deck. What is left is skipped whole (BR-TRASH-010).
-  Future<PurgeReport> _purge(Set<String> chosen, DateTime now) async {
-    try {
-      return await _db.transaction(() async {
+  Future<PurgeReport> _purge(Set<String> chosen, DateTime now) =>
+      _db.mappedTransaction(() async {
         var pending = await _dao.purgeCandidates(
           chosen: chosen,
           cutoff: trashCutoff(now),
@@ -73,8 +73,4 @@ final class TrashRepositoryImpl implements TrashRepository {
           missing: chosen.difference(found),
         );
       });
-    } on Object catch (error, stackTrace) {
-      Error.throwWithStackTrace(mapDatabaseError(error), stackTrace);
-    }
-  }
 }
