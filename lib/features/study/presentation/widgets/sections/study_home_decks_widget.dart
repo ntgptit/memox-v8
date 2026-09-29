@@ -75,6 +75,7 @@ class _Row extends StatelessWidget {
     final l10n = context.l10n;
     final due = deck.overdueCount + deck.dueTodayCount;
     return MxListRow(
+      titleMaxLines: 2,
       title: deck.name,
       leading: const MxIconTile(icon: AppIcons.library),
       meta: MxWorkloadBreakdownLine(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -263,5 +264,29 @@ void main() {
     );
 
     expect(tester.takeException(), isAssertionError);
+  });
+  testWidgets('a user-named row may take two lines and keeps its divider', (
+    tester,
+  ) async {
+    const name = 'Cấu trúc thường gặp trong đề thi TOPIK II phần đọc hiểu';
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 360,
+        child: MxListRow(title: name, subtitle: '12 cards', titleMaxLines: 2),
+      ),
+    );
+    final text = tester.widget<RichText>(
+      find.byWidgetPredicate(
+        (w) => w is RichText && w.text.toPlainText() == name,
+      ),
+    );
+
+    expect(text.maxLines, 2);
+    expect(text.softWrap, isTrue);
+    expect(
+      tester.getSize(find.byType(MxListRow)).height,
+      greaterThanOrEqualTo(AppSize.listRowMin),
+    );
   });
 }

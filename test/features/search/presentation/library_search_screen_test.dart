@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/di/search_repository_provider.dart';
@@ -246,6 +247,12 @@ void main() {
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text(_en.searchNoMatchesTitle('zzz')), findsOneWidget);
     expect(find.text(_en.searchNoMatchesBody), findsOneWidget);
+    // Audit P1: the state keeps the page's top gap under the app bar.
+    expect(
+      tester.getTopLeft(find.byType(MxEmptyState)).dy -
+          tester.getBottomLeft(find.byType(MxAppBar)).dy,
+      AppSpacing.control,
+    );
 
     await tester.tap(
       find.byWidgetPredicate(

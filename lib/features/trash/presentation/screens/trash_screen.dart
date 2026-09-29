@@ -107,6 +107,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         body: switch (entries) {
           AsyncData(:final value) when value.isEmpty => MxScreenScroll(
             children: [
+              const SizedBox(height: AppSpacing.control),
               MxEmptyState(
                 icon: AppIcons.delete,
                 title: l10n.trashEmptyTitle,
@@ -119,6 +120,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           ),
           AsyncError(:final isLoading) => MxScreenScroll(
             children: [
+              const SizedBox(height: AppSpacing.control),
               MxErrorState(
                 title: l10n.trashLoadErrorTitle,
                 body: l10n.libraryLoadErrorBody,

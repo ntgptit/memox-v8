@@ -45,9 +45,25 @@ class MxAppShell extends StatelessWidget {
   /// by its height, so the end of a scroll clears it.
   final Widget? notice;
 
+  /// Whether the keyboard is up. Its Scaffold resizes the body above the
+  /// keyboard and strips the inset from the body's MediaQuery, so a widget
+  /// in the body or footer asks here; outside a shell it reads MediaQuery.
+  static bool isTypingOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_TypingScope>()?.isTyping ??
+      MediaQuery.viewInsetsOf(context).bottom > 0;
+
   @override
   Widget build(BuildContext context) {
     final appBar = this.appBar;
+    // An outer shell (the tab shell) has already stripped the inset from
+    // this shell's MediaQuery, so its scope answers first.
+    return _TypingScope(
+      isTyping: isTypingOf(context),
+      child: _scaffold(context, appBar),
+    );
+  }
+
+  Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
       backgroundColor: context.colors.surface,
       // A wide window centres the column at [AppSize.contentMaxWidth]; the
@@ -92,6 +108,17 @@ class MxAppShell extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Carries [MxAppShell.isTypingOf] past the Scaffold that strips the inset.
+class _TypingScope extends InheritedWidget {
+  const _TypingScope({required this.isTyping, required super.child});
+
+  final bool isTyping;
+
+  @override
+  bool updateShouldNotify(_TypingScope oldWidget) =>
+      isTyping != oldWidget.isTyping;
 }
 
 /// FAB placement (Fab contract, caller-owned): 16 from the column's trailing

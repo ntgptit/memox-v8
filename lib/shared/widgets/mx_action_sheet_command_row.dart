@@ -95,10 +95,11 @@ class MxActionSheetCommandRow extends StatelessWidget {
                     ),
                     if (subtitle case final text?) ...[
                       const SizedBox(height: _subtitleGap),
+                      // Two lines: a consequence (a merge, a loss) must not be
+                      // cut (audit 2026-09-29, screen 05).
                       Text(
                         text,
-                        maxLines: 1,
-                        softWrap: false,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: styles.rowSubtitle,
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -254,21 +255,24 @@ class _Half extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.gutter),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                spacing: AppSpacing.control,
-                children: [
-                  main,
-                  if (detail != null)
-                    Text(
-                      detail,
-                      textAlign: TextAlign.center,
-                      style: styles.studyDetail,
-                    ),
-                ],
+          child: StudyScrollFadeWidget(
+            ground: context.colors.surfaceContainerLowest,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.gutter),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: AppSpacing.control,
+                  children: [
+                    main,
+                    if (detail != null)
+                      Text(
+                        detail,
+                        textAlign: TextAlign.center,
+                        style: styles.studyDetail,
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

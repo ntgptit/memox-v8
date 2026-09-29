@@ -7,10 +7,14 @@ import 'package:memox/core/theme/theme_context.dart';
 /// reads as "scroll for more" (Impeccable after P3). Decorative: it takes
 /// no taps and says nothing to TalkBack.
 class StudyScrollFadeWidget extends StatefulWidget {
-  const StudyScrollFadeWidget({super.key, required this.child});
+  const StudyScrollFadeWidget({super.key, required this.child, this.ground});
 
   /// A scroll view.
   final Widget child;
+
+  /// The fill under the fade: the card's own ground inside a face (audit
+  /// P1). The screen's surface by default.
+  final Color? ground;
 
   @override
   State<StudyScrollFadeWidget> createState() => _StudyScrollFadeWidgetState();
@@ -29,7 +33,7 @@ class _StudyScrollFadeWidgetState extends State<StudyScrollFadeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final ground = context.colors.surface;
+    final ground = widget.ground ?? context.colors.surface;
     return Stack(
       children: [
         NotificationListener<ScrollMetricsNotification>(

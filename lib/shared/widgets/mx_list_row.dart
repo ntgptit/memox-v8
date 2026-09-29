@@ -9,8 +9,8 @@ import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
-/// title and the sub are one line each with an ellipsis, so every row in a
-/// list is one height. It is not a SettingsRow: this is a piece of content.
+/// title is one line by default and the sub one line, each with an
+/// ellipsis, so every row in a list is one height. It is not a SettingsRow: this is a piece of content.
 class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
@@ -25,6 +25,7 @@ class MxListRow extends StatelessWidget {
     this.isEnabled = true,
     this.isBusy = false,
     this.hasDivider = true,
+    this.titleMaxLines = 1,
   }) : assert(subtitle == null || meta == null, 'a subtitle or meta'),
        assert(trailing == null || !hasChevron, 'a trailing or the chevron');
 
@@ -59,6 +60,11 @@ class MxListRow extends StatelessWidget {
   /// The ghost rule under the row. The caller turns it off on the last row
   /// and inside an MxSection, which draws its own.
   final bool hasDivider;
+
+  /// 2 for a name the person chose (tag, deck), which must stay
+  /// recognisable; content lists keep 1 so rows are one height (audit
+  /// 2026-09-29, pattern 2).
+  final int titleMaxLines;
 
   static const double _subtitleGap = 2;
 
@@ -128,8 +134,8 @@ class MxListRow extends StatelessWidget {
                       children: [
                         Text.rich(
                           _titleSpan(styles.rowTitleMatch),
-                          maxLines: 1,
-                          softWrap: false,
+                          maxLines: titleMaxLines,
+                          softWrap: titleMaxLines > 1,
                           overflow: TextOverflow.ellipsis,
                           style: styles.listRowTitle,
                         ),

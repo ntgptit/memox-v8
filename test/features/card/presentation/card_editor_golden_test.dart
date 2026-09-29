@@ -46,6 +46,25 @@ void main() {
       });
     });
 
+    libraryTest('card editor, create, keyboard, $theme', (tester, env) async {
+      final deckId = await _words(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.create(deckId: deckId, deckContext: _context),
+          brightness,
+        );
+        // 300 dp of keyboard at the golden's 3x.
+        tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_create_keyboard_$theme.png',
+        );
+      });
+    });
+
     libraryTest('card editor, errors and tags, $theme', (tester, env) async {
       final deckId = await _words(env);
       await withRealShadows(() async {

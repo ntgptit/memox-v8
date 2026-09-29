@@ -150,4 +150,22 @@ void main() {
     );
     semantics.dispose();
   });
+  testWidgets('a long subtitle keeps two lines', (tester) async {
+    const warning =
+        'Renaming onto an existing name merges the two tags into one, '
+        'and every card keeps a single copy.';
+    await pumpMx(
+      tester,
+      _width(
+        MxActionSheetCommandRow(
+          icon: AppIcons.edit,
+          label: 'Rename',
+          subtitle: warning,
+          onTap: () {},
+        ),
+      ),
+    );
+
+    expect(tester.widget<Text>(find.text(warning)).maxLines, 2);
+  });
 }

@@ -67,6 +67,7 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenNoResults(:final term) => MxScreenScroll(
         children: [
+          const SizedBox(height: AppSpacing.control),
           MxEmptyState(
             icon: AppIcons.searchOff,
             title: l10n.searchNoMatchesTitle(term),
@@ -78,6 +79,7 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenFailed() => MxScreenScroll(
         children: [
+          const SizedBox(height: AppSpacing.control),
           MxErrorState(
             title: l10n.searchErrorTitle,
             body: l10n.searchErrorBody,
