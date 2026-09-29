@@ -78,10 +78,13 @@ In V8 ([ADR-018](../../../docs/shared/decisions/ADR-018-log-tap-trung-va-monitor
   name and a `LogCategory`; put ids, SQL and values in `context`. Outside
   `lib/core/logging/`, nothing imports `dart:developer`
   (`test/architecture/logging_rules_test.dart`).
-- Entries go to the console and to the device buffer (`memox_logs`), and
+- Entries go to the console (debug builds only) and to the device buffer
+  (`memox_logs`, only when the build names a Supabase project), and
   `LogShipper` pushes the buffer to Supabase `public.app_log` through
-  `log_push`. Every level is kept; `LogConfig.persistMinLevel` is the knob if
-  the volume grows.
+  `log_push` while the app is in front. Every level is kept;
+  `LogConfig.persistMinLevel` is the knob if the volume grows. A repeated
+  warning or error that carries an error is counted, not written, within 5 s
+  (`context.repeated`).
 - Already captured: every Drift statement (`TracingInterceptor`), every
   Supabase request (`LoggingHttpClient`), uncaught errors, failing providers, navigation, lifecycle, sync and reminders. Add a
   call only for an event none of these sees.

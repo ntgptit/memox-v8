@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(23);
+select plan(28);
 
 -- ADR-018 §7; spec 2026-09-29-app-logging-design.md §4: the admin's reads of app_log
 -- (20261007000000_log_admin_reads.sql).
@@ -61,6 +61,16 @@ select is(jsonb_array_length(public.log_query('{"levels": null, "sources": null,
 select is(jsonb_array_length(public.log_query('{"levels": "warning", "sources": 7, "categories": {},
     "statuses": true, "before": "later"}'::jsonb)->'items'), 5,
   'a list or cursor of the wrong type filters nothing');
+select is(jsonb_array_length(public.log_query('{"from": "yesterday-ish", "to": 7,
+    "userId": "not-a-uuid"}'::jsonb)->'items'), 5, 'a bad time or user id is an absent filter');
+select is(jsonb_array_length(public.log_query('{"limit": "many"}'::jsonb)->'items'), 5,
+  'a limit that is not a number is absent');
+select is(jsonb_array_length(public.log_query('{"limit": 2.7}'::jsonb)->'items'), 2,
+  'a fractional limit is cut to a whole number');
+select is(jsonb_array_length(public.log_query('{"limit": 1e20}'::jsonb)->'items'), 5,
+  'a huge limit is capped, not an overflow');
+select is(jsonb_array_length(public.log_query('{"before": {}}'::jsonb)->'items'), 5,
+  'a cursor missing its time or id, or with a bad one, is absent, not an empty page');
 select is(jsonb_array_length(public.log_query('null'::jsonb)->'items'), 5, 'a JSON null filter reads everything');
 select is(jsonb_array_length(public.log_query('[]'::jsonb)->'items'), 5, 'a non-object filter reads everything');
 select is(jsonb_array_length(public.log_query('{"levels": []}'::jsonb)->'items'), 0,

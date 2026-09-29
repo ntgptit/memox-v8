@@ -201,7 +201,10 @@ final class AppLogger {
     }
     final suppressed = storm?.suppressed ?? 0;
     if (_storms.length >= _maxStormKeys && storm == null) _forgetOldStorms(at);
-    _storms[key] = _Storm(at);
+    // Written again: to the back, so the cap drops the least recently written.
+    _storms
+      ..remove(key)
+      ..[key] = _Storm(at);
     return suppressed;
   }
 
@@ -209,7 +212,7 @@ final class AppLogger {
     _storms.removeWhere(
       (_, storm) => at.difference(storm.writtenAt) >= stormWindow,
     );
-    // Every key still open: drop the oldest, which was inserted first.
+    // Every key still open: drop the least recently written, at the front.
     while (_storms.length >= _maxStormKeys) {
       _storms.remove(_storms.keys.first);
     }
