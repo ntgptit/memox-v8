@@ -293,6 +293,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final errors = _errors(l10n);
+    final isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
     return PopScope(
       canPop: _isLeaving || _isGone || !_isDirty,
       onPopInvokedWithResult: (didPop, _) {
@@ -324,10 +325,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  widget.deckContext(
-                    widget.deckId,
-                    _isCreating ? l10n.cardAddTitle : l10n.cardEditCrumb,
-                  ),
+                  // The path is context, not input: it waits while the
+                  // keyboard is up (audit P1; §9 row 81 kept at rest).
+                  if (!isTyping)
+                    widget.deckContext(
+                      widget.deckId,
+                      _isCreating ? l10n.cardAddTitle : l10n.cardEditCrumb,
+                    ),
                   Expanded(
                     child: MxScreenScroll(children: _fields(l10n, errors)),
                   ),

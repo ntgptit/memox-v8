@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
@@ -485,5 +486,20 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.cardCaptionAddMissing), findsOneWidget);
+  });
+  libraryTest('the deck path steps aside while typing and comes back after '
+      '(audit P1)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxBreadcrumb), findsOneWidget);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBreadcrumb), findsNothing);
+
+    tester.view.resetViewInsets();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBreadcrumb), findsOneWidget);
   });
 }

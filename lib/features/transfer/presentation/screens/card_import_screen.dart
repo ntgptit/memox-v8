@@ -92,13 +92,17 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
   Widget _wizardShell(BuildContext context, CardImportDraft draft) {
     final l10n = context.l10n;
     final step = draft.step;
+    final isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
     return MxAppShell(
       appBar: _appBar(context, l10n.importTitle),
       // The deck and the step stay above the scroll, as on the card editor.
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          widget.deckContext(widget.deckId, l10n.importBreadcrumb),
+          // The path is context, not input: it waits while the keyboard is
+          // up (audit P1; §9 row 81 kept at rest).
+          if (!isTyping)
+            widget.deckContext(widget.deckId, l10n.importBreadcrumb),
           ImportStepTrackerWidget(current: step),
           Expanded(child: _wizardScroll(draft)),
         ],

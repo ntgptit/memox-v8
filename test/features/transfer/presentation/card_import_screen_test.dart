@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
@@ -225,5 +226,21 @@ void main() {
     final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
     expect(pair.leading!.tone, MxButtonTone.outline);
     expect(pair.leading!.label, _en.importAnother);
+  });
+  libraryTest('the deck path steps aside while typing and comes back after '
+      '(audit P1)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxBreadcrumb), findsOneWidget);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBreadcrumb), findsNothing);
+
+    tester.view.resetViewInsets();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBreadcrumb), findsOneWidget);
   });
 }
