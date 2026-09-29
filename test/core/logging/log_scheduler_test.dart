@@ -108,6 +108,41 @@ void main() {
     });
   });
 
+  test('a retry after a failed push waits while the app is not in front', () {
+    fakeAsync((async) {
+      var runs = 0;
+      var foreground = true;
+      final scheduler = startLogScheduler(
+        run: () async {
+          runs++;
+          throw StateError('offline');
+        },
+        periodic: const Stream.empty(),
+        reconnects: const Stream.empty(),
+        isForeground: () => foreground,
+      );
+      async.elapse(Duration.zero);
+      expect(runs, 1);
+
+      foreground = false;
+      async.elapse(const Duration(minutes: 10));
+
+      expect(runs, 1);
+      scheduler.dispose();
+    });
+  });
+
+  group('isForegroundState', () {
+    test('an app with no lifecycle state yet counts as in front', () {
+      expect(isForegroundState(null), isTrue);
+      expect(isForegroundState(AppLifecycleState.resumed), isTrue);
+      expect(isForegroundState(AppLifecycleState.inactive), isFalse);
+      expect(isForegroundState(AppLifecycleState.paused), isFalse);
+      expect(isForegroundState(AppLifecycleState.hidden), isFalse);
+      expect(isForegroundState(AppLifecycleState.detached), isFalse);
+    });
+  });
+
   group('isForegroundProvider', () {
     test('is true only while the app lifecycle state is resumed', () {
       final container = ProviderContainer();

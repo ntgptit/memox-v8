@@ -39,7 +39,12 @@ LogApi logApi(Ref ref) {
 /// Injectable, so a test needs no lifecycle.
 @Riverpod(keepAlive: true)
 bool Function() isForeground(Ref ref) =>
-    () => WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    () => isForegroundState(WidgetsBinding.instance.lifecycleState);
+
+/// In front when resumed, and before the first lifecycle event (the app has
+/// just started in front).
+bool isForegroundState(AppLifecycleState? state) =>
+    state == null || state == AppLifecycleState.resumed;
 
 /// Pushes the buffer at start, every [_every] and when the network returns,
 /// backing off like sync; null when this build names no Supabase project.
@@ -63,9 +68,10 @@ SyncScheduler? logScheduler(Ref ref) {
   return scheduler;
 }
 
-/// The log scheduler, started. Both triggers, the periodic push and the
-/// reconnect, are dropped unless [isForeground]: the app calls `syncNow` when
-/// it resumes, so nothing waits for the next tick.
+/// The log scheduler, started. Nothing ships unless [isForeground]: both
+/// triggers are dropped, and a run that comes due in the background (a retry
+/// after a failure) does nothing. The app calls `syncNow` when it resumes, so
+/// nothing waits for the next tick.
 SyncScheduler startLogScheduler({
   required Future<void> Function() run,
   required Stream<void> periodic,
@@ -73,7 +79,7 @@ SyncScheduler startLogScheduler({
   required bool Function() isForeground,
   Duration debounce = const Duration(seconds: 2),
 }) => SyncScheduler(
-  run: run,
+  run: () => isForeground() ? run() : Future<void>.value(),
   triggers: periodic.where((_) => isForeground()),
   reconnects: reconnects.where((_) => isForeground()),
   debounce: debounce,

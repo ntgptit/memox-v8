@@ -324,6 +324,25 @@ void main() {
       expect(sink.entries.last.context, {'failures': 3, 'repeated': 1});
     });
 
+    test('a key written again moves to the back: a busy storm is not the '
+        'one dropped at the cap', () {
+      fail(StateError('hot'));
+      tick(const Duration(seconds: 6));
+      for (var i = 0; i < 255; i++) {
+        logger.error('x.$i', error: StateError('e'));
+      }
+      // Written again after the others: the most recently written key.
+      fail(StateError('hot'));
+      // The 257th key: one key must go.
+      logger.error('x.255', error: StateError('e'));
+      fail(StateError('hot'));
+
+      expect(
+        sink.entries.where((e) => e.errorMessage == 'Bad state: hot'),
+        hasLength(2),
+      );
+    });
+
     test('keys of storms long over do not pile up', () {
       for (var i = 0; i < 1000; i++) {
         logger.error('x.$i', error: StateError('e'));
