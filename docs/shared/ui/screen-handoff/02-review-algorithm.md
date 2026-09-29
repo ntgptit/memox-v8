@@ -48,7 +48,7 @@ Not in the artifact, required by V8:
   - Lost: "Every card's schedule, due date and progress; the open session. All {count} cards become new"
 - Nothing to lose: "Nothing has been studied in this cycle yet, so there is nothing to lose. A new cycle starts with the algorithm you pick."
 - "Algorithm for the new cycle": "Keep {current}" · "Switch to {other}"
-- Buttons: "Cancel" · "Reset and start cycle {n+1}" · "Resetting…"
+- Buttons: "Cancel" · "Reset and start cycle {n+1}"; while it runs the confirm spins and Cancel is off
 - Done: "Cycle {n+1} started · {count} cards are new again"
 - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry"
 
@@ -57,6 +57,8 @@ Not in the artifact, required by V8:
 | Artifact | V8 | Wins |
 |---|---|---|
 | A tap on the other algorithm switches at once | A confirmation dialog first | UC-DECK-002 steps 3–4 |
+| "Resetting…" in the confirm while it runs | The confirm spins (`MxSheetActions.isConfirmLoading`), as every other async confirm | M3 review 2026-09-28 B2 |
+| An empty deck's actions in a row outside the card, with glyphs | The empty state's own block actions, text only; Import as the outline third | M3 review 2026-09-28 D5 |
 | "Kept" coloured with the mastery token | `statusMasteredInk`, 4.5:1 | Spec A10, WCAG 2.2 AA |
 | Refused because the tree just locked: a message on the screen | The locked state from the stream, and the reason as a snackbar | Ruling D-L1 |
 | Strip body, algorithm descriptions and the Kept/Lost bodies in plain 12/500 | The caption role (`rowDescription`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
