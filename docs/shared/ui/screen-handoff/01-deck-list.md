@@ -98,6 +98,7 @@ One `MxBottomSheet`, "Sort & filter":
 | Sort pill "⇅ Manual ⌄" | `MxChipTrigger`: "Manual" with the sort glyph after it | The shared chip trigger's anatomy |
 | "Create deck" and "Browse starter decks" carry glyphs | Text-only `MxEmptyState` actions | The shared empty state's anatomy |
 | Reorder mode as a divided list | One `MxCard` per deck, 8 apart, as in browse mode | M3 review 2026-09-28 D2 (spec `2026-09-28-ui-consistency-m3-review.md`) |
+| An empty deck's actions in a row outside the card, with glyphs | The empty state's own block actions, text only; Import as the outline third | M3 review 2026-09-28 D5 |
 | Action sheet header with the deck's tile and "N sub-decks · N cards · {algorithm}"; Open and Study rows with count subtitles | The deck's name only; no count subtitles | `DeckView` carries no counts; the sheet reads only the view (ruling C-L6) |
 
 ## Pending

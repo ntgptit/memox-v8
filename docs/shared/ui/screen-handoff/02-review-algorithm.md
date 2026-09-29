@@ -58,7 +58,6 @@ Not in the artifact, required by V8:
 |---|---|---|
 | A tap on the other algorithm switches at once | A confirmation dialog first | UC-DECK-002 steps 3–4 |
 | "Resetting…" in the confirm while it runs | The confirm spins (`MxSheetActions.isConfirmLoading`), as every other async confirm | M3 review 2026-09-28 B2 |
-| An empty deck's actions in a row outside the card, with glyphs | The empty state's own block actions, text only; Import as the outline third | M3 review 2026-09-28 D5 |
 | "Kept" coloured with the mastery token | `statusMasteredInk`, 4.5:1 | Spec A10, WCAG 2.2 AA |
 | Refused because the tree just locked: a message on the screen | The locked state from the stream, and the reason as a snackbar | Ruling D-L1 |
 | Strip body, algorithm descriptions and the Kept/Lost bodies in plain 12/500 | The caption role (`rowDescription`), tracked 1.2 | Guard: no per-site text styling; the caption role is shared |
