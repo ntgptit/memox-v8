@@ -35,9 +35,24 @@ convenience; the CI `supabase` job is the gate.
 
        flutter run --dart-define=SUPABASE_URL=https://<ref>.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=<key>
 
+6. Make your own user the log admin (ADR-018 §7), once per user id. Find the
+   id under Authentication → Users (the app's anonymous user on your phone),
+   then run in the SQL Editor:
+
+       update auth.users
+       set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'
+       where id = '<uuid>';
+
+   The role reaches the app with its next token refresh (up to an hour) or
+   sign-in. Only an admin can call `log_query` and `log_set_status`; everyone
+   else gets `FORBIDDEN`. This changes data, not schema, so the drift check
+   does not see it.
+
 ## Rules
 
-- Clients reach data only through `sync_push`, `sync_changes` and `ping`.
+- Clients reach data only through `sync_push`, `sync_changes`, `ping` and the
+  log RPCs: `log_push` for everyone, `log_query` and `log_set_status` for an
+  admin (ADR-018).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - A new migration never edits one already pushed to the project.
@@ -54,4 +69,5 @@ convenience; the CI `supabase` job is the gate.
 |---|---|---|
 | `supabase migrations` | merge to `master` touching `migrations/`, or by hand | pgTAP, `db push`, then `db diff --linked` must be empty |
 | `supabase keep-alive` | daily | calls `ping` so the Free project does not pause |
+| `app-log-retention` (pg_cron, in the database) | daily at 03:41 UTC | `private.purge_app_log()`: deletes `debug`/`info` logs older than 7 days and `warning`/`error` older than 180 days (ADR-018 §5) |
 | `supabase usage` | weekly, or by hand | reports database size, users and 30-day active users; fails at 80% of a Free limit, so GitHub emails the owner |

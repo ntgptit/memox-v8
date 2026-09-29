@@ -121,8 +121,10 @@ The server is a Supabase project ([ADR-015](docs/shared/decisions/ADR-015-supaba
 Business rules and SRS live only in the app; the server checks integrity.
 
 - **Code:** `supabase/migrations/` (SQL and PL/pgSQL). Clients call only
-  `sync_push`, `sync_changes` and `ping`; tables have RLS on, no policy and
-  no client privilege; helpers live in the unexposed `private` schema.
+  `sync_push`, `sync_changes`, `ping` and the log RPCs (`log_push`; for an
+  admin, `log_query` and `log_set_status`, [ADR-018](docs/shared/decisions/ADR-018-log-tap-trung-va-monitoring.md));
+  tables have RLS on, no policy and no client privilege; helpers live in the
+  unexposed `private` schema.
 - **Gate:** `npx supabase db start` then `npx supabase test db` (pgTAP in
   `supabase/tests/`; needs Docker). CI runs it in the `supabase` job.
 - **Owner setup:** [supabase/README.md](supabase/README.md).

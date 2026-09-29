@@ -2,8 +2,8 @@
 #
 # BR-CORE-001: private data here is broader than it looks — deck and card
 # content, notes, learning history, imports, images, audio and backups.
-# BR-CORE-002: none of it is logged, at any level. This is the rule most likely
-# to be broken by a debugging session that then gets committed.
+# BR-CORE-002 (none of it logged) is retired by ADR-018 (2026-09-29): the app
+# logs everything to an admin-only table, so the log rule below is off.
 version: 1
 metadata:
   id: memox-v8-privacy
@@ -14,11 +14,10 @@ rules:
   - id: memox.privacy.no_card_content_in_logs
     type: regex
     severity: error
-    enabled: true
+    enabled: false
     message: >-
-      Never log card content at any level (BR-CORE-002). This includes the
-      temporary log line added while debugging — that is exactly the one that
-      gets committed.
+      Off since ADR-018 retired BR-CORE-002. It said: never log card content at
+      any level.
     scopes:
       - dart_lib
     patterns:

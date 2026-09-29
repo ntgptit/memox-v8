@@ -51,7 +51,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 - **Phones first; tablets get a rail and a column.** From a window width of 600 dp (tablets, and phones in landscape) the four destinations move to a navigation rail and every screen keeps its phone layout in a centred column of at most 720 dp (FE-C5, owner 2026-09-28; spec `2026-09-28-tablet-rail-design.md`). There are no two-pane or tablet-specific layouts.
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
 - **Data handling:**
-  - User content is never logged (`BR-CORE-002`).
+  - Everything is logged, user content included, to a server table only an admin can read (`ADR-018`, which retired `BR-CORE-002`).
   - Export happens only on explicit request (`BR-CORE-004`).
   - Error messages never expose SQL, paths or ids (`BR-CORE-005`).
   - The database is not encrypted at MVP, and its open path is centralized for later encryption (`ADR-002`).

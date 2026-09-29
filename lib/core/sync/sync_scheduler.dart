@@ -1,6 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math' as math;
+
+import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/sync/sync_failure.dart';
 
 /// When a sync runs: at start, after a debounced burst of triggers, and on
 /// backoff after a failure. At most one run at a time (app deck-sync spec §5).
@@ -14,6 +16,7 @@ class SyncScheduler {
     this.debounce = const Duration(seconds: 2),
     this.minBackoff = const Duration(seconds: 5),
     this.maxBackoff = const Duration(minutes: 5),
+    this._logger,
   });
 
   final Future<void> Function() _run;
@@ -30,6 +33,12 @@ class SyncScheduler {
   final Duration debounce;
   final Duration minBackoff;
   final Duration maxBackoff;
+
+  /// Where a failed run is logged; [appLogger] unless the run itself empties
+  /// the log buffer (ADR-018 §3), which must not log into what it ships.
+  final AppLogger? _logger;
+
+  AppLogger get _log => _logger ?? appLogger;
 
   final _subscriptions = <StreamSubscription<void>>[];
   Timer? _timer;
@@ -114,7 +123,7 @@ class SyncScheduler {
       _failures = 0;
     } catch (error, stackTrace) {
       _failures++;
-      log('Sync failed; retrying', error: error, stackTrace: stackTrace);
+      _logFailure(error, stackTrace);
       await _report(() async => _onFailed?.call(error));
     } finally {
       _running = false;
@@ -130,13 +139,40 @@ class SyncScheduler {
     }
   }
 
+  /// Offline is a normal state here; only another failure is an error an
+  /// admin has to look at (ADR-018 §6).
+  void _logFailure(Object error, StackTrace stackTrace) {
+    final context = {'failures': _failures};
+    if (classifySyncFailure(error) == SyncFailureKind.network) {
+      _log.info(
+        'sync.failed',
+        category: LogCategory.sync,
+        message: '$error',
+        context: context,
+      );
+      return;
+    }
+    _log.error(
+      'sync.failed',
+      category: LogCategory.sync,
+      error: error,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+
   /// A failure that cannot be recorded is logged; the run already failed and
   /// backs off either way.
   Future<void> _report(Future<void> Function() report) async {
     try {
       await report();
     } catch (error, stackTrace) {
-      log('Sync status not recorded', error: error, stackTrace: stackTrace);
+      _log.warning(
+        'sync.status_not_recorded',
+        category: LogCategory.sync,
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 }

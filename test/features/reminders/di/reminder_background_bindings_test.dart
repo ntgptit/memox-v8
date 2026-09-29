@@ -1,6 +1,10 @@
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/database/log/log_database.dart';
+import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/features/reminders/di/reminder_background_bindings.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
@@ -8,6 +12,10 @@ import 'package:memox/features/reminders/presentation/providers/deliver_reminder
 
 import '../../../support/fake_reminder_platform.dart';
 import '../../../support/test_database.dart';
+
+/// The fire's log buffer, in memory (the real one needs path_provider).
+Override _memoryLogs() =>
+    logDatabaseProvider.overrideWithValue(LogDatabase(NativeDatabase.memory()));
 
 void main() {
   // The production databaseProvider closes its connection in onDispose; these
@@ -27,6 +35,7 @@ void main() {
           return db;
         }),
         reminderPlatformRepositoryProvider.overrideWithValue(platform),
+        _memoryLogs(),
       ],
     );
     // Deliver on an unsupported platform stops before the database; read it
@@ -47,11 +56,31 @@ void main() {
           ref.onDispose(() => disposed = true);
           throw StateError('no database');
         }),
+        _memoryLogs(),
       ],
     );
 
     await runReminderDelivery(container);
 
     expect(disposed, isTrue);
+  });
+
+  test('a Deliver that throws is written to the log buffer before the fire '
+      'ends (ADR-018: background failures reach monitoring)', () async {
+    final logs = LogDatabase(NativeDatabase.memory());
+    addTearDown(logs.close);
+    final container = ProviderContainer(
+      overrides: [
+        logDatabaseProvider.overrideWithValue(logs),
+        deliverReminderUseCaseProvider.overrideWith(
+          (ref) => throw StateError('no database'),
+        ),
+      ],
+    );
+
+    await runReminderDelivery(container);
+
+    final rows = await logs.oldest(10);
+    expect(rows.map((e) => e.event), ['reminder.fire_failed']);
   });
 }

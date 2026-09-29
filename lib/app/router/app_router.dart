@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/app/router/app_tab_shell.dart';
+import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
@@ -50,6 +51,8 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
   final rootNavigator = GlobalKey<NavigatorState>();
   return GoRouter(
     navigatorKey: rootNavigator,
+    // ADR-018: navigation is logged; each branch's navigator has its own.
+    observers: [LogNavigatorObserver()],
     initialLocation: AppRoutes.decks,
     // IT-NAV-005, FE-D3 spec D5: not go_router's page, which prints the error.
     errorBuilder: (context, state) => const RouteNotFoundScreen(),
@@ -60,6 +63,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
         branches: [
           // The Library (library spec §4): one page per deck level.
           StatefulShellBranch(
+            observers: [LogNavigatorObserver()],
             routes: [
               GoRoute(
                 path: AppRoutes.decks,
@@ -177,6 +181,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
             ],
           ),
           StatefulShellBranch(
+            observers: [LogNavigatorObserver()],
             routes: [
               GoRoute(
                 path: AppRoutes.study,
@@ -200,6 +205,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
           // Screen 22 (FE-A9): one page per level, under the tab bar, so
           // Back climbs one level (D5).
           StatefulShellBranch(
+            observers: [LogNavigatorObserver()],
             routes: [
               GoRoute(
                 path: AppRoutes.progress,
@@ -227,6 +233,7 @@ GoRouter buildAppRouter({bool hasGallery = kDebugMode}) {
             ],
           ),
           StatefulShellBranch(
+            observers: [LogNavigatorObserver()],
             routes: [
               GoRoute(
                 path: AppRoutes.settings,

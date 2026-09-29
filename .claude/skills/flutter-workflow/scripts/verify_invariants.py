@@ -273,7 +273,7 @@ if args.db:
             continue
         if rows:
             # Ids only. Never a row's content: card text, notes and learning
-            # history are private (BR-CORE-001, BR-CORE-002), and a checker's
+            # history are private (BR-CORE-001), and a checker's
             # output ends up in logs and CI transcripts.
             ids = ", ".join(str(r[0]) for r in rows[:5])
             print(f"  ✗ Q{n:<2} {label[:56]}  → {len(rows)} dòng: {ids}")
