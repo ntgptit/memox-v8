@@ -4,7 +4,8 @@ import 'package:memox/core/theme/theme_context.dart';
 
 /// The centred overline under the session's top bar naming deck, kind,
 /// stage and mode (kit SessionContextLine). Study-local, not shared: it
-/// speaks session vocabulary.
+/// speaks session vocabulary. Two lines at most: a long deck name ends in
+/// an ellipsis on screen and is read whole by a screen reader.
 class SessionContextLineWidget extends StatelessWidget {
   const SessionContextLineWidget({super.key, required this.text});
 
@@ -21,6 +22,8 @@ class SessionContextLineWidget extends StatelessWidget {
     child: Text(
       text.toUpperCase(),
       semanticsLabel: text,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: context.textStyles.overline,
     ),

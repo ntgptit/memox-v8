@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/library_harness.dart';
@@ -126,5 +130,67 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+  });
+  libraryTest('the context line takes at most two lines and is heard whole', (
+    tester,
+    env,
+  ) async {
+    const text =
+        'Tiếng Hàn TOPIK I · Từ vựng sơ cấp · Learning · Stage 1 of 3 · Match';
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(const SessionContextLineWidget(text: text)),
+      textScale: 2,
+    );
+    final line = tester.widget<Text>(find.text(text.toUpperCase()));
+
+    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
+    expect(line.semanticsLabel, text);
+  });
+
+  libraryTest('the footer hint takes at most two lines, glyph on the first', (
+    tester,
+    env,
+  ) async {
+    const text =
+        'Swipe left for next, right to look back · nothing is graded here';
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(const SessionFooterHintWidget(icon: AppIcons.check, text: text)),
+      textScale: 2,
+    );
+
+    expect(tester.widget<Text>(find.text(text)).maxLines, 2);
+    expect(
+      tester
+          .widget<Row>(
+            find.descendant(
+              of: find.byType(SessionFooterHintWidget),
+              matching: find.byType(Row),
+            ),
+          )
+          .crossAxisAlignment,
+      CrossAxisAlignment.start,
+    );
+  });
+
+  libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
+      'inside the shell whose Scaffold strips the inset', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const MxAppShell(
+        body: SizedBox.expand(),
+        footer: SessionFooterHintWidget(icon: AppIcons.edit, text: 'Type it'),
+      ),
+    );
+    expect(find.text('Type it'), findsOneWidget);
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await tester.pump();
+
+    expect(find.text('Type it'), findsNothing);
   });
 }
