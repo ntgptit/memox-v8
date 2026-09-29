@@ -125,13 +125,27 @@ void main() {
     expect(rpc.calls, hasLength(1));
   });
 
-  test('when the server refuses every call, one row is dropped and the error '
-      'propagates: a broken RPC must not empty the buffer', () async {
+  test('when the server refuses every call, no row is dropped, however many '
+      'runs retry: a broken RPC must not empty the buffer', () async {
     await db.insertAll([for (var n = 1; n <= 4; n++) _entry(n)]);
     rpc.failWith = const PostgrestException(message: 'function not found');
 
-    await expectLater(shipper.runOnce(), throwsA(isA<PostgrestException>()));
+    for (var run = 0; run < 5; run++) {
+      await expectLater(shipper.runOnce(), throwsA(isA<PostgrestException>()));
+    }
 
-    expect(await db.count(), 3);
+    expect(await db.count(), 4);
   });
+
+  test(
+    'a refused row with nothing after it to prove the RPC works stays',
+    () async {
+      await db.insertAll([_entry(1)]);
+      rpc.poison = {'id-0001'};
+
+      await expectLater(shipper.runOnce(), throwsA(isA<PostgrestException>()));
+
+      expect(await db.count(), 1);
+    },
+  );
 }

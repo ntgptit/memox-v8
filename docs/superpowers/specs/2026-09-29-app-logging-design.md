@@ -125,9 +125,10 @@ forbids `dart:developer` imports outside `lib/core/logging/`.
   - returns the accepted ids and the number skipped.
 - **Client, the same concern:** `AppLogger` replaces NUL and lone UTF-16 surrogates,
   which Postgres cannot store; `LogShipper` halves a batch the server refuses whole
-  until the refused row is alone, and drops it (at most one between two successful
-  pushes, so a broken RPC cannot empty the buffer); the log push never signs in
-  itself, it waits for sync's session.
+  until the refused row is alone, and drops it only when the row after it goes
+  through (a broken RPC refuses both, so it never empties the buffer); the log push
+  never signs in itself, it waits for sync's session. The reminder's background
+  isolate logs to the same buffer and writes it before the fire ends.
 - **`public.log_query(filter jsonb) returns jsonb`**, admin only (otherwise `FORBIDDEN`):
   - filters on level, source, category, status, text search on `event`/`message`, a
     date range and user;
