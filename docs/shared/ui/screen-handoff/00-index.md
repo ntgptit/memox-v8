@@ -4,7 +4,8 @@
 
 Every screen of the app. Each detail file records the screen's layout, its states with
 their goldens, its rulings and its copy. The visual system is in
-[`DESIGN.md`](../../../../DESIGN.md); the authority order is ADR-019.
+[`DESIGN.md`](../../../../DESIGN.md); the authority order is
+[ADR-019](../../decisions/ADR-019-app-la-chuan-ui.md).
 
 ## Status values
 

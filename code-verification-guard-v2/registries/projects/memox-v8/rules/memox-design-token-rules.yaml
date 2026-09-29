@@ -1,8 +1,7 @@
 # MemoX V8 guard rules — domain: design_token
 #
-# The UI kit and its design handoff (`docs/shared/ui/design-handoff/`): no
-# hardcoded colours, text styles or padding — everything comes from design
-# tokens.
+# The visual system (`DESIGN.md`): no hardcoded colours, text styles or
+# padding — everything comes from design tokens.
 #
 # Scope note: these run on `ui_surfaces` (features/*/presentation + shared), NOT
 # on lib/app/** or lib/core/theme/**. lib/core/theme is where raw values are

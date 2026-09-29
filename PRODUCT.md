@@ -64,16 +64,16 @@ This is not a market product. It is a personal app its owner builds so they can 
 ## Brand Commitments
 
 - **The name is "MemoX"** (`lib/l10n/app_en.arb` `appTitle`).
-- **Copy voice for failures is local-first:** say first that nothing was lost, then offer the retry (`docs/shared/ui/design-handoff/widgets/error-state.md`).
+- **Copy voice for failures is local-first:** say first that nothing was lost, then offer the retry (`DESIGN.md`, Do's and Don'ts).
 - **Copy is caller-supplied and localized.** Components hold no copy.
 - No brand guide, logo system or tone document exists beyond these points. The only identity asset is the Android launcher icon (`android/app/src/main/res/mipmap-*/ic_launcher.png`).
-- The visual system is the V3 design handoff (`docs/shared/ui/design-handoff/`), implemented by the Flutter UI base. It is recorded there, not here.
+- The visual system is recorded in `DESIGN.md`, generated from the Flutter UI base (ADR-019). It is recorded there, not here.
 
 ## Evidence on Hand
 
-- The V3 design handoff: foundations, theme binding and 46 widget contracts (`docs/shared/ui/design-handoff/`).
+- `DESIGN.md`: foundations, theme binding, the shared widgets and the copy voice, generated from the code.
 - Goldens for the implemented UI, light and dark, at 3x: components (`test/shared/widgets/goldens/`, `test/app/goldens/`) and every screen (`test/features/*/presentation/goldens/`), written on Linux.
-- The kit's screens and states as images (`docs/shared/ui/screen-handoff/img/`), and each screen's detail file with its deviations (`docs/shared/ui/screen-handoff/`).
+- Each screen's detail file with its states, goldens and rulings (`docs/shared/ui/screen-handoff/`).
 - The phase 6 native audit: score 13/20, findings in spec §9 rows 56–66 (`docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`).
 - There are no testimonials, users, pricing, monetization, marketing screenshots, press, or production starter-deck content. Future work must not fabricate any of them.
 
