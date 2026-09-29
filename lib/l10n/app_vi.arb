@@ -1209,5 +1209,8 @@
   "studyHomeSyncDetails": "Chi tiết",
   "routeNotFoundTitle": "Không tìm thấy trang",
   "routeNotFoundBody": "Liên kết này không dẫn tới đâu trong MemoX.",
-  "reminderOpenSystemSettings": "Mở cài đặt hệ thống"
+  "reminderOpenSystemSettings": "Mở cài đặt hệ thống",
+  "failureNotAdmin": "Chỉ quản trị viên mới xem được mục này.",
+  "failureOffline": "Không kết nối được máy chủ. Không mất gì cả.",
+  "failureServer": "Máy chủ chưa trả lời được. Không mất gì cả, thử lại sau một lát."
 }

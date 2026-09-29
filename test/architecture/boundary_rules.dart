@@ -30,6 +30,7 @@ const allowedFeatureImports = <String, Set<String>>{
   'transfer': {'card'},
   'starter_decks': {'deck', 'card', 'srs'},
   'reminders': {'settings', 'deck', 'srs'},
+  'monitoring': {},
 };
 
 const _package = 'package:memox/';

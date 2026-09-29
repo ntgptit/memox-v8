@@ -6443,5 +6443,17 @@
   "reminderOpenSystemSettings": "Open system settings",
   "@reminderOpenSystemSettings": {
     "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
+  },
+  "failureNotAdmin": "Only an admin can see this.",
+  "@failureNotAdmin": {
+    "description": "A failure sentence (ADR-016 D3): the server refused a Monitoring call because the account is not an admin (FORBIDDEN), or has no session."
+  },
+  "failureOffline": "Can't reach the server. Nothing was lost.",
+  "@failureOffline": {
+    "description": "A failure sentence (ADR-016 D3): a server call never reached the server."
+  },
+  "failureServer": "The server couldn't answer. Nothing was lost. Try again in a moment.",
+  "@failureServer": {
+    "description": "A failure sentence (ADR-016 D3): the server answered with an error or an answer this build cannot read."
   }
 }
