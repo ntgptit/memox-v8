@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// One destination in an MxDeckPickerSheet. It is generic: which decks are
 /// eligible, and why, is the caller's (spec §5).
@@ -59,31 +60,11 @@ class MxDeckPickerSheet extends StatelessWidget {
   final String emptyTitle;
   final String? emptyBody;
 
-  /// Ruling O11: the title → rule gap is UNSPECIFIED.
-  static const double _ruleGap = 4;
-
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final isEmpty = candidates.isEmpty;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: _ruleGap,
-          children: [
-            Text(title, style: styles.compactTitle),
-            Text(rule, style: styles.noteText),
-          ],
-        ),
-      ),
+      header: _PickerHead(title: title, rule: rule),
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [
@@ -125,6 +106,67 @@ class MxDeckPickerSheet extends StatelessWidget {
                     ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+/// MxDeckPickerSheet while its candidates load: the same head over a
+/// skeleton, so the title does not appear late (ruling M3-A5). The rule is
+/// optional because some rules depend on the loaded targets.
+class MxDeckPickerLoadingSheet extends StatelessWidget {
+  const MxDeckPickerLoadingSheet({
+    super.key,
+    required this.title,
+    this.rule,
+    required this.semanticLabel,
+    this.rows = _defaultRows,
+  });
+
+  final String title;
+  final String? rule;
+
+  /// What is loading, in the caller's copy.
+  final String semanticLabel;
+  final int rows;
+
+  static const int _defaultRows = 3;
+
+  @override
+  Widget build(BuildContext context) => MxBottomSheet(
+    header: _PickerHead(title: title, rule: rule),
+    child: MxSkeletonList(semanticLabel: semanticLabel, rows: rows),
+  );
+}
+
+/// The picker's head: the title and, when known, the rule under it.
+class _PickerHead extends StatelessWidget {
+  const _PickerHead({required this.title, this.rule});
+
+  final String title;
+  final String? rule;
+
+  /// Ruling O11: the title → rule gap is UNSPECIFIED.
+  static const double _ruleGap = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    final styles = context.textStyles;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.card,
+        AppSpacing.micro,
+        AppSpacing.card,
+        AppSpacing.grouped,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: _ruleGap,
+        children: [
+          Text(title, style: styles.compactTitle),
+          if (rule case final text?) Text(text, style: styles.noteText),
+        ],
       ),
     );
   }
