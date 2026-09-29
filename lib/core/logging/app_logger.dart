@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_entry.dart';
@@ -22,6 +23,21 @@ final class AppLogger {
   final List<LogSink> _sinks;
   final DateTime Function() _now;
   final LogStamp stamp;
+
+  /// A warning or error repeated inside this window is counted, not written.
+  static const stormWindow = Duration(seconds: 5);
+
+  /// Past this many keys, the ones whose window is over are forgotten (their
+  /// suppressed count with them).
+  static const _maxStormKeys = 256;
+
+  final _storms = <(String, String?, String?), _Storm>{};
+
+  @visibleForTesting
+  int get dedupeKeysForTest => _storms.length;
+
+  @visibleForTesting
+  List<LogSink> get sinks => _sinks;
 
   static const _uuid = Uuid();
   static AppLogger _installed = AppLogger(sinks: const [ConsoleSink()]);
@@ -97,19 +113,25 @@ final class AppLogger {
     StackTrace? stackTrace,
     Map<String, Object?> context,
   ) {
+    final at = _now().toUtc();
+    final errorType = error?.runtimeType.toString();
+    final errorMessage = _storable(_describe(error));
+    final repeated = _repeated(level, at, (event, errorType, errorMessage));
+    if (repeated == null) return;
     final entry = LogEntry(
       id: _uuid.v4(),
-      occurredAt: _now().toUtc(),
+      occurredAt: at,
       level: level,
       category: category,
       event: event,
       message: _storable(message),
-      errorType: error?.runtimeType.toString(),
-      errorMessage: _storable(_describe(error)),
+      errorType: errorType,
+      errorMessage: errorMessage,
       stackTrace: _storable(stackTrace?.toString()),
       context: {
         for (final MapEntry(:key, :value) in context.entries)
           key: _storableValue(value),
+        if (repeated > 0) 'repeated': repeated,
       },
       stamp: stamp,
     );
@@ -120,6 +142,34 @@ final class AppLogger {
         // A sink never logs itself: that would loop.
         developer.log('Log sink failed: $sinkError', name: 'memox.logging');
       }
+    }
+  }
+
+  /// Error-storm dedupe: null when this warning or error repeats one written
+  /// less than [stormWindow] ago (it is counted); otherwise how many it
+  /// suppressed since the last one written (0 for none). Debug and info are
+  /// never held back. The window runs from the last entry written, so a storm
+  /// that never stops still shows up once per window.
+  int? _repeated(LogLevel level, DateTime at, (String, String?, String?) key) {
+    if (level.index < LogLevel.warning.index) return 0;
+    final storm = _storms[key];
+    if (storm != null && at.difference(storm.writtenAt) < stormWindow) {
+      storm.suppressed++;
+      return null;
+    }
+    final suppressed = storm?.suppressed ?? 0;
+    if (_storms.length >= _maxStormKeys && storm == null) _forgetOldStorms(at);
+    _storms[key] = _Storm(at);
+    return suppressed;
+  }
+
+  void _forgetOldStorms(DateTime at) {
+    _storms.removeWhere(
+      (_, storm) => at.difference(storm.writtenAt) >= stormWindow,
+    );
+    // Every key still open: drop the oldest, which was inserted first.
+    while (_storms.length >= _maxStormKeys) {
+      _storms.remove(_storms.keys.first);
     }
   }
 
@@ -168,6 +218,15 @@ final class AppLogger {
   static final _loneSurrogate = RegExp(
     r'[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]',
   );
+}
+
+/// One warning or error, as it was last written, and how many like it came
+/// since.
+final class _Storm {
+  _Storm(this.writtenAt);
+
+  final DateTime writtenAt;
+  int suppressed = 0;
 }
 
 /// The installed logger; console-only until the app installs its own.
