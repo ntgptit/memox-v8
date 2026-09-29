@@ -326,12 +326,25 @@ void main() {
 
     test('keys of storms long over do not pile up', () {
       for (var i = 0; i < 1000; i++) {
-        logger.error('x.$i');
+        logger.error('x.$i', error: StateError('e'));
         tick(const Duration(seconds: 6));
       }
 
       expect(logger.dedupeKeysForTest, lessThanOrEqualTo(256));
     });
+  });
+
+  test('a network entry round-trips through JSON', () {
+    final sink = _RecordingSink();
+    AppLogger(
+      sinks: [sink],
+      now: () => at,
+    ).debug('net.request', category: LogCategory.network);
+
+    final json = sink.entries.single.toJson();
+
+    expect(json['category'], 'network');
+    expect(LogEntry.fromJson(json).category, LogCategory.network);
   });
 }
 

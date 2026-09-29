@@ -51,6 +51,7 @@ Trước ADR này, V8 có:
 - Không ảnh hưởng: [BR-REMINDER-005](../../features/reminders/rules/BR-REMINDER-005-noi-dung-notification-rieng-tu.md)
   (nội dung trên màn khoá), [BR-STUDY-030](../../features/study/rules/BR-STUDY-030-khong-luu-noi-dung-go-o-fill.md)
   (luật lưu trữ, không phải luật log).
+- Log mạng: mọi request của Supabase client (trừ `log_push`) được ghi với category `network` (spec [`2026-09-29-network-logging-design.md`](../../superpowers/specs/2026-09-29-network-logging-design.md)).
 - Khi app có người dùng thật ngoài admin, phải xem lại quyết định 1.
 
 Chi tiết thiết kế: spec

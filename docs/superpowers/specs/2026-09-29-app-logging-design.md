@@ -113,6 +113,7 @@ AppLogger ──► ConsoleSink (dart:developer, every level; debug builds only)
 | GoRouter `NavigatorObserver` | `info nav.push` / `nav.pop` / `nav.replace` | route location, arguments |
 | App lifecycle | `info lifecycle.start` / `resume` / `pause` | app version |
 | Sync (`SyncCoordinator`, `SyncScheduler`) | `info sync.push` / `sync.pull` (counts, duration); `warning sync.rejected`; `error sync.failed` | entity, id, code, counts |
+| Supabase HTTP client (`core/network/logging_http_client.dart`, spec [`2026-09-29-network-logging-design.md`](2026-09-29-network-logging-design.md)) | `debug net.request`; `warning net.http_error`; `info net.unreachable`; `error net.failed` | method, url, headers, bodies (64 KB head), status, `duration_ms` |
 | Reminders (`main`, background bindings) | the two existing calls, as `warning reminder.*` | error |
 
 The four existing `dart:developer` calls move to `appLogger`. An architecture test

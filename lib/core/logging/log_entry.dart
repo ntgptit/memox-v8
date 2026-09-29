@@ -9,6 +9,7 @@ enum LogCategory {
   state,
   db,
   sync,
+  network,
   reminder,
   lifecycle,
   server,
