@@ -45,4 +45,53 @@ void main() {
 
     await expectLater(watch, emitsError(isA<DatabaseLockedFailure>()));
   });
+
+  group('guardDatabase', () {
+    test('a value passes through', () async {
+      expect(await guardDatabase(() async => 7), 7);
+    });
+
+    test('a database error leaves as its Failure, with the original '
+        'stack', () async {
+      late StackTrace thrownAt;
+      Future<int> body() async {
+        try {
+          throw sqlite3.SqliteException(
+            extendedResultCode: 5,
+            message: 'database is locked',
+          );
+        } on Object catch (_, stack) {
+          thrownAt = stack;
+          rethrow;
+        }
+      }
+
+      Object? caught;
+      StackTrace? caughtAt;
+      try {
+        await guardDatabase(body);
+      } on Object catch (error, stack) {
+        caught = error;
+        caughtAt = stack;
+      }
+      expect(caught, isA<DatabaseLockedFailure>());
+      expect(caughtAt.toString(), thrownAt.toString());
+    });
+
+    test('a throw before the first await is mapped too', () async {
+      Future<int> body() => throw StateError('sync');
+      await expectLater(
+        guardDatabase(body),
+        throwsA(isA<UnknownDatabaseFailure>()),
+      );
+    });
+
+    test('a Failure thrown inside leaves as it is', () async {
+      const refusal = ConstraintFailure(cause: 'x');
+      await expectLater(
+        guardDatabase<int>(() async => throw refusal),
+        throwsA(same(refusal)),
+      );
+    });
+  });
 }
