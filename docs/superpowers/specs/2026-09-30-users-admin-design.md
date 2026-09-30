@@ -1,6 +1,7 @@
 # Users (admin): screen 33 and the role client (P4)
 
-Status: approved 2026-09-30 in the P4 brainstorm. Phase P4 of
+Status: approved 2026-09-30 in the P4 brainstorm; implemented by
+`docs/superpowers/plans/2026-09-30-users-admin.md`. Phase P4 of
 [the auth spec](2026-09-30-auth-design.md) §11: the **Users** screen of O9,
 under Settings › Admin, over the P1 RPCs `role_list` and `role_set` (auth spec
 §2, `supabase/migrations/20261010000000_accounts.sql`). The auth spec's §8
