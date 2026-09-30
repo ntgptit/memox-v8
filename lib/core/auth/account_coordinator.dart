@@ -702,8 +702,12 @@ class AccountCoordinator {
     await _sync.pause();
     _emit(_inTransition(t));
     var s = t;
+    // Only while the SDK still holds the source: a rerun after the SDK
+    // signed out has nothing left to send and no session to send it with
+    // (R3).
     if (s.stage == TransitionStage.started &&
-        s.kind == TransitionKind.signOut) {
+        s.kind == TransitionKind.signOut &&
+        _gateway.currentUserId == s.sourceUserId) {
       try {
         await _sync.pushPending(); // #39
       } on Failure catch (error) {
