@@ -30,6 +30,8 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 
 /// Screen 06, the Trash (UC-TRASH-001): what was deleted, newest first,
 /// filtered by kind, each entry with its time left.
@@ -189,6 +191,13 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   /// The note, the filters with their counts (A6, none while selecting),
   /// the header, the rows, then why the other kind waits and what a purge
   /// skipped (spec D6).
+  /// Once the dismissed notes are read, [key] shows unless it was hidden.
+  bool _showsNote(String key) =>
+      ref.watch(dismissedNotesProvider).value?.contains(key) == false;
+
+  void _dismissNote(String key) =>
+      unawaited(ref.read(dismissedNoteStoreProvider).dismiss(key));
+
   List<Widget> _list(AppLocalizations l10n, List<TrashEntry> entries) {
     final state = ref.watch(trashControllerProvider);
     final now = ref.watch(dayClockProvider).now();
@@ -197,8 +206,14 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     return [
       const SizedBox(height: AppSpacing.control),
       // Read before selecting; the selection gives the list the room.
-      if (!state.isSelecting) ...[
-        MxNote(icon: AppIcons.history, text: l10n.trashNote),
+      // Critique 2026-09-30: a note the person hid stays hidden.
+      if (!state.isSelecting && _showsNote(NoteKeys.trashRetention)) ...[
+        MxNote(
+          icon: AppIcons.history,
+          text: l10n.trashNote,
+          dismissLabel: l10n.commonDismissNote,
+          onDismiss: () => _dismissNote(NoteKeys.trashRetention),
+        ),
         const SizedBox(height: AppSpacing.grouped),
       ],
       if (!state.isSelecting)

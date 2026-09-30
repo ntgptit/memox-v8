@@ -21,6 +21,9 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// Screen 03, Starter decks (UC-STARTER-001): the templates bundled with the
 /// app, each added as a deck of the person's own under the scheduler they
@@ -78,6 +81,23 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
     }
   }
 
+  /// Critique 2026-09-30: the fixture note, until the person hides it.
+  bool get _showsNote =>
+      ref
+          .watch(dismissedNotesProvider)
+          .value
+          ?.contains(NoteKeys.starterFixtures) ==
+      false;
+
+  Widget _fixtureNote(AppLocalizations l10n) => MxNote(
+    icon: AppIcons.fixture,
+    text: l10n.starterNote,
+    dismissLabel: l10n.commonDismissNote,
+    onDismiss: () => unawaited(
+      ref.read(dismissedNoteStoreProvider).dismiss(NoteKeys.starterFixtures),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -105,7 +125,7 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           ],
           AsyncData(:final value) => [
             const SizedBox(height: AppSpacing.control),
-            MxNote(icon: AppIcons.fixture, text: l10n.starterNote),
+            if (_showsNote) _fixtureNote(l10n),
             for (final entry in value) ...[
               const SizedBox(height: AppSpacing.grouped),
               StarterTemplateCardWidget(
@@ -128,7 +148,7 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           // are read (kit 03 `loading`).
           _ => [
             const SizedBox(height: AppSpacing.control),
-            MxNote(icon: AppIcons.fixture, text: l10n.starterNote),
+            if (_showsNote) _fixtureNote(l10n),
             const SizedBox(height: AppSpacing.grouped),
             MxSkeletonList(
               semanticLabel: l10n.commonLoading,

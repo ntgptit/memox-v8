@@ -37,6 +37,10 @@
     "description": "Opens screen 06, the Trash: the Library app bar, the gone states and the Trash toasts (FE-B1 D1, D4, D11)."
   },
   "commonRetry": "Retry",
+  "commonDismissNote": "Hide this note",
+  "@commonDismissNote": {
+    "description": "The close button of a one-time note that can be hidden for good (critique 2026-09-30)."
+  },
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
