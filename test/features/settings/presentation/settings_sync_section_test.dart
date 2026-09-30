@@ -34,7 +34,7 @@ void main() {
       _screen(onOpenSync: () => opened++),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 1)),
     );
-    final line = find.text('1 change kept only on this device');
+    final line = find.text("1 change wasn't accepted");
     await tester.scrollUntilVisible(line, 200);
     await tester.tap(line);
     expect(opened, 1);
@@ -57,7 +57,7 @@ void main() {
     );
     statuses.add(const SyncStatus(rejectedCount: 1));
     await tester.pump();
-    final line = find.text('1 change kept only on this device');
+    final line = find.text("1 change wasn't accepted");
     await tester.scrollUntilVisible(line, 200);
     expect(line, findsOneWidget);
 

@@ -2214,7 +2214,7 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchedToast."
   },
-  "algorithmSwitchFailedTitle": "Couldn’t switch.",
+  "algorithmSwitchFailedTitle": "Couldn't switch.",
   "@algorithmSwitchFailedTitle": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchFailedTitle."
   },
@@ -3747,7 +3747,7 @@
   "@importCaptionProblemPaste": {
     "description": "Import commit bar, step 1, the pasted text could not be read."
   },
-  "importCaptionColumns": "Next you’ll preview every row before anything is imported.",
+  "importCaptionColumns": "Next you'll preview every row before anything is imported.",
   "@importCaptionColumns": {
     "description": "Import commit bar caption at step 2."
   },
@@ -3781,7 +3781,7 @@
   "@importProblemEncodingBody": {
     "description": "Import problem: how to fix the encoding."
   },
-  "importProblemUnreadableTitle": "This file can’t be read",
+  "importProblemUnreadableTitle": "This file can't be read",
   "@importProblemUnreadableTitle": {
     "description": "Import problem: E1."
   },
@@ -3830,7 +3830,7 @@
   "@importNoneBody": {
     "description": "Import result: none body."
   },
-  "importFailedTitle": "Import didn’t finish",
+  "importFailedTitle": "Import didn't finish",
   "@importFailedTitle": {
     "description": "Import result: E5."
   },
@@ -3987,7 +3987,7 @@
     },
     "description": "Toast once the share sheet took the file; never says where it was saved (BR-TRANSFER-014)."
   },
-  "exportFailedTitle": "Couldn’t prepare the file",
+  "exportFailedTitle": "Couldn't prepare the file",
   "@exportFailedTitle": {
     "description": "Export banner: the cards could not be read or the file written (E3, E4)."
   },
@@ -3995,7 +3995,7 @@
   "@exportFailedBody": {
     "description": "Export banner body for E3, E4."
   },
-  "exportShareFailedTitle": "Couldn’t hand the file over",
+  "exportShareFailedTitle": "Couldn't hand the file over",
   "@exportShareFailedTitle": {
     "description": "Export banner: the platform failed while sharing (E2)."
   },
@@ -5131,7 +5131,7 @@
   "@settingsStudyDefaults": {
     "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
   },
-  "settingsStudyDefaultsNote": "Apply to sessions started from now on. A deck with its own study options keeps them.",
+  "settingsStudyDefaultsNote": "Applies to sessions started from now on. A deck with its own study options keeps them.",
   "@settingsStudyDefaultsNote": {
     "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
   },
@@ -5179,7 +5179,7 @@
   "@settingsNewCardOrderHint": {
     "description": "Line under New-card order."
   },
-  "settingsOrderCreated": "Created",
+  "settingsOrderCreated": "In order",
   "@settingsOrderCreated": {
     "description": "New-card order: the order cards were created."
   },
@@ -5294,7 +5294,7 @@
   "@studyOptionsOwn": {
     "description": "Screen handoff 15 (FE-A3 plan 2): the toggle sub-line while off."
   },
-  "studyOptionsOrderCreatedShort": "created order",
+  "studyOptionsOrderCreatedShort": "in creation order",
   "@studyOptionsOrderCreatedShort": {
     "description": "Screen handoff 15 (FE-A3 plan 2): the order inside a sentence."
   },
@@ -6041,7 +6041,7 @@
   "@reminderTryAgain": {
     "description": "Screen handoff 24 (FE-B5): the action of the E1 and E6 banners."
   },
-  "reminderCouldNotTurnOnTitle": "Couldn’t schedule the reminder.",
+  "reminderCouldNotTurnOnTitle": "Couldn't schedule the reminder.",
   "@reminderCouldNotTurnOnTitle": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
   },
@@ -6049,7 +6049,7 @@
   "@reminderCouldNotTurnOnBody": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
   },
-  "reminderCouldNotChangeTimeTitle": "Couldn’t change the time.",
+  "reminderCouldNotChangeTimeTitle": "Couldn't change the time.",
   "@reminderCouldNotChangeTimeTitle": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Change time (E3)."
   },
@@ -6192,7 +6192,7 @@
   "@syncTitle": {
     "description": "Screen 27 (SB-U1): the app bar title."
   },
-  "syncStatusRejected": "{count, plural, =1{1 change kept only on this device} other{{count} changes kept only on this device}}",
+  "syncStatusRejected": "{count, plural, =1{1 change wasn't accepted} other{{count} changes weren't accepted}}",
   "@syncStatusRejected": {
     "placeholders": {
       "count": {
@@ -6297,7 +6297,7 @@
   "@syncNow": {
     "description": "Screen 27 (SB-U1): the button that runs a sync."
   },
-  "syncRejectedTitle": "{count, plural, =1{1 change is kept only on this device} other{{count} changes are kept only on this device}}",
+  "syncRejectedTitle": "{count, plural, =1{1 change wasn't accepted} other{{count} changes weren't accepted}}",
   "@syncRejectedTitle": {
     "placeholders": {
       "count": {
@@ -6371,7 +6371,7 @@
   "@syncLoadErrorTitle": {
     "description": "Screen 27 (SB-U1): the status stream failed (spec §6)."
   },
-  "studyHomeSyncRejected": "{count, plural, =1{1 change is kept only on this device.} other{{count} changes are kept only on this device.}}",
+  "studyHomeSyncRejected": "{count, plural, =1{1 change wasn't accepted.} other{{count} changes weren't accepted.}}",
   "@studyHomeSyncRejected": {
     "placeholders": {
       "count": {

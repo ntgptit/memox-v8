@@ -59,7 +59,7 @@ void main() {
       const SyncScreen(),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
-    expect(find.text('3 changes are kept only on this device'), findsOneWidget);
+    expect(find.text("3 changes weren't accepted"), findsOneWidget);
     await tester.tap(find.text('Try again'));
     await _settle(tester);
     expect(commands.retries, 1);
@@ -268,7 +268,7 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(commands.keeps, 0);
-    expect(find.text('3 changes are kept only on this device'), findsOneWidget);
+    expect(find.text("3 changes weren't accepted"), findsOneWidget);
   });
 
   libraryTest('refused rows and a failure: one primary', (tester, env) async {
@@ -289,5 +289,21 @@ void main() {
     );
     expect(find.text('Try again'), findsOneWidget);
     expectOnePrimaryPerDecision(tester);
+  });
+
+  libraryTest('one refused change reads in the singular (R3)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        const SyncStatus(rejectedCount: 1),
+        FakeSyncCommands(),
+      ),
+    );
+    expect(find.text("1 change wasn't accepted"), findsOneWidget);
   });
 }

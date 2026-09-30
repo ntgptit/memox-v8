@@ -10,7 +10,7 @@ import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
 
-const _rejected = '2 changes are kept only on this device.';
+const _rejected = "2 changes weren't accepted.";
 const _stale = "Some changes haven't synced in over a day. They're safe here.";
 
 StudyHomeScreen _screen({void Function()? onOpenSync}) => StudyHomeScreen(
