@@ -7194,5 +7194,134 @@
       }
     },
     "description": "Screen 30 reauth: what continuing without does (Account UI spec §9.1)."
+  },
+  "usersTitle": "Users",
+  "@usersTitle": {
+    "description": "Screen 33's title and 23's Admin row (users spec §3, §4)."
+  },
+  "usersRowHint": "Who can manage the app",
+  "@usersRowHint": {
+    "description": "Screen 23: under the Users row."
+  },
+  "usersSearchHint": "Search by email",
+  "@usersSearchHint": {
+    "description": "Screen 33: the search field."
+  },
+  "usersSearchClear": "Clear search",
+  "@usersSearchClear": {
+    "description": "Screen 33: the search field's clear button."
+  },
+  "usersSection": "Accounts",
+  "@usersSection": {
+    "description": "Screen 33: the overline over the list (§6)."
+  },
+  "usersJoined": "Joined {date}",
+  "@usersJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 33: a row's subtitle; `date` is a medium date."
+  },
+  "usersJoinedYou": "Joined {date} · You",
+  "@usersJoinedYou": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 33: the signed-in admin's own row (U1)."
+  },
+  "usersRoleAdmin": "Admin",
+  "@usersRoleAdmin": {
+    "description": "Screen 33: the badge and the sheet's option."
+  },
+  "usersRoleUser": "User",
+  "@usersRoleUser": {
+    "description": "Screen 33: the badge and the sheet's option."
+  },
+  "usersRoleAdminHint": "Sees logs and manages roles",
+  "@usersRoleAdminHint": {
+    "description": "Role sheet: under Admin."
+  },
+  "usersRoleUserHint": "Studies and syncs their own decks",
+  "@usersRoleUserHint": {
+    "description": "Role sheet: under User."
+  },
+  "usersSave": "Save",
+  "@usersSave": {
+    "description": "Role sheet: confirm."
+  },
+  "usersNoMore": "No more users",
+  "@usersNoMore": {
+    "description": "Screen 33: the end of the list."
+  },
+  "usersLoadMoreFailed": "Couldn't load more users.",
+  "@usersLoadMoreFailed": {
+    "description": "Screen 33: a failed next page."
+  },
+  "usersNoMatch": "No users match “{query}”",
+  "@usersNoMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 33: empty search."
+  },
+  "usersNone": "No accounts yet",
+  "@usersNone": {
+    "description": "Screen 33: empty with no query."
+  },
+  "usersErrorTitle": "Couldn't load users",
+  "@usersErrorTitle": {
+    "description": "Screen 33: a failed first page."
+  },
+  "usersOfflineTitle": "No connection",
+  "@usersOfflineTitle": {
+    "description": "Screen 33: offline."
+  },
+  "usersOfflineBody": "Users load when you're online.",
+  "@usersOfflineBody": {
+    "description": "Screen 33: offline body."
+  },
+  "usersNowAdmin": "{email} is now an admin",
+  "@usersNowAdmin": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Toast after a save."
+  },
+  "usersNowUser": "{email} is now a user",
+  "@usersNowUser": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Toast after a save."
+  },
+  "usersLastAdmin": "An admin must remain. Make someone else an admin first.",
+  "@usersLastAdmin": {
+    "description": "Toast: LAST_ADMIN."
+  },
+  "usersAnonymous": "This account isn't signed in with an email or Google.",
+  "@usersAnonymous": {
+    "description": "Toast: ANONYMOUS_USER."
+  },
+  "usersGone": "That account no longer exists.",
+  "@usersGone": {
+    "description": "Toast: NOT_FOUND."
+  },
+  "usersOffline": "No connection. Nothing changed.",
+  "@usersOffline": {
+    "description": "Toast: offline save."
+  },
+  "usersSaveFailed": "Couldn't change the role. Nothing changed.",
+  "@usersSaveFailed": {
+    "description": "Toast: any other failed save."
   }
 }

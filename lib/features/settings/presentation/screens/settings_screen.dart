@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -36,7 +37,7 @@ class SettingsScreen extends ConsumerWidget {
     required this.onAppOptionsReset,
     required this.onOpenSync,
     this.accountSection,
-    this.adminSection,
+    this.adminRows = const [],
     this.onOpenGallery,
   });
 
@@ -55,9 +56,10 @@ class SettingsScreen extends ConsumerWidget {
   /// (account UI spec §5.5); first in the list.
   final Widget? accountSection;
 
-  /// The Admin section, which `app/` composes from Monitoring (monitoring
-  /// spec §3.1): a widget that draws nothing unless the account is an admin.
-  final Widget? adminSection;
+  /// The rows features supply for the Admin section (Monitoring, Users),
+  /// which `app/` composes; the section shows only to an admin (users spec
+  /// U2).
+  final List<Widget> adminRows;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -104,7 +106,8 @@ class SettingsScreen extends ConsumerWidget {
                 now: ref.watch(dayClockProvider).now(),
                 onOpenSync: onOpenSync,
               ),
-            ?adminSection,
+            if (adminRows.isNotEmpty && ref.watch(isAdminProvider))
+              MxSection(title: l10n.settingsAdmin, children: adminRows),
             MxSection(
               title: l10n.settingsReset,
               note: l10n.settingsResetNote,

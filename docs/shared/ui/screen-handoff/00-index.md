@@ -49,6 +49,7 @@ their goldens, its rulings and its copy. The visual system is in
 | 30 | Sign-in, merge sheet, transition layer | 13 | FE-B9, FE-B10 | built | [30-sign-in.md](30-sign-in.md) (shape in the account UI spec) |
 | 31 | Code | 2 | FE-B9 | built | [31-code.md](31-code.md) |
 | 32 | Account | 9 | FE-B10 | built | [32-account.md](32-account.md) (shape in the account UI spec §9.1) |
+| 33 | Users (admin) | 5 | FE-B11 | built | [33-users.md](33-users.md) (shape in the users spec §6) |
 
 ## Rules shared by every screen
 

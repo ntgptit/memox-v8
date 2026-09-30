@@ -26,7 +26,7 @@ bar (D2).
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
 | App | `MxSection` + `MxSettingsRow` × 2 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt". Both open their page. |
 | Sync | `MxSection` + `MxSettingsRow` | SB-U1: "Sync", one row with the cloud-sync tile; its sub-line is the first that applies of "{n} changes kept only on this device", "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1). Opens screen 27. Hidden when the build has no Supabase. |
-| Admin | `MxSection` + `MxSettingsRow` | FE-B8: "Admin", one row "Monitoring" / "Logs of the app and the server" with the monitor tile. Opens screen 28. Drawn only while the session's account is an admin; hidden for everyone else and in a build with no Supabase. |
+| Admin | `MxSection` + `MxSettingsRow` × 2 | FE-B8, FE-B11: "Admin", then "Monitoring" / "Logs of the app and the server" (monitor tile, opens 28) and "Users" / "Who can manage the app" (people tile, opens 33). Settings draws the section from an `adminRows` slot that `app/` fills (users spec U2), only while the session's account is an admin; hidden for everyone else and in a build with no Supabase. |
 | Reset | `MxSection` + `MxSettingsRow` | "Reset app options" / "Theme, language, study defaults". The note: "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." |
 | Reset dialog | `MxDialog` + `MxNote` + `MxSheetActions.custom` | "Reset app options?", "Theme, language, cards per session and new-card order go back to their defaults.", the shield note "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.", then Cancel (outline) · "Reset options" (primary, spinning while it runs), stacked when a label cannot fit (UI-base row 118). Back and Cancel do nothing while it runs. |
 | Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order." · Retry; "App options reset to defaults"; "Couldn't reset the app options. Nothing changed." · Retry. |
@@ -52,6 +52,7 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | account | ![](../../../../test/features/account/presentation/goldens/settings_account_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_dark.png) | Golden `settings_account_*` (in the account tests): the Account section first, anonymous. |
 | account, signed in | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_dark.png) | (FE-B10) Golden `settings_account_signed_in_*`: the account row and its chevron. |
 | account, re-auth | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_dark.png) | (FE-B10) Golden `settings_account_reauth_*`: the banner leads the section. |
+| admin rows | ![](../../../../test/features/account/presentation/goldens/settings_admin_rows_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_admin_rows_dark.png) | (FE-B11) Golden `settings_admin_rows_*`: Monitoring then Users. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
 
 
@@ -67,7 +68,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens screen 27.
 - **UI-base row 128:** the tile sits beside the label on a row with a wide control.
 - **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens screen 32; an expired sign-in's banner leads the Account section, since 23 owns the problem.
-- **ADR-018 §8, monitoring spec §3.1:** an Admin section with one row opens screen 28, drawn only while the account is an admin.
+- **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds Monitoring and Users, drawn by Settings from rows the features supply, only while the account is an admin.
 
 ## Copy
 
@@ -75,6 +76,6 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt".
 - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session and new-card order go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset options".
 - Sync (SB-U1): "Sync" · "{n} changes kept only on this device" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".
-- Admin (FE-B8): "Admin" · "Monitoring" · "Logs of the app and the server".
+- Admin (FE-B8, FE-B11): "Admin" · "Monitoring" · "Logs of the app and the server" · "Users" · "Who can manage the app".
 - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order." · "App options reset to defaults" · "Couldn't reset the app options. Nothing changed." · "Retry".
 - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · "Retry".

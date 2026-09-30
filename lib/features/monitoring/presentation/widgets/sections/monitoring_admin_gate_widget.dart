@@ -18,9 +18,13 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 /// buffer has no server check behind it. So for a non-admin the page builds
 /// none of [child], reads nothing, and says only an admin can see this.
 class MonitoringAdminGateWidget extends ConsumerWidget {
-  const MonitoringAdminGateWidget({super.key, required this.child});
+  const MonitoringAdminGateWidget({super.key, required this.child, this.title});
 
   final Widget child;
+
+  /// The app bar's title while it refuses; Monitoring's when null (users
+  /// plan ruling 2).
+  final String? title;
 
   static const int _waitRows = 3;
 
@@ -36,7 +40,7 @@ class MonitoringAdminGateWidget extends ConsumerWidget {
     final l10n = context.l10n;
     return MxAppShell(
       appBar: MxAppBar(
-        title: l10n.monitoringTitle,
+        title: title ?? l10n.monitoringTitle,
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,

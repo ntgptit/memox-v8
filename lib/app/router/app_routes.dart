@@ -93,6 +93,10 @@ abstract final class AppRoutes {
   static const String settingsAccountChild = 'account';
   static const String settingsAccount = '$settings/$settingsAccountChild';
 
+  /// Screen 33, the admin's Users (users spec U5), under [settings].
+  static const String settingsUsersChild = 'users';
+  static const String settingsUsers = '$settings/$settingsUsersChild';
+
   /// Signing in again (spec §5.2) and where the flow began, to return to
   /// once it succeeds (spec §9 B9).
   static const String accountReauthMode = 'reauth';

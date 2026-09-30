@@ -97,6 +97,7 @@ void main() {
     );
     expect(AppRoutes.welcomeFrom('/decks'), '/welcome?from=%2Fdecks');
     expect(AppRoutes.settingsAccount, '/settings/account');
+    expect(AppRoutes.settingsUsers, '/settings/users');
     expect(
       AppRoutes.settingsSignInReauth(from: '/study'),
       '/settings/sign-in?mode=reauth&from=%2Fstudy',
