@@ -1,17 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
-import 'package:memox/features/reminders/domain/models/reminder_digest_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
-import 'package:memox/features/reminders/presentation/providers/reminder_preview_digest_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
-import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
-import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -22,52 +16,19 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../../support/fake_reminder_platform.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/reminder_screen_harness.dart';
 import '../../../support/settings_fakes.dart';
-import '../../../support/study_entry_fixtures.dart';
 
 // Screen 24, Daily reminder: UC-REMINDER-001; FE-B5 spec §5.1.
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-Future<void> _settle(WidgetTester tester) async {
-  await tester.pump();
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 400));
-}
-
-Future<({FakeReminderPlatform platform, FlakySettingsRepository store})> _pump(
-  WidgetTester tester,
-  LibraryEnv env, {
-  FakeReminderPlatform? platform,
-  List<Override> overrides = const [],
-}) async {
-  final fake = platform ?? FakeReminderPlatform();
-  final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
-  await pumpLibraryScreen(
-    tester,
-    env,
-    const ReminderScreen(),
-    overrides: [
-      reminderPlatformRepositoryProvider.overrideWithValue(fake),
-      settingsRepositoryProvider.overrideWithValue(store),
-      ...overrides,
-    ],
-  );
-  await _settle(tester);
-  return (platform: fake, store: store);
-}
-
-Future<void> _toggle(WidgetTester tester) async {
-  await tester.tap(find.byType(MxToggle));
-  await _settle(tester);
-}
 
 void main() {
   libraryTest('off: toggle off, time row disabled, note and preview (main 1)', (
     tester,
     env,
   ) async {
-    final s = await _pump(tester, env);
+    final s = await pumpReminderScreen(tester, env);
 
     expect(find.text(_en.reminderOffHint), findsOneWidget);
     expect(find.text(_en.reminderTimeOffHint), findsOneWidget);
@@ -84,8 +45,8 @@ void main() {
   libraryTest(
     'on: the toggle asks for the permission, then the time row opens (main 2-3)',
     (tester, env) async {
-      final s = await _pump(tester, env);
-      await _toggle(tester);
+      final s = await pumpReminderScreen(tester, env);
+      await tapReminderToggle(tester);
 
       expect(
         s.platform.calls.where((c) => c == PlatformCall.requestPermission),
@@ -100,7 +61,7 @@ void main() {
   libraryTest(
     'busy: the toggle becomes a spinner, the permission is asked once',
     (tester, env) async {
-      final s = await _pump(tester, env);
+      final s = await pumpReminderScreen(tester, env);
       final hold = Completer<void>();
       s.store.hold = hold;
 
@@ -110,7 +71,7 @@ void main() {
       expect(find.byType(MxToggle), findsNothing);
 
       hold.complete();
-      await _settle(tester);
+      await settleReminderScreen(tester);
       expect(
         s.platform.calls.where((c) => c == PlatformCall.requestPermission),
         hasLength(1),
@@ -122,12 +83,12 @@ void main() {
     tester,
     env,
   ) async {
-    final s = await _pump(
+    final s = await pumpReminderScreen(
       tester,
       env,
       platform: FakeReminderPlatform(permission: ReminderPermission.denied),
     );
-    await _toggle(tester);
+    await tapReminderToggle(tester);
 
     expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
     expect(find.text(_en.reminderDeniedBody), findsOneWidget);
@@ -136,19 +97,19 @@ void main() {
 
     s.platform.permission = ReminderPermission.granted;
     await tester.tap(find.text(_en.reminderTryAgain));
-    await _settle(tester);
+    await settleReminderScreen(tester);
     expect(find.byType(MxInlineBanner), findsNothing);
     expect(find.text(_en.reminderOnHint), findsOneWidget);
   });
 
   libraryTest('permDenied: Try again outlined, then Open system settings '
       'last and primary (R5, amends FE-B6)', (tester, env) async {
-    await _pump(
+    await pumpReminderScreen(
       tester,
       env,
       platform: FakeReminderPlatform(permission: ReminderPermission.denied),
     );
-    await _toggle(tester);
+    await tapReminderToggle(tester);
 
     final buttons = tester
         .widgetList<MxButton>(
@@ -173,15 +134,15 @@ void main() {
     final platform = FakeReminderPlatform(
       permission: ReminderPermission.denied,
     );
-    await _pump(tester, env, platform: platform);
-    await _toggle(tester);
+    await pumpReminderScreen(tester, env, platform: platform);
+    await tapReminderToggle(tester);
     platform.permissionHold = Completer<void>();
     await tester.tap(find.text(_en.reminderTryAgain));
     await tester.pump();
     expect(find.byType(MxInlineBanner), findsNothing);
 
     platform.permissionHold!.complete();
-    await _settle(tester);
+    await settleReminderScreen(tester);
     final buttons = tester
         .widgetList<MxButton>(
           find.descendant(
@@ -199,19 +160,19 @@ void main() {
   libraryTest('permDenied: Open system settings opens them and changes nothing '
       'else: no permission asked, nothing written, the banner stays '
       '(FE-B6; BR-REMINDER-011)', (tester, env) async {
-    final s = await _pump(
+    final s = await pumpReminderScreen(
       tester,
       env,
       platform: FakeReminderPlatform(permission: ReminderPermission.denied),
     );
-    await _toggle(tester);
+    await tapReminderToggle(tester);
     final asked = s.platform.calls
         .where((c) => c == PlatformCall.requestPermission)
         .length;
     final writes = s.store.writes;
 
     await tester.tap(find.text(_en.reminderOpenSystemSettings));
-    await _settle(tester);
+    await settleReminderScreen(tester);
 
     expect(s.platform.calls.last, PlatformCall.openSettings);
     expect(
@@ -226,11 +187,11 @@ void main() {
       'is (FE-B6)', (tester, env) async {
     final platform = FakeReminderPlatform(permission: ReminderPermission.denied)
       ..refusing.add(PlatformCall.openSettings);
-    await _pump(tester, env, platform: platform);
-    await _toggle(tester);
+    await pumpReminderScreen(tester, env, platform: platform);
+    await tapReminderToggle(tester);
 
     await tester.tap(find.text(_en.reminderOpenSystemSettings));
-    await _settle(tester);
+    await settleReminderScreen(tester);
 
     expect(tester.takeException(), isNull);
     expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
@@ -243,30 +204,30 @@ void main() {
   ) async {
     final platform = FakeReminderPlatform()
       ..refusing.add(PlatformCall.schedule);
-    await _pump(tester, env, platform: platform);
-    await _toggle(tester);
+    await pumpReminderScreen(tester, env, platform: platform);
+    await tapReminderToggle(tester);
 
     expect(find.text(_en.reminderCouldNotTurnOnTitle), findsOneWidget);
     platform.refusing.clear();
     await tester.tap(find.text(_en.commonRetry));
-    await _settle(tester);
+    await settleReminderScreen(tester);
     expect(find.text(_en.reminderOnHint), findsOneWidget);
   });
 
   libraryTest(
     'offMayShow: off, the warning and Try again, which only cancels (E6)',
     (tester, env) async {
-      final s = await _pump(tester, env);
-      await _toggle(tester);
+      final s = await pumpReminderScreen(tester, env);
+      await tapReminderToggle(tester);
       s.platform.refusing.add(PlatformCall.cancel);
-      await _toggle(tester);
+      await tapReminderToggle(tester);
 
       expect(find.text(_en.reminderMayStillShow), findsOneWidget);
       expect(find.text(_en.reminderOffHint), findsOneWidget);
       s.platform.refusing.clear();
       final writes = s.store.writes;
       await tester.tap(find.text(_en.reminderTryAgain));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       expect(find.text(_en.reminderMayStillShow), findsNothing);
       expect(s.store.writes, writes);
     },
@@ -276,7 +237,7 @@ void main() {
     tester,
     env,
   ) async {
-    await _pump(
+    await pumpReminderScreen(
       tester,
       env,
       platform: FakeReminderPlatform(
@@ -294,9 +255,9 @@ void main() {
     tester,
     env,
   ) async {
-    final s = await _pump(tester, env);
+    final s = await pumpReminderScreen(tester, env);
     s.store.isFailing = true;
-    await _toggle(tester);
+    await tapReminderToggle(tester);
 
     expect(find.text(_en.reminderSaveFailed), findsOneWidget);
     expect(find.textContaining('/data/'), findsNothing, reason: 'BR-CORE-005');
@@ -304,7 +265,7 @@ void main() {
 
     s.store.isFailing = false;
     await tester.tap(find.text(_en.commonRetry));
-    await _settle(tester);
+    await settleReminderScreen(tester);
     expect(find.text(_en.reminderOnHint), findsOneWidget);
   });
 
@@ -335,7 +296,7 @@ void main() {
         ),
       ],
     );
-    await _settle(tester);
+    await settleReminderScreen(tester);
 
     expect(find.byType(MxErrorState), findsOneWidget);
     expect(find.text(_en.reminderReadErrorTitle), findsOneWidget);
@@ -344,30 +305,30 @@ void main() {
   });
 
   libraryTest('off: the time row is disabled', (tester, env) async {
-    await _pump(tester, env);
+    await pumpReminderScreen(tester, env);
     await tester.tap(find.text('20:00'));
-    await _settle(tester);
+    await settleReminderScreen(tester);
     expect(find.text(_en.reminderTimeDialogTitle), findsNothing);
   });
 
   libraryTest(
     'A1: Cancel changes nothing; Save stores and schedules the new minute',
     (tester, env) async {
-      final s = await _pump(tester, env);
-      await _toggle(tester);
+      final s = await pumpReminderScreen(tester, env);
+      await tapReminderToggle(tester);
       final scheduledBefore = s.platform.pending;
 
       await tester.tap(find.text('20:00'));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       await tester.tap(find.byTooltip(_en.reminderLaterHour));
       await tester.pump();
       await tester.tap(find.text(_en.commonCancel));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       expect(find.text('20:00'), findsOneWidget);
       expect(s.platform.pending, scheduledBefore);
 
       await tester.tap(find.text('20:00'));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       await tester.tap(find.byTooltip(_en.reminderLaterHour));
       await tester.pump();
       expect(
@@ -376,17 +337,17 @@ void main() {
         reason: 'the dialog reads the chosen time',
       );
       await tester.tap(find.text(_en.reminderTimeSave));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       expect(find.text('21:00'), findsOneWidget);
       expect(s.platform.pending, isNot(scheduledBefore));
     },
   );
 
   libraryTest('a typed minute outside 0–59 disables Save', (tester, env) async {
-    await _pump(tester, env);
-    await _toggle(tester);
+    await pumpReminderScreen(tester, env);
+    await tapReminderToggle(tester);
     await tester.tap(find.text('20:00'));
-    await _settle(tester);
+    await settleReminderScreen(tester);
 
     // The minute stepper's value; a tap makes it typeable (MxStepper).
     await tester.tap(find.text('0').last);
@@ -402,15 +363,15 @@ void main() {
   libraryTest(
     'couldNotChangeTime: the old time stands, the banner names it (E3)',
     (tester, env) async {
-      final s = await _pump(tester, env);
-      await _toggle(tester);
+      final s = await pumpReminderScreen(tester, env);
+      await tapReminderToggle(tester);
       s.platform.refusing.add(PlatformCall.schedule);
 
       await tester.tap(find.text('20:00'));
-      await _settle(tester);
+      await settleReminderScreen(tester);
       await tester.tap(find.byTooltip(_en.reminderLaterHour));
       await tester.tap(find.text(_en.reminderTimeSave));
-      await _settle(tester);
+      await settleReminderScreen(tester);
 
       expect(find.text(_en.reminderCouldNotChangeTimeTitle), findsOneWidget);
       expect(
@@ -420,66 +381,9 @@ void main() {
     },
   );
 
-  libraryTest('the preview says what the notification would say now '
-      '(critique 2026-09-30 part 1)', (tester, env) async {
-    // Korean > Lesson with three learned cards due before the harness day.
-    await sm2Leaf(env.db, env.decks, dueCards: 3);
-    await _pump(tester, env);
-    expect(
-      find.text(
-        _en.reminderPreviewQuoted(
-          _en.reminderBody(_en.reminderDueCards(3), 'Korean'),
-        ),
-      ),
-      findsOneWidget,
-    );
-  });
-
-  libraryTest('nothing due: the preview says the reminder stays silent', (
-    tester,
-    env,
-  ) async {
-    await _pump(tester, env);
-    expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
-  });
-
-  libraryTest('a failed read shows the neutral line', (tester, env) async {
-    final s = await _pump(
-      tester,
-      env,
-      overrides: [
-        reminderPreviewDigestProvider.overrideWith(
-          (ref) async => throw StateError('db'),
-        ),
-      ],
-    );
-    expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
-    expect(find.byType(MxErrorState), findsNothing);
-    await _toggle(tester);
-    expect(s.platform.calls, contains(PlatformCall.schedule));
-  });
-
-  libraryTest('while the preview loads the row keeps its place and shows no '
-      'error', (tester, env) async {
-    final never = Completer<ReminderDigest?>();
-    await _pump(
-      tester,
-      env,
-      overrides: [
-        reminderPreviewDigestProvider.overrideWith((ref) => never.future),
-      ],
-    );
-    // The section header draws its title in capitals.
-    expect(find.text(_en.reminderPreviewTitle.toUpperCase()), findsOneWidget);
-    expect(find.text(_en.reminderPreviewHint), findsOneWidget);
-    expect(find.text(_en.reminderPreviewNothingDue), findsNothing);
-    expect(find.byType(MxErrorState), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('off: the time button draws its own disabled state, dimmed '
       'once (critique 2026-09-30 part 3a)', (tester, env) async {
-    await _pump(tester, env);
+    await pumpReminderScreen(tester, env);
     final time = find.descendant(
       of: find.byType(MxButton),
       matching: find.text('20:00'),
