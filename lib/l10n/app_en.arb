@@ -3566,18 +3566,6 @@
   "@importMappingIncomplete": {
     "description": "Import mapping: front or back is not mapped (BR-TRANSFER-002)."
   },
-  "importPreviewReady": "{ready} of {total} rows ready",
-  "@importPreviewReady": {
-    "placeholders": {
-      "ready": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Import preview: the ready count."
-  },
   "importBadgeReady": "Ready · {count}",
   "@importBadgeReady": {
     "placeholders": {
@@ -3741,14 +3729,9 @@
   "@importCaptionColumns": {
     "description": "Import commit bar caption at step 2."
   },
-  "importCaptionPreview": "{count, plural, =0{No row will be imported.} =1{1 row will become a new card.} other{{count} rows will become new cards.}}",
-  "@importCaptionPreview": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Import commit bar caption at step 3 (E3 when 0)."
+  "importCaptionNothingToImport": "No row will be imported.",
+  "@importCaptionNothingToImport": {
+    "description": "Screen 11: the caption under a locked Import button, saying why; with rows to import the button states the count (critique 2026-09-30 part 3b)."
   },
   "importImportingTitle": "{count, plural, =1{Adding 1 card…} other{Adding {count} cards…}}",
   "@importImportingTitle": {

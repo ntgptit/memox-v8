@@ -83,7 +83,10 @@ void main() {
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await _tap(tester, _en.importPreviewAction);
-    expect(find.text(_en.importPreviewReady(2, 2)), findsOneWidget);
+    // The chips carry the breakdown and the button the count: no header
+    // total, no caption (critique 2026-09-30 part 3b).
+    expect(find.textContaining('rows ready'), findsNothing);
+    expect(find.text('2 rows will become new cards.'), findsNothing);
 
     await _tap(tester, _en.importCommitAction(2));
     expect(find.text(_en.importDoneTitle), findsOneWidget);
@@ -207,7 +210,7 @@ void main() {
       await _tap(tester, _en.importPreviewAction);
 
       expect(find.text(_en.importRowDuplicateInDeck), findsOneWidget);
-      expect(find.text(_en.importCaptionPreview(0)), findsOneWidget);
+      expect(find.text(_en.importCaptionNothingToImport), findsOneWidget);
 
       await _tap(tester, _en.importIncludeDuplicates);
       expect(find.text(_en.importCommitAction(1)), findsOneWidget);
@@ -330,5 +333,23 @@ void main() {
       );
     }
     expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the file line counts data rows: a header row is not a row '
+      '(critique 2026-09-30 part 3b)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back\nmul,water\nbul,fire\n'),
+    );
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
+
+    await _tap(tester, _en.importHeaderToggle);
+    expect(find.text(_en.importFileRead('CSV', 3, 2)), findsOneWidget);
   });
 }

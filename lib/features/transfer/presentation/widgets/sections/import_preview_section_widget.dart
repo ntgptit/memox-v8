@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -35,13 +34,9 @@ class ImportPreviewSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        MxListSectionHeader(
-          label: l10n.importSectionPreview,
-          trailing: Text(
-            l10n.importPreviewReady(preview.ready, preview.total),
-            style: context.textStyles.counter,
-          ),
-        ),
+        // The chips below carry the breakdown: no total beside the title
+        // (critique 2026-09-30 part 3b).
+        MxListSectionHeader(label: l10n.importSectionPreview),
         Wrap(
           spacing: AppSpacing.micro,
           runSpacing: AppSpacing.micro,

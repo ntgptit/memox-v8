@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -239,6 +241,11 @@ class _SourceChip extends StatelessWidget {
   final VoidCallback? onClear;
   final ValueChanged<int> onChooseSheet;
 
+  /// The rows that become cards: a header row is not one, as the preview
+  /// skips it (import_preview_model.dart; critique 2026-09-30 part 3b).
+  int _dataRows(int lines) =>
+      draft.hasHeaderRow ? math.max(0, lines - 1) : lines;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -252,7 +259,11 @@ class _SourceChip extends StatelessWidget {
     final isFile = source is FileSource;
     final meta = table == null
         ? l10n.importFileReady(format)
-        : l10n.importFileRead(format, table.rows.length, table.columnCount);
+        : l10n.importFileRead(
+            format,
+            _dataRows(table.rows.length),
+            table.columnCount,
+          );
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
