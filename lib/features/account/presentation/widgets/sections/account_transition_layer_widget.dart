@@ -39,7 +39,11 @@ class AccountTransitionLayerWidget extends StatelessWidget {
   Widget build(BuildContext context) => Navigator(
     key: navigatorKey,
     onGenerateRoute: (_) => PageRouteBuilder<void>(
-      pageBuilder: (_, _, _) => const _LayerPage(),
+      // Its root route refuses to pop, so the navigator tells Android that
+      // the framework handles Back (predictive back); the host then keeps
+      // it inside the layer (P3a plan ruling 9).
+      pageBuilder: (_, _, _) =>
+          const PopScope(canPop: false, child: _LayerPage()),
       transitionDuration: Duration.zero,
     ),
   );
@@ -271,6 +275,24 @@ class _SignOutNow extends ConsumerWidget {
   }
 
   /// Auth spec #39: the loss is accepted, so the sign-out goes on offline.
-  Future<void> _signOutNow(WidgetRef ref) async =>
-      ref.read(accountCoordinatorProvider)?.signOut(discardUnsent: true);
+  /// A refusal leaves the state as it is; the log keeps why.
+  Future<void> _signOutNow(WidgetRef ref) async {
+    try {
+      await ref.read(accountCoordinatorProvider)?.signOut(discardUnsent: true);
+    } on Failure catch (error, stackTrace) {
+      appLogger.warning(
+        'account.sign_out_now_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    } on StateError catch (error, stackTrace) {
+      appLogger.warning(
+        'account.sign_out_now_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
 }

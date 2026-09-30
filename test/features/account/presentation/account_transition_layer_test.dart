@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -42,6 +43,26 @@ Future<void> _onThemePage(
   expect(find.byType(ThemeScreen), findsOneWidget);
 }
 
+/// A system back swipe, as Android 14 sends it with predictive back on.
+Future<void> _backSwipe(WidgetTester tester) async {
+  const codec = StandardMethodCodec();
+  Future<void> send(String method, [Object? arguments]) =>
+      tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+        SystemChannels.backGesture.name,
+        codec.encodeMethodCall(MethodCall(method, arguments)),
+        (_) {},
+      );
+  const event = {
+    'touchOffset': [5.0, 300.0],
+    'progress': 0.0,
+    'swipeEdge': 0,
+  };
+  await send('startBackGesture', event);
+  await send('updateBackGestureProgress', {...event, 'progress': 0.6});
+  await send('commitBackGesture');
+  await _settle(tester);
+}
+
 void main() {
   accountTest('a switch covers the app, keeps Back inside, and Cancel puts '
       'the page back (Review Focus 2)', (tester, env, world) async {
@@ -73,6 +94,64 @@ void main() {
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
     expect(find.byType(ThemeScreen), findsOneWidget);
     expect(world.state, isA<Ready>());
+  });
+
+  accountTest('a system back swipe under the layer never pops the page '
+      'beneath, and Back works again once the layer closes', (
+    tester,
+    env,
+    world,
+  ) async {
+    await _onThemePage(tester, env, world);
+    await world.coordinator.beginSwitch(
+      choice: TransitionChoice.discard,
+      targetHint: 'b@example.com',
+    );
+    await _settle(tester);
+
+    await _backSwipe(tester);
+    expect(find.byType(SignInFormWidget), findsOneWidget);
+    expect(find.byType(ThemeScreen, skipOffstage: false), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonCancel));
+    await _settle(tester);
+    expect(find.byType(AccountTransitionLayerWidget), findsNothing);
+
+    await tester.binding.handlePopRoute();
+    await _settle(tester);
+    expect(find.byType(ThemeScreen), findsNothing);
+  });
+
+  accountTest('while the layer shows, the framework takes Back, even over a '
+      'root page (Android predictive back)', (tester, env, world) async {
+    final handlesBack = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'SystemNavigator.setFrameworkHandlesBack') {
+          handlesBack.add(call.arguments);
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    // The app is in front, so it tells the platform who handles Back.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    expect(handlesBack.last, isFalse, reason: 'the Library root');
+
+    await world.coordinator.beginSwitch(
+      choice: TransitionChoice.discard,
+      targetHint: 'b@example.com',
+    );
+    await _settle(tester);
+
+    expect(handlesBack.last, isTrue);
   });
 
   accountTest('the layer signs in the target, and the switch finishes '

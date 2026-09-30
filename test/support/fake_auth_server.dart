@@ -105,6 +105,11 @@ class FakeAuthGateway implements AuthGateway {
   /// The next code request fails with this, as GoTrue's rate limit does.
   Failure? failNextRequest;
 
+  /// While set, code requests wait on it, as a slow network does.
+  Completer<void>? holdRequests;
+
+  Future<void> _waitIfHeld() async => holdRequests?.future;
+
   void _failIfAsked() {
     final failure = failNextRequest;
     if (failure == null) return;
@@ -162,6 +167,7 @@ class FakeAuthGateway implements AuthGateway {
     kill?.step();
     server.checkOnline();
     _failIfAsked();
+    await _waitIfHeld();
     final owner = server.userByEmail(email);
     if (owner != null && owner.id != _userId) {
       throw const IdentityTakenFailure(method: IdentityMethod.email);
@@ -185,6 +191,7 @@ class FakeAuthGateway implements AuthGateway {
     kill?.step();
     server.checkOnline();
     _failIfAsked();
+    await _waitIfHeld();
     server.sentCodes[email] = code;
   }
 

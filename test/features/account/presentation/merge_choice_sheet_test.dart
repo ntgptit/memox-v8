@@ -13,6 +13,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../../support/account_harness.dart';
+import '../../../support/auth_fakes.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 
@@ -171,5 +172,25 @@ void main() {
 
     expect(find.text(_en.accountTakenGoogle), findsOneWidget);
     expect(find.text(_en.accountMergePlain), findsOneWidget);
+  });
+
+  libraryTest('an account that cannot switch yet says so, and nothing breaks', (
+    tester,
+    env,
+  ) async {
+    final world = AuthWorld()..boot(); // Booting: not started.
+    addTearDown(() => tester.runAsync(world.close));
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.tap(find.text('go'));
+    await _settle(tester);
+
+    expect(find.text(_en.failureAccount), findsOneWidget);
+    expect(world.state, isA<Booting>());
   });
 }

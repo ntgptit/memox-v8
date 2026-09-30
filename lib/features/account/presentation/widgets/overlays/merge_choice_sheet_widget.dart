@@ -51,6 +51,12 @@ Future<bool> startLinkSwitch(
       showMxSnackbar(context, message: context.l10n.failure(error));
     }
     return false;
+  } on StateError {
+    // The account moved on meanwhile: it takes a switch only in Ready.
+    if (context.mounted) {
+      showMxSnackbar(context, message: context.l10n.failureAccount);
+    }
+    return false;
   }
 }
 

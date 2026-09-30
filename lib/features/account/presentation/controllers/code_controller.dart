@@ -30,8 +30,14 @@ class CodeController extends _$CodeController {
   /// True when the code signed in.
   Future<bool> verify(String code) async {
     final accounts = ref.read(accountCoordinatorProvider);
-    if (accounts == null || state.isBusy) return false;
-    state = CodeState(isVerifying: true, resendIn: state.resendIn);
+    // A check may start while a new code is on its way: the coordinator
+    // runs one step at a time, so it waits for the request (review M1).
+    if (accounts == null || state.isVerifying) return false;
+    state = CodeState(
+      isVerifying: true,
+      isResending: state.isResending,
+      resendIn: state.resendIn,
+    );
     SignInProblem? problem;
     try {
       await accounts.verifyCode(email, code);
@@ -41,7 +47,11 @@ class CodeController extends _$CodeController {
       problem = SignInProblem.failed; // The account moved on meanwhile.
     }
     if (ref.mounted) {
-      state = CodeState(problem: problem, resendIn: state.resendIn);
+      state = CodeState(
+        isResending: state.isResending,
+        problem: problem,
+        resendIn: state.resendIn,
+      );
     }
     return problem == null;
   }
@@ -62,6 +72,7 @@ class CodeController extends _$CodeController {
     if (!ref.mounted) return problem == null;
     final isSent = problem == null;
     state = CodeState(
+      isVerifying: state.isVerifying,
       problem: problem,
       resendIn: isSent ? resendWait : Duration.zero,
     );
