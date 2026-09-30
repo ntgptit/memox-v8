@@ -102,6 +102,16 @@ class FakeAuthGateway implements AuthGateway {
   );
   var googleCancels = false;
 
+  /// The next code request fails with this, as GoTrue's rate limit does.
+  Failure? failNextRequest;
+
+  void _failIfAsked() {
+    final failure = failNextRequest;
+    if (failure == null) return;
+    failNextRequest = null;
+    throw failure;
+  }
+
   /// Runs right after a target sign-in succeeds, before it returns.
   void Function()? afterSignIn;
 
@@ -151,6 +161,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> requestEmailLink(String email) async {
     kill?.step();
     server.checkOnline();
+    _failIfAsked();
     final owner = server.userByEmail(email);
     if (owner != null && owner.id != _userId) {
       throw const IdentityTakenFailure(method: IdentityMethod.email);
@@ -173,6 +184,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> requestEmailSignIn(String email) async {
     kill?.step();
     server.checkOnline();
+    _failIfAsked();
     server.sentCodes[email] = code;
   }
 
