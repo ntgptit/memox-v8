@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(61);
+select plan(71);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
@@ -326,6 +326,48 @@ select throws_ok($$ select public.account_merge(current_setting('t.token3')::uui
 reset role;
 select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000016'),
   'a refused merge leaves the anonymous user in place');
+
+-- Deletion (spec §2.3, O7).
+select public.t_user('12000000-0000-0000-0000-000000000021', 'del@example.com', false);
+select public.t_seed('12000000-0000-0000-0000-000000000021', 'gone', true);
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000021',
+  'role', 'authenticated')::text, true);
+select lives_ok($$ select public.account_delete() $$, 'a user deletes their account');
+select throws_ok($$ select public.me() $$, 'P0001', 'UNAUTHORIZED', 'the old token finds no account');
+select throws_ok($$ select public.account_delete() $$, 'P0001', 'UNAUTHORIZED',
+  'a retry after the deletion is told the account is gone');
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000007',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_delete() $$, 'P0001', 'LAST_ADMIN',
+  'the last admin cannot delete their account');
+reset role;
+select is(public.t_owned('12000000-0000-0000-0000-000000000021'), 0, 'the deleted account owns nothing');
+select ok(has_function_privilege('authenticated', 'public.account_delete()', 'execute')
+  and not has_function_privilege('anon', 'public.account_delete()', 'execute'),
+  'only a signed-in user can delete an account');
+
+-- Cleanup: anonymous users away 90 days go; others stay; spent receipts and claims go.
+select public.t_user('12000000-0000-0000-0000-000000000022', null, true);
+select public.t_user('12000000-0000-0000-0000-000000000023', null, true);
+select public.t_user('12000000-0000-0000-0000-000000000024', 'old@example.com', false);
+update public.profiles set last_active_at = now() - interval '91 days'
+  where id in ('12000000-0000-0000-0000-000000000022', '12000000-0000-0000-0000-000000000024');
+insert into public.account_merge_receipt (operation_id, source_user_id, target_user_id, expires_at)
+values ('12000000-0000-0000-0000-0000000000e1', gen_random_uuid(), '12000000-0000-0000-0000-000000000024',
+  now() - interval '1 second'),
+  ('12000000-0000-0000-0000-0000000000e2', gen_random_uuid(), '12000000-0000-0000-0000-000000000024',
+  now() + interval '7 days');
+select private.cleanup_accounts();
+select ok(not exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000022'),
+  'an anonymous user away 90 days is deleted');
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000023'),
+  'an active anonymous user stays');
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000024'),
+  'an account is never cleaned up');
+select is((select array_agg(operation_id::text order by operation_id) from public.account_merge_receipt
+  where target_user_id = '12000000-0000-0000-0000-000000000024'),
+  array['12000000-0000-0000-0000-0000000000e2'], 'expired or acknowledged receipts go, a fresh one stays');
 
 select * from finish();
 rollback;

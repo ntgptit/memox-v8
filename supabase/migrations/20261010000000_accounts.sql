@@ -373,3 +373,53 @@ revoke all on function public.account_claim_begin(), public.account_merge(uuid, 
 grant execute on function public.account_claim_begin(), public.account_merge(uuid, uuid),
   public.account_merge_ack(uuid) to authenticated;
 revoke all on all functions in schema private from public, anon, authenticated;
+
+-- Everything a user owns goes with the auth row (the keys of section 4 cascade). Later,
+-- Storage objects the user owns would have to be removed first.
+create function private.delete_user_data(p_user uuid) returns void
+language sql set search_path = '' as $$
+  delete from auth.users where id = p_user
+$$;
+
+create function public.account_delete() returns void
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_current_profile();
+begin
+  perform private.lock_roles();
+  if (select role from public.profiles where id = v_user) = 'admin'
+     and (select count(*) from public.profiles where role = 'admin') <= 1 then
+    raise exception 'LAST_ADMIN';
+  end if;
+  perform private.delete_user_data(v_user);
+end
+$$;
+revoke all on function public.account_delete() from public, anon, authenticated;
+grant execute on function public.account_delete() to authenticated;
+
+-- Daily (spec O7): abandoned anonymous users and spent merge records.
+create function private.cleanup_accounts() returns void
+language plpgsql set search_path = '' as $$
+declare
+  v_user uuid;
+begin
+  for v_user in
+    select u.id from auth.users u join public.profiles p on p.id = u.id
+    where u.is_anonymous and p.last_active_at < now() - interval '90 days'
+  loop
+    perform private.delete_user_data(v_user);
+  end loop;
+  delete from public.account_merge_receipt where acknowledged_at is not null or expires_at < now();
+  delete from public.account_claim where expires_at < now();
+end
+$$;
+revoke all on all functions in schema private from public, anon, authenticated;
+
+do $$
+begin
+  if exists (select 1 from pg_available_extensions where name = 'pg_cron') then
+    create extension if not exists pg_cron with schema pg_catalog;
+    perform cron.schedule('account-cleanup', '17 4 * * *', 'select private.cleanup_accounts()');
+  end if;
+end
+$$;
