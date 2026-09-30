@@ -69,7 +69,7 @@ class MxSettingsRow extends StatelessWidget {
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
-      dimsWhenDisabled: false,
+      shouldDimWhenDisabled: false,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
         child: Padding(

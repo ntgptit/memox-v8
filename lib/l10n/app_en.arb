@@ -6324,12 +6324,12 @@
   },
   "syncKeepTitle": "{count, plural, =1{Keep 1 change on this device only?} other{Keep {count} changes on this device only?}}",
   "@syncKeepTitle": {
-    "description": "Screen 27: the dialog that confirms Keep on this device (critique 2026-09-30 part 1, R4).",
     "placeholders": {
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "Screen 27: the dialog that confirms Keep on this device (critique 2026-09-30 part 1, R4)."
   },
   "syncKeepBody": "They won't sync to your other devices. You can't undo this.",
   "@syncKeepBody": {
