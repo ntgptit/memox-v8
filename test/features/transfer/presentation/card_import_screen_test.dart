@@ -283,4 +283,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.importHelperBody), findsNothing);
   });
+
+  libraryTest('each column shows its first value, under the header when '
+      'there is one (critique 2026-09-30)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back,tags\nmul,water,noun\n'),
+    );
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text('mul'), findsOneWidget);
+    expect(find.text('water'), findsOneWidget);
+
+    await tester.tap(find.text(_en.importHeaderToggle));
+    await tester.pumpAndSettle();
+    // Without a header the first row is data.
+    expect(find.text('front'), findsOneWidget);
+  });
+
+  libraryTest('a short or blank sample cell shows no sample', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('front,back,tags\nmul, \n'));
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text('mul'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
