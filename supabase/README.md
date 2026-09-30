@@ -59,6 +59,71 @@ convenience; the CI `supabase` job is the gate.
    everyone else gets `FORBIDDEN`. This changes data, not schema, so the drift
    check does not see it.
 
+## Sign-in setup (SB-A4, once)
+
+The app signs in with a 6-digit email code and with native Google (auth spec
+2026-09-30, O1 and O11). Nothing opens a link, so the project needs no
+redirect URL and the app no deep link for auth; the Site URL can stay as it
+is. Until this is done, anonymous use and sync work as before, and signing in
+fails.
+
+1. **Google Cloud** (console.cloud.google.com, one project for MemoX):
+   1. Google Auth Platform → Branding: the app name, a support email and,
+      before real users, a privacy policy link. While the audience is
+      "Testing", add your Google accounts as test users.
+   2. Clients → Create client → **Web application**. No origins or redirect
+      URIs are needed. Keep its client ID and secret.
+   3. Clients → Create client → **Android**, package `com.memox.memox`, and
+      the SHA-1 of the key that signs the build you install. For a debug or
+      `flutter run --release` build on your machine:
+
+          keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+
+      One Android client per signing key: another machine, and later a
+      release key, each need their own.
+2. **Supabase → Authentication → Sign In / Providers:**
+   - **Google:** on. *Client IDs*: the Web client ID **first**, then every
+     Android client ID, separated by commas. *Client Secret*: the Web
+     client's secret. *Skip nonce check*: on, as Supabase's Flutter guide
+     says (the device check, row D2 of the auth spec §9.1, confirms it).
+   - **Allow manual linking:** on. Linking an email or Google to the
+     anonymous user needs it.
+   - **Email:** on, with *Email OTP Length* **6** (the app's code field takes
+     exactly six digits) and an *Email OTP Expiration* of at most one hour.
+   - **Anonymous sign-ins:** stays on.
+3. **Authentication → Emails → Templates.** The app never uses the link, so
+   each of these templates must show `{{ .Token }}`:
+   - **Magic link:** signing in by email.
+   - **Confirm signup:** the first email to an address with no account yet.
+   - **Change email address:** linking an email to the anonymous user.
+
+   For example, subject `{{ .Token }} is your MemoX code`, body:
+
+       <h2>Your MemoX code</h2>
+       <p>Enter this code in the app: <strong>{{ .Token }}</strong></p>
+       <p>If you didn't ask for it, ignore this email.</p>
+
+4. **Authentication → Emails → SMTP Settings:** turn on custom SMTP with a
+   mail provider (sender address, host, port, user, password). The built-in
+   mailer sends very few emails and only for testing (auth spec §10). Then
+   raise the email limit under **Authentication → Rate Limits**.
+5. **Build with the Web client ID:**
+
+       flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_PUBLISHABLE_KEY=… --dart-define=GOOGLE_WEB_CLIENT_ID=<Web client ID>
+
+   For the Build APK workflow, add the repository secret
+   `GOOGLE_WEB_CLIENT_ID`. Without it, email sign-in still works and Google
+   does not.
+
+**Known limit:** the Build APK workflow signs with a debug key that the runner
+creates on each run, so no Android client can match its SHA-1, and Google
+sign-in fails on those APKs; email works. Google works on a build signed by a
+key registered in step 1.3, such as `flutter run` from your machine. A fixed
+release key, kept as a secret, would remove this limit.
+
+After setup, run the device check (auth spec §9.1) and record its results
+there.
+
 ## Rules
 
 - Clients reach data only through `sync_push`, `sync_changes`, `ping`, the
