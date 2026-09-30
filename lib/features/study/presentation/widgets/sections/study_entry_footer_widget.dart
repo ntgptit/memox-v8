@@ -81,6 +81,11 @@ class StudyEntryFooterWidget extends ConsumerWidget {
       child: MxButton(
         label: label,
         icon: icon,
+        // An open session leads with Continue in its card; the footer's
+        // start yields (DESIGN.md One Indigo; critique 2026-09-30 part 1).
+        tone: entry.resumable == null
+            ? MxButtonTone.primary
+            : MxButtonTone.outline,
         isBlock: true,
         isLoading: start.isStarting,
         onPressed: onPressed,

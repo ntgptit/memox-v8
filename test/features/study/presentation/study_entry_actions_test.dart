@@ -12,6 +12,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
@@ -197,10 +198,30 @@ void main() {
       0,
     );
 
+    // An open session leads with Continue; the footer yields (critique
+    // 2026-09-30 part 1).
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryReviewInstead)).tone,
+      MxButtonTone.outline,
+    );
+    expectOnePrimaryPerDecision(tester);
+
     await tester.tap(_button(_en.studyEntryContinue));
     await tester.pumpAndSettle();
 
     expect(opened, sessionId);
+  });
+
+  libraryTest('resume with only new cards keeps one primary', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expectOnePrimaryPerDecision(tester);
   });
 
   libraryTest('while a session opens every action is locked and the footer '

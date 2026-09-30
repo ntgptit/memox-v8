@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
 
@@ -60,6 +62,13 @@ void main() {
     );
     await _settle(tester);
     expect(find.text(_rejected), findsOneWidget);
+    // A link out of a warning, not the screen's decision (critique
+    // 2026-09-30 part 1).
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Details')).tone,
+      MxButtonTone.outline,
+    );
+    expectOnePrimaryPerDecision(tester);
     await tester.tap(find.text('Details'));
     expect(opened, 1);
   });
