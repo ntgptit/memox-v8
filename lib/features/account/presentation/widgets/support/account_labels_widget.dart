@@ -25,10 +25,13 @@ String signInProblemText(AppLocalizations l10n, SignInProblem problem) =>
     };
 
 /// The toast after an account is attached (spec §5.2): its email once
-/// `me()` confirmed it.
+/// `me()` confirmed it. Nothing while no account is ready, such as a switch
+/// that stopped on the way: the transition layer says what happened (P3b
+/// minor M2).
 void saySignedIn(BuildContext context, AccountUser? account) {
+  if (account == null) return;
   final l10n = context.l10n;
-  final email = account?.email;
+  final email = account.email;
   showMxSnackbar(
     context,
     message: email == null
