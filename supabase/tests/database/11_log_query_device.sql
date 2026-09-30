@@ -6,6 +6,7 @@ insert into auth.users (id) values
   ('aaaaaaaa-0000-0000-0000-000000000001'), ('bbbbbbbb-0000-0000-0000-000000000002'),
   ('bbbbbbbb-0000-0000-0000-00000000000a'), ('cccccccc-0000-0000-0000-000000000001')
 on conflict (id) do nothing;
+update public.profiles set role = 'admin' where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
 
 -- ADR-018 §8; monitoring spec §3.2: the admin filters the logs by device.
 create function public.t_as(p_sub text, p_admin boolean) returns void language sql as $$

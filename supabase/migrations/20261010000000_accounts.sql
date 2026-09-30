@@ -40,3 +40,10 @@ $$;
 select private.backfill_profiles();
 
 revoke all on all functions in schema private from public, anon, authenticated;
+
+-- The admin role lives in profiles (spec O8); the log RPCs keep calling this.
+create or replace function private.is_admin() returns boolean
+language sql stable set search_path = '' as $$
+  select exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+$$;
+revoke all on function private.is_admin() from public, anon, authenticated;

@@ -6,6 +6,7 @@ insert into auth.users (id) values
   ('aaaaaaaa-0000-0000-0000-000000000001'), ('bbbbbbbb-0000-0000-0000-000000000002'),
   ('bbbbbbbb-0000-0000-0000-00000000000a'), ('cccccccc-0000-0000-0000-000000000001')
 on conflict (id) do nothing;
+update public.profiles set role = 'admin' where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
 
 -- ADR-018; spec 2026-09-29-app-logging-design.md §4.
 create function public.t_entry(p_id text, p_level text, p_at timestamptz default now()) returns jsonb
