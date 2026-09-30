@@ -81,6 +81,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         hintText: context.l10n.galleryTheTerm,
         variant: MxTextFieldVariant.term,
       ),
+      const MxTextField(variant: MxTextFieldVariant.code),
       MxFieldMessage(
         message: context.l10n.galleryTenTagsAtMostOn,
         tone: MxFieldMessageTone.warning,

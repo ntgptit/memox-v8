@@ -95,6 +95,28 @@ void main() {
     );
   });
 
+  testWidgets('MxTextField code variant', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_text_field_code',
+      Column(
+        spacing: 16,
+        children: [
+          const MxTextField(variant: MxTextFieldVariant.code),
+          MxTextField(
+            controller: TextEditingController(text: '123456'),
+            variant: MxTextFieldVariant.code,
+          ),
+          MxTextField(
+            controller: TextEditingController(text: '000000'),
+            variant: MxTextFieldVariant.code,
+            errorText: 'That code is wrong or has expired.',
+          ),
+        ],
+      ),
+    );
+  });
+
   testWidgets('MxSearchField empty and filled', (tester) async {
     await expectThemedGoldens(
       tester,

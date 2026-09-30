@@ -366,4 +366,34 @@ void main() {
       greaterThanOrEqualTo(48),
     );
   });
+
+  testWidgets('the code variant asks for digits, offers the one-time code '
+      'and centres them', (tester) async {
+    await pumpMx(
+      tester,
+      const MxTextField(label: 'Code', variant: MxTextFieldVariant.code),
+    );
+    final field = tester.widget<TextField>(find.byType(TextField));
+
+    expect(field.keyboardType, TextInputType.number);
+    expect(field.autofillHints, [AutofillHints.oneTimeCode]);
+    expect(field.textAlign, TextAlign.center);
+    expect(field.maxLines, 1);
+  });
+
+  testWidgets('the code variant keeps six digits and nothing else', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+
+    await tester.enterText(find.byType(TextField), '12a3456789');
+
+    expect(controller.text, '123456');
+    expect(MxTextField.codeLength, 6);
+  });
 }
