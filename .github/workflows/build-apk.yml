@@ -42,6 +42,31 @@ jobs:
       - name: generate
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # The release key (supabase/README.md, "Sign-in setup"): the keystore
+      # goes outside the checkout, android/key.properties (git-ignored) points
+      # at it. Without the secrets the APK keeps the debug key, and native
+      # Google sign-in cannot match it.
+      - name: release key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" || -z "$ANDROID_KEYSTORE_PASSWORD" || -z "$ANDROID_KEY_ALIAS" || -z "$ANDROID_KEY_PASSWORD" ]]; then
+            echo "::warning::The ANDROID_KEY* secrets are not all set; this APK is signed with a debug key, so Google sign-in will not work on it."
+            exit 0
+          fi
+          keystore="$RUNNER_TEMP/memox-release.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$keystore"
+          {
+            echo "storeFile=$keystore"
+            echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+            echo "keyAlias=$ANDROID_KEY_ALIAS"
+            echo "keyPassword=$ANDROID_KEY_PASSWORD"
+          } > android/key.properties
+
       # ADR-015: sync runs only when the build defines both values
       # (lib/core/network/supabase_config.dart); the file lives outside the checkout.
       - name: build APK
@@ -67,6 +92,26 @@ jobs:
             echo "apk=$name"
             echo "tag=build-${GITHUB_RUN_NUMBER}-${sha8}"
           } >> "$GITHUB_OUTPUT"
+
+      # The SHA-1 to register as an Android OAuth client (SB-A4 step 1.3).
+      - name: signer
+        env:
+          APK: ${{ steps.build.outputs.apk }}
+        run: |
+          set -euo pipefail
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
+          signer="$("$apksigner" verify --print-certs "$APK" | grep -E 'Signer #1 certificate (DN|SHA-1)')"
+          {
+            echo '### APK signer'
+            echo '```'
+            echo "$signer"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # A release key was given, yet Gradle signed with the debug key.
+          if [[ -f android/key.properties ]] && grep -q 'CN=Android Debug' <<<"$signer"; then
+            echo "::error::android/key.properties exists but the APK is signed with the debug key."
+            exit 1
+          fi
 
       # A re-run of the same run reuses the tag; the script replaces the asset.
       - name: publish pre-release

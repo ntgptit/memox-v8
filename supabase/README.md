@@ -79,8 +79,8 @@ fails.
 
           keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 
-      One Android client per signing key: another machine, and later a
-      release key, each need their own.
+      One Android client per signing key: another machine and the release
+      key of step 6 each need their own.
 2. **Supabase → Authentication → Sign In / Providers:**
    - **Google:** on. *Client IDs*: the Web client ID **first**, then every
      Android client ID, separated by commas. *Client Secret*: the Web
@@ -115,11 +115,29 @@ fails.
    `GOOGLE_WEB_CLIENT_ID`. Without it, email sign-in still works and Google
    does not.
 
-**Known limit:** the Build APK workflow signs with a debug key that the runner
-creates on each run, so no Android client can match its SHA-1, and Google
-sign-in fails on those APKs; email works. Google works on a build signed by a
-key registered in step 1.3, such as `flutter run` from your machine. A fixed
-release key, kept as a secret, would remove this limit.
+6. **The release key for the Build APK workflow.** Without it the workflow
+   signs with a debug key the runner creates on each run: no Android client
+   can match it, Google sign-in fails on those APKs (email works), and a new
+   APK cannot be installed over the last one. Once:
+   1. Create the key, with passwords of letters and digits only (the
+      workflow writes them into a `.properties` file, where `\` escapes):
+
+          keytool -genkeypair -keystore memox-release.jks -alias memox -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=MemoX"
+
+      Keep the `.jks` and both passwords somewhere safe outside the repo:
+      without them no later APK installs over one signed by this key (on
+      Google Play it would become the upload key).
+   2. Repository secrets: `ANDROID_KEYSTORE_BASE64` (the output of
+      `base64 -w0 memox-release.jks`), `ANDROID_KEYSTORE_PASSWORD`,
+      `ANDROID_KEY_ALIAS` (`memox`) and `ANDROID_KEY_PASSWORD`.
+   3. Run Build APK by hand. Its job summary shows the APK's signer; add its
+      SHA-1 as another Android client (step 1.3), and that client ID to
+      Supabase's *Client IDs* (step 2).
+   4. The first APK with this key does not install over an older one: let
+      sync finish (or sign in) on the phone, uninstall, then install it.
+
+   The workflow fails if a key is given and the APK still carries the debug
+   key; `flutter run` on your machine keeps the debug key.
 
 After setup, run the device check (auth spec §9.1) and record its results
 there.
