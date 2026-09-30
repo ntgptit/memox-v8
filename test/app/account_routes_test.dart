@@ -5,7 +5,10 @@ import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/features/account/data/repositories/account_device_repository_impl.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/features/account/di/user_role_repository_provider.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
+import 'package:memox/features/account/presentation/screens/users_screen.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
@@ -19,6 +22,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import '../support/account_harness.dart';
 import '../support/fake_auth_server.dart';
 import '../support/library_harness.dart';
+import '../support/users_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -205,5 +209,44 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text(_en.accountSignIn), findsNothing);
+  });
+
+  accountTest('an admin opens Users from Settings, and Back returns '
+      '(users spec U5)', (tester, env, world) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        ...accountOverrides(world),
+        isAdminProvider.overrideWithValue(true),
+        userRoleRepositoryProvider.overrideWithValue(
+          FakeUserRoleRepository([managedUser('ann@example.com')]),
+        ),
+      ],
+    );
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
+    await tester.tap(find.text(_en.usersTitle));
+    await tester.pumpAndSettle();
+    expect(find.byType(UsersScreen), findsOneWidget);
+    expect(find.text('ann@example.com'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  accountTest('a non-admin\'s deep link to Users meets the gate, titled '
+      'Users', (tester, env, world) async {
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+
+    _router(tester).go(AppRoutes.settingsUsers);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(UsersScreen), findsNothing);
+    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
+    expect(find.text(_en.usersTitle), findsOneWidget);
   });
 }

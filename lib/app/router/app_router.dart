@@ -290,6 +290,7 @@ GoRouter buildAppRouter({
                   ),
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),
+                  usersRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,
