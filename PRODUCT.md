@@ -91,7 +91,7 @@ This is not a market product. It is a personal app its owner builds so they can 
   - Text contrast is at least 4.5:1, and 3:1 for large text and meaningful non-text elements.
   - TalkBack labels, states and reading order are complete.
   - Touch targets are 48 × 48 dp.
-  - Layouts hold at large system font scales.
+  - The default system font scale is the committed target. Larger scales are not a design target (owner 2026-09-30: the users are young and keep the default size); text still grows with the system setting and is never clamped, but a cut line at large text is not a defect.
   - The system "remove animations" setting is honored.
 - **Mixed-script content:** vocabulary in any script (Korean, Vietnamese with stacked diacritics, Latin) must render without clipping. Tight line-heights are a known risk (spec §9 row 5).
 - **Known gaps against this standard** are recorded in spec §9 rows 1–5 and 56–66: contrast of several status and warning colours, and missing loading semantics.

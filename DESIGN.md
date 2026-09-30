@@ -290,7 +290,7 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Column Rule.** Content never grows wider than 720dp; wide windows gain empty ground, not longer lines.
 
-**The Wrap Rule.** At large text a meta line, a breakdown line, a session context line or a hint wraps between whole terms; it is never cut with an ellipsis. Only a title keeps one line.
+**The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target (PRODUCT.md, owner 2026-09-30), so no new work goes into wrapping for them; a title keeps one line.
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
 
