@@ -23,8 +23,9 @@ The six digits sent to the address. SB-A2; spec
 | Another email | `MxButton` (text) | "Use another email". |
 
 A right code attaches the account, toasts "Signed in as {email}" and closes the flow on
-Settings. No toast while no account is ready, such as a re-auth switch that stopped on the
-way; the layer says what happened (P3b minor M2).
+Settings. While `me()` has not confirmed it yet the toast reads "Signed in"; while the
+account moves, such as a re-auth switch that stopped on the way, there is none and the layer
+says what happened (P3b minor M2).
 
 ## States
 

@@ -78,7 +78,7 @@ class SignInScreen extends ConsumerWidget {
                 : null,
             onCodeSent: onCodeSent,
             onSignedIn: () {
-              saySignedIn(context, attachedAccount(ref));
+              saySignedIn(context, stateAfterCommand(ref));
               onSignedIn();
             },
           ),

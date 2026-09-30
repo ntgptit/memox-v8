@@ -227,6 +227,35 @@ void main() {
     expect(world.state, isA<Ready>());
   });
 
+  accountTest('a sign-in that worked but is not confirmed yet still says '
+      '"Signed in" (P3b minor M2, final review I1)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await refuseSession(world);
+    await world.coordinator.requestCode('a@example.com');
+    // Signed in, then `me()` meets no network: the state stays Validating.
+    world.gateway.afterSignIn = () => world.server.offline = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const CodeScreen(
+        email: 'a@example.com',
+        purpose: SignInPurpose.reauth,
+        onSignedIn: _noop,
+      ),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(world.state, isA<Validating>());
+    expect(find.text(_en.accountSignedIn), findsOneWidget);
+  });
+
   accountTest('a re-auth into another account that stops on the way says '
       'no "Signed in"; the layer says what happened (P3b minor M2)', (
     tester,

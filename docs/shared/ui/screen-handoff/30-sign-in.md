@@ -109,5 +109,5 @@ The images are the goldens.
 - "Sign in" · "Your decks stay on this phone and join the account." · "Continue with Google" · "or" · "Email address" · "Send code".
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Continue without an account"; the dialogs as in the table above.
-- Toast: "Signed in as {email}", only once an account is ready; a switch that stopped on the way leaves the word to the layer (P3b minor M2).
+- Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" while it is still being checked; none while the account moves, such as a switch that stopped on the way, which the layer speaks for (P3b minor M2).
 - Merge sheet and layer: as in the tables above.
