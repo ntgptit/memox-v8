@@ -95,8 +95,8 @@ void main() {
     expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
   });
 
-  accountTest('a re-auth resend to another address does not ask again '
-      '(plan ruling 8)', (tester, env, world) async {
+  accountTest('a re-auth resend to another address names the unsent '
+      'changes again (P3b minor M7)', (tester, env, world) async {
     await refuseSession(world);
     await world.coordinator.requestCode('b@example.com', confirmedLoss: true);
     await pumpLibraryScreen(
@@ -112,11 +112,48 @@ void main() {
       ),
       overrides: accountOverrides(world),
     );
-
     await tester.pump(const Duration(seconds: 60));
+
+    await tester.tap(find.text(_en.accountResend));
+    await _settle(tester);
+    expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
+    await tester.tap(find.text(_en.commonCancel));
+    await _settle(tester);
+    expect(find.text(_en.accountCodeResent), findsNothing);
+
+    await tester.tap(find.text(_en.accountResend));
+    await _settle(tester);
+    await tester.tap(find.widgetWithText(MxButton, _en.accountContinue));
+    await _settle(tester);
+    expect(find.text(_en.accountCodeResent), findsOneWidget);
+  });
+
+  accountTest('a re-auth resend to its own address asks nothing', (
+    tester,
+    env,
+    world,
+  ) async {
+    await refuseSession(world);
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CodeFormWidget(
+          email: 'a@example.com',
+          purpose: SignInPurpose.reauth,
+          onUseAnotherEmail: () {},
+          onSignedIn: () {},
+        ),
+      ),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump(const Duration(seconds: 60));
+
     await tester.tap(find.text(_en.accountResend));
     await _settle(tester);
 
+    expect(find.text(_en.accountUnsentTitle(2)), findsNothing);
     expect(find.text(_en.accountCodeResent), findsOneWidget);
   });
 

@@ -119,14 +119,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     final count = ref
         .read(signInControllerProvider(widget.purpose))
         .unsentCount;
-    final l10n = context.l10n;
-    final isSure = await confirmAccountStep(
-      context,
-      title: l10n.accountUnsentTitle(count),
-      body: l10n.accountUnsentBody(count),
-      confirmLabel: l10n.accountContinue,
-      isDestructive: true,
-    );
+    final isSure = await confirmUnsentLoss(context, count);
     if (!isSure) {
       if (isGoogle) _controller.forgetPickedGoogle();
       return;
