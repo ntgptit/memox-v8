@@ -19,6 +19,7 @@ import '../../../support/fake_reminder_platform.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/study_entry_fixtures.dart';
 
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
@@ -77,6 +78,12 @@ void main() {
 
     libraryTest('reminder, on, $theme', (tester, env) async {
       await shoot(tester, env, 'on', act: (_) => toggle(tester));
+    });
+
+    // Critique 2026-09-30 part 1: the preview reads the live workload.
+    libraryTest('reminder, preview due, $theme', (tester, env) async {
+      await sm2Leaf(env.db, env.decks, dueCards: 3);
+      await shoot(tester, env, 'preview_due');
     });
 
     libraryTest('reminder, turning on, $theme', (tester, env) async {

@@ -6012,10 +6012,6 @@
   "@reminderPreviewTitle": {
     "description": "Screen handoff 24 (FE-B5): the preview section's title."
   },
-  "reminderPreviewDeck": "Tiếng Hàn TOPIK I · Từ vựng",
-  "@reminderPreviewDeck": {
-    "description": "Screen handoff 24 (FE-B5): the sample deck name in the preview; the kit writes it in Hangul, which the test fonts lack (FE-C2), so it reads as the fixtures do."
-  },
   "reminderPreviewQuoted": "“{text}”",
   "@reminderPreviewQuoted": {
     "placeholders": {
@@ -6024,6 +6020,10 @@
       }
     },
     "description": "Screen handoff 24 (FE-B5): the preview sentence in quotes; {text} is the notification's own body."
+  },
+  "reminderPreviewNothingDue": "Nothing is due right now, so today's reminder would stay silent.",
+  "@reminderPreviewNothingDue": {
+    "description": "Screen 24: What it says when no card is due now (BR-REMINDER-003; critique 2026-09-30 part 1)."
   },
   "reminderPreviewHint": "Deck name and counts only — never a card, tag or history, including on the lock screen. Opening it lands on Study.",
   "@reminderPreviewHint": {

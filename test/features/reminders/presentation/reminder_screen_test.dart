@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
+import 'package:memox/features/reminders/presentation/providers/reminder_preview_digest_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -20,19 +22,11 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import '../../../support/fake_reminder_platform.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/study_entry_fixtures.dart';
 
 // Screen 24, Daily reminder: UC-REMINDER-001; FE-B5 spec §5.1.
 
 final _en = lookupAppLocalizations(const Locale('en'));
-
-/// The preview is the notification's own sentence (FE-B5 Task 2 ruling).
-final _sample = _en.reminderPreviewQuoted(
-  _en.reminderBodyWithOthers(
-    _en.reminderDueCards(86),
-    _en.reminderPreviewDeck,
-    _en.reminderOtherDecks(2),
-  ),
-);
 
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
@@ -44,6 +38,7 @@ Future<({FakeReminderPlatform platform, FlakySettingsRepository store})> _pump(
   WidgetTester tester,
   LibraryEnv env, {
   FakeReminderPlatform? platform,
+  List<Override> overrides = const [],
 }) async {
   final fake = platform ?? FakeReminderPlatform();
   final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
@@ -54,6 +49,7 @@ Future<({FakeReminderPlatform platform, FlakySettingsRepository store})> _pump(
     overrides: [
       reminderPlatformRepositoryProvider.overrideWithValue(fake),
       settingsRepositoryProvider.overrideWithValue(store),
+      ...overrides,
     ],
   );
   await _settle(tester);
@@ -75,7 +71,7 @@ void main() {
     expect(find.text(_en.reminderOffHint), findsOneWidget);
     expect(find.text(_en.reminderTimeOffHint), findsOneWidget);
     expect(find.text(_en.reminderNote), findsOneWidget);
-    expect(find.text(_sample), findsOneWidget);
+    expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
     expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
     expect(
       s.platform.calls,
@@ -394,4 +390,43 @@ void main() {
       );
     },
   );
+
+  libraryTest('the preview says what the notification would say now '
+      '(critique 2026-09-30 part 1)', (tester, env) async {
+    // Korean > Lesson with three learned cards due before the harness day.
+    await sm2Leaf(env.db, env.decks, dueCards: 3);
+    await _pump(tester, env);
+    expect(
+      find.text(
+        _en.reminderPreviewQuoted(
+          _en.reminderBody(_en.reminderDueCards(3), 'Korean'),
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('nothing due: the preview says the reminder stays silent', (
+    tester,
+    env,
+  ) async {
+    await _pump(tester, env);
+    expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
+  });
+
+  libraryTest('a failed read shows the neutral line', (tester, env) async {
+    final s = await _pump(
+      tester,
+      env,
+      overrides: [
+        reminderPreviewDigestProvider.overrideWith(
+          (ref) async => throw StateError('db'),
+        ),
+      ],
+    );
+    expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
+    expect(find.byType(MxErrorState), findsNothing);
+    await _toggle(tester);
+    expect(s.platform.calls, contains(PlatformCall.schedule));
+  });
 }
