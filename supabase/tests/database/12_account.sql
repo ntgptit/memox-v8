@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(21);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
@@ -139,6 +139,33 @@ $$;
 reset role;
 select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0,
   'deleted user cannot recreate persisted data through sync_push');
+
+-- me() (spec §2.3).
+select ok(has_function_privilege('authenticated', 'public.me()', 'execute'), 'a user can call me');
+select ok(not has_function_privilege('anon', 'public.me()', 'execute'), 'anon cannot call me');
+update public.profiles set last_active_at = now() - interval '3 days'
+  where id = '12000000-0000-0000-0000-000000000002';
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000002',
+  'role', 'authenticated')::text, true);
+select is(public.me(), jsonb_build_object('id', '12000000-0000-0000-0000-000000000002', 'email', null,
+  'isAnonymous', true, 'role', 'user'), 'me() describes an anonymous user');
+reset role;
+select ok((select last_active_at > now() - interval '1 minute' from public.profiles
+  where id = '12000000-0000-0000-0000-000000000002'), 'me() marks a user active after a day away');
+update public.profiles set last_active_at = now() - interval '1 hour'
+  where id = '12000000-0000-0000-0000-000000000005';
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000005',
+  'role', 'authenticated')::text, true);
+select is(public.me()->>'email', 'o@example.com', 'me() gives the email of an account');
+reset role;
+select ok((select last_active_at < now() - interval '50 minutes' from public.profiles
+  where id = '12000000-0000-0000-0000-000000000005'), 'activity is written at most once a day');
+delete from public.profiles where id = '12000000-0000-0000-0000-000000000005';
+set local role authenticated;
+select throws_ok($$ select public.me() $$, 'P0001', 'UNAUTHORIZED', 'a caller without a profile is refused');
+reset role;
 
 select * from finish();
 rollback;

@@ -79,3 +79,44 @@ alter table public.card_tags
   add constraint card_tags_card_id_fkey foreign key (card_id) references public.card (id) on delete cascade,
   drop constraint card_tags_tag_id_fkey,
   add constraint card_tags_tag_id_fkey foreign key (tag_id) references public.tags (id) on delete cascade;
+
+-- The caller, who must still have a profile: a deleted user's live token gets UNAUTHORIZED.
+create function private.require_current_profile() returns uuid
+language plpgsql stable set search_path = '' as $$
+declare
+  v_user uuid := auth.uid();
+begin
+  if v_user is null then
+    raise exception 'NOT_AUTHENTICATED';
+  end if;
+  if not exists (select 1 from public.profiles p where p.id = v_user) then
+    raise exception 'UNAUTHORIZED';
+  end if;
+  return v_user;
+end
+$$;
+
+-- At most one write a day per user (spec §2.3); the 90-day cleanup reads it.
+create function private.touch_user_activity(p_user uuid) returns void
+language sql set search_path = '' as $$
+  update public.profiles set last_active_at = now()
+  where id = p_user and last_active_at < now() - interval '1 day'
+$$;
+
+create function public.me() returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_current_profile();
+  v_me jsonb;
+begin
+  perform private.touch_user_activity(v_user);
+  select jsonb_build_object('id', u.id, 'email', u.email, 'isAnonymous', u.is_anonymous, 'role', p.role)
+  into v_me
+  from auth.users u join public.profiles p on p.id = u.id
+  where u.id = v_user;
+  return v_me;
+end
+$$;
+revoke all on function public.me() from public, anon, authenticated;
+grant execute on function public.me() to authenticated;
+revoke all on all functions in schema private from public, anon, authenticated;
