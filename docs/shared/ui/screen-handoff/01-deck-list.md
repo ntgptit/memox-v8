@@ -23,7 +23,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 | App bar | `MxAppBar` | Back, deck name, `⋮` (the deck's action sheet). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
 | Summary card | `MxCard` (hero) | For a deck holding sub-decks: `MxMasteryDonut` of the level (BR-DECK-026) beside "MASTERED · {algorithm}", "N sub-decks · N cards", overdue · today · new · N scheduled. "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the subtree holds no card to study. |
-| List | as root | Header "N sub-decks" with the sort pill. |
+| List | as root | Header "Sub-decks" with the sort pill: the summary card states the count (critique 2026-09-30 part 3b). |
 | FAB | `MxFab` | "New sub-deck"; none at level 10 (BR-DECK-001), and none on an `unset` deck, whose empty state offers both choices (R9, critique 2026-09-30 part 1). |
 | By content type | — | `unset`: empty state with the two create choices (BR-DECK-007) and "Import cards from a file" (screen 11), all text-only block actions, Import as the outline third. `card`: the card list, screen 07. |
 
@@ -69,7 +69,7 @@ One `MxBottomSheet`, "Sort & filter":
 | rootRename | no golden | no golden | The rename dialog. |
 | rootDelete | `library_deck_delete_light.png` | `library_deck_delete_dark.png` | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
 | rootTrashed | `library_deck_trashed_light.png` | `library_deck_trashed_dark.png` | Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
-| deckLoaded | `library_deck_open_light.png` | `library_deck_open_dark.png` | The level's donut beside "MASTERED · {algorithm}"; the breakdown line ends in an ellipsis when it does not fit. |
+| deckLoaded | `library_deck_open_light.png` | `library_deck_open_dark.png` | The level's donut beside "MASTERED · {algorithm}"; the breakdown line wraps between whole terms, never "…" (the Wrap Rule; critique 2026-09-30 part 3b). |
 | deckEmpty | `library_deck_unset_light.png` | `library_deck_unset_dark.png` | `unset` deck: both create choices and "Import cards from a file" (screen 11); no FAB (R9, critique 2026-09-30 part 1). |
 | deckMaxDepth | no golden | no golden | No FAB. |
 | deckLoading | no golden | no golden | Skeletons under the summary card. |

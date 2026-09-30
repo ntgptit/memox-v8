@@ -351,7 +351,13 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
-- **Do** state a number once per screen: a hero figure is not repeated in a list, a legend or a second tile.
+- **Do** state a number once per screen (critique 2026-09-30 part 3b). A number lives in the element that explains it: a hero, a tile, a filter chip or the app bar title. A hero figure is not repeated in a list, a legend or a second tile.
+  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 1 card", "Review 12 due cards", a bulk action's "({n})".
+  - A caption under a button never repeats the button's number.
+  - A list header counts only when no hero, title or chip above states the same number.
+  - While selecting, the selected count lives in the app bar title only.
+  - A row states a status once: a coloured label, not a dot beside it.
+  - Kept because a rule asks for them: the card list's filter chip counts (IT-ORG-005), Study entry's NEW and DUE tiles and each mode's count (UC-STUDY-001, BR-STUDY-044), the selected count (UC-CARD-001), Import's preview counts (UC-TRANSFER-001), Progress's two ranges (BR-PROGRESS-003).
 - **Do** make a hero card that leads somewhere tappable, with a trailing chevron (the Library's due strip opens Study).
 - **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.

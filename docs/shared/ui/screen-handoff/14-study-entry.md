@@ -56,7 +56,7 @@ banner and a failed write the danger banner, whose footer is "Try again"
 (repeating the same start, direction included). `eight_box` reviews in any mode its
 cards can run (FE-A6 P3; Recall and Fill since P4): the available rows are a pick, the
 first available one picked at first, and the footer reviews the picked mode with the
-caption "{mode} · {n} due cards · oldest first". Every mode has its screen since P4, so
+caption "{mode} · oldest first" (the button states the count; critique 2026-09-30 part 3b, R5). Every mode has its screen since P4, so
 Learn is offered whenever new cards exist and nothing says "Coming soon". A deck deleted while its entry is open leaves with
 the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 `test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
@@ -91,4 +91,4 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - Review options, Eight boxes: "Review · choose how cards are asked" · "Match" "Pair terms with meanings, up to 5 at a time" · "Guess" "Pick the meaning out of five" · "Recall" "Recall the meaning within 20 seconds" · "Fill" "Type the term for the meaning" · "{n} cards" · "Not available" · "A mode that is not available lacks suitable cards for this review — it comes back when the cards qualify."
 - Direction sheet, SM-2: "Review · question direction" · "Term first" "See the term, recall the meaning" · "Meaning first" "See the meaning, recall the term" · "Mixed" "Half each way, evenly split" · "SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy. The direction cannot change once the session starts." · "Start review".
 - Banners: "Nothing is due any more." "The due cards were reviewed from another session or deleted since this screen was opened. Counts are up to date now." · "No new cards left to learn." "They were learned in another session or deleted since this screen was opened. Counts are up to date now." · "This mode can't run on the due cards any more." "The due cards changed since this screen was opened. Counts are up to date now." · "That session can't be continued." "It ended since this screen was opened, and its answers are kept. Start a new one below." · "Couldn't start the session." "Nothing was written. Try again."
-- Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try again" · "Start a new review instead" · captions "Nothing is due — review is available once cards come due." · "{mode} · {n} due cards · oldest first" (Eight boxes) · "{shown} of {due} due · oldest first" (SM-2).
+- Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try again" · "Start a new review instead" · captions "Nothing is due — review is available once cards come due." · "{mode} · oldest first" (Eight boxes) · "{shown} of {due} due · oldest first" (SM-2).
