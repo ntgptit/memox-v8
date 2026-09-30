@@ -21,10 +21,10 @@ bar (D2).
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | "Settings"; the gallery icon in debug builds. |
-| Study defaults | `MxSection` + `MxSettingsRow` × 2 | "Cards per session" / "1 to 200 · default 20", with an `MxStepper` under the label: −/+, a hold repeats, a tap on the number types one (D6). "New-card order" / "How new cards enter a learning session", with an `MxSegmentedTray` Created · Random. The note: "Apply to sessions started from now on. A deck with its own study options keeps them." |
+| Study defaults | `MxSection` + `MxSettingsRow` × 2 | "Cards per session" / "1 to 200 · default 20", with an `MxStepper` under the label: −/+, a hold repeats, a tap on the number types one (D6). "New-card order" / "How new cards enter a learning session", with an `MxSegmentedTray` In order · Random (critique 2026-09-30 part 3a, R2). The note: "Applies to sessions started from now on. A deck with its own study options keeps them." |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
-| App | `MxSection` + `MxSettingsRow` × 2 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt". Both open their page. |
-| Sync | `MxSection` + `MxSettingsRow` | SB-U1: "Sync", one row with the cloud-sync tile; its sub-line is the first that applies of "{n} changes kept only on this device", "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1). Opens screen 27. Hidden when the build has no Supabase. |
+| App | `MxSection` + `MxSettingsRow` × 3 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt"; "Daily reminder" with "Off" or "On · {HH:mm}" (FE-B5). Each opens its page. |
+| Sync | `MxSection` + `MxSettingsRow` | SB-U1: "Sync", one row with the cloud-sync tile; its sub-line is the first that applies of "{n} changes weren't accepted" (critique 2026-09-30 part 3a, R3), "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1). Opens screen 27. Hidden when the build has no Supabase. |
 | Admin | `MxSection` + `MxSettingsRow` | FE-B8: "Admin", one row "Monitoring" / "Logs of the app and the server" with the monitor tile. Opens screen 28. Drawn only while the session's account is an admin; hidden for everyone else and in a build with no Supabase. |
 | Reset | `MxSection` + `MxSettingsRow` (`isAction`: it opens a dialog, so no chevron; critique 2026-09-30 part 1) | "Reset app options" / "Theme, language, study defaults". The note: "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." |
 | Reset dialog | `MxDialog` + `MxNote` + `MxSheetActions.custom` | "Reset app options?", "Theme, language, cards per session and new-card order go back to their defaults.", the shield note "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.", then Cancel (outline) · "Reset options" (primary, spinning while it runs), stacked when a label cannot fit (UI-base row 118). Back and Cancel do nothing while it runs. |
@@ -37,7 +37,7 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| loaded | `settings_loaded_light.png` | `settings_loaded_dark.png` | Theme is a row that opens screen 25 (D2); the Daily reminder row is hidden until FE-B5. |
+| loaded | `settings_loaded_light.png` | `settings_loaded_dark.png` | Theme is a row that opens screen 25 (D2); the Daily reminder row reads "Off" or "On · {HH:mm}" and opens screen 24 (FE-B5). |
 | loading | `settings_loading_light.png` | `settings_loading_dark.png` | Skeleton rows (UI-base row 125). |
 | saving | `settings_saving_light.png` | `settings_saving_dark.png` | The stepper's spinner; the other rows stay usable. |
 | saved | `settings_saved_light.png` | `settings_saved_dark.png` | — |
@@ -66,10 +66,10 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 
 ## Copy
 
-- Study defaults: "Study defaults" · "Cards per session" · "1 to {max} · default {n}" · "Fewer cards per session" · "More cards per session" · "Enter a number from {min} to {max}" · "New-card order" · "How new cards enter a learning session" · "Created" · "Random" · "Apply to sessions started from now on. A deck with its own study options keeps them."
-- App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt".
-- Reset: "Reset" · "Reset app options" · "Theme, language, study defaults" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session and new-card order go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset options".
-- Sync (SB-U1): "Sync" · "{n} changes kept only on this device" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".
+- Study defaults: "Study defaults" · "Cards per session" · "1 to {max} · default {n}" · "Fewer cards per session" · "More cards per session" · "Enter a number from {min} to {max}" · "New-card order" · "How new cards enter a learning session" · "In order" · "Random" · "Applies to sessions started from now on. A deck with its own study options keeps them."
+- App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt" · "Daily reminder" · "Off" · "On · {time}".
+- Reset: "Reset" · "Reset app options" · "Theme, language, study defaults, reminder" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session, new-card order and the daily reminder (off, 20:00) go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset options".
+- Sync (SB-U1): "Sync" · "{n} changes weren't accepted" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".
 - Admin (FE-B8): "Admin" · "Monitoring" · "Logs of the app and the server".
 - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order." · "App options reset to defaults" · "Couldn't reset the app options. Nothing changed." · "Retry".
 - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · "Retry".

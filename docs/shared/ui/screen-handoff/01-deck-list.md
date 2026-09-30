@@ -57,7 +57,7 @@ One `MxBottomSheet`, "Sort & filter":
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). |
+| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
 | rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. |
 | rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
 | rootError | no golden | no golden | "Couldn't load your library" with Retry. |
@@ -100,7 +100,6 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 
 | Element | Shown as | Waits for |
 |---|---|---|
-| Due strip tap | not interactive | FE-A8 |
 | Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at level 10 | absent; the header says "· level 10" | a later phase (owner decision C-O6) |
 
 ## Copy

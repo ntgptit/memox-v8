@@ -10,7 +10,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Close (✕); title "New card"; trailing compact `MxButton` "Save", disabled until valid, spinner in place of the label while saving. |
+| App bar | `MxAppBar` (content density) | Close (✕); title "New card". No Save here: the single Save is the footer's "Save card" (critique 2026-09-30 part 3a records it). |
 | Deck path | `DeckContextHeaderWidget` (`MxBreadcrumb`), injected by `app/` (ruling P4a-L7) | Library › ancestors › deck › "New card": the deck is named once (critique 2026-09-30). Not a picker: the card belongs to the deck it was opened from. |
 | Deck-rejects banner | `MxInlineBanner` (warning) | "This deck no longer accepts cards." / "It now holds sub-decks."; shown only once the target deck can no longer hold a card. |
 | Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Overline "Front · Term", "Required", live "{count} / 60"; inline error once the field is touched (ruling P4a-L2). |
@@ -52,7 +52,7 @@ card?") when leaving a dirty new-card form without saving.
 
 ## Copy
 
-- App bar: "New card" · "Save" · "Front and back are required to save." · "Fix the marked field to enable save." · "You can keep adding cards after saving." · "Saving to this device…" · "This deck can't take cards now."
+- App bar and caption: "New card" · "Front and back are required to save." · "Fix the marked field to enable save." · "You can keep adding cards after saving." · "Saving to this device…" · "This deck can't take cards now."
 - Fields: "Front · Term" · "Back · Meaning" · "Required" · "{count} / {limit}" · "The term you want to remember" · "The meaning; separate several with commas" · "Add details" · "example · hint · pronunciation" · "Optional details" · "· optional" · "Example sentence" · "Hint" · "Pronunciation" · "A sentence using this term" · "A clue that jogs memory without giving the answer" · "Romanisation or a note on how to say it".
 - Errors: "Add the term to remember." · "The term can be at most 60 characters. Move the rest into the meaning or an example." · "Add a meaning so this card can be answered." · "The meaning can be at most 240 characters." · "Keep this to 240 characters."
 - Deck rejects: "This deck no longer accepts cards." · "It now holds sub-decks."

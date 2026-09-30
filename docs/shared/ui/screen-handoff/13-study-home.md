@@ -76,5 +76,5 @@ Every state above is built.
 - Section: "Your decks" · "Library".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
-- Sync notice (SB-U1): "{n} changes are kept only on this device." · "Some changes haven't synced in over a day. They're safe here." · "Details".
+- Sync notice (SB-U1): "{n} changes weren't accepted." (one: "1 change wasn't accepted."; critique 2026-09-30 part 3a, R3) · "Some changes haven't synced in over a day. They're safe here." · "Details".
 - Error: "Couldn't load your study overview" · "Your cards are safe on this device. You can still open Library directly."

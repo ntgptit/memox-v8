@@ -14,7 +14,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new; mastery is stated once, with no four-state bar or legend (critique 2026-09-30, R2). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting, and while search is open, so the first results sit above the keyboard (critique 2026-09-30 part 1). |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts, then Tags with the tag glyph: selected with the count of tags applied, and its tap opens the tag filter (FE-B2 D14). |
-| Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
+| Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest ⇅" / "Due first ⇅" (the sort glyph, not a chevron). |
 | Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting. The list ends clear of it (`MxScrollClearance.fabAboveNav`), and drops that clearance while selecting (critique 2026-09-30). |
@@ -42,7 +42,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
-Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open with matches).
+Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open, no match); `card_list_search_results_light.png` / `card_list_search_results_dark.png` (two matches with a 300 dp keyboard up: the summary card steps aside, critique 2026-09-30 part 3a).
 
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
@@ -92,7 +92,7 @@ The goldens are in `test/features/card/presentation/goldens/`.
 ## Copy
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
-- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first".
+- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest" · "Due first".
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Trash".
 - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
