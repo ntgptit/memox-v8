@@ -89,11 +89,11 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | ID | Kết quả | Trạng thái | Người làm | Phụ thuộc | Cỡ | Bằng chứng / ghi chú |
 |---|---|---|---|---|---|---|
-| SB-A1 | Spec auth: cách đăng nhập (email OTP, magic link, mật khẩu hay Google), gắn danh tính vào **cùng** user ẩn danh để không phải chuyển dữ liệu, đăng xuất, và cách xử lý `owner_id` local đang `NULL` | tạm dừng | chủ dự án | — | M | Thay BE-E6 của `wbs_BE.md`. Ngày 2026-09-28 chủ dự án tạm dừng việc đăng nhập để cân nhắc lại chuyện tài khoản người dùng; sẽ bàn lại trước khi viết spec. Ý kiến ban đầu, **chưa chốt**: đăng nhập bằng email OTP và Google; máy thứ hai có dữ liệu ẩn danh thì hỏi người dùng, mặc định gộp. Chưa bàn: đăng xuất, `owner_id` local |
+| SB-A1 | Spec auth: cách đăng nhập (email OTP, magic link, mật khẩu hay Google), gắn danh tính vào **cùng** user ẩn danh để không phải chuyển dữ liệu, đăng xuất, và cách xử lý `owner_id` local đang `NULL` | xong | chủ dự án | — | M | [Spec](superpowers/specs/2026-09-30-auth-design.md), chủ dự án duyệt 2026-09-30: email OTP và Google, gộp máy thứ hai bằng claim token, đăng xuất xoá dữ liệu trên máy, role trong `public.profiles`. Thay BE-E6 của `wbs_BE.md`. Ngày 2026-09-28 chủ dự án tạm dừng việc đăng nhập để cân nhắc lại chuyện tài khoản người dùng; sẽ bàn lại trước khi viết spec. Ý kiến ban đầu, **chưa chốt**: đăng nhập bằng email OTP và Google; máy thứ hai có dữ liệu ẩn danh thì hỏi người dùng, mặc định gộp. Chưa bàn: đăng xuất, `owner_id` local |
 | SB-A2 | Login phía app: màn đăng nhập, gắn danh tính, giữ session; không đổi `user_id` của dữ liệu đã đồng bộ; báo cho người dùng rằng dữ liệu đang gắn với lần cài này (ẩn danh) và mời gắn email, làm lối vào màn đăng nhập | chưa bắt đầu | | SB-A1 | L | Gộp SB-U2 (lời báo và lời mời) vào đây ngày 2026-09-28: nó là lối vào của màn này nên cùng một lượt `shape` và plan. Màn này không có trong kit: dùng Impeccable `shape` trước khi plan (`CLAUDE.md`); ghi thêm hạng mục ở `wbs_FE.md` |
 | SB-A3 | Nhiều máy cùng tài khoản: máy thứ hai đăng nhập thì kéo dữ liệu về; dữ liệu ẩn danh đã có trên máy đó được gộp hay bỏ theo spec auth | chưa bắt đầu | | SB-A2, SB-S8 | L | Đây là lúc sync giữa các máy của cùng một người bắt đầu có tác dụng |
 | SB-A4 | Cấu hình Auth cho Android: redirect URL và deep link cho email, mẫu email, SMTP riêng nếu cần | chưa bắt đầu | chủ dự án | SB-A1 | S | Giả định: email dựng sẵn của Supabase có giới hạn gửi rất thấp, không đủ cho người dùng thật |
-| SB-A5 | Xoá dữ liệu theo user: (1) xoá tài khoản trong app (Google Play đòi hỏi khi app có tạo tài khoản): RPC xoá toàn bộ dữ liệu của `auth.uid()` rồi xoá user; (2) dọn user ẩn danh mồ côi: user ẩn danh không hoạt động quá N ngày thì xoá cùng dữ liệu, chạy theo lịch, dùng lại hàm xoá của (1) | chưa bắt đầu | | SB-A2 | M | Gộp SB-A6 (2) vào đây ngày 2026-09-28: chung một hàm `SECURITY DEFINER` và một bộ pgTAP chứng minh không xoá được dữ liệu người khác. (2): mỗi lần cài lại app tạo một user ẩn danh mới, nên dữ liệu cũ nằm lại mãi; chủ dự án chốt N |
+| SB-A5 | Xoá dữ liệu theo user: (1) xoá tài khoản trong app (Google Play đòi hỏi khi app có tạo tài khoản): RPC xoá toàn bộ dữ liệu của `auth.uid()` rồi xoá user; (2) dọn user ẩn danh mồ côi: user ẩn danh không hoạt động quá N ngày thì xoá cùng dữ liệu, chạy theo lịch, dùng lại hàm xoá của (1) | đang làm | | SB-A2 | M | Server (P1, [plan](superpowers/plans/2026-09-30-accounts-server.md)): `account_delete`, `private.cleanup_accounts` (cron `account-cleanup`, ẩn danh 90 ngày), migration `20261010000000_accounts.sql`, pgTAP `12_account.sql`; phía app (P3) chờ. Gộp SB-A6 (2) vào đây ngày 2026-09-28: chung một hàm `SECURITY DEFINER` và một bộ pgTAP chứng minh không xoá được dữ liệu người khác. (2): mỗi lần cài lại app tạo một user ẩn danh mới, nên dữ liệu cũ nằm lại mãi; chủ dự án chốt N |
 
 ### D. Trải nghiệm sync trong app
 
@@ -105,7 +105,6 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 | Hạng mục | Câu hỏi | Ảnh hưởng | Cần gì, từ ai |
 |---|---|---|---|
-| SB-A1 | Cách đăng nhập và chính sách gộp dữ liệu ẩn danh khi đăng nhập trên máy thứ hai | Toàn bộ nhóm C | Chủ dự án (tạm dừng 2026-09-28, sẽ bàn lại) |
 | SB-O7 | Nơi lưu và thời hạn giữ bản sao lưu | Khôi phục khi mất dữ liệu | Chủ dự án (tạm dừng 2026-09-28: chưa sao lưu tới khi có người dùng thật) |
 
 ## Bước tiếp theo
@@ -153,3 +152,5 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 - **Cập nhật ngày 2026-09-28:** chủ dự án tạm dừng SB-A1 (đăng nhập, tài khoản) để cân nhắc
   lại; nhóm C chờ buổi bàn tiếp. SB-O7 tạm dừng tới khi có người dùng thật. Còn lại cần chủ
   dự án: SB-O1 (dashboard) và SB-O8 (chạy tay `supabase usage` lần đầu).
+
+- **Cập nhật ngày 2026-09-30:** SB-A1 xong (spec auth); P1 phía server làm theo plan 2026-09-30-accounts-server: profiles và role, khoá ngoại về `auth.users`, `me`, role, gộp máy thứ hai, xoá tài khoản, dọn ẩn danh 90 ngày. Bỏ SB-A1 khỏi "Quyết định còn mở".
