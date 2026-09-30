@@ -255,7 +255,11 @@ void main() {
           onOpenReminder: () {},
           onAppOptionsReset: () {},
           onOpenSync: () {},
-          accountSection: AccountSettingsSectionWidget(onSignIn: () {}),
+          accountSection: AccountSettingsSectionWidget(
+            onSignIn: () {},
+            onOpenAccount: () {},
+            onSignInAgain: () {},
+          ),
         ),
         'settings_account',
         overrides: accountOverrides(world),

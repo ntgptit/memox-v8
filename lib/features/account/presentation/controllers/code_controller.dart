@@ -63,7 +63,12 @@ class CodeController extends _$CodeController {
     state = const CodeState(isResending: true);
     SignInProblem? problem;
     try {
-      await accounts.requestCode(email);
+      // P3b plan ruling 8: a re-auth's first code went out only once any
+      // loss was accepted on screen 30; a resend does not ask again.
+      await accounts.requestCode(
+        email,
+        confirmedLoss: purpose == SignInPurpose.reauth,
+      );
     } on Failure catch (error) {
       problem = signInProblemOf(error);
     } on StateError {

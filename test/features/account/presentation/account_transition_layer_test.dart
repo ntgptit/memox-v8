@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
+import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
@@ -225,6 +226,19 @@ void main() {
 
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
     expect(find.text(_en.accountMergeNotDone), findsOneWidget);
+  });
+
+  accountTest('a refused last-admin deletion is a dialog, not a toast '
+      '(P3b B7)', (tester, env, world) async {
+    await linkEmail(world);
+    world.server.users[world.gateway.currentUserId]!.role = AccountRole.admin;
+    await _onThemePage(tester, env, world);
+
+    await world.coordinator.deleteAccount();
+    await _settle(tester);
+
+    expect(find.text(_en.accountLastAdminTitle), findsOneWidget);
+    expect(find.text(_en.accountLastAdmin), findsOneWidget);
   });
 
   libraryTest('a sign-out stopped offline offers to go on and lose the '

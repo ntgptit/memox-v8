@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
@@ -35,6 +37,7 @@ class StudyHomeScreen extends ConsumerWidget {
     required this.onOpenLibrary,
     required this.onOpenStarterDecks,
     required this.onOpenSync,
+    this.reauthNotice,
   });
 
   final ValueChanged<String> onOpenSession;
@@ -44,6 +47,10 @@ class StudyHomeScreen extends ConsumerWidget {
 
   /// Opens screen 27 when the sync banner's Details is tapped (SB-U1).
   final VoidCallback onOpenSync;
+
+  /// The account feature's notice for an expired sign-in (account UI spec
+  /// §5.7), which `app/` composes; it takes the slot over the sync notice.
+  final Widget? reauthNotice;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,6 +65,8 @@ class StudyHomeScreen extends ConsumerWidget {
         home is AsyncData &&
         sync != null &&
         needsAttention(sync, ref.watch(dayClockProvider).now());
+    final isSignInRefused =
+        ref.watch(authStateProvider).value is ReauthRequired;
     final children = switch (home) {
       AsyncData(:final value) => _loaded(context, ref, value),
       AsyncError(:final isLoading) => [
@@ -73,7 +82,9 @@ class StudyHomeScreen extends ConsumerWidget {
     };
     return MxAppShell(
       appBar: MxAppBar(title: l10n.studyHomeTitle),
-      notice: showsSync
+      notice: isSignInRefused && reauthNotice != null
+          ? reauthNotice
+          : showsSync
           ? StudyHomeSyncBannerWidget(status: sync, onOpenSync: onOpenSync)
           : null,
       body: MxScreenScroll(children: children),

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
@@ -106,5 +107,55 @@ void main() {
 
     expect(await controller().continueWithGoogle(), SignInOutcome.failed);
     expect(state().problemTask, SignInTask.google);
+  });
+
+  group('reauth', () {
+    final reauth = signInControllerProvider(SignInPurpose.reauth);
+
+    setUp(() async {
+      await refuseSession(world);
+      container.listen(reauth, (_, _) {});
+    });
+
+    test('the same address gets its code without a word about loss '
+        '(Review Focus 1)', () async {
+      expect(
+        await container.read(reauth.notifier).sendCode('A@example.com'),
+        SignInOutcome.codeSent,
+      );
+    });
+
+    test('another address with changes unsent asks first', () async {
+      expect(
+        await container.read(reauth.notifier).sendCode('b@example.com'),
+        SignInOutcome.unsentChanges,
+      );
+      expect(container.read(reauth).unsentCount, 2);
+      expect(world.server.sentCodes['b@example.com'], isNull);
+
+      expect(
+        await container
+            .read(reauth.notifier)
+            .sendCode('b@example.com', confirmedLoss: true),
+        SignInOutcome.codeSent,
+      );
+    });
+
+    test('Google as another account asks first too', () async {
+      world.gateway.google = const GoogleCredential(
+        idToken: 't',
+        email: 'g@example.com',
+      );
+      expect(
+        await container.read(reauth.notifier).continueWithGoogle(),
+        SignInOutcome.unsentChanges,
+      );
+      expect(
+        await container
+            .read(reauth.notifier)
+            .continueWithGoogle(confirmedLoss: true),
+        SignInOutcome.signedIn,
+      );
+    });
   });
 }

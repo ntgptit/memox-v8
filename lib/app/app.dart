@@ -9,6 +9,7 @@ import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/account_redirect.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
@@ -63,7 +64,9 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     redirect: (context, state) => accountRedirect(
       state.uri,
       isWelcomeDue: ref.read(welcomeDueProvider),
-      hasAccount: ref.read(currentAccountProvider)?.isAnonymous == false,
+      // P3b plan ruling 4: the coordinator's own state, a frame ahead of
+      // the provider's.
+      account: ref.read(accountCoordinatorProvider)?.state ?? const LocalOnly(),
     ),
   );
 
@@ -109,7 +112,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     // redirect.
     ref
       ..listenManual(welcomeDueProvider, (_, _) => _accountRoutes.ping())
-      ..listenManual(currentAccountProvider, (_, _) => _accountRoutes.ping());
+      ..listenManual(authStateProvider, (_, _) => _accountRoutes.ping());
   }
 
   /// A tap on the reminder opens Study Home, whether the app was running or
@@ -197,6 +200,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
       // with the router's Back dispatcher to take priority over.
       builder: (context, child) => AccountLayerHostWidget(
         backButtons: _router.backButtonDispatcher,
+        dialogNavigator: _router.routerDelegate.navigatorKey,
         child: child!,
       ),
     );

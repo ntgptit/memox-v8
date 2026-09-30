@@ -6,6 +6,7 @@ import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 
@@ -41,6 +42,7 @@ void accountTest(
 List<Override> accountOverrides(AuthWorld world) => [
   accountCoordinatorProvider.overrideWithValue(world.coordinator),
   syncControlProvider.overrideWithValue(world.sync),
+  networkStatusProvider.overrideWithValue(world.network),
 ];
 
 /// [world]'s anonymous user attached to [email] through a code.
@@ -50,6 +52,18 @@ Future<void> linkEmail(
 ]) async {
   await world.coordinator.requestCode(email);
   await world.coordinator.verifyCode(email, FakeAuthGateway.code);
+}
+
+/// [world]'s linked account refused its session: REAUTH_REQUIRED (auth
+/// spec #14). Waits on microtasks only, so it runs under a widget test's
+/// fake clock too.
+Future<void> refuseSession(AuthWorld world) async {
+  await linkEmail(world);
+  world.gateway.dropSession();
+  for (var turn = 0; turn < 1000 && world.state is! ReauthRequired; turn++) {
+    await Future<void>.value();
+  }
+  expect(world.state, isA<ReauthRequired>());
 }
 
 /// [state] as the only account state, for a surface that renders it.

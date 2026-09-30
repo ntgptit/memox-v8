@@ -65,6 +65,11 @@ extension AccountSwitching on AccountCoordinator {
     },
   );
 
+  /// The person declined what the kept Google account would do (its loss
+  /// of unsent changes): the next press shows the picker again (P3b final
+  /// review I1).
+  void forgetPickedGoogle() => _pendingGoogle = null;
+
   /// Starts moving this device to another account: #18 from an anonymous
   /// user whose identity is taken, #34 "Switch account" from an account.
   /// The gate shuts, the source's changes are sent and, for a merge, a claim

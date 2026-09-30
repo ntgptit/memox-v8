@@ -3,8 +3,8 @@ import 'package:memox/core/error/failure.dart';
 /// Who the sign-in form signs in (account UI spec §5.2): this anonymous
 /// user's link, or the switch's target inside the transition layer. Each
 /// has its own controller, since the layer's form can stand over screen
-/// 30's.
-enum SignInPurpose { link, target }
+/// 30's. P3b adds signing in again after the session was refused.
+enum SignInPurpose { link, target, reauth }
 
 /// The command the form is running.
 enum SignInTask { google, email }
@@ -23,6 +23,10 @@ enum SignInOutcome {
   /// The identity belongs to another account (auth spec #17).
   identityTaken,
 
+  /// Signing in to another account would lose [SignInState.unsentCount]
+  /// changes; asked again with the loss confirmed (auth spec ruling 6).
+  unsentChanges,
+
   /// Nothing to show: a cancelled Google pick, or a press while one runs.
   none,
 
@@ -32,7 +36,12 @@ enum SignInOutcome {
 
 /// The form's state: what runs, and what went wrong with which command.
 final class SignInState {
-  const SignInState({this.task, this.problem, this.problemTask});
+  const SignInState({
+    this.task,
+    this.problem,
+    this.problemTask,
+    this.unsentCount = 0,
+  });
 
   final SignInTask? task;
   final SignInProblem? problem;
@@ -40,6 +49,9 @@ final class SignInState {
   /// Which command [problem] belongs to: an email problem shows under the
   /// field, a Google one as a toast.
   final SignInTask? problemTask;
+
+  /// The changes a re-auth to another account would lose.
+  final int unsentCount;
 
   bool get isRunning => task != null;
 }

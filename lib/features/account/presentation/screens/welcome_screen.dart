@@ -64,7 +64,10 @@ class WelcomeScreen extends ConsumerWidget {
           context,
           message: signInProblemText(context.l10n, problem),
         );
-      case SignInOutcome.codeSent || SignInOutcome.none:
+      // A link never replaces an account, so no loss is asked here.
+      case SignInOutcome.codeSent ||
+          SignInOutcome.none ||
+          SignInOutcome.unsentChanges:
         return;
     }
   }

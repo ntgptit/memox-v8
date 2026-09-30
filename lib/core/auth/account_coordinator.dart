@@ -78,6 +78,9 @@ class AccountCoordinator {
 
   AuthState get state => _state;
 
+  /// How the signed-in account signs in (account UI spec §9 B1).
+  Set<SignInMethod> get signInMethods => _gateway.signInMethods;
+
   /// The state now, then every change.
   Stream<AuthState> watch() {
     final controller = StreamController<AuthState>();

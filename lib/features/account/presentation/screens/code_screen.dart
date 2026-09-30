@@ -14,12 +14,20 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// Screen 31 (account UI spec §5.2): the six digits sent to [email].
 class CodeScreen extends ConsumerWidget {
-  const CodeScreen({super.key, required this.email, required this.onSignedIn});
+  const CodeScreen({
+    super.key,
+    required this.email,
+    required this.onSignedIn,
+    this.purpose = SignInPurpose.link,
+  });
 
   final String email;
 
-  /// The account is attached: the flow closes (plan ruling 2).
+  /// Signed in: the flow closes (spec §9 B9).
   final VoidCallback onSignedIn;
+
+  /// `link` or `reauth`, as on screen 30.
+  final SignInPurpose purpose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,7 +47,7 @@ class CodeScreen extends ConsumerWidget {
         children: [
           CodeFormWidget(
             email: email,
-            purpose: SignInPurpose.link,
+            purpose: purpose,
             onUseAnotherEmail: back,
             onSignedIn: () {
               saySignedIn(context, attachedAccount(ref));

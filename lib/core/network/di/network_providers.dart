@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:memox/core/network/api_config.dart';
+import 'package:memox/core/network/network_status.dart';
 import 'package:memox/core/network/request_id_interceptor.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -27,3 +28,8 @@ Dio dio(Ref ref) {
   ref.onDispose(dio.close);
   return dio;
 }
+
+/// The device's network hint (auth spec §6), one for the coordinator and
+/// the screens that ask before an online-only step (account UI spec §9 B2).
+@Riverpod(keepAlive: true)
+NetworkStatus networkStatus(Ref ref) => ConnectivityNetworkStatus();
