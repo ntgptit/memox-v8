@@ -197,6 +197,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
       // with the router's Back dispatcher to take priority over.
       builder: (context, child) => AccountLayerHostWidget(
         backButtons: _router.backButtonDispatcher,
+        dialogNavigator: _router.routerDelegate.navigatorKey,
         child: child!,
       ),
     );
