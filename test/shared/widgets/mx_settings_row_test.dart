@@ -306,4 +306,39 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('iconTone reaches the lead tile, and a disabled row still dims '
+      'it (critique 2026-09-30 tone pass, T4)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(const MxSettingsRow(label: 'Sync', icon: AppIcons.sync)),
+    );
+    expect(
+      tester.widget<MxIconTile>(find.byType(MxIconTile)).tone,
+      MxIconTileTone.tinted,
+    );
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Sync',
+          icon: AppIcons.sync,
+          iconTone: MxIconTileTone.success,
+          isEnabled: false,
+        ),
+      ),
+    );
+    expect(
+      tester.widget<MxIconTile>(find.byType(MxIconTile)).tone,
+      MxIconTileTone.success,
+    );
+    expect(
+      find.ancestor(
+        of: find.byType(MxIconTile),
+        matching: find.byType(Opacity),
+      ),
+      findsOneWidget,
+    );
+  });
 }

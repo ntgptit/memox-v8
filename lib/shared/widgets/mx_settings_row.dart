@@ -21,6 +21,7 @@ class MxSettingsRow extends StatelessWidget {
     required this.label,
     this.subtitle,
     this.icon,
+    this.iconTone = MxIconTileTone.tinted,
     this.trailing,
     this.wideControl,
     this.onTap,
@@ -33,6 +34,11 @@ class MxSettingsRow extends StatelessWidget {
 
   /// Drawn as an MxIconTile at the medium step, centred in the 40 lead column.
   final IconData? icon;
+
+  /// The lead tile's tone: tinted by default; success when the setting's
+  /// state is fine, as screen 23's Sync row once sync is settled (critique
+  /// 2026-09-30 tone pass, T4).
+  final MxIconTileTone iconTone;
 
   /// A toggle, a time button or a value.
   final Widget? trailing;
@@ -95,7 +101,11 @@ class MxSettingsRow extends StatelessWidget {
                     child: Center(
                       heightFactor: 1,
                       child: _dim(
-                        MxIconTile(icon: glyph, size: MxIconTileSize.medium),
+                        MxIconTile(
+                          icon: glyph,
+                          size: MxIconTileSize.medium,
+                          tone: iconTone,
+                        ),
                       ),
                     ),
                   ),
