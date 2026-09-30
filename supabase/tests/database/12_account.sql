@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(61);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
@@ -204,6 +204,128 @@ select is((select role_changed_by from public.profiles where id = '12000000-0000
 delete from auth.users where id = '12000000-0000-0000-0000-000000000006';
 select is((select role_changed_by from public.profiles where id = '12000000-0000-0000-0000-000000000007'),
   null, 'deleting the admin who granted a role clears the record, not the profile');
+
+-- Claim, merge, acknowledge (spec §2.3, O4, O5).
+-- S anonymous (source), T account (target), X another account. S and T both have a live tag
+-- "verb"; S also has a tombstoned tag "noun" while T has a live "noun".
+select public.t_user('12000000-0000-0000-0000-000000000011', null, true);                -- S
+select public.t_user('12000000-0000-0000-0000-000000000012', 't@example.com', false);    -- T
+select public.t_user('12000000-0000-0000-0000-000000000013', 'x@example.com', false);    -- X
+select public.t_seed('12000000-0000-0000-0000-000000000011', 'Verb', true);
+select public.t_seed('12000000-0000-0000-0000-000000000012', 'verb', true);
+insert into public.tags (id, user_id, name, name_folded, created_at, server_version, last_device_id, deleted_at)
+values ('12000000-0000-0000-0000-0000000000a1', '12000000-0000-0000-0000-000000000011', 'noun', 'noun',
+  now(), private.allocate_versions('12000000-0000-0000-0000-000000000011', 1),
+  '00000000-0000-0000-0000-0000000000d1', now()),
+  ('12000000-0000-0000-0000-0000000000a2', '12000000-0000-0000-0000-000000000012', 'noun', 'noun',
+  now(), private.allocate_versions('12000000-0000-0000-0000-000000000012', 1),
+  '00000000-0000-0000-0000-0000000000d1', null);
+update public.profiles set role = 'admin' where id = '12000000-0000-0000-0000-000000000011';
+update public.account_settings set theme_mode = 'light' where user_id = '12000000-0000-0000-0000-000000000012';
+select set_config('t.top', private.current_version('12000000-0000-0000-0000-000000000012')::text, true);
+
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000012',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_claim_begin() $$, 'P0001', 'NOT_ANONYMOUS',
+  'an account cannot hand out a claim');
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000011',
+  'role', 'authenticated')::text, true);
+select set_config('t.token', public.account_claim_begin()::text, true);
+select throws_ok($$ select public.account_merge(current_setting('t.token')::uuid,
+  '12000000-0000-0000-0000-0000000000c1') $$, 'P0001', 'NOT_PERMANENT', 'an anonymous user cannot merge');
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000012',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_merge(gen_random_uuid(), '12000000-0000-0000-0000-0000000000c1') $$,
+  'P0001', 'CLAIM_INVALID', 'a wrong token is refused');
+select is(public.account_merge(current_setting('t.token')::uuid, '12000000-0000-0000-0000-0000000000c1'),
+  '{"status": "MERGED"}'::jsonb, 'the account merges the anonymous data');
+select is(public.account_merge(current_setting('t.token')::uuid, '12000000-0000-0000-0000-0000000000c1'),
+  '{"status": "MERGED"}'::jsonb, 'a retry with the same operation says MERGED again');
+select throws_ok($$ select public.account_merge(current_setting('t.token')::uuid,
+  '12000000-0000-0000-0000-0000000000c2') $$, 'P0001', 'CLAIM_INVALID',
+  'a used token with another operation is refused');
+-- Moved: the batch, two decks, the tombstoned tag, the card, its schedule and its review (the
+-- live "Verb" merged into the account's tag and the settings gave way to the account's).
+select is(jsonb_array_length(public.sync_changes(current_setting('t.top')::bigint, 500)->'changes'), 7,
+  'the moved rows reach the account''s other devices as new changes');
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000013',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_merge(current_setting('t.token')::uuid,
+  '12000000-0000-0000-0000-0000000000c1') $$, 'P0001', 'CLAIM_INVALID',
+  'another user learns nothing from the operation id');
+select lives_ok($$ select public.account_merge_ack('12000000-0000-0000-0000-0000000000c1') $$,
+  'another user''s acknowledgement is a no-op');
+reset role;
+
+select ok(not exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000011'),
+  'the anonymous user is gone');
+select is(public.t_owned('12000000-0000-0000-0000-000000000011'), 0, 'it owns nothing any more');
+select is((select count(*)::int from public.deck where user_id = '12000000-0000-0000-0000-000000000012'), 4,
+  'the account has both libraries');
+select is((select count(*)::int from public.tags where user_id = '12000000-0000-0000-0000-000000000012'
+  and deleted_at is null and name_folded = 'verb'), 1, 'live tags with the same name become one');
+select is((select tag_id from public.card_tags
+  where card_id = md5('12000000-0000-0000-0000-000000000011' || 'card')::uuid),
+  md5('12000000-0000-0000-0000-000000000012' || 'tag')::uuid, 'the moved card points at the account''s tag');
+select ok(exists (select 1 from public.tags where id = '12000000-0000-0000-0000-0000000000a1'
+  and user_id = '12000000-0000-0000-0000-000000000012' and deleted_at is not null),
+  'a tombstoned tag moves as it is, beside a live one of the same name');
+select is((select theme_mode from public.account_settings
+  where user_id = '12000000-0000-0000-0000-000000000012'), 'light', 'the account keeps its own settings');
+select ok((select min(server_version) from public.card where id = md5('12000000-0000-0000-0000-000000000011' || 'card')::uuid)
+  > current_setting('t.top')::bigint, 'moved rows get versions above the account''s last one');
+select is((select role from public.profiles where id = '12000000-0000-0000-0000-000000000012'), 'user',
+  'the anonymous user''s role is not carried over');
+select ok(exists (select 1 from public.account_merge_receipt where operation_id = '12000000-0000-0000-0000-0000000000c1'
+  and acknowledged_at is null), 'a receipt records the merge, not yet acknowledged');
+select is((select count(*)::int from public.app_log where user_id = '12000000-0000-0000-0000-000000000012'), 2,
+  'the logs moved with the data');
+select is((select count(*)::int from pg_class c where c.oid in ('public.account_claim'::regclass,
+  'public.account_merge_receipt'::regclass) and c.relrowsecurity), 2, 'RLS is on for claims and receipts');
+
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000012',
+  'role', 'authenticated')::text, true);
+select lives_ok($$ select public.account_merge_ack('12000000-0000-0000-0000-0000000000c1') $$,
+  'the account acknowledges its merge');
+select lives_ok($$ select public.account_merge_ack('12000000-0000-0000-0000-0000000000c1') $$,
+  'acknowledging twice is fine');
+reset role;
+select ok((select acknowledged_at is not null from public.account_merge_receipt
+  where operation_id = '12000000-0000-0000-0000-0000000000c1'), 'the receipt is acknowledged');
+
+-- A target without settings takes the source's; an expired claim is refused.
+select public.t_user('12000000-0000-0000-0000-000000000014', null, true);
+select public.t_user('12000000-0000-0000-0000-000000000015', 'u@example.com', false);
+select public.t_seed('12000000-0000-0000-0000-000000000014', 'solo', true);
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000014',
+  'role', 'authenticated')::text, true);
+select set_config('t.token2', public.account_claim_begin()::text, true);
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000015',
+  'role', 'authenticated')::text, true);
+select is(public.account_merge(current_setting('t.token2')::uuid, '12000000-0000-0000-0000-0000000000c3')->>'status',
+  'MERGED', 'a merge into an empty account');
+reset role;
+select is((select theme_mode from public.account_settings
+  where user_id = '12000000-0000-0000-0000-000000000015'), 'dark', 'an account without settings takes the source''s');
+select public.t_user('12000000-0000-0000-0000-000000000016', null, true);
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000016',
+  'role', 'authenticated')::text, true);
+select set_config('t.token3', public.account_claim_begin()::text, true);
+reset role;
+update public.account_claim set expires_at = now() - interval '1 second'
+  where source_user_id = '12000000-0000-0000-0000-000000000016';
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000015',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_merge(current_setting('t.token3')::uuid,
+  '12000000-0000-0000-0000-0000000000c4') $$, 'P0001', 'CLAIM_INVALID', 'an expired claim is refused');
+reset role;
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000016'),
+  'a refused merge leaves the anonymous user in place');
 
 select * from finish();
 rollback;

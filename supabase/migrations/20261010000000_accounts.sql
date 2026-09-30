@@ -196,3 +196,180 @@ revoke all on function public.role_list(text, text), public.role_set(uuid, text)
   from public, anon, authenticated;
 grant execute on function public.role_list(text, text), public.role_set(uuid, text) to authenticated;
 revoke all on all functions in schema private from public, anon, authenticated;
+
+-- A one-time claim handed out by an anonymous user (spec §2.2); the token itself is never stored.
+create table public.account_claim (
+  token_hash text primary key,
+  source_user_id uuid not null unique references auth.users (id) on delete cascade,
+  expires_at timestamptz not null
+);
+-- Proof that a merge ran, so a retry after a lost answer says MERGED; no key on the source,
+-- which the merge deletes.
+create table public.account_merge_receipt (
+  operation_id uuid primary key,
+  source_user_id uuid not null,
+  target_user_id uuid not null references auth.users (id) on delete cascade,
+  merged_at timestamptz not null default now(),
+  acknowledged_at timestamptz null,
+  expires_at timestamptz not null default now() + interval '7 days'
+);
+alter table public.account_claim enable row level security;
+alter table public.account_merge_receipt enable row level security;
+revoke all on table public.account_claim, public.account_merge_receipt from public, anon, authenticated;
+
+create function private.token_hash(p_token uuid) returns text
+language sql immutable set search_path = '' as $$
+  select encode(pg_catalog.sha256(convert_to(p_token::text, 'UTF8')), 'hex')
+$$;
+
+create function public.account_claim_begin() returns uuid
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_current_profile();
+  v_token uuid := gen_random_uuid();
+begin
+  if not coalesce((select u.is_anonymous from auth.users u where u.id = v_user), false) then
+    raise exception 'NOT_ANONYMOUS';
+  end if;
+  insert into public.account_claim (token_hash, source_user_id, expires_at)
+  values (private.token_hash(v_token), v_user, now() + interval '15 minutes')
+  on conflict (source_user_id) do update
+    set token_hash = excluded.token_hash, expires_at = excluded.expires_at;
+  return v_token;
+end
+$$;
+
+-- Moves every row of p_source to p_target (spec §2.3). Moved rows get new versions from the
+-- target's counter, parents first, so the target's other devices pull them.
+create function private.merge_user_data(p_source uuid, p_target uuid) returns void
+language plpgsql set search_path = '' as $$
+declare
+  v_total bigint;
+  v_next bigint;
+  v_rows bigint;
+begin
+  -- Live tags with a name the target already has: links move to the target's tag.
+  update public.card_tags ct set tag_id = t.id
+  from public.tags s join public.tags t
+    on t.user_id = p_target and t.deleted_at is null and t.name_folded = s.name_folded
+  where s.user_id = p_source and s.deleted_at is null and ct.tag_id = s.id;
+  delete from public.tags s using public.tags t
+  where s.user_id = p_source and s.deleted_at is null
+    and t.user_id = p_target and t.deleted_at is null and t.name_folded = s.name_folded;
+
+  -- The target's own settings win.
+  if exists (select 1 from public.account_settings where user_id = p_target) then
+    delete from public.account_settings where user_id = p_source;
+  end if;
+
+  select (select count(*) from public.delete_batch where user_id = p_source)
+       + (select count(*) from public.deck where user_id = p_source)
+       + (select count(*) from public.tags where user_id = p_source)
+       + (select count(*) from public.card where user_id = p_source)
+       + (select count(*) from public.card_schedule where user_id = p_source)
+       + (select count(*) from public.review_log where user_id = p_source)
+       + (select count(*) from public.account_settings where user_id = p_source)
+  into v_total;
+  if v_total > 0 then
+    v_next := private.allocate_versions(p_target, v_total::integer) - v_total;
+
+    update public.delete_batch x set user_id = p_target, server_version = v_next + s.n
+    from (select id, row_number() over (order by server_version) as n
+          from public.delete_batch where user_id = p_source) s
+    where x.id = s.id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.deck x set user_id = p_target, server_version = v_next + s.n
+    from (select id, row_number() over (order by depth, server_version) as n
+          from public.deck where user_id = p_source) s
+    where x.id = s.id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.tags x set user_id = p_target, server_version = v_next + s.n
+    from (select id, row_number() over (order by server_version) as n
+          from public.tags where user_id = p_source) s
+    where x.id = s.id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.card x set user_id = p_target, server_version = v_next + s.n
+    from (select id, row_number() over (order by server_version) as n
+          from public.card where user_id = p_source) s
+    where x.id = s.id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.card_schedule x set user_id = p_target, server_version = v_next + s.n
+    from (select card_id, row_number() over (order by server_version) as n
+          from public.card_schedule where user_id = p_source) s
+    where x.card_id = s.card_id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.review_log x set user_id = p_target, server_version = v_next + s.n
+    from (select id, row_number() over (order by server_version) as n
+          from public.review_log where user_id = p_source) s
+    where x.id = s.id;
+    get diagnostics v_rows = row_count; v_next := v_next + v_rows;
+
+    update public.account_settings set user_id = p_target, server_version = v_next + 1
+    where user_id = p_source;
+  end if;
+
+  update public.app_log set user_id = p_target where user_id = p_source;
+end
+$$;
+
+create function public.account_merge(p_token uuid, p_operation_id uuid) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_target uuid := private.require_current_profile();
+  v_source uuid;
+begin
+  if coalesce((select u.is_anonymous from auth.users u where u.id = v_target), true) then
+    raise exception 'NOT_PERMANENT';
+  end if;
+  if p_operation_id is null then
+    raise exception 'CLAIM_INVALID';
+  end if;
+  -- A retry after a lost answer.
+  if exists (select 1 from public.account_merge_receipt r
+             where r.operation_id = p_operation_id and r.target_user_id = v_target) then
+    return jsonb_build_object('status', 'MERGED');
+  end if;
+  -- Consumed atomically: a concurrent call with the same token finds nothing.
+  delete from public.account_claim c
+  where c.token_hash = private.token_hash(p_token) and c.expires_at > now()
+  returning c.source_user_id into v_source;
+  if v_source is null then
+    -- The concurrent call may have been this very operation; its receipt is committed now.
+    if exists (select 1 from public.account_merge_receipt r
+               where r.operation_id = p_operation_id and r.target_user_id = v_target) then
+      return jsonb_build_object('status', 'MERGED');
+    end if;
+    raise exception 'CLAIM_INVALID';
+  end if;
+  if v_source = v_target then
+    raise exception 'CLAIM_INVALID';
+  end if;
+  perform private.merge_user_data(v_source, v_target);
+  insert into public.account_merge_receipt (operation_id, source_user_id, target_user_id)
+  values (p_operation_id, v_source, v_target);
+  delete from auth.users where id = v_source;
+  return jsonb_build_object('status', 'MERGED');
+end
+$$;
+
+create function public.account_merge_ack(p_operation_id uuid) returns void
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_user uuid := private.require_current_profile();
+begin
+  update public.account_merge_receipt
+  set acknowledged_at = coalesce(acknowledged_at, now())
+  where operation_id = p_operation_id and target_user_id = v_user;
+end
+$$;
+
+revoke all on function public.account_claim_begin(), public.account_merge(uuid, uuid),
+  public.account_merge_ack(uuid) from public, anon, authenticated;
+grant execute on function public.account_claim_begin(), public.account_merge(uuid, uuid),
+  public.account_merge_ack(uuid) to authenticated;
+revoke all on all functions in schema private from public, anon, authenticated;
