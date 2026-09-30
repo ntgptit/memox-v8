@@ -41,4 +41,22 @@ void main() {
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.text('logs'), findsNothing);
   });
+
+  libraryTest('the gate names the screen it guards (users plan ruling 2)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const MonitoringAdminGateWidget(title: 'Users', child: Text('users')),
+      overrides: [
+        isAdminProvider.overrideWithValue(false),
+        authStateOf(const LocalOnly()),
+      ],
+    );
+
+    expect(find.text('Users'), findsOneWidget);
+    expect(find.text('Monitoring'), findsNothing);
+  });
 }
