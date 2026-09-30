@@ -4519,15 +4519,6 @@
     },
     "description": "Screen handoff 13 (FE-A8): the hero breakdown's suffix."
   },
-  "workloadScheduled": "{count} scheduled",
-  "@workloadScheduled": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 13 (FE-A8): the muted fourth workload term (BR-STUDY-068)."
-  },
   "studyHomeCaughtUpTitle": "Nothing due right now",
   "@studyHomeCaughtUpTitle": {
     "description": "Screen handoff 13 (FE-A8): the caught-up card's title (BR-STUDY-008)."

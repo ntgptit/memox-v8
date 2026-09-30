@@ -21,7 +21,7 @@ snapshot. UC-STUDY-002.
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| loaded | `study_home_loaded_light.png` | `study_home_loaded_dark.png` | The hero's four-term breakdown and the primary resume dot (see Rulings). |
+| loaded | `study_home_loaded_light.png` | `study_home_loaded_dark.png` | The hero's due breakdown (overdue · today) and the primary resume dot (see Rulings). |
 | noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload hero and deck list, no Resume card (BR-STUDY-075 A1). |
 | zero | `study_home_zero_light.png` | `study_home_zero_dark.png` | Every root deck holds cards but nothing is due; rows still list every deck with 0/0/0 (BR-STUDY-008, BR-STUDY-077). |
 | noDecks | `study_home_no_decks_light.png` | `study_home_no_decks_dark.png` | "Browse starter decks" opens the Starter Library (screen 03), "Go to Library" the Library root (UC-STUDY-002 A4). |
@@ -46,7 +46,7 @@ Every state above is built.
 
 ## Rulings
 
-- **BR-STUDY-068:** the hero breakdown has four terms: overdue, today, new and scheduled (`MxWorkloadBreakdownLine`).
+- **BR-STUDY-068 (owner 2026-09-30):** the hero states "{n} cards due" over its two halves, overdue · today (`MxWorkloadBreakdownLine`); new and scheduled cards are not in the hero, new ones show in each deck row.
 - **UI-base row 28:** the resume dot and paused tile use primary; there is no streak tone.
 - The app bar carries no date: `MxAppBar.actions` takes buttons only and no BR/UC calls for one.
 - **FE-A8 ruling S3:** the dot beside "Continue studying" is static, as on 14; no looping motion. The resume progress is the shared 4-tall `MxLinearProgress`.
@@ -72,7 +72,6 @@ Every state above is built.
 - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" · "Resume".
 - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks".
 - Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow." · "…on {date}." · "Every card is resting." (ruling S2).
-- Workload hero: "{n} scheduled" joins the breakdown, muted (BR-STUDY-068).
 - Resume refused: "This session can't be continued any more".
 - Section: "Your decks" · "Library".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).

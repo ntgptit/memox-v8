@@ -850,7 +850,6 @@
   "studyHomeWaiting": "Đang chờ bạn",
   "studyHomeDueTitle": "{count} thẻ đến hạn",
   "studyHomeAcrossDecks": "trong {count} bộ thẻ",
-  "workloadScheduled": "{count} đã lên lịch",
   "studyHomeCaughtUpTitle": "Hiện chưa có thẻ đến hạn",
   "studyHomeCaughtUpTomorrow": "Mọi thẻ đang nghỉ. Thẻ tiếp theo đến hạn vào ngày mai.",
   "studyHomeCaughtUpOn": "Mọi thẻ đang nghỉ. Thẻ tiếp theo đến hạn vào {date}.",
