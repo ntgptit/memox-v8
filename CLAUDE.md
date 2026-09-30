@@ -13,9 +13,9 @@ Each layer answers one question; none takes over another's.
 
 - **Superpowers is the sole process controller.** Nothing else plans,
   sequences or gates work, and no other layer repeats its methodology.
-- **Impeccable judges UI against the kit, not against its own taste.** The kit
-  is the design authority ([UI source of truth](#ui-source-of-truth)).
-  Impeccable checks the work against the kit and against the quality floor.
+- **Impeccable judges UI against `DESIGN.md`, not against its own taste.**
+  `DESIGN.md` is the design authority ([UI source of truth](#ui-source-of-truth)).
+  Impeccable checks the work against it and against the quality floor.
 - **Repo rules hold project invariants only**, such as the architecture,
   stack, data rules and quality bars. They never restate a workflow.
 - **ECC skills are read on demand** by whoever does the task. They are never
@@ -23,17 +23,17 @@ Each layer answers one question; none takes over another's.
 
 ### A screen's workflow
 
-1. Read the screen and all its states in the kit.
+1. Read the screen's detail file, its goldens and `DESIGN.md`.
 2. Run `superpowers:brainstorming`: goal, scope, business rules (BR/UC),
    constraints.
 3. Run Impeccable before the plan:
-   - critique the design against the kit (what the plan must adopt or rule
-     on);
-   - use `shape` only for a screen or state that the kit does not cover.
+   - critique the design against `DESIGN.md` (what the plan must adopt or
+     rule on);
+   - use `shape` only for a screen or state not built yet.
 4. Run `superpowers:writing-plans`, then execute it, subagent-driven or
    native, as the user chooses.
 5. Run Impeccable after the build: critique and audit the goldens against
-   the kit.
+   `DESIGN.md`.
    - Fix everything found in one batch, then confirm once. Never loop on
      polish.
 6. Run the final whole-branch review, then complete the branch. If goldens
@@ -44,7 +44,9 @@ Each layer answers one question; none takes over another's.
 | Knowledge | Home |
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` |
-| Deviations from the kit or a UI spec | the screen's detail file or the UI-base register (§9) |
+| The visual system | `DESIGN.md` |
+| A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
+| Known UI debt | the UI-base register (§9) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
 | Work in flight that moves to another session | a session handoff in `.claude/handoff/`, on the branch only |
@@ -57,8 +59,8 @@ work goes through a [session handoff](#session-handoff).
 ### Session handoff
 
 A session handoff is a short file that carries the live thread of one piece
-of unfinished work to a fresh agent. It is unrelated to the design and screen
-handoffs under `docs/shared/ui/`. Write one when the owner asks for a handoff.
+of unfinished work to a fresh agent. It is unrelated to the screen files under
+`docs/shared/ui/screen-handoff/`. Write one when the owner asks for a handoff.
 
 - **When:** only when the work moves to another harness (Claude ↔ Codex),
   another machine or cloud container, another person, or a side task forked to
@@ -134,24 +136,24 @@ Business rules and SRS live only in the app; the server checks integrity.
 
 ## UI source of truth
 
-The visual authority for every V8 screen is the artifact "MemoX — Mobile UI
-Kit v3": <https://claude.ai/artifact/UCesgHkzYHKsZwhwVshKRE>.
+The visual authority for every V8 screen is the app itself, recorded in
+[`DESIGN.md`](DESIGN.md) and in the goldens the owner reviewed
+([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)). The artifact
+"MemoX — Mobile UI Kit v3" is retired and is never read as a source.
 
-- **Precedence:** a BR or UC beats the kit; the kit beats a UI spec's layout
-  and copy. Record every deviation from the kit, either in the screen's detail
-  file or in the UI-base debt register
-  ([§9](docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md)).
+- **Precedence:** a BR or UC beats `DESIGN.md`; `DESIGN.md` and the reviewed
+  goldens beat a screen's detail file.
 - **Where it is described:**
-  - the [screen handoff index](docs/shared/ui/screen-handoff/00-index.md)
-    holds the screen numbers, states, FE items, status, and the rules every
-    screen shares;
-  - the [design handoff](docs/shared/ui/design-handoff/00-index.md) holds the
-    foundations, the theme binding and the widgets.
-- **Reading it:** use the Artifact tool's `read` action, not a web fetch. The
-  page is a bundle: each screen and each of its states is its own module.
-- **Before planning a screen,** read that screen and all its states in the
-  kit.
-- **After building a screen,** update its row in the screen handoff index.
+  - [`DESIGN.md`](DESIGN.md) holds the foundations, the theme binding, the
+    shared widgets and the copy voice;
+  - the [screen index](docs/shared/ui/screen-handoff/00-index.md) holds the
+    screen numbers, FE items, status and the rules every screen shares; each
+    screen's detail file holds its layout, states with goldens, rulings and copy;
+  - known UI debt is in the UI-base register
+    ([§9](docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md)).
+- **Changing UI:** update `DESIGN.md` when the visual system changes and the
+  screen's detail file when the screen changes, in the same PR.
+- **After building a screen,** update its row in the screen index.
 
 ## Vendored ECC skills
 

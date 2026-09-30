@@ -33,6 +33,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     required this.schedulerType,
     required this.hasDeepestSubDecks,
     this.onOpenTrash,
+    this.onOpenStudyHome,
   });
 
   final DeckLevel level;
@@ -50,6 +51,9 @@ class DeckLevelListWidget extends ConsumerWidget {
 
   /// Opens the Trash (screen 06), for a refused Undo (FE-B1).
   final VoidCallback? onOpenTrash;
+
+  /// The due strip's tap: Study home.
+  final VoidCallback? onOpenStudyHome;
 
   /// Shown when the level holds no deck at all (ruling L4).
   final Widget emptyState;
@@ -112,7 +116,7 @@ class DeckLevelListWidget extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.grouped),
         ] else if (_hasCards) ...[
-          DeckDueStripWidget(level: level),
+          DeckDueStripWidget(level: level, onOpen: onOpenStudyHome),
           const SizedBox(height: AppSpacing.grouped),
         ],
         DeckLevelHeaderWidget(

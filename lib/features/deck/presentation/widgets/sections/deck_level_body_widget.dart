@@ -27,6 +27,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
     required this.schedulerType,
     required this.hasDeepestSubDecks,
     this.onOpenTrash,
+    this.onOpenStudyHome,
   });
 
   final String? parentId;
@@ -43,6 +44,9 @@ class DeckLevelBodyWidget extends ConsumerWidget {
 
   /// Opens the Trash (screen 06), for a refused Undo (FE-B1).
   final VoidCallback? onOpenTrash;
+
+  /// The Library root's due strip opens Study home.
+  final VoidCallback? onOpenStudyHome;
 
   /// The open deck's algorithm for its summary card; null at the root.
   final SchedulerType? schedulerType;
@@ -78,6 +82,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
               onOpenStudy: onOpenStudy,
               onOpenStudyOptions: onOpenStudyOptions,
               onOpenTrash: onOpenTrash,
+              onOpenStudyHome: onOpenStudyHome,
               emptyState: emptyState,
               schedulerType: schedulerType,
               hasDeepestSubDecks: hasDeepestSubDecks,

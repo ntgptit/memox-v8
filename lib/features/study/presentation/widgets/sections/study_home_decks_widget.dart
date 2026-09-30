@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -73,7 +72,6 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final due = deck.overdueCount + deck.dueTodayCount;
     return MxListRow(
       titleMaxLines: 2,
       title: deck.name,
@@ -93,8 +91,9 @@ class _Row extends StatelessWidget {
         canWrap: true,
         fallback: l10n.workloadNoCards,
       ),
-      trailing: due > 0 ? MxBadge(label: l10n.studyHomeRowDue(due)) : null,
-      hasChevron: due == 0 && deck.canStudy,
+      // Every studiable row ends alike; its counts are in the meta line
+      // (critique 2026-09-30).
+      hasChevron: deck.canStudy,
       // A deck with no card keeps the action but disables it, so it is
       // dimmed and read as a disabled button, not silently inert (S4).
       onTap: onOpen,

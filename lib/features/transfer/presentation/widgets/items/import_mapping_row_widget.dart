@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
@@ -59,15 +57,9 @@ class ImportMappingRowWidget extends StatelessWidget {
               ],
             ),
           ),
-          ExcludeSemantics(
-            child: IconTheme.merge(
-              data: IconThemeData(
-                color: context.colors.onSurfaceVariant,
-                size: AppIconSize.inline,
-              ),
-              child: const Icon(AppIcons.arrowRight),
-            ),
-          ),
+          // No arrow between the column and its field: it sat at a
+          // different x on every row (critique 2026-09-30); the chips end on
+          // one edge.
           MxChipTrigger(
             label: l10n.importField(field),
             onPressed: () => showImportOptionSheet<TransferField?>(

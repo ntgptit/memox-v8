@@ -249,6 +249,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     final selected = ref.watch(cardSelectionProvider(widget.deckId));
     final isSelecting = selected.isNotEmpty;
     final isSearchOpen = ref.watch(cardSearchOpenProvider(widget.deckId));
+    // The FAB shows unless cards are selected; the list's end clears it.
+    final clearance = isSelecting
+        ? MxScrollClearance.base
+        : MxScrollClearance.fabAboveNav;
     final provider = cardListProvider(
       deckId: widget.deckId,
       filter: request.filter,
@@ -261,6 +265,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     // A failure always says so, even over rows loaded before (spec §5).
     if (async.hasError) {
       return MxScreenScroll(
+        clearance: clearance,
         children: [
           MxErrorState(
             title: l10n.cardLoadErrorTitle,
@@ -275,6 +280,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     final view = _lastView = async.value ?? _lastView;
     if (view == null) {
       return MxScreenScroll(
+        clearance: clearance,
         children: [
           MxSkeletonList(
             semanticLabel: context.l10n.commonLoading,
@@ -305,6 +311,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               },
               // E-L5: each row is its own child, built only in view.
               child: MxScreenScroll(
+                clearance: clearance,
                 children: _children(view, request, selected, isSearchOpen),
               ),
             ),

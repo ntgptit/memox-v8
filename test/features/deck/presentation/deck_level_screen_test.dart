@@ -27,7 +27,13 @@ import '../../../support/widget_harness.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 final _vi = lookupAppLocalizations(const Locale('vi'));
 
-Finder _rich(String text) => find.text(text, findRichText: true);
+/// A rich line as read, with the wrap glue (non-breaking spaces) read as
+/// spaces.
+Finder _rich(String text) => find.byWidgetPredicate(
+  (widget) =>
+      widget is RichText &&
+      widget.text.toPlainText().replaceAll(' ', ' ') == text,
+);
 
 /// Korean holds one overdue, one due-today and one new card; Kanji is empty.
 Future<void> _seed(LibraryEnv env) async {
@@ -404,5 +410,25 @@ void main() {
     double top(String name) => tester.getTopLeft(find.text(name)).dy;
     expect(top('Korean'), lessThan(top('Hangul')));
     expect(top('Hangul'), lessThan(top('Kanji')));
+  });
+
+  libraryTest('the due strip is a button to Study home (critique 2026-09-30, '
+      'R4)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await _seed(env);
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckScreen(onOpenStudyHome: () => opened++),
+    );
+
+    await tester.tap(find.text(_en.libraryDueTitle(2)));
+    expect(opened, 1);
+    expect(
+      tester.getSemantics(find.text(_en.libraryDueTitle(2))),
+      isSemantics(isButton: true, hasTapAction: true),
+    );
+    handle.dispose();
   });
 }

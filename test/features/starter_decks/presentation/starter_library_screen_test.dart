@@ -317,4 +317,23 @@ void main() {
     expect(find.textContaining('load failed'), findsNothing);
     expect(find.text(_en.commonRetry), findsOneWidget);
   });
+
+  libraryTest('a template already in the library offers another copy as the '
+      'secondary action (critique 2026-09-30)', (tester, env) async {
+    final library = StarterLibraryFake(env);
+    await library.addStarterDeck(
+      templateId: everydayTemplate.templateId,
+      schedulerType: everydayTemplate.suggestedScheduler,
+    );
+    await _pump(tester, env, library);
+
+    expect(
+      tester.widget<MxButton>(_cardButton(_en.starterAddAnotherCopy)).tone,
+      MxButtonTone.secondary,
+    );
+    expect(
+      tester.widget<MxButton>(_cardButton(_en.starterAddToLibrary)).tone,
+      MxButtonTone.primary,
+    );
+  });
 }

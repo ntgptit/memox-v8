@@ -43,7 +43,8 @@ CardListView _workload(CardWorkload workload) => CardListView(
 );
 
 void main() {
-  libraryTest('the summary names progress, the workload and each state', (
+  libraryTest('the summary names progress and the workload, and states mastery '
+      'once: no four-state legend (critique 2026-09-30, R2)', (
     tester,
     env,
   ) async {
@@ -71,11 +72,7 @@ void main() {
       (_en.cardStatusReviewing, 100),
       (_en.cardStatusMastered, 80),
     ]) {
-      expect(
-        find.text(_en.cardStatusCount(label, count)),
-        findsOneWidget,
-        reason: label,
-      );
+      expect(find.text('$label $count'), findsNothing, reason: label);
     }
   });
 
@@ -151,21 +148,20 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
-  libraryTest('the four-state bar paints a segment per state, full height', (
+  libraryTest('no four-state bar under the donut (critique 2026-09-30, R2)', (
     tester,
     env,
   ) async {
     await pumpLibraryScreen(tester, env, _host());
 
     final segments = find.descendant(
-      of: find.byType(ExcludeSemantics),
-      matching: find.byType(ColoredBox),
+      of: find.byType(CardDeckSummaryWidget),
+      matching: find.descendant(
+        of: find.byType(ExcludeSemantics),
+        matching: find.byType(ColoredBox),
+      ),
     );
-    // The track and one segment per state.
-    expect(segments, findsNWidgets(5));
-    for (final segment in segments.evaluate()) {
-      expect(segment.size!.height, greaterThan(0));
-    }
+    expect(segments, findsNothing);
   });
 
   libraryTest('the progress label keeps the 12 overline, one line on a phone '

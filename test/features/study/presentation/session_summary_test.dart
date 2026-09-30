@@ -7,7 +7,6 @@ import 'package:memox/features/study/presentation/widgets/sections/session_summa
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
@@ -38,8 +37,11 @@ Future<void> _pump(
 );
 
 void main() {
-  libraryTest('a finished review: title, body, three stats and three facts '
-      '(handoff 21 loaded)', (tester, env) async {
+  libraryTest('a finished review: title, body and three stats, stated once: no '
+      'fact list repeats them (handoff 21 loaded; critique 2026-09-30, R3)', (
+    tester,
+    env,
+  ) async {
     var done = 0;
     var again = 0;
     await _pump(
@@ -72,22 +74,8 @@ void main() {
         (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
       ],
     );
-    expect(find.byType(MxListRow), findsNWidgets(3));
-    expect(find.text(_en.summaryFactWrongCameBack(23)), findsOneWidget);
-    // The row glyphs take their value's tone, as the kit inks them.
-    final tiles = tester
-        .widgetList<MxIconTile>(
-          find.descendant(
-            of: find.byType(MxListRow),
-            matching: find.byType(MxIconTile),
-          ),
-        )
-        .map((tile) => tile.tone);
-    expect(tiles, [
-      MxIconTileTone.success,
-      MxIconTileTone.tinted,
-      MxIconTileTone.caution,
-    ]);
+    expect(find.byType(MxListRow), findsNothing);
+    expect(find.text(_en.summaryFactsHeader.toUpperCase()), findsNothing);
 
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeck));
@@ -117,7 +105,7 @@ void main() {
 
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     expect(find.text(_en.summaryLeftEarlyLearningBody(4, 8)), findsOneWidget);
-    expect(find.text(_en.summaryFactLearned), findsOneWidget);
+    expect(find.text(_en.summaryFactLearned), findsNothing);
     expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
   });
 

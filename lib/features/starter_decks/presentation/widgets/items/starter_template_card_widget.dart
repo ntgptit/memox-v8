@@ -119,16 +119,27 @@ class _AddButton extends StatelessWidget {
     final label = entry.isInLibrary
         ? l10n.starterAddAnotherCopy
         : l10n.starterAddToLibrary;
+    // Another copy of a deck already held is the lesser action (critique
+    // 2026-09-30).
+    final tone = entry.isInLibrary
+        ? MxButtonTone.secondary
+        : MxButtonTone.primary;
     return LayoutBuilder(
       builder: (context, constraints) {
         final small = MxButton(
           label: label,
           icon: AppIcons.add,
+          tone: tone,
           size: MxButtonSize.small,
           onPressed: onAdd,
         );
         if (small.naturalWidth(context) <= constraints.maxWidth) return small;
-        return MxButton(label: label, icon: AppIcons.add, onPressed: onAdd);
+        return MxButton(
+          label: label,
+          icon: AppIcons.add,
+          tone: tone,
+          onPressed: onAdd,
+        );
       },
     );
   }

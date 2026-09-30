@@ -317,4 +317,30 @@ void main() {
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
   });
+
+  libraryTest('the switch consequence is read before the choice: the note sits '
+      'above the options (critique 2026-09-30)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+
+    expect(
+      tester.getTopLeft(find.text(_en.algorithmSwitchNote)).dy,
+      lessThan(tester.getTopLeft(find.text(_en.deckSchedulerSm2)).dy),
+    );
+    expect(_en.algorithmSwitchNote, isNot(contains('re-initialises')));
+    expect(_en.algorithmEightBoxDescription, isNot(contains('128')));
+  });
+
+  test('plain copy for the study caption and the wrong-turns stat '
+      '(critique 2026-09-30)', () {
+    expect(
+      _en.studyEntryOverline('SM-2', 20),
+      'SM-2 · up to 20 cards per session',
+    );
+    expect(_en.summaryStatWrong, 'Wrong turns');
+  });
 }

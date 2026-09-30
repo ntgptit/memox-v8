@@ -11,6 +11,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -170,5 +171,19 @@ void main() {
     await _swipe(tester, -300);
     expect(hasAction(_en.studyBrowsePrevious), isTrue);
     handle.dispose();
+  });
+
+  libraryTest('a visible Next moves on like a left swipe, for a thumb or a '
+      'switch (critique 2026-09-30)', (tester, env) async {
+    final id = await _session(env, ['a', 'b', 'c']);
+    await pumpLibraryScreen(tester, env, _Host(id));
+    await tester.pumpAndSettle();
+    final first = _front(tester);
+
+    await tester.tap(find.widgetWithText(MxButton, _en.studyBrowseNext));
+    await tester.pumpAndSettle();
+
+    expect(_front(tester), isNot(first));
+    expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
   });
 }

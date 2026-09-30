@@ -22,8 +22,6 @@ class SessionContextLineWidget extends StatelessWidget {
     child: Text(
       text.toUpperCase(),
       semanticsLabel: text,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: context.textStyles.overline,
     ),

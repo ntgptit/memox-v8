@@ -184,10 +184,8 @@ void main() {
     expect(answers, [false, true]);
   });
 
-  libraryTest('the deck context names the path and the destination', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the deck context names the path once, ending in the deck and '
+      'the operation (critique 2026-09-30)', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await pumpLibraryScreen(
@@ -210,7 +208,7 @@ void main() {
         findsOneWidget,
       );
     }
-    expect(find.text('Words'), findsNWidgets(2));
+    expect(find.text('Words'), findsOneWidget);
   });
 
   libraryTest('tags and fields hold at 2x and meet the guidelines', (

@@ -42,8 +42,6 @@ class SessionFooterHintWidget extends StatelessWidget {
           Flexible(
             child: Text(
               text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               semanticsLabel: text,
               textAlign: TextAlign.center,
               style: style,

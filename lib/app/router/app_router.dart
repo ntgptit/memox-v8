@@ -365,6 +365,7 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
     ),
     onOpenTrash: openTrash,
+    onOpenStudyHome: () => context.go(AppRoutes.study),
     onOpenStarterDecks: _opener(context, AppRoutes.starterDecks),
     onOpenTags: _opener(context, AppRoutes.tags),
     cardAppBar: (view, back, actions) =>

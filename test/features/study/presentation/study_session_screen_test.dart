@@ -126,13 +126,7 @@ void main() {
     expect(
       find.text(
         _en
-            .studyContextLearning(
-              'Lesson',
-              _en.studyKindLearning,
-              1,
-              stages,
-              _en.cardModeBrowse,
-            )
+            .studyContextLearning('Lesson', _en.studyKindLearning, 1, stages)
             .toUpperCase(),
       ),
       findsOneWidget,

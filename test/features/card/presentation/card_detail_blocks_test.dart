@@ -168,8 +168,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Due, learned and last answered.
-    expect(find.text(_en.cardFactNotYet), findsNWidgets(3));
+    // Due and learned; with no answer yet, last answered, answers and
+    // lapses are left out rather than stated as nothing (critique 2026-09-30).
+    expect(find.text(_en.cardFactNotYet), findsNWidgets(2));
+    for (final label in [
+      _en.cardFactLastAnswered,
+      _en.cardFactAnswers,
+      _en.cardFactLapses,
+    ]) {
+      expect(find.text(label), findsNothing, reason: label);
+    }
   });
 
   libraryTest('content and schedule hold at 2x and meet the guidelines', (

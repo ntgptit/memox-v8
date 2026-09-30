@@ -118,7 +118,7 @@ void main() {
           )
           .first,
     );
-    expect(cherry.opacity, AppOpacity.disabled);
+    expect(cherry.opacity, AppOpacity.muted);
     expect(tester.takeAnnouncements().map((a) => a.message), [
       _en.studyGuessAnnounceWrong('apple'),
     ]);
@@ -260,11 +260,7 @@ void main() {
       find.bySemanticsLabel(
         _en.studyContextFirstPick(
           _en.studyContextRound(
-            _en.studyContextReview(
-              'Lesson',
-              _en.studyKindReview,
-              _en.cardModeGuess,
-            ),
+            _en.studyContextReview('Lesson', _en.studyKindReview),
             1,
           ),
         ),

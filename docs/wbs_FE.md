@@ -8,7 +8,7 @@
   audit, kịch bản IT `HOST-WIDGET` và `DEVICE-E2E`. Không gồm domain, data và use
   case — phần đó ở [`wbs_BE.md`](wbs_BE.md).
 - **Nguồn sự thật cho:** tiến độ và thứ tự của các hạng mục frontend. Thiết kế thuộc
-  [handoff V3](shared/ui/design-handoff/00-index.md); điều hướng thuộc
+  [`DESIGN.md`](../DESIGN.md); điều hướng thuộc
   [`navigation.md`](shared/ui/navigation.md); hành vi thuộc BR/UC trong `features/`;
   quyết định và nợ của UI base thuộc
   [spec UI base](superpowers/specs/2026-09-23-flutter-ui-base-design.md) (§2, §9).
@@ -31,12 +31,9 @@
   nên mỗi hạng mục FE phụ thuộc hạng mục BE tương ứng.
 - **Thiết kế:** Impeccable phụ trách product definition, UX, UI, design system và
   accessibility (`CLAUDE.md`).
-  - Handoff V3 có foundations, theme binding và 46 widget; các màn nằm ở
-    [screen handoff](shared/ui/screen-handoff/00-index.md). File chi tiết đã có cho mọi
-    màn, kèm 16a.
-  - [Checklist màn hình và state](shared/ui/screen-state-checklist.md) liệt kê 26 màn và
-    211 state của kit, và đánh dấu từng state xong, một phần, chưa làm hay không làm.
-    Khi một hạng mục FE làm xong một state, sửa dòng của state đó ở checklist.
+  - [`DESIGN.md`](../DESIGN.md) giữ foundations, theme binding, widget dùng chung và
+    giọng copy; các màn nằm ở [screen handoff](shared/ui/screen-handoff/00-index.md), mỗi
+    màn một file chi tiết liệt kê state kèm golden (ADR-019).
   - [Critique 2026-09-21](../.impeccable/critique/2026-09-21T06-26-58Z__handoff-out.md)
     ghi luồng học chưa được thiết kế (P1, đóng ở FE-A5) và typography tiếng Việt/tiếng
     Hàn chưa được thiết kế (P2, đóng ở FE-C2).
@@ -119,7 +116,9 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D1 | Sinh lại goldens trên Linux | xong | — | S | Chủ dự án chốt golden là bản render Linux (2026-09-25); toàn bộ golden sinh lại trong container `.claude/skills/flutter-testing/scripts/golden.Dockerfile` (#46, #51); spec UI base §8.2, §9 dòng 9 đã đóng; job `goldens` của CI so ảnh trên mỗi pull request (BE-D2) | — |
 | FE-D2 | Chuyển gate sang `dod_check.sh` và làm rỗng `targets_pending` | xong | — | M | Companion `test/visual_audit/` cho 01, 02, 04, 07–10 và placeholder; test coverage; luật V7 `not_exploratory` đã xoá; `dod_check.sh` bỏ golden, base `origin/master`; ô chi tiết của card editor cao 48 (§9 dòng 103) | — |
 | FE-D3 | Kịch bản `DEVICE-E2E`: 8 kịch bản cần emulator hoặc thiết bị | xong | — | M | [spec](superpowers/specs/2026-09-28-device-e2e-design.md) và [plan](superpowers/plans/2026-09-28-device-e2e.md); `integration_test/` và `tools/device/run_device_e2e.sh`; 8/8 PASS trên emulator API 36 ngày 2026-09-28 ([device-e2e.md](shared/testing/device-e2e.md)); kèm deep link `memox://app/<route>` và màn not-found (IT-NAV-005) | — |
-| FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và [design handoff](shared/ui/design-handoff/00-index.md); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | xong | — | M | 10 chỗ sai tên hoặc API được sửa theo code (`MxAppShell`, `MxButton` với `MxButtonTone`/`MxButtonSize`, `MxBottomNav`, `MxListRow`, `MxSelectionCheckbox`, `MxToggle`, `MxFilterChip`/`MxTagChip`/`MxChipTrigger`, `MxDialog`/`showMxDialog`, `showMxSnackbar`, `MxSpinner`/`MxSkeleton*`/`MxLinearProgress`), bảng parity ghi slot nào có trong `app_theme.dart`, `MxIcon` (không tồn tại) thay bằng `AppIcons`/`AppIconSize`, danh sách rule guard đầy đủ; checklist ThemeData của slot chưa dựng giữ nguyên vì SKILL.md ghi rõ là đích | — |
+| FE-D4 | Đối chiếu skill `flutter-theme-design` với V8: tên widget, API và hợp đồng component so với `lib/core/theme/`, `lib/shared/widgets/` và design handoff (đã retire theo ADR-019); bỏ hoặc đổi các mục quy định widget mà V8 đã dựng dưới tên khác | xong | — | M | 10 chỗ sai tên hoặc API được sửa theo code (`MxAppShell`, `MxButton` với `MxButtonTone`/`MxButtonSize`, `MxBottomNav`, `MxListRow`, `MxSelectionCheckbox`, `MxToggle`, `MxFilterChip`/`MxTagChip`/`MxChipTrigger`, `MxDialog`/`showMxDialog`, `showMxSnackbar`, `MxSpinner`/`MxSkeleton*`/`MxLinearProgress`), bảng parity ghi slot nào có trong `app_theme.dart`, `MxIcon` (không tồn tại) thay bằng `AppIcons`/`AppIconSize`, danh sách rule guard đầy đủ; checklist ThemeData của slot chưa dựng giữ nguyên vì SKILL.md ghi rõ là đích | — |
+| FE-D5 | Retire UI Kit v3 và design handoff; `DESIGN.md` sinh từ app là chuẩn UI (ADR-019); file chi tiết màn mô tả app và ghi golden | xong | — | M | [spec](superpowers/specs/2026-09-30-retire-ui-kit-design.md) và [plan](superpowers/plans/2026-09-30-retire-ui-kit.md); SP1 của đợt sửa theo critique 2026-09-30 (SP2 shared, SP3a/SP3b màn hình theo sau) | — |
+| FE-D6 | Sửa UI theo critique 2026-09-30 (SP2 shared + SP3 màn hình): chữ xuống dòng thay vì bị cắt khi chữ to, list chừa chỗ cho FAB, `AppOpacity.muted`, form một nút Save và nêu deck một lần, CTA học rộng đều, due strip mở Study; các màn 01, 02, 03, 07, 10, 11, 13–22, 27 | xong | FE-D5 | L | [spec](superpowers/specs/2026-09-30-ui-critique-fixes-design.md) và [plan](superpowers/plans/2026-09-30-ui-critique-fixes.md); 7 finding bị loại có lý do ở spec §5; golden sinh lại trong container Linux | — |
 
 ## Đã xong và đã kiểm chứng
 
@@ -226,7 +225,7 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   (dọn cột "Việc tiếp theo"; luồng học đã xử lý `sessionClosed` và `notFound`), FE-A6 đã
   qua P3 nên "Đang làm", FE-A8 và "Bước tiếp theo" theo roadmap P4 → P6; danh sách file
   chi tiết handoff tính cả 06, 11, 12.
-- **Cập nhật ngày 2026-09-26:** thêm [checklist màn hình và state](shared/ui/screen-state-checklist.md)
+- **Cập nhật ngày 2026-09-26:** thêm checklist màn hình và state (đã xoá theo ADR-019)
   theo kit (26 màn, 211 state; tại `e2ad9de`: 108 xong, 6 một phần, 22 đã dựng nhưng chưa
   đối chiếu, 73 chưa làm, 2 không làm).
 - **Cập nhật cùng commit:** sửa file này, và dòng của state ở checklist màn hình và

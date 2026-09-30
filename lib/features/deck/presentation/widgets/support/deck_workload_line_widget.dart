@@ -3,7 +3,8 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 /// A deck's or a level's workload: overdue · today · new, or the calm line
-/// when nothing is due ("3 cards · nothing due", "No cards yet").
+/// when nothing is due ("3 cards · nothing due", "No cards yet"). It wraps
+/// between whole terms at large text, never cut (critique 2026-09-30).
 class DeckWorkloadLineWidget extends StatelessWidget {
   const DeckWorkloadLineWidget({
     super.key,
@@ -33,6 +34,7 @@ class DeckWorkloadLineWidget extends StatelessWidget {
       fallback: cardCount == 0
           ? l10n.workloadNoCards
           : l10n.workloadNothingDue(cardCount),
+      canWrap: true,
     );
   }
 }

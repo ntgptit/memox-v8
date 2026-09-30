@@ -2152,15 +2152,15 @@
   "@algorithmHeader": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmHeader."
   },
-  "algorithmEightBoxDescription": "Remembered → one box up (1 · 2 · 4 · 8 · 16 · 32 · 64 · 128 days). Forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill.",
+  "algorithmEightBoxDescription": "Remembered → one box up; forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill.",
   "@algorithmEightBoxDescription": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmEightBoxDescription."
   },
-  "algorithmSm2Description": "Intervals adapt to how well you recall each card; you grade yourself again · hard · good · easy. One review mode: self-assess.",
+  "algorithmSm2Description": "Intervals adapt to how well you recall each card. You grade yourself: again, hard, good or easy. Review mode: self-assess.",
   "@algorithmSm2Description": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmSm2Description."
   },
-  "algorithmSwitchNote": "Switching re-initialises every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing.",
+  "algorithmSwitchNote": "Switching resets every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing.",
   "@algorithmSwitchNote": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchNote."
   },
@@ -2437,18 +2437,6 @@
   "cardBulkFailedBody": "Nothing changed. The cards stay selected.",
   "@cardBulkFailedBody": {
     "description": "Inline banner body when a bulk command fails."
-  },
-  "cardStatusCount": "{label} {count}",
-  "@cardStatusCount": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Card deck summary legend: a display state and its card count."
   },
   "cardSearchEmptyHint": "Try a different term, or clear the search.",
   "@cardSearchEmptyHint": {
@@ -3012,7 +3000,7 @@
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "studyEntryOverline": "{algorithm} · cards per session {limit}",
+  "studyEntryOverline": "{algorithm} · up to {limit} cards per session",
   "@studyEntryOverline": {
     "placeholders": {
       "algorithm": {
@@ -4063,7 +4051,7 @@
   "@studyKindLearning": {
     "description": "Study session shell (FE-A6 P1c): the session kind in the context line."
   },
-  "studyContextLearning": "{deck} · {kind} · stage {stage} of {stages} · {mode}",
+  "studyContextLearning": "{deck} · {kind} · stage {stage} of {stages}",
   "@studyContextLearning": {
     "placeholders": {
       "deck": {
@@ -4077,12 +4065,9 @@
       },
       "stages": {
         "type": "int"
-      },
-      "mode": {
-        "type": "String"
       }
     },
-    "description": "Study session shell (FE-A6 P1c): the context line of a learning session (BR-MODE-004)."
+    "description": "Study session shell (FE-A6 P1c): the context line of a learning session (BR-MODE-004); the mode is in the top bar's pill (critique 2026-09-30)."
   },
   "studyBrowseTerm": "Term",
   "@studyBrowseTerm": {
@@ -4132,7 +4117,7 @@
   "@studyKindReview": {
     "description": "Study session shell (FE-A6 P2): the kind of a review session in the context line."
   },
-  "studyContextReview": "{deck} · {kind} · {mode}",
+  "studyContextReview": "{deck} · {kind}",
   "@studyContextReview": {
     "placeholders": {
       "deck": {
@@ -4140,12 +4125,9 @@
       },
       "kind": {
         "type": "String"
-      },
-      "mode": {
-        "type": "String"
       }
     },
-    "description": "Study session shell (FE-A6 P2): the context line of a review session."
+    "description": "Study session shell (FE-A6 P2): the context line of a review session; the mode is in the top bar's pill (critique 2026-09-30)."
   },
   "studySelfAssessShowAnswer": "Show answer",
   "@studySelfAssessShowAnswer": {
@@ -4236,18 +4218,6 @@
       }
     },
     "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
-  },
-  "studyContextPairsLeft": "{context} · {count, plural, =1{1 pair left} other{{count} pairs left}}",
-  "@studyContextPairsLeft": {
-    "placeholders": {
-      "context": {
-        "type": "String"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 17 (FE-A6 P3): the context line with the board's pairs left."
   },
   "studyContextFirstPick": "{context} · first pick counts",
   "@studyContextFirstPick": {
@@ -4587,15 +4557,6 @@
   "@studyHomeLibrary": {
     "description": "Screen handoff 13 (FE-A8): opens the Library root."
   },
-  "studyHomeRowDue": "{count} due",
-  "@studyHomeRowDue": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 13 (FE-A8): a deck row's badge."
-  },
   "progressTitle": "Progress",
   "@progressTitle": {
     "description": "Screen handoff 22 (FE-A9): the Progress tab's app bar title."
@@ -4678,23 +4639,6 @@
   "progressStreakLost": "no study yesterday",
   "@progressStreakLost": {
     "description": "Screen handoff 22 (FE-A9): the streak tile when the streak is lost."
-  },
-  "progressTodayCards": "{count, plural, =1{1 card} other{{count} cards}}",
-  "@progressTodayCards": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 22 (FE-A9): the Today tile's count."
-  },
-  "progressTodayCounted": "counted once each",
-  "@progressTodayCounted": {
-    "description": "Screen handoff 22 (FE-A9): the Today tile when today has activity."
-  },
-  "progressTodayNothing": "nothing yet",
-  "@progressTodayNothing": {
-    "description": "Screen handoff 22 (FE-A9): the Today tile when today has no activity."
   },
   "progressHeldNote": "Study one card today and the streak continues at {next}.",
   "@progressHeldNote": {
@@ -5009,7 +4953,7 @@
   "@summaryStatAnswered": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
   },
-  "summaryStatWrong": "Wrong",
+  "summaryStatWrong": "Wrong turns",
   "@summaryStatWrong": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
   },
@@ -5322,7 +5266,7 @@
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it.",
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options.",
   "@studyOptionsBelongTo": {
     "placeholders": {
       "root": {
@@ -5379,10 +5323,6 @@
       }
     },
     "description": "Screen handoff 15 (FE-A3 plan 2): the card limit sub-line."
-  },
-  "studyOptionsApplyNote": "Changes apply to sessions started from now on. A session already open keeps the options it started with.",
-  "@studyOptionsApplyNote": {
-    "description": "Screen handoff 15 (FE-A3 plan 2): the note under the options (BR-SETTINGS-004)."
   },
   "studyOptionsFixLimit": "Fix the limit to enable save.",
   "@studyOptionsFixLimit": {

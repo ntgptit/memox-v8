@@ -3,6 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_decorations.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
@@ -131,7 +135,7 @@ void main() {
 
     expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
   });
-  libraryTest('the context line takes at most two lines and is heard whole', (
+  libraryTest('the context line wraps, never cut, and is heard whole', (
     tester,
     env,
   ) async {
@@ -145,11 +149,11 @@ void main() {
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
-    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
+    expect((line.maxLines, line.overflow), (null, null));
     expect(line.semanticsLabel, text);
   });
 
-  libraryTest('the footer hint takes at most two lines', (tester, env) async {
+  libraryTest('the footer hint wraps, never cut', (tester, env) async {
     const text =
         'Swipe left for next, right to look back · nothing is graded here';
     await pumpLibraryScreen(
@@ -160,7 +164,7 @@ void main() {
     );
     final hint = tester.widget<Text>(find.text(text));
 
-    expect((hint.maxLines, hint.overflow), (2, TextOverflow.ellipsis));
+    expect((hint.maxLines, hint.overflow), (null, null));
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -179,5 +183,45 @@ void main() {
     await tester.pump();
 
     expect(find.text('Type it'), findsNothing);
+  });
+
+  libraryTest('an option out of play stays readable: it fades to the muted '
+      'opacity, not the disabled one (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        StudyChoiceWidget(
+          tone: StudyChoiceTone.idle,
+          isFaded: true,
+          semanticsLabel: 'a',
+          builder: (ink) => const Text('a'),
+        ),
+      ),
+    );
+
+    final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
+    expect(fade.opacity, AppOpacity.muted);
+  });
+
+  libraryTest('one action spans the width of a two-action row, not its own '
+      'label (critique 2026-09-30, S6)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        const StudyCtaRowWidget(
+          children: [MxButton(label: 'Continue', onPressed: null)],
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(MxButton)).width,
+      2 * 160 + AppSpacing.control,
+    );
   });
 }

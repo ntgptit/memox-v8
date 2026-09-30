@@ -4,7 +4,9 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
@@ -81,6 +83,22 @@ void main() {
     );
     expect(find.text(_en.studyOptionsLocalOnly), findsOneWidget);
     expect(_save(tester).onPressed, isNull);
+    // Critique 2026-09-30: one note, and the values read at full contrast
+    // as plain text instead of dimmed controls.
+    expect(find.byType(MxNote), findsOneWidget);
+    expect(find.byType(MxStepper), findsNothing);
+    expect(find.byType(MxSegmentedTray<NewCardOrder>), findsNothing);
+    expect(find.text('20'), findsOneWidget);
+    expect(find.text(_en.settingsOrderCreated), findsOneWidget);
+    // Full contrast: the value reads like the row's label, not a muted count.
+    final styles = tester.element(find.text('20')).textStyles;
+    for (final value in ['20', _en.settingsOrderCreated]) {
+      expect(
+        tester.widget<Text>(find.text(value)).style,
+        styles.settingsLabel,
+        reason: value,
+      );
+    }
   });
 
   libraryTest('turning app defaults off, stepping and saving writes the '
@@ -105,18 +123,23 @@ void main() {
     expect(stored.options.newCardOrder, NewCardOrder.random);
   });
 
-  libraryTest('while app defaults are on the order tray is read-only (E1)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('while app defaults are on the values are read-only text; '
+      'turning them off brings the controls back with the same values (E1; '
+      'critique 2026-09-30)', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _screen(ids.subId));
 
+    expect(find.byType(MxSegmentedTray<NewCardOrder>), findsNothing);
+    expect(find.byType(MxOptionRow), findsNothing);
+
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    expect(tester.widget<MxStepper>(find.byType(MxStepper)).value, 20);
     final tray = tester.widget<MxSegmentedTray<NewCardOrder>>(
       find.byType(MxSegmentedTray<NewCardOrder>),
     );
-    expect(tray.onSelected, isNull);
-    expect(find.byType(MxOptionRow), findsNothing);
+    expect(tray.selected, NewCardOrder.created);
+    expect(tray.onSelected, isNotNull);
   });
 
   libraryTest('a typed 250 is refused under the stepper and Save waits '

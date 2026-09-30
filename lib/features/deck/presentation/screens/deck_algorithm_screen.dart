@@ -193,18 +193,20 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
               ],
               const SizedBox(height: AppSpacing.grouped),
               MxListSectionHeader(label: l10n.algorithmHeader),
-              DeckAlgorithmOptionsWidget(
-                current: view.schedulerType,
-                isLocked: isLocked,
-                switchingTo: _switchingTo,
-                onSelected: (type) => unawaited(_onSelected(view, type)),
-              ),
-              const SizedBox(height: AppSpacing.grouped),
+              // The consequence is read before the choice (critique
+              // 2026-09-30).
               MxNote(
                 text: isLocked
                     ? l10n.algorithmLockedNote
                     : l10n.algorithmSwitchNote,
                 icon: isLocked ? AppIcons.lock : AppIcons.info,
+              ),
+              const SizedBox(height: AppSpacing.grouped),
+              DeckAlgorithmOptionsWidget(
+                current: view.schedulerType,
+                isLocked: isLocked,
+                switchingTo: _switchingTo,
+                onSelected: (type) => unawaited(_onSelected(view, type)),
               ),
               const SizedBox(height: AppSpacing.grouped),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),

@@ -101,8 +101,6 @@ abstract final class AppIcons {
   static const IconData fileDown = Icons.file_download_outlined; // file-down
   // Progress (kit 22).
   static const IconData streak = Icons.local_fire_department_outlined; // flame
-  static const IconData studiedToday =
-      Icons.event_available_outlined; // calendar-check
   static const IconData library = Icons.layers_outlined;
   static const IconData librarySelected = Icons.layers;
   static const IconData study = Icons.play_circle_outline;

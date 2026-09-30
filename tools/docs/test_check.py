@@ -133,5 +133,28 @@ class AcceptanceCriteriaTest(unittest.TestCase):
         self.assertEqual(self.errors(uc("draft", self.PLACEHOLDER)), [])
 
 
+class LinkScopeTest(unittest.TestCase):
+    def setUp(self):
+        self.root = tree({
+            "superpowers/plans/old.md": "see [img](img/gone.png)\n",
+            "shared/ui/x.md": "see [img](img/gone.png)\n",
+        })
+        self.saved = check.g.DOCS
+        check.g.DOCS = self.root
+
+    def tearDown(self):
+        check.g.DOCS = self.saved
+
+    def test_history_is_skipped_for_links(self):
+        self.assertTrue(check.is_skipped_for_links(self.root / "superpowers/plans/old.md"))
+
+    def test_a_live_document_is_still_checked(self):
+        self.assertFalse(check.is_skipped_for_links(self.root / "shared/ui/x.md"))
+        report = check.Report()
+        path = self.root / "shared/ui/x.md"
+        check.check_links(path, path.read_text(encoding="utf-8"), "x", report)
+        self.assertEqual(report.errors, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

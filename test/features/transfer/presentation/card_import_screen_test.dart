@@ -8,7 +8,9 @@ import 'package:memox/features/deck/presentation/widgets/sections/deck_context_h
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -242,5 +244,27 @@ void main() {
     tester.view.resetViewInsets();
     await tester.pumpAndSettle();
     expect(find.byType(MxBreadcrumb), findsOneWidget);
+  });
+
+  libraryTest('the mapping rows end their field chips on one edge, with no '
+      'arrow wandering between (critique 2026-09-30)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back,tags\nmul,water,noun\n'),
+    );
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+
+    expect(find.byIcon(AppIcons.arrowRight), findsNothing);
+    final chips = find.byType(MxChipTrigger);
+    expect(chips, findsNWidgets(3));
+    final rights = {
+      for (var i = 0; i < 3; i++) tester.getTopRight(chips.at(i)).dx,
+    };
+    expect(rights, hasLength(1));
   });
 }
