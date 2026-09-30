@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
+import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -89,6 +91,31 @@ void main() {
 
     expect(find.text(_en.accountCodeResent), findsOneWidget);
     expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
+  });
+
+  accountTest('a re-auth resend to another address does not ask again '
+      '(plan ruling 8)', (tester, env, world) async {
+    await refuseSession(world);
+    await world.coordinator.requestCode('b@example.com', confirmedLoss: true);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CodeFormWidget(
+          email: 'b@example.com',
+          purpose: SignInPurpose.reauth,
+          onUseAnotherEmail: () {},
+          onSignedIn: () {},
+        ),
+      ),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.pump(const Duration(seconds: 60));
+    await tester.tap(find.text(_en.accountResend));
+    await _settle(tester);
+
+    expect(find.text(_en.accountCodeResent), findsOneWidget);
   });
 
   accountTest('a code typed while a new one is on its way is kept and '

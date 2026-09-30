@@ -54,6 +54,18 @@ Future<void> linkEmail(
   await world.coordinator.verifyCode(email, FakeAuthGateway.code);
 }
 
+/// [world]'s linked account refused its session: REAUTH_REQUIRED (auth
+/// spec #14). Waits on microtasks only, so it runs under a widget test's
+/// fake clock too.
+Future<void> refuseSession(AuthWorld world) async {
+  await linkEmail(world);
+  world.gateway.dropSession();
+  for (var turn = 0; turn < 1000 && world.state is! ReauthRequired; turn++) {
+    await Future<void>.value();
+  }
+  expect(world.state, isA<ReauthRequired>());
+}
+
 /// [state] as the only account state, for a surface that renders it.
 Override authStateOf(AuthState state) =>
     authStateProvider.overrideWith((ref) => Stream.value(state));

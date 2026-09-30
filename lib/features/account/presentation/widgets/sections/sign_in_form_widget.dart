@@ -87,6 +87,8 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
         widget.onCodeSent(email!);
       case SignInOutcome.identityTaken:
         await startLinkSwitch(context, ref, email: email);
+      case SignInOutcome.unsentChanges:
+        return; // Task 8 asks about the loss here.
       case SignInOutcome.none || SignInOutcome.failed:
         return;
     }
