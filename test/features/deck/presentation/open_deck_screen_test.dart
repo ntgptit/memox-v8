@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -298,7 +299,24 @@ void main() {
       find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
       findsOneWidget,
     );
-    expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
+    // The summary card states the count; the header names the list
+    // (critique 2026-09-30 part 3b).
+    expect(find.text(_en.deckSubDecksHeader.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsNothing);
+    // The breakdown wraps between whole terms, never "…" (Wrap Rule).
+    final breakdown = tester.widget<Text>(
+      find
+          .descendant(
+            of: find.descendant(
+              of: find.byType(DeckSummaryCardWidget),
+              matching: find.byType(MxWorkloadBreakdownLine),
+            ),
+            matching: find.byType(Text),
+          )
+          .first,
+    );
+    expect(breakdown.maxLines, isNull);
+    expect(breakdown.overflow, isNot(TextOverflow.ellipsis));
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
     expect(studied, [korean.id]);
   });

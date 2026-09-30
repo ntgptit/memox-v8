@@ -80,6 +80,9 @@ class DeckSummaryCardWidget extends StatelessWidget {
                       suffix: level.scheduledCount > 0
                           ? l10n.deckScheduledCount(level.scheduledCount)
                           : null,
+                      // A hero statement wraps between whole terms, never
+                      // "…" (the Wrap Rule; critique 2026-09-30 part 3b).
+                      canWrap: true,
                     ),
                   ],
                 ),

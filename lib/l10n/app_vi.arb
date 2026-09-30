@@ -339,6 +339,7 @@
   "libraryDueDecksHeader": "Bộ thẻ có thẻ đến hạn",
   "libraryEmptyFootnote": "Mọi thứ nằm trên máy này. Không gì được thêm cho tới khi bạn chọn.",
   "deckSubDeckCount": "{count} bộ thẻ con",
+  "deckSubDecksHeader": "Bộ thẻ con",
   "deckCardCount": "{count} thẻ",
   "deckRowMeta": "{subDecks} · {cards}",
   "deckRowEmpty": "Trống · thêm thẻ hoặc bộ thẻ con",

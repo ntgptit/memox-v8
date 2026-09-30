@@ -1784,6 +1784,10 @@
     },
     "description": "Screen handoff 01/04 (library alignment phase C): deckSubDeckCount."
   },
+  "deckSubDecksHeader": "Sub-decks",
+  "@deckSubDecksHeader": {
+    "description": "Screen 01: the sub-deck list header under an open deck's summary card, which already states the count (critique 2026-09-30 part 3b)."
+  },
   "deckCardCount": "{count, plural, =1{1 card} other{{count} cards}}",
   "@deckCardCount": {
     "placeholders": {
