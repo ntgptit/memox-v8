@@ -53,5 +53,15 @@ void main() {
       '/settings/sign-in/code?mode=link&email=a%40example.com',
     );
     expect(AppRoutes.welcomeFrom('/decks'), '/welcome?from=%2Fdecks');
+    expect(AppRoutes.settingsAccount, '/settings/account');
+    expect(
+      AppRoutes.settingsSignInReauth(from: '/study'),
+      '/settings/sign-in?mode=reauth&from=%2Fstudy',
+    );
+    expect(
+      AppRoutes.settingsSignInCodeReauth('a@example.com', from: '/settings'),
+      '/settings/sign-in/code?mode=reauth&email=a%40example.com'
+      '&from=%2Fsettings',
+    );
   });
 }

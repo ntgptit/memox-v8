@@ -7045,10 +7045,154 @@
   },
   "accountLastAdmin": "An admin must remain. Give another person the admin role first.",
   "@accountLastAdmin": {
-    "description": "Toast: the last admin cannot delete the account (plan ruling 8)."
+    "description": "Last-admin dialog: body; the last admin cannot delete the account (Account UI spec §9 B7)."
   },
   "accountDeleteRefused": "Couldn't delete the account. Nothing changed.",
   "@accountDeleteRefused": {
     "description": "Toast: the deletion did not happen."
+  },
+  "accountTitle": "Account",
+  "@accountTitle": {
+    "description": "Screen 32's title (Account UI spec §5.6)."
+  },
+  "accountMethodGoogle": "Signed in with Google",
+  "@accountMethodGoogle": {
+    "description": "Screen 32: under the email (Account UI spec §9 B1)."
+  },
+  "accountMethodEmail": "Signed in with email",
+  "@accountMethodEmail": {
+    "description": "Screen 32: under the email (Account UI spec §9 B1)."
+  },
+  "accountMethodBoth": "Signed in with Google and email",
+  "@accountMethodBoth": {
+    "description": "Screen 32: under the email, both identities (Account UI spec §9 B1)."
+  },
+  "accountThisPhone": "This phone",
+  "@accountThisPhone": {
+    "description": "Screen 32: the commands' overline (Account UI spec §9.1)."
+  },
+  "accountSwitch": "Switch account",
+  "@accountSwitch": {
+    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+  },
+  "accountSwitchHint": "Move this phone to another account",
+  "@accountSwitchHint": {
+    "description": "Screen 32: under Switch account (Account UI spec §9.1)."
+  },
+  "accountSignOut": "Sign out",
+  "@accountSignOut": {
+    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+  },
+  "accountSignOutHint": "Your changes are sent first",
+  "@accountSignOutHint": {
+    "description": "Screen 32: under Sign out (Account UI spec §9.1)."
+  },
+  "accountDeleteSection": "Delete",
+  "@accountDeleteSection": {
+    "description": "Screen 32: the last section's overline (Account UI spec §9.1 B12)."
+  },
+  "accountDelete": "Delete account",
+  "@accountDelete": {
+    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+  },
+  "accountDeleteHint": "Your account and its data, for good",
+  "@accountDeleteHint": {
+    "description": "Screen 32: under Delete account (Account UI spec §9.1)."
+  },
+  "accountNeedsConnection": "Managing your account needs a connection. Your decks are safe on this phone.",
+  "@accountNeedsConnection": {
+    "description": "Screen 32: while the account is checked again (Account UI spec §9 B3)."
+  },
+  "accountReauthBanner": "Your sign-in expired. Your decks are still on this phone.",
+  "@accountReauthBanner": {
+    "description": "Screens 23, 32 and 13: the re-auth banner and notice (Account UI spec §5.5, §5.7)."
+  },
+  "accountSwitchTitle": "Switch account?",
+  "@accountSwitchTitle": {
+    "description": "Switch dialog: title (Account UI spec §9.1)."
+  },
+  "accountSwitchBody": "This phone's data is replaced by the other account's after your changes are sent.",
+  "@accountSwitchBody": {
+    "description": "Switch dialog: body (Account UI spec §5.6)."
+  },
+  "accountChangesSentFirst": "Your changes are sent first.",
+  "@accountChangesSentFirst": {
+    "description": "Switch dialog: the reassurance note (Account UI spec §9.1)."
+  },
+  "accountSignOutTitle": "Sign out?",
+  "@accountSignOutTitle": {
+    "description": "Sign-out dialog: title (Account UI spec §9.1)."
+  },
+  "accountSignOutBody": "Your changes are sent first, then this phone's data is removed. Sign in again to get it back.",
+  "@accountSignOutBody": {
+    "description": "Sign-out dialog: body (Account UI spec §5.6)."
+  },
+  "accountSignOutLossTitle": "Sign out and lose changes?",
+  "@accountSignOutLossTitle": {
+    "description": "Sign-out dialog offline with unsent changes: title (Account UI spec §9 B4)."
+  },
+  "accountSignOutLossBody": "{count, plural, =1{1 change isn't sent yet and will be lost.} other{{count} changes aren't sent yet and will be lost.}}",
+  "@accountSignOutLossBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Sign-out dialog offline with unsent changes: body (Account UI spec §9 B4)."
+  },
+  "accountDeleteTitle": "Delete your account?",
+  "@accountDeleteTitle": {
+    "description": "Delete dialog: title (Account UI spec §9.1)."
+  },
+  "accountDeleteBody": "Your account and its decks, cards and progress are deleted from the server, and this phone's data is removed. This can't be undone.",
+  "@accountDeleteBody": {
+    "description": "Delete dialog: what goes (Account UI spec §9 B6)."
+  },
+  "accountDeleteOffline": "Deleting your account needs a connection.",
+  "@accountDeleteOffline": {
+    "description": "Delete dialog offline: why the confirm is disabled (Account UI spec §9 B6)."
+  },
+  "accountLastAdminTitle": "An admin must remain",
+  "@accountLastAdminTitle": {
+    "description": "Last-admin dialog: title (Account UI spec §9 B7)."
+  },
+  "accountCommandFailed": "Couldn't finish that. Nothing changed; try again.",
+  "@accountCommandFailed": {
+    "description": "Screen 32: toast when a command was refused (Account UI spec §9)."
+  },
+  "accountReauthLine": "Sign in again to keep syncing. Your decks are still here.",
+  "@accountReauthLine": {
+    "description": "Screen 30 in reauth mode: the mode line (Account UI spec §5.2)."
+  },
+  "accountUnsentTitle": "Lose {count, plural, =1{1 change} other{{count} changes}}?",
+  "@accountUnsentTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 30 reauth, another account: title (Account UI spec §9 B8)."
+  },
+  "accountUnsentBody": "{count, plural, =1{1 change on this phone isn't sent and will be lost.} other{{count} changes on this phone aren't sent and will be lost.}}",
+  "@accountUnsentBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 30 reauth, another account: body (Account UI spec §5.2)."
+  },
+  "accountWithoutTitle": "Continue without an account?",
+  "@accountWithoutTitle": {
+    "description": "Screen 30 reauth: the confirm's title (Account UI spec §9.1)."
+  },
+  "accountWithoutBody": "This phone's decks from {email} are removed. Sign in to {email} later to get them back.",
+  "@accountWithoutBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 30 reauth: what continuing without does (Account UI spec §9.1)."
   }
 }
