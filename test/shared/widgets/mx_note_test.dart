@@ -54,4 +54,25 @@ void main() {
       tester.getTopLeft(find.text(long)).dy + firstLine / 2,
     );
   });
+
+  testWidgets('the hint form is a footnote: no fill, no border, the glyph and '
+      'text in the secondary ink (critique 2026-09-30)', (tester) async {
+    await pumpMx(
+      tester,
+      const SizedBox(width: 328, child: MxNote.hint(text: _rule)),
+    );
+
+    final boxes = tester.widgetList<DecoratedBox>(
+      find.descendant(
+        of: find.byType(MxNote),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    expect(boxes, isEmpty);
+    expect(
+      tester.widget<Text>(find.text(_rule)).style!.color,
+      scheme.onSurfaceVariant,
+    );
+    expect(tester.widget<MxNote>(find.byType(MxNote)).isHint, isTrue);
+  });
 }

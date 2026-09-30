@@ -69,7 +69,7 @@ class ImportMappingSectionWidget extends StatelessWidget {
           const SizedBox(height: AppSpacing.grouped),
         ],
         // It says columns were mapped: only once they are.
-        if (draft.mapping.isComplete) MxNote(text: l10n.importMappingNote),
+        if (draft.mapping.isComplete) MxNote.hint(text: l10n.importMappingNote),
       ],
     );
   }

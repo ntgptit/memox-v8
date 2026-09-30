@@ -54,7 +54,7 @@ class MxSection extends StatelessWidget {
                 end: AppSpacing.micro,
                 top: AppSpacing.control,
               ),
-              child: MxNote(text: text),
+              child: MxNote.hint(text: text),
             ),
         ],
       ),

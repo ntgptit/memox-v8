@@ -94,4 +94,13 @@ void main() {
       const Offset(4, 8),
     );
   });
+
+  testWidgets('a section note is a hint (critique 2026-09-30)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxSection(note: 'A footnote', children: [Text('row')]),
+    );
+
+    expect(tester.widget<MxNote>(find.byType(MxNote)).isHint, isTrue);
+  });
 }
