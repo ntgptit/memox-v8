@@ -35,11 +35,18 @@ class StudyEntryFooterWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final start = ref.watch(studyEntryControllerProvider(deckId));
+    // An open session leads with Continue in its card; the footer's start
+    // (or its Try again) yields (DESIGN.md One Indigo; critique 2026-09-30
+    // part 1).
+    final tone = entry.resumable == null
+        ? MxButtonTone.primary
+        : MxButtonTone.outline;
     if (start.status == StudyStartStatus.failed) {
       return MxFooterBar(
         child: MxButton(
           label: l10n.studyEntryTryAgain,
           icon: AppIcons.retry,
+          tone: tone,
           isBlock: true,
           onPressed: onRetry,
         ),
@@ -81,11 +88,7 @@ class StudyEntryFooterWidget extends ConsumerWidget {
       child: MxButton(
         label: label,
         icon: icon,
-        // An open session leads with Continue in its card; the footer's
-        // start yields (DESIGN.md One Indigo; critique 2026-09-30 part 1).
-        tone: entry.resumable == null
-            ? MxButtonTone.primary
-            : MxButtonTone.outline,
+        tone: tone,
         isBlock: true,
         isLoading: start.isStarting,
         onPressed: onPressed,

@@ -142,6 +142,26 @@ void main() {
     expect(opened, isNotNull);
   });
 
+  libraryTest('a failed start beside an open session keeps one primary '
+      '(final review, critique 2026-09-30 part 1)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 1);
+    await env.entries.openLearningSession(deckId: leaf);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+    env.entries.isFailing = true;
+
+    // The row's Learn starts directly (no direction sheet).
+    await tester.tap(_button(_en.studyEntryLearn));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyEntryStartFailedTitle), findsOneWidget);
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryTryAgain)).tone,
+      MxButtonTone.outline,
+    );
+    expectOnePrimaryPerDecision(tester);
+  });
+
   libraryTest('a start the counts no longer allow is refused with the '
       'warning banner; the footer follows the new counts', (tester, env) async {
     final leaf = await sm2Leaf(env.db, env.decks, newCards: 1, dueCards: 1);
