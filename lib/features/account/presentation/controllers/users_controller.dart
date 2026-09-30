@@ -77,8 +77,13 @@ class UsersController extends _$UsersController {
       _show(
         UsersLoaded(users: [...latest.users, ...page.users], next: page.next),
       );
-    } on Object {
+    } on Object catch (error) {
       if (!_isCurrent(generation)) return;
+      // No longer an admin: the whole screen says so, not one page (final
+      // review I1).
+      if (error is NotAdminFailure) {
+        return _show(const UsersFailed(UsersLoadFailure.notAdmin));
+      }
       final latest = _loaded;
       if (latest == null) return;
       _show(latest.withMore(UsersMore.failed));

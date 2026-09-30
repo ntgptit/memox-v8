@@ -190,4 +190,23 @@ void main() {
       ),
     );
   });
+
+  test('no longer an admin while paging: the screen says so, not a failed '
+      'page (final review I1)', () async {
+    roles.pageSize = 2;
+    controller().retry();
+    await pumpEventQueue();
+    roles.failNextList = const NotAdminFailure(cause: 'x');
+
+    await controller().loadMore();
+
+    expect(
+      state().content,
+      isA<UsersFailed>().having(
+        (c) => c.failure,
+        'failure',
+        UsersLoadFailure.notAdmin,
+      ),
+    );
+  });
 }

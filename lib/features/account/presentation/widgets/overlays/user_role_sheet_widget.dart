@@ -10,6 +10,7 @@ import 'package:memox/features/account/presentation/controllers/users_controller
 import 'package:memox/features/account/presentation/states/users_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -38,8 +39,15 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
   late var _choice = widget.user.role;
   var _isSaving = false;
 
+  /// Why the last save was refused, said inside the sheet (final review I2).
+  String? _problem;
+
   void _choose(AccountRole role) {
-    if (!_isSaving) setState(() => _choice = role);
+    if (_isSaving) return;
+    setState(() {
+      _choice = role;
+      _problem = null;
+    });
   }
 
   Future<void> _save() async {
@@ -50,28 +58,32 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
     if (!mounted) return;
     final l10n = context.l10n;
     final email = widget.user.email;
-    final message = switch (change) {
+    // What closes the sheet is a toast on the screen; what keeps it open is
+    // said inside it, where a toast would sit behind (final review I2).
+    final problem = switch (change) {
+      RoleChange.lastAdmin => l10n.usersLastAdmin,
+      RoleChange.anonymous => l10n.usersAnonymous,
+      RoleChange.offline => l10n.usersOffline,
+      RoleChange.failed => l10n.usersSaveFailed,
+      _ => null,
+    };
+    if (problem != null) {
+      setState(() {
+        _isSaving = false;
+        _problem = problem;
+      });
+      return;
+    }
+    final toast = switch (change) {
       RoleChange.saved =>
         _choice == AccountRole.admin
             ? l10n.usersNowAdmin(email)
             : l10n.usersNowUser(email),
-      RoleChange.lastAdmin => l10n.usersLastAdmin,
-      RoleChange.anonymous => l10n.usersAnonymous,
       RoleChange.gone => l10n.usersGone,
-      RoleChange.offline => l10n.usersOffline,
-      RoleChange.failed => l10n.usersSaveFailed,
-      RoleChange.notAdmin => null,
+      _ => null,
     };
-    final closes = switch (change) {
-      RoleChange.saved || RoleChange.gone || RoleChange.notAdmin => true,
-      _ => false,
-    };
-    if (message != null) showMxSnackbar(context, message: message);
-    if (closes) {
-      Navigator.of(context).pop();
-      return;
-    }
-    setState(() => _isSaving = false);
+    if (toast != null) showMxSnackbar(context, message: toast);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -117,6 +129,20 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
               onSelected: () => _choose(AccountRole.admin),
               hasDivider: false,
             ),
+            if (_problem case final text?)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.gutter,
+                  AppSpacing.grouped,
+                  AppSpacing.gutter,
+                  0,
+                ),
+                // Nothing changed, so the warning tone.
+                child: MxInlineBanner(
+                  tone: MxBannerTone.warning,
+                  message: text,
+                ),
+              ),
           ],
         ),
       ),

@@ -115,7 +115,14 @@ void main() {
     await _settle(tester);
 
     expect(find.byType(MxBottomSheet), findsOneWidget);
-    expect(find.text(_en.usersLastAdmin), findsOneWidget);
+    // Said inside the sheet, which a toast would sit behind (final review I2).
+    expect(
+      find.descendant(
+        of: find.byType(MxBottomSheet),
+        matching: find.text(_en.usersLastAdmin),
+      ),
+      findsOneWidget,
+    );
   });
 
   libraryTest('a user gone closes the sheet and says so', (tester, env) async {

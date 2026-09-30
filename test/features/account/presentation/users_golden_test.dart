@@ -150,6 +150,26 @@ void main() {
       );
     });
 
+    libraryTest('users, role sheet refused, $theme', (tester, env) async {
+      final roles = _roles()..failNextSet = const LastAdminFailure();
+      await capture(
+        tester,
+        env,
+        const UsersScreen(),
+        'users_role_sheet_refused',
+        roles: roles,
+        before: () async {
+          await tester.tap(find.text('ann.nguyen@example.com'));
+          await _settle(tester);
+          await tester.tap(find.text(_en.usersRoleUserHint));
+          await _settle(tester);
+          await tester.tap(find.text(_en.usersSave));
+          await _settle(tester);
+          await _rest(tester);
+        },
+      );
+    });
+
     libraryTest('settings, admin rows, $theme', (tester, env) async {
       await capture(
         tester,
