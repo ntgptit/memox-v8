@@ -29,11 +29,12 @@ class SyncScreen extends ConsumerWidget {
 
   static const int _skeletonRows = 2;
 
-  /// Something waits, went wrong or was refused.
-  static bool _needsSync(SyncStatus status) =>
-      status.pendingCount > 0 ||
-      status.rejectedCount > 0 ||
-      status.lastFailure != null;
+  /// Sync now leads only when something waits or the last run failed and no
+  /// row was refused; with refused rows the banner's Try again is the one
+  /// primary (DESIGN.md One Indigo; critique 2026-09-30 part 1).
+  static bool _leadsSyncNow(SyncStatus status) =>
+      status.rejectedCount == 0 &&
+      (status.pendingCount > 0 || status.lastFailure != null);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,7 +77,7 @@ class SyncScreen extends ConsumerWidget {
               icon: AppIcons.sync,
               // Sync is automatic; the manual run leads only when something
               // waits or went wrong (critique 2026-09-30).
-              tone: _needsSync(value)
+              tone: _leadsSyncNow(value)
                   ? MxButtonTone.primary
                   : MxButtonTone.outline,
               isBlock: true,

@@ -33,9 +33,13 @@ class SyncStatusSectionWidget extends StatelessWidget {
         ),
         MxSettingsRow(
           label: l10n.syncWaiting,
-          subtitle: status.pendingCount == 0
-              ? l10n.syncWaitingNone
-              : l10n.syncWaitingCount(status.pendingCount),
+          // With only refused rows left, "Nothing waiting" would contradict
+          // the banner below (critique 2026-09-30 part 1).
+          subtitle: switch ((status.pendingCount, status.rejectedCount)) {
+            (0, 0) => l10n.syncWaitingNone,
+            (0, _) => l10n.syncWaitingNoneOthers,
+            (final count, _) => l10n.syncWaitingCount(count),
+          },
         ),
       ],
     );

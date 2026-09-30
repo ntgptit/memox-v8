@@ -6314,6 +6314,27 @@
   "@syncKeepOnDevice": {
     "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
   },
+  "syncRejectedBody": "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices.",
+  "@syncRejectedBody": {
+    "description": "Screen 27: the refused banner's message under its title (sync status spec §5.2; critique 2026-09-30 part 1)."
+  },
+  "syncWaitingNoneOthers": "No other changes waiting",
+  "@syncWaitingNoneOthers": {
+    "description": "Screen 27: the waiting row when only refused changes remain (critique 2026-09-30 part 1)."
+  },
+  "syncKeepTitle": "{count, plural, =1{Keep 1 change on this device only?} other{Keep {count} changes on this device only?}}",
+  "@syncKeepTitle": {
+    "description": "Screen 27: the dialog that confirms Keep on this device (critique 2026-09-30 part 1, R4).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncKeepBody": "They won't sync to your other devices. You can't undo this.",
+  "@syncKeepBody": {
+    "description": "Screen 27: the Keep dialog's body (critique 2026-09-30 part 1, R4)."
+  },
   "syncFailedNetwork": "No connection. Your changes are safe on this device and will sync when you're back online.",
   "@syncFailedNetwork": {
     "description": "Screen 27 (SB-U1): the failure banner, network (spec §5.4)."

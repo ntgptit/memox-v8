@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
+import '../../../shared/expect_one_primary.dart';
 
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
@@ -59,10 +60,6 @@ void main() {
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
     expect(find.text('3 changes are kept only on this device'), findsOneWidget);
-    await tester.tap(find.text('Keep on this device'));
-    await _settle(tester);
-    expect(commands.keeps, 1);
-    expect(find.text('Kept on this device'), findsOneWidget);
     await tester.tap(find.text('Try again'));
     await _settle(tester);
     expect(commands.retries, 1);
@@ -203,5 +200,94 @@ void main() {
         tester.getBottomLeft(find.byType(SyncStatusSectionWidget)).dy,
       ),
     );
+  });
+
+  libraryTest('refused rows: Try again is the one primary; Sync now is '
+      'outline; the waiting row does not contradict the banner', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        const SyncStatus(rejectedCount: 2),
+        FakeSyncCommands(),
+      ),
+    );
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
+      MxButtonTone.outline,
+    );
+    expect(find.text('No other changes waiting'), findsOneWidget);
+    expect(find.text('Nothing waiting'), findsNothing);
+    expect(
+      find.textContaining("they won't sync to your other devices"),
+      findsOneWidget,
+    );
+    expectOnePrimaryPerDecision(tester);
+  });
+
+  libraryTest('Keep asks first and keeps only on confirm', (tester, env) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
+    );
+    await tester.tap(find.text('Keep on this device'));
+    await tester.pumpAndSettle();
+    expect(find.text('Keep 3 changes on this device only?'), findsOneWidget);
+    expect(commands.keeps, 0);
+    await tester.tap(find.text('Keep on this device').last);
+    await _settle(tester);
+    expect(commands.keeps, 1);
+    expect(find.text('Kept on this device'), findsOneWidget);
+  });
+
+  libraryTest('dismissing the Keep dialog keeps the refused rows', (
+    tester,
+    env,
+  ) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
+    );
+    await tester.tap(find.text('Keep on this device'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(commands.keeps, 0);
+    await tester.tap(find.text('Keep on this device'));
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(commands.keeps, 0);
+    expect(find.text('3 changes are kept only on this device'), findsOneWidget);
+  });
+
+  libraryTest('refused rows and a failure: one primary', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        SyncStatus(
+          rejectedCount: 1,
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.network,
+            env.clock.now(),
+          ),
+        ),
+        FakeSyncCommands(),
+      ),
+    );
+    expect(find.text('Try again'), findsOneWidget);
+    expectOnePrimaryPerDecision(tester);
   });
 }
