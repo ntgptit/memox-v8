@@ -1,7 +1,7 @@
 # Whole-app critique 2026-09-30, part 3a: quick, safe Minors — design
 
 Status: approved 2026-09-30 ·
-Path: architectural (small shared-widget and copy changes across screens) · Owner rulings 2026-09-30 (§2): R1–R4
+Path: architectural (small shared-widget and copy changes across screens) · Owner rulings 2026-09-30 (§2): R1–R5
 
 ## 1. Intent
 
@@ -29,6 +29,8 @@ Success means:
 - **R4.** Out of 3a (no clear problem): the headerless sample's ink, the "Recommended" badge
   on a locked row, the Keep dialog's count frozen at open time, sharing the reminder sentence
   builder with the notification mapper.
+- **R5.** Banner actions put the primary last (Material 3). This amends FE-B6 on screen 24,
+  which put "Open system settings" first.
 
 ## 3. Items
 
