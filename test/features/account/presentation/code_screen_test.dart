@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
+import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -10,6 +11,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/account_harness.dart';
+import '../../../support/fake_auth_server.dart';
 import '../../../support/library_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -163,5 +165,28 @@ void main() {
       tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
       isTrue,
     );
+  });
+
+  accountTest('a re-auth code signs in again', (tester, env, world) async {
+    await refuseSession(world);
+    await world.coordinator.requestCode('a@example.com');
+    var signedIn = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      CodeScreen(
+        email: 'a@example.com',
+        purpose: SignInPurpose.reauth,
+        onSignedIn: () => signedIn++,
+      ),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(signedIn, 1);
+    expect(world.state, isA<Ready>());
   });
 }

@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -52,14 +53,29 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
   SignInController get _controller =>
       ref.read(signInControllerProvider(widget.purpose).notifier);
 
+  /// A re-auth's address arrives with the account state, which may come a
+  /// frame after the form: it fills the field while nothing is typed.
+  @override
+  void didUpdateWidget(SignInFormWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final email = widget.initialEmail;
+    if (email != null &&
+        oldWidget.initialEmail == null &&
+        _email.text.isEmpty) {
+      _email.text = email;
+    }
+  }
+
   @override
   void dispose() {
     _email.dispose();
     super.dispose();
   }
 
-  Future<void> _google() async {
-    final outcome = await _controller.continueWithGoogle();
+  Future<void> _google({bool confirmedLoss = false}) async {
+    final outcome = await _controller.continueWithGoogle(
+      confirmedLoss: confirmedLoss,
+    );
     if (!mounted) return;
     final problem = ref.read(signInControllerProvider(widget.purpose)).problem;
     if (outcome == SignInOutcome.failed && problem != null) {
@@ -72,9 +88,12 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     await _follow(outcome, email: null);
   }
 
-  Future<void> _send() async {
+  Future<void> _send({bool confirmedLoss = false}) async {
     final email = _email.text.trim();
-    final outcome = await _controller.sendCode(email);
+    final outcome = await _controller.sendCode(
+      email,
+      confirmedLoss: confirmedLoss,
+    );
     if (!mounted) return;
     await _follow(outcome, email: email);
   }
@@ -88,10 +107,29 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
       case SignInOutcome.identityTaken:
         await startLinkSwitch(context, ref, email: email);
       case SignInOutcome.unsentChanges:
-        return; // Task 8 asks about the loss here.
+        await _confirmLoss(isGoogle: email == null);
       case SignInOutcome.none || SignInOutcome.failed:
         return;
     }
+  }
+
+  /// Auth spec ruling 6: another account replaces this phone's data, so the
+  /// unsent changes are named before the command runs again.
+  Future<void> _confirmLoss({required bool isGoogle}) async {
+    final count = ref
+        .read(signInControllerProvider(widget.purpose))
+        .unsentCount;
+    final l10n = context.l10n;
+    final isSure = await confirmAccountStep(
+      context,
+      title: l10n.accountUnsentTitle(count),
+      body: l10n.accountUnsentBody(count),
+      confirmLabel: l10n.accountContinue,
+      isDestructive: true,
+    );
+    if (!isSure || !mounted) return;
+    if (isGoogle) return _google(confirmedLoss: true);
+    return _send(confirmedLoss: true);
   }
 
   @override
@@ -105,12 +143,11 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.purpose == SignInPurpose.link
-              ? l10n.accountLinkLine
-              : l10n.accountTargetLine,
-          style: context.textStyles.emptyBody,
-        ),
+        Text(switch (widget.purpose) {
+          SignInPurpose.link => l10n.accountLinkLine,
+          SignInPurpose.target => l10n.accountTargetLine,
+          SignInPurpose.reauth => l10n.accountReauthLine,
+        }, style: context.textStyles.emptyBody),
         const SizedBox(height: AppSpacing.section),
         MxButton(
           label: l10n.accountContinueGoogle,
