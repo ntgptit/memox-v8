@@ -1,6 +1,6 @@
 ---
 name: flutter-navigation
-description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, auth redirect guards (deferred until login lands, ADR-013), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
+description: GoRouter setup and navigation rules for this Flutter app — centralised route declarations, typed routes and path constants, StatefulShellRoute for bottom navigation, the account redirect (signing in stays optional), 404 handling, deep links, and correct back behaviour on Android and iOS. Use this skill when adding a screen or route, wiring bottom navigation or nested navigation, implementing login redirects or route guards, handling deep links or cold-start links, passing data between screens, or debugging a wrong back-button or duplicated-stack behaviour.
 ---
 
 # Navigation
@@ -13,7 +13,8 @@ app/router/
 └── app_routes.dart      # path and path-parameter constants
 ```
 
-A `route_guards.dart` comes with login, which ADR-013 leaves for later.
+The account rules live in `account_redirect.dart`; signing in stays optional,
+so nothing else redirects.
 
 ## Routes are declared centrally, referenced by name
 
@@ -70,9 +71,9 @@ visible and the branch's back stack is correct.
 
 ## Guards
 
-> **Deferred until login lands (ADR-013: identity now, login later).** This
-> section is reference material for that phase — do not build an auth guard,
-> login flow or `authStateProvider` now.
+> **The app's account rules are in `lib/app/router/account_redirect.dart`**
+> (auth spec 2026-09-30). Signing in stays optional, so the app has no
+> sign-in wall; the example below shows the pattern, not the app's routes.
 
 Put auth redirection in the router's `redirect`, not in screen `initState`. A
 guard in `initState` means the protected screen is built and briefly visible

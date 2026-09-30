@@ -1,6 +1,6 @@
 """The skills the repo owns keep nothing of V7 (package 12c, BE-D7).
 
-V7 is a reference implementation only (`CLAUDE.md`). Its decisions (`AD-nn`),
+V7 is not V8's source (BE-D7). Its decisions (`AD-nn`),
 its business rules (`BR-nn`), its milestones, its 22-phase checklist, its
 documents and its Widgetbook catalog do not exist in V8, so a skill that cites
 them sends the agent to something it cannot read. What a skill cites is V8's:
@@ -41,7 +41,7 @@ REPO_OWNED_SKILLS = (
     "spring-boot-mybatis-review",
 )
 
-# Copied from their upstreams and not the repo's to edit (CLAUDE.md): ECC,
+# Copied from their upstreams and not the repo's to edit (docs/agent/vendored-ecc.md): ECC,
 # Superpowers and Impeccable. Every other skill is the repo's, and is scanned.
 VENDORED_SKILLS = (
     # ECC

@@ -1,6 +1,6 @@
 ---
 name: flutter-testing
-description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links — no login yet, per ADR-013). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances.
+description: Testing strategy and patterns for this Flutter app — unit tests for use cases, repositories, mappers, validators, Drift queries and migrations and error mapping; Riverpod controller tests for state transitions; widget tests with ProviderScope covering loading/empty/error/dark-mode/text-scale; golden tests with stable rendering; and integration tests for the 60-scenario UI suite (cold start, navigation, CRUD, restart, deep links and the optional sign-in and account flows). Use this skill whenever writing, fixing or reviewing any test, setting up mocks or fakes, deciding what needs test coverage, debugging a flaky or failing test, or configuring golden-test tolerances.
 ---
 
 # Testing
@@ -174,7 +174,7 @@ scenario's readiness, its profile (`HOST-FLOW`, `HOST-WIDGET`, `DEVICE-E2E`),
 its setup and its cleanup. Read both before writing, running or debugging a
 scenario.
 
-Cover what the app actually has (no login yet — ADR-013): cold start, main
+Cover what the app actually has: cold start, the optional sign-in and account flows, main
 navigation, deck/card CRUD through the UI, restart
 with state restored, the review flows, and each deep link. The canonical list
 is the 60 scenarios in `docs/shared/testing/scenario-catalog.md` — extend that

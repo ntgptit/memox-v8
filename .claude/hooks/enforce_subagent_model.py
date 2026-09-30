@@ -28,6 +28,12 @@ import sys
 
 REQUIRED_MODEL = "sonnet"
 
+# The one exception (owner's ruling, 2026-09-30): the final whole-branch review
+# that executing-plans and subagent-driven-development dispatch once per branch
+# runs on the most capable model. It is recognised by the call's description.
+FINAL_REVIEW_MODEL = "opus"
+FINAL_REVIEW_PREFIX = "Final whole-branch review"
+
 # `agent(` but not `subagent(`, `myAgent(`, `x.agent(`.
 AGENT_CALL = re.compile(r"(?<![A-Za-z0-9_$.])agent\s*\(")
 
@@ -187,8 +193,16 @@ def read_script(tool_input):
         return None, "unreadable: %s" % error
 
 
+def is_final_review(tool_input):
+    description = tool_input.get("description") or ""
+    return (
+        tool_input.get("model") == FINAL_REVIEW_MODEL
+        and description.startswith(FINAL_REVIEW_PREFIX)
+    )
+
+
 def gate_agent(tool_input):
-    if tool_input.get("model") == REQUIRED_MODEL:
+    if tool_input.get("model") == REQUIRED_MODEL or is_final_review(tool_input):
         allow()
     updated = dict(tool_input)
     updated["model"] = REQUIRED_MODEL
@@ -229,7 +243,7 @@ def gate_workflow(tool_input):
                         "Workflow agents inherit the main-loop model, so an unpinned call runs on "
                         "Opus. Give every agent() an explicit "
                         "{model: 'sonnet', effort: 'low'|'medium'|'high'|'max'} and re-run. "
-                        "Effort tiers are in CLAUDE.md under 'Subagent model and effort'."
+                        "Effort tiers are in .claude/hooks/README.md under 'Subagent model and effort'."
                     )
                     % (len(findings), where, lines, more),
                 }
@@ -355,7 +369,7 @@ def manifest(sites, script):
     if non_sonnet:
         warning = "\n  !! non-sonnet model requested: %s" % ", ".join(non_sonnet)
 
-    # The owner's standing rule (CLAUDE.md): below the threshold Claude decides
+    # The owner's standing rule (.claude/hooks/README.md): below the threshold Claude decides
     # alone; at or above it, Claude must offer the choice with AskUserQuestion
     # BEFORE calling Workflow. Nothing can prove that happened, so the next best
     # thing is to say plainly that it should have — if the owner sees this line on
