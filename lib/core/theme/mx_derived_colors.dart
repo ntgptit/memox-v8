@@ -26,6 +26,7 @@ final class MxDerivedColors {
     required this.statusReviewingInk,
     required this.statusMasteredInk,
     required this.primaryInk,
+    required this.outlineEdge,
   });
 
   factory MxDerivedColors.resolve(
@@ -102,6 +103,13 @@ final class MxDerivedColors {
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
       primaryInk: primaryInkOf(scheme),
+      // The outline button's edge. Dark pulls outline toward onSurface so it
+      // holds 3:1 on the page, the sheet and the warning ground (3.41 on the
+      // sheet); light keeps outlineVariant (owner ruling R7, critique
+      // 2026-09-30 part 1).
+      outlineEdge: isDark
+          ? Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!
+          : scheme.outlineVariant,
     );
   }
 
@@ -136,6 +144,7 @@ final class MxDerivedColors {
   static const double _masteredInkDark = 0;
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
+  static const double _outlineEdgeDark = 0.25;
 
   /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
   /// toward onSurface until it reads at 4.5:1 on every ground and primary
@@ -182,6 +191,9 @@ final class MxDerivedColors {
 
   /// The 1px primary-tinted hairline on cards, chips, dividers and chrome.
   final Color ghostBorder;
+
+  /// The outline button's 1px edge (see [MxDerivedColors.resolve]).
+  final Color outlineEdge;
 
   /// Warning TEXT (FieldMessage), never the warning fill.
   final Color warningInk;

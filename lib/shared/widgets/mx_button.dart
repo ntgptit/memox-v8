@@ -174,7 +174,7 @@ class MxButton extends StatelessWidget {
         fill: null,
         ink: context.derivedColors.primaryInk,
         edge: BorderSide(
-          color: colors.outlineVariant,
+          color: context.derivedColors.outlineEdge,
           width: AppStroke.hairline,
         ),
       ),
