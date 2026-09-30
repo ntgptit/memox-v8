@@ -1386,53 +1386,21 @@ class ReviewLog extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class AccountState extends Table with TableInfo {
+class DismissedNote extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  AccountState(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL PRIMARY KEY CHECK (id = 1)',
-  );
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
-    'user_id',
+  DismissedNote(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> noteKey = GeneratedColumn<String>(
+    'note_key',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+    $customConstraints: 'NOT NULL PRIMARY KEY',
   );
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  late final GeneratedColumn<int> isAnonymous = GeneratedColumn<int>(
-    'is_anonymous',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (is_anonymous IN (0, 1))',
-  );
-  late final GeneratedColumn<String> role = GeneratedColumn<String>(
-    'role',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (role IN (\'user\', \'admin\'))',
-  );
-  late final GeneratedColumn<int> validatedAt = GeneratedColumn<int>(
-    'validated_at',
+  late final GeneratedColumn<int> dismissedAt = GeneratedColumn<int>(
+    'dismissed_at',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -1440,157 +1408,22 @@ class AccountState extends Table with TableInfo {
     $customConstraints: 'NOT NULL',
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    userId,
-    email,
-    isAnonymous,
-    role,
-    validatedAt,
-  ];
+  List<GeneratedColumn> get $columns => [noteKey, dismissedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'account_state';
+  static const String $name = 'dismissed_note';
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {noteKey};
   @override
   Never map(Map<String, dynamic> data, {String? tablePrefix}) {
     throw UnsupportedError('TableInfo.map in schema verification code');
   }
 
   @override
-  AccountState createAlias(String alias) {
-    return AccountState(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class AccountTransition extends Table with TableInfo {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  AccountTransition(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL PRIMARY KEY CHECK (id = 1)',
-  );
-  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
-    'op_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
-    'kind',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (kind IN (\'switchAccount\', \'signOut\', \'delete\', \'clearToAnon\', \'anonRecovery\'))',
-  );
-  late final GeneratedColumn<String> choice = GeneratedColumn<String>(
-    'choice',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'CHECK (choice IN (\'merge\', \'discard\'))',
-  );
-  late final GeneratedColumn<String> sourceUserId = GeneratedColumn<String>(
-    'source_user_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  late final GeneratedColumn<int> sourceIsAnonymous = GeneratedColumn<int>(
-    'source_is_anonymous',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'CHECK (source_is_anonymous IN (0, 1))',
-  );
-  late final GeneratedColumn<String> targetUserId = GeneratedColumn<String>(
-    'target_user_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  late final GeneratedColumn<String> targetHint = GeneratedColumn<String>(
-    'target_hint',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  late final GeneratedColumn<String> stage = GeneratedColumn<String>(
-    'stage',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (stage IN (\'started\', \'sourcePushed\', \'claimed\', \'targetSignedIn\', \'merged\', \'localCleared\', \'targetPulled\', \'acknowledged\', \'serverDeleted\', \'signedOut\', \'newAnon\'))',
-  );
-  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    opId,
-    kind,
-    choice,
-    sourceUserId,
-    sourceIsAnonymous,
-    targetUserId,
-    targetHint,
-    stage,
-    createdAt,
-    updatedAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'account_transition';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
-  }
-
-  @override
-  AccountTransition createAlias(String alias) {
-    return AccountTransition(attachedDatabase, alias);
+  DismissedNote createAlias(String alias) {
+    return DismissedNote(attachedDatabase, alias);
   }
 
   @override
@@ -1809,15 +1642,6 @@ class AppSettings extends Table with TableInfo {
         requiredDuringInsert: false,
         $customConstraints: '',
       );
-  late final GeneratedColumn<int> welcomeSeen = GeneratedColumn<int>(
-    'welcome_seen',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
   late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
@@ -1836,7 +1660,6 @@ class AppSettings extends Table with TableInfo {
     reminderEnabled,
     reminderMinuteOfDay,
     reminderLastDeliveredAt,
-    welcomeSeen,
     updatedAt,
   ];
   @override
@@ -1941,8 +1764,7 @@ class DatabaseAtV11 extends GeneratedDatabase {
   late final Tags tags = Tags(this);
   late final CardTags cardTags = CardTags(this);
   late final ReviewLog reviewLog = ReviewLog(this);
-  late final AccountState accountState = AccountState(this);
-  late final AccountTransition accountTransition = AccountTransition(this);
+  late final DismissedNote dismissedNote = DismissedNote(this);
   late final SyncOutbox syncOutbox = SyncOutbox(this);
   late final SyncState syncState = SyncState(this);
   late final Trigger deckSyncInsert = Trigger(
@@ -2094,8 +1916,7 @@ class DatabaseAtV11 extends GeneratedDatabase {
     tags,
     cardTags,
     reviewLog,
-    accountState,
-    accountTransition,
+    dismissedNote,
     syncOutbox,
     syncState,
     deckSyncInsert,

@@ -19,7 +19,7 @@ person's own under the scheduler they choose. UC-STARTER-001; BR-STARTER-001…0
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content) | Back and "Starter decks". |
-| Note | `MxNote` (flask) | "These decks are practice fixtures for development and testing, not published course material. Anything you add is yours to edit." (BR-STARTER-010). Shown while the templates load too. |
+| Note | `MxNote` (flask), dismissible | "These decks are practice fixtures for development and testing, not published course material. Anything you add is yours to edit." (BR-STARTER-010). Shown while the templates load too. |
 | A card per template | `MxCard` + `MxIconTile` (sparkles) + `MxBadge` | The title, "In library" once a copy is in the library, the facts "{front} · {back} · {n} cards · {m} sub-decks · {source}", then the add ("Add to library" in primary, or "Add another copy" in secondary, critique 2026-09-30) and "Suggests {algorithm}". The title wraps and the badge follows it; the suggestion drops below the button, whole, when both do not fit (critique P2a). The facts and the actions line up with the title, past the tile. |
 | Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "{n} cards in {m} sub-decks, as a new deck of your own.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add deck". |
 
@@ -51,6 +51,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 - **D13 (FE-A3 C8):** the add button shows the spinner alone, no "Adding…" text.
 - **UI-base row 125:** loading shows the note, then generic skeleton rows.
 - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for a template already in the library, is secondary.
+- **Critique 2026-09-30:** the fixture note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`).
 
 ## Copy
 

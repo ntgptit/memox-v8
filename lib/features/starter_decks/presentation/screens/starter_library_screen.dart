@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
@@ -11,6 +13,7 @@ import 'package:memox/features/starter_decks/presentation/widgets/items/starter_
 import 'package:memox/features/starter_decks/presentation/widgets/overlays/starter_algorithm_sheet_widget.dart';
 import 'package:memox/features/starter_decks/presentation/widgets/overlays/starter_repeat_add_dialog_widget.dart';
 import 'package:memox/features/starter_decks/presentation/widgets/support/starter_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -78,6 +81,23 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
     }
   }
 
+  /// Critique 2026-09-30: the fixture note, until the person hides it.
+  bool get _showsNote =>
+      ref
+          .watch(dismissedNotesProvider)
+          .value
+          ?.contains(NoteKeys.starterFixtures) ==
+      false;
+
+  Widget _fixtureNote(AppLocalizations l10n) => MxNote(
+    icon: AppIcons.fixture,
+    text: l10n.starterNote,
+    dismissLabel: l10n.commonDismissNote,
+    onDismiss: () => unawaited(
+      ref.read(dismissedNoteStoreProvider).dismiss(NoteKeys.starterFixtures),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -105,7 +125,7 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           ],
           AsyncData(:final value) => [
             const SizedBox(height: AppSpacing.control),
-            MxNote(icon: AppIcons.fixture, text: l10n.starterNote),
+            if (_showsNote) _fixtureNote(l10n),
             for (final entry in value) ...[
               const SizedBox(height: AppSpacing.grouped),
               StarterTemplateCardWidget(
@@ -128,7 +148,7 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           // are read (kit 03 `loading`).
           _ => [
             const SizedBox(height: AppSpacing.control),
-            MxNote(icon: AppIcons.fixture, text: l10n.starterNote),
+            if (_showsNote) _fixtureNote(l10n),
             const SizedBox(height: AppSpacing.grouped),
             MxSkeletonList(
               semanticLabel: l10n.commonLoading,

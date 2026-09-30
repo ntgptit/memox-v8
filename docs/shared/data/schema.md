@@ -627,6 +627,14 @@ lại từ `since = 0`
 §4.1). Mỗi lượt pull áp mọi trang trong một transaction, khoá ngoại kiểm khi commit
 (§4.2).
 
+## `dismissed_note` (schema 11)
+
+Những ghi chú một lần người dùng đã tắt trên máy này (critique 2026-09-30):
+`note_key` (khoá chính, hằng số trong `lib/core/notes/note_keys.dart`) và
+`dismissed_at` (UTC). Bảng chỉ ở trên thiết bị: không trigger sync, không
+`server_version`; đổi máy thì ghi chú hiện lại một lần. Đọc và ghi qua
+`DismissedNoteStore` (`lib/core/notes/`).
+
 ## Bất biến — phải kiểm tra được bằng query
 
 Mỗi query dưới đây **phải luôn trả về 0 dòng**. Chúng là đặc tả cho phần kiểm tra

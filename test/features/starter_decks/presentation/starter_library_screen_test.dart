@@ -308,4 +308,17 @@ void main() {
       MxButtonTone.primary,
     );
   });
+
+  libraryTest('the fixture note can be hidden, and stays hidden '
+      '(critique 2026-09-30)', (tester, env) async {
+    await _pump(tester, env, StarterLibraryFake(env));
+
+    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.starterNote), findsNothing);
+
+    await _pump(tester, env, StarterLibraryFake(env));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.starterNote), findsNothing);
+  });
 }

@@ -60,15 +60,18 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
             l10n.studyHomeDueTitle(workload.dueCount),
             style: styles.summaryTitle,
           ),
+          // The hero states what is due, in its two halves; new and
+          // scheduled cards are in the deck rows (BR-STUDY-068, critique
+          // 2026-09-30). A zero term drops out.
           MxWorkloadBreakdownLine(
             overdueCount: workload.overdueCount,
             todayCount: workload.dueTodayCount,
-            newCount: workload.newCount,
-            scheduledCount: workload.scheduledCount,
+            // The hero names only what is due (BR-STUDY-068); a zero
+            // count drops the new term.
+            newCount: 0,
             overdueLabel: l10n.workloadOverdue,
             todayLabel: l10n.workloadToday,
             newLabel: l10n.workloadNew,
-            scheduledLabel: l10n.workloadScheduled,
             fallback: l10n.studyHomeCaughtUpTitle,
             suffix: l10n.studyHomeAcrossDecks(workload.workloadDeckCount),
             canWrap: true,

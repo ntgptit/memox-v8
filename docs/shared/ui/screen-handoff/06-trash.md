@@ -23,7 +23,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | Back, "Trash" and "Select" (a compact secondary `MxButton`; hidden when the Trash is empty). While selecting: close, then "Select entries", "{n} cards selected" or "{n} decks selected". |
-| Note | `MxNote` (history icon) | "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go." Hidden while selecting. |
+| Note | `MxNote` (history icon), dismissible | "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go." Hidden while selecting. |
 | Filters | `MxFilterChip` × 3 | All · Cards · Decks, each with its count (A6). Hidden while selecting. |
 | Header | `MxListSectionHeader` | "{n} entries · newest first"; while selecting, "{n} of {m} cards" or "decks". |
 | Rows | `MxCard` + `MxRowInk` per entry | The kind's tile (a checkbox while selecting). The name ("front · back" for a card), and the time left on the right: a warning `MxBadge` under 3 days, grey text otherwise. Then "Card · deleted {ago}" or "Deck · {n} sub-decks · {m} cards · deleted {ago}" (up to two lines), then "Was in {path}" or "Was in Top level", 8 apart. Then `⋮`. While selecting, an entry of the other kind is dimmed to 0.38. The row is one TalkBack node with every fact (D15). |
@@ -68,6 +68,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **Owner 2026-09-26 (UI refinements phase 2):** the selection bar reads "Restore ({n})" · "Delete ({n})"; "Delete" is a filled destructive `MxButton`.
 - **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the meta line wraps to two lines, 8 apart.
 - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other kind dims to 0.38, and "Cards and decks can't be selected together." shows.
+- **Critique 2026-09-30:** the retention note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`). The kind-lock note is not dismissible.
 
 ## Copy
 

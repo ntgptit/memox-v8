@@ -14,6 +14,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -94,6 +95,15 @@ void main() {
 
     expect(find.text(_en.studyHomeDueTitle(5)), findsOneWidget);
     expect(find.textContaining(_en.studyHomeAcrossDecks(2)), findsOneWidget);
+    // Critique 2026-09-30 (BR-STUDY-068): the hero states only what is due,
+    // overdue and today; new and scheduled cards are in the deck rows.
+    final hero = tester.widget<MxWorkloadBreakdownLine>(
+      find.descendant(
+        of: find.byType(StudyHomeWorkloadWidget),
+        matching: find.byType(MxWorkloadBreakdownLine),
+      ),
+    );
+    expect((hero.newCount, hero.scheduledLabel), (0, null));
 
     final titles = [
       for (final row in tester.widgetList<MxListRow>(find.byType(MxListRow)))

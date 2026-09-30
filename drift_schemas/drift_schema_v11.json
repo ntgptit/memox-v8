@@ -1518,15 +1518,15 @@
       "references": [],
       "type": "table",
       "data": {
-        "name": "account_state",
+        "name": "dismissed_note",
         "was_declared_in_moor": true,
         "columns": [
           {
-            "name": "id",
-            "getter_name": "id",
-            "moor_type": "int",
+            "name": "note_key",
+            "getter_name": "noteKey",
+            "moor_type": "string",
             "nullable": false,
-            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
+            "customConstraints": "NOT NULL PRIMARY KEY",
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": [
@@ -1534,48 +1534,8 @@
             ]
           },
           {
-            "name": "user_id",
-            "getter_name": "userId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": "NOT NULL",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "email",
-            "getter_name": "email",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": "",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "is_anonymous",
-            "getter_name": "isAnonymous",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": "NOT NULL CHECK (is_anonymous IN (0, 1))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "role",
-            "getter_name": "role",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": "NOT NULL CHECK (role IN ('user', 'admin'))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "validated_at",
-            "getter_name": "validatedAt",
+            "name": "dismissed_at",
+            "getter_name": "dismissedAt",
             "moor_type": "dateTime",
             "nullable": false,
             "customConstraints": "NOT NULL",
@@ -1591,132 +1551,6 @@
     },
     {
       "id": 11,
-      "references": [],
-      "type": "table",
-      "data": {
-        "name": "account_transition",
-        "was_declared_in_moor": true,
-        "columns": [
-          {
-            "name": "id",
-            "getter_name": "id",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [
-              "primary-key"
-            ]
-          },
-          {
-            "name": "op_id",
-            "getter_name": "opId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": "NOT NULL",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "kind",
-            "getter_name": "kind",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": "NOT NULL CHECK (kind IN ('switchAccount', 'signOut', 'delete', 'clearToAnon', 'anonRecovery'))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "choice",
-            "getter_name": "choice",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": "CHECK (choice IN ('merge', 'discard'))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "source_user_id",
-            "getter_name": "sourceUserId",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": "",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "source_is_anonymous",
-            "getter_name": "sourceIsAnonymous",
-            "moor_type": "int",
-            "nullable": true,
-            "customConstraints": "CHECK (source_is_anonymous IN (0, 1))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "target_user_id",
-            "getter_name": "targetUserId",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": "",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "target_hint",
-            "getter_name": "targetHint",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": "",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "stage",
-            "getter_name": "stage",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": "NOT NULL CHECK (stage IN ('started', 'sourcePushed', 'claimed', 'targetSignedIn', 'merged', 'localCleared', 'targetPulled', 'acknowledged', 'serverDeleted', 'signedOut', 'newAnon'))",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "created_at",
-            "getter_name": "createdAt",
-            "moor_type": "dateTime",
-            "nullable": false,
-            "customConstraints": "NOT NULL",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "updated_at",
-            "getter_name": "updatedAt",
-            "moor_type": "dateTime",
-            "nullable": false,
-            "customConstraints": "NOT NULL",
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": []
-      }
-    },
-    {
-      "id": 12,
       "references": [],
       "type": "table",
       "data": {
@@ -1800,7 +1634,7 @@
       }
     },
     {
-      "id": 13,
+      "id": 12,
       "references": [],
       "type": "table",
       "data": {
@@ -1836,275 +1670,275 @@
       }
     },
     {
-      "id": 14,
+      "id": 13,
       "references": [
         1,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 1,
         "references_in_body": [
           1,
-          13,
-          12
+          12,
+          11
         ],
         "name": "deck_sync_insert",
         "sql": "CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 15,
+      "id": 14,
       "references": [
         1,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 1,
         "references_in_body": [
           1,
-          13,
-          12
+          12,
+          11
         ],
         "name": "deck_sync_update",
         "sql": "CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 16,
+      "id": 15,
       "references": [
         1,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 1,
         "references_in_body": [
           1,
-          13,
-          12
+          12,
+          11
         ],
         "name": "deck_sync_delete",
         "sql": "CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 17,
+      "id": 16,
       "references": [
         0,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 0,
         "references_in_body": [
           0,
-          13,
-          12
+          12,
+          11
         ],
         "name": "delete_batches_sync_insert",
         "sql": "CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 18,
+      "id": 17,
       "references": [
         0,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 0,
         "references_in_body": [
           0,
-          13,
-          12
+          12,
+          11
         ],
         "name": "delete_batches_sync_update",
         "sql": "CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 19,
+      "id": 18,
       "references": [
         0,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 0,
         "references_in_body": [
           0,
-          13,
-          12
+          12,
+          11
         ],
         "name": "delete_batches_sync_delete",
         "sql": "CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 20,
+      "id": 19,
       "references": [
         3,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 3,
         "references_in_body": [
           3,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_sync_insert",
         "sql": "CREATE TRIGGER card_sync_insert AFTER INSERT ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 21,
+      "id": 20,
       "references": [
         3,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 3,
         "references_in_body": [
           3,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_sync_update",
         "sql": "CREATE TRIGGER card_sync_update AFTER UPDATE ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 22,
+      "id": 21,
       "references": [
         3,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 3,
         "references_in_body": [
           3,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_sync_delete",
         "sql": "CREATE TRIGGER card_sync_delete AFTER DELETE ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 23,
+      "id": 22,
       "references": [
         7,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 7,
         "references_in_body": [
           7,
-          13,
-          12
+          12,
+          11
         ],
         "name": "tags_sync_insert",
         "sql": "CREATE TRIGGER tags_sync_insert AFTER INSERT ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 24,
+      "id": 23,
       "references": [
         7,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 7,
         "references_in_body": [
           7,
-          13,
-          12
+          12,
+          11
         ],
         "name": "tags_sync_update",
         "sql": "CREATE TRIGGER tags_sync_update AFTER UPDATE ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 25,
+      "id": 24,
       "references": [
         7,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 7,
         "references_in_body": [
           7,
-          13,
-          12
+          12,
+          11
         ],
         "name": "tags_sync_delete",
         "sql": "CREATE TRIGGER tags_sync_delete AFTER DELETE ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 26,
+      "id": 25,
       "references": [
         8,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 8,
         "references_in_body": [
           8,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_tags_sync_insert",
         "sql": "CREATE TRIGGER card_tags_sync_insert AFTER INSERT ON card_tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 27,
+      "id": 26,
       "references": [
         8,
-        13,
+        12,
         3,
-        12
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 8,
         "references_in_body": [
           8,
-          13,
+          12,
           3,
-          12
+          11
         ],
         "name": "card_tags_sync_delete",
         "sql": "CREATE TRIGGER card_tags_sync_delete AFTER DELETE ON card_tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\n  AND EXISTS (SELECT 1 FROM card WHERE id = old.card_id)\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', old.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 28,
+      "id": 27,
       "references": [],
       "type": "table",
       "data": {
@@ -2194,16 +2028,6 @@
             "dsl_features": []
           },
           {
-            "name": "welcome_seen",
-            "getter_name": "welcomeSeen",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": "NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1))",
-            "default_dart": "const CustomExpression('0')",
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "updated_at",
             "getter_name": "updatedAt",
             "moor_type": "dateTime",
@@ -2220,83 +2044,83 @@
       }
     },
     {
-      "id": 29,
+      "id": 28,
       "references": [
-        28,
-        13,
-        12
+        27,
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
-        "on": 28,
+        "on": 27,
         "references_in_body": [
-          28,
-          13,
-          12
+          27,
+          12,
+          11
         ],
         "name": "app_settings_sync_update",
         "sql": "CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\n  AND (old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order\n    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'account_settings', '00000000-0000-0000-0000-000000000000', 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 30,
+      "id": 29,
       "references": [
         9,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 9,
         "references_in_body": [
           9,
-          13,
-          12
+          12,
+          11
         ],
         "name": "review_log_sync_insert",
         "sql": "CREATE TRIGGER review_log_sync_insert AFTER INSERT ON review_log\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'review_log', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 31,
+      "id": 30,
       "references": [
         6,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 6,
         "references_in_body": [
           6,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_schedule_sync_insert",
         "sql": "CREATE TRIGGER card_schedule_sync_insert AFTER INSERT ON card_schedule\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 32,
+      "id": 31,
       "references": [
         6,
-        13,
-        12
+        12,
+        11
       ],
       "type": "trigger",
       "data": {
         "on": 6,
         "references_in_body": [
           6,
-          13,
-          12
+          12,
+          11
         ],
         "name": "card_schedule_sync_update",
         "sql": "CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
       }
     },
     {
-      "id": 33,
+      "id": 32,
       "references": [],
       "type": "table",
       "data": {
@@ -2356,7 +2180,7 @@
       }
     },
     {
-      "id": 34,
+      "id": 33,
       "references": [
         0
       ],
@@ -2370,7 +2194,7 @@
       }
     },
     {
-      "id": 35,
+      "id": 34,
       "references": [
         4
       ],
@@ -2384,7 +2208,7 @@
       }
     },
     {
-      "id": 36,
+      "id": 35,
       "references": [
         5
       ],
@@ -2398,7 +2222,7 @@
       }
     },
     {
-      "id": 37,
+      "id": 36,
       "references": [
         6
       ],
@@ -2412,7 +2236,7 @@
       }
     },
     {
-      "id": 38,
+      "id": 37,
       "references": [
         9
       ],
@@ -2426,7 +2250,7 @@
       }
     },
     {
-      "id": 39,
+      "id": 38,
       "references": [
         9
       ],
@@ -2440,7 +2264,7 @@
       }
     },
     {
-      "id": 40,
+      "id": 39,
       "references": [
         9
       ],
@@ -2455,7 +2279,7 @@
       }
     },
     {
-      "id": 41,
+      "id": 40,
       "references": [
         9,
         3
@@ -2472,7 +2296,7 @@
       }
     },
     {
-      "id": 42,
+      "id": 41,
       "references": [
         7
       ],
@@ -2486,7 +2310,7 @@
       }
     },
     {
-      "id": 43,
+      "id": 42,
       "references": [
         8
       ],
@@ -2500,7 +2324,7 @@
       }
     },
     {
-      "id": 44,
+      "id": 43,
       "references": [
         3
       ],
@@ -2514,7 +2338,7 @@
       }
     },
     {
-      "id": 45,
+      "id": 44,
       "references": [
         3
       ],
@@ -2528,7 +2352,7 @@
       }
     },
     {
-      "id": 46,
+      "id": 45,
       "references": [
         1
       ],
@@ -2542,7 +2366,7 @@
       }
     },
     {
-      "id": 47,
+      "id": 46,
       "references": [
         1
       ],
@@ -2556,7 +2380,7 @@
       }
     },
     {
-      "id": 48,
+      "id": 47,
       "references": [
         1
       ],
@@ -2662,20 +2486,11 @@
       ]
     },
     {
-      "name": "account_state",
+      "name": "dismissed_note",
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"account_state\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"user_id\" TEXT NOT NULL, \"email\" TEXT, \"is_anonymous\" INTEGER NOT NULL CHECK (is_anonymous IN (0, 1)), \"role\" TEXT NOT NULL CHECK (role IN ('user', 'admin')), \"validated_at\" INTEGER NOT NULL);"
-        }
-      ]
-    },
-    {
-      "name": "account_transition",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"account_transition\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"op_id\" TEXT NOT NULL, \"kind\" TEXT NOT NULL CHECK (kind IN ('switchAccount', 'signOut', 'delete', 'clearToAnon', 'anonRecovery')), \"choice\" TEXT CHECK (choice IN ('merge', 'discard')), \"source_user_id\" TEXT, \"source_is_anonymous\" INTEGER CHECK (source_is_anonymous IN (0, 1)), \"target_user_id\" TEXT, \"target_hint\" TEXT, \"stage\" TEXT NOT NULL CHECK (stage IN ('started', 'sourcePushed', 'claimed', 'targetSignedIn', 'merged', 'localCleared', 'targetPulled', 'acknowledged', 'serverDeleted', 'signedOut', 'newAnon')), \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL);"
+          "sql": "CREATE TABLE IF NOT EXISTS \"dismissed_note\" (\"note_key\" TEXT NOT NULL PRIMARY KEY, \"dismissed_at\" INTEGER NOT NULL);"
         }
       ]
     },
@@ -2828,7 +2643,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"app_settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"new_card_order\" TEXT NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random')), \"theme_mode\" TEXT NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark')), \"language\" TEXT NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi')), \"reminder_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)), \"reminder_minute_of_day\" INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439), \"reminder_last_delivered_at\" INTEGER, \"welcome_seen\" INTEGER NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1)), \"updated_at\" INTEGER NOT NULL);"
+          "sql": "CREATE TABLE IF NOT EXISTS \"app_settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"new_card_order\" TEXT NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random')), \"theme_mode\" TEXT NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark')), \"language\" TEXT NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi')), \"reminder_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)), \"reminder_minute_of_day\" INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439), \"reminder_last_delivered_at\" INTEGER, \"updated_at\" INTEGER NOT NULL);"
         }
       ]
     },

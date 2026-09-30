@@ -12,8 +12,8 @@ import 'generated/schema.dart';
 // v5 puts the store in NFC (BE-C5, local backend spec 2026-09-27 §4); v6
 // records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2); v8
 // syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5); v10 syncs reviews
-// and schedules (SB-S4); v11 adds the account state, the account transition and the welcome
-// flag (auth spec §4).
+// and schedules (SB-S4); v11 keeps dismissed notes on the device (critique 2026-09-30); v12 adds
+// the account state, the account transition and the welcome flag (auth spec §4).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -88,14 +88,14 @@ const _v2Columns = {'hint_shown', 'meaning_slot'};
 /// every migrated row, so they are left out of the comparison.
 const _v4Columns = {'server_version'};
 
-/// The column v11 adds to `app_settings` (auth spec §4): its default on every
+/// The column v12 adds to `app_settings` (auth spec §4): its default on every
 /// migrated row, checked by account_migration_test.dart, so left out here.
-const _v11Columns = {'welcome_seen'};
+const _v12Columns = {'welcome_seen'};
 
 /// A row as text, its columns in name order, so two reads compare as sets.
 String _canonical(Map<String, Object?> row) => ([
   ...row.keys.where(
-    (column) => !_v4Columns.contains(column) && !_v11Columns.contains(column),
+    (column) => !_v4Columns.contains(column) && !_v12Columns.contains(column),
   ),
 ]..sort()).map((column) => '$column=${row[column]}').join('|');
 
@@ -119,64 +119,70 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v11', () async {
+  test('v1 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v2 upgrades to the schema of v11', () async {
+  test('v2 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v3 upgrades to the schema of v11', () async {
+  test('v3 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v4 upgrades to the schema of v11', () async {
+  test('v4 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v5 upgrades to the schema of v11', () async {
+  test('v5 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(5));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v6 upgrades to the schema of v11', () async {
+  test('v6 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(6));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v7 upgrades to the schema of v11', () async {
+  test('v7 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(7));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v8 upgrades to the schema of v11', () async {
+  test('v8 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(8));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v9 upgrades to the schema of v11', () async {
+  test('v9 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(9));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
   });
 
-  test('v10 upgrades to the schema of v11', () async {
+  test('v10 upgrades to the schema of v12', () async {
     final db = AppDatabase(await verifier.startAt(10));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
+  });
+
+  test('v11 upgrades to the schema of v12', () async {
+    final db = AppDatabase(await verifier.startAt(11));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 12);
   });
 
   test(
@@ -193,7 +199,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 11);
+      await verifier.migrateAndValidate(db, 12);
 
       final queued = await db
           .customSelect(
@@ -214,7 +220,7 @@ void main() {
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 11);
+      await verifier.migrateAndValidate(db, 12);
     },
   );
 
@@ -232,7 +238,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 11);
+      await verifier.migrateAndValidate(db, 12);
     });
     tearDown(() => db.close());
 
@@ -295,7 +301,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 11);
+      await verifier.migrateAndValidate(db, 12);
     });
     tearDown(() => db.close());
 

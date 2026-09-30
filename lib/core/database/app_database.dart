@@ -16,6 +16,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/settings.drift',
     'package:memox/core/database/tables/trash.drift',
     'package:memox/core/database/tables/sync.drift',
+    'package:memox/core/database/tables/ui_state.drift',
     'package:memox/core/database/tables/account.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
@@ -36,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   final MutationGate mutationGate;
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -169,6 +170,10 @@ class AppDatabase extends _$AppDatabase {
         );
       },
       from10To11: (m, schema) async {
+        // Critique 2026-09-30: dismissed one-time notes, device-local.
+        await m.createTable(schema.dismissedNote);
+      },
+      from11To12: (m, schema) async {
         // SB-A2/SB-A3 (auth spec §4): the validated account, a pending
         // account transition and the welcome flag. Two empty tables and one
         // column with its default; no row changes.

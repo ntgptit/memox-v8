@@ -4,7 +4,7 @@ import 'package:memox/core/database/app_database.dart';
 
 import 'generated/schema.dart';
 
-// Auth spec §4: v11 adds the validated account, a pending account transition
+// Auth spec §4: v12 adds the validated account, a pending account transition
 // and the welcome flag. Existing settings keep their values; the flag starts
 // unset, so an upgraded install sees the welcome once.
 void main() {
@@ -12,9 +12,9 @@ void main() {
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
   test(
-    'v10 upgrades to v11 with its settings intact and the welcome unseen',
+    'v11 upgrades to v12 with its settings intact and the welcome unseen',
     () async {
-      final schema = await verifier.schemaAt(10);
+      final schema = await verifier.schemaAt(11);
       schema.rawDatabase.execute(
         "INSERT INTO app_settings (id, card_limit, theme_mode, reminder_enabled, updated_at) "
         "VALUES (1, 35, 'dark', 1, 0)",
@@ -22,7 +22,7 @@ void main() {
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
 
-      await verifier.migrateAndValidate(db, 11);
+      await verifier.migrateAndValidate(db, 12);
 
       final row = await db.select(db.appSettings).getSingle();
       expect(row.cardLimit, 35);
@@ -35,7 +35,7 @@ void main() {
   );
 
   test('a transition row is one row at most', () async {
-    final db = AppDatabase(await verifier.startAt(11));
+    final db = AppDatabase(await verifier.startAt(12));
     addTearDown(db.close);
     await db.customStatement(
       "INSERT INTO account_transition (id, op_id, kind, stage, created_at, updated_at) "

@@ -4,11 +4,12 @@ import 'package:memox/features/settings/presentation/states/sync_screen_state.da
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_floating_notice.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
-/// Screen 27's floating notice (sync status spec §5.2; owner ruling
-/// 2026-09-28): the refused rows with Keep on this device and Try again, or
-/// else the last failed run. Shown only when [shows] is true.
+/// Screen 27's problem banner, under the status card and above Sync now
+/// (critique 2026-09-30; was a floating notice, sync status spec §5.2): the
+/// refused rows with Keep on this device and Try again, or else the last
+/// failed run. Shown only when [shows] is true.
 class SyncNoticeWidget extends StatelessWidget {
   const SyncNoticeWidget({
     super.key,
@@ -29,10 +30,14 @@ class SyncNoticeWidget extends StatelessWidget {
     final l10n = context.l10n;
     final failure = status.lastFailure;
     if (status.rejectedCount == 0 && failure != null) {
-      return MxFloatingNotice(message: syncFailureSentence(l10n, failure.kind));
+      return MxInlineBanner(
+        tone: MxBannerTone.warning,
+        message: syncFailureSentence(l10n, failure.kind),
+      );
     }
     final isIdle = task == null;
-    return MxFloatingNotice(
+    return MxInlineBanner(
+      tone: MxBannerTone.warning,
       message: l10n.syncRejectedTitle(status.rejectedCount),
       actions: [
         MxButton(

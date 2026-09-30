@@ -1,0 +1,8 @@
+-- Device-local UI state (critique 2026-09-30): never synced, so no sync
+-- trigger and no server_version.
+
+-- A one-time note the person dismissed; the note stays hidden on this device.
+CREATE TABLE dismissed_note (
+  note_key TEXT NOT NULL PRIMARY KEY,
+  dismissed_at DATETIME NOT NULL
+) AS DismissedNote;

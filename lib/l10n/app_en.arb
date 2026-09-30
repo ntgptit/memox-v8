@@ -40,6 +40,10 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "commonDismissNote": "Hide this note",
+  "@commonDismissNote": {
+    "description": "The close button of a one-time note that can be hidden for good (critique 2026-09-30)."
+  },
   "commonEdit": "Edit",
   "@commonEdit": {
     "description": "Generic action to change a value; TalkBack names it on a typeable number."
@@ -2160,11 +2164,11 @@
   "@algorithmHeader": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmHeader."
   },
-  "algorithmEightBoxDescription": "Remembered → one box up; forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill.",
+  "algorithmEightBoxDescription": "Remembered moves a card up a box and forgotten sends it back to box 1; reviews use match, guess, recall or fill.",
   "@algorithmEightBoxDescription": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmEightBoxDescription."
   },
-  "algorithmSm2Description": "Intervals adapt to how well you recall each card. You grade yourself: again, hard, good or easy. Review mode: self-assess.",
+  "algorithmSm2Description": "Intervals adapt as you grade each card again, hard, good or easy in self-assess reviews.",
   "@algorithmSm2Description": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmSm2Description."
   },
@@ -4527,15 +4531,6 @@
     },
     "description": "Screen handoff 13 (FE-A8): the hero breakdown's suffix."
   },
-  "workloadScheduled": "{count} scheduled",
-  "@workloadScheduled": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 13 (FE-A8): the muted fourth workload term (BR-STUDY-068)."
-  },
   "studyHomeCaughtUpTitle": "Nothing due right now",
   "@studyHomeCaughtUpTitle": {
     "description": "Screen handoff 13 (FE-A8): the caught-up card's title (BR-STUDY-008)."
@@ -4965,7 +4960,7 @@
   "@summaryStatWrong": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
   },
-  "summaryWrongOf": "{wrong} / {total}",
+  "summaryWrongOf": "{wrong} of {total}",
   "@summaryWrongOf": {
     "placeholders": {
       "wrong": {
