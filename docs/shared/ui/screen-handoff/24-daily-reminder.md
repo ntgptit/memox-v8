@@ -21,7 +21,7 @@ UC-REMINDER-001; spec
 | App bar | `MxAppBar` (content density) + back `MxIconButton` | "Daily reminder". |
 | Reminder section | `MxSection` with note, two `MxSettingsRow`s | Row bell "Daily reminder" with `MxToggle` (an `MxSpinner` while turning on or off); row clock "Time" with a compact `MxButton` "{HH:mm}", disabled while off. The note: "Fires once a day, only when cards are due. Never for new cards, never twice." |
 | Banner | `MxInlineBanner` | Only after an operation left a problem: E1 `warning`, E3 `danger`, E6 `warning`. |
-| What it says | `MxSection` "What it says", one `MxSettingsRow` | The notification's own sentence, from the strings the notification uses, over the live workload read when the screen opens (`reminderPreviewDigestProvider`); "Nothing is due right now, so today's reminder would stay silent." when nothing is due or the read fails (critique 2026-09-30 part 1); the line that it never carries a card, a tag or history. |
+| What it says | `MxSection` "What it says", one `MxSettingsRow` | The notification's own sentence, from the strings the notification uses, over the live workload read when the screen opens (`ReadReminderPreviewUseCase` behind `reminderPreviewDigestProvider`); "Nothing is due right now, so today's reminder would stay silent." when nothing is due or the read fails (critique 2026-09-30 part 1); the line that it never carries a card, a tag or history. |
 | Time dialog | `MxDialog` + two `MxStepper`s + `MxSheetActions` | "Reminder time": Hour 0–23, Minute 0–59 (hold repeats, tap to type), the chosen "HH:mm", Cancel / Save. |
 
 ## States

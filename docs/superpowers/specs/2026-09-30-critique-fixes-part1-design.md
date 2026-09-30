@@ -157,7 +157,7 @@ column letter, sample. An empty or missing cell shows no sample line.
   `reminderWorkloadRepositoryProvider.rootWorkloads(now, startOfToday)` with the times from
   `dayClockProvider`, and returns `reminderDigestOf(...)`, null when nothing is due. It
   reads once when the screen opens, as the notification reads once when it fires
-  (BR-REMINDER-003). No use case: one read passed through an existing domain function.
+  (BR-REMINDER-003). It goes through `ReadReminderPreviewUseCase` (domain), as ADR-011 D4/D5 require one use case per interaction with no exception; the spec first said "no use case", corrected at the final review.
 - The row renders the quoted sentence from the digest with the strings the notification
   uses. Null renders a neutral line ("Nothing is due right now, so today's reminder would
   stay silent."). Loading keeps the row's space; a read error renders the neutral line.
