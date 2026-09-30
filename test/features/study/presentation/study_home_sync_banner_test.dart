@@ -73,6 +73,18 @@ void main() {
     expect(opened, 1);
   });
 
+  libraryTest("one refused row reads in the singular (critique 2026-09-30 "
+      'part 3a, R3)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 1)),
+    );
+    await _settle(tester);
+    expect(find.text("1 change wasn't accepted."), findsOneWidget);
+  });
+
   libraryTest('a change waiting 25 h shows the stale banner', (
     tester,
     env,

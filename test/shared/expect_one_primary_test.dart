@@ -54,4 +54,14 @@ void main() {
     );
     expectOnePrimaryPerDecision(tester, expected: 0);
   });
+
+  testWidgets('a primary where none is due fails under expected: 0', (
+    tester,
+  ) async {
+    await pumpMx(tester, MxButton(label: 'Save', onPressed: () {}));
+    expect(
+      () => expectOnePrimaryPerDecision(tester, expected: 0),
+      throwsA(isA<TestFailure>()),
+    );
+  });
 }
