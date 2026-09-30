@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
@@ -11,6 +13,7 @@ import 'package:memox/features/starter_decks/presentation/widgets/items/starter_
 import 'package:memox/features/starter_decks/presentation/widgets/overlays/starter_algorithm_sheet_widget.dart';
 import 'package:memox/features/starter_decks/presentation/widgets/overlays/starter_repeat_add_dialog_widget.dart';
 import 'package:memox/features/starter_decks/presentation/widgets/support/starter_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -21,9 +24,6 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
-import 'package:memox/core/notes/note_keys.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// Screen 03, Starter decks (UC-STARTER-001): the templates bundled with the
 /// app, each added as a deck of the person's own under the scheduler they

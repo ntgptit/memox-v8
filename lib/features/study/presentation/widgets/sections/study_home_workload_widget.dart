@@ -66,6 +66,8 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
           MxWorkloadBreakdownLine(
             overdueCount: workload.overdueCount,
             todayCount: workload.dueTodayCount,
+            // The hero names only what is due (BR-STUDY-068); a zero
+            // count drops the new term.
             newCount: 0,
             overdueLabel: l10n.workloadOverdue,
             todayLabel: l10n.workloadToday,

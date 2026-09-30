@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -8,6 +13,7 @@ import 'package:memox/features/transfer/presentation/states/card_import_state.da
 import 'package:memox/features/transfer/presentation/widgets/items/import_source_option_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/import_option_sheet_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -20,13 +26,6 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
-import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
-import 'package:memox/core/notes/note_keys.dart';
-
-import 'dart:async';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// Step 1 of the import (kit 11). While choosing: the two sources, then the
 /// file picker, the pasted text, the problem or the reading card. Once the
