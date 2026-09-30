@@ -21,7 +21,7 @@ auth spec O9; spec
 | Search | `MxSearchField` | "Search by email"; asks 400 ms after the last keystroke; hidden on the not-admin state. |
 | Overline | `MxListSectionHeader` | "ACCOUNTS" (no count: `role_list` has no total). |
 | Rows | `MxListRow` | Person tile (tinted, the same for all), the email, "Joined {date}" (locale medium date), `MxBadge` "Admin" (primary) or "User" (neutral); no chevron. The admin's own row reads "Joined {date} · You" and does not tap (U1); not dimmed. |
-| End | as screen 28 | The next page loads near the end; "No more users"; a failed page is a danger `MxInlineBanner` with Retry. |
+| End | as screen 28 | The next page loads near the end; "No more users"; a failed page is a danger `MxInlineBanner` with Retry; a page refused as not an admin turns the screen to the not-admin state (final review I1). |
 
 **Role sheet** (`MxBottomSheet`, the merge sheet's form): the email as title; `MxOptionRow`s
 "User" · "Studies and syncs their own decks" and "Admin" · "Sees logs and manages roles", the
@@ -31,11 +31,11 @@ spinning while it runs.
 | Outcome | Shows |
 |---|---|
 | saved | the sheet closes, the badge changes in place, toast "{email} is now an admin" / "… a user" |
-| last admin | the sheet stays, toast "An admin must remain. Make someone else an admin first." |
-| anonymous | toast "This account isn't signed in with an email or Google." |
+| last admin | the sheet stays and says, in a warning `MxInlineBanner` under the options, "An admin must remain. Make someone else an admin first." (final review I2: a toast would sit behind the sheet) |
+| anonymous | the sheet stays, banner "This account isn't signed in with an email or Google." |
 | gone | the sheet closes, toast "That account no longer exists.", the list reloads |
 | not an admin | the sheet closes, the screen shows the not-admin state |
-| offline / other | the sheet stays, toast "No connection. Nothing changed." / "Couldn't change the role. Nothing changed." |
+| offline / other | the sheet stays, banner "No connection. Nothing changed." / "Couldn't change the role. Nothing changed."; a new choice clears it |
 
 ## States
 
@@ -48,6 +48,7 @@ The images are the goldens.
 | offline | ![](../../../../test/features/account/presentation/goldens/users_offline_light.png) | ![](../../../../test/features/account/presentation/goldens/users_offline_dark.png) |  Golden `users_offline_*`. |
 | role sheet | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_light.png) | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_dark.png) | The current role selected; Save disabled. Golden `users_role_sheet_*`. |
 | role sheet, changed | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_changed_light.png) | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_changed_dark.png) | Admin chosen; Save enabled. Golden `users_role_sheet_changed_*`. |
+| role sheet, refused | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_refused_light.png) | ![](../../../../test/features/account/presentation/goldens/users_role_sheet_refused_dark.png) | LAST_ADMIN said inside the sheet. Golden `users_role_sheet_refused_*`. |
 | loading | — | — | `MxSkeletonList`. |
 | no accounts | — | — | "No accounts yet". |
 | error | — | — | "Couldn't load users" + Retry. |

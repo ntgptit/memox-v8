@@ -56,7 +56,7 @@ manages roles", the current one selected; `MxSheetActions`: Cancel · "Save"
 | Outcome | Shows |
 |---|---|
 | saved | the sheet closes, the row's badge changes in place, toast "{email} is now an admin" / "{email} is now a user" |
-| `LastAdminFailure` | the sheet stays, toast "An admin must remain. Make someone else an admin first." |
+| `LastAdminFailure` | the sheet stays and says it inside, in a warning banner (a toast would sit behind the sheet; final review I2): "An admin must remain. Make someone else an admin first." |
 | `AnonymousUserFailure` | toast "This account isn't signed in with an email or Google." |
 | gone (null) | the sheet closes, toast "That account no longer exists.", the list reloads |
 | `NotAdminFailure` | the sheet closes and the screen shows the gate's not-admin state |
