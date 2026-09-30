@@ -9,5 +9,8 @@ extension FailureMessage on AppLocalizations {
     ConstraintFailure() => failureConstraint,
     DatabaseLockedFailure() => failureBusy,
     UnknownDatabaseFailure() => failureUnknown,
+    NotAdminFailure() => failureNotAdmin,
+    OfflineFailure() => failureOffline,
+    ServerFailure() => failureServer,
   };
 }

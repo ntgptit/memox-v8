@@ -39,11 +39,12 @@ their goldens, its rulings and its copy. The visual system is in
 | 20 | Study · Fill | 3 | FE-A6 | built | [20-study-fill.md](20-study-fill.md) |
 | 21 | Session summary | 10 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 8 | FE-A9 | built | [22-progress.md](22-progress.md) |
-| 23 | Settings | 11 | FE-A3, SB-U1 | built | [23-settings.md](23-settings.md) |
+| 23 | Settings | 11 | FE-A3, SB-U1, FE-B8 | built | [23-settings.md](23-settings.md) |
 | 24 | Daily reminder | 9 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 3 | FE-A3 | built | [25-theme.md](25-theme.md) |
 | 26 | Language | 3 | FE-A3 | built | [26-language.md](26-language.md) |
 | 27 | Sync | 7 | SB-U1 | built | [27-sync.md](27-sync.md) (shape brief in the spec) |
+| 28 | Monitoring (admin only) | 15 | FE-B8 | built | [28-monitoring.md](28-monitoring.md) (shape brief in the spec) |
 
 ## Rules shared by every screen
 

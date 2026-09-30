@@ -117,6 +117,10 @@
 | [UC-DECK-005](../features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md) | Di chuyển deck trong cây | ready | — |
 | [UC-DECK-006](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md) | Sắp xếp lại Deck cùng cấp | ready | — |
 
+## [monitoring](../features/monitoring/README.md)
+
+Chưa có tài liệu.
+
 ## [progress](../features/progress/README.md)
 
 ### Rules

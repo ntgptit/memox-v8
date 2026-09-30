@@ -25,6 +25,7 @@ bar (D2).
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
 | App | `MxSection` + `MxSettingsRow` × 2 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt". Both open their page. |
 | Sync | `MxSection` + `MxSettingsRow` | SB-U1: "Sync", one row with the cloud-sync tile; its sub-line is the first that applies of "{n} changes kept only on this device", "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1). Opens screen 27. Hidden when the build has no Supabase. |
+| Admin | `MxSection` + `MxSettingsRow` | FE-B8: "Admin", one row "Monitoring" / "Logs of the app and the server" with the monitor tile. Opens screen 28. Drawn only while the session's account is an admin; hidden for everyone else and in a build with no Supabase. |
 | Reset | `MxSection` + `MxSettingsRow` | "Reset app options" / "Theme, language, study defaults". The note: "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." |
 | Reset dialog | `MxDialog` + `MxNote` + `MxSheetActions.custom` | "Reset app options?", "Theme, language, cards per session and new-card order go back to their defaults.", the shield note "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”.", then Cancel (outline) · "Reset options" (primary, spinning while it runs), stacked when a label cannot fit (UI-base row 118). Back and Cancel do nothing while it runs. |
 | Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order." · Retry; "App options reset to defaults"; "Couldn't reset the app options. Nothing changed." · Retry. |
@@ -48,7 +49,6 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | syncFailed | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_dark.png) | (SB-U1) the Sync row after a failed run. |
 | syncRejected | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_dark.png) | (SB-U1) the Sync row with refused rows. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
-Other goldens: `settings_sync_synced_light.png` / `settings_sync_synced_dark.png` (the Sync row, synced); `settings_sync_failed_light.png` / `settings_sync_failed_dark.png` (the Sync row, failed); `settings_sync_rejected_light.png` / `settings_sync_rejected_dark.png` (the Sync row, refused changes).
 
 
 Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,saving,saved,invalid_limit,save_failed,reset_confirm,reset_done,sync_synced,sync_failed,sync_rejected}_{light,dark}.png`.
@@ -62,6 +62,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **UI-base row 127:** tray options stack when their labels do not fit.
 - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens screen 27.
 - **UI-base row 128:** the tile sits beside the label on a row with a wide control.
+- **ADR-018 §8, monitoring spec §3.1:** an Admin section with one row opens screen 28, drawn only while the account is an admin.
 
 ## Copy
 
@@ -69,5 +70,6 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt".
 - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session and new-card order go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset options".
 - Sync (SB-U1): "Sync" · "{n} changes kept only on this device" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".
+- Admin (FE-B8): "Admin" · "Monitoring" · "Logs of the app and the server".
 - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't save the new-card order." · "App options reset to defaults" · "Couldn't reset the app options. Nothing changed." · "Retry".
 - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · "Retry".

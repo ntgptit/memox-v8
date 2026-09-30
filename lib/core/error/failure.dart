@@ -35,6 +35,27 @@ final class UnknownDatabaseFailure extends Failure {
     : super(message: 'Something went wrong.');
 }
 
+/// A read or change only an admin may make, from a caller that is not one or
+/// has no session (ADR-018 §7). The server's `FORBIDDEN`.
+final class NotAdminFailure extends Failure {
+  const NotAdminFailure({required super.cause})
+    : super(message: 'Only an admin can see this.');
+}
+
+/// A server call that never reached the server (no connection, a timeout).
+/// The kind of failure sync calls `network`.
+final class OfflineFailure extends Failure {
+  const OfflineFailure({required super.cause})
+    : super(message: "Can't reach the server.");
+}
+
+/// The server was reached and could not answer: an error of its own, or an
+/// answer this build cannot read.
+final class ServerFailure extends Failure {
+  const ServerFailure({required super.cause})
+    : super(message: "The server couldn't answer.");
+}
+
 /// Maps a raw exception from the Drift/sqlite3 boundary to one [Failure].
 /// This is the single place that inspects driver-specific error shapes —
 /// no repository does this itself.
