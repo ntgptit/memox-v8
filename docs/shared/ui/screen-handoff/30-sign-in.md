@@ -18,7 +18,9 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 - A device that already holds an account is sent from `mode=link` to screen 32 (P3b B9).
 - `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13
   (`/settings/sign-in?mode=reauth&from=…`; from 13 it opens under Settings, P3b plan
-  ruling 3). A re-auth that succeeds returns to `from`; the link ends on 32 (B9).
+  ruling 3). A re-auth that succeeds returns to `from`; the link ends on 32 (B9). A
+  `from` outside the app (a scheme, a host, `//`) is ignored for Settings, as
+  Welcome's is for the Library (P3b minor M1).
 
 ## Layout
 
@@ -40,7 +42,7 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 | Email | Filled with the last account's email (the usual case signs in again to it). |
 | Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Continue" (destructive), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
 | Continue without an account | `MxButton` (text, block) under the form (P3b plan ruling 10) → "Continue without an account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2). Cancel · "Continue without an account" (destructive). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. |
-| Code step (31) | A resend does not ask about the loss again (P3b plan ruling 8). |
+| Code step (31) | A resend to another account names the unsent changes again, in the same dialog: a link may open 31 without passing here (P3b minor M7, which retires plan ruling 8). |
 
 ### Merge sheet (auth spec #17)
 
@@ -98,7 +100,7 @@ The images are the goldens.
 
 - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target inside the layer.
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
-- **B8, B9 and P3b plan rulings 3, 8, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; no second loss question on a resend; the way out under the form.
+- **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
 - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6).
 
@@ -107,5 +109,5 @@ The images are the goldens.
 - "Sign in" · "Your decks stay on this phone and join the account." · "Continue with Google" · "or" · "Email address" · "Send code".
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Continue without an account"; the dialogs as in the table above.
-- Toast: "Signed in as {email}".
+- Toast: "Signed in as {email}", only once an account is ready; a switch that stopped on the way leaves the word to the layer (P3b minor M2).
 - Merge sheet and layer: as in the tables above.
