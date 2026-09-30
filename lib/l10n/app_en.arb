@@ -6591,14 +6591,18 @@
   "@monitoringNotAdminTitle": {
     "description": "Screen 28 and its detail: the server refused the call (FORBIDDEN)."
   },
-  "monitoringPendingNote": "{count, plural, =1{1 log waits on this device. It is sent when MemoX is online.} other{{count} logs wait on this device. They are sent when MemoX is online.}}",
+  "monitoringPendingNote": "These logs wait on this device. They are sent when MemoX is online.",
   "@monitoringPendingNote": {
+    "description": "Screen 28: the note of the Not sent tab; the tab label states how many (critique 2026-09-30 part 3b)."
+  },
+  "monitoringPendingCount": "{count} at these levels",
+  "@monitoringPendingCount": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 28: the note of the Not sent tab; {count} is every row of the buffer."
+    "description": "Screen 28: the Not sent list header, counting the rows shown at the chosen levels (critique 2026-09-30 part 3b)."
   },
   "monitoringPendingNoneTitle": "Nothing waiting",
   "@monitoringPendingNoneTitle": {

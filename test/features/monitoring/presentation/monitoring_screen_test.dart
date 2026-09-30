@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
@@ -17,6 +18,17 @@ import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
 
 // Monitoring spec §3.2, §3.4, §5: the Server tab.
+/// The status pills a row shows; a row without one keeps an invisible pill
+/// for the time column's height (F5).
+List<Element> _shownBadges() => find
+    .byType(MxBadge)
+    .evaluate()
+    .where(
+      (badge) =>
+          badge.findAncestorWidgetOfExactType<Visibility>()?.visible != false,
+    )
+    .toList();
+
 void main() {
   libraryTest('it opens on open warnings and errors, with their count', (
     tester,
@@ -36,8 +48,32 @@ void main() {
     expect(find.text('sync.push_failed'), findsOneWidget);
     expect(find.text('db.slow_query'), findsOneWidget);
     expect(find.text('message of a'), findsOneWidget);
-    expect(find.widgetWithText(MxBadge, 'Open'), findsNWidgets(2));
+    // The chip and the header say Open: rows do not repeat it (critique
+    // 2026-09-30 part 3b).
+    expect(_shownBadges(), isEmpty);
     expect(repository.lastQuery.filter.isDefault, isTrue);
+  });
+
+  libraryTest('with both statuses chosen, each row says which it is', (
+    tester,
+    env,
+  ) async {
+    final repository = FakeMonitoringRepository()
+      ..autoPage = LogPage(
+        items: [
+          summary('a', event: 'sync.push_failed'),
+          summary('b', level: LogLevel.warning, event: 'db.slow_query'),
+        ],
+      );
+    await pumpMonitoring(tester, env, repository);
+
+    await tapMonitoringChip(tester, 'Status');
+    await tester.tap(find.byType(MxToggle).at(1));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Apply'));
+    await tester.pumpAndSettle();
+
+    expect(_shownBadges(), hasLength(2));
   });
 
   libraryTest('a row reads as level, event, time and status', (

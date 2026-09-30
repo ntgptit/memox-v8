@@ -15,6 +15,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -38,7 +39,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     ];
     return Column(
       children: [
-        if (state.logs.value case final logs?)
+        if (state.logs.hasValue)
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.gutter,
@@ -46,7 +47,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
               AppSpacing.gutter,
               0,
             ),
-            child: MxNote(text: l10n.monitoringPendingNote(logs.total)),
+            child: MxNote(text: l10n.monitoringPendingNote),
           ),
         Align(
           alignment: AlignmentDirectional.centerStart,
@@ -116,6 +117,11 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     return MxScreenScroll(
       children: [
         const SizedBox(height: AppSpacing.control),
+        // The tab states the buffer's count; the list counts what it shows
+        // at the chosen levels (critique 2026-09-30 part 3b).
+        MxListSectionHeader(
+          label: l10n.monitoringPendingCount(logs.items.length),
+        ),
         for (final (index, log) in logs.items.indexed)
           LogRowWidget(
             log: log,

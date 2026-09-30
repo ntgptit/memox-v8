@@ -55,15 +55,19 @@ String monitoringWindowLabel(AppLocalizations l10n, LogWindow window) =>
       LogWindow.all => l10n.monitoringWindowAll,
     };
 
-/// A filter chip: its name alone, with the choice's name when one is made,
-/// with how many when several are (monitoring spec §3.2).
+/// A filter chip: its name alone, with the choices' names when one or two
+/// are made, with how many from three (monitoring spec §3.2; critique
+/// 2026-09-30 part 3b: "Level · 2" said no level). A chip whose choices are
+/// ids, not names, counts a pair instead ([isPairNamed] false).
 String monitoringChipLabel(
   AppLocalizations l10n,
   String label,
-  List<String> chosen,
-) => switch (chosen.length) {
+  List<String> chosen, {
+  bool isPairNamed = true,
+}) => switch (chosen.length) {
   0 => label,
   1 => l10n.monitoringChipValue(label, chosen.single),
+  2 when isPairNamed => l10n.monitoringChipValue(label, chosen.join(', ')),
   final count => l10n.monitoringChipValue(label, '$count'),
 };
 

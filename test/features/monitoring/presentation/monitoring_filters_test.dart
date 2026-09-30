@@ -16,7 +16,9 @@ void main() {
   ) async {
     final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
     await pumpMonitoring(tester, env, repository);
-    expect(find.text('Level · 2'), findsOneWidget);
+    // One or two choices are named, three or more counted (critique
+    // 2026-09-30 part 3b).
+    expect(find.text('Level · Warning, Error'), findsOneWidget);
     expect(find.text('Status · Open'), findsOneWidget);
 
     await tapMonitoringChip(tester, 'Level');

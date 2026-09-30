@@ -38,12 +38,16 @@ void main() {
     await tester.tap(find.text('Not sent (12)'));
     await tester.pumpAndSettle();
 
+    // The tab states the buffer's count; the list counts what it shows
+    // (critique 2026-09-30 part 3b).
     expect(
       find.text(
-        '12 logs wait on this device. They are sent when MemoX is online.',
+        'These logs wait on this device. They are sent when MemoX is online.',
       ),
       findsOneWidget,
     );
+    expect(find.textContaining('12 logs'), findsNothing);
+    expect(find.text('2 AT THESE LEVELS'), findsOneWidget);
     // A row keeps an invisible pill for the time column's height (F5).
     final shown = find
         .byType(MxBadge)

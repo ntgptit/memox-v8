@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -84,6 +85,11 @@ class MonitoringServerListWidget extends ConsumerWidget {
       final MonitoringListLoaded loaded => _Rows(
         loaded: loaded,
         isDefaultFilter: state.filter.isDefault,
+        // One status chosen: the chip and the header say it (critique
+        // 2026-09-30 part 3b).
+        statusShownByFilter: state.filter.statuses.length == 1
+            ? state.filter.statuses.single
+            : null,
         onOpenLog: onOpenLog,
       ),
     };
@@ -139,11 +145,13 @@ class _Rows extends ConsumerWidget {
   const _Rows({
     required this.loaded,
     required this.isDefaultFilter,
+    required this.statusShownByFilter,
     required this.onOpenLog,
   });
 
   final MonitoringListLoaded loaded;
   final bool isDefaultFilter;
+  final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
   static const double _prefetchExtent = 10 * AppSize.listRowMin;
@@ -182,6 +190,7 @@ class _Rows extends ConsumerWidget {
                 now: now,
                 onTap: () => onOpenLog(log.id),
                 hasDivider: index < count - 1,
+                statusShownByFilter: statusShownByFilter,
               ),
             const SizedBox(height: AppSpacing.grouped),
             _End(loaded: loaded, onRetry: controller.loadMore),
