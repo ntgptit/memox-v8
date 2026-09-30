@@ -61,7 +61,7 @@ void main() {
     final tones = {
       MxEmptyStateTone.primary: scheme.primary,
       MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
-      MxEmptyStateTone.success: MxSemanticColors.light.mastery,
+      MxEmptyStateTone.success: MxSemanticColors.light.success,
       MxEmptyStateTone.warning: MxSemanticColors.light.warning,
       MxEmptyStateTone.danger: scheme.error,
     };
@@ -77,10 +77,14 @@ void main() {
         color.withValues(alpha: 0.10),
         reason: '$tone',
       );
-      // The primary glyph reads in primaryInk (spec 2026-09-27 D2).
-      final glyph = tone == MxEmptyStateTone.primary
-          ? MxDerivedColors.primaryInkOf(scheme)
-          : color;
+      // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
+      // success glyph in its ink (critique 2026-09-30 tone pass, T7).
+      final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+      final glyph = switch (tone) {
+        MxEmptyStateTone.primary => MxDerivedColors.primaryInkOf(scheme),
+        MxEmptyStateTone.success => derived.successInk,
+        _ => color,
+      };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
     }
   });
