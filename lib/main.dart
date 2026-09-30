@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/app/app.dart';
 import 'package:memox/app/logging_bootstrap.dart';
 import 'package:memox/app/startup_settings.dart';
+import 'package:memox/app/startup_welcome.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
@@ -38,6 +39,8 @@ Future<void> main() async {
   // first frame never waits for the network (R1, R2).
   final accounts = container.read(accountCoordinatorProvider);
   await accounts?.prepare();
+  // Account UI spec U1: the first launch's Welcome, before the first frame.
+  await showWelcomeIfDue(container);
   container
     ..read(syncSchedulerProvider)
     ..read(logSchedulerProvider);
