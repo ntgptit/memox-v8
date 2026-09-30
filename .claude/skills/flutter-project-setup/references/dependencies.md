@@ -40,13 +40,14 @@ fails until it does.
 | `android_alarm_manager_plus` | 5.x | The daily reminder's inexact alarm on Android, rescheduled after a reboot, running a Dart callback in the background (BE-B5b). Imported only by `plugin_reminder_plugins_data_source.dart`. |
 | `flutter_local_notifications` | 22.x | Shows the daily reminder under one fixed id and carries the tap that opens Study Home (BE-B5b). Imported only by `plugin_reminder_plugins_data_source.dart`; needs core-library desugaring in gradle. |
 | `package_info_plus` | 10.x | The app version and build number stamped on every log entry (ADR-018; owner 2026-09-29). Imported only by `lib/app/logging_bootstrap.dart`. |
+| `flutter_secure_storage` | 11.x | Keeps the anonymous-session backup and the claim token in Keychain / EncryptedSharedPreferences, never SharedPreferences (auth spec O13). Imported only by `lib/core/auth/secure_secret_store.dart`. |
+| `google_sign_in` | 7.x | Native Google sign-in: its `idToken` and `accessToken` go to Supabase `signInWithIdToken` / `linkIdentityWithIdToken` (auth spec O11). Imported only by `lib/core/auth/google_credential_source.dart`. |
 | ~~`sqlite3_flutter_libs`~~ | — | **Do not add it.** The only version compatible with current Drift is `0.6.0+eol` — a tombstone with no native code in it. `sqlite3` 3.x supplies the native library through native assets instead, so Drift on mobile needs no separate package. The row is struck rather than deleted because a session that has seen the old advice will look for it here. |
 
 Add only when the need is real:
 
 | Package | Add when |
 |---|---|
-| `flutter_secure_storage` | Tokens exist, which needs login (ADR-013: login comes later). Keychain / EncryptedSharedPreferences, never SharedPreferences. |
 | `cached_network_image` | You render remote images in lists. |
 | `sentry_flutter` / `firebase_crashlytics` | Entering release (`flutter-ship`). Not before. |
 
