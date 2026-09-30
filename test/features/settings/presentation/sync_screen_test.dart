@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_failure.dart';
@@ -305,5 +308,41 @@ void main() {
       ),
     );
     expect(find.text("1 change wasn't accepted"), findsOneWidget);
+  });
+
+  Finder syncCheck() => find.descendant(
+    of: find.byType(SyncStatusSectionWidget),
+    matching: find.byIcon(AppIcons.check),
+  );
+
+  libraryTest('settled sync ends the waiting row with a success check '
+      '(critique 2026-09-30 tone pass, T3)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(SyncStatus(lastSuccessAt: env.clock.now())),
+    );
+    expect(syncCheck(), findsOneWidget);
+    expect(
+      tester.widget<Icon>(syncCheck()).color,
+      tester.element(syncCheck()).derivedColors.successInk,
+    );
+  });
+
+  libraryTest('changes still waiting show no success check (T3)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        SyncStatus(lastSuccessAt: env.clock.now(), pendingCount: 2),
+      ),
+    );
+    expect(find.byType(SyncStatusSectionWidget), findsOneWidget);
+    expect(syncCheck(), findsNothing);
   });
 }

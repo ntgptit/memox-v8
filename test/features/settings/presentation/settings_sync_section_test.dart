@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
@@ -64,5 +67,36 @@ void main() {
     statuses.addError(StateError('database closed'));
     await tester.pump();
     expect(line, findsNothing);
+  });
+
+  Finder syncTile() => find.ancestor(
+    of: find.byIcon(AppIcons.sync),
+    matching: find.byType(MxIconTile),
+  );
+
+  libraryTest('the Sync tile is success once sync is settled (critique '
+      '2026-09-30 tone pass, T4)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: syncOverrides(SyncStatus(lastSuccessAt: env.clock.now())),
+    );
+    await tester.scrollUntilVisible(syncTile(), 200);
+    expect(tester.widget<MxIconTile>(syncTile()).tone, MxIconTileTone.success);
+  });
+
+  libraryTest('the Sync tile stays tinted while changes were refused (T4)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: syncOverrides(const SyncStatus(rejectedCount: 1)),
+    );
+    await tester.scrollUntilVisible(syncTile(), 200);
+    expect(tester.widget<MxIconTile>(syncTile()).tone, MxIconTileTone.tinted);
   });
 }

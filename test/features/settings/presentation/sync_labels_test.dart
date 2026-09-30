@@ -72,4 +72,28 @@ void main() {
       );
     }
   });
+
+  test('settled: synced once, nothing waiting, refused or failed (critique '
+      '2026-09-30 tone pass, T3)', () {
+    final success = DateTime(2026, 9, 28, 0, 10);
+    expect(syncIsSettled(SyncStatus(lastSuccessAt: success)), isTrue);
+    expect(syncIsSettled(const SyncStatus()), isFalse);
+    expect(
+      syncIsSettled(SyncStatus(lastSuccessAt: success, pendingCount: 1)),
+      isFalse,
+    );
+    expect(
+      syncIsSettled(SyncStatus(lastSuccessAt: success, rejectedCount: 1)),
+      isFalse,
+    );
+    expect(
+      syncIsSettled(
+        SyncStatus(
+          lastSuccessAt: success,
+          lastFailure: LastSyncFailure(SyncFailureKind.network, success),
+        ),
+      ),
+      isFalse,
+    );
+  });
 }

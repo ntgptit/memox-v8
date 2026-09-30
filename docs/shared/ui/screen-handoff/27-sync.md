@@ -52,6 +52,7 @@ The images are the goldens.
 - **ADR-015, SB-U1 owner rulings R1, R3, R5–R7:** sync has its own screen, and its problems reach other screens as a floating notice (register row 143); on this screen they sit inline under the status, by Sync now (critique 2026-09-30).
 - **Critique 2026-09-30 part 1 (spec `2026-09-30-critique-fixes-part1-design.md`), R4:** with refused rows Try again is the one primary, the waiting row never says "Nothing waiting", the banner says why and what Keep costs, and Keep asks first.
 - **Spec R6, FE-B5 D9:** times are 24-hour `HH:mm` in every language; dates read "Sep 26" style in English.
+- **Critique 2026-09-30 tone pass (spec `2026-09-30-critique-fixes-tone-design.md`), T3:** when sync is settled (synced once, nothing waiting, refused or failed) the waiting row ends with a success check, not read out.
 
 ## Copy
 

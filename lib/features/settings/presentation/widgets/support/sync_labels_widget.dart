@@ -41,6 +41,16 @@ String syncStatusLine(AppLocalizations l10n, SyncStatus status, DateTime now) {
   return l10n.syncStatusNever;
 }
 
+/// Everything is on the server: something synced, nothing waits, nothing
+/// was refused and the last run did not fail. Screen 27 ends its waiting row
+/// with a success check and screen 23 turns its Sync tile success
+/// (critique 2026-09-30 tone pass, T3 and T4).
+bool syncIsSettled(SyncStatus status) =>
+    status.lastSuccessAt != null &&
+    status.pendingCount == 0 &&
+    status.rejectedCount == 0 &&
+    status.lastFailure == null;
+
 /// Screen 27's failure banner (spec §5.4): local-first, no code or message.
 String syncFailureSentence(AppLocalizations l10n, SyncFailureKind kind) =>
     switch (kind) {

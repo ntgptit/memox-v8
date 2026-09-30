@@ -69,6 +69,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **UI-base row 128:** the tile sits beside the label on a row with a wide control.
 - **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens screen 32; an expired sign-in's banner leads the Account section, since 23 owns the problem.
 - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds Monitoring and Users, drawn by Settings from rows the features supply, only while the account is an admin.
+- **Critique 2026-09-30 tone pass, T4:** the Sync row's tile is success when sync is settled, tinted otherwise.
 
 ## Copy
 
