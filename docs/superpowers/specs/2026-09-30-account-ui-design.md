@@ -249,6 +249,53 @@ Owner rulings from the P3b brainstorm (B1–B3), then the brainstorm's own
 | B10 | **Switch account** keeps R1: the §5.6 dialog, then `beginSwitch(discard)`; the layer's target sign-in does the rest |
 | B11 | **One PR**, no server change |
 
+### 9.1 Shape (Impeccable, 2026-09-30)
+
+Critiqued against `DESIGN.md` and the goldens of 23 (`settings_account_*`,
+`settings_reset_confirm_*`) and 13 (`study_home_sync_*`); approved by the
+owner. Every dialog follows 23's Reset dialog: a title ending in "?", the
+body, an optional `MxNote`, then `MxSheetActions` (Cancel outline · confirm).
+
+- **32 layout**, three `MxSection`s:
+  - `ACCOUNT`: one plain row, the person-glyph tile, the email on one line
+    with an ellipsis, subtitle "Signed in with Google" / "Signed in with
+    email" / "Signed in with Google and email" (B1).
+  - `THIS PHONE`: "Switch account" · "Move this phone to another account";
+    "Sign out" · "Your changes are sent first".
+  - `DELETE`, last, like 23's `RESET`: "Delete account" · "Your account and
+    its data, for good". **B12 (owner): a neutral row** in its own section;
+    the danger colour is only the dialog's confirm. `MxSettingsRow` gets no
+    tone.
+  - `Validating`: an `MxNote` on top (B3 copy), the action rows disabled.
+    `ReauthRequired`: the §5.5 `MxInlineBanner` on top with "Sign in", the
+    action rows disabled.
+- **Dialogs** (32):
+  - Switch: "Switch account?", the §5.6 body, a shield `MxNote` "Your
+    changes are sent first.", confirm "Switch account" (primary).
+  - Sign out, online: "Sign out?", the §5.6 body, confirm "Sign out"
+    (**primary**: the data is safe on the server).
+  - Sign out, loss (B4): "Sign out and lose changes?", "{n} changes aren't
+    sent yet and will be lost.", confirm "Sign out" (destructive).
+  - Delete: "Delete your account?", the body naming what goes (B6), no
+    reassurance note, confirm "Delete account" (destructive, delete icon).
+    Offline: an `MxNote` (offline glyph) "Deleting your account needs a
+    connection." and the confirm disabled.
+  - Last admin (B7): "An admin must remain", the §5.4 body, one "OK".
+- **30 `reauth`**: the reauth mode line; **the email field starts with the
+  last account's email** (the usual case is signing in again to the same
+  account); "Continue without an account" (text) at the bottom of the
+  thumb zone, as on 29.
+  - Unsent loss (B8): "Lose {n} changes?", the §5.2 body, confirm
+    "Continue" (destructive).
+  - Continue without: "Continue without an account?", "This phone's decks
+    from {email} are removed. Sign in to {email} later to get them back.",
+    confirm "Continue without an account" (destructive).
+- **23**: the warning banner sits inside the Account section, above its
+  card; the account row gets its chevron.
+- **13**: the `MxFloatingNotice` of the sync notice's form, "Your sign-in
+  expired. Your decks are still on this phone." with a compact primary
+  "Sign in".
+
 Verification adds to §8: goldens (light and dark, English) of 32 in `Ready`,
 `Validating` and `ReauthRequired`; the switch, sign-out (online and loss),
 delete (online and offline), last-admin, unsent-loss and continue-without
