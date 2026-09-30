@@ -343,10 +343,7 @@ void main() {
 
   test('plain copy for the study caption and the wrong-turns stat '
       '(critique 2026-09-30)', () {
-    expect(
-      _en.studyEntryOverline('SM-2', 20),
-      'SM-2 · up to 20 cards per session',
-    );
+    expect(_en.studyEntryLimit(20), 'Up to 20 cards per session');
     expect(_en.summaryStatWrong, 'Wrong turns');
     expect(_en.summaryWrongOf(3, 23), '3 of 23');
   });

@@ -3002,17 +3002,14 @@
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "studyEntryOverline": "{algorithm} · up to {limit} cards per session",
-  "@studyEntryOverline": {
+  "studyEntryLimit": "Up to {limit} cards per session",
+  "@studyEntryLimit": {
     "placeholders": {
-      "algorithm": {
-        "type": "String"
-      },
       "limit": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 14 (FE-A6): the hero's overline, the deck's algorithm and the session limit (BR-STUDY-024)."
+    "description": "Screen 14: the plain line under the hero's overline, which names the algorithm alone (critique 2026-09-30 part 3c-1, R5)."
   },
   "studyEntryNew": "New",
   "@studyEntryNew": {
@@ -3305,7 +3302,7 @@
   "@studyDirectionMixedBody": {
     "description": "Screen handoff 14 (FE-A6 P2): direction sheet option description."
   },
-  "studyDirectionNote": "SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy. The direction cannot change once the session starts.",
+  "studyDirectionNote": "The direction can't change once the session starts. SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy.",
   "@studyDirectionNote": {
     "description": "Screen handoff 14 (FE-A6 P2): direction sheet note (BR-MODE-017)."
   },

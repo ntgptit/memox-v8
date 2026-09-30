@@ -137,6 +137,11 @@ void main() {
     await lockScheduler(env.db, root.id);
     await pumpLibraryScreen(tester, env, _screen(root.id));
 
+    // The algorithm alone as overline, the limit its own line: no orphan
+    // word (critique 2026-09-30 part 3c-1, R5).
+    expect(find.text(_en.deckSchedulerEightBox.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.studyEntryLimit(20)), findsOneWidget);
+
     final rows = tester.widgetList<MxOptionRow>(find.byType(MxOptionRow));
     expect(
       [for (final row in rows) row.title],
