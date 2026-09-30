@@ -285,9 +285,11 @@ void main() {
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeMatch, 5)),
+      find.text(_en.studyEntryModeCaption(_en.cardModeMatch)),
       findsOneWidget,
     );
+    // The start button states the count (R5, critique 2026-09-30 part 3b).
+    expect(find.textContaining('5 due cards ·'), findsNothing);
 
     await tester.tap(find.text(_en.cardModeGuess));
     await tester.pump();
@@ -295,7 +297,7 @@ void main() {
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeGuess, 5)),
+      find.text(_en.studyEntryModeCaption(_en.cardModeGuess)),
       findsOneWidget,
     );
 

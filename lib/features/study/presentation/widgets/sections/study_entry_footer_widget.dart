@@ -68,10 +68,8 @@ class StudyEntryFooterWidget extends ConsumerWidget {
         // SM-2 asks its direction next; Eight boxes names the mode (E1).
         target.isDirectionRequired
             ? l10n.studyEntryReviewCaption(target.cardCount, entry.dueCardCount)
-            : l10n.studyEntryModeCaption(
-                l10n.studyMode(target.mode),
-                target.cardCount,
-              ),
+            // The button states the count (critique 2026-09-30 part 3b).
+            : l10n.studyEntryModeCaption(l10n.studyMode(target.mode)),
         onReview,
       ),
       EntryFooterAction.learn => (

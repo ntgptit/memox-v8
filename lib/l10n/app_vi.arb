@@ -624,7 +624,7 @@
   "studyEntryRefusedSessionBody": "Phiên đã kết thúc sau khi mở màn hình này, các câu đã trả lời vẫn được giữ. Hãy bắt đầu phiên mới bên dưới.",
   "studyEntryStartFailedTitle": "Không bắt đầu được phiên.",
   "studyEntryStartFailedBody": "Chưa có gì được ghi. Hãy thử lại.",
-  "studyEntryModeCaption": "{mode} · {count} thẻ đến hạn · cũ nhất trước",
+  "studyEntryModeCaption": "{mode} · cũ nhất trước",
   "studyDirectionTitle": "Ôn tập · chiều hỏi",
   "studyDirectionTermFirst": "Thuật ngữ trước",
   "studyDirectionTermFirstBody": "Nhìn thuật ngữ, nhớ lại nghĩa",

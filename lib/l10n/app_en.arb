@@ -3260,17 +3260,14 @@
   "@studyEntryStartFailedBody": {
     "description": "Screen handoff 14 (FE-A6 P2): startFailed banner body."
   },
-  "studyEntryModeCaption": "{mode} · {count, plural, =1{1 due card} other{{count} due cards}} · oldest first",
+  "studyEntryModeCaption": "{mode} · oldest first",
   "@studyEntryModeCaption": {
     "placeholders": {
       "mode": {
         "type": "String"
-      },
-      "count": {
-        "type": "int"
       }
     },
-    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review."
+    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review; the start button states the count (R5, critique 2026-09-30 part 3b)."
   },
   "studyDirectionTitle": "Review · question direction",
   "@studyDirectionTitle": {
