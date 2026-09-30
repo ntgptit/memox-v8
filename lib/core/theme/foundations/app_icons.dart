@@ -64,6 +64,7 @@ abstract final class AppIcons {
   static const IconData monitoring = Icons.monitor_heart_outlined; // activity
   // Account (screens 23, 29).
   static const IconData account = Icons.person_outline; // user
+  static const IconData users = Icons.group_outlined; // users
   static const IconData switchAccount = Icons.swap_horiz; // arrow-left-right
   static const IconData signOut = Icons.logout; // log-out
   static const IconData devices = Icons.devices_outlined; // smartphone
