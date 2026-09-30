@@ -167,51 +167,67 @@ class _Progress extends ConsumerWidget {
     final error = view.error;
     final isStopped = error != null || view.isStuck;
     final step = accountStepText(l10n, accountStepOf(view.transition));
-    return MxScreenScroll(
-      children: [
-        const SizedBox(height: AppSpacing.pageEnd),
-        if (isStopped) ...[
-          Semantics(
-            liveRegion: true,
-            child: MxInlineBanner(
-              tone: MxBannerTone.warning,
-              message: view.isStuck
-                  ? l10n.accountLayerStuck
-                  : error is OfflineFailure
-                  ? l10n.accountLayerOffline
-                  : l10n.accountLayerFailed,
+    // Centred in the page, the one thing on it (account UI spec §6); it
+    // scrolls when it outgrows the screen.
+    return CustomScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (isStopped) ...[
+                  Semantics(
+                    liveRegion: true,
+                    child: MxInlineBanner(
+                      tone: MxBannerTone.warning,
+                      message: view.isStuck
+                          ? l10n.accountLayerStuck
+                          : error is OfflineFailure
+                          ? l10n.accountLayerOffline
+                          : l10n.accountLayerFailed,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.gutter),
+                  MxButton(
+                    label: l10n.commonRetry,
+                    isBlock: true,
+                    onPressed: () => unawaited(_retry(ref)),
+                  ),
+                  if (_isSignOutStoppedOffline(error)) ...[
+                    const SizedBox(height: AppSpacing.grouped),
+                    const _SignOutNow(),
+                  ],
+                ] else ...[
+                  Center(
+                    child: MxSpinner(
+                      size: MxSpinnerSize.large,
+                      semanticLabel: step,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.section),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      step,
+                      textAlign: TextAlign.center,
+                      style: context.textStyles.screenTitle,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.control),
+                  Text(
+                    l10n.accountSafeToClose,
+                    textAlign: TextAlign.center,
+                    style: context.textStyles.emptyBody,
+                  ),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: AppSpacing.gutter),
-          MxButton(
-            label: l10n.commonRetry,
-            isBlock: true,
-            onPressed: () => unawaited(_retry(ref)),
-          ),
-          if (_isSignOutStoppedOffline(error)) ...[
-            const SizedBox(height: AppSpacing.grouped),
-            const _SignOutNow(),
-          ],
-        ] else ...[
-          Center(
-            child: MxSpinner(size: MxSpinnerSize.large, semanticLabel: step),
-          ),
-          const SizedBox(height: AppSpacing.section),
-          Semantics(
-            liveRegion: true,
-            child: Text(
-              step,
-              textAlign: TextAlign.center,
-              style: context.textStyles.screenTitle,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.control),
-          Text(
-            l10n.accountSafeToClose,
-            textAlign: TextAlign.center,
-            style: context.textStyles.emptyBody,
-          ),
-        ],
+        ),
       ],
     );
   }

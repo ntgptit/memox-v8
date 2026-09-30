@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart' show driftRuntimeOptions;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
@@ -7,6 +7,7 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 
 import 'auth_fakes.dart';
 import 'library_harness.dart';
@@ -72,4 +73,14 @@ AccountTransition transitionOf(
     choice: choice,
     targetHint: targetHint,
   );
+}
+
+/// Google's G decoded before a golden captures it: an asset image
+/// otherwise paints its first frame empty.
+Future<void> precacheGoogleMark(WidgetTester tester) async {
+  await tester.runAsync(
+    () =>
+        precacheImage(googleMark, tester.element(find.byType(Scaffold).first)),
+  );
+  await tester.pump();
 }
