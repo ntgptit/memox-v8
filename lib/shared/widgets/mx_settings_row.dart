@@ -141,9 +141,13 @@ class MxSettingsRow extends StatelessWidget {
   }
 
   /// MxButton, MxToggle and MxStepper draw their own disabled opacity, so
-  /// the row leaves them alone (critique 2026-09-30 part 3a).
-  static bool _drawsOwnDisabledState(Widget control) =>
-      control is MxButton || control is MxToggle || control is MxStepper;
+  /// the row leaves them alone, also under a Semantics label, as the
+  /// reminder's time button is (critique 2026-09-30 part 3a).
+  static bool _drawsOwnDisabledState(Widget control) => switch (control) {
+    MxButton() || MxToggle() || MxStepper() => true,
+    Semantics(:final child?) => _drawsOwnDisabledState(child),
+    _ => false,
+  };
 
   Widget _dimControl(Widget control) =>
       _drawsOwnDisabledState(control) ? control : _dim(control);

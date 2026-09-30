@@ -476,4 +476,17 @@ void main() {
     expect(find.byType(MxErrorState), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  libraryTest('off: the time button draws its own disabled state, dimmed '
+      'once (critique 2026-09-30 part 3a)', (tester, env) async {
+    await _pump(tester, env);
+    final time = find.descendant(
+      of: find.byType(MxButton),
+      matching: find.text('20:00'),
+    );
+    expect(
+      find.ancestor(of: time, matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
 }

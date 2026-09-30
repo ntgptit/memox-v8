@@ -277,4 +277,33 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('a control under a Semantics label is not dimmed twice either, '
+      "as the reminder's time button is (critique 2026-09-30 part 3a)", (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSettingsRow(
+          label: 'Time',
+          isEnabled: false,
+          trailing: Semantics(
+            label: 'Reminder time, 20:00',
+            excludeSemantics: true,
+            button: true,
+            child: const MxButton(
+              label: '20:00',
+              size: MxButtonSize.compact,
+              onPressed: null,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
 }
