@@ -7043,7 +7043,7 @@
   "@accountMergeNotDone": {
     "description": "Toast: the merge was refused (auth spec #25)."
   },
-  "accountLastAdmin": "An admin must remain. Give another person the admin role first.",
+  "accountLastAdmin": "Give another person the admin role first, then delete the account.",
   "@accountLastAdmin": {
     "description": "Last-admin dialog: body; the last admin cannot delete the account (Account UI spec §9 B7)."
   },

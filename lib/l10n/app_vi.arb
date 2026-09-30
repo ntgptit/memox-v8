@@ -1345,7 +1345,7 @@
   "accountLayerStuck": "Đã có lỗi khi chuyển tài khoản. Dữ liệu vẫn an toàn trên điện thoại này.",
   "accountSignOutLosing": "Đăng xuất ngay, mất {count} thay đổi",
   "accountMergeNotDone": "Không gộp được. Bộ thẻ vẫn còn trên điện thoại này.",
-  "accountLastAdmin": "Phải còn ít nhất một admin. Hãy cấp quyền admin cho người khác trước.",
+  "accountLastAdmin": "Hãy cấp quyền admin cho người khác trước, rồi xoá tài khoản.",
   "accountDeleteRefused": "Không xoá được tài khoản. Chưa có gì thay đổi.",
   "accountTitle": "Tài khoản",
   "accountMethodGoogle": "Đăng nhập bằng Google",
