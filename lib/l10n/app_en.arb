@@ -1917,14 +1917,14 @@
   "@deckReorderHint": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckReorderHint."
   },
-  "deckScheduledCount": "· {count} scheduled",
+  "deckScheduledCount": "{count} scheduled",
   "@deckScheduledCount": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 01: the trailing clause of the open deck's workload line, after the overdue · today · new terms; it carries its own separator."
+    "description": "Screen handoff 01: the trailing clause of the open deck's workload line, after the overdue · today · new terms; it carries its own separator. A muted fourth term of the open deck's breakdown, wrapping whole (critique 2026-09-30 part 3b)."
   },
   "deckDepthHeader": "{count} sub-decks · level 10",
   "@deckDepthHeader": {

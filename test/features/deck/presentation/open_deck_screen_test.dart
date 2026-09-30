@@ -321,6 +321,41 @@ void main() {
     expect(studied, [korean.id]);
   });
 
+  libraryTest('the scheduled count is a whole term of the breakdown: it '
+      'wraps before "1 scheduled", never inside it (Wrap Rule; critique '
+      '2026-09-30 part 3b)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(
+      env.db,
+      id: 'late',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 22),
+    );
+    await insertCard(
+      env.db,
+      id: 'later',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 12, 1),
+    );
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    final line = tester.widget<Text>(
+      find
+          .descendant(
+            of: find.descendant(
+              of: find.byType(DeckSummaryCardWidget),
+              matching: find.byType(MxWorkloadBreakdownLine),
+            ),
+            matching: find.byType(Text),
+          )
+          .first,
+    );
+    expect(line.textSpan!.toPlainText(), contains('1\u00A0scheduled'));
+  });
+
   libraryTest('the summary shows the level mastery donut beside "Mastered · '
       '{algorithm}" (BR-DECK-026)', (tester, env) async {
     final korean = await env.decks.root('Korean');
