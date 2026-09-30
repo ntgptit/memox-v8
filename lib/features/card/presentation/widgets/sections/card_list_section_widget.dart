@@ -358,11 +358,14 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           ),
         ),
       if (!isSelecting) ...[
-        CardDeckSummaryWidget(
-          view: view,
-          algorithm: widget.algorithm,
-          onStudy: widget.onStudy,
-        ),
+        // Search keeps the filters but not the summary, so the first
+        // results sit above the keyboard (critique 2026-09-30 part 1).
+        if (!isSearchOpen)
+          CardDeckSummaryWidget(
+            view: view,
+            algorithm: widget.algorithm,
+            onStudy: widget.onStudy,
+          ),
         CardListToolbarWidget(
           deckId: widget.deckId,
           request: request,

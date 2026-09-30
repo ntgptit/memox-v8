@@ -13,7 +13,9 @@ import 'package:memox/features/card/presentation/providers/card_list_provider.da
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_list_toolbar_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
@@ -231,6 +233,16 @@ void main() {
       tester.element(find.byType(CardListSectionWidget)),
     ).read(cardListRequestProvider(words.id));
     expect(request.windowSize, cardListWindowStep * 2);
+  });
+
+  libraryTest('search hides the deck summary and keeps the filters '
+      '(critique 2026-09-30: results clear the keyboard)', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    expect(find.byType(CardDeckSummaryWidget), findsOneWidget);
+    await _openSearch(tester, deckId);
+    expect(find.byType(CardDeckSummaryWidget), findsNothing);
+    expect(find.byType(CardListToolbarWidget), findsOneWidget);
   });
 
   libraryTest('a search with no hit names the term', (tester, env) async {
