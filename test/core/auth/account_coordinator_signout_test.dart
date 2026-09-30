@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';

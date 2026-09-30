@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/router/app_routes.dart';
-import 'package:memox/features/monitoring/di/is_admin_provider.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/domain/entities/log_summary_entity.dart';
@@ -9,20 +10,19 @@ import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/features/monitoring/domain/repositories/monitoring_repository.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Session, User;
 
-/// A Supabase session whose account has [role] in `app_metadata`, as the
-/// dashboard sets it (ADR-018 §7); no role when null.
-Session sessionWithRole(String? role) => Session(
-  accessToken: 'token',
-  tokenType: 'bearer',
-  user: User(
-    id: '00000000-0000-0000-0000-0000000000ad',
-    appMetadata: {'role': ?role},
-    userMetadata: const {},
-    aud: 'authenticated',
-    createdAt: '2026-09-29T00:00:00Z',
-  ),
+/// A confirmed admin, and a confirmed user (auth spec O8).
+const adminAccount = AccountUser(
+  id: '00000000-0000-0000-0000-0000000000ad',
+  email: 'admin@example.com',
+  isAnonymous: false,
+  role: AccountRole.admin,
+);
+const userAccount = AccountUser(
+  id: '00000000-0000-0000-0000-0000000000a5',
+  email: 'user@example.com',
+  isAnonymous: false,
+  role: AccountRole.user,
 );
 
 final DateTime monitoringNow = DateTime.utc(2026, 9, 29, 12);

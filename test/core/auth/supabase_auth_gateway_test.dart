@@ -15,9 +15,8 @@ Map<String, Object?> _session(String id, {bool anonymous = true}) => {
   'access_token': 'access-$id',
   'token_type': 'bearer',
   'expires_in': 3600,
-  'expires_at':
-      DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
-      1000,
+  // Far in the future, so the client never tries to refresh it.
+  'expires_at': 4102444800,
   'refresh_token': 'refresh-$id',
   'user': {
     'id': id,

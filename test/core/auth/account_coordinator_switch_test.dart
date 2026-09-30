@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/secret_store.dart';
@@ -95,7 +96,7 @@ void main() {
       expect(world.secrets.values.keys, [claimSecretKey(t.opId)]);
       expect(
         world.state,
-        isA<Transitioning>().having((s) => s.needsTargetSignIn, 'asks', isTrue),
+        isA<Transitioning>().having((s) => s.isAwaitingTargetSignIn, 'asks', isTrue),
       );
     },
   );
@@ -255,7 +256,7 @@ void main() {
     await world.coordinator.start();
     expect(
       world.state,
-      isA<Recovering>().having((s) => s.needsTargetSignIn, 'asks', isTrue),
+      isA<Recovering>().having((s) => s.isAwaitingTargetSignIn, 'asks', isTrue),
     );
     expect(world.gate.isClosed, isTrue);
 
@@ -334,7 +335,7 @@ void main() {
 
     expect(
       world.state,
-      isA<Transitioning>().having((s) => s.needsTargetSignIn, 'asks', isTrue),
+      isA<Transitioning>().having((s) => s.isAwaitingTargetSignIn, 'asks', isTrue),
     );
     expect((await world.store.transition())!.stage, TransitionStage.claimed);
   });

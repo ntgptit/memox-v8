@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/app/app.dart';
 import 'package:memox/app/logging_bootstrap.dart';
 import 'package:memox/app/startup_settings.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/logging/log_provider_observer.dart';
@@ -30,9 +33,15 @@ Future<void> main() async {
     // 2026-09-29-network-logging-design.md).
     await initializeSupabase(supabase);
   }
+  // Auth spec R3: a pending account transition shuts the write gate before
+  // the first frame. The rest of the start runs in the background: the
+  // first frame never waits for the network (R1, R2).
+  final accounts = container.read(accountCoordinatorProvider);
+  await accounts?.prepare();
   container
     ..read(syncSchedulerProvider)
     ..read(logSchedulerProvider);
+  if (accounts != null) unawaited(accounts.start());
   // BE-B5b: the reminder's plugins, on Android only, before anything
   // schedules. A failure here leaves the reminder to report its own typed
   // reason when it is used; the app starts regardless.

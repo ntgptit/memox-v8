@@ -49,14 +49,14 @@ final class ReauthRequired extends AuthState {
 final class Transitioning extends AuthState {
   const Transitioning(
     this.transition, {
-    this.needsTargetSignIn = false,
+    this.isAwaitingTargetSignIn = false,
     this.error,
   });
 
   final AccountTransition transition;
 
   /// The switch waits for the user to sign in to the target account.
-  final bool needsTargetSignIn;
+  final bool isAwaitingTargetSignIn;
 
   /// Why the flow stopped, when it did (a network error until Retry).
   final Failure? error;
@@ -66,18 +66,18 @@ final class Transitioning extends AuthState {
 final class Recovering extends AuthState {
   const Recovering(
     this.transition, {
-    this.needsTargetSignIn = false,
+    this.isAwaitingTargetSignIn = false,
     this.error,
-    this.stuck = false,
+    this.isStuck = false,
   });
 
   final AccountTransition transition;
-  final bool needsTargetSignIn;
+  final bool isAwaitingTargetSignIn;
   final Failure? error;
 
   /// A state the table says cannot happen (#31 after a merge). The gate
   /// stays shut, and the log has the details.
-  final bool stuck;
+  final bool isStuck;
 }
 
 /// A one-off outcome for the user, beside the state (plan ruling 3).

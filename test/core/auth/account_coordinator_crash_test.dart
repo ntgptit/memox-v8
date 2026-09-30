@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
@@ -52,8 +53,8 @@ Future<void> _settle(AuthWorld world, String? target) async {
     final state = world.state;
     if (state is Ready) return;
     final asks =
-        (state is Transitioning && state.needsTargetSignIn) ||
-        (state is Recovering && state.needsTargetSignIn);
+        (state is Transitioning && state.isAwaitingTargetSignIn) ||
+        (state is Recovering && state.isAwaitingTargetSignIn);
     if (asks && target != null) {
       await world.coordinator.requestCode(target);
       await world.coordinator.verifyCode(target, FakeAuthGateway.code);
