@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/network/supabase_client.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
 import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
@@ -18,7 +19,6 @@ import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/sync/sync_store.dart';
 import 'package:memox/core/sync/tag_sync_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'sync_providers.g.dart';
 
@@ -27,18 +27,13 @@ SupabaseConfig supabaseConfig(Ref ref) => SupabaseConfig.environment;
 
 /// Sync through the Supabase project; main.dart has initialized the client.
 @Riverpod(keepAlive: true)
-SyncApi syncApi(Ref ref) {
-  final client = Supabase.instance.client;
-  return SupabaseSyncApi(
-    ensureSession: () async {
-      if (client.auth.currentSession != null) {
-        return;
-      }
-      await client.auth.signInAnonymously();
-    },
-    rpc: (function, params) => client.rpc<Object?>(function, params: params),
-  );
-}
+SyncApi syncApi(Ref ref) => SupabaseSyncApi(
+  ensureSession: () async {
+    if (hasSupabaseSession()) return;
+    await signInAnonymouslyForSync();
+  },
+  rpc: supabaseRpc,
+);
 
 @Riverpod(keepAlive: true)
 SyncStore syncStore(Ref ref) => SyncStore(ref.watch(databaseProvider));

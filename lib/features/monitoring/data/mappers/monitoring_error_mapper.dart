@@ -1,7 +1,7 @@
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/network/remote_error.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/features/monitoring/data/datasources/monitoring_remote_data_source.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 const _forbidden = 'FORBIDDEN';
 
@@ -12,9 +12,7 @@ const _forbidden = 'FORBIDDEN';
 Failure mapMonitoringError(Object error) {
   if (error is Failure) return error;
   if (error is MonitoringSessionMissing) return NotAdminFailure(cause: error);
-  if (error is PostgrestException && error.message == _forbidden) {
-    return NotAdminFailure(cause: error);
-  }
+  if (rpcErrorCode(error) == _forbidden) return NotAdminFailure(cause: error);
   return switch (classifySyncFailure(error)) {
     SyncFailureKind.network => OfflineFailure(cause: error),
     SyncFailureKind.signIn ||

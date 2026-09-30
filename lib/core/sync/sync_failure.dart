@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:memox/core/network/remote_error.dart';
 
 /// Why a sync run failed, as screen 27 says it (sync status spec §4, §5.4).
 /// Stored by name in `sync_state`.
@@ -20,16 +16,11 @@ enum SyncFailureKind {
   }
 }
 
-/// The kind of [error] a run threw. The transport's errors are checked
-/// before the sign-in's, since a retryable fetch is also an AuthException.
-SyncFailureKind classifySyncFailure(Object error) => switch (error) {
-  SocketException() ||
-  TimeoutException() ||
-  http.ClientException() ||
-  AuthRetryableFetchException() => SyncFailureKind.network,
-  AuthException() => SyncFailureKind.signIn,
-  PostgrestException() ||
-  FormatException() ||
-  TypeError() => SyncFailureKind.server,
-  _ => SyncFailureKind.unknown,
-};
+/// The kind of [error] a run threw (the transport's classification).
+SyncFailureKind classifySyncFailure(Object error) =>
+    switch (classifyRemoteError(error)) {
+      RemoteErrorKind.network => SyncFailureKind.network,
+      RemoteErrorKind.signIn => SyncFailureKind.signIn,
+      RemoteErrorKind.server => SyncFailureKind.server,
+      RemoteErrorKind.unknown => SyncFailureKind.unknown,
+    };
