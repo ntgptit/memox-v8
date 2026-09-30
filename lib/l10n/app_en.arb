@@ -6793,5 +6793,262 @@
   "monitoringGoneBody": "It may have been cleaned up.",
   "@monitoringGoneBody": {
     "description": "Screen 28 detail: the body of the gone log."
+  },
+  "accountSection": "Account",
+  "@accountSection": {
+    "description": "Screen 23: the Account section's overline (Account UI spec §5.5)."
+  },
+  "accountSignIn": "Sign in",
+  "@accountSignIn": {
+    "description": "Screen 23's row and screen 30's title: attach an account (Account UI spec §5.5)."
+  },
+  "accountSignInHint": "Keep your decks if you reinstall or change phones",
+  "@accountSignInHint": {
+    "description": "Screen 23: under Sign in."
+  },
+  "accountSignInLater": "Available when you're online",
+  "@accountSignInLater": {
+    "description": "Screen 23: under a Sign in that must wait for the network (plan ruling 6)."
+  },
+  "accountSignedInHint": "Your decks sync to this account",
+  "@accountSignedInHint": {
+    "description": "Screen 23: under the attached account's email (plan ruling 5)."
+  },
+  "welcomeLead": "Sign in to keep your decks safe and the same on every phone.",
+  "@welcomeLead": {
+    "description": "Screen 29: the line under the app name."
+  },
+  "welcomeBenefitReinstall": "Keep your decks when you reinstall",
+  "@welcomeBenefitReinstall": {
+    "description": "Screen 29: the first benefit."
+  },
+  "welcomeBenefitPhones": "Study on several phones",
+  "@welcomeBenefitPhones": {
+    "description": "Screen 29: the second benefit."
+  },
+  "welcomeBenefitOffline": "Still works offline",
+  "@welcomeBenefitOffline": {
+    "description": "Screen 29: the third benefit."
+  },
+  "accountContinueGoogle": "Continue with Google",
+  "@accountContinueGoogle": {
+    "description": "Screens 29 and 30: sign in with Google."
+  },
+  "accountContinueEmail": "Continue with email",
+  "@accountContinueEmail": {
+    "description": "Screen 29: go to screen 30 for an email code."
+  },
+  "accountContinueWithout": "Continue without an account",
+  "@accountContinueWithout": {
+    "description": "Screen 29: leave without signing in."
+  },
+  "accountOfflineNote": "Signing in needs a connection. You can do it later in Settings.",
+  "@accountOfflineNote": {
+    "description": "Screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
+  },
+  "accountLinkLine": "Your decks stay on this phone and join the account.",
+  "@accountLinkLine": {
+    "description": "Screen 30, link mode: what signing in does."
+  },
+  "accountTargetLine": "Sign in to the account this phone moves to.",
+  "@accountTargetLine": {
+    "description": "Transition layer: the target sign-in."
+  },
+  "accountOr": "or",
+  "@accountOr": {
+    "description": "Screen 30: between Google and the email field."
+  },
+  "accountEmail": "Email address",
+  "@accountEmail": {
+    "description": "Screen 30: the email field's label and hint."
+  },
+  "accountSendCode": "Send code",
+  "@accountSendCode": {
+    "description": "Screen 30: send a 6-digit code to the email."
+  },
+  "accountEmailInvalid": "Enter an email address, like name@example.com.",
+  "@accountEmailInvalid": {
+    "description": "Screen 30: the email is not an address."
+  },
+  "accountRateLimited": "Too many tries. Wait a minute, then try again.",
+  "@accountRateLimited": {
+    "description": "Screens 30 and 31: rate limited (Account UI spec R3)."
+  },
+  "accountOffline": "No connection. Nothing changed; try again when you're online.",
+  "@accountOffline": {
+    "description": "Screens 30 and 31: offline."
+  },
+  "accountFailed": "Couldn't sign in. Nothing changed; try again.",
+  "@accountFailed": {
+    "description": "Screens 30 and 31: any other failure."
+  },
+  "accountSignedInAs": "Signed in as {email}",
+  "@accountSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Toast after an account is attached."
+  },
+  "accountSignedIn": "Signed in",
+  "@accountSignedIn": {
+    "description": "Toast after an account is attached, its email not confirmed yet."
+  },
+  "accountCodeTitle": "Enter the code",
+  "@accountCodeTitle": {
+    "description": "Screen 31's title."
+  },
+  "accountCodeSentTo": "Enter the 6-digit code sent to {email}",
+  "@accountCodeSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 31: where the code went."
+  },
+  "accountCodeLabel": "Code, 6 digits",
+  "@accountCodeLabel": {
+    "description": "Screen 31: the code field's TalkBack label."
+  },
+  "accountCodeWrong": "That code is wrong or has expired. Check the latest email, or send a new code.",
+  "@accountCodeWrong": {
+    "description": "Screen 31: a refused code (Account UI spec R3)."
+  },
+  "accountResendIn": "Resend code in {time}",
+  "@accountResendIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 31: the resend countdown, as m:ss."
+  },
+  "accountResend": "Resend code",
+  "@accountResend": {
+    "description": "Screen 31: send a new code."
+  },
+  "accountCodeResent": "A new code is on its way.",
+  "@accountCodeResent": {
+    "description": "Screen 31: toast after a resend."
+  },
+  "accountUseAnotherEmail": "Use another email",
+  "@accountUseAnotherEmail": {
+    "description": "Screen 31: back to the email."
+  },
+  "accountTakenEmail": "{email} already has an account",
+  "@accountTakenEmail": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Merge sheet: the title for an email."
+  },
+  "accountTakenGoogle": "This Google account is already in use",
+  "@accountTakenGoogle": {
+    "description": "Merge sheet: the title for Google (plan ruling 12)."
+  },
+  "accountMerge": "Merge into the account",
+  "@accountMerge": {
+    "description": "Merge sheet: the default choice."
+  },
+  "accountMergeCounts": "{decks, plural, =1{Your 1 deck} other{Your {decks} decks}} and {cards, plural, =1{1 card} other{{cards} cards}} join it.",
+  "@accountMergeCounts": {
+    "placeholders": {
+      "decks": {
+        "type": "int"
+      },
+      "cards": {
+        "type": "int"
+      }
+    },
+    "description": "Merge sheet: what merging brings."
+  },
+  "accountMergePlain": "This phone's decks and cards join it.",
+  "@accountMergePlain": {
+    "description": "Merge sheet: what merging brings, when the count failed (plan ruling 10)."
+  },
+  "accountDiscard": "Discard this phone's data",
+  "@accountDiscard": {
+    "description": "Merge sheet: the other choice."
+  },
+  "accountDiscardBody": "They're removed from this phone. The account's decks come down instead.",
+  "@accountDiscardBody": {
+    "description": "Merge sheet: what discarding does."
+  },
+  "accountDiscardWarning": "This phone's decks and progress go for good.",
+  "@accountDiscardWarning": {
+    "description": "Merge sheet: the warning once Discard is chosen."
+  },
+  "accountContinue": "Continue",
+  "@accountContinue": {
+    "description": "Merge sheet: confirm the merge."
+  },
+  "accountDiscardContinue": "Discard and continue",
+  "@accountDiscardContinue": {
+    "description": "Merge sheet: confirm the discard."
+  },
+  "accountStepSending": "Sending your changes…",
+  "@accountStepSending": {
+    "description": "Transition layer: pushing before the move."
+  },
+  "accountStepPreparing": "Getting your decks ready…",
+  "@accountStepPreparing": {
+    "description": "Transition layer: taking the merge claim."
+  },
+  "accountStepMerging": "Merging…",
+  "@accountStepMerging": {
+    "description": "Transition layer: the merge."
+  },
+  "accountStepDownloading": "Downloading your decks…",
+  "@accountStepDownloading": {
+    "description": "Transition layer: the full pull."
+  },
+  "accountStepSigningOut": "Signing out…",
+  "@accountStepSigningOut": {
+    "description": "Transition layer: sign-out or clear."
+  },
+  "accountStepDeleting": "Deleting your account…",
+  "@accountStepDeleting": {
+    "description": "Transition layer: the deletion."
+  },
+  "accountSafeToClose": "Nothing is lost if you close the app.",
+  "@accountSafeToClose": {
+    "description": "Transition layer: the reassurance under the step."
+  },
+  "accountLayerOffline": "No connection. Your data is safe on this phone.",
+  "@accountLayerOffline": {
+    "description": "Transition layer: a network error."
+  },
+  "accountLayerFailed": "Something went wrong. Your data is safe on this phone.",
+  "@accountLayerFailed": {
+    "description": "Transition layer: any other error."
+  },
+  "accountLayerStuck": "Something went wrong while moving your account. Your data is safe on this phone.",
+  "@accountLayerStuck": {
+    "description": "Transition layer: a state the machine says cannot happen."
+  },
+  "accountSignOutLosing": "Sign out now and lose {count, plural, =1{1 change} other{{count} changes}}",
+  "@accountSignOutLosing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Transition layer: a sign-out stopped offline."
+  },
+  "accountMergeNotDone": "Couldn't merge. Your decks are still on this phone.",
+  "@accountMergeNotDone": {
+    "description": "Toast: the merge was refused (auth spec #25)."
+  },
+  "accountLastAdmin": "An admin must remain. Give another person the admin role first.",
+  "@accountLastAdmin": {
+    "description": "Toast: the last admin cannot delete the account (plan ruling 8)."
+  },
+  "accountDeleteRefused": "Couldn't delete the account. Nothing changed.",
+  "@accountDeleteRefused": {
+    "description": "Toast: the deletion did not happen."
   }
 }

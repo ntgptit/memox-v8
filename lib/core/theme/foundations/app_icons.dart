@@ -62,6 +62,9 @@ abstract final class AppIcons {
       Icons.warning_amber_outlined; // triangle-alert
   static const IconData copy = Icons.content_copy_outlined; // copy
   static const IconData monitoring = Icons.monitor_heart_outlined; // activity
+  // Account (screens 23, 29).
+  static const IconData account = Icons.person_outline; // user
+  static const IconData devices = Icons.devices_outlined; // smartphone
 
   // Debug gallery.
   static const IconData gallery = Icons.widgets_outlined;
