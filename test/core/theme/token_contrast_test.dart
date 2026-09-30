@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
@@ -80,6 +81,14 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
     ),
     ('progress fill on its track', scheme.primary, track, _nonText),
     ('sheet grabber', scheme.onSurfaceVariant, sheet, _nonText),
+    // Critique 2026-09-30: a Guess option out of play fades as a whole (ink and
+    // surface) to AppOpacity.muted over the page, and must stay readable.
+    (
+      'faded choice ink',
+      _tint(scheme.onSurface, AppOpacity.muted, page),
+      _tint(scheme.surfaceContainerLowest, AppOpacity.muted, page),
+      _text,
+    ),
   ];
 }
 
