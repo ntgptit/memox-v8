@@ -107,9 +107,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           widget.purpose == SignInPurpose.link
               ? l10n.accountLinkLine
               : l10n.accountTargetLine,
-          style: context.texts.bodyMedium!.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
+          style: context.textStyles.emptyBody,
         ),
         const SizedBox(height: AppSpacing.section),
         MxButton(
@@ -164,12 +162,7 @@ class _OrDivider extends StatelessWidget {
       spacing: AppSpacing.grouped,
       children: [
         line,
-        Text(
-          label,
-          style: context.texts.labelSmall!.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
-        ),
+        Text(label, style: context.textStyles.footerCaption),
         line,
       ],
     );
