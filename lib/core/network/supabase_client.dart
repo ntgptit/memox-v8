@@ -21,9 +21,3 @@ Future<Object?> supabaseRpc(String function, Map<String, Object?> params) =>
 /// Whether the SDK holds a session now. It never signs in.
 bool hasSupabaseSession() =>
     Supabase.instance.client.auth.currentSession != null;
-
-/// Sync's lazy anonymous sign-in, until the account coordinator owns
-/// sign-in (auth spec §3; removed by core-auth plan Task 7).
-Future<void> signInAnonymouslyForSync() async {
-  await Supabase.instance.client.auth.signInAnonymously();
-}

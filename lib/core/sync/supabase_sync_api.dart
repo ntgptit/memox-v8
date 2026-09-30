@@ -35,3 +35,13 @@ class SupabaseSyncApi implements SyncApi {
     return ChangesResponseModel.fromJson(json! as Map<String, Object?>);
   }
 }
+
+/// A sync call with no session: the account has not signed in yet (auth
+/// spec R2). Sync runs only once the account is confirmed, so this is a
+/// bug, not a state.
+final class SyncSessionMissing implements Exception {
+  const SyncSessionMissing();
+
+  @override
+  String toString() => 'SyncSessionMissing: no session to sync with';
+}

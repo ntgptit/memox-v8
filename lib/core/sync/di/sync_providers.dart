@@ -11,6 +11,7 @@ import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/review_log_sync_adapter.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
 import 'package:memox/core/sync/sync_commands.dart';
+import 'package:memox/core/sync/sync_control.dart';
 import 'package:memox/core/sync/sync_api.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_failure.dart';
@@ -25,12 +26,13 @@ part 'sync_providers.g.dart';
 @Riverpod(keepAlive: true)
 SupabaseConfig supabaseConfig(Ref ref) => SupabaseConfig.environment;
 
-/// Sync through the Supabase project; main.dart has initialized the client.
+/// Sync through the Supabase project main.dart initialized. It never signs
+/// in: the account coordinator does, and resumes sync once `me()` confirms
+/// the account (auth spec R2).
 @Riverpod(keepAlive: true)
 SyncApi syncApi(Ref ref) => SupabaseSyncApi(
   ensureSession: () async {
-    if (hasSupabaseSession()) return;
-    await signInAnonymouslyForSync();
+    if (!hasSupabaseSession()) throw const SyncSessionMissing();
   },
   rpc: supabaseRpc,
 );
@@ -79,7 +81,8 @@ SyncScheduler? syncScheduler(Ref ref) {
     onSucceeded: () => store.recordSuccess(clock.now()),
     onFailed: (error) =>
         store.recordFailure(classifySyncFailure(error), clock.now()),
-  )..start();
+    // Paused until the account coordinator reaches Ready (auth spec R2).
+  )..start(paused: true);
   ref.onDispose(scheduler.dispose);
   return scheduler;
 }
@@ -105,3 +108,11 @@ SyncCommands? syncCommands(Ref ref) {
     store: ref.watch(syncStoreProvider),
   );
 }
+
+/// What the account coordinator drives (auth spec §5).
+@Riverpod(keepAlive: true)
+SyncControl syncControl(Ref ref) => AppSyncControl(
+  scheduler: ref.watch(syncSchedulerProvider),
+  coordinator: ref.watch(syncCoordinatorProvider),
+  store: ref.watch(syncStoreProvider),
+);

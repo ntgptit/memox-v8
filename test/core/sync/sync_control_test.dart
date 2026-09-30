@@ -1,0 +1,83 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/sync/account_settings_sync_adapter.dart';
+import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
+import 'package:memox/core/sync/card_sync_adapter.dart';
+import 'package:memox/core/sync/deck_sync_adapter.dart';
+import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
+import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/core/sync/sync_control.dart';
+import 'package:memox/core/sync/sync_coordinator.dart';
+import 'package:memox/core/sync/sync_models.dart';
+import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/core/sync/tag_sync_adapter.dart';
+
+import '../../support/test_database.dart';
+import 'fake_sync_server.dart';
+
+void main() {
+  test('push all empties the outbox; pull all reads from version 0', () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    final store = SyncStore(db);
+    final server = FakeSyncServer();
+    final coordinator = SyncCoordinator(
+      api: server,
+      store: store,
+      adapters: [
+        DeleteBatchSyncAdapter(db),
+        DeckSyncAdapter(db),
+        TagSyncAdapter(db, store),
+        CardSyncAdapter(db),
+        CardScheduleSyncAdapter(db, store),
+        ReviewLogSyncAdapter(db),
+        AccountSettingsSyncAdapter(db),
+      ],
+    );
+    final control = AppSyncControl(
+      scheduler: null,
+      coordinator: coordinator,
+      store: store,
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t', 'T', 't', 0)",
+    );
+    expect(await control.pendingCount(), 1);
+
+    await control.pushPending();
+    expect(await control.pendingCount(), 0);
+    expect(server.row('tag', 't'), isNotNull);
+
+    await store.setSince(99);
+    await control.pullAll();
+    expect(await store.since(), greaterThan(0));
+  });
+
+  test('a push that never reached the server is an OfflineFailure', () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    final store = SyncStore(db);
+    final control = AppSyncControl(
+      scheduler: null,
+      coordinator: SyncCoordinator(
+        api: _OfflineApi(),
+        store: store,
+        adapters: [TagSyncAdapter(db, store)],
+      ),
+      store: store,
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t', 'T', 't', 0)",
+    );
+
+    await expectLater(control.pushPending(), throwsA(isA<OfflineFailure>()));
+  });
+}
+
+class _OfflineApi extends FakeSyncServer {
+  @override
+  Future<PushResponseModel> push(PushRequestModel request) async =>
+      throw const SocketException('down');
+}
