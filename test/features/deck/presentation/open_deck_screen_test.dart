@@ -16,6 +16,7 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 
@@ -125,6 +126,10 @@ void main() {
     expect(buttons, isNotEmpty);
     expect(buttons.every((b) => b.isBlock), isTrue);
     expect(buttons.first.label, _en.deckNewCard);
+    // Its empty state offers both; no FAB beside it (ruling R9, critique
+    // 2026-09-30 part 1).
+    expect(find.byType(MxFab), findsNothing);
+    expectOnePrimaryPerDecision(tester);
     await tester.tap(_unsetButton(_en.deckNewCard));
     expect(added, [words.id]);
 
@@ -171,6 +176,8 @@ void main() {
 
   libraryTest('the FAB opens the new sub-deck dialog', (tester, env) async {
     final korean = await env.decks.root('Korean');
+    // A deck of sub-decks keeps the FAB; an unset one has none (R9).
+    await env.decks.sub(korean.id, 'Words');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
     await tester.tap(find.byType(MxFab));
     await tester.pumpAndSettle();

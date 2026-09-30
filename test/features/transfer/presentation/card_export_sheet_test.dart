@@ -22,6 +22,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/fake_export_share.dart';
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../visual_audit/screen_audit.dart';
 
@@ -205,6 +206,13 @@ void main() {
     expect(find.text(_en.exportStaleTitle), findsOneWidget);
     expect(_button(_en.exportClose), findsOneWidget);
     expect(share.shared, isEmpty);
+    // A final problem leaves nothing to choose (critique 2026-09-30).
+    for (final row in tester.widgetList<MxOptionRow>(
+      find.byType(MxOptionRow),
+    )) {
+      expect(row.onSelected, isNull);
+    }
+    expectOnePrimaryPerDecision(tester);
   });
 
   for (final (how, dismiss) in <(String, Future<void> Function(WidgetTester))>[
