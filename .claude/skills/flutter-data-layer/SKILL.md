@@ -84,6 +84,10 @@ stack trace (ADR-011 D6). A watch does the same with `.mapDatabaseErrors()`
 (`progress_repository_impl.dart`). The example is
 `lib/features/reminders/data/repositories/reminder_workload_repository_impl.dart`.
 
+Sync never signs in: `AccountCoordinator` (`lib/core/auth/`) owns sign-in and
+resumes the paused sync scheduler once `me()` confirms the account (auth spec
+R2).
+
 Sync handles its own network failures: `SyncScheduler` retries a failed run
 with backoff, and nothing reaches a repository. When a repository first calls
 the API, its `DioException` mapping goes next to `mapDatabaseError` in

@@ -35,6 +35,10 @@ convenience; the CI `supabase` job is the gate.
 
        flutter run --dart-define=SUPABASE_URL=https://<ref>.supabase.co --dart-define=SUPABASE_PUBLISHABLE_KEY=<key>
 
+   Native Google sign-in also needs `--dart-define=GOOGLE_WEB_CLIENT_ID=<Web
+   OAuth client id of SB-A4>` (auth spec O11); without it, email sign-in still
+   works.
+
 6. Make your own user the first admin, once per user id. Find the id under
    Authentication → Users (your account, or the app's anonymous user on your
    phone), then run in the SQL Editor:

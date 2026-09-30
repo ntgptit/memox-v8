@@ -1,0 +1,28 @@
+-- Auth spec §4. The account the server last confirmed through me(), read at
+-- start before any network (R1, R2). One row; overwritten on each me(),
+-- removed when the device's data is cleared (#41).
+CREATE TABLE account_state (
+  id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+  user_id TEXT NOT NULL,
+  email TEXT,
+  is_anonymous INTEGER NOT NULL CHECK (is_anonymous IN (0, 1)),
+  role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+  validated_at DATETIME NOT NULL
+) AS AccountStateRow;
+
+-- Auth spec §3.3, §4. The account transition in progress: its intent and how
+-- far it got, never who is signed in (R1). Zero or one row, until the flow
+-- ends.
+CREATE TABLE account_transition (
+  id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+  op_id TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('switchAccount', 'signOut', 'delete', 'clearToAnon', 'anonRecovery')),
+  choice TEXT CHECK (choice IN ('merge', 'discard')),
+  source_user_id TEXT,
+  source_is_anonymous INTEGER CHECK (source_is_anonymous IN (0, 1)),
+  target_user_id TEXT,
+  target_hint TEXT,
+  stage TEXT NOT NULL CHECK (stage IN ('started', 'sourcePushed', 'claimed', 'targetSignedIn', 'merged', 'localCleared', 'targetPulled', 'acknowledged', 'serverDeleted', 'signedOut', 'newAnon')),
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) AS AccountTransitionRow;

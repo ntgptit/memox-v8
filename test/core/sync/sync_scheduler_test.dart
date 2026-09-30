@@ -257,4 +257,71 @@ void main() {
       scheduler.dispose();
     });
   });
+
+  test('started paused, nothing runs until resume', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final triggers = StreamController<void>();
+      final reconnects = StreamController<void>();
+      final scheduler = SyncScheduler(
+        run: () async => runs++,
+        triggers: triggers.stream,
+        reconnects: reconnects.stream,
+      )..start(paused: true);
+
+      triggers.add(null);
+      reconnects.add(null);
+      clock.elapse(const Duration(minutes: 1));
+      expect(runs, 0);
+      expect(scheduler.isPaused, isTrue);
+
+      var answered = false;
+      scheduler.syncNow().then((ok) {
+        expect(ok, isFalse);
+        answered = true;
+      });
+      clock.flushMicrotasks();
+      expect(answered, isTrue);
+      expect(runs, 0);
+
+      scheduler.resume();
+      clock.elapse(Duration.zero);
+      expect(runs, 1);
+
+      scheduler.dispose();
+      triggers.close();
+      reconnects.close();
+    });
+  });
+
+  test('pause waits for the run in progress and schedules nothing after', () {
+    fakeAsync((clock) {
+      var runs = 0;
+      final release = Completer<void>();
+      final triggers = StreamController<void>();
+      final scheduler = SyncScheduler(
+        run: () async {
+          runs++;
+          await release.future;
+        },
+        triggers: triggers.stream,
+      )..start();
+      clock.elapse(Duration.zero);
+      expect(runs, 1);
+
+      var paused = false;
+      scheduler.pause().then((_) => paused = true);
+      clock.flushMicrotasks();
+      expect(paused, isFalse);
+
+      triggers.add(null);
+      release.complete();
+      clock.elapse(const Duration(minutes: 10));
+      expect(paused, isTrue);
+      expect(runs, 1);
+
+      scheduler.dispose();
+      triggers.close();
+    });
+  });
 }

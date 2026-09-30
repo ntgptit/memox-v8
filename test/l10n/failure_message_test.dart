@@ -12,6 +12,12 @@ void main() {
         const ConstraintFailure(cause: 'CHECK constraint failed: deck'),
         const DatabaseLockedFailure(cause: 'database is locked'),
         const UnknownDatabaseFailure(cause: '/data/app/memox.sqlite'),
+        const SessionInvalidFailure(cause: 'refresh_token_not_found'),
+        const IdentityTakenFailure(method: IdentityMethod.google),
+        const InvalidCodeFailure(cause: 'otp_expired'),
+        const LastAdminFailure(cause: 'LAST_ADMIN'),
+        const UnsentChangesFailure(count: 3),
+        const MutationBlockedFailure(),
       ];
 
       for (final failure in failures) {

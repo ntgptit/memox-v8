@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
-import 'package:memox/features/monitoring/di/auth_session_provider.dart';
-import 'package:memox/features/monitoring/di/is_admin_provider.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_entry_section_widget.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Session;
 
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
@@ -55,55 +54,52 @@ void main() {
     expect(opened, 1);
   });
 
-  libraryTest('a build with no Supabase shows nothing, whatever the session', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(onOpen: () {}),
-      overrides: [
-        supabaseConfigProvider.overrideWithValue(
-          const SupabaseConfig(url: '', publishableKey: ''),
-        ),
-        authSessionProvider.overrideWith(
-          (ref) => Stream.value(sessionWithRole('admin')),
-        ),
-      ],
-    );
-    await tester.scrollUntilVisible(find.text('Reset app options'), 200);
+  libraryTest(
+    'a build with no Supabase shows nothing: its account stays local',
+    (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(onOpen: () {}),
+        overrides: [
+          supabaseConfigProvider.overrideWithValue(
+            const SupabaseConfig(url: '', publishableKey: ''),
+          ),
+        ],
+      );
+      await tester.scrollUntilVisible(find.text('Reset app options'), 200);
 
-    expect(find.text('Monitoring'), findsNothing);
-  });
+      expect(find.text('Monitoring'), findsNothing);
+    },
+  );
 
   // Review focus: a token refresh that adds the admin role while Settings is
   // open.
-  libraryTest('a token refresh that adds the role shows the row without a '
-      'restart, and a sign-out hides it', (tester, env) async {
-    final sessions = StreamController<Session?>();
-    addTearDown(sessions.close);
+  libraryTest('an account confirmed as admin shows the row without a '
+      'restart, and a lost confirmation hides it', (tester, env) async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
     await pumpLibraryScreen(
       tester,
       env,
       _screen(onOpen: () {}),
       overrides: [
         supabaseConfigProvider.overrideWithValue(_enabled),
-        authSessionProvider.overrideWith((ref) => sessions.stream),
+        authStateProvider.overrideWith((ref) => states.stream),
       ],
     );
-    sessions.add(sessionWithRole(null));
+    states.add(const Ready(userAccount));
     await tester.pump();
     await tester.scrollUntilVisible(find.text('Reset app options'), 200);
     expect(find.text('Monitoring'), findsNothing);
 
-    sessions.add(sessionWithRole('admin'));
+    states.add(const Ready(adminAccount));
     await tester.pump();
     await tester.pump();
     await tester.scrollUntilVisible(find.text('Monitoring'), 200);
     expect(find.text('Monitoring'), findsOneWidget);
 
-    sessions.add(null);
+    states.add(const Validating(null));
     await tester.pump();
     await tester.pump();
     expect(find.text('Monitoring'), findsNothing);

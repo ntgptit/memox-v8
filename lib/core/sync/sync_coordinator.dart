@@ -50,6 +50,17 @@ class SyncCoordinator {
     );
   }
 
+  /// Pushes until the outbox is empty (auth spec #19, #39).
+  Future<void> pushAll() async {
+    await _push(await _store.deviceId());
+  }
+
+  /// The account's whole library, from version 0 (auth spec #28).
+  Future<void> pullAll() async {
+    await _store.setSince(0);
+    await _pull();
+  }
+
   /// Try again (sync status spec §4): each refused entity goes back to the
   /// outbox, as an upsert while it exists locally and as a delete once it
   /// is gone. The records stay until the next push answers.

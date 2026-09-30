@@ -35,7 +35,7 @@ void main() {
       ..execute('DELETE FROM sync_outbox');
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 10);
+    await verifier.migrateAndValidate(db, 12);
     final queued = await db
         .customSelect(
           'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
@@ -60,7 +60,7 @@ void main() {
         ..execute("UPDATE app_settings SET theme_mode = '$theme' WHERE id = 1")
         ..execute('DELETE FROM sync_outbox');
       final db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 10);
+      await verifier.migrateAndValidate(db, 12);
       final rows = await db
           .customSelect(
             "SELECT 1 FROM sync_outbox WHERE entity_type = 'account_settings'",
@@ -90,7 +90,7 @@ void main() {
       ..execute('DELETE FROM sync_outbox');
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 10);
+    await verifier.migrateAndValidate(db, 12);
 
     final queued = await db
         .customSelect(
@@ -121,7 +121,7 @@ void main() {
       );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 10);
+    await verifier.migrateAndValidate(db, 12);
 
     final queued = await db
         .customSelect(

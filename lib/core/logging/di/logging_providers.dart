@@ -6,10 +6,10 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_api.dart';
 import 'package:memox/core/logging/log_shipper.dart';
+import 'package:memox/core/network/supabase_client.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'logging_providers.g.dart';
 
@@ -24,15 +24,10 @@ LogDatabase logDatabase(Ref ref) {
 /// `log_push` through the Supabase project; main.dart has initialized it.
 /// It waits for sync's session instead of signing in.
 @Riverpod(keepAlive: true)
-LogApi logApi(Ref ref) {
-  final client = Supabase.instance.client;
-  return LogApi(
-    ensureSession: existingSessionOnly(
-      () => client.auth.currentSession != null,
-    ),
-    rpc: (function, params) => client.rpc<Object?>(function, params: params),
-  );
-}
+LogApi logApi(Ref ref) => LogApi(
+  ensureSession: existingSessionOnly(hasSupabaseSession),
+  rpc: supabaseRpc,
+);
 
 /// Whether the app is in front. Logs ship only then (ADR-018 §3): a push in
 /// the background wakes the radio for nothing the owner is waiting on.

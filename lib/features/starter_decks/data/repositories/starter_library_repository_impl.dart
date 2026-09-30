@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -64,37 +65,35 @@ final class StarterLibraryRepositoryImpl implements StarterLibraryRepository {
     if (template == null) {
       return const Rejected(StarterRejection.templateNotFound);
     }
-    return guardDatabase(
-      () => _db.transaction(() async {
-        final isInLibrary = await _dao.hasCopy(
-          template.templateId,
-          template.version,
-        );
-        if (isInLibrary && !allowSecondCopy) {
-          return const Rejected(StarterRejection.alreadyInLibrary);
-        }
-        final root = _written(
-          await _decks.createRootDeck(
-            name: template.title,
-            schedulerType: schedulerType,
-            sourceTemplate: DeckSourceTemplate(
-              templateId: template.templateId,
-              version: template.version,
-            ),
-            now: now,
+    return _db.mappedTransaction(() async {
+      final isInLibrary = await _dao.hasCopy(
+        template.templateId,
+        template.version,
+      );
+      if (isInLibrary && !allowSecondCopy) {
+        return const Rejected(StarterRejection.alreadyInLibrary);
+      }
+      final root = _written(
+        await _decks.createRootDeck(
+          name: template.title,
+          schedulerType: schedulerType,
+          sourceTemplate: DeckSourceTemplate(
+            templateId: template.templateId,
+            version: template.version,
           ),
-        );
-        await _writeDecks(root.id, template.decks, now);
-        return Ok(
-          AddedStarterDeck(
-            rootDeckId: root.id,
-            title: template.title,
-            schedulerType: schedulerType,
-            cardCount: template.cardCount,
-          ),
-        );
-      }),
-    );
+          now: now,
+        ),
+      );
+      await _writeDecks(root.id, template.decks, now);
+      return Ok(
+        AddedStarterDeck(
+          rootDeckId: root.id,
+          title: template.title,
+          schedulerType: schedulerType,
+          cardCount: template.cardCount,
+        ),
+      );
+    });
   }
 
   /// [decks] under [parentId], depth first, in template order (spec D9).

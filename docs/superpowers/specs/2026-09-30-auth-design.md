@@ -1,7 +1,8 @@
 # Real accounts: sign-in, account switch, sign-out and deletion (SB-A1)
 
 Status: approved 2026-09-30; P1 (server) implemented by
-`docs/superpowers/plans/2026-09-30-accounts-server.md`. Every section was
+`docs/superpowers/plans/2026-09-30-accounts-server.md`; P2 (core auth) implemented by
+`docs/superpowers/plans/2026-09-30-accounts-core-auth.md`. Every section was
 approved in the brainstorm of 2026-09-29/30, the UI brief in the Impeccable
 `shape` of 2026-09-30. Covers SB-A1 (this spec), SB-A2, SB-A3, SB-A5
 and the owner's setup SB-A4 of `docs/wbs_supabase.md`. Decisions extend

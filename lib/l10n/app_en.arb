@@ -244,6 +244,14 @@
   "@failureUnknown": {
     "description": "An unexpected database error; nothing was lost."
   },
+  "failureAccount": "Nothing was lost. The account step didn't finish. Try again.",
+  "@failureAccount": {
+    "description": "Any refused account step (auth spec §3.2); screens of P3 may say more for their own cases."
+  },
+  "failureAccountBusy": "Nothing was saved yet: your account is changing. Try again in a moment.",
+  "@failureAccountBusy": {
+    "description": "A change refused while the account switches, signs out or is deleted (R3)."
+  },
   "commonBack": "Back",
   "@commonBack": {
     "description": "Accessible name of the back control."

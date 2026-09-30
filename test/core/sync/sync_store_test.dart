@@ -122,4 +122,52 @@ void main() {
     await sub.cancel();
     expect(seen, [0, 1]);
   });
+
+  test('markAllPending queues every row parents first, once, and rewinds the cursor', () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    final store = SyncStore(db);
+    await store.applyingRemote(() async {
+      for (final sql in [
+        "INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at) VALUES ('b', 'deck', 'x', 0)",
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, scheduler_version, generation, sibling_position, created_at, updated_at) VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'eight_box', 1, 1, 0, 0, 0)",
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, sibling_position, created_at, updated_at) VALUES ('C', 'c', 'R', 'R', 2, 'card', 0, 0, 0)",
+        "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'C', 'f', 'b', 0, 0)",
+        "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t', 'T', 't', 0)",
+        "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 1, 0, 1)",
+        "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, \"action\", answered_at) VALUES ('V', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
+      ]) {
+        await db.customStatement(sql);
+      }
+    });
+    await store.setSince(42);
+    await store.enqueue('deck', 'R', 'delete', DateTime.utc(2026));
+
+    await store.markAllPending();
+    await store.markAllPending();
+
+    final queued = await db
+        .customSelect(
+          'SELECT entity_type, entity_id, op FROM sync_outbox ORDER BY rowid',
+        )
+        .get();
+    expect(
+      [
+        for (final row in queued)
+          '${row.read<String>('entity_type')}:${row.read<String>('entity_id')}:${row.read<String>('op')}',
+      ],
+      [
+        'deck:R:delete',
+        'delete_batch:b:upsert',
+        'deck:C:upsert',
+        'tag:t:upsert',
+        'card:K:upsert',
+        'card_schedule:K:upsert',
+        'review_log:V:upsert',
+        'account_settings:00000000-0000-0000-0000-000000000000:upsert',
+      ],
+    );
+    expect(await store.since(), 0);
+    expect(await store.pendingCount(), 8);
+  });
 }

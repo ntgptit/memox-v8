@@ -56,6 +56,86 @@ final class ServerFailure extends Failure {
     : super(message: "The server couldn't answer.");
 }
 
+/// How an identity was being attached when it turned out to belong to
+/// another account (auth spec §3.2 `IDENTITY_TAKEN`).
+enum IdentityMethod { email, google }
+
+/// An account step that the server or the identity provider refused (auth
+/// spec §3.2, §5). A call that never arrived stays [OfflineFailure], and an
+/// admin-only refusal stays [NotAdminFailure] (plan ruling 1).
+sealed class AuthFailure extends Failure {
+  const AuthFailure({required super.message, super.cause});
+}
+
+/// The SDK's session was refused: its refresh token, session or user is gone.
+final class SessionInvalidFailure extends AuthFailure {
+  const SessionInvalidFailure({super.cause})
+    : super(message: 'The sign-in is no longer valid.');
+}
+
+/// A live token whose user no longer has a profile: the account was
+/// deleted (`me()` → `UNAUTHORIZED`).
+final class ProfileGoneFailure extends AuthFailure {
+  const ProfileGoneFailure({super.cause})
+    : super(message: 'This account no longer exists.');
+}
+
+final class IdentityTakenFailure extends AuthFailure {
+  const IdentityTakenFailure({required this.method, super.cause})
+    : super(message: 'That sign-in belongs to another account.');
+
+  final IdentityMethod method;
+}
+
+/// A code the server refused. GoTrue answers a wrong and an expired code
+/// alike (plan ruling 2).
+final class InvalidCodeFailure extends AuthFailure {
+  const InvalidCodeFailure({super.cause})
+    : super(message: 'The code is wrong or has expired.');
+}
+
+final class RateLimitedFailure extends AuthFailure {
+  const RateLimitedFailure({super.cause})
+    : super(message: 'Too many attempts. Wait, then try again.');
+}
+
+/// The claim token was used, expired or never existed (`CLAIM_INVALID`).
+final class ClaimInvalidFailure extends AuthFailure {
+  const ClaimInvalidFailure({super.cause})
+    : super(message: 'The merge could not be completed.');
+}
+
+final class LastAdminFailure extends AuthFailure {
+  const LastAdminFailure({super.cause})
+    : super(message: 'An admin must remain.');
+}
+
+final class AnonymousUserFailure extends AuthFailure {
+  const AnonymousUserFailure({super.cause})
+    : super(message: 'An anonymous user cannot be an admin.');
+}
+
+final class GoogleCancelledFailure extends AuthFailure {
+  const GoogleCancelledFailure({super.cause})
+    : super(message: 'Google sign-in was cancelled.');
+}
+
+/// Signing in again as another account would clear [count] changes not yet
+/// sent; the caller asks first (plan ruling 6).
+final class UnsentChangesFailure extends AuthFailure {
+  const UnsentChangesFailure({required this.count})
+    : super(message: 'Changes on this phone are not sent yet.');
+
+  final int count;
+}
+
+/// A business write while the account is changing (R3). Nothing was
+/// written.
+final class MutationBlockedFailure extends Failure {
+  const MutationBlockedFailure()
+    : super(message: 'The account is changing. Try again in a moment.');
+}
+
 /// Maps a raw exception from the Drift/sqlite3 boundary to one [Failure].
 /// This is the single place that inspects driver-specific error shapes —
 /// no repository does this itself.
