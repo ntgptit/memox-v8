@@ -24,6 +24,7 @@ run() {
     cd "$work"
     echo apk > memox-5-abcdef12.apk
     PATH="$work/bin:$PATH" STUB_LOG="$work/gh.log" STUB_RELEASE_EXISTS="$1" \
+      APK_SIGNER="${2:-}" \
       GITHUB_SHA=abcdef1234567890 GITHUB_REF_NAME=master GITHUB_RUN_NUMBER=5 \
       GITHUB_STEP_SUMMARY="$work/summary.md" \
       bash "$script" memox-5-abcdef12.apk build-5-abcdef12 >/dev/null
@@ -50,5 +51,16 @@ check "re-run of the same run replaces the asset instead of failing" \
   "$(printf 'release upload build-5-abcdef12\nrelease edit build-5-abcdef12')" "$(run 1)"
 check "re-run uploads with --clobber" \
   "1" "$(run 1 >/dev/null; grep -c -- '--clobber' "$work/gh.log")"
+
+notes() { run 0 "$1" >/dev/null; grep -c "$2" "$work/notes.md" || true; }
+
+check "a release-signed APK says so in the notes" \
+  "1" "$(notes 'Signer #1 certificate DN: CN=MemoX' 'Signed with the MemoX release key (CN=MemoX)')"
+check "a release-signed APK does not claim the debug key" \
+  "0" "$(notes 'Signer #1 certificate DN: CN=MemoX' 'debug key')"
+check "a debug-signed APK keeps the debug note" \
+  "1" "$(notes 'Signer #1 certificate DN: C=US, O=Android, CN=Android Debug' 'Signed with the debug key')"
+check "an unknown signer keeps the debug note" \
+  "1" "$(notes '' 'Signed with the debug key')"
 
 exit "$fail"

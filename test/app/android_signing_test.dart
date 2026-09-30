@@ -23,6 +23,26 @@ void main() {
     }
   });
 
+  test('the release key exists only when key.properties has one, so any '
+      'machine without it still builds', () {
+    expect(gradle, contains('val hasReleaseKey = releaseKey.isNotEmpty()'));
+    expect(
+      gradle,
+      matches(
+        RegExp(r'if\s*\(\s*hasReleaseKey\s*\)\s*\{\s*create\("release"\)'),
+      ),
+    );
+  });
+
+  test('key.properties is git-ignored', () {
+    final ignored = Process.runSync('git', [
+      'check-ignore',
+      'android/key.properties',
+    ]);
+
+    expect(ignored.exitCode, 0);
+  });
+
   test('without key.properties the release build keeps the debug key', () {
     expect(
       gradle,

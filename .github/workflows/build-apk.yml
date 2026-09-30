@@ -95,12 +95,14 @@ jobs:
 
       # The SHA-1 to register as an Android OAuth client (SB-A4 step 1.3).
       - name: signer
+        id: signer
         env:
           APK: ${{ steps.build.outputs.apk }}
         run: |
           set -euo pipefail
           apksigner="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner"
           signer="$("$apksigner" verify --print-certs "$APK" | grep -E 'Signer #1 certificate (DN|SHA-1)')"
+          echo "dn=$(grep -m1 'certificate DN:' <<<"$signer")" >> "$GITHUB_OUTPUT"
           {
             echo '### APK signer'
             echo '```'
@@ -118,6 +120,7 @@ jobs:
         env:
           APK: ${{ steps.build.outputs.apk }}
           TAG: ${{ steps.build.outputs.tag }}
+          APK_SIGNER: ${{ steps.signer.outputs.dn }}
         run: bash .github/scripts/publish-build-release.sh "$APK" "$TAG"
 
       # Runs only when every step above succeeded, so a failed build never

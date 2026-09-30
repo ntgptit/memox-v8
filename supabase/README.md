@@ -119,22 +119,34 @@ fails.
    signs with a debug key the runner creates on each run: no Android client
    can match it, Google sign-in fails on those APKs (email works), and a new
    APK cannot be installed over the last one. Once:
-   1. Create the key, with passwords of letters and digits only (the
-      workflow writes them into a `.properties` file, where `\` escapes):
+   1. Create the key with the JDK's `keytool` (in the JDK's `bin`, also on
+      Windows). Its password: letters and digits only (the workflow writes it
+      into a `.properties` file, where `\` escapes). The keystore is PKCS12,
+      which has one password: if `keytool` asks for a key password, press
+      RETURN to reuse it.
 
           keytool -genkeypair -keystore memox-release.jks -alias memox -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=MemoX"
 
-      Keep the `.jks` and both passwords somewhere safe outside the repo:
+      Keep the `.jks` and its password somewhere safe outside the repo:
       without them no later APK installs over one signed by this key (on
       Google Play it would become the upload key).
-   2. Repository secrets: `ANDROID_KEYSTORE_BASE64` (the output of
-      `base64 -w0 memox-release.jks`), `ANDROID_KEYSTORE_PASSWORD`,
-      `ANDROID_KEY_ALIAS` (`memox`) and `ANDROID_KEY_PASSWORD`.
+   2. The keystore as one line of base64:
+
+          base64 -w0 memox-release.jks                                          # Linux
+          base64 -i memox-release.jks                                           # macOS
+          [Convert]::ToBase64String([IO.File]::ReadAllBytes("memox-release.jks"))  # PowerShell
+
+      Repository secrets: `ANDROID_KEYSTORE_BASE64` (that line),
+      `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD` (both the one
+      password), and `ANDROID_KEY_ALIAS` (`memox`).
    3. Run Build APK by hand. Its job summary shows the APK's signer; add its
       SHA-1 as another Android client (step 1.3), and that client ID to
       Supabase's *Client IDs* (step 2).
-   4. The first APK with this key does not install over an older one: let
-      sync finish (or sign in) on the phone, uninstall, then install it.
+   4. The first APK with this key does not install over an older one, and
+      uninstalling removes the phone's data. An anonymous install cannot get
+      it back: a reinstall is a new anonymous user. So first sign in with an
+      email code on the old APK and let it sync; then uninstall, install the
+      new APK, and sign in with the same email.
 
    The workflow fails if a key is given and the APK still carries the debug
    key; `flutter run` on your machine keeps the debug key.
