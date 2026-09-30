@@ -21,6 +21,7 @@ bar (D2).
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | "Settings"; the gallery icon in debug builds. |
+| Account | `MxSection` + `MxSettingsRow` | FE-B9, first: "Account". An anonymous device gets "Sign in" / "Keep your decks if you reinstall or change phones" with the person tile, opening screen 30; while the account cannot link yet (offline) the row is disabled with "Available when you're online". An attached account shows its email / "Your decks sync to this account" (P3b adds the way to screen 32). `app/` composes it as a slot, like Admin; hidden in a build with no Supabase. |
 | Study defaults | `MxSection` + `MxSettingsRow` × 2 | "Cards per session" / "1 to 200 · default 20", with an `MxStepper` under the label: −/+, a hold repeats, a tap on the number types one (D6). "New-card order" / "How new cards enter a learning session", with an `MxSegmentedTray` Created · Random. The note: "Apply to sessions started from now on. A deck with its own study options keeps them." |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
 | App | `MxSection` + `MxSettingsRow` × 2 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt". Both open their page. |
@@ -48,6 +49,7 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | syncSynced | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_synced_dark.png) | (SB-U1) the Sync row after a success. |
 | syncFailed | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_dark.png) | (SB-U1) the Sync row after a failed run. |
 | syncRejected | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_dark.png) | (SB-U1) the Sync row with refused rows. |
+| account | ![](../../../../test/features/account/presentation/goldens/settings_account_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_dark.png) | Golden `settings_account_*` (in the account tests): the Account section first, anonymous. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
 
 

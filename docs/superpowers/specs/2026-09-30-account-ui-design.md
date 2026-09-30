@@ -1,6 +1,7 @@
 # Account UI: welcome, sign-in, code, account, transition layer (P3)
 
-Status: approved 2026-09-30 in the P3 brainstorm. An addendum to
+Status: approved 2026-09-30 in the P3 brainstorm; P3a implemented by
+`docs/superpowers/plans/2026-09-30-account-ui-attach.md`. An addendum to
 [the auth spec](2026-09-30-auth-design.md): it settles §7 (router) and §8 (UI)
 against what P2 built and against [`DESIGN.md`](../../../DESIGN.md), which is
 now the UI authority
@@ -67,14 +68,17 @@ Each can be overturned by the owner; the cost if wrong is in brackets.
 
 - **Routes**, all on the root navigator (no tab bar):
   `/welcome?from=<location>`, `/settings/account` (32),
-  `/account/sign-in?mode=link|reauth` (30), `/account/code` (31).
+  `/settings/sign-in?mode=link|reauth` (30) and
+  `/settings/sign-in/code?mode=…&email=…` (31), under Settings so Back lands
+  there (P3a plan ruling 1).
 - `buildAppRouter` takes a read-only **account route guard**: the welcome
   flag, whether the device holds a permanent account, and a `Listenable`
   that fires when either changes (`refreshListenable`). Two rules only:
   - `welcome_seen == false` and not already on `/welcome` → `/welcome?from=`
     the requested location (a deep link survives);
-  - `/account/sign-in?mode=link` while `Ready(account)` →
-    `/settings/account`.
+  - `/settings/sign-in?mode=link` (and its code step) while the device holds
+    an account → `/settings/account`; P3a sends it to `/settings` until
+    screen 32 exists (P3a plan ruling 2).
 - No other auth redirect: signing in stays optional, `ReauthRequired` shows
   banners (R2), and a transition shows the layer (§5.4).
 - The admin gate (`MonitoringAdminGateWidget`) keeps reading `isAdminProvider`;
