@@ -16,6 +16,8 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_sect
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -104,7 +106,10 @@ void main() {
   ) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
-    final header = find.text(_en.cardShowingOf(2, 2).toUpperCase());
+    // Every card shows: the chips count, the header only names the list
+    // (critique 2026-09-30 part 3b).
+    final header = find.text(_en.cardListHeader.toUpperCase());
+    expect(find.textContaining('SHOWING'), findsNothing);
 
     expect(find.byType(CardDeckSummaryWidget), findsOneWidget);
     expect(header, findsOneWidget);
@@ -129,7 +134,20 @@ void main() {
 
     expect(find.byType(CardDeckSummaryWidget), findsNothing);
     expect(find.byType(MxFilterChip), findsNothing);
-    expect(find.text(_en.cardSelectedOf(1, 2).toUpperCase()), findsOneWidget);
+    // The selected count lives in the app bar title only (critique
+    // 2026-09-30 part 3b).
+    expect(find.byType(MxListSectionHeader), findsNothing);
+  });
+
+  libraryTest('a filter narrows the list: the header says how many of the '
+      "deck's cards show (critique 2026-09-30 part 3b)", (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterDue));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardShowingOf(1, 2).toUpperCase()), findsOneWidget);
+    expect(find.text(_en.cardListHeader.toUpperCase()), findsNothing);
   });
 
   libraryTest('the bulk bar offers Move, Flag, Tag, Export, Delete (kit 07)', (
@@ -184,7 +202,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardBulkFailedTitle), findsOneWidget);
-    expect(find.text(_en.cardSelectedOf(1, 2).toUpperCase()), findsOneWidget);
+    // The selection stays after the failure.
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('sqlite'), findsNothing);
   });
 

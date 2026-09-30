@@ -98,10 +98,8 @@ Future<void> _tapChip(WidgetTester tester, String label) async {
 }
 
 void main() {
-  libraryTest('rows show front, back, a status dot and the flag', (
-    tester,
-    env,
-  ) async {
+  libraryTest('rows show front, back, a status label, no dot, and the flag '
+      '(critique 2026-09-30 part 3b, R3)', (tester, env) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
 
@@ -113,7 +111,7 @@ void main() {
         of: find.byType(CardRowWidget),
         matching: find.byType(MxStatusBadge),
       ),
-      findsNWidgets(4),
+      findsNothing,
     );
     expect(find.byIcon(AppIcons.flagged), findsOneWidget);
   });

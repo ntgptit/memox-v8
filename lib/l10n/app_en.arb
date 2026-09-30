@@ -2365,17 +2365,9 @@
     },
     "description": "Card list header: cards shown out of the filter's total."
   },
-  "cardSelectedOf": "{selected} of {total} selected",
-  "@cardSelectedOf": {
-    "placeholders": {
-      "selected": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Card list header while selecting."
+  "cardListHeader": "Cards",
+  "@cardListHeader": {
+    "description": "Screen 07: the list header while every card of the deck shows; 'Showing {n} of {total}' only while a filter, a tag or search narrows it (critique 2026-09-30 part 3b)."
   },
   "cardSelectAllCount": "Select all {count}",
   "@cardSelectAllCount": {

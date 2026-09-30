@@ -185,7 +185,12 @@ void main() {
 
       expect(find.text(_en.tagRejectionTooManyTags), findsOneWidget);
       expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 10);
-      expect(find.text(_en.cardSelectedOf(2, 3).toUpperCase()), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+        ),
+        findsNWidgets(2),
+      );
     },
   );
 
@@ -220,7 +225,12 @@ void main() {
     expect(find.text(_en.cardDeleteNote(2)), findsOneWidget);
     await tester.tap(_inDialog(_en.commonCancel));
     await tester.pumpAndSettle();
-    expect(find.text(_en.cardSelectedOf(2, 3).toUpperCase()), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      ),
+      findsNWidgets(2),
+    );
 
     await _bulk(tester, _en.cardDelete);
     await tester.tap(_inDialog(_en.cardMoveToTrash));

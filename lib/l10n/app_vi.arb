@@ -431,7 +431,7 @@
   "cardDeckProgress": "Tiến độ bộ thẻ · {algorithm}",
   "cardMasteredOf": "{mastered}/{total} thẻ đã thuộc",
   "cardShowingOf": "Đang hiện {shown}/{total}",
-  "cardSelectedOf": "Đã chọn {selected}/{total}",
+  "cardListHeader": "Thẻ",
   "cardSelectAllCount": "Chọn tất cả {count}",
   "cardSearchOpen": "Tìm trong bộ thẻ này",
   "cardSearchClose": "Đóng tìm kiếm",

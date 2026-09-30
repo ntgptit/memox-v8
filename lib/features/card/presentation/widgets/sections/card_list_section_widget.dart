@@ -36,7 +36,8 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// A deck's cards (screen 07, UC-CARD-001): the search the app bar reveals,
-/// the deck summary, the filters, "Showing n of total" with the sort, then
+/// the deck summary, the filters, the header ("Cards", or "Showing n of
+/// total" while narrowed) with the sort, then
 /// one card per row. A long-press starts selection: the app bar turns into
 /// the selection header (spec A14) and the bulk bar shows.
 class CardListSectionWidget extends ConsumerStatefulWidget {
@@ -373,18 +374,20 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           onFilter: _show,
         ),
       ],
-      MxListSectionHeader(
-        label: isSelecting
-            ? l10n.cardSelectedOf(selected.length, total)
-            : l10n.cardShowingOf(view.items.length, total),
-        trailing: isSelecting
-            ? null
-            : MxChipTrigger(
-                label: l10n.cardSort(request.sort),
-                icon: AppIcons.sort,
-                onPressed: () => _sort(request),
-              ),
-      ),
+      // A number is stated once (critique 2026-09-30 part 3b): the chips
+      // count every filter, so the header names the list unless something
+      // narrows it; while selecting the app bar holds the count.
+      if (!isSelecting)
+        MxListSectionHeader(
+          label: request.isNarrowed
+              ? l10n.cardShowingOf(total, view.statusCounts.total)
+              : l10n.cardListHeader,
+          trailing: MxChipTrigger(
+            label: l10n.cardSort(request.sort),
+            icon: AppIcons.sort,
+            onPressed: () => _sort(request),
+          ),
+        ),
       if (view.items.isEmpty)
         CardListEmptyWidget(
           request: request,

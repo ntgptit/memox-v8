@@ -44,6 +44,13 @@ final class CardListRequestState {
   final CardTagFilter tags;
   final int windowSize;
 
+  /// A filter, a tag or a search term leaves out some of the deck's cards:
+  /// the header then says how many show (critique 2026-09-30 part 3b).
+  bool get isNarrowed =>
+      filter != CardListFilter.all ||
+      searchTerm.trim().isNotEmpty ||
+      !tags.isEmpty;
+
   /// The query the list, its counts and Select all share (BR-CARD-012).
   CardListQuery get query => CardListQuery(
     filter: filter,
