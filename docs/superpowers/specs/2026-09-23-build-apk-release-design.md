@@ -52,7 +52,8 @@ presses queue rather than kill a run that may be mid-publish.
 6. `flutter build apk --release --dart-define-from-file=<file>`, where the
    file is written to `$RUNNER_TEMP` from the `SUPABASE_URL` and
    `SUPABASE_PUBLISHABLE_KEY` secrets (ADR-015; a missing secret warns and
-   the APK builds without sync), then rename
+   the APK builds without sync) and the `GOOGLE_WEB_CLIENT_ID` secret (auth
+   spec 2026-09-30 O11; empty leaves email sign-in only), then rename
    `build/app/outputs/flutter-apk/app-release.apk` to
    `memox-<run_number>-<sha8>.apk`.
 7. **Publish.** `gh release create build-<run_number>-<sha8> <apk>
