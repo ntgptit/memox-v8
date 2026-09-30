@@ -1,6 +1,6 @@
 # Critique 2026-09-30, remaining items — design
 
-Status: draft 2026-09-30, awaiting owner review ·
+Status: approved 2026-09-30 ·
 Path: architectural (a new local table, a BR change) · Owner rulings 2026-09-30 (§2): R1–R6
 
 ## 1. Intent
