@@ -1629,29 +1629,23 @@
     },
     "description": "Screen 06 app bar while decks are selected."
   },
-  "trashSelectedOfCards": "{count} of {total} cards",
-  "@trashSelectedOfCards": {
+  "trashCardsHeader": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@trashCardsHeader": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "total": {
-        "type": "int"
       }
     },
-    "description": "Screen 06 list header while cards are selected."
+    "description": "Screen 06: the list header while cards are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
-  "trashSelectedOfDecks": "{count} of {total} decks",
-  "@trashSelectedOfDecks": {
+  "trashDecksHeader": "{count, plural, =1{1 deck} other{{count} decks}}",
+  "@trashDecksHeader": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "total": {
-        "type": "int"
       }
     },
-    "description": "Screen 06 list header while decks are selected."
+    "description": "Screen 06: the list header while decks are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
   "trashSelectionClose": "Clear selection",
   "@trashSelectionClose": {

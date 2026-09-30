@@ -223,7 +223,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           onSelected: _trash().chooseFilter,
         ),
       MxListSectionHeader(
-        label: _header(l10n, state, shown, kind),
+        label: _header(l10n, shown, kind),
         isAfterFilterBand: !state.isSelecting,
       ),
       for (final entry in shown)
@@ -255,16 +255,16 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
 
   String _header(
     AppLocalizations l10n,
-    TrashState state,
     List<TrashEntry> shown,
     TrashKind? kind,
   ) {
     int total(TrashKind of) =>
         shown.where((entry) => TrashKind.of(entry) == of).length;
-    final count = state.countIn(shown);
+    // While selecting, the title states the selection and the header the
+    // kind's total: each number once (critique 2026-09-30 part 3b).
     return switch (kind) {
-      TrashKind.card => l10n.trashSelectedOfCards(count, total(TrashKind.card)),
-      TrashKind.deck => l10n.trashSelectedOfDecks(count, total(TrashKind.deck)),
+      TrashKind.card => l10n.trashCardsHeader(total(TrashKind.card)),
+      TrashKind.deck => l10n.trashDecksHeader(total(TrashKind.deck)),
       null => l10n.trashEntriesHeader(shown.length),
     };
   }
