@@ -140,8 +140,8 @@ void main() {
     expect(find.text(_en.reminderOnHint), findsOneWidget);
   });
 
-  libraryTest('permDenied: Open system settings first and primary, Try again '
-      'outlined (kit 24, FE-B6)', (tester, env) async {
+  libraryTest('permDenied: Try again outlined, then Open system settings '
+      'last and primary (R5, amends FE-B6)', (tester, env) async {
     await _pump(
       tester,
       env,
@@ -158,12 +158,40 @@ void main() {
         )
         .toList();
     expect(buttons.map((b) => b.label), [
-      _en.reminderOpenSystemSettings,
       _en.reminderTryAgain,
+      _en.reminderOpenSystemSettings,
     ]);
     expect(buttons.map((b) => b.tone), [
-      MxButtonTone.primary,
       MxButtonTone.outline,
+      MxButtonTone.primary,
+    ]);
+  });
+
+  libraryTest('permDenied: while Try again runs the banner steps aside, '
+      'then returns in the same order', (tester, env) async {
+    final platform = FakeReminderPlatform(
+      permission: ReminderPermission.denied,
+    );
+    await _pump(tester, env, platform: platform);
+    await _toggle(tester);
+    platform.permissionHold = Completer<void>();
+    await tester.tap(find.text(_en.reminderTryAgain));
+    await tester.pump();
+    expect(find.byType(MxInlineBanner), findsNothing);
+
+    platform.permissionHold!.complete();
+    await _settle(tester);
+    final buttons = tester
+        .widgetList<MxButton>(
+          find.descendant(
+            of: find.byType(MxInlineBanner),
+            matching: find.byType(MxButton),
+          ),
+        )
+        .toList();
+    expect(buttons.map((b) => b.label), [
+      _en.reminderTryAgain,
+      _en.reminderOpenSystemSettings,
     ]);
   });
 

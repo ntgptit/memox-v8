@@ -39,13 +39,14 @@ class ReminderBannersWidget extends StatelessWidget {
         tone: MxBannerTone.warning,
         title: l10n.reminderDeniedTitle,
         message: l10n.reminderDeniedBody,
+        // The primary last, as every banner (R5; critique 2026-09-30 part 3a).
         actions: [
+          action(l10n.reminderTryAgain, tone: MxButtonTone.outline),
           MxButton(
             label: l10n.reminderOpenSystemSettings,
             size: MxButtonSize.compact,
             onPressed: onOpenSettings,
           ),
-          action(l10n.reminderTryAgain, tone: MxButtonTone.outline),
         ],
       ),
       ReminderProblem.couldNotTurnOn => MxInlineBanner(
