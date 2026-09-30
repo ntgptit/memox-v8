@@ -1,6 +1,6 @@
 # Whole-app critique 2026-09-30, part 3a: quick, safe Minors — design
 
-Status: approved in conversation 2026-09-30, written spec pending review ·
+Status: approved 2026-09-30 ·
 Path: architectural (small shared-widget and copy changes across screens) · Owner rulings 2026-09-30 (§2): R1–R4
 
 ## 1. Intent
