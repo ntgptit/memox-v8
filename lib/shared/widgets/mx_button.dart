@@ -10,12 +10,14 @@ import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// Colour role of a button: the contract's four shipped tones, the soft
-/// danger tint of a grade that marks a lapse (screen 16a), and the warning
-/// fill of a merge (screen 05; FE-B2 spec D15).
+/// danger tint of a grade that marks a lapse (screen 16a), the warning
+/// fill of a merge (screen 05; FE-B2 spec D15), and the quiet `text` action
+/// beside a decision's fill (account UI spec U2).
 enum MxButtonTone {
   primary,
   secondary,
   outline,
+  text,
   destructive,
   dangerSoft,
   warning,
@@ -45,6 +47,7 @@ class MxButton extends StatelessWidget {
     this.tone = MxButtonTone.primary,
     this.size = MxButtonSize.regular,
     this.icon,
+    this.mark,
     this.isBlock = false,
     this.isLoading = false,
     this.isAutofocused = false,
@@ -56,7 +59,8 @@ class MxButton extends StatelessWidget {
              size == MxButtonSize.small ||
              size == MxButtonSize.study,
          'a detail line needs a regular, small or study button',
-       );
+       ),
+       assert(icon == null || mark == null, 'a glyph or a mark, not both');
 
   final String label;
 
@@ -67,6 +71,11 @@ class MxButton extends StatelessWidget {
 
   /// Optional leading glyph, painted at 16.
   final IconData? icon;
+
+  /// A brand's own mark in place of [icon], such as Google's G (account UI
+  /// spec U6), painted at [AppIconSize.brandMark] and never read aloud: the
+  /// label names the action.
+  final ImageProvider? mark;
   final bool isBlock;
 
   /// Replaces the label with a spinner, keeps the width and blocks presses.
@@ -95,7 +104,7 @@ class MxButton extends StatelessWidget {
     final paint = _paintFor(context);
     final geometry = _geometryFor(
       size,
-      hasIcon: icon != null,
+      hasIcon: icon != null || mark != null,
       isBlock: isBlock,
     );
     final button = TextButton(
@@ -128,7 +137,7 @@ class MxButton extends StatelessWidget {
   double naturalWidth(BuildContext context) {
     final geometry = _geometryFor(
       size,
-      hasIcon: icon != null,
+      hasIcon: icon != null || mark != null,
       isBlock: isBlock,
     );
     final style = geometry.isSmallType
@@ -140,8 +149,12 @@ class MxButton extends StatelessWidget {
       textScaler: MediaQuery.textScalerOf(context),
       maxLines: 1,
     )..layout();
-    final iconWidth = icon == null ? 0 : AppIconSize.inline + AppSpacing.micro;
-    final width = painter.width + iconWidth + geometry.padding * 2;
+    final leadWidth = switch ((icon, mark)) {
+      (_?, _) => AppIconSize.inline + AppSpacing.micro,
+      (_, _?) => AppIconSize.brandMark + AppSpacing.micro,
+      _ => 0.0,
+    };
+    final width = painter.width + leadWidth + geometry.padding * 2;
     painter.dispose();
     return width.ceilToDouble();
   }
@@ -177,6 +190,13 @@ class MxButton extends StatelessWidget {
           color: colors.outlineVariant,
           width: AppStroke.hairline,
         ),
+      ),
+      // The quiet action beside a decision's fill (account UI spec U2): the
+      // outline's ink without its edge.
+      MxButtonTone.text => (
+        fill: null,
+        ink: context.derivedColors.primaryInk,
+        edge: BorderSide.none,
       ),
       MxButtonTone.destructive => (
         fill: context.semanticColors.errorFill,
@@ -266,13 +286,14 @@ class MxButton extends StatelessWidget {
               Text(detail, textAlign: TextAlign.center, style: detailStyle),
             ],
           );
-    final body = icon == null
+    final lead = _lead();
+    final body = lead == null
         ? text
         : Row(
             mainAxisSize: MainAxisSize.min,
             spacing: AppSpacing.micro,
             children: [
-              Icon(icon, size: AppIconSize.inline),
+              lead,
               Flexible(child: text),
             ],
           );
@@ -290,5 +311,19 @@ class MxButton extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// The glyph or the brand mark before the label, if any.
+  Widget? _lead() {
+    if (icon case final glyph?) return Icon(glyph, size: AppIconSize.inline);
+    if (mark case final image?) {
+      return Image(
+        image: image,
+        width: AppIconSize.brandMark,
+        height: AppIconSize.brandMark,
+        excludeFromSemantics: true,
+      );
+    }
+    return null;
   }
 }

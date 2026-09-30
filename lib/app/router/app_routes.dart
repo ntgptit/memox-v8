@@ -57,6 +57,38 @@ abstract final class AppRoutes {
   static bool isLocalLog(Map<String, String> query) =>
       query[monitoringLocalParam] == _monitoringLocalOn;
 
+  /// The first-launch Welcome (screen 29, account UI spec §4) and the
+  /// location the launch was headed to.
+  static const String welcome = '/welcome';
+  static const String welcomeFromParam = 'from';
+
+  static String welcomeFrom(String location) => Uri(
+    path: welcome,
+    queryParameters: {welcomeFromParam: location},
+  ).toString();
+
+  /// Attaching an account (screens 30 and 31), relative to [settings] on
+  /// the root navigator like Sync (P3a plan ruling 1). The mode names the
+  /// flow: P3a has the link; P3b adds re-auth.
+  static const String settingsSignInChild = 'sign-in';
+  static const String settingsSignIn = '$settings/$settingsSignInChild';
+  static const String settingsSignInCodeChild = 'code';
+  static const String settingsSignInCode =
+      '$settingsSignIn/$settingsSignInCodeChild';
+  static const String accountModeParam = 'mode';
+  static const String accountEmailParam = 'email';
+  static const String accountLinkMode = 'link';
+  static const String settingsSignInLink =
+      '$settingsSignIn?$accountModeParam=$accountLinkMode';
+
+  static String settingsSignInCodeLink(String email) => Uri(
+    path: settingsSignInCode,
+    queryParameters: {
+      accountModeParam: accountLinkMode,
+      accountEmailParam: email,
+    },
+  ).toString();
+
   /// Debug builds only: the component gallery.
   static const String gallery = '/gallery';
 
