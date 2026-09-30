@@ -17,7 +17,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing compact `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051), independent of the footer's Review action. |
 | Review options | `MxListSectionHeader` (overline) + full-bleed `MxCard` of `MxOptionRow`s + `MxNote` | Eight boxes: Match · Guess · Recall · Fill, each with its own `MxBadge` "{n} cards" or "Not available" plus the unavailable reason as the row's subtitle (BR-STUDY-044, BR-STUDY-045, BR-MODE-009); a single available mode skips this list and opens directly (BR-STUDY-055). SM-2 has one mode, so this list never appears for it — see the Direction sheet. |
 | Inline banners | `MxInlineBanner` | `refused` (warning): counts changed since the screen opened. `startFailed` (danger): the write failed; nothing was saved (BR-STUDY-018). |
-| Footer | `MxFooterBar` | A caption line plus one block `MxButton` (primary): "Learn {n} new cards" / "Review {n} due cards" / "Continue" / "Start a new review instead" / "Try again"; `MxSpinner` + "Starting…" while a session opens, and the button plus every option lock (BR-STUDY-004). |
+| Footer | `MxFooterBar` | A caption line plus one block `MxButton` (primary; outline while the resume banner shows, since Continue is then the one primary, critique 2026-09-30 part 1): "Learn {n} new cards" / "Review {n} due cards" / "Continue" / "Start a new review instead" / "Try again"; `MxSpinner` + "Starting…" while a session opens, and the button plus every option lock (BR-STUDY-004). |
 
 ## Direction sheet (SM-2 only)
 
@@ -37,7 +37,7 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 | eightBox | `study_entry_eight_box_light.png` | `study_entry_eight_box_dark.png` | The mode list is inline here (BR-STUDY-055, UC-STUDY-001 step 4). |
 | onlyNew | `study_entry_only_new_light.png` | `study_entry_only_new_dark.png` | Due = 0, only the Learn row and its footer CTA show. |
 | nothing | `study_entry_nothing_light.png` | `study_entry_nothing_dark.png` | Positive empty state, no footer (BR-STUDY-008, BR-STUDY-054). |
-| resume | `study_entry_resume_light.png` | `study_entry_resume_dark.png` | The Continue banner with a primary, static dot and its progress track (see Rulings). |
+| resume | `study_entry_resume_light.png` | `study_entry_resume_dark.png` | The Continue banner with a primary, static dot and its progress track (see Rulings); the footer's start is outline (critique 2026-09-30 part 1). |
 | starting | `study_entry_starting_light.png` | `study_entry_starting_dark.png` | Footer shows the spinner, every option locks (BR-STUDY-004). |
 | refused | `study_entry_refused_light.png` | `study_entry_refused_dark.png` | Inline warning banner; the footer stays usable (plan R5). |
 | startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again". |
@@ -77,6 +77,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - **Plan R7:** "Start review" answers the choice and closes the sheet; the entry footer shows `starting`, and Try again repeats the review with the same direction.
 - **Plan R8:** the SM-2 caption reads "{shown} of {due} due · oldest first".
 - **Plan R9:** each refusal has its own title: nothing due, no new cards, a mode that no longer runs, a session that can no longer be continued.
+- **Critique 2026-09-30 part 1:** while an open session shows, "Continue" is the one primary and the footer's start (Review instead or Learn) is outline, since it ends that session (DESIGN.md One Indigo).
 - **FE-A6 P3 ruling C5:** `eightBox` picks the first available mode at first; the pick is not kept.
 - The Learn button is the secondary tone with the sparkles glyph.
 - **BR-CARD-002:** direction descriptions name no language ("See the term, recall the meaning").

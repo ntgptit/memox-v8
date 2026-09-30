@@ -25,7 +25,7 @@ bar is gone while it is open.
 | Step tracker | `ImportStepTrackerWidget` | Source · Columns · Preview · Import (spec §8.1 ruling 4). Done steps check in the mastery colour, the current one is primary, later ones are muted. It stays on one row with stretching connectors and wraps at a large text scale. One semantic label: "Step {n} of 4: {name}". |
 | 1 · Choose a source | `MxCard` options (`isSelected`) | Choose a file · Paste text, shown only before a source is read (K1). The file option picks through `file_picker`; the paste option opens an `MxTextField`. |
 | Source chip | `MxCard` + `MxIconTile` | File name, then "{format} · UTF-8 · ready to read" or "{format} · {rows} · {columns}" once read; remove action. A workbook with several sheets adds a "Sheet: {name} ({i} of {n})" `MxChipTrigger` (ruling 2). |
-| 2 · Map columns | `MxSection` of `ImportMappingRowWidget` | "First row is a header" `MxSettingsRow` with an `MxToggle` and the header sample; one row per column: "Column {A}", its header cell, and an `MxChipTrigger` for the field, the chips ending on one edge with no arrow between (critique 2026-09-30) (six fields or "Not imported") in a bottom sheet. |
+| 2 · Map columns | `MxSection` of `ImportMappingRowWidget` | "First row is a header" `MxSettingsRow` with an `MxToggle` and the header sample; one row per column: "Column {A}", its header cell, its first value (the first data row's cell, one line; none when empty; critique 2026-09-30 part 1), and an `MxChipTrigger` for the field, the chips ending on one edge with no arrow between (critique 2026-09-30) (six fields or "Not imported") in a bottom sheet. |
 | Mapping error | `MxInlineBanner` (warning) | Its own row when Term or Meaning is unmapped (K3). Preview is locked. |
 | 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | "{ready} of {total} rows ready"; Ready, Invalid, Duplicate and Blank badges, only for counts above 0; one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2); "Include duplicates" toggle when there is one. |
 | Importing | `MxCard` + `MxSpinner` | "Adding {n} cards…". Close and Back do nothing until the write ends. |
@@ -43,6 +43,7 @@ bar is gone while it is open.
 | emptySheet | no golden | no golden | One copy for a file, a sheet or text with no row (E2); another sheet can still be chosen (A2). |
 | parsing | no golden | no golden | "Reading your file…" in the source area. |
 | mapping | `import_mapping_light.png` | `import_mapping_dark.png` | Only canonical header names map by themselves (D2); headers such as `term`/`meaning` stay unmapped. |
+| mappingNoHeader | `import_mapping_no_header_light.png` | `import_mapping_no_header_dark.png` | "First row is a header" off: each column shows its first value under "Column {A}" (critique 2026-09-30 part 1). |
 | mappingIncomplete | no golden | no golden | The error is a banner of its own, not a red border (K3). The "mapped for you" note shows only once the mapping is complete. |
 | previewAll | no golden | no golden | Rows stack front over back instead of three columns. |
 | previewMix | `import_preview_light.png` | `import_preview_dark.png` | As previewAll; the invalid row is not tinted, its reason and icon say it. |
@@ -62,6 +63,7 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 
 ## Rulings
 
+- **Critique 2026-09-30 part 1:** each mapping row shows its column's first value, so a headerless file or pasted text is not mapped blind.
 - **Spec §8.2 K1:** once read, the source step collapses to the source chip.
 - **Spec §8.2 K2, UC-TRANSFER-001 step 5:** the preview shows the first 50 rows and "Showing the first {n} of {m} rows".
 - **Spec §8.2 K3:** each status icon has a semantic label, a mapping error sits on its own row, and cells wrap to two lines; the preview is front over back in one column, since two-line cells do not fit three columns at 360 dp.

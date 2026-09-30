@@ -39,13 +39,14 @@ The overline, the banner and the note line up with the title (20 dp).
 | shareClosed | no golden | no golden | the export sheet stays open, as it was. |
 | failed | `export_failed_light.png` | `export_failed_dark.png` | For a read or encode failure. A share failure has its own copy, also with Try again. |
 | noShareTarget | no golden | no golden | The banner shows the warning glyph. |
-| staleSelection | `export_stale_light.png` | `export_stale_dark.png` | The selection changed since the sheet opened (FE-B1 D12 closes X11). |
+| staleSelection | `export_stale_light.png` | `export_stale_dark.png` | The selection changed since the sheet opened (FE-B1 D12 closes X11). The format rows are locked, as in every final problem (critique 2026-09-30 part 1). |
 | nothingToExport | no golden | no golden | Reached only by a deck emptied between the count and the export, or by a count of 0. |
 
 Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}_{light,dark}.png`.
 
 ## Rulings
 
+- **Critique 2026-09-30 part 1, R8:** a final problem (stale, empty, no share target) locks the format rows; its lone Close stays primary (ruling C1 of the M3 review).
 - **UC-TRANSFER-002 A3 (E1):** closing the share sheet keeps the export sheet open with its scope and format.
 - **Spec §7, BR-TRANSFER-014 (E2):** the result reads "Handed {n} cards to the system." without the file name.
 - **UC-TRANSFER-002 step 2 (E3):** CSV carries a "Recommended" badge.
