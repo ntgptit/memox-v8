@@ -64,6 +64,11 @@ class AccountCoordinator {
   /// must not treat it as found at start (Review Focus 2).
   String? _liveOpId;
 
+  /// A Google account picked for a link that turned out to be another
+  /// account's (#17). Kept in memory for the switch's target sign-in, so
+  /// nobody picks twice; never persisted (spec §4).
+  GoogleCredential? _pendingGoogle;
+
   AuthState get state => _state;
 
   /// The state now, then every change.
@@ -116,6 +121,311 @@ class AccountCoordinator {
   /// Runs again whatever stopped on an error (a network error's Retry).
   Future<void> retry() => _serial(_resume);
 
+  // --- Sign-in and switch commands -----------------------------------------
+
+  /// Sends a 6-digit code to [email]: to attach it to this anonymous user
+  /// (#16), or to sign in to the switch's target (#21). Throws
+  /// [IdentityTakenFailure] when [email] already has an account; the caller
+  /// then asks merge or discard (#17).
+  Future<void> requestCode(String email) => _serial(() async {
+    return switch (await _signInContext()) {
+      _SignIn.link => _gateway.requestEmailLink(email),
+      _SignIn.target => _gateway.requestEmailSignIn(email),
+    };
+  });
+
+  Future<void> verifyCode(String email, String code) => _serial(() async {
+    switch (await _signInContext()) {
+      case _SignIn.link:
+        await _gateway.verifyEmailLink(email, code);
+        return _validate(); // #16
+      case _SignIn.target:
+        return _signInTarget(
+          () => _gateway.verifyEmailSignIn(email, code),
+        ); // #21
+    }
+  });
+
+  Future<void> continueWithGoogle() => _serial(() async {
+    final context = await _signInContext();
+    final credential = _pendingGoogle ?? await _gateway.pickGoogle();
+    try {
+      switch (context) {
+        case _SignIn.link:
+          await _gateway.linkGoogle(credential);
+          _pendingGoogle = null;
+          await _validate(); // #16
+        case _SignIn.target:
+          await _signInTarget(() => _gateway.signInGoogle(credential)); // #21
+          _pendingGoogle = null;
+      }
+    } on IdentityTakenFailure {
+      _pendingGoogle = credential; // #17
+      rethrow;
+    }
+  });
+
+  /// Starts moving this device to another account: #18 from an anonymous
+  /// user whose identity is taken, #34 "Switch account" from an account.
+  /// The gate shuts, the source's changes are sent and, for a merge, a claim
+  /// is taken. Then the state asks for the target sign-in.
+  Future<void> beginSwitch({
+    required TransitionChoice choice,
+    String? targetHint,
+  }) => _serial(() async {
+    await _ensureNoTransition();
+    final user = _readyUser();
+    if (choice == TransitionChoice.merge && !user.isAnonymous) {
+      throw ArgumentError.value(
+        choice,
+        'choice',
+        'only an anonymous user merges',
+      );
+    }
+    return _begin(
+      _newTransition(
+        TransitionKind.switchAccount,
+        choice: choice,
+        sourceUserId: user.id,
+        sourceIsAnonymous: user.isAnonymous,
+        targetHint: targetHint,
+      ),
+    );
+  });
+
+  /// Before the target sign-in: back to the source as it was (#22). With the
+  /// source's session gone, the source is treated as lost (plan ruling 9).
+  Future<void> cancelSwitch() => _serial(() async {
+    final t = await _store.transition();
+    final userId = _gateway.currentUserId;
+    if (t == null ||
+        t.kind != TransitionKind.switchAccount ||
+        !t.stage.isBefore(TransitionStage.targetSignedIn) ||
+        (userId != null && userId != t.sourceUserId)) {
+      throw StateError('No switch to cancel before the target sign-in');
+    }
+    _pendingGoogle = null;
+    await _drop(t);
+    if (userId == t.sourceUserId) return _validate(); // #22
+    return _lost(sessionInvalid: true);
+  });
+
+  Future<_SignIn> _signInContext() async {
+    final pending = await _store.transition();
+    if (pending != null) {
+      if (pending.kind == TransitionKind.switchAccount) return _SignIn.target;
+      throw StateError('No sign-in during ${pending.kind.name}');
+    }
+    return switch (_state) {
+      Ready(:final user) when user.isAnonymous => _SignIn.link,
+      _ => throw StateError('No account step takes a sign-in in $_state'),
+    };
+  }
+
+  /// #21, and ruling 4: A's refresh token is kept just before the SDK
+  /// replaces it with B's. A refused sign-in changes nothing.
+  Future<void> _signInTarget(Future<void> Function() signIn) async {
+    final t = (await _store.transition())!;
+    _liveOpId = t.opId;
+    final source = t.sourceUserId;
+    if (t.merges &&
+        t.stage.isBefore(TransitionStage.merged) &&
+        source != null &&
+        _gateway.currentUserId == source) {
+      final token = _gateway.refreshToken;
+      if (token != null) {
+        await _secrets.write(backupSecretKey(t.opId), token);
+      }
+    }
+    await signIn();
+    return _driveSwitch(t);
+  }
+
+  // --- The switch -------------------------------------------------------------
+
+  Future<void> _driveSwitch(AccountTransition t) async {
+    _gate.close();
+    await _sync.pause();
+    _emit(_inTransition(t));
+    final userId = _gateway.currentUserId; // R1
+    if (userId != null && userId == t.sourceUserId) {
+      if (_liveOpId == t.opId) return _advanceSource(t); // #19, #20
+      if (t.stage.isBefore(TransitionStage.merged)) {
+        await _drop(t); // #31
+        return _validate();
+      }
+      _log.error(
+        'auth.switch_source_after_merge',
+        category: LogCategory.state,
+        context: {'op': t.opId, 'stage': t.stage.name},
+      );
+      return _emit(Recovering(t, stuck: true));
+    }
+    if (userId == null) return _switchWithoutSession(t); // #33
+    return _advanceTarget(t, userId); // #32
+  }
+
+  Future<void> _advanceSource(AccountTransition t) async {
+    var s = t;
+    if (s.stage == TransitionStage.started) {
+      try {
+        await _sync.pushPending(); // #19
+      } on Failure catch (error) {
+        return _emit(Transitioning(s, error: error));
+      }
+      s = await _save(s.copyWith(stage: TransitionStage.sourcePushed));
+    }
+    if (s.merges && s.stage == TransitionStage.sourcePushed) {
+      final String token;
+      try {
+        token = await _api.claimBegin(); // #20
+      } on Failure catch (error) {
+        return _emit(Transitioning(s, error: error));
+      }
+      await _secrets.write(claimSecretKey(s.opId), token);
+      s = await _save(s.copyWith(stage: TransitionStage.claimed));
+    }
+    _emit(Transitioning(s, needsTargetSignIn: true));
+  }
+
+  /// #33: no session. Before the merge, back to A through its backup; after
+  /// it, the gate stays shut until the target signs in again.
+  Future<void> _switchWithoutSession(AccountTransition t) async {
+    final backup = await _secrets.read(backupSecretKey(t.opId));
+    if (t.stage.isBefore(TransitionStage.merged) && backup != null) {
+      try {
+        await _gateway.restoreSession(backup);
+      } on OfflineFailure catch (error) {
+        return _emit(_inTransition(t, error: error));
+      } on SessionInvalidFailure {
+        await _secrets.delete(backupSecretKey(t.opId));
+        return _emit(_inTransition(t, needsTargetSignIn: true));
+      }
+      return _driveSwitch(t); // the SDK is on A again: #31
+    }
+    _emit(_inTransition(t, needsTargetSignIn: true));
+  }
+
+  /// #32 and #23–#30, on the target [userId] the SDK holds.
+  Future<void> _advanceTarget(AccountTransition t, String userId) async {
+    var s = t;
+    if (s.targetUserId != userId ||
+        s.stage.isBefore(TransitionStage.targetSignedIn)) {
+      s = await _save(
+        s.copyWith(
+          targetUserId: userId,
+          stage: s.stage.atLeast(TransitionStage.targetSignedIn),
+        ),
+      );
+    }
+    if (s.merges && s.stage == TransitionStage.targetSignedIn) {
+      final token = await _secrets.read(claimSecretKey(s.opId));
+      try {
+        if (token == null) throw const ClaimInvalidFailure();
+        await _api.merge(token, s.opId); // #23, MERGED on a retry
+      } on ClaimInvalidFailure {
+        return _mergeRefused(s); // #25
+      } on OfflineFailure catch (error) {
+        return _emit(_inTransition(s, error: error)); // #26
+      }
+      await _secrets.delete(backupSecretKey(s.opId)); // #24
+      s = await _save(s.copyWith(stage: TransitionStage.merged));
+    }
+    if (s.stage.isBefore(TransitionStage.localCleared)) {
+      await _localReset.run(); // #27
+      s = await _save(s.copyWith(stage: TransitionStage.localCleared));
+    }
+    if (s.stage.isBefore(TransitionStage.targetPulled)) {
+      try {
+        await _sync.pullAll(); // #28
+      } on OfflineFailure catch (error) {
+        return _emit(_inTransition(s, error: error));
+      }
+      s = await _save(s.copyWith(stage: TransitionStage.targetPulled));
+    }
+    if (s.merges && s.stage == TransitionStage.targetPulled) {
+      try {
+        await _api.mergeAck(s.opId); // #29
+      } on OfflineFailure catch (error) {
+        return _emit(_inTransition(s, error: error));
+      }
+      s = await _save(s.copyWith(stage: TransitionStage.acknowledged));
+    }
+    await _store.saveLastKnown(
+      AccountUser(
+        id: userId,
+        email: s.targetHint,
+        isAnonymous: false,
+        role: AccountRole.user,
+      ),
+      _now(),
+    ); // plan ruling 7; me() replaces it at once
+    await _drop(s); // #30
+    return _validate();
+  }
+
+  /// #25: the claim was refused, so nothing moved. Back to A with its data.
+  /// When A cannot come back, a new anonymous user takes the data (ruling
+  /// 8).
+  Future<void> _mergeRefused(AccountTransition s) async {
+    final backup = await _secrets.read(backupSecretKey(s.opId));
+    if (backup != null) {
+      try {
+        await _gateway.restoreSession(backup);
+        await _drop(s);
+        _notice(const MergeNotDone());
+        await _validate();
+        return;
+      } on OfflineFailure catch (error) {
+        return _emit(
+          _inTransition(s, error: error),
+        ); // the same op on reconnect
+      } on SessionInvalidFailure {
+        // Ruling 8, below.
+      }
+    }
+    await _gateway.signOutLocal(); // B never sees A's data
+    await _drop(s);
+    _notice(const MergeNotDone());
+    return _begin(
+      _newTransition(TransitionKind.anonRecovery, sourceIsAnonymous: true),
+    );
+  }
+
+  /// Ruling 7: the SDK holds another account than the one whose data the
+  /// device has, and no transition says why. The device takes the SDK's
+  /// account, as a discard switch that is past the sign-in.
+  Future<void> _adopt(AccountUser last, String userId) {
+    _log.warning(
+      'auth.account_mismatch',
+      category: LogCategory.state,
+      context: {'last': last.id, 'signed_in': userId},
+    );
+    return _begin(
+      _newTransition(
+        TransitionKind.switchAccount,
+        choice: TransitionChoice.discard,
+        sourceUserId: last.id,
+        sourceIsAnonymous: last.isAnonymous,
+      ).copyWith(targetUserId: userId, stage: TransitionStage.targetSignedIn),
+    );
+  }
+
+  AccountUser _readyUser() => switch (_state) {
+    Ready(:final user) => user,
+    _ => throw StateError('This needs a confirmed account, not $_state'),
+  };
+
+  Future<void> _ensureNoTransition() async {
+    if (await _store.transition() != null) {
+      throw StateError('An account transition is already running');
+    }
+  }
+
+  void _notice(AccountNotice notice) {
+    if (!_notices.isClosed) _notices.add(notice);
+  }
+
   Future<void> dispose() async {
     await Future.wait([
       for (final subscription in _subscriptions) subscription.cancel(),
@@ -127,7 +437,12 @@ class AccountCoordinator {
   // --- Start and validation -------------------------------------------------
 
   Future<void> _settle() async {
-    if (_gateway.currentUserId != null) return _validate(); // #2, #5 (R1)
+    final userId = _gateway.currentUserId; // R1
+    if (userId != null) {
+      final last = await _store.lastKnown();
+      if (last != null && last.id != userId) return _adopt(last, userId);
+      return _validate(); // #2, #5
+    }
     if (!await _network.isOnline) return _emit(const LocalOnly()); // #3
     _emit(const Bootstrapping());
     try {
@@ -227,6 +542,7 @@ class AccountCoordinator {
       case TransitionKind.anonRecovery:
         return _driveAnonRecovery(t);
       case TransitionKind.switchAccount:
+        return _driveSwitch(t);
       case TransitionKind.signOut:
       case TransitionKind.delete:
       case TransitionKind.clearToAnon:
@@ -356,3 +672,6 @@ class AccountCoordinator {
     if (!_states.isClosed) _states.add(state);
   }
 }
+
+/// What a sign-in command does in the current state.
+enum _SignIn { link, target }
