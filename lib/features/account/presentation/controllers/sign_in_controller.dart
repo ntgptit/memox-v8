@@ -15,12 +15,23 @@ class SignInController extends _$SignInController {
   @override
   SignInState build(SignInPurpose purpose) => const SignInState();
 
-  Future<SignInOutcome> continueWithGoogle() =>
-      _run(SignInTask.google, (accounts) => accounts.continueWithGoogle());
+  Future<SignInOutcome> continueWithGoogle({bool confirmedLoss = false}) =>
+      _run(
+        SignInTask.google,
+        (accounts) => accounts.continueWithGoogle(confirmedLoss: confirmedLoss),
+      );
+
+  /// The loss was declined: the Google account picked for it is dropped
+  /// (P3b final review I1).
+  void forgetPickedGoogle() =>
+      ref.read(accountCoordinatorProvider)?.forgetPickedGoogle();
 
   /// A text that is not an address is refused here, before anything is
   /// sent.
-  Future<SignInOutcome> sendCode(String email) async {
+  Future<SignInOutcome> sendCode(
+    String email, {
+    bool confirmedLoss = false,
+  }) async {
     final address = email.trim();
     if (!isEmailAddress(address)) {
       state = const SignInState(
@@ -31,7 +42,7 @@ class SignInController extends _$SignInController {
     }
     return _run(
       SignInTask.email,
-      (accounts) => accounts.requestCode(address),
+      (accounts) => accounts.requestCode(address, confirmedLoss: confirmedLoss),
       done: SignInOutcome.codeSent,
     );
   }
@@ -45,11 +56,15 @@ class SignInController extends _$SignInController {
     if (accounts == null || state.isRunning) return SignInOutcome.none;
     state = SignInState(task: task);
     SignInProblem? problem;
+    var unsent = 0;
     var outcome = done;
     try {
       await command(accounts);
     } on IdentityTakenFailure {
       outcome = SignInOutcome.identityTaken;
+    } on UnsentChangesFailure catch (error) {
+      unsent = error.count;
+      outcome = SignInOutcome.unsentChanges;
     } on GoogleCancelledFailure {
       outcome = SignInOutcome.none;
     } on Failure catch (error) {
@@ -65,6 +80,7 @@ class SignInController extends _$SignInController {
       state = SignInState(
         problem: problem,
         problemTask: problem == null ? null : task,
+        unsentCount: unsent,
       );
     }
     return outcome;

@@ -21,7 +21,7 @@ bar (D2).
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | "Settings"; the gallery icon in debug builds. |
-| Account | `MxSection` + `MxSettingsRow` | FE-B9, first: "Account". An anonymous device gets "Sign in" / "Keep your decks if you reinstall or change phones" with the person tile, opening screen 30; while the account cannot link yet (offline) the row is disabled with "Available when you're online". An attached account shows its email / "Your decks sync to this account" (P3b adds the way to screen 32). `app/` composes it as a slot, like Admin; hidden in a build with no Supabase. |
+| Account | `MxSection` + `MxSettingsRow` | FE-B9, first: "Account". An anonymous device gets "Sign in" / "Keep your decks if you reinstall or change phones" with the person tile, opening screen 30; while the account cannot link yet (offline) the row is disabled with "Available when you're online". An attached account shows its email / "Your decks sync to this account" with a chevron to screen 32 (FE-B10). An expired sign-in puts a warning `MxInlineBanner` above the section: "Your sign-in expired. Your decks are still on this phone." · "Sign in" → 30 `reauth` (spec §5.5; above the overline, P3b plan ruling 1). `app/` composes it as a slot, like Admin; hidden in a build with no Supabase. |
 | Study defaults | `MxSection` + `MxSettingsRow` × 2 | "Cards per session" / "1 to 200 · default 20", with an `MxStepper` under the label: −/+, a hold repeats, a tap on the number types one (D6). "New-card order" / "How new cards enter a learning session", with an `MxSegmentedTray` In order · Random (critique 2026-09-30 part 3a, R2). The note: "Applies to sessions started from now on. A deck with its own study options keeps them." |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper, while a typed value is out of range (E1). |
 | App | `MxSection` + `MxSettingsRow` × 3 | "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt"; "Daily reminder" with "Off" or "On · {HH:mm}" (FE-B5). Each opens its page. |
@@ -50,6 +50,8 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | syncFailed | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_failed_dark.png) | (SB-U1) the Sync row after a failed run. |
 | syncRejected | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/settings_sync_rejected_dark.png) | (SB-U1) the Sync row with refused rows. |
 | account | ![](../../../../test/features/account/presentation/goldens/settings_account_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_dark.png) | Golden `settings_account_*` (in the account tests): the Account section first, anonymous. |
+| account, signed in | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_signed_in_dark.png) | (FE-B10) Golden `settings_account_signed_in_*`: the account row and its chevron. |
+| account, re-auth | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/settings_account_reauth_dark.png) | (FE-B10) Golden `settings_account_reauth_*`: the banner leads the section. |
 | read error | — | — | (UC E3) `MxErrorState` "Couldn't open Settings" with the local-first body and Retry; no value is shown. |
 
 
@@ -64,6 +66,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **UI-base row 127:** tray options stack when their labels do not fit.
 - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens screen 27.
 - **UI-base row 128:** the tile sits beside the label on a row with a wide control.
+- **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens screen 32; an expired sign-in's banner leads the Account section, since 23 owns the problem.
 - **ADR-018 §8, monitoring spec §3.1:** an Admin section with one row opens screen 28, drawn only while the account is an admin.
 
 ## Copy

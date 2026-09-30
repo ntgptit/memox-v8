@@ -1,7 +1,9 @@
 # Account UI: welcome, sign-in, code, account, transition layer (P3)
 
 Status: approved 2026-09-30 in the P3 brainstorm; P3a implemented by
-`docs/superpowers/plans/2026-09-30-account-ui-attach.md`. An addendum to
+`docs/superpowers/plans/2026-09-30-account-ui-attach.md`; P3b rulings
+approved 2026-09-30 (§9) and implemented by
+`docs/superpowers/plans/2026-09-30-account-ui-manage.md`. An addendum to
 [the auth spec](2026-09-30-auth-design.md): it settles §7 (router) and §8 (UI)
 against what P2 built and against [`DESIGN.md`](../../../DESIGN.md), which is
 now the UI authority
@@ -159,7 +161,8 @@ another person the admin role first."; any other `DeleteRefused` → snackbar
 - Anonymous: "Sign in" / "Keep your decks if you reinstall or change phones"
   → 30 (`link`).
 - Account: the email and "Google" or "Email"; in P3a a plain row, in P3b a
-  chevron row → 32.
+  chevron row → 32 (subtitle stays "Your decks sync to this account"; the
+  method shows on 32, §9 B1).
 - `ReauthRequired` (P3b): an `MxInlineBanner` (warning) at the top of the
   section: "Your sign-in expired. Your decks are still on this phone." ·
   "Sign in" → 30 (`reauth`).
@@ -175,10 +178,12 @@ aren't sent yet and will be lost." → `signOut(discardUnsent: true)`).
 "Delete account" (destructive) → dialog naming what is deleted; offline the
 confirm is disabled with "Deleting your account needs a connection."
 
+P3b states and wiring are in §9.
+
 ### 5.7 Study home (13, P3b)
 
 `ReauthRequired` → `MxFloatingNotice` in the notice slot (R2), same copy and
-action as §5.5.
+action as §5.5. The notice comes from the router as a slot (§9 B5).
 
 ## 6. Shape (Impeccable, 2026-09-30)
 
@@ -196,9 +201,10 @@ above already carry the outcome. Layout notes for the builder:
   tracking, centred. The resend countdown ("Resend code in 0:42") is a
   disabled text button until it reaches zero.
 - **Settings › Account**: `MxSection` "ACCOUNT", first; `MxSettingsRow` with
-  a person-glyph tile; the email keeps one line and ends in an ellipsis.
+  a person-glyph tile; the email wraps (`DESIGN.md`'s Wrap Rule; P3b plan
+  ruling 2).
 - **Re-auth on 23** (P3b): `MxInlineBanner` (warning) with "Sign in" as its
-  action, above the Account card.
+  action, leading the Account section (P3b plan ruling 1).
 - **Debt** to record in the UI-base register (§9): the Welcome icon tile
   (U5).
 
@@ -225,3 +231,80 @@ it is recorded in the auth spec.
   critique and audit of the goldens after the build (one fix batch).
 - Docs: detail files 29–32 in `docs/shared/ui/screen-handoff/`, their rows in
   the screen index, the FE rows in `docs/wbs_FE.md`, `DESIGN.md` for U2 and U6.
+
+## 9. P3b rulings (2026-09-30)
+
+Owner rulings from the P3b brainstorm (B1–B3), then the brainstorm's own
+(B4–B11), each with its cost if wrong in brackets.
+
+| # | Ruling |
+|---|---|
+| B1 | **Sign-in method** (P3a plan ruling 5) comes from the SDK session: `AuthGateway.signInMethods` returns a `Set<SignInMethod>` (`google`, `email`) read from the current user's identities. `AccountUser` and `me()` do not change; it works offline. Both → "Google · Email" |
+| B2 | **`networkStatusProvider`** in `lib/core/network/di/`: one `NetworkStatus` shared by the coordinator and the UI. Screen 32's dialogs read `isOnline` once when they open (a hint: the coordinator checks again, and the layer still covers a connection lost midway) |
+| B3 | **Screen 32 before `Ready`**: it always shows the email of the last known account. `Validating` → the three commands disabled, with an `MxNote` "Managing your account needs a connection. Your decks are safe on this phone."; `ReauthRequired` → the §5.5 `MxInlineBanner` on top, the three commands disabled. P2 is not changed (auth spec #39 needs `READY`) |
+| B4 | **Sign-out dialog** on 32: online, or nothing unsent → the §5.6 copy and `signOut()`; offline with `n > 0` unsent → "{n} changes aren't sent yet and will be lost." with a destructive confirm and `signOut(discardUnsent: true)`. [Copy and one branch] |
+| B5 | **Study home (13) gets the re-auth notice as a slot** (`reauthNotice`), built by the account feature in the router, like 23's `accountSection`; study reads core `authStateProvider` to know when it is `ReauthRequired`, and the notice then takes the slot over the sync notice (R2). Study never imports account. [One parameter] |
+| B6 | **Delete dialog** names what goes: the account with its decks, cards and progress on the server, and this phone's data; it cannot be undone. One destructive confirm (the row tap plus the confirm are the two deliberate taps); no typed confirmation. Offline: the confirm is disabled with "Deleting your account needs a connection." [A second step to add] |
+| B7 | **`DeleteRefused(LastAdmin)` becomes a dialog** (§5.4), replacing P3a's snackbar (P3a plan ruling 8); other refusals stay snackbars. [Back to a snackbar] |
+| B8 | **30 `mode=reauth`** shows the reauth mode line (fixing P3a's deferred minor that it rendered the link form). `UnsentChangesFailure(n)` from Google or the code step → a dialog "{n} changes on this phone aren't sent and will be lost." → the same command with `confirmedLoss: true`. "Continue without an account" (text) → a confirm dialog → `continueWithoutAccount()`; the layer shows the ClearToAnon progress |
+| B9 | **Where flows end**: the link flow ends on `/settings/account`, and `mode=link` while the device holds an account redirects there (P3a plan ruling 2). A re-auth returns to where it was opened (23, 13 or 32) with "Signed in as {email}". [A route constant] |
+| B10 | **Switch account** keeps R1: the §5.6 dialog, then `beginSwitch(discard)`; the layer's target sign-in does the rest |
+| B11 | **One PR**, no server change |
+
+### 9.1 Shape (Impeccable, 2026-09-30)
+
+Critiqued against `DESIGN.md` and the goldens of 23 (`settings_account_*`,
+`settings_reset_confirm_*`) and 13 (`study_home_sync_*`); approved by the
+owner. Every dialog follows 23's Reset dialog: a title ending in "?", the
+body, an optional `MxNote`, then `MxSheetActions` (Cancel outline · confirm).
+
+- **32 layout**, three `MxSection`s:
+  - `ACCOUNT`: one plain row, the person-glyph tile, the email (it wraps,
+    P3b plan ruling 2), subtitle "Signed in with Google" / "Signed in with
+    email" / "Signed in with Google and email" (B1).
+  - `THIS PHONE`: "Switch account" · "Move this phone to another account";
+    "Sign out" · "Your changes are sent first".
+  - `DELETE`, last, like 23's `RESET`: "Delete account" · "Your account and
+    its data, for good". **B12 (owner): a neutral row** in its own section;
+    the danger colour is only the dialog's confirm. `MxSettingsRow` gets no
+    tone.
+  - `Validating`: an `MxNote` on top (B3 copy), the action rows disabled.
+    `ReauthRequired`: the §5.5 `MxInlineBanner` on top with "Sign in", the
+    action rows disabled.
+- **Dialogs** (32):
+  - Switch: "Switch account?", the §5.6 body, a shield `MxNote` "Your
+    changes are sent first.", confirm "Switch account" (primary).
+  - Sign out, online: "Sign out?", the §5.6 body, confirm "Sign out"
+    (**primary**: the data is safe on the server).
+  - Sign out, loss (B4): "Sign out and lose changes?", "{n} changes aren't
+    sent yet and will be lost.", confirm "Sign out" (destructive).
+  - Delete: "Delete your account?", the body naming what goes (B6), no
+    reassurance note, confirm "Delete account" (destructive, delete icon).
+    Offline: an `MxNote` (offline glyph) "Deleting your account needs a
+    connection." and the confirm disabled.
+  - Last admin (B7): "An admin must remain", "Give another person the
+    admin role first, then delete the account." (after the build: the §5.4
+    body repeated the title), one "OK".
+- **30 `reauth`**: the reauth mode line; **the email field starts with the
+  last account's email** (the usual case is signing in again to the same
+  account); "Continue without an account" (text) at the bottom of the
+  thumb zone, as on 29.
+  - Unsent loss (B8): "Lose {n} changes?", the §5.2 body, confirm
+    "Continue" (destructive).
+  - Continue without: "Continue without an account?", "This phone's decks
+    from {email} are removed. Sign in to {email} later to get them back.",
+    confirm "Continue without an account" (destructive).
+- **23**: the warning banner leads the Account section, above its overline
+  (`MxSection` has no header slot: P3b plan ruling 1, UI-base row 151); the
+  account row gets its chevron. 32 places it the same way.
+- **13**: the `MxFloatingNotice` of the sync notice's form, "Your sign-in
+  expired. Your decks are still on this phone." with a compact primary
+  "Sign in".
+
+Verification adds to §8: goldens (light and dark, English) of 32 in `Ready`,
+`Validating` and `ReauthRequired`; the switch, sign-out (online and loss),
+delete (online and offline), last-admin, unsent-loss and continue-without
+dialogs; 23 with the banner; 13 with the notice; 30 in `reauth`. Unit tests
+for `signInMethods` and the network provider. Docs: `32-account.md`, updates
+to the 13, 23 and 30 detail files, the screen index, and `docs/wbs_FE.md`
+(FE-B10) with SB-A5 (in-app deletion) in `docs/wbs_supabase.md`.

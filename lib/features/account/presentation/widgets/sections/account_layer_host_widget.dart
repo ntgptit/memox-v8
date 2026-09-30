@@ -6,6 +6,7 @@ import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
+import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -14,16 +15,21 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// transition blocks writes, it covers the router, hides the app from
 /// TalkBack, and takes the system Back with priority over the router's
 /// root dispatcher (plan ruling 9). It also says the coordinator's one-off
-/// notices (plan ruling 8).
+/// notices (plan ruling 8; the last admin is a dialog, P3b B7).
 class AccountLayerHostWidget extends ConsumerStatefulWidget {
   const AccountLayerHostWidget({
     super.key,
     required this.backButtons,
+    required this.dialogNavigator,
     required this.child,
   });
 
   /// The router's root dispatcher.
   final BackButtonDispatcher backButtons;
+
+  /// The router's navigator, where the last-admin dialog opens (P3b plan
+  /// ruling 7).
+  final GlobalKey<NavigatorState> dialogNavigator;
 
   /// The router.
   final Widget child;
@@ -72,12 +78,16 @@ class _AccountLayerHostWidgetState
 
   void _say(AccountNotice notice) {
     if (!mounted) return;
+    if (notice case DeleteRefused(failure: LastAdminFailure())) {
+      final dialogContext = widget.dialogNavigator.currentContext;
+      if (dialogContext != null) unawaited(showLastAdminDialog(dialogContext));
+      return;
+    }
     final l10n = context.l10n;
     showMxSnackbar(
       context,
       message: switch (notice) {
         MergeNotDone() => l10n.accountMergeNotDone,
-        DeleteRefused(failure: LastAdminFailure()) => l10n.accountLastAdmin,
         DeleteRefused() => l10n.accountDeleteRefused,
       },
     );

@@ -2,11 +2,12 @@
 
 # 30 · Sign-in, the merge sheet and the transition layer
 
-Attach Google or an email to this device's anonymous user. The same form signs in the
+Attach Google or an email to this device's anonymous user (`link`), or sign in again
+after the session was refused (`reauth`, P3b). The same form signs in the
 switch's target inside the transition layer, and the merge sheet asks what happens to
 this phone's data when the sign-in already has an account. SB-A2; spec
 [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-account-ui-design.md)
-§5.2–§5.4, §6.
+§5.2–§5.4, §6, §9 (B8, B9), §9.1.
 
 ## Entry points
 
@@ -14,7 +15,10 @@ this phone's data when the sign-in already has an account. SB-A2; spec
   root navigator like Sync; Back returns to 23 (P3a plan ruling 1).
 - Screen 29, "Continue with email" (`go`, so Settings sits under it).
 - The transition layer, while a switch waits for its target sign-in.
-- A device that already holds an account is sent from the route to Settings (plan ruling 2).
+- A device that already holds an account is sent from `mode=link` to screen 32 (P3b B9).
+- `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13
+  (`/settings/sign-in?mode=reauth&from=…`; from 13 it opens under Settings, P3b plan
+  ruling 3). A re-auth that succeeds returns to `from`; the link ends on 32 (B9).
 
 ## Layout
 
@@ -26,7 +30,17 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 | Divider | two hairlines + `footerCaption` | "or". |
 | Email | `MxTextField` (form) | "Email address". Checked on send; its problem shows under the field (`MxFieldMessage`). Text keyboard (UI-base row 150). |
 | Send code | `MxButton` (primary, block) | "Send code", the form's one fill; spins while sending and never greys out for a bad address. |
-| Offline note | `MxNote` | "Signing in needs a connection. You can do it later in Settings." while the account cannot link yet. |
+| Offline note | `MxNote` | "Signing in needs a connection. You can do it later in Settings." while the account cannot link yet (`link` only). |
+
+### Re-auth (`mode=reauth`, P3b)
+
+| Region | Design |
+|---|---|
+| Mode line | "Sign in again to keep syncing. Your decks are still here." |
+| Email | Filled with the last account's email (the usual case signs in again to it). |
+| Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Continue" (destructive), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
+| Continue without an account | `MxButton` (text, block) under the form (P3b plan ruling 10) → "Continue without an account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2). Cancel · "Continue without an account" (destructive). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. |
+| Code step (31) | A resend does not ask about the loss again (P3b plan ruling 8). |
 
 ### Merge sheet (auth spec #17)
 
@@ -56,9 +70,9 @@ form inside it. Its content is centred in the page.
 | Stuck | "Something went wrong while moving your account. Your data is safe on this phone." + Retry only. |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
 
-Notices, as toasts at the app root: "Couldn't merge. Your decks are still on this phone.";
-"An admin must remain. Give another person the admin role first."; "Couldn't delete the
-account. Nothing changed." (plan ruling 8).
+Notices at the app root: toasts "Couldn't merge. Your decks are still on this phone." and
+"Couldn't delete the account. Nothing changed." (plan ruling 8); a refused deletion of the
+last admin is a dialog on screen 32's record (P3b B7).
 
 ## States
 
@@ -75,18 +89,23 @@ The images are the goldens.
 | layer, offline | ![](../../../../test/features/account/presentation/goldens/layer_offline_light.png) | ![](../../../../test/features/account/presentation/goldens/layer_offline_dark.png) | Golden `layer_offline_*`. |
 | layer, target sign-in | ![](../../../../test/features/account/presentation/goldens/layer_target_light.png) | ![](../../../../test/features/account/presentation/goldens/layer_target_dark.png) | Golden `layer_target_*`. |
 | layer, sign-out offline | ![](../../../../test/features/account/presentation/goldens/layer_sign_out_offline_light.png) | ![](../../../../test/features/account/presentation/goldens/layer_sign_out_offline_dark.png) | Golden `layer_sign_out_offline_*`. |
+| reauth | ![](../../../../test/features/account/presentation/goldens/sign_in_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/sign_in_reauth_dark.png) | (P3b) Golden `sign_in_reauth_*`. |
+| reauth, unsent loss | ![](../../../../test/features/account/presentation/goldens/sign_in_unsent_loss_light.png) | ![](../../../../test/features/account/presentation/goldens/sign_in_unsent_loss_dark.png) | (P3b B8) Golden `sign_in_unsent_loss_*`. |
+| reauth, continue without | ![](../../../../test/features/account/presentation/goldens/sign_in_continue_without_light.png) | ![](../../../../test/features/account/presentation/goldens/sign_in_continue_without_dark.png) | (P3b B8) Golden `sign_in_continue_without_*`. |
 | layer, stuck | ![](../../../../test/features/account/presentation/goldens/layer_stuck_light.png) | ![](../../../../test/features/account/presentation/goldens/layer_stuck_dark.png) | Golden `layer_stuck_*`. |
 
 ## Rulings
 
 - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target inside the layer.
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
-- **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ends on Settings; text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
+- **B8, B9 and P3b plan rulings 3, 8, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; no second loss question on a resend; the way out under the form.
+- **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6).
 
 ## Copy
 
 - "Sign in" · "Your decks stay on this phone and join the account." · "Continue with Google" · "or" · "Email address" · "Send code".
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
+- Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Continue without an account"; the dialogs as in the table above.
 - Toast: "Signed in as {email}".
 - Merge sheet and layer: as in the tables above.

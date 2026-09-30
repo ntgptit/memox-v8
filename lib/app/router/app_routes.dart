@@ -69,7 +69,7 @@ abstract final class AppRoutes {
 
   /// Attaching an account (screens 30 and 31), relative to [settings] on
   /// the root navigator like Sync (P3a plan ruling 1). The mode names the
-  /// flow: P3a has the link; P3b adds re-auth.
+  /// flow: `link` attaches an account, `reauth` signs in again.
   static const String settingsSignInChild = 'sign-in';
   static const String settingsSignIn = '$settings/$settingsSignInChild';
   static const String settingsSignInCodeChild = 'code';
@@ -86,6 +86,35 @@ abstract final class AppRoutes {
     queryParameters: {
       accountModeParam: accountLinkMode,
       accountEmailParam: email,
+    },
+  ).toString();
+
+  /// Screen 32 (account UI spec §5.6), under [settings] like Sync.
+  static const String settingsAccountChild = 'account';
+  static const String settingsAccount = '$settings/$settingsAccountChild';
+
+  /// Signing in again (spec §5.2) and where the flow began, to return to
+  /// once it succeeds (spec §9 B9).
+  static const String accountReauthMode = 'reauth';
+  static const String accountFromParam = 'from';
+
+  static String settingsSignInReauth({required String from}) => Uri(
+    path: settingsSignIn,
+    queryParameters: {
+      accountModeParam: accountReauthMode,
+      accountFromParam: from,
+    },
+  ).toString();
+
+  static String settingsSignInCodeReauth(
+    String email, {
+    required String from,
+  }) => Uri(
+    path: settingsSignInCode,
+    queryParameters: {
+      accountModeParam: accountReauthMode,
+      accountEmailParam: email,
+      accountFromParam: from,
     },
   ).toString();
 
