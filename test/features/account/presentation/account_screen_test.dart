@@ -5,6 +5,7 @@ import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 
@@ -133,6 +134,32 @@ void main() {
 
     expect(find.text(_en.accountSignOutLossTitle), findsOneWidget);
     expect(find.text(_en.accountSignOutLossBody(2)), findsOneWidget);
+  });
+
+  accountTest('a second tap while a command asks opens no second dialog '
+      '(P3b minor M3)', (tester, env, world) async {
+    await linkEmail(world);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    _row(tester, _en.accountSignOut).onTap!();
+    _row(tester, _en.accountSignOut).onTap!();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.byType(MxDialog), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonCancel));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    _row(tester, _en.accountSignOut).onTap!();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byType(MxDialog), findsOneWidget);
   });
 
   accountTest('Delete offline cannot be confirmed', (tester, env, world) async {

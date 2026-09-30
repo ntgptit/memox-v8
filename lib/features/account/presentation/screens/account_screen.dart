@@ -24,14 +24,33 @@ import 'package:memox/shared/widgets/mx_settings_row.dart';
 /// data belongs to, then switch, sign out and delete. The commands need a
 /// confirmed account (auth spec #39): before `Ready` they wait and say why
 /// (B3). Each asks first; the transition layer shows what follows.
-class AccountScreen extends ConsumerWidget {
+class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key, required this.onSignInAgain});
 
   /// Opens screen 30 in its reauth mode (spec §5.5).
   final VoidCallback onSignInAgain;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends ConsumerState<AccountScreen> {
+  /// A command is asking or running: a second tap waits for it, so no
+  /// second dialog opens over the first (P3b minor M3).
+  var _isAsking = false;
+
+  Future<void> _once(Future<void> Function() command) async {
+    if (_isAsking) return;
+    _isAsking = true;
+    try {
+      await command();
+    } finally {
+      _isAsking = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = ref.watch(authStateProvider).value;
     final account = ref.watch(deviceAccountProvider);
@@ -47,7 +66,7 @@ class AccountScreen extends ConsumerWidget {
       subtitle: hint,
       icon: icon,
       isEnabled: canManage,
-      onTap: canManage ? () => unawaited(run(context, ref)) : null,
+      onTap: canManage ? () => unawaited(_once(() => run(context, ref))) : null,
     );
     return MxAppShell(
       appBar: MxAppBar(
@@ -62,7 +81,7 @@ class AccountScreen extends ConsumerWidget {
       body: MxScreenScroll(
         children: [
           if (state is ReauthRequired) ...[
-            AccountReauthBannerWidget(onSignIn: onSignInAgain),
+            AccountReauthBannerWidget(onSignIn: widget.onSignInAgain),
             const SizedBox(height: AppSpacing.gutter),
           ] else if (state is Validating) ...[
             MxNote(text: l10n.accountNeedsConnection),
