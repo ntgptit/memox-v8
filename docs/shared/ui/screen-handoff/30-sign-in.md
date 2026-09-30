@@ -38,8 +38,8 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 |---|---|
 | Mode line | "Sign in again to keep syncing. Your decks are still here." |
 | Email | Filled with the last account's email (the usual case signs in again to it). |
-| Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Continue" (destructive), then the same command with the loss confirmed (B8). The same address asks nothing. |
-| Continue without an account | `MxButton` (text, block) under the form (P3b plan ruling 10) → "Continue without an account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." · Cancel · "Continue without an account" (destructive). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. |
+| Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Continue" (destructive), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
+| Continue without an account | `MxButton` (text, block) under the form (P3b plan ruling 10) → "Continue without an account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2). Cancel · "Continue without an account" (destructive). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. |
 | Code step (31) | A resend does not ask about the loss again (P3b plan ruling 8). |
 
 ### Merge sheet (auth spec #17)
