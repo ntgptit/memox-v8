@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -232,5 +233,48 @@ void main() {
       ),
     );
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
+  });
+
+  testWidgets('a disabled row does not dim its control twice (critique '
+      '2026-09-30 part 3a)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Time',
+          subtitle: 'Turn the reminder on to choose a time',
+          icon: AppIcons.clock,
+          isEnabled: false,
+          trailing: MxButton(
+            label: '20:00',
+            size: MxButtonSize.compact,
+            onPressed: null,
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets("a disabled row's non-control trailing still dims", (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Time',
+          isEnabled: false,
+          trailing: Text('20:00'),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
   });
 }

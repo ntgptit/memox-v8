@@ -5,8 +5,11 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
@@ -43,7 +46,8 @@ class MxSettingsRow extends StatelessWidget {
 
   /// False dims the tile, the label and the control while the setting is
   /// unavailable; the subtitle, which says why, keeps full ink (critique
-  /// 2026-09-30).
+  /// 2026-09-30). A control that draws its own disabled state is left to it
+  /// (part 3a).
   final bool isEnabled;
 
   /// Runs an action or opens a dialog: no chevron, since nothing is
@@ -114,13 +118,13 @@ class MxSettingsRow extends StatelessWidget {
                       ],
                       if (below case final control?) ...[
                         const SizedBox(height: AppSpacing.grouped),
-                        _dim(control),
+                        _dimControl(control),
                       ],
                     ],
                   ),
                 ),
               ),
-              if (!isStacked && trailing != null) _dim(trailing!),
+              if (!isStacked && trailing != null) _dimControl(trailing!),
               if (isNavigable)
                 _dim(
                   Icon(
@@ -135,6 +139,14 @@ class MxSettingsRow extends StatelessWidget {
       ),
     );
   }
+
+  /// MxButton, MxToggle and MxStepper draw their own disabled opacity, so
+  /// the row leaves them alone (critique 2026-09-30 part 3a).
+  static bool _drawsOwnDisabledState(Widget control) =>
+      control is MxButton || control is MxToggle || control is MxStepper;
+
+  Widget _dimControl(Widget control) =>
+      _drawsOwnDisabledState(control) ? control : _dim(control);
 
   Widget _dim(Widget child) =>
       isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
