@@ -15,6 +15,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/settings.drift',
     'package:memox/core/database/tables/trash.drift',
     'package:memox/core/database/tables/sync.drift',
+    'package:memox/core/database/tables/account.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
     'package:memox/core/database/queries/trash_queries.drift',
@@ -27,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -80,9 +81,9 @@ class AppDatabase extends _$AppDatabase {
         await m.createTrigger(schema.deleteBatchesSyncUpdate);
         await m.createTrigger(schema.deleteBatchesSyncDelete);
         await customStatement(
-          _seedOutbox('delete_batch', 'delete_batches', 'id'),
+          seedOutboxSql('delete_batch', 'delete_batches', 'id'),
         );
-        await customStatement(_seedOutbox('deck', 'deck', 'depth, id'));
+        await customStatement(seedOutboxSql('deck', 'deck', 'depth, id'));
       },
       from4To5: (m, schema) async {
         // G1 (BE-C5): user text in NFC, folded columns recomputed, tags that
@@ -102,7 +103,7 @@ class AppDatabase extends _$AppDatabase {
         await m.createTrigger(schema.cardSyncInsert);
         await m.createTrigger(schema.cardSyncUpdate);
         await m.createTrigger(schema.cardSyncDelete);
-        await customStatement(_seedOutbox('card', 'card', 'created_at, id'));
+        await customStatement(seedOutboxSql('card', 'card', 'created_at, id'));
       },
       from7To8: (m, schema) async {
         // SB-S3: tags sync, and a card's links travel on the card (library
@@ -114,9 +115,9 @@ class AppDatabase extends _$AppDatabase {
         await m.createTrigger(schema.tagsSyncDelete);
         await m.createTrigger(schema.cardTagsSyncInsert);
         await m.createTrigger(schema.cardTagsSyncDelete);
-        await customStatement(_seedOutbox('tag', 'tags', 'created_at, id'));
+        await customStatement(seedOutboxSql('tag', 'tags', 'created_at, id'));
         await customStatement(
-          '${_seedOutbox('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
+          '${seedOutboxSql('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
           'ON CONFLICT (entity_type, entity_id) DO NOTHING',
         );
       },
@@ -145,19 +146,27 @@ class AppDatabase extends _$AppDatabase {
         await m.createTrigger(schema.cardScheduleSyncInsert);
         await m.createTrigger(schema.cardScheduleSyncUpdate);
         await customStatement(
-          _seedOutbox(
+          seedOutboxSql(
             'card_schedule',
             '(SELECT card_id AS id FROM card_schedule)',
             'id',
           ),
         );
         await customStatement(
-          _seedOutbox(
+          seedOutboxSql(
             'review_log',
             '(SELECT id, answered_at FROM review_log)',
             'answered_at, id',
           ),
         );
+      },
+      from10To11: (m, schema) async {
+        // SB-A2/SB-A3 (auth spec §4): the validated account, a pending
+        // account transition and the welcome flag. Two empty tables and one
+        // column with its default; no row changes.
+        await m.createTable(schema.accountState);
+        await m.createTable(schema.accountTransition);
+        await m.addColumn(schema.appSettings, schema.appSettings.welcomeSeen);
       },
     ),
     beforeOpen: (details) async {
@@ -179,8 +188,12 @@ class AppDatabase extends _$AppDatabase {
 /// this row (BR-SETTINGS-001).
 const appSettingsRowId = 1;
 
-/// Queues every existing row of [table] for upload, in [order].
-String _seedOutbox(String entityType, String table, String order) =>
+/// The id of the one account_state row and of the one account_transition row.
+const accountRowId = 1;
+
+/// Queues every existing row of [table] for upload, in [order] (migrations and
+/// SyncStore.markAllPending).
+String seedOutboxSql(String entityType, String table, String order) =>
     'INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) '
     "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "
     "substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || "
