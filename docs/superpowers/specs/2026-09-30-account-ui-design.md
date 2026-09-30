@@ -2,7 +2,8 @@
 
 Status: approved 2026-09-30 in the P3 brainstorm; P3a implemented by
 `docs/superpowers/plans/2026-09-30-account-ui-attach.md`; P3b rulings
-approved 2026-09-30 (§9). An addendum to
+approved 2026-09-30 (§9) and implemented by
+`docs/superpowers/plans/2026-09-30-account-ui-manage.md`. An addendum to
 [the auth spec](2026-09-30-auth-design.md): it settles §7 (router) and §8 (UI)
 against what P2 built and against [`DESIGN.md`](../../../DESIGN.md), which is
 now the UI authority
@@ -200,9 +201,10 @@ above already carry the outcome. Layout notes for the builder:
   tracking, centred. The resend countdown ("Resend code in 0:42") is a
   disabled text button until it reaches zero.
 - **Settings › Account**: `MxSection` "ACCOUNT", first; `MxSettingsRow` with
-  a person-glyph tile; the email keeps one line and ends in an ellipsis.
+  a person-glyph tile; the email wraps (`DESIGN.md`'s Wrap Rule; P3b plan
+  ruling 2).
 - **Re-auth on 23** (P3b): `MxInlineBanner` (warning) with "Sign in" as its
-  action, above the Account card.
+  action, leading the Account section (P3b plan ruling 1).
 - **Debt** to record in the UI-base register (§9): the Welcome icon tile
   (U5).
 
@@ -257,8 +259,8 @@ owner. Every dialog follows 23's Reset dialog: a title ending in "?", the
 body, an optional `MxNote`, then `MxSheetActions` (Cancel outline · confirm).
 
 - **32 layout**, three `MxSection`s:
-  - `ACCOUNT`: one plain row, the person-glyph tile, the email on one line
-    with an ellipsis, subtitle "Signed in with Google" / "Signed in with
+  - `ACCOUNT`: one plain row, the person-glyph tile, the email (it wraps,
+    P3b plan ruling 2), subtitle "Signed in with Google" / "Signed in with
     email" / "Signed in with Google and email" (B1).
   - `THIS PHONE`: "Switch account" · "Move this phone to another account";
     "Sign out" · "Your changes are sent first".
@@ -280,7 +282,9 @@ body, an optional `MxNote`, then `MxSheetActions` (Cancel outline · confirm).
     reassurance note, confirm "Delete account" (destructive, delete icon).
     Offline: an `MxNote` (offline glyph) "Deleting your account needs a
     connection." and the confirm disabled.
-  - Last admin (B7): "An admin must remain", the §5.4 body, one "OK".
+  - Last admin (B7): "An admin must remain", "Give another person the
+    admin role first, then delete the account." (after the build: the §5.4
+    body repeated the title), one "OK".
 - **30 `reauth`**: the reauth mode line; **the email field starts with the
   last account's email** (the usual case is signing in again to the same
   account); "Continue without an account" (text) at the bottom of the
@@ -290,8 +294,9 @@ body, an optional `MxNote`, then `MxSheetActions` (Cancel outline · confirm).
   - Continue without: "Continue without an account?", "This phone's decks
     from {email} are removed. Sign in to {email} later to get them back.",
     confirm "Continue without an account" (destructive).
-- **23**: the warning banner sits inside the Account section, above its
-  card; the account row gets its chevron.
+- **23**: the warning banner leads the Account section, above its overline
+  (`MxSection` has no header slot: P3b plan ruling 1, UI-base row 151); the
+  account row gets its chevron. 32 places it the same way.
 - **13**: the `MxFloatingNotice` of the sync notice's form, "Your sign-in
   expired. Your decks are still on this phone." with a compact primary
   "Sign in".

@@ -553,6 +553,7 @@ item names where it comes from.
 | 148 | Open debt, not yet ruled: the outline `MxButton` (Reset in the Monitoring filter sheets, and every other outline button on a sheet) draws its edge about 1.05:1 against the dark sheet surface and about 1.3:1 in light, under the 3:1 FE-C1 sets for meaningful edges; its label reads 4.9:1. Found by the Impeccable audit of screen 28 (F9). It is a shared widget, so it is not changed on the Monitoring branch: a UI-base task checks the kit and moves the edge to `outline` or keeps it as the kit's | Impeccable post-build audit 2026-09-29, F9; FE-C1 |
 | 149 | Screen 29's head is an `MxIconTile` (large, tinted, the deck glyph): the launcher icon is still Flutter's default. Replace it with MemoX's icon when one exists | Account UI spec U5 (owner 2026-09-30) |
 | 150 | Screen 30's email field uses the form variant's text keyboard; an email keyboard needs an `MxTextField` variant, which U2 did not approve | P3a plan ruling 7 |
+| 151 | The re-auth banner on 23 and 32 sits above the Account section, not between its overline and its card: `MxSection` has no header slot | P3b plan ruling 1 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

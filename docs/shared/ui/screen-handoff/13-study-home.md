@@ -15,6 +15,7 @@ snapshot. UC-STUDY-002.
 | Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
 | Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
+| Re-auth notice | `MxFloatingNotice` in the same slot + compact `MxButton` | FE-B10 (account UI spec §5.7, R2, B5): while the sign-in is refused, "Your sign-in expired. Your decks are still on this phone." · "Sign in", which opens screen 30 `reauth` under Settings and returns here once signed in. It takes the slot over the sync notice, since the expired sign-in is why sync stopped. The account feature builds it; `app/` hands it in as `reauthNotice`. |
 | Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); a chevron on every row that can be studied; the due counts are in the meta line, so there is no due badge (critique 2026-09-30). A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
 
 ## States
@@ -30,6 +31,7 @@ snapshot. UC-STUDY-002.
 | error | `study_home_error_light.png` | `study_home_error_dark.png` | `MxErrorState` with Retry; no table or query names (BR-STUDY-077). |
 | syncRejected | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_dark.png) | (SB-U1) the sync banner, refused rows. Golden `study_home_sync_rejected_*`. |
 | syncStale | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_dark.png) | (SB-U1) the sync banner, a change waiting over a day. Golden `study_home_sync_stale_*`. |
+| reauth | ![](../../../../test/features/account/presentation/goldens/study_home_reauth_light.png) | ![](../../../../test/features/account/presentation/goldens/study_home_reauth_dark.png) | (FE-B10) the re-auth notice over the page. Golden `study_home_reauth_*` (in the account tests). |
 
 Every state above is built.
 
@@ -57,6 +59,7 @@ Every state above is built.
 - **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never cut; a deck with cards always states its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its ink; a deck with no card reads "No cards yet".
 - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard `MxSkeletonList` rows.
 - `MxEmptyState` actions carry no glyph.
+- **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.
 - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows under the sync status rules (ADR-015).
 
 ## Accessibility
@@ -76,5 +79,6 @@ Every state above is built.
 - Section: "Your decks" · "Library".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
+- Re-auth notice (FE-B10): "Your sign-in expired. Your decks are still on this phone." · "Sign in".
 - Sync notice (SB-U1): "{n} changes are kept only on this device." · "Some changes haven't synced in over a day. They're safe here." · "Details".
 - Error: "Couldn't load your study overview" · "Your cards are safe on this device. You can still open Library directly."
