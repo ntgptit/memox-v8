@@ -127,7 +127,7 @@ Fill, Green Means Progress, and "a right answer is success, never mastery".
 - DESIGN.md: the `warning-ink` token (#895806 light) and the Warning Amber line; `MxBadge`
   tones; `MxInlineBanner` title ink; `MxSettingsRow.iconTone`; `MxEmptyState` success tone.
 - Detail files 10, 11, 23, 27 and 28, each with a ruling line for its change.
-- `docs/wbs_FE.md`: a line FE-D11 for the tone pass.
+- `docs/wbs_FE.md`: a row FE-D12 for the tone pass.
 
 ## 6. Out of scope
 
