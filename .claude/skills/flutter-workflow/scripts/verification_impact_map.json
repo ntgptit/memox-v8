@@ -1,6 +1,7 @@
 {
   "version": 1,
   "feature_dependencies": {
+    "account": [],
     "card": [
       "search",
       "srs",

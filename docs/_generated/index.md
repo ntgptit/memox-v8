@@ -38,6 +38,10 @@
 | [ADR-018](../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) | Log tập trung và monitoring cho admin | active | — |
 | [ADR-019](../shared/decisions/ADR-019-app-la-chuan-ui.md) | App là chuẩn UI; retire kit v3 và design handoff | active | — |
 
+## [account](../features/account/README.md)
+
+Chưa có tài liệu.
+
 ## [card](../features/card/README.md)
 
 ### Rules
