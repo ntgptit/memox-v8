@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
+import 'package:memox/features/reminders/domain/models/reminder_digest_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_preview_digest_provider.dart';
@@ -456,5 +457,23 @@ void main() {
     expect(find.byType(MxErrorState), findsNothing);
     await _toggle(tester);
     expect(s.platform.calls, contains(PlatformCall.schedule));
+  });
+
+  libraryTest('while the preview loads the row keeps its place and shows no '
+      'error', (tester, env) async {
+    final never = Completer<ReminderDigest?>();
+    await _pump(
+      tester,
+      env,
+      overrides: [
+        reminderPreviewDigestProvider.overrideWith((ref) => never.future),
+      ],
+    );
+    // The section header draws its title in capitals.
+    expect(find.text(_en.reminderPreviewTitle.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.reminderPreviewHint), findsOneWidget);
+    expect(find.text(_en.reminderPreviewNothingDue), findsNothing);
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 }

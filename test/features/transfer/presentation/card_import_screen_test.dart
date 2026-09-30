@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
+import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -315,6 +316,19 @@ void main() {
     await _tap(tester, _en.importPickAction);
     await _tap(tester, _en.importReadAction);
     expect(find.text('mul'), findsOneWidget);
+    // Columns B (a blank cell) and C (a missing one) show only their name
+    // and header, no sample line.
+    final rows = find.byType(ImportMappingRowWidget);
+    for (var i = 1; i < 3; i++) {
+      final labels = find.descendant(
+        of: rows.at(i),
+        matching: find.byType(Column),
+      );
+      expect(
+        find.descendant(of: labels.first, matching: find.byType(Text)),
+        findsNWidgets(2),
+      );
+    }
     expect(tester.takeException(), isNull);
   });
 }
