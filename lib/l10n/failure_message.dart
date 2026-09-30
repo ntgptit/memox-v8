@@ -12,5 +12,7 @@ extension FailureMessage on AppLocalizations {
     NotAdminFailure() => failureNotAdmin,
     OfflineFailure() => failureOffline,
     ServerFailure() => failureServer,
+    MutationBlockedFailure() => failureAccountBusy,
+    AuthFailure() => failureAccount,
   };
 }

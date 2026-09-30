@@ -55,6 +55,8 @@
   "failureConstraint": "Chưa lưu gì: thay đổi này vi phạm một quy tắc dữ liệu.",
   "failureBusy": "Không mất dữ liệu nào. Dữ liệu đang bận, hãy thử lại.",
   "failureUnknown": "Không mất dữ liệu nào, nhưng đã có lỗi. Hãy thử lại.",
+  "failureAccount": "Không mất dữ liệu nào. Bước tài khoản chưa xong, hãy thử lại.",
+  "failureAccountBusy": "Chưa lưu gì: tài khoản đang được chuyển. Hãy thử lại sau giây lát.",
   "commonBack": "Quay lại",
   "commonOk": "OK",
   "libraryReorderDone": "Xong",
