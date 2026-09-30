@@ -12,6 +12,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_layer_host_widget.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
@@ -26,8 +27,9 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 /// The composition root: themes, localization and the router, the start-up
 /// close of an earlier day's open study session (FE-A6 D9), and the Trash's
 /// auto-purge at start and on every resume (FE-B1 D5), and the daily
-/// reminder's start-up Reconcile and tap route (BE-B5b). The theme and the
-/// language follow the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
+/// reminder's start-up Reconcile and tap route (BE-B5b), and the account
+/// transition layer (account UI spec U4). The theme and the language follow
+/// the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
 class MemoxApp extends ConsumerStatefulWidget {
   const MemoxApp({
     super.key,
@@ -171,6 +173,12 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: _router,
+      // Account UI spec U4: the transition layer sits above the router,
+      // with the router's Back dispatcher to take priority over.
+      builder: (context, child) => AccountLayerHostWidget(
+        backButtons: _router.backButtonDispatcher,
+        child: child!,
+      ),
     );
   }
 }

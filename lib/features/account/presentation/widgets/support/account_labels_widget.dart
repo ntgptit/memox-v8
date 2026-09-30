@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/features/account/presentation/states/account_step_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -40,4 +41,15 @@ AccountUser? attachedAccount(WidgetRef ref) =>
     switch (ref.read(accountCoordinatorProvider)?.state) {
       Ready(:final user) => user,
       _ => null,
+    };
+
+/// The layer's line for [step] (spec §5.4).
+String accountStepText(AppLocalizations l10n, AccountStep step) =>
+    switch (step) {
+      AccountStep.sending => l10n.accountStepSending,
+      AccountStep.preparing => l10n.accountStepPreparing,
+      AccountStep.merging => l10n.accountStepMerging,
+      AccountStep.downloading => l10n.accountStepDownloading,
+      AccountStep.signingOut => l10n.accountStepSigningOut,
+      AccountStep.deleting => l10n.accountStepDeleting,
     };
