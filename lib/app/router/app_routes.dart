@@ -62,6 +62,18 @@ abstract final class AppRoutes {
   static const String welcome = '/welcome';
   static const String welcomeFromParam = 'from';
 
+  /// [location] when it is a place inside the app, else [fallback]: a
+  /// `from` in a link is only a way back, never a way out (P3b minor M1).
+  static String inAppOr(String? location, String fallback) {
+    if (location == null || !location.startsWith('/')) return fallback;
+    if (location.startsWith('//') || location.startsWith(r'/\')) {
+      return fallback;
+    }
+    final uri = Uri.tryParse(location);
+    if (uri == null || uri.hasScheme || uri.hasAuthority) return fallback;
+    return location;
+  }
+
   static String welcomeFrom(String location) => Uri(
     path: welcome,
     queryParameters: {welcomeFromParam: location},

@@ -21,8 +21,13 @@ const Duration usersSearchDebounce = Duration(milliseconds: 400);
 class UsersController extends _$UsersController {
   Timer? _debounce;
 
-  /// Bumped by every ask from the first page.
+  /// Bumped by every ask from the first page, and when the screen turns to
+  /// "not an admin", so no answer in flight brings the rows back (P4 minor
+  /// M1).
   var _generation = 0;
+
+  /// The generation of the first-page ask still in flight, if any.
+  int? _firstInFlight;
 
   /// The search typed but not yet asked, carried into a retry or refresh.
   String? _pendingSearch;
@@ -40,6 +45,11 @@ class UsersController extends _$UsersController {
   /// change.
   void search(String text) {
     _debounce?.cancel();
+    // The use case trims, so spaces alone ask nothing new (P4 minor M5).
+    if (text.trim() == state.query.trim()) {
+      _pendingSearch = null;
+      return;
+    }
     _pendingSearch = text;
     _debounce = Timer(usersSearchDebounce, () => _ask(_intended));
   }
@@ -81,9 +91,7 @@ class UsersController extends _$UsersController {
       if (!_isCurrent(generation)) return;
       // No longer an admin: the whole screen says so, not one page (final
       // review I1).
-      if (error is NotAdminFailure) {
-        return _show(const UsersFailed(UsersLoadFailure.notAdmin));
-      }
+      if (error is NotAdminFailure) return _showNotAdmin();
       final latest = _loaded;
       if (latest == null) return;
       _show(latest.withMore(UsersMore.failed));
@@ -101,9 +109,12 @@ class UsersController extends _$UsersController {
         return RoleChange.gone;
       }
       _replace(user.withRole(held));
+      // A first page asked before the save would bring the old role back
+      // (P4 minor M2): ask it again.
+      if (_firstInFlight != null) unawaited(_loadFirst());
       return RoleChange.saved;
     } on NotAdminFailure {
-      if (ref.mounted) _show(const UsersFailed(UsersLoadFailure.notAdmin));
+      if (ref.mounted) _showNotAdmin();
       return RoleChange.notAdmin;
     } on LastAdminFailure {
       return RoleChange.lastAdmin;
@@ -139,6 +150,11 @@ class UsersController extends _$UsersController {
     );
   }
 
+  void _showNotAdmin() {
+    _generation++;
+    _show(const UsersFailed(UsersLoadFailure.notAdmin));
+  }
+
   void _show(UsersContent content) =>
       state = UsersState(query: state.query, content: content);
 
@@ -147,6 +163,7 @@ class UsersController extends _$UsersController {
   Future<void> _loadFirst() async {
     if (!ref.mounted) return;
     final generation = ++_generation;
+    _firstInFlight = generation;
     final query = state.query;
     try {
       final page = await ref.read(searchUsersUseCaseProvider)(query);
@@ -155,6 +172,8 @@ class UsersController extends _$UsersController {
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
       _show(UsersFailed(UsersLoadFailure.of(error)));
+    } finally {
+      if (_firstInFlight == generation) _firstInFlight = null;
     }
   }
 }

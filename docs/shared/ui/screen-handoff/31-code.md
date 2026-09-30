@@ -19,11 +19,13 @@ The six digits sent to the address. SB-A2; spec
 | App bar | `MxAppBar` (content) + back | "Enter the code". |
 | Lead | `emptyBody` | "Enter the 6-digit code sent to {email}". |
 | Code | `MxTextField` (code) | Six digits, numeric keyboard, one-time-code autofill, TalkBack "Code, 6 digits". Six digits check at once; a spinner shows while they do. A wrong code clears the field (plan ruling 11). |
-| Resend | `MxButton` (text) | "Resend code in 0:42", disabled, until the 60 s wait ends; then "Resend code", which toasts "A new code is on its way." and starts the wait again. |
+| Resend | `MxButton` (text) | "Resend code in 0:42", disabled, until the 60 s wait ends; then "Resend code", which toasts "A new code is on its way." and starts the wait again. In a re-auth to another account with changes unsent, it first asks in screen 30's loss dialog; Cancel sends nothing (P3b minor M7). |
 | Another email | `MxButton` (text) | "Use another email". |
 
 A right code attaches the account, toasts "Signed in as {email}" and closes the flow on
-Settings.
+Settings. While `me()` has not confirmed it yet the toast reads "Signed in"; while the
+account moves, such as a re-auth switch that stopped on the way, there is none and the layer
+says what happened (P3b minor M2).
 
 ## States
 

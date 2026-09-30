@@ -52,7 +52,7 @@ class WelcomeScreen extends ConsumerWidget {
     if (!context.mounted) return;
     switch (outcome) {
       case SignInOutcome.signedIn:
-        saySignedIn(context, attachedAccount(ref));
+        saySignedIn(context, stateAfterCommand(ref));
         _leave(ref, onDone);
       case SignInOutcome.identityTaken:
         final isSwitching = await startLinkSwitch(context, ref);

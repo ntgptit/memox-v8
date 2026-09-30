@@ -17,9 +17,10 @@ import 'package:memox/features/account/presentation/widgets/sections/account_set
 GoRoute welcomeRoute() => GoRoute(
   path: AppRoutes.welcome,
   builder: (context, state) {
-    final from =
-        state.uri.queryParameters[AppRoutes.welcomeFromParam] ??
-        AppRoutes.decks;
+    final from = AppRoutes.inAppOr(
+      state.uri.queryParameters[AppRoutes.welcomeFromParam],
+      AppRoutes.decks,
+    );
     return WelcomeScreen(
       onDone: () => context.go(from),
       onEmail: () => context.go(AppRoutes.settingsSignInLink),
@@ -89,7 +90,7 @@ final class _SignInFlow {
         query[AppRoutes.accountModeParam] == AppRoutes.accountReauthMode;
     return _SignInFlow(
       isReauth ? SignInPurpose.reauth : SignInPurpose.link,
-      query[AppRoutes.accountFromParam] ?? AppRoutes.settings,
+      AppRoutes.inAppOr(query[AppRoutes.accountFromParam], AppRoutes.settings),
     );
   }
 

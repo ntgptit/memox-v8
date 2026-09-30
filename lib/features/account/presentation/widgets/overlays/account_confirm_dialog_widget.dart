@@ -32,6 +32,20 @@ Future<bool> confirmAccountStep(
     ) ??
     false;
 
+/// Auth spec ruling 6: signing in as another account replaces this
+/// phone's data, so its [count] unsent changes are named first (screens 30
+/// and 31).
+Future<bool> confirmUnsentLoss(BuildContext context, int count) {
+  final l10n = context.l10n;
+  return confirmAccountStep(
+    context,
+    title: l10n.accountUnsentTitle(count),
+    body: l10n.accountUnsentBody(count),
+    confirmLabel: l10n.accountContinue,
+    isDestructive: true,
+  );
+}
+
 /// A refused deletion of the last admin (spec §5.4, §9 B7): what to do
 /// first, and one OK.
 Future<void> showLastAdminDialog(BuildContext context) => showMxDialog<void>(
