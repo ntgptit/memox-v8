@@ -22,7 +22,7 @@ Thiết kế chi tiết nằm ở
 |---|---|---|
 | 1 | Nguồn dữ liệu | PostgreSQL của `memox-api-services` là **nguồn chính thức** của dữ liệu người dùng, dùng chung cho mọi thiết bị. Drift trên mỗi máy là **kho vận hành bền vững**: app luôn đọc và ghi local, kể cả khi đang có mạng. Drift không phải cache có thể xoá |
 | 2 | Ghi | Ghi local trước: dữ liệu và một dòng `sync_outbox` được ghi trong **cùng một transaction Drift**, UI phản hồi ngay, rồi `SyncCoordinator` (tầng `data/`) đẩy lên server khi có mạng. Use case và presentation không biết gì về mạng |
-| 3 | Danh tính | Làm sớm, **login làm sau**. Server lấy owner qua `CurrentUserProvider`, hiện trả về một user dev cố định, sau này thay bằng JWT. Mọi bảng trên server có `user_id`; server không bao giờ tin owner do client gửi. Mỗi máy có một `device_id` |
+| 3 | Danh tính | Làm sớm, **login làm sau**. Server lấy owner qua `CurrentUserProvider`, hiện trả về một user dev cố định, sau này thay bằng JWT. Mọi bảng trên server có `user_id`; server không bao giờ tin owner do client gửi. Mỗi máy có một `device_id` 2026-09-30: login đã thiết kế ở `docs/superpowers/specs/2026-09-30-auth-design.md` (SB-A1); P1 server và P2 core auth xong. |
 | 4 | Giao thức | Push theo lô, có idempotency key (id của dòng outbox). Pull theo cursor `server_version`, là một chuỗi số tăng dần theo từng user |
 | 5 | Conflict: nội dung | deck, card, tags, card_tags và setting theo tài khoản: cả hàng bị ghi đè, thao tác mà server nhận **sau** thắng; không dựa vào đồng hồ của máy |
 | 6 | Conflict: cây deck | Server kiểm các bất biến của cây khi áp dụng thao tác (không có chu trình, `root_id` và `content_type` nhất quán). Thao tác vi phạm bị từ chối, và client nhận lại trạng thái của server |

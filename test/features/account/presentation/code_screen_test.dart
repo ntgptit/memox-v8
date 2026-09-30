@@ -1,0 +1,140 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
+import 'package:memox/features/account/presentation/screens/code_screen.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+
+import '../../../support/account_harness.dart';
+import '../../../support/library_harness.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
+
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+}
+
+void main() {
+  late int signIns;
+
+  setUp(() => signIns = 0);
+
+  CodeScreen screen() =>
+      CodeScreen(email: 'a@example.com', onSignedIn: () => signIns++);
+
+  accountTest('six digits sign in and say so', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    expect(find.text(_en.accountCodeSentTo('a@example.com')), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '123456');
+    await _settle(tester);
+
+    expect(signIns, 1);
+    expect(find.text(_en.accountSignedInAs('a@example.com')), findsOneWidget);
+  });
+
+  accountTest('a wrong code clears the field and says so; the right one then '
+      'signs in (Review Focus 4)', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.enterText(find.byType(TextField), '000000');
+    await _settle(tester);
+
+    expect(find.text(_en.accountCodeWrong), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      '',
+    );
+    expect(signIns, 0);
+
+    await tester.enterText(find.byType(TextField), '123456');
+    await _settle(tester);
+    expect(signIns, 1);
+  });
+
+  accountTest('Resend waits a minute, then sends a new code and waits again', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    final waiting = find.widgetWithText(MxButton, _en.accountResendIn('1:00'));
+    expect(tester.widget<MxButton>(waiting).onPressed, isNull);
+
+    await tester.pump(const Duration(seconds: 60));
+    await tester.tap(find.text(_en.accountResend));
+    await _settle(tester);
+
+    expect(find.text(_en.accountCodeResent), findsOneWidget);
+    expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
+  });
+
+  accountTest('a code typed while a new one is on its way is kept and '
+      'checked', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump(const Duration(seconds: 60));
+    final held = world.gateway.holdRequests = Completer<void>();
+    await tester.tap(find.text(_en.accountResend));
+    await tester.pump();
+
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pump();
+    held.complete();
+    world.gateway.holdRequests = null;
+    await _settle(tester);
+    await _settle(tester);
+
+    expect(signIns, 1);
+  });
+
+  accountTest('after a wrong code the field keeps the keyboard', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.enterText(find.byType(TextField), '000000');
+    await _settle(tester);
+
+    expect(find.text(_en.accountCodeWrong), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  });
+}

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -28,6 +29,11 @@ enum MxTextFieldVariant {
   /// one centred line in the study term role, inside the answer face that
   /// frames it (FE-A6 P4 F1).
   study,
+
+  /// A sign-in code (account UI spec U2): one centred line of six digits
+  /// on the form fill, the numeric keyboard, the platform's one-time-code
+  /// autofill.
+  code,
 }
 
 typedef _Geometry = ({
@@ -105,6 +111,9 @@ class MxTextField extends StatelessWidget {
   /// Past this many characters a term steps down to 18 (kit).
   static const int _termLongAt = 30;
 
+  /// The digits a sign-in code holds (auth spec O1).
+  static const int codeLength = 6;
+
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
     MxTextFieldVariant.form => (
       floor: AppSize.input,
@@ -135,6 +144,13 @@ class MxTextField extends StatelessWidget {
       radius: AppRadius.md,
       isMultiline: false,
     ),
+    MxTextFieldVariant.code => (
+      floor: AppSize.input,
+      horizontal: AppSpacing.grouped,
+      vertical: 0,
+      radius: AppRadius.md,
+      isMultiline: false,
+    ),
     MxTextFieldVariant.term => (
       floor: _termFloor,
       horizontal: AppSpacing.gutter,
@@ -149,6 +165,7 @@ class MxTextField extends StatelessWidget {
     return switch (variant) {
       MxTextFieldVariant.form => context.texts.bodyMedium!,
       MxTextFieldVariant.study => styles.studyTerm,
+      MxTextFieldVariant.code => styles.fieldCode,
       MxTextFieldVariant.detail => styles.fieldDetail,
       MxTextFieldVariant.meaning => styles.fieldMeaning,
       MxTextFieldVariant.term
@@ -247,6 +264,7 @@ class MxTextField extends StatelessWidget {
         : context.fieldHint;
     final isForm = variant == MxTextFieldVariant.form;
     final isBare = variant == MxTextFieldVariant.study;
+    final isCode = variant == MxTextFieldVariant.code;
     final field = TextField(
       controller: controller,
       focusNode: focusNode,
@@ -259,10 +277,18 @@ class MxTextField extends StatelessWidget {
       keyboardType: switch (variant) {
         MxTextFieldVariant.detail ||
         MxTextFieldVariant.meaning => TextInputType.multiline,
+        MxTextFieldVariant.code => TextInputType.number,
         _ => TextInputType.text,
       },
+      inputFormatters: isCode
+          ? [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(codeLength),
+            ]
+          : null,
+      autofillHints: isCode ? const [AutofillHints.oneTimeCode] : null,
       style: textStyle,
-      textAlign: isBare ? TextAlign.center : TextAlign.start,
+      textAlign: isBare || isCode ? TextAlign.center : TextAlign.start,
       cursorColor: colors.primary,
       textAlignVertical: TextAlignVertical.center,
       decoration: isBare
@@ -282,7 +308,9 @@ class MxTextField extends StatelessWidget {
               hintStyle: hintStyle,
               // The editor's boxes sit white on the page; a form field keeps the
               // theme's fill, which lightens on focus.
-              fillColor: isForm ? null : colors.surfaceContainerLowest,
+              fillColor: isForm || isCode
+                  ? null
+                  : colors.surfaceContainerLowest,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: geometry.horizontal,
                 vertical: _verticalPadding(

@@ -11,5 +11,8 @@ CREATE TABLE app_settings (
   reminder_enabled INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)),
   reminder_minute_of_day INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439),
   reminder_last_delivered_at DATETIME,
+  -- Auth spec §7: the first-launch welcome was answered. Device-only: not in
+  -- the account settings that sync, kept by LocalDataReset.
+  welcome_seen INTEGER NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1)),
   updated_at DATETIME NOT NULL
 ) AS AppSetting;

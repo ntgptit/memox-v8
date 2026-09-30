@@ -45,14 +45,25 @@ class SyncScheduler {
   var _running = false;
   var _rerun = false;
   var _failures = 0;
+  var _paused = false;
+
+  /// Completed when the run in progress ends, for a [pause] waiting on it.
+  Completer<void>? _idle;
+
+  bool get isPaused => _paused;
 
   /// Callers of [syncNow] waiting for the next run to end.
   final _waiters = <Completer<bool>>[];
 
-  void start() {
+  /// Listens for triggers and reconnects. [paused] waits for [resume] before
+  /// the first run: sync starts only once the account is confirmed (auth
+  /// spec R2).
+  void start({bool paused = false}) {
+    _paused = paused;
     _subscriptions
       ..add(
         _triggers.listen((_) {
+          if (_paused) return;
           // During a backoff a local write waits for the retry: offline, a
           // burst of edits must not hammer the server every 2 s.
           if (_failures == 0) {
@@ -62,16 +73,35 @@ class SyncScheduler {
       )
       ..add(
         _reconnects.listen((_) {
+          if (_paused) return;
           _failures = 0;
           _schedule(Duration.zero);
         }),
       );
+    if (!paused) _schedule(Duration.zero);
+  }
+
+  /// No run starts until [resume]. Completes once a run in progress has
+  /// ended, so nothing is pushed after it returns (auth spec R3).
+  Future<void> pause() {
+    _paused = true;
+    _timer?.cancel();
+    if (!_running) return Future<void>.value();
+    return (_idle ??= Completer<void>()).future;
+  }
+
+  /// Runs at once, then schedules as before; the backoff is forgotten.
+  void resume() {
+    if (!_paused) return;
+    _paused = false;
+    _failures = 0;
     _schedule(Duration.zero);
   }
 
   /// Sync now (screen 27): forget the backoff and run at once, or right after
   /// the run in progress. True when that run succeeded.
   Future<bool> syncNow() {
+    if (_paused) return Future<bool>.value(false);
     final waiter = Completer<bool>();
     _waiters.add(waiter);
     _failures = 0;
@@ -101,11 +131,13 @@ class SyncScheduler {
   }
 
   void _schedule(Duration delay) {
+    if (_paused) return;
     _timer?.cancel();
     _timer = Timer(delay, _tick);
   }
 
   Future<void> _tick() async {
+    if (_paused) return;
     if (_running) {
       _rerun = true;
       return;
@@ -130,7 +162,15 @@ class SyncScheduler {
       for (final waiter in waiting) {
         waiter.complete(succeeded);
       }
-      if (_waiters.isNotEmpty || (succeeded && _rerun)) {
+      final idle = _idle;
+      _idle = null;
+      idle?.complete();
+      if (_paused) {
+        for (final waiter in _waiters) {
+          waiter.complete(false);
+        }
+        _waiters.clear();
+      } else if (_waiters.isNotEmpty || (succeeded && _rerun)) {
         _schedule(Duration.zero);
       } else if (!succeeded) {
         _schedule(backoffFor(_failures));

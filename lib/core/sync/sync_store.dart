@@ -237,4 +237,46 @@ class SyncStore {
       .insertOnConflictUpdate(
         SyncStateCompanion.insert(name: key, value: value),
       );
+
+  /// How many changes wait in the outbox (auth spec §5).
+  Future<int> pendingCount() async =>
+      (await _db
+              .customSelect(
+                'SELECT COUNT(*) AS n FROM sync_outbox',
+                readsFrom: {_db.syncOutbox},
+              )
+              .getSingle())
+          .read<int>('n');
+
+  /// Every local row queued for upload in the migrations' parents-first
+  /// order, the settings row included, and the pull cursor back to 0: a new
+  /// anonymous user gets the whole library (auth spec #12). A row already
+  /// queued keeps its operation, so a rerun queues nothing twice (plan
+  /// ruling 12).
+  Future<void> markAllPending() => _db.transaction(() async {
+    for (final (entityType, table, order) in _everyRow) {
+      await _db.customStatement(
+        '${seedOutboxSql(entityType, table, order)} '
+        'ON CONFLICT (entity_type, entity_id) DO NOTHING',
+      );
+    }
+    await setSince(0);
+  });
 }
+
+/// Each synced type in the coordinator's adapter order, with the rows it
+/// uploads and their order (the migrations' seeds, app_database.dart).
+const _everyRow = [
+  ('delete_batch', 'delete_batches', 'id'),
+  ('deck', 'deck', 'depth, id'),
+  ('tag', 'tags', 'created_at, id'),
+  ('card', 'card', 'created_at, id'),
+  ('card_schedule', '(SELECT card_id AS id FROM card_schedule)', 'id'),
+  ('review_log', '(SELECT id, answered_at FROM review_log)', 'answered_at, id'),
+  (
+    'account_settings',
+    "(SELECT '$accountSettingsEntityId' AS id FROM app_settings "
+        'WHERE id = $appSettingsRowId)',
+    'id',
+  ),
+];

@@ -23,7 +23,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.4.3
+  flutter_secure_storage: ^11.2.0
   go_router: ^18.0.1
+  google_sign_in: ^7.2.0
   http: ^1.6.0
   intl: any
   json_annotation: ^4.12.0
@@ -59,6 +61,9 @@ flutter:
     # files, not its subfolders, so each folder is listed.
     - assets/templates/
     - assets/templates/en/
+    # Google's G for "Continue with Google" (account UI spec U6), rendered
+    # from the official path at 1x–4x; Flutter picks the density variant.
+    - assets/brand/
   fonts:
     # Variable font (wght axis). Weights are set through
     # AppTypography.withWeight, which moves the axis with fontWeight.

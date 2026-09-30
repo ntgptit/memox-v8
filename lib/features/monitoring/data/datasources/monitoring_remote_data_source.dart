@@ -1,5 +1,5 @@
+import 'package:memox/core/network/remote_error.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 /// The admin RPCs of `public.app_log` (ADR-018 §7): `log_query`, `log_get`
 /// and `log_set_status`, on the session sync already holds. It never signs
@@ -43,8 +43,8 @@ final class MonitoringRemoteDataSource {
     try {
       final json = await _call(function, params);
       return json! as Map<String, Object?>;
-    } on PostgrestException catch (error) {
-      if (error.message == _notFound) return null;
+    } on Object catch (error) {
+      if (rpcErrorCode(error) == _notFound) return null;
       rethrow;
     }
   }

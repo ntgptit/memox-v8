@@ -35,6 +35,7 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenReminder,
     required this.onAppOptionsReset,
     required this.onOpenSync,
+    this.accountSection,
     this.adminSection,
     this.onOpenGallery,
   });
@@ -49,6 +50,10 @@ class SettingsScreen extends ConsumerWidget {
 
   /// Opens screen 27 (SB-U1).
   final VoidCallback onOpenSync;
+
+  /// The Account section, which `app/` composes from the account feature
+  /// (account UI spec §5.5); first in the list.
+  final Widget? accountSection;
 
   /// The Admin section, which `app/` composes from Monitoring (monitoring
   /// spec §3.1): a widget that draws nothing unless the account is an admin.
@@ -82,6 +87,7 @@ class SettingsScreen extends ConsumerWidget {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
+            ?accountSection,
             SettingsStudyDefaultsSectionWidget(stored: value.studyDefaults),
             SettingsAppSectionWidget(
               stored: value,

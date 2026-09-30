@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/features/monitoring/di/is_admin_provider.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';

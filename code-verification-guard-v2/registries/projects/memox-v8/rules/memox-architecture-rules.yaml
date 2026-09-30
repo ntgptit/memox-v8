@@ -152,12 +152,15 @@ rules:
     severity: error
     enabled: true
     message: >-
-      `flutter_secure_storage` is deliberately absent: the app stores no
-      credential until the auth spec (ADR-002). Adding it is a documented
-      decision, not an import. (`dio` and `connectivity_plus` were admitted by
-      ADR-012 and ADR-013 for the sync layer.)
+      `flutter_secure_storage` holds the account's secrets only, behind
+      `SecretStore` (auth spec 2026-09-30 O13, ADR-002): import it in
+      `lib/core/auth/secure_secret_store.dart` alone. (`dio` and
+      `connectivity_plus` were admitted by ADR-012 and ADR-013 for the sync
+      layer.)
     scopes:
       - dart_source
+    exclude:
+      - lib/core/auth/secure_*.dart
     patterns:
       - package:flutter_secure_storage/.*
     tags:
@@ -262,6 +265,34 @@ rules:
       - lib/features/reminders/data/datasources/plugin_reminder_plugins_data_source.dart
     patterns:
       - "^\\s*import\\s+'package:(android_alarm_manager_plus|flutter_local_notifications)/"
+    tags:
+      - memox-v8
+      - architecture
+
+  # Auth spec §5: the SDKs of identity, sync and secrets are reached through
+  # their door files only, so no Supabase or Google type leaks into a
+  # feature (core-auth plan rulings 18-19; test/architecture/sdk_door_test.dart).
+  - id: memox_v8.architecture.auth_sdks_have_one_door
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import `supabase_flutter`, `gotrue`, `google_sign_in` and
+      `flutter_secure_storage` only in their door files
+      (`lib/core/auth/supabase_*`, `lib/core/auth/google_*`,
+      `lib/core/auth/secure_*`, `lib/core/network/`,
+      `lib/core/sync/supabase_sync_api.dart`); use the account coordinator,
+      the gateway ports or `supabase_client.dart` instead.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/core/auth/supabase_*.dart
+      - lib/core/auth/google_*.dart
+      - lib/core/auth/secure_*.dart
+      - lib/core/network/**
+      - lib/core/sync/supabase_sync_api.dart
+    patterns:
+      - "^\\s*import\\s+'package:(supabase_flutter|gotrue|google_sign_in|flutter_secure_storage)/"
     tags:
       - memox-v8
       - architecture
