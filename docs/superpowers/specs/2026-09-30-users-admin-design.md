@@ -43,13 +43,13 @@ change.
 |---|---|
 | App bar | `MxAppBar` (content) + back: "Users". |
 | Search | `MxSearchField` "Search by email"; a query runs 400 ms after the last keystroke; clearing it lists everyone. |
-| Rows | `MxListRow` per user: the email (title), "Joined {date}" (subtitle, the locale's medium date), an `MxBadge` "Admin" (primary tint) or "User" (neutral). The signed-in admin's row adds "You" and has no chevron and no tap (U1). |
-| More | At the end of a page with `next`: "Load more", as screen 28; its failure is an inline danger banner with Retry. |
+| Rows | Under an "ACCOUNTS" overline, `MxListRow` per user: a tinted person tile, the email (title), "Joined {date}" (subtitle, the locale's medium date), an `MxBadge` "Admin" (primary) or "User" (neutral) as trailing; no chevron (a badge or a chevron, never both). The signed-in admin's row reads "Joined {date} · You" and does not tap (U1); it is not dimmed. |
+| More | The next page loads when the list reaches its end, as screen 28; the end reads "No more users"; a failed page is an inline danger banner with Retry (§6). |
 | States | loading (`MxSkeletonList`); empty ("No users match {query}" or, with no query, "No accounts yet"); error (`MxErrorState` + Retry; offline says so first); not an admin (the gate's state). |
 
 **Role sheet** (`MxBottomSheet`): the email as title; two `MxOptionRow`s,
-"User" · "Can study and sync their own decks" and "Admin" · "Can see logs and
-manage roles", the current one selected; `MxSheetActions`: Cancel · "Save"
+"User" · "Studies and syncs their own decks" and "Admin" · "Sees logs and
+manages roles", the current one selected; `MxSheetActions`: Cancel · "Save"
 (primary), enabled only when the choice differs, spinning while it runs.
 
 | Outcome | Shows |
@@ -82,3 +82,21 @@ Supabase, as today.
   goldens after the build (one fix batch).
 - Docs: `33-users.md`, the screen index, 23's detail file, a new FE row in
   `docs/wbs_FE.md`.
+
+## 6. Shape (Impeccable, 2026-09-30)
+
+Critiqued against `DESIGN.md` and the goldens of 28 (`monitoring_list_*`,
+`monitoring_level_sheet_*`) and the merge sheet (`merge_sheet_*`); approved by
+the owner.
+
+- **Screen 28 is the pattern**: the search field under the app bar, an
+  overline over the list, rows with a leading tile and a trailing badge, pages
+  that load at the end of the scroll and close on "No more …". 28 has no
+  "Load more" button, so 33 has none (this replaces the first draft of §3).
+- **Rows**: the person tile is the same for everyone (a scan anchor); the role
+  lives in the badge alone, so it is not said twice. The "You" row is content,
+  not a disabled control: full contrast, no tap.
+- **Sheet**: the merge sheet's form (title, `MxOptionRow` × 2, `MxSheetActions`);
+  its one fill is Save, disabled until the choice differs.
+- **One Indigo Rule**: no primary fill on 33 itself; the sheet's Save is its
+  one fill.
