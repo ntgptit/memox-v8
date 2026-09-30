@@ -74,7 +74,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
           _BodyText(body: body, strong: strong),
           if (outcome.drawsStats && summary.hasAnswers) ...[
             const SizedBox(height: AppSpacing.grouped),
-            _Stats(view: view, summary: summary),
+            _Stats(
+              view: view,
+              summary: summary,
+              // Every body with stats states the finished count (bold, or
+              // "The {n} cards you finished…" when left early) but an
+              // interrupted one.
+              isFinishedStated: outcome != SummaryOutcome.interrupted,
+            ),
           ],
         ],
       ),
@@ -175,14 +182,22 @@ class _BodyText extends StatelessWidget {
   }
 }
 
-/// What the body does not state: answered only when it differs from the
-/// finished count the body bolds, and wrong turns with their meaning
+/// What the body does not state: the finished count when the body has none,
+/// answered only when it differs from it, and wrong turns with their meaning
 /// (critique 2026-09-30 part 3c-1, R3; amends FE-A6 D17's three stats).
 class _Stats extends StatelessWidget {
-  const _Stats({required this.view, required this.summary});
+  const _Stats({
+    required this.view,
+    required this.summary,
+    required this.isFinishedStated,
+  });
 
   final StudySessionView view;
   final SessionSummary summary;
+
+  /// The body states the finished count; an interrupted session's body does
+  /// not, so its finished tile stays.
+  final bool isFinishedStated;
 
   @override
   Widget build(BuildContext context) {
@@ -197,6 +212,15 @@ class _Stats extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.control,
           children: [
+            if (!isFinishedStated)
+              Expanded(
+                child: MxStatTile(
+                  value: l10n.studyCount(finished),
+                  label: view.kind == SessionKind.learning
+                      ? l10n.summaryStatLearned
+                      : l10n.summaryStatReviewed,
+                ),
+              ),
             if (answered != finished)
               Expanded(
                 child: MxStatTile(

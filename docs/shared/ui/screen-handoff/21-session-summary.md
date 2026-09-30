@@ -11,7 +11,7 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content density; with no leading control its title starts on the gutter, critique 2026-09-30 part 3c-1) | Title only, muted ink: "Session summary". No back control, no actions — v1's minimal bar, Share removed. |
-| Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × 1–2 | Icon and tone by outcome — ok `success`, paused tinted, ended `warning`, error `danger` (FE-A6 spec D14) — a title, one body sentence with the headline count bold, and — where the session has facts — only the numbers the body does not state: Answered when it differs from the finished count, and Wrong turns "{wrong} of {total}", with "Wrong cards came back in later rounds." under the tiles when wrong > 0 (critique 2026-09-30 part 3c-1, R3). When it fits, the hero and its note sit centred between the app bar and the footer; longer content scrolls from the top (R4). |
+| Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × 1–2 | Icon and tone by outcome — ok `success`, paused tinted, ended `warning`, error `danger` (FE-A6 spec D14) — a title, one body sentence with the headline count bold, and — where the session has facts — only the numbers the body does not state: the finished count when the body has none (an interrupted session), Answered when it differs from the finished count, and Wrong turns "{wrong} of {total}", with "Wrong cards came back in later rounds." under the tiles when wrong > 0 (critique 2026-09-30 part 3c-1, R3). When it fits, the hero and its note sit centred between the app bar and the footer; longer content scrolls from the top (R4). |
 | Facts | `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 | "This session"; rows: finished (label depends on session kind), cards answered, wrong turns — leading a small tinted `MxIconTile`, trailing the value in tabular numerals, warning ink when wrong > 0. Shown only where the hero draws no stats (reset, content deleted, save error); with stats it would repeat them (critique 2026-09-30, R3). Omitted where the session has no facts (`schedulerChanged`). |
 | End note | `MxNote` | One calm info line, only for the states that need it. |
 | Footer | `MxFooterBar` + `MxButton` × 2 | Outline "Study this deck" (hidden once the outcome is `ended`/`error`) + primary "Done" (disabled while loading); a caption line under them. |
@@ -57,7 +57,7 @@ A session that ended before its first turn shows the hero without stats and no F
 
 ## Rulings (FE-A5)
 
-- **Critique 2026-09-30 part 3c-1 (spec `2026-09-30-critique-fixes-part3c1-design.md`), R3, amends FE-A6 D17:** a tile states only what the body does not; the finished tile is gone, Answered shows only when it differs, Wrong turns is explained under the tiles. R4: a short summary sits centred.
+- **Critique 2026-09-30 part 3c-1 (spec `2026-09-30-critique-fixes-part3c1-design.md`), R3, amends FE-A6 D17:** a tile states only what the body does not; the finished tile is gone except after an interruption, whose body states no count, Answered shows only when it differs, Wrong turns is explained under the tiles. R4: a short summary sits centred.
 
 - `stale_generation` never reaches this screen: the write is refused, the session closes, and
   the app returns to the deck list (UC-STUDY-001 E4; it is not folded into `reset`).

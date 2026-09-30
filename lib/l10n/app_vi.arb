@@ -930,6 +930,8 @@
   "summarySaveError": "Dừng vì lỗi lưu",
   "summarySaveErrorBody": "Một câu trả lời không ghi được vào máy nên phiên đã dừng. Mọi thứ đã lưu trước đó vẫn được giữ; các thẻ chưa trả lời vẫn đến hạn.",
   "summaryStatAnswered": "Đã trả lời",
+  "summaryStatReviewed": "Đã ôn",
+  "summaryStatLearned": "Đã học",
   "summaryStatWrong": "Lượt sai",
   "summaryWrongOf": "{wrong} trên {total}",
   "summaryWrongExplained": "Thẻ sai quay lại ở các vòng sau.",

@@ -337,4 +337,32 @@ void main() {
     expect(hero.top - bar.bottom, lessThan(AppSpacing.section));
     expect(tester.takeException(), isNull);
   });
+
+  libraryTest("an interrupted session's body states no count, so the finished "
+      'tile stays (critique 2026-09-30 part 3c-1 review, R3)', (
+    tester,
+    env,
+  ) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        status: SessionStatus.abandoned,
+        reason: SessionEndReason.interrupted,
+      ),
+      SummaryOutcome.interrupted,
+    );
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          (tile.label, tile.value),
+      ],
+      [
+        (_en.summaryStatReviewed, '20'),
+        (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
+      ],
+    );
+  });
 }

@@ -4907,6 +4907,14 @@
   "@summaryStatAnswered": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
   },
+  "summaryStatReviewed": "Reviewed",
+  "@summaryStatReviewed": {
+    "description": "Screen 21: the finished tile of a review, shown only when the body states no count, as after an interruption (critique 2026-09-30 part 3c-1, R3)."
+  },
+  "summaryStatLearned": "Learned",
+  "@summaryStatLearned": {
+    "description": "Screen 21: the finished tile of a learning session, shown only when the body states no count (critique 2026-09-30 part 3c-1, R3)."
+  },
   "summaryStatWrong": "Wrong turns",
   "@summaryStatWrong": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
