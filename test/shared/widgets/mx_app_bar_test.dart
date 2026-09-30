@@ -93,18 +93,6 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('2x text grows the bar instead of overflowing (R1)', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxAppBar(title: 'Progress'), textScale: 2);
-
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getSize(find.byType(MxAppBar)).height,
-      greaterThanOrEqualTo(56),
-    );
-  });
-
   testWidgets(
     'a title widget takes the title slot between leading and actions',
     (tester) async {

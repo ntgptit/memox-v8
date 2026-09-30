@@ -120,12 +120,12 @@ ConstrainedBox(
 
 ## Testing these
 
-Text scale and small screen, in a widget test:
+Small screen, in a widget test (at the default text scale; large text is not a design target (PRODUCT.md, 2026-09-30)):
 
 ```dart
 await tester.pumpWidget(
   MediaQuery(
-    data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+    data: const MediaQueryData(size: Size(320, 568)),
     child: const ProviderScope(child: MyApp()),
   ),
 );

@@ -97,19 +97,4 @@ void main() {
       findsOneWidget,
     );
   });
-
-  testWidgets('text scale 2 wraps without overflow', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxFloatingNotice(
-          message: _message,
-          actions: [_action('Try again'), _action('Keep on this device')],
-        ),
-      ),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-  });
 }

@@ -35,7 +35,7 @@ hành động dưới dialog là `MxSheetActions` (cặp Cancel/Confirm, hoặc 
 - [ ] Button arrangement centralized.
 - [ ] Destructive confirmation semantic variant.
 - [ ] Async submit preserves dimensions.
-- [ ] Long text and textScaler 2.0 tested.
+- [ ] Long text tested (default text scale).
 - [ ] Feature supplies content/intent, không supplies visual metrics.
 
 ## 36. `BottomSheetThemeData`

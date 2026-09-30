@@ -44,7 +44,6 @@ void main() {
     LibraryEnv env,
     DeckTile tile, {
     VoidCallback? onMore,
-    double textScale = 1,
   }) => pumpLibraryScreen(
     tester,
     env,
@@ -53,7 +52,6 @@ void main() {
         child: DeckRowWidget(tile: tile, onTap: () {}, onMore: onMore ?? () {}),
       ),
     ),
-    textScale: textScale,
   );
 
   libraryTest('a card with the name, the due badge and the structure line', (
@@ -126,23 +124,9 @@ void main() {
     expect(more, 1);
   });
 
-  libraryTest('a long name at text scale 2 on a 360 phone does not overflow', (
-    tester,
-    env,
-  ) async {
-    await pump(
-      tester,
-      env,
-      _tile(name: 'Thuật ngữ Kinh tế – Tài chính – Ngân hàng cho kỳ thi'),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-  });
-
-  libraryTest('the structure line wraps at text scale 2, never cut '
+  libraryTest('the structure line wraps, never cut '
       '(critique 2026-09-30)', (tester, env) async {
-    await pump(tester, env, _tile(), textScale: 2);
+    await pump(tester, env, _tile());
     final meta = tester.widget<Text>(
       find.text(
         _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),

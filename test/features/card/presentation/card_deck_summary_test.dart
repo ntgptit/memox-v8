@@ -138,11 +138,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  libraryTest('the summary holds at 2x and meets the target guidelines', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host(), textScale: 2);
+  libraryTest('the summary meets the target guidelines', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host());
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);

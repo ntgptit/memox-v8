@@ -16,7 +16,6 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-import '../../../support/widget_harness.dart';
 
 /// Screen 07's app bar and breadcrumb, composed as `app/` composes them (A14).
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -162,26 +161,6 @@ void main() {
     expect(_barText('Words'), findsOneWidget);
     expect(find.byTooltip(_en.cardSelectionClose), findsNothing);
     expect(find.byType(MxBreadcrumb), findsOneWidget);
-  });
-
-  libraryTest('the selecting bar holds at 2x', (tester, env) async {
-    final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _screen(deckId), textScale: 2);
-    await tester.scrollUntilVisible(
-      find.text('annyeong'),
-      200,
-      scrollable: find
-          .descendant(
-            of: find.byType(CardListSectionWidget),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.longPress(find.text('annyeong'));
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    await expectAccessibleTargets(tester);
   });
 
   libraryTest('Select all stays while a larger window loads', (

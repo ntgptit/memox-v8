@@ -121,7 +121,7 @@ void main() {
     expect(find.textContaining('sqlite'), findsNothing);
   });
 
-  libraryTest('the detail holds Vietnamese at 2x and meets the guidelines', (
+  libraryTest('the detail holds Vietnamese and meets the guidelines', (
     tester,
     env,
   ) async {
@@ -132,7 +132,7 @@ void main() {
         back: 'nghĩa',
       ),
     );
-    await pumpLibraryScreen(tester, env, _screen(card.id), textScale: 2);
+    await pumpLibraryScreen(tester, env, _screen(card.id));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

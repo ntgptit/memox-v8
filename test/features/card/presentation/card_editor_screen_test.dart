@@ -16,7 +16,6 @@ import 'package:memox/features/card/presentation/widgets/items/card_add_details_
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
 
@@ -308,12 +307,12 @@ void main() {
     );
   });
 
-  libraryTest('the editor holds Hangul at 2x and meets the guidelines (RF5)', (
+  libraryTest('the editor holds Hangul and meets the guidelines (RF5)', (
     tester,
     env,
   ) async {
     final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId), textScale: 2);
+    await pumpLibraryScreen(tester, env, _create(deckId));
     await tester.enterText(_field(0), List.filled(4, '한국어 단어').join(' '));
     await tester.pump();
 
@@ -392,28 +391,6 @@ void main() {
 
     final term = tester.renderObject<RenderBox>(_field(0));
     expect(term.size.height, greaterThan(40));
-    expect(tester.takeException(), isNull);
-  });
-
-  libraryTest('the editor at 2x holds with every field open', (
-    tester,
-    env,
-  ) async {
-    final deckId = await _words(env);
-    await pumpLibraryScreen(tester, env, _create(deckId), textScale: 2);
-    await tester.scrollUntilVisible(
-      find.byType(CardAddDetailsWidget),
-      200,
-      scrollable: find
-          .descendant(
-            of: find.byType(MxScreenScroll),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.tap(find.byType(CardAddDetailsWidget));
-    await tester.pumpAndSettle();
-
     expect(tester.takeException(), isNull);
   });
 

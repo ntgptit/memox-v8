@@ -6,7 +6,6 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
@@ -174,45 +173,6 @@ void main() {
       findsOneWidget,
     );
     handle.dispose();
-  });
-
-  libraryTest('at twice the text size the grades become a 2 × 2 grid, each '
-      'at least 48 tall (16a)', (tester, env) async {
-    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-    await _reveal(tester);
-
-    final again = tester.getRect(
-      find.widgetWithText(MxButton, _en.cardActionAgain),
-    );
-    final good = tester.getRect(
-      find.widgetWithText(MxButton, _en.cardActionGood),
-    );
-    expect(good.top, greaterThan(again.bottom - 1));
-    expect(again.height, greaterThanOrEqualTo(48));
-    expect(tester.takeException(), isNull);
-  });
-
-  libraryTest('at twice the text size a face label never covers the face '
-      '(FE-A6 D19)', (tester, env) async {
-    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
-    const long = 'to eat and drink, or to share a meal with friends';
-    await env.db.customStatement(
-      "UPDATE card SET back = '$long' WHERE id = 'R1'",
-    );
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-    await _reveal(tester);
-
-    final term = find.text(_en.studyBrowseTerm.toUpperCase());
-    final meaning = find.text(_en.studyBrowseMeaning.toUpperCase());
-    expect(
-      tester.getRect(term).bottom,
-      lessThanOrEqualTo(tester.getRect(find.text('term 1')).top),
-    );
-    expect(
-      tester.getRect(meaning).bottom,
-      lessThanOrEqualTo(tester.getRect(find.text(long)).top),
-    );
   });
 
   libraryTest('with Remove animations on, the answer appears at once', (

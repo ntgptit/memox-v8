@@ -190,20 +190,6 @@ void main() {
     );
   });
 
-  libraryTest('at twice the text size with a long meaning nothing overflows '
-      'and Check stays reachable (C4, V6)', (tester, env) async {
-    final id = await _fill(env);
-    await env.db.customStatement(
-      "UPDATE card SET back = '${List.filled(24, 'a long meaning').join(' ')}' "
-      "WHERE id = 'ST-01'",
-    );
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-    await _type(tester, 'term');
-
-    expect(tester.takeException(), isNull);
-    expect(find.text(_en.studyFillCheck).hitTestable(), findsOneWidget);
-  });
-
   libraryTest('a wrong answer the busy database refused shows what was typed '
       'once Retry commits it (UC-STUDY-001 E2; P4 final review)', (
     tester,

@@ -170,23 +170,5 @@ void main() {
         );
       });
     });
-
-    libraryTest('Library at text scale 2, $theme', (tester, env) async {
-      await _seed(env);
-      await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          deckScreen(),
-          brightness,
-          textScale: 2,
-        );
-        await _settleOverlay(tester);
-        await expectBoundaryGolden(
-          tester,
-          'goldens/library_decks_2x_$theme.png',
-        );
-      });
-    });
   }
 }

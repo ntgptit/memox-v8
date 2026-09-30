@@ -103,34 +103,6 @@ void main() {
     expect(find.textContaining('Development fixture'), findsNothing);
   });
 
-  libraryTest('at text scale 2 in Vietnamese an add keeps its whole label '
-      '(post-build audit)', (tester, env) async {
-    final vi = lookupAppLocalizations(const Locale('vi'));
-    final library = StarterLibraryFake(env);
-    await library.addStarterDeck(
-      templateId: everydayTemplate.templateId,
-      schedulerType: everydayTemplate.suggestedScheduler,
-    );
-    await pumpLibraryScreen(
-      tester,
-      env,
-      StarterLibraryScreen(onOpenDeck: (_) {}, onCreateDeck: () {}),
-      textScale: 2,
-      locale: const Locale('vi'),
-      overrides: [library.asOverride],
-    );
-
-    // A label on one line must fit it; a longer one wraps instead. The
-    // longest label, on the first card.
-    final text = tester.renderObject<RenderParagraph>(
-      find.text(vi.starterAddAnotherCopy),
-    );
-    final isWhole =
-        text.maxLines != 1 ||
-        text.getMaxIntrinsicWidth(double.infinity) <= text.size.width;
-    expect(isWhole, isTrue, reason: 'the label is cut on one line');
-  });
-
   libraryTest('choose: the sheet preselects the suggested scheduler; the one '
       'picked is the copy\'s, and the toast opens it (added)', (
     tester,

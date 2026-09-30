@@ -151,24 +151,4 @@ void main() {
     );
     expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 24);
   });
-
-  testWidgets('at text scale 2 on a short landscape the rail scrolls and '
-      'nothing overflows', (tester) async {
-    await pumpMx(tester, _rail(height: 240), textScale: 2);
-
-    expect(tester.takeException(), isNull);
-    expect(
-      find.descendant(
-        of: find.byType(MxNavRail),
-        matching: find.byType(Scrollable),
-      ),
-      findsOneWidget,
-    );
-    await tester.drag(find.byType(MxNavRail), const Offset(0, -300));
-    await tester.pumpAndSettle();
-    expect(
-      tester.getRect(find.text('Settings')).bottom,
-      lessThanOrEqualTo(tester.getRect(find.byType(MxNavRail)).bottom),
-    );
-  });
 }

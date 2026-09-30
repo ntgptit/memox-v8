@@ -289,10 +289,7 @@ void main() {
     expect(find.textContaining('disk'), findsNothing);
   });
 
-  libraryTest('long cards at 2x meet the target guidelines', (
-    tester,
-    env,
-  ) async {
+  libraryTest('long cards meet the target guidelines', (tester, env) async {
     final korean = await env.decks.root('Korean');
     final words = await env.decks.sub(korean.id, 'Words');
     await insertCard(
@@ -303,7 +300,7 @@ void main() {
       back: List.filled(20, 'nghĩa tiếng Việt').join(' '),
       isFlagged: true,
     );
-    await pumpLibraryScreen(tester, env, _section(words.id), textScale: 2);
+    await pumpLibraryScreen(tester, env, _section(words.id));
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);

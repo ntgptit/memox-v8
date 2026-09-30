@@ -247,24 +247,6 @@ void main() {
     );
   });
 
-  libraryTest('the summary holds at text scale 2 (FE-A6 D19)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      SessionSummaryWidget(
-        view: summaryView(),
-        outcome: SummaryOutcome.reviewFinished,
-        onDone: () {},
-        onStudyDeck: () {},
-      ),
-      textScale: 2,
-    );
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('the footer is one MxActionPair: Study this deck 5, Done 6', (
     tester,
     env,

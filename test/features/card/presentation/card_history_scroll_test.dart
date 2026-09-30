@@ -275,10 +275,7 @@ void main() {
     );
   });
 
-  libraryTest('the history holds at 2x and meets the guidelines', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the history meets the guidelines', (tester, env) async {
     await _card(env);
     await logReview(
       env.db,
@@ -291,7 +288,7 @@ void main() {
       nextBox: 3,
       nextDueAt: DateTime(2026, 9, 6),
     );
-    await pumpLibraryScreen(tester, env, _section(), textScale: 2);
+    await pumpLibraryScreen(tester, env, _section());
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

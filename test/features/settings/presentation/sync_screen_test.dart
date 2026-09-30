@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_failure.dart';
@@ -131,27 +130,6 @@ void main() {
     expect(commands.retries, 0);
     commands.hold!.complete(true);
     await _settle(tester);
-  });
-
-  libraryTest('Vietnamese at text scale 2 does not overflow', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      const SyncScreen(),
-      locale: const Locale('vi'),
-      textScale: 2,
-      overrides: syncOverrides(
-        SyncStatus(
-          rejectedCount: 1234,
-          pendingCount: 1234,
-          lastFailure: LastSyncFailure(SyncFailureKind.server, env.clock.now()),
-        ),
-      ),
-    );
-    expect(tester.takeException(), isNull);
   });
 
   libraryTest('Sync now steps back when nothing waits (critique 2026-09-30)', (

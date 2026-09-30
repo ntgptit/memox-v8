@@ -131,20 +131,6 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
   });
 
-  testWidgets('2x text grows the single-line box', (tester) async {
-    await pumpMx(
-      tester,
-      const SizedBox(width: 300, child: MxTextField(hintText: 'Deck name')),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getSize(find.byType(TextField)).height,
-      greaterThanOrEqualTo(52),
-    );
-  });
-
   testWidgets('a filled field keeps its name for TalkBack', (tester) async {
     final handle = tester.ensureSemantics();
     final controller = TextEditingController(text: 'gamsa');
@@ -346,19 +332,6 @@ void main() {
       ),
       throwsAssertionError,
     );
-  });
-
-  testWidgets('a form field at 2x still sits on its 52 floor', (tester) async {
-    await pumpMx(
-      tester,
-      const MediaQuery(
-        data: MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: SizedBox(width: 300, child: MxTextField(hintText: 'Deck name')),
-      ),
-    );
-
-    // 21 of text at 2x is 42: it fits the floor, so the box stays 52.
-    expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
   testWidgets('study is bare: no fill and no edge in any state, centred, '

@@ -291,26 +291,6 @@ void main() {
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
   });
 
-  libraryTest('at large text the reset buttons stack instead of wrapping '
-      '(UI-base row 118)', (tester, env) async {
-    await pumpLibraryScreen(tester, env, _screen(), textScale: 2);
-    await tester.scrollUntilVisible(
-      find.text(_en.settingsResetRow),
-      200,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.ensureVisible(find.text(_en.settingsResetRow));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.settingsResetRow));
-    await tester.pumpAndSettle();
-
-    expect(
-      tester.getTopLeft(find.text(_en.settingsResetConfirm)).dy,
-      greaterThan(tester.getBottomLeft(find.text(_en.commonCancel)).dy),
-    );
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('a failed read shows the error with Retry and no invented '
       'value (E3)', (tester, env) async {
     await pumpLibraryScreen(

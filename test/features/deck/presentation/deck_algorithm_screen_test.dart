@@ -298,7 +298,7 @@ void main() {
     expect(opened, [korean.id, null]);
   });
 
-  libraryTest('at 2x on a 360 phone the locked screen does not overflow', (
+  libraryTest('on a 360 phone the locked screen meets the target guidelines', (
     tester,
     env,
   ) async {
@@ -311,7 +311,6 @@ void main() {
       tester,
       env,
       deckAlgorithmScreen(deckId: korean.id),
-      textScale: 2,
     );
 
     expect(tester.takeException(), isNull);

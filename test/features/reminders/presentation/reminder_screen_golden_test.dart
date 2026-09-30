@@ -37,7 +37,6 @@ void main() {
       FakeReminderPlatform? platform,
       Future<void> Function(FlakySettingsRepository store)? act,
       List<Override> overrides = const [],
-      double textScale = 1,
     }) async {
       final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
       await withRealShadows(() async {
@@ -46,7 +45,6 @@ void main() {
           env,
           const ReminderScreen(),
           brightness,
-          textScale: textScale,
           overrides: [
             reminderPlatformRepositoryProvider.overrideWithValue(
               platform ?? FakeReminderPlatform(),
@@ -177,16 +175,6 @@ void main() {
             (ref) => Stream.error(FlakySettingsRepository.failure),
           ),
         ],
-      );
-    });
-
-    libraryTest('reminder, on, large text, $theme', (tester, env) async {
-      await shoot(
-        tester,
-        env,
-        'large_text',
-        textScale: 2,
-        act: (_) => toggle(tester),
       );
     });
   }

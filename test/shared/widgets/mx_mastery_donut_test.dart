@@ -77,13 +77,6 @@ void main() {
     expect(find.text('1%'), findsOneWidget);
   });
 
-  testWidgets('at 2x the label stays inside the ring', (tester) async {
-    await pumpMx(tester, const MxMasteryDonut(fraction: 1), textScale: 2);
-
-    expect(tester.takeException(), isNull);
-    expect(tester.getRect(find.text('100%')).width, lessThanOrEqualTo(44));
-  });
-
   test('out of range or NaN asserts (RF5)', () {
     expect(() => MxMasteryDonut(fraction: 1.2), throwsAssertionError);
     expect(() => MxMasteryDonut(fraction: -0.1), throwsAssertionError);

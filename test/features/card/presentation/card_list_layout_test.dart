@@ -188,9 +188,12 @@ void main() {
     expect(find.textContaining('sqlite'), findsNothing);
   });
 
-  libraryTest('the section with a selection holds at 2x', (tester, env) async {
+  libraryTest('the section with a selection meets the target guidelines', (
+    tester,
+    env,
+  ) async {
     final deckId = await _seed(env);
-    await pumpLibraryScreen(tester, env, _section(deckId), textScale: 2);
+    await pumpLibraryScreen(tester, env, _section(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 

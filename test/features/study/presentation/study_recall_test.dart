@@ -247,18 +247,6 @@ void main() {
     );
   });
 
-  libraryTest('at twice the text size nothing overflows, before and after '
-      'the reveal (C4)', (tester, env) async {
-    final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-    expect(tester.takeException(), isNull);
-
-    await tester.tap(find.text(_en.studyRecallShowMeaning));
-    await _settle(tester);
-    expect(tester.takeException(), isNull);
-    expect(find.text(_en.studyRecallRemembered).hitTestable(), findsOneWidget);
-  });
-
   libraryTest('the self-check labels show whole at normal size (Impeccable '
       'after P4)', (tester, env) async {
     final id = await _recall(env);

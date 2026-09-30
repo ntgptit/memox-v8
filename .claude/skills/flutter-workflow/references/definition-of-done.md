@@ -32,7 +32,7 @@ without re-checking.
 - [ ] Light mode and dark mode both checked.
 - [ ] Small screen checked — nothing overflows, nothing is hidden behind the
       bottom navigation or the keyboard.
-- [ ] Large text scale checked (at least 1.5×, ideally 2.0×).
+- [ ] Default text scale checked; large text is not a design target (PRODUCT.md, 2026-09-30).
 - [ ] Loading, empty, error and success states all render correctly. An
       unhandled empty state is the single most common gap here.
 - [ ] Icon-only controls have semantic labels; touch targets are at least 48dp.

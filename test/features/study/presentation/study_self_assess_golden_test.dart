@@ -128,21 +128,5 @@ void main() {
         await _golden(tester, 'meaning_first', theme);
       });
     });
-
-    libraryTest('self-assess, large text, $theme', (tester, env) async {
-      final id = await _review(env);
-      await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          _screen(id),
-          brightness,
-          textScale: 2,
-        );
-        await tester.pumpAndSettle();
-        await _reveal(tester);
-        await _golden(tester, 'large_text', theme);
-      });
-    });
   }
 }

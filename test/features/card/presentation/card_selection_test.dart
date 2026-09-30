@@ -94,12 +94,9 @@ void main() {
     expect(find.text('annyeong'), findsOneWidget);
   });
 
-  libraryTest('selection meets the target guidelines at 2x', (
-    tester,
-    env,
-  ) async {
+  libraryTest('selection meets the target guidelines', (tester, env) async {
     final deckId = await _deck(env, ['annyeong', 'gamsa']);
-    await pumpLibraryScreen(tester, env, _section(deckId), textScale: 2);
+    await pumpLibraryScreen(tester, env, _section(deckId));
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 

@@ -244,14 +244,11 @@ void main() {
     expect(find.text(_en.deckRejectionNotSiblings), findsOneWidget);
   });
 
-  libraryTest('reorder mode meets the target guidelines at 2x', (
-    tester,
-    env,
-  ) async {
+  libraryTest('reorder mode meets the target guidelines', (tester, env) async {
     for (final name in ['A', 'B']) {
       await env.decks.root(name);
     }
-    await pumpLibraryScreen(tester, env, deckScreen(), textScale: 2);
+    await pumpLibraryScreen(tester, env, deckScreen());
     await _startReorder(tester);
 
     expect(tester.takeException(), isNull);

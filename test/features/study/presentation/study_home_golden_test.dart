@@ -119,7 +119,6 @@ void main() {
       WidgetTester tester,
       LibraryEnv env,
       String name, {
-      double textScale = 1,
       List<Override> overrides = const [],
     }) async {
       await withRealShadows(() async {
@@ -128,7 +127,6 @@ void main() {
           env,
           _screen(),
           brightness,
-          textScale: textScale,
           overrides: overrides,
         );
         await expectBoundaryGolden(
@@ -188,10 +186,6 @@ void main() {
       );
     });
 
-    libraryTest('study home, large text, $theme', (tester, env) async {
-      await _resume(env, await _library(env));
-      await shoot(tester, env, 'large_text', textScale: 2);
-    });
     libraryTest('study home, sync rejected, $theme', (tester, env) async {
       await _library(env);
       await shoot(

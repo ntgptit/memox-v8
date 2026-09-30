@@ -4,7 +4,6 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
-import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -93,29 +92,6 @@ void main() {
       isSemantics(label: 'Delete deck?', namesRoute: true, scopesRoute: true),
     );
     handle.dispose();
-  });
-
-  testWidgets('at 2x a long body scrolls and the actions stay', (tester) async {
-    await pumpMx(
-      tester,
-      MxDialog(
-        title: 'Delete deck?',
-        body: List.filled(40, 'Its cards move to Trash.').join(' '),
-        actions: MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: 'Delete',
-          onConfirm: () {},
-        ),
-      ),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getBottomLeft(find.byType(MxSheetActions)).dy,
-      lessThanOrEqualTo(800),
-    );
   });
 
   testWidgets('showMxDialog: a 45% scrim; a scrim tap returns null (RF2)', (

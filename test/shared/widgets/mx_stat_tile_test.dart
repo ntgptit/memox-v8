@@ -48,8 +48,9 @@ void main() {
     expect(ink('3'), scheme.onSurfaceVariant);
   });
 
-  testWidgets('the label is upper-cased and a boxed tile does not clip at '
-      'text scale 2', (tester) async {
+  testWidgets('the label is upper-cased and a boxed tile does not clip', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -60,7 +61,6 @@ void main() {
           layout: MxStatTileLayout.boxed,
         ),
       ),
-      textScale: 2,
     );
 
     expect(find.text('WRONG'), findsOneWidget);

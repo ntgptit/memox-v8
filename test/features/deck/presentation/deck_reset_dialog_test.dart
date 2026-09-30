@@ -212,32 +212,6 @@ void main() {
     expect(find.text(_en.algorithmLockedTitle(1)), findsOneWidget);
   });
 
-  libraryTest('the reset dialog at 2x on a 360 phone does not overflow', (
-    tester,
-    env,
-  ) async {
-    final korean = await env.decks.root('Korean', SchedulerType.sm2);
-    final words = await env.decks.sub(korean.id, 'Words');
-    await insertCard(
-      env.db,
-      id: 'a',
-      deckId: words.id,
-      learnedAt: DateTime(2026, 9, 1),
-      dueAt: DateTime(2026, 9, 30),
-    );
-    await lockScheduler(env.db, korean.id);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      deckAlgorithmScreen(deckId: korean.id),
-      textScale: 2,
-    );
-    await _openReset(tester);
-
-    expect(tester.takeException(), isNull);
-    expect(find.text(_en.resetDialogTitle), findsOneWidget);
-  });
-
   libraryTest('a reset made elsewhere while the dialog is open moves its '
       'cycle on', (tester, env) async {
     final korean = await env.decks.root('Korean', SchedulerType.sm2);

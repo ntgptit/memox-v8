@@ -168,7 +168,7 @@ While building the screen:
   methods.
 - **Render every state in the matrix.** Empty is the one that gets skipped, and
   it is the first thing a new user sees.
-- Check dark mode, a 320px screen, 2.0× text scale, and keyboard-open before
+- Check dark mode, a 320px screen, and keyboard-open (default text scale) before
   calling the screen done — not in a later pass, when fixing it means
   restructuring.
 

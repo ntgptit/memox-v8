@@ -128,27 +128,6 @@ void main() {
     );
   });
 
-  testWidgets('a detail line grows the box at 2x text instead of clipping', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      SizedBox(
-        width: 80,
-        child: MxButton(
-          label: 'Good',
-          detail: '6d',
-          isBlock: true,
-          onPressed: () {},
-        ),
-      ),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-    expect(tester.getSize(_painted.first).height, greaterThan(48));
-  });
-
   test('a detail line needs a size with room for it', () {
     expect(
       () => MxButton(
@@ -278,26 +257,6 @@ void main() {
     expect(tester.getSize(_painted.first).width, 300);
   });
 
-  testWidgets('a constrained label wraps and grows the box at 2x text', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      SizedBox(
-        width: 160,
-        child: MxButton(
-          label: 'Move every selected card',
-          isBlock: true,
-          onPressed: () {},
-        ),
-      ),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-    expect(tester.getSize(_painted.first).height, greaterThan(48));
-  });
-
   testWidgets('small painted sizes still offer 48×48 labelled targets', (
     tester,
   ) async {
@@ -389,32 +348,6 @@ void main() {
       measured,
       tester.getSize(find.byType(TextButton)).width.ceilToDouble(),
     );
-  });
-
-  testWidgets('naturalWidth grows with the text scale', (tester) async {
-    late double atOne;
-    late double atTwo;
-    final button = MxButton(label: 'Restore', onPressed: () {});
-    await pumpMx(
-      tester,
-      Builder(
-        builder: (context) {
-          atOne = button.naturalWidth(context);
-          return button;
-        },
-      ),
-    );
-    await pumpMx(
-      tester,
-      Builder(
-        builder: (context) {
-          atTwo = button.naturalWidth(context);
-          return button;
-        },
-      ),
-      textScale: 2,
-    );
-    expect(atTwo, greaterThan(atOne));
   });
 
   testWidgets('naturalWidth of a loading button still measures its label', (

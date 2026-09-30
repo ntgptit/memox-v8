@@ -279,37 +279,36 @@ void main() {
     );
   });
 
-  libraryTest('the sheet meets the target guidelines at 1x and 2x text', (
-    tester,
-    env,
-  ) async {
-    final root = await env.decks.root('Korean');
-    final deck = await env.decks.sub(root.id, 'Words');
-    await insertCard(env.db, id: 'a', deckId: deck.id);
-    await auditProductionScreen(
-      tester,
-      screen: CardExportSheetWidget,
-      pump: (brightness, scale) async {
-        await pumpLibraryScreen(
-          tester,
-          env,
-          _Host(
-            (context) => showCardExportSheet(
-              context,
-              CardExportScope.deck(
-                deckId: deck.id,
-                deckName: 'Words',
-                cardCount: 1,
+  libraryTest(
+    'the sheet meets the target guidelines at the default text size',
+    (tester, env) async {
+      final root = await env.decks.root('Korean');
+      final deck = await env.decks.sub(root.id, 'Words');
+      await insertCard(env.db, id: 'a', deckId: deck.id);
+      await auditProductionScreen(
+        tester,
+        screen: CardExportSheetWidget,
+        pump: (brightness, _) async {
+          await pumpLibraryScreen(
+            tester,
+            env,
+            _Host(
+              (context) => showCardExportSheet(
+                context,
+                CardExportScope.deck(
+                  deckId: deck.id,
+                  deckName: 'Words',
+                  cardCount: 1,
+                ),
               ),
             ),
-          ),
-          brightness: brightness,
-          textScale: scale,
-        );
-        if (find.byType(CardExportSheetWidget).evaluate().isEmpty) {
-          await _tap(tester, _button(_open));
-        }
-      },
-    );
-  });
+            brightness: brightness,
+          );
+          if (find.byType(CardExportSheetWidget).evaluate().isEmpty) {
+            await _tap(tester, _button(_open));
+          }
+        },
+      );
+    },
+  );
 }
