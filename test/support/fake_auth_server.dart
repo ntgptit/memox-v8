@@ -20,6 +20,7 @@ class FakeUser {
   String? email;
   bool isAnonymous;
   AccountRole role;
+  final methods = <SignInMethod>{};
 }
 
 /// GoTrue and the account RPCs, in memory.
@@ -153,6 +154,10 @@ class FakeAuthGateway implements AuthGateway {
   Stream<String?> get userIds => _ids.stream;
 
   @override
+  Set<SignInMethod> get signInMethods =>
+      Set.of(server.users[_userId]?.methods ?? const <SignInMethod>{});
+
+  @override
   String? get refreshToken => _refreshToken;
 
   @override
@@ -182,7 +187,8 @@ class FakeAuthGateway implements AuthGateway {
     _checkCode(email, code);
     server.users[_userId]!
       ..email = email
-      ..isAnonymous = false;
+      ..isAnonymous = false
+      ..methods.add(SignInMethod.email);
     _ids.add(_userId);
   }
 
@@ -200,7 +206,9 @@ class FakeAuthGateway implements AuthGateway {
     kill?.step();
     server.checkOnline();
     _checkCode(email, code);
-    _set((server.userByEmail(email) ?? server.addUser(email: email)).id);
+    final user = server.userByEmail(email) ?? server.addUser(email: email);
+    user.methods.add(SignInMethod.email);
+    _set(user.id);
     afterSignIn?.call();
   }
 
@@ -221,7 +229,8 @@ class FakeAuthGateway implements AuthGateway {
     }
     server.users[_userId]!
       ..email = credential.email
-      ..isAnonymous = false;
+      ..isAnonymous = false
+      ..methods.add(SignInMethod.google);
     _ids.add(_userId);
   }
 
@@ -230,7 +239,9 @@ class FakeAuthGateway implements AuthGateway {
     kill?.step();
     server.checkOnline();
     final email = credential.email!;
-    _set((server.userByEmail(email) ?? server.addUser(email: email)).id);
+    final user = server.userByEmail(email) ?? server.addUser(email: email);
+    user.methods.add(SignInMethod.google);
+    _set(user.id);
     afterSignIn?.call();
   }
 

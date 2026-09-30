@@ -7,12 +7,13 @@ import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/google_credential_source.dart';
 import 'package:memox/core/auth/secure_secret_store.dart';
 import 'package:memox/core/auth/supabase_account_api.dart';
+import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/supabase_auth_gateway.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/database/local_data_reset.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
-import 'package:memox/core/network/network_status.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -34,7 +35,7 @@ AccountCoordinator? accountCoordinator(Ref ref) {
     sync: ref.watch(syncControlProvider),
     localReset: LocalDataReset(db, now: clock.now),
     gate: db.mutationGate,
-    network: ConnectivityNetworkStatus(),
+    network: ref.watch(networkStatusProvider),
     flushLogs: () async {
       await ref.read(logSchedulerProvider)?.syncNow();
     },
@@ -66,3 +67,11 @@ AccountUser? currentAccount(Ref ref) =>
 /// again (`FORBIDDEN`).
 @Riverpod(keepAlive: true)
 bool isAdmin(Ref ref) => ref.watch(currentAccountProvider)?.isAdmin ?? false;
+
+/// How the signed-in account signs in, again on every account change
+/// (account UI spec §9 B1).
+@riverpod
+Set<SignInMethod> signInMethods(Ref ref) {
+  ref.watch(authStateProvider);
+  return ref.watch(accountCoordinatorProvider)?.signInMethods ?? const {};
+}

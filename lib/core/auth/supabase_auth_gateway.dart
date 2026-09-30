@@ -30,6 +30,10 @@ class SupabaseAuthGateway implements AuthGateway {
   String? get refreshToken => _auth.currentSession?.refreshToken;
 
   @override
+  Set<SignInMethod> get signInMethods =>
+      signInMethodsOf(_auth.currentSession?.user);
+
+  @override
   Future<void> signInAnonymously() => _guard(_auth.signInAnonymously);
 
   @override
@@ -104,3 +108,14 @@ class SupabaseAuthGateway implements AuthGateway {
     }
   }
 }
+
+/// The methods [user]'s identities name; any other provider (anonymous)
+/// names none.
+Set<SignInMethod> signInMethodsOf(User? user) => {
+  for (final identity in user?.identities ?? const <UserIdentity>[])
+    ?switch (identity.provider) {
+      'google' => SignInMethod.google,
+      'email' => SignInMethod.email,
+      _ => null,
+    },
+};
