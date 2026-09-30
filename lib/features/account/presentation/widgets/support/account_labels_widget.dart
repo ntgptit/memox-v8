@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -30,3 +33,11 @@ void saySignedIn(BuildContext context, AccountUser? account) {
         : l10n.accountSignedInAs(email),
   );
 }
+
+/// The account right after a command attached it. The coordinator's own
+/// state, since the provider hears of the change a frame later.
+AccountUser? attachedAccount(WidgetRef ref) =>
+    switch (ref.read(accountCoordinatorProvider)?.state) {
+      Ready(:final user) => user,
+      _ => null,
+    };
