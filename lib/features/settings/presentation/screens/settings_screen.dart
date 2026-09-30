@@ -107,6 +107,8 @@ class SettingsScreen extends ConsumerWidget {
                   label: l10n.settingsResetRow,
                   subtitle: l10n.settingsResetRowHint,
                   icon: AppIcons.resetOptions,
+                  // Opens a dialog, not a page (critique 2026-09-30).
+                  isAction: true,
                   onTap: () => unawaited(showSettingsResetDialog(context)),
                 ),
               ],
