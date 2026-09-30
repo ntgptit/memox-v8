@@ -47,3 +47,35 @@ language sql stable set search_path = '' as $$
   select exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
 $$;
 revoke all on function private.is_admin() from public, anon, authenticated;
+
+-- Every owned row belongs to a live auth user (spec §2.2). Deleting the user deletes the rows;
+-- a still-valid token of a deleted user cannot write, since its rows would reference nobody.
+alter table public.deck add constraint deck_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.card add constraint card_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.tags add constraint tags_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.delete_batch add constraint delete_batch_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.review_log add constraint review_log_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.card_schedule add constraint card_schedule_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.account_settings add constraint account_settings_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.user_sync_version add constraint user_sync_version_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.sync_applied_op add constraint sync_applied_op_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+alter table public.app_log add constraint app_log_user_id_fkey
+  foreign key (user_id) references auth.users (id) on delete cascade;
+
+-- card_tags has no user_id: its links go with their card or tag, or deleting a user would
+-- fail on them. The other keys between one user's rows stay NO ACTION: the cascade removes
+-- both ends in the same statement, and NO ACTION is checked at its end.
+alter table public.card_tags
+  drop constraint card_tags_card_id_fkey,
+  add constraint card_tags_card_id_fkey foreign key (card_id) references public.card (id) on delete cascade,
+  drop constraint card_tags_tag_id_fkey,
+  add constraint card_tags_tag_id_fkey foreign key (tag_id) references public.tags (id) on delete cascade;

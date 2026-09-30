@@ -1,11 +1,70 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(14);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
   language sql as $$
   insert into auth.users (id, email, is_anonymous) values (p_id, p_email, p_anonymous) returning id $$;
+
+-- One user's whole library, written as postgres: root and child deck, a card tagged p_tag,
+-- a review, a schedule, a trash batch, settings when asked, a log. Versions come from the
+-- user's counter, as sync_push would take them.
+create function public.t_seed(p_user uuid, p_tag text, p_settings boolean) returns void
+  language plpgsql as $$
+declare
+  v_top bigint := private.allocate_versions(p_user, 8);
+  v_base bigint := v_top - 8;
+  v_root uuid := md5(p_user::text || 'root')::uuid;
+  v_child uuid := md5(p_user::text || 'child')::uuid;
+  v_card uuid := md5(p_user::text || 'card')::uuid;
+  v_tag uuid := md5(p_user::text || 'tag')::uuid;
+  v_dev uuid := '00000000-0000-0000-0000-0000000000d1';
+begin
+  insert into public.deck (id, user_id, name, parent_id, root_id, depth, content_type, scheduler_type,
+    scheduler_version, scheduler_config, study_config, generation, sibling_position, created_at,
+    updated_at, server_version, last_device_id)
+  values (v_root, p_user, 'Root', null, v_root, 1, 'deck', 'eight_box', 1, '{}', '{}', 1, 0, now(),
+      now(), v_base + 1, v_dev),
+    (v_child, p_user, 'Child', v_root, v_root, 2, 'card', null, null, null, null, null, 0, now(),
+      now(), v_base + 2, v_dev);
+  insert into public.card (id, user_id, deck_id, front, back, is_flagged, created_at, updated_at,
+    server_version, last_device_id)
+  values (v_card, p_user, v_child, 'front', 'back', false, now(), now(), v_base + 3, v_dev);
+  insert into public.tags (id, user_id, name, name_folded, created_at, server_version, last_device_id)
+  values (v_tag, p_user, p_tag, lower(p_tag), now(), v_base + 4, v_dev);
+  insert into public.card_tags (card_id, tag_id) values (v_card, v_tag);
+  insert into public.review_log (id, user_id, card_id, session_id, scheduler_type, generation, kind,
+    mode, action, answered_at, server_version, last_device_id)
+  values (md5(p_user::text || 'review')::uuid, p_user, v_card, 's1', 'eight_box', 1, 'learning',
+    'browse', 'remembered', now(), v_base + 5, v_dev);
+  insert into public.card_schedule (card_id, user_id, scheduler_type, scheduler_version, generation,
+    answer_count, lapse_count, current_box, server_version, last_device_id)
+  values (v_card, p_user, 'eight_box', 1, 1, 1, 0, 1, v_base + 6, v_dev);
+  insert into public.delete_batch (id, user_id, item_type, root_item_id, deleted_at, server_version,
+    last_device_id)
+  values (md5(p_user::text || 'batch')::uuid, p_user, 'deck', v_root, now(), v_base + 7, v_dev);
+  if p_settings then
+    insert into public.account_settings (user_id, card_limit, new_card_order, theme_mode, language,
+      updated_at, server_version, last_device_id)
+    values (p_user, 20, 'created', 'dark', 'en', now(), v_base + 8, v_dev);
+  end if;
+  insert into public.app_log (id, occurred_at, level, category, event, user_id)
+  values (md5(p_user::text || 'log')::uuid, now(), 'info', 'sync', 't12.seed', p_user);
+end
+$$;
+
+-- Rows a user owns, across every owned table.
+create function public.t_owned(p_user uuid) returns int language sql as $$
+  select ((select count(*) from public.deck where user_id = p_user)
+    + (select count(*) from public.card where user_id = p_user)
+    + (select count(*) from public.tags where user_id = p_user)
+    + (select count(*) from public.review_log where user_id = p_user)
+    + (select count(*) from public.card_schedule where user_id = p_user)
+    + (select count(*) from public.delete_batch where user_id = p_user)
+    + (select count(*) from public.account_settings where user_id = p_user)
+    + (select count(*) from public.user_sync_version where user_id = p_user)
+    + (select count(*) from public.app_log where user_id = p_user))::int $$;
 
 select has_table('public', 'profiles', 'profiles exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.profiles'::regclass),
@@ -48,6 +107,38 @@ set local role authenticated;
 select throws_ok($$ select public.log_query('{}'::jsonb) $$, 'P0001', 'FORBIDDEN',
   'a role change counts at once, without a new token');
 reset role;
+
+-- Deleting a user removes everything it owns, in one statement (spec §2.2).
+select public.t_user('12000000-0000-0000-0000-000000000004', 'd@example.com', false);
+select public.t_user('12000000-0000-0000-0000-000000000005', 'o@example.com', false);
+select public.t_seed('12000000-0000-0000-0000-000000000004', 'Verb', true);
+select public.t_seed('12000000-0000-0000-0000-000000000005', 'Noun', true);
+select lives_ok($$ delete from auth.users where id = '12000000-0000-0000-0000-000000000004' $$,
+  'a user who owns a whole library can be deleted');
+select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0, 'nothing of it is left');
+select is(public.t_owned('12000000-0000-0000-0000-000000000005'), 10, 'another user keeps all of theirs');
+
+-- An access token outlives its user; the keys stop it from writing (spec §10).
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000004',
+  'role', 'authenticated')::text, true);
+do $$
+begin
+  perform public.sync_push(jsonb_build_object('deviceId', '00000000-0000-0000-0000-0000000000d1',
+    'operations', jsonb_build_array(jsonb_build_object('opId', gen_random_uuid(), 'entityType', 'deck',
+      'entityId', '12000000-0000-0000-0000-0000000000f1', 'op', 'upsert', 'row', jsonb_build_object(
+        'id', '12000000-0000-0000-0000-0000000000f1', 'name', 'Back', 'parentId', null,
+        'rootId', '12000000-0000-0000-0000-0000000000f1', 'depth', 1, 'contentType', 'deck',
+        'schedulerType', 'eight_box', 'schedulerVersion', 1, 'schedulerConfig', '{}',
+        'studyConfig', '{}', 'generation', 1, 'firstAnsweredAt', null, 'sourceTemplateId', null,
+        'sourceTemplateVersion', null, 'deleteBatchId', null, 'siblingPosition', 0,
+        'createdAt', '2026-09-30T00:00:00.000Z', 'updatedAt', '2026-09-30T00:00:00.000Z')))));
+exception when others then null;
+end
+$$;
+reset role;
+select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0,
+  'deleted user cannot recreate persisted data through sync_push');
 
 select * from finish();
 rollback;
