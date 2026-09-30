@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(7);
+select plan(9);
 
 select ok(not has_function_privilege('anon', 'public.sync_push(jsonb)', 'execute'), 'anon cannot push');
 select ok(not has_function_privilege('anon', 'public.sync_changes(bigint, integer)', 'execute'), 'anon cannot pull');
@@ -17,6 +17,19 @@ select is(
      and (has_function_privilege('anon', p.oid, 'execute')
        or has_function_privilege('authenticated', p.oid, 'execute'))),
   null, 'no private function is executable by a client role');
+-- Final review I3: a function in public is open to clients only when granted on purpose.
+select is(
+  (select array_agg(p.proname::text order by 1) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+   where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute')
+     and p.proname not in ('ping', 'rls_auto_enable')),
+  null, 'anon can execute only ping in public');
+select is(
+  (select array_agg(p.proname::text order by 1) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+   where n.nspname = 'public' and has_function_privilege('authenticated', p.oid, 'execute')
+     and p.proname not in ('ping', 'rls_auto_enable', 'sync_push', 'sync_changes', 'log_push', 'log_query',
+       'log_get', 'log_set_status', 'me', 'role_list', 'role_set', 'account_claim_begin', 'account_merge',
+       'account_merge_ack', 'account_delete')),
+  null, 'a signed-in user can execute only the listed RPCs in public');
 set local role anon;
 select is(public.ping(), 'ok', 'anon can ping');
 

@@ -123,8 +123,11 @@ The server is a Supabase project ([ADR-015](docs/shared/decisions/ADR-015-supaba
 Business rules and SRS live only in the app; the server checks integrity.
 
 - **Code:** `supabase/migrations/` (SQL and PL/pgSQL). Clients call only
-  `sync_push`, `sync_changes`, `ping` and the log RPCs (`log_push`; for an
-  admin, `log_query`, `log_get` and `log_set_status`, [ADR-018](docs/shared/decisions/ADR-018-log-tap-trung-va-monitoring.md));
+  `sync_push`, `sync_changes`, `ping`, the log RPCs (`log_push`; for an
+  admin, `log_query`, `log_get` and `log_set_status`, [ADR-018](docs/shared/decisions/ADR-018-log-tap-trung-va-monitoring.md))
+  and the account RPCs (`me`, `account_claim_begin`, `account_merge`,
+  `account_merge_ack`, `account_delete`; for an admin, `role_list` and
+  `role_set`, [auth spec](docs/superpowers/specs/2026-09-30-auth-design.md));
   tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - **Gate:** `npx supabase db start` then `npx supabase test db` (pgTAP in
