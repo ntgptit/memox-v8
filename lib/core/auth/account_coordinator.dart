@@ -349,8 +349,16 @@ class AccountCoordinator {
     bool isAwaitingTargetSignIn = false,
     Failure? error,
   }) => _liveOpId == t.opId
-      ? Transitioning(t, isAwaitingTargetSignIn: isAwaitingTargetSignIn, error: error)
-      : Recovering(t, isAwaitingTargetSignIn: isAwaitingTargetSignIn, error: error);
+      ? Transitioning(
+          t,
+          isAwaitingTargetSignIn: isAwaitingTargetSignIn,
+          error: error,
+        )
+      : Recovering(
+          t,
+          isAwaitingTargetSignIn: isAwaitingTargetSignIn,
+          error: error,
+        );
 
   // --- Plumbing -------------------------------------------------------------
 

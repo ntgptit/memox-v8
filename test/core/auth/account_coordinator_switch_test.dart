@@ -96,7 +96,11 @@ void main() {
       expect(world.secrets.values.keys, [claimSecretKey(t.opId)]);
       expect(
         world.state,
-        isA<Transitioning>().having((s) => s.isAwaitingTargetSignIn, 'asks', isTrue),
+        isA<Transitioning>().having(
+          (s) => s.isAwaitingTargetSignIn,
+          'asks',
+          isTrue,
+        ),
       );
     },
   );
@@ -335,7 +339,11 @@ void main() {
 
     expect(
       world.state,
-      isA<Transitioning>().having((s) => s.isAwaitingTargetSignIn, 'asks', isTrue),
+      isA<Transitioning>().having(
+        (s) => s.isAwaitingTargetSignIn,
+        'asks',
+        isTrue,
+      ),
     );
     expect((await world.store.transition())!.stage, TransitionStage.claimed);
   });
