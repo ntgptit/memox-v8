@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
+import 'package:memox/core/database/mutation_gate.dart';
 import 'package:memox/core/database/schema_versions.dart';
 import 'package:memox/core/database/tables/sync_keys.dart';
 
@@ -22,10 +23,17 @@ part 'app_database.g.dart';
   },
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase(super.executor, {DateTime Function()? now})
-    : _now = now ?? DateTime.now;
+  AppDatabase(
+    super.executor, {
+    DateTime Function()? now,
+    MutationGate? mutationGate,
+  }) : _now = now ?? DateTime.now,
+       mutationGate = mutationGate ?? MutationGate();
 
   final DateTime Function() _now;
+
+  /// The account's write gate (auth spec R3); open unless a transition runs.
+  final MutationGate mutationGate;
 
   @override
   int get schemaVersion => 11;
