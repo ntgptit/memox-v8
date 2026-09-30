@@ -106,6 +106,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
         spacing: AppSpacing.grouped,
         children: [
           MxErrorState(
+            icon: AppIcons.offline,
             title: l10n.monitoringOfflineTitle,
             body: l10n.monitoringOfflineBody,
             retryLabel: l10n.commonRetry,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
@@ -431,6 +432,8 @@ void main() {
     await _pump(tester, env, repository);
     expect(find.text("Can't reach the server"), findsOneWidget);
     expect(find.byType(MxErrorState), findsOneWidget);
+    // A network failure keeps the cloud-off glyph (critique 2026-09-30).
+    expect(find.byIcon(AppIcons.offline), findsOneWidget);
 
     repository.readError = const NotAdminFailure(cause: 'x');
     await tester.tap(find.text('Retry'));

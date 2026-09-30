@@ -16,7 +16,7 @@ class MxErrorState extends StatelessWidget {
     super.key,
     required this.title,
     required this.body,
-    this.icon = AppIcons.offline,
+    this.icon = AppIcons.alert,
     this.retryLabel,
     this.onRetry,
     this.isRetrying = false,
@@ -28,6 +28,9 @@ class MxErrorState extends StatelessWidget {
 
   final String title;
   final String body;
+
+  /// Alert by default; pass `AppIcons.offline` only for a network failure
+  /// (critique 2026-09-30).
   final IconData icon;
   final String? retryLabel;
   final VoidCallback? onRetry;

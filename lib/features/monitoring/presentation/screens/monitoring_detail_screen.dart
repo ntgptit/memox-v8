@@ -139,6 +139,7 @@ class _MonitoringDetailScreenState
         isCompact: true,
       ),
       MonitoringLoadFailure.offline => MxErrorState(
+        icon: AppIcons.offline,
         title: l10n.monitoringOfflineTitle,
         body: l10n.monitoringDetailOfflineBody,
         retryLabel: l10n.commonRetry,
