@@ -14,8 +14,10 @@ Everything else in the auth spec stands.
 |---|---|
 | U1 | Welcome shows once on **every** device, including one that used the app before the update: `welcome_seen` stays `0` on upgrade, no backfill |
 | U2 | Two shared additions, with `DESIGN.md` in the same PR: `MxTextFieldVariant.code` (one line, digits only, 6, centred, numeric keyboard, one-time-code autofill) and `MxButtonTone.text` (no fill, no edge, Indigo Ink label) |
-| U3 | Two PRs: **P3a** the base and the attach flow, **P3b** account management (§6) |
+| U3 | Two PRs: **P3a** the base and the attach flow, **P3b** account management (§7) |
 | U4 | The transition layer is an **overlay at the app root** (auth spec §7), not a route, with its own `Navigator` |
+| U5 | The launcher icon is still Flutter's default, so Welcome shows an `MxIconTile` (large, primary, the deck glyph) until a MemoX icon exists; recorded as UI-base debt |
+| U6 | "Continue with Google" carries Google's **G mark** now: a PNG asset (1x–4x) rendered from the official G path, and a third shared change, an `MxButton` brand mark (an image painted at 18 in place of the icon), in `DESIGN.md` |
 
 ## 2. Rulings made in the brainstorm
 
@@ -55,7 +57,7 @@ Each can be overturned by the owner; the cost if wrong is in brackets.
     banner/notice. Commands and state come straight from P2's
     `accountCoordinatorProvider` and `authStateProvider`; no pass-through
     repository.
-- **Shared** (`lib/shared/widgets/`): the two additions of U2, each with a
+- **Shared** (`lib/shared/widgets/`): the additions of U2 and U6, each with a
   widget test, a gallery entry and a `DESIGN.md` line.
 - **Providers**: the welcome flag (read in `main` before the first frame,
   like `readStartupSettings`, so nothing flashes) and the coordinator's
@@ -85,19 +87,21 @@ the same meaning. Copy is local-first: what is kept before what is asked.
 
 ### 5.1 Welcome (29)
 
-`MxScreenScroll`: the launcher icon and "MemoX", three `MxIconTile` benefit
-rows (keep your decks when you reinstall · study on several phones · still
-works offline), then "Continue with Google" (primary), "Continue with email"
-(outline) and "Continue without an account" (text). No back; Android Back
+Top: the icon tile (U5) and "MemoX", three `MxIconTile` benefit rows (keep
+your decks when you reinstall · study on several phones · still works
+offline). Bottom, in the thumb zone: "Continue with Google" (primary, G
+mark), "Continue with email" (outline) and "Continue without an account"
+(text), 12 apart. No back; Android Back
 leaves the app as on any root. Every exit sets `welcome_seen = 1` first,
 then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
 
 ### 5.2 Sign-in (30) and code (31)
 
 - The **sign-in form** (a presentation widget used by 30 and by the layer):
-  a mode line, "Continue with Google" (primary), an "or" divider, the email
-  `MxTextField` and "Send code". Field errors under the field
-  (`MxFieldMessage`).
+  a mode line, "Continue with Google" (outline, G mark), an "or" divider,
+  the email `MxTextField` and "Send code" (primary, the screen's one fill).
+  The email is checked on send; its error goes under the field
+  (`MxFieldMessage`), and the button never greys out for it.
   - `link`: "Your decks stay on this phone and join the account."
   - `reauth`: "Sign in again to keep syncing. Your decks are still here."
   - target (inside the layer): "Sign in to the account this phone moves to."
@@ -117,10 +121,14 @@ then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
 
 ### 5.3 Merge choice (sheet)
 
-`MxBottomSheet`: "{email} already has an account". "Merge into the account"
-(primary, default) with "Your {n} decks and {m} cards join it."; "Discard
-this phone's data" (destructive outline) with an `MxNote` warning; Cancel.
-The choice calls `beginSwitch(choice, targetHint: email)`.
+`MxBottomSheet`: "{email} already has an account". Two `MxOptionRow`s:
+"Merge into the account" (selected by default) with "Your {n} decks and {m}
+cards join it."; "Discard this phone's data" with "They're removed from this
+phone. The account's decks come down instead." Selecting Discard shows an
+`MxNote` warning and turns the confirm destructive. `MxSheetActions`:
+Cancel · "Continue" (primary) or "Discard and continue" (destructive). The
+confirm calls `beginSwitch(choice, targetHint: email)`. A destructive choice
+takes two deliberate taps; the default stays merge (O4).
 
 ### 5.4 Transition layer
 
@@ -168,26 +176,48 @@ confirm is disabled with "Deleting your account needs a connection."
 `ReauthRequired` → `MxFloatingNotice` in the notice slot (R2), same copy and
 action as §5.5.
 
-## 6. Phasing
+## 6. Shape (Impeccable, 2026-09-30)
+
+Critiqued against `DESIGN.md` and the goldens of 23, 27 and 13; the rulings
+above already carry the outcome. Layout notes for the builder:
+
+- **One Indigo Rule**: 29's one fill is Google; 30's is "Send code"; the
+  merge sheet's is its confirm; the layer's is Retry.
+- **Transition layer**: `surface` ground, content centred in the 720
+  column: `MxSpinner`, the step in Title, the reassurance in Body variant
+  ink. An error is an `MxInlineBanner` (warning: nothing was lost) with
+  Retry (primary, block); the offline sign-out escape is `dangerSoft`. The
+  target sign-in has no app bar: "Cancel" (text) at the top, then the form.
+- **Code field** (`code` variant): Headline 24/700, tabular figures, wide
+  tracking, centred. The resend countdown ("Resend code in 0:42") is a
+  disabled text button until it reaches zero.
+- **Settings › Account**: `MxSection` "ACCOUNT", first; `MxSettingsRow` with
+  a person-glyph tile; the email keeps one line and ends in an ellipsis.
+- **Re-auth on 23** (P3b): `MxInlineBanner` (warning) with "Sign in" as its
+  action, above the Account card.
+- **Debt** to record in the UI-base register (§9): the Welcome icon tile
+  (U5).
+
+## 7. Phasing
 
 | PR | Scope | FE rows |
 |---|---|---|
-| P3a | U2 widgets; welcome flag, route guard and routes; 29, 30 (`link`), 31; merge sheet; transition layer with every kind's copy (a launch may recover any kind); notices; Settings › Account section (anonymous row, plain account row) | new rows for 29–31 and the layer |
+| P3a | U2 and U6 shared changes; welcome flag, route guard and routes; 29, 30 (`link`), 31; merge sheet; transition layer with every kind's copy (a launch may recover any kind); notices; Settings › Account section (anonymous row, plain account row) | new rows for 29–31 and the layer |
 | P3b | 32 (switch, sign-out, delete); re-auth banner on 23 and notice on 13; 30 (`reauth`) with the unsent-loss dialog and "Continue without an account"; the Account row's chevron | new rows for 32 and re-auth; SB-A5 (in-app deletion) |
 
 The device check of auth spec §9 closes P3 after the owner's SB-A4 setup;
 it is recorded in the auth spec.
 
-## 7. Verification
+## 8. Verification
 
 - Widget tests for every state of §5 in en; router tests (welcome once,
   deep link kept through `from`, `mode=link` redirect, no redirect in
   `ReauthRequired`); layer tests per kind, error, stuck and target sign-in;
-  shared-widget tests for U2.
+  shared-widget tests for U2 and U6.
 - Goldens: every new screen, the sheet and the layer's states, light and
   dark, English; rendered in the Linux container; a golden-compare page
   before the owner is asked to merge.
 - Impeccable: critique and `shape` against `DESIGN.md` before the plan,
   critique and audit of the goldens after the build (one fix batch).
 - Docs: detail files 29–32 in `docs/shared/ui/screen-handoff/`, their rows in
-  the screen index, the FE rows in `docs/wbs_FE.md`, `DESIGN.md` for U2.
+  the screen index, the FE rows in `docs/wbs_FE.md`, `DESIGN.md` for U2 and U6.
