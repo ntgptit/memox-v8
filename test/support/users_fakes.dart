@@ -37,16 +37,20 @@ final class FakeUserRoleRepository implements UserRoleRepository {
   @override
   Future<UserPage> list(String query, {String? after}) async {
     lists.add((query, after));
+    // The answer is the server's state when asked; a hold only delays it.
+    final failure = failNextList;
+    failNextList = null;
+    final page = _page(query, after);
     final hold = holdList;
     if (hold != null) {
       holdList = null;
       await hold.future;
     }
-    final failure = failNextList;
-    if (failure != null) {
-      failNextList = null;
-      throw failure;
-    }
+    if (failure != null) throw failure;
+    return page;
+  }
+
+  UserPage _page(String query, String? after) {
     final matching =
         users
             .where((user) => user.email.contains(query.toLowerCase()))
