@@ -12,7 +12,7 @@ snapshot. UC-STUDY-002.
 |---|---|---|
 | App bar | `MxAppBar` (screen density) | "Study"; no date (see Rulings). |
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
-| Workload hero | `MxCard` (hero) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
+| Workload card | `MxCard` (no hero: a summary, not a door; sessions start per deck, critique 2026-09-30 part 3c-1, R2) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
 | Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" (outline, a link out of a warning, not the screen's decision; critique 2026-09-30 part 1) on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
 | Re-auth notice | `MxFloatingNotice` in the same slot + compact `MxButton` | FE-B10 (account UI spec §5.7, R2, B5): while the sign-in is refused, "Your sign-in expired. Your decks are still on this phone." · "Sign in", which opens screen 30 `reauth` under Settings and returns here once signed in. It takes the slot over the sync notice, since the expired sign-in is why sync stopped. The account feature builds it; `app/` hands it in as `reauthNotice`. |
@@ -23,7 +23,7 @@ snapshot. UC-STUDY-002.
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `study_home_loaded_light.png` | `study_home_loaded_dark.png` | The hero's due breakdown (overdue · today) and the primary resume dot (see Rulings). |
-| noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload hero and deck list, no Resume card (BR-STUDY-075 A1). |
+| noResume | `study_home_no_resume_light.png` | `study_home_no_resume_dark.png` | Same workload card and deck list, no Resume card (BR-STUDY-075 A1). |
 | zero | `study_home_zero_light.png` | `study_home_zero_dark.png` | Every root deck holds cards but nothing is due; rows still list every deck with 0/0/0 (BR-STUDY-008, BR-STUDY-077). |
 | noDecks | `study_home_no_decks_light.png` | `study_home_no_decks_dark.png` | "Browse starter decks" opens the Starter Library (screen 03), "Go to Library" the Library root (UC-STUDY-002 A4). |
 | noCards | `study_home_no_cards_light.png` | `study_home_no_cards_dark.png` | Root decks exist, none holds a card, no invented Due number (BR-STUDY-077). |
