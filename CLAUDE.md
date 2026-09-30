@@ -23,6 +23,11 @@ Each layer answers one question; none takes over another's.
   stack, data rules and quality bars. They never restate a workflow.
 - **ECC skills are read on demand** by whoever does the task. They are never
   routed to as agents, and they never override a layer above.
+- **An Impeccable fix ends with one `impeccable audit`** of what it changed,
+  whichever command made the fix (`polish`, `layout`, `typeset`, `harden`, …).
+  Skip it when an audit already ran on the current state. That audit is the
+  one confirmation: if it finds something, fix it in one batch and report what
+  it found to the owner; never run a further audit.
 
 ### A screen's workflow
 
@@ -37,8 +42,8 @@ Each layer answers one question; none takes over another's.
    native, as the user chooses.
 5. Run Impeccable after the build: critique and audit the goldens against
    `DESIGN.md`.
-   - Fix everything found in one batch, then confirm once. Never loop on
-     polish.
+   - Fix everything found in one batch; that fix ends with its one
+     `impeccable audit`, as above. Never loop on polish.
 6. Run the final whole-branch review, then complete the branch. If goldens
    changed, the owner gets the [golden review](#the-gate) page first.
 
