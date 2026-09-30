@@ -1,7 +1,7 @@
 # Whole-app critique 2026-09-30 (31/40), part 1: shared components and the six Majors — design
 
 Status: approved 2026-09-30 ·
-Path: architectural (shared widget APIs, one new provider) · Owner rulings 2026-09-30 (§3): R1–R6
+Path: architectural (shared widget APIs, one new provider) · Owner rulings 2026-09-30 (§3): R1–R9
 
 ## 1. Intent
 
@@ -36,7 +36,7 @@ The parent session checked each of these against the goldens and the source.
 | M4 | 07 Card list | With search open the summary hero stays above the results, so the first matches sit under the keyboard | `card_list_search_light.png`; `card_list_section_widget.dart` hides it only when `isSelecting` |
 | M5 | 11 Import | Mapping shows the column letter and, with a header row, the header; no data. Pasted text and headerless files map blind | `import_mapping_light.png`; `import_mapping_row_widget.dart` |
 | M6 | 24 Reminder | "What it says" hard-codes 86 due cards, 2 other decks and a Vietnamese deck name; the detail file says "live counts" | `reminder_preview_section_widget.dart:12-13`; `24-daily-reminder.md` line 24 |
-| S1 | many | Banner, notice and footer actions are primary beside another primary (13, 14, 27, 12, 01) | critique "One Indigo" pattern |
+| S1 | many | Banner, notice and footer actions are primary beside another primary (13, 14, 27, 01); Export's final states keep the format rows live (12) | critique "One Indigo" pattern |
 | S2 | 02, 14 | A dimmed option row dims the selected fact (02 locked) and the reason it is blocked (14, about 2.5:1) | `library_algorithm_locked_*`, `study_entry_eight_box_*`; `mx_option_row.dart` |
 | S3 | 24, 23 | A disabled settings row dims its explanation (24 Time hint); the Reset row shows a chevron but opens a dialog | `reminder_off_*`, `settings_loaded_*`; `mx_settings_row.dart`, `mx_row_ink.dart` |
 | S4 | 03, 06, 24 + | `MxErrorState` defaults to the cloud-off glyph; most callers report a local Drift read | `mx_error_state.dart:19`; 33 feature call sites |
@@ -53,6 +53,14 @@ The parent session checked each of these against the goldens and the source.
 - **R6.** Decisions that touch `DESIGN.md` but lie outside part 1 (the Study home workload
   hero, the mastery accent on Recall and Fill, the study context line) are decided one by
   one when their part is planned, not here.
+- **R7.** The outline edge changes in dark only; light keeps `outlineVariant` (1.53:1, but
+  visible, and the label identifies the control).
+- **R8.** A lone Close stays primary (ruling C1, M3 review 2026-09-28): one primary per
+  decision holds. Export's final states only disable the format rows.
+- **R9.** A deck with no content yet (`DeckContentType.unset`) has no FAB: its empty state
+  already offers New card and New sub-deck. This amends ruling P4a-L9
+  (`docs/superpowers/plans/2026-09-24-library-phase-4a-card-editor.md`); the FAB returns
+  once the deck holds sub-decks.
 
 ## 4. Shared components and rules
 
@@ -85,8 +93,10 @@ The parent session checked each of these against the goldens and the source.
 
 - The outline edge holds 3:1 in dark on the grounds it sits on: the page, the sheet
   (`surface-container-high`) and the warning soft ground. The colour is a derived colour in
-  `derivedColors` chosen by the existing contrast test; light keeps its edge when it
-  already passes.
+  `derivedColors` (`outlineEdge`): dark is `outline` pulled 25% toward `onSurface`
+  (3.41:1 on the sheet, 5.69 on the page, 4.27 on the warning ground); light keeps
+  `outlineVariant`. Light is 1.53:1, but its edge stays visible and the label identifies
+  the control (WCAG 1.4.11), so it is left as is (owner ruling R7).
 
 ### 4.5 Rules and guard
 
@@ -95,7 +105,6 @@ The parent session checked each of these against the goldens and the source.
 - An action in `MxInlineBanner` or `MxFloatingNotice`, and the action in `MxFooterBar`, is
   primary only when the screen shows no other primary for the same decision; otherwise it
   is outline or secondary.
-- A state whose only action dismisses (Close) draws it secondary.
 
 and under Components:
 
@@ -157,10 +166,11 @@ column letter, sample. An empty or missing cell shows no sample line.
 ### 5.6 Caller tone fixes (S1)
 
 - 13 Study home: the sync notice's "Details" is outline.
-- 12 Export: in terminal states (stale, and any state whose only action is Close) Close is
-  secondary and the format rows are disabled.
-- 01 Library: while the empty state of a deck with no content (`library_deck_unset`) shows
-  both "New card" and "New sub-deck", the FAB is hidden.
+- 12 Export: in a final problem state (stale, empty, no share target) the format rows are
+  disabled. Close stays the one primary (ruling C1 of the 2026-09-28 M3 review; R8).
+- 01 Library: a deck with no content (`DeckContentType.unset`, golden
+  `library_deck_unset`) shows no FAB; its empty state keeps "New card" and "New sub-deck"
+  (R9).
 
 ## 6. Data, copy and records
 
