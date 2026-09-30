@@ -77,7 +77,7 @@ The parent session checked each of these against the goldens and the source.
 
 - While `isEnabled` is false the icon tile, the label and the control draw at
   `AppOpacity.disabled`; the subtitle stays at full ink. The row still ignores taps.
-  `MxRowInk` gains `dimsWhenDisabled` (default true); `MxSettingsRow` passes false and
+  `MxRowInk` gains `shouldDimWhenDisabled` (default true); `MxSettingsRow` passes false and
   paints the opacity itself, so `MxRowInk`'s other callers keep today's look.
 - New `isAction` (default false): a row with `onTap` that runs an action or opens a dialog
   shows no chevron. Screen 23's Reset row sets it.

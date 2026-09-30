@@ -143,12 +143,12 @@ with `static const double _outlineEdgeDark = 0.25;`. In `mx_button.dart` outline
 - Test: `test/shared/widgets/mx_row_ink_test.dart`, `test/shared/widgets/mx_settings_row_test.dart:150-175`
 
 **Interfaces:**
-- Produces: `MxRowInk({…, bool dimsWhenDisabled = true})`; `MxSettingsRow({…, bool isAction = false})`.
+- Produces: `MxRowInk({…, bool shouldDimWhenDisabled = true})`; `MxSettingsRow({…, bool isAction = false})`.
 
 - [ ] **Step 1: Write the failing tests.** In `mx_row_ink_test.dart`:
 
 ```dart
-  testWidgets('dimsWhenDisabled false blocks taps without painting opacity', (
+  testWidgets('shouldDimWhenDisabled false blocks taps without painting opacity', (
     tester,
   ) async {
     var taps = 0;
@@ -157,7 +157,7 @@ with `static const double _outlineEdgeDark = 0.25;`. In `mx_button.dart` outline
       MxRowInk(
         onTap: () => taps++,
         isEnabled: false,
-        dimsWhenDisabled: false,
+        shouldDimWhenDisabled: false,
         child: const SizedBox(height: 48, child: Text('Row')),
       ),
     );
@@ -214,9 +214,9 @@ In `mx_settings_row_test.dart`, replace the body of `'dimmed at 0.38 while unava
 
 - [ ] **Step 2: Run** both files → the new tests FAIL.
 
-- [ ] **Step 3: Implement `MxRowInk`.** Add `this.dimsWhenDisabled = true` and the field with a doc ("False leaves the dim to the child, which dims only what is unavailable; taps stay blocked."). In `build`, when `!widget.isEnabled`, build the same `Semantics`/child as today and wrap it in `Opacity` only when `dimsWhenDisabled`.
+- [ ] **Step 3: Implement `MxRowInk`.** Add `this.shouldDimWhenDisabled = true` and the field with a doc ("False leaves the dim to the child, which dims only what is unavailable; taps stay blocked."). In `build`, when `!widget.isEnabled`, build the same `Semantics`/child as today and wrap it in `Opacity` only when `shouldDimWhenDisabled`.
 
-- [ ] **Step 4: Implement `MxSettingsRow`.** Add `this.isAction = false` with doc "Runs an action or opens a dialog: no chevron, since nothing is navigated to (critique 2026-09-30)." Set `isNavigable = onTap != null && !isAction && trailing == null && wideControl == null`. Pass `dimsWhenDisabled: false` to `MxRowInk`. Wrap the icon tile, the label `Text`, the trailing control and the wide control in `Opacity(opacity: AppOpacity.disabled)` when `!isEnabled` (one private `_dim` helper as in Task 2); the subtitle is not wrapped. Update the `isEnabled` doc: "False dims the tile, label and control while the setting is unavailable; the subtitle, which says why, keeps full ink."
+- [ ] **Step 4: Implement `MxSettingsRow`.** Add `this.isAction = false` with doc "Runs an action or opens a dialog: no chevron, since nothing is navigated to (critique 2026-09-30)." Set `isNavigable = onTap != null && !isAction && trailing == null && wideControl == null`. Pass `shouldDimWhenDisabled: false` to `MxRowInk`. Wrap the icon tile, the label `Text`, the trailing control and the wide control in `Opacity(opacity: AppOpacity.disabled)` when `!isEnabled` (one private `_dim` helper as in Task 2); the subtitle is not wrapped. Update the `isEnabled` doc: "False dims the tile, label and control while the setting is unavailable; the subtitle, which says why, keeps full ink."
 
 - [ ] **Step 5: Screen 23.** In `settings_screen.dart`, add `isAction: true` to the Reset row.
 
