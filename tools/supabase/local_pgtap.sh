@@ -25,6 +25,16 @@ P=(psql -h /tmp -p "$PORT" -U postgres -v ON_ERROR_STOP=1 -q)
 alter database postgres set search_path = "$user", public, extensions;
 create role anon nologin; create role authenticated nologin; create role service_role nologin;
 create schema extensions; create schema auth;
+-- Supabase's auth.users, reduced to the columns our migrations read.
+create table auth.users (
+  id uuid primary key,
+  email text,
+  is_anonymous boolean not null default false,
+  raw_app_meta_data jsonb default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  last_sign_in_at timestamptz
+);
 -- As Supabase defines it: the sub claim, from either setting.
 create function auth.uid() returns uuid language sql stable as
   $$ select coalesce(nullif(current_setting('request.jwt.claim.sub', true), ''),

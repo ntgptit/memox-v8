@@ -1,6 +1,11 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(33);
+-- The users these tests act as (the owned tables reference auth.users, 20261010000000).
+insert into auth.users (id) values
+  ('aaaaaaaa-0000-0000-0000-000000000001'), ('bbbbbbbb-0000-0000-0000-000000000002'),
+  ('bbbbbbbb-0000-0000-0000-00000000000a'), ('cccccccc-0000-0000-0000-000000000001')
+on conflict (id) do nothing;
 
 -- ADR-018; spec 2026-09-29-app-logging-design.md §4.
 create function public.t_entry(p_id text, p_level text, p_at timestamptz default now()) returns jsonb

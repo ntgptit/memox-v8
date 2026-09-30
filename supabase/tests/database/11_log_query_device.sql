@@ -1,6 +1,11 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(9);
+-- The users these tests act as (the owned tables reference auth.users, 20261010000000).
+insert into auth.users (id) values
+  ('aaaaaaaa-0000-0000-0000-000000000001'), ('bbbbbbbb-0000-0000-0000-000000000002'),
+  ('bbbbbbbb-0000-0000-0000-00000000000a'), ('cccccccc-0000-0000-0000-000000000001')
+on conflict (id) do nothing;
 
 -- ADR-018 §8; monitoring spec §3.2: the admin filters the logs by device.
 create function public.t_as(p_sub text, p_admin boolean) returns void language sql as $$
