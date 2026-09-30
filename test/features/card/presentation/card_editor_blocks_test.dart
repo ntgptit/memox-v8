@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
@@ -290,6 +291,13 @@ void main() {
 
     expect(find.textContaining(_en.cardAddDetails), findsOneWidget);
     expect(find.textContaining(_en.cardAddDetailsFields), findsOneWidget);
+    // A plus, not the sparkle, which implies AI (critique 2026-09-30 3a).
+    final disclosure = find.byType(CardAddDetailsWidget);
+    expect(
+      find.descendant(of: disclosure, matching: find.byIcon(AppIcons.add)),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.auto_awesome_outlined), findsNothing);
     expect(
       tester.getSize(find.byType(CardAddDetailsWidget)).height,
       greaterThanOrEqualTo(48),

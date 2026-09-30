@@ -9,7 +9,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
-/// The card editor's "Add details" disclosure (kit 08): a sparkle, the label
+/// The card editor's "Add details" disclosure (kit 08): a plus, the label
 /// and the fields it opens, and a chevron, in an outlined box. The kit's
 /// dashed edge is solid here: there is no dashed-border token (§9 row 101).
 class CardAddDetailsWidget extends StatelessWidget {
@@ -52,7 +52,7 @@ class CardAddDetailsWidget extends StatelessWidget {
             child: Row(
               spacing: AppSpacing.control,
               children: [
-                const Icon(AppIcons.details),
+                const Icon(AppIcons.add),
                 Expanded(
                   child: Text.rich(
                     TextSpan(
