@@ -6,6 +6,9 @@ import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/features/settings/presentation/widgets/sections/sync_status_section_widget.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 
 import '../../../support/library_harness.dart';
@@ -166,6 +169,39 @@ void main() {
     expect(
       tester.widget<MxButton>(find.widgetWithText(MxButton, 'Sync now')).tone,
       MxButtonTone.primary,
+    );
+  });
+
+  libraryTest('a problem sits under the status, above Sync now, not in a '
+      'floating notice (critique 2026-09-30)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(
+        SyncStatus(
+          pendingCount: 2,
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.network,
+            env.clock.now(),
+          ),
+        ),
+      ),
+    );
+    await _settle(tester);
+
+    expect(find.byType(MxFloatingNotice), findsNothing);
+    final banner = find.byType(MxInlineBanner);
+    expect(banner, findsOneWidget);
+    expect(
+      tester.getBottomLeft(banner).dy,
+      lessThan(tester.getTopLeft(find.text('Sync now')).dy),
+    );
+    expect(
+      tester.getTopLeft(banner).dy,
+      greaterThanOrEqualTo(
+        tester.getBottomLeft(find.byType(SyncStatusSectionWidget)).dy,
+      ),
     );
   });
 }
