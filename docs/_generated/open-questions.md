@@ -8,4 +8,4 @@
 
 ## [wbs_FE.md](../wbs_FE.md)
 
-- L267: OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.
+- L268: OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.

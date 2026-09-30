@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
 import 'package:memox/app/router/account_routes.dart';
+import 'package:memox/app/router/admin_routes.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
@@ -15,7 +16,6 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
-import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_entry_section_widget.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -259,9 +259,7 @@ GoRouter buildAppRouter({
                   // The reset turned the reminder off; the pending alarm
                   // follows through the gate (FE-B5 spec D7).
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
-                  adminSection: MonitoringEntrySectionWidget(
-                    onOpen: () => context.push(AppRoutes.settingsMonitoring),
-                  ),
+                  adminRows: adminSettingsRows(context),
                   onAppOptionsReset: () => unawaited(
                     _reconcileAfterReset(ProviderScope.containerOf(context)),
                   ),
@@ -292,6 +290,7 @@ GoRouter buildAppRouter({
                   ),
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),
+                  usersRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,

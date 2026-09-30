@@ -5,20 +5,28 @@ import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
-import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_entry_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/users_entry_row_widget.dart';
+import 'package:memox/features/monitoring/presentation/widgets/items/monitoring_entry_row_widget.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
 
 // Monitoring spec §3.1, §5: the entry shows only for an admin.
-SettingsScreen _screen({required void Function() onOpen}) => SettingsScreen(
+// Users spec U2: Settings owns the section; the features supply its rows.
+SettingsScreen _screen({
+  required void Function() onOpen,
+  void Function()? onOpenUsers,
+}) => SettingsScreen(
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
   onAppOptionsReset: () {},
   onOpenSync: () {},
-  adminSection: MonitoringEntrySectionWidget(onOpen: onOpen),
+  adminRows: [
+    MonitoringEntryRowWidget(onOpen: onOpen),
+    UsersEntryRowWidget(onOpen: onOpenUsers ?? () {}),
+  ],
 );
 
 const _enabled = SupabaseConfig(
@@ -33,6 +41,27 @@ void main() {
 
     expect(find.text('ADMIN'), findsNothing);
     expect(find.text('Monitoring'), findsNothing);
+    expect(find.text('Users'), findsNothing);
+  });
+
+  libraryTest('an admin sees Monitoring then Users, and Users opens its '
+      'screen (users spec U2)', (tester, env) async {
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onOpen: () {}, onOpenUsers: () => opened++),
+      overrides: [isAdminProvider.overrideWithValue(true)],
+    );
+    await tester.scrollUntilVisible(find.text('Users'), 200);
+
+    expect(find.text('Who can manage the app'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Monitoring')).dy,
+      lessThan(tester.getTopLeft(find.text('Users')).dy),
+    );
+    await tester.tap(find.text('Users'));
+    expect(opened, 1);
   });
 
   libraryTest('an admin sees Monitoring and it opens the screen', (
@@ -70,6 +99,7 @@ void main() {
       await tester.scrollUntilVisible(find.text('Reset app options'), 200);
 
       expect(find.text('Monitoring'), findsNothing);
+      expect(find.text('Users'), findsNothing);
     },
   );
 

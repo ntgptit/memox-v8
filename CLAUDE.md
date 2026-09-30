@@ -1,5 +1,8 @@
 # CLAUDE.md — MemoX V8
 
+This file holds what must always hold. Procedures live in skills and in the
+documents it points to; read those when the task reaches them.
+
 ## Layers and authority
 
 Each layer answers one question; none takes over another's.
@@ -9,12 +12,12 @@ Each layer answers one question; none takes over another's.
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
 | Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
-| ECC skills | What does good practice look like here? | reference knowledge only (see [Vendored ECC skills](#vendored-ecc-skills)) |
+| ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
   sequences or gates work, and no other layer repeats its methodology.
 - **Impeccable judges UI against `DESIGN.md`, not against its own taste.**
-  `DESIGN.md` is the design authority ([UI source of truth](#ui-source-of-truth)).
+  `DESIGN.md` is the design authority ([UI source of truth](#project-invariants)).
   Impeccable checks the work against it and against the quality floor.
 - **Repo rules hold project invariants only**, such as the architecture,
   stack, data rules and quality bars. They never restate a workflow.
@@ -37,189 +40,82 @@ Each layer answers one question; none takes over another's.
    - Fix everything found in one batch, then confirm once. Never loop on
      polish.
 6. Run the final whole-branch review, then complete the branch. If goldens
-   changed, the owner gets the [golden review](#golden-review) page first.
+   changed, the owner gets the [golden review](#the-gate) page first.
 
 ### Where knowledge lives
 
 | Knowledge | Home |
 |---|---|
-| Architecture and product decisions | an ADR in `docs/shared/decisions/` |
+| Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
 | The visual system | `DESIGN.md` |
 | A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
-| Known UI debt | the UI-base register (§9) |
+| Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
+| Work progress | `docs/wbs_FE.md`, `docs/wbs_BE.md`, `docs/wbs_supabase.md` (`flutter-workflow`) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
-| Work in flight that moves to another session | a session handoff in `.claude/handoff/`, on the branch only |
+| Work in flight that moves to another session | a session handoff in `.claude/handoff/`, deleted before the merge ([docs/agent/session-handoff.md](docs/agent/session-handoff.md)) |
 
-Do not add another store, such as `.ecc/memory/`. Anything meant to outlive
-a session and bind the project goes into the repo through a PR. Standing
-context for another harness goes through `AGENTS.md` or `docs/`; unfinished
-work goes through a [session handoff](#session-handoff).
+Do not add another store. Anything meant to outlive a session and bind the
+project goes into the repo through a PR.
 
-### Session handoff
+## The gate
 
-A session handoff is a short file that carries the live thread of one piece
-of unfinished work to a fresh agent. It is unrelated to the screen files under
-`docs/shared/ui/screen-handoff/`. Write one when the owner asks for a handoff.
+- `bash .claude/skills/flutter-workflow/scripts/dod_check.sh` is the gate:
+  format, analyze, generated code, architecture, docs, the guard and the full
+  suite. Goldens run after it, in the Linux container only
+  (`TZ=UTC flutter test --tags golden`); on Windows run
+  `flutter test --exclude-tags golden` and never `--update-goldens`.
+- **Golden review:** when a branch adds, updates or deletes a
+  `test/**/goldens/*.png`, the owner gets a before · after · diff page built
+  with the `golden-compare` skill before any approve or merge. Changed images
+  on their own are not a review.
+- Hooks are repo-owned. [.claude/hooks/README.md](.claude/hooks/README.md)
+  lists them and holds the subagent rules they enforce: every subagent on
+  Sonnet except the final whole-branch review, which runs on Opus, and a
+  `Workflow` whose token floor reaches 300k offered to the owner first. CI is paused and runs by hand; the local gate is what counts.
 
-- **When:** only when the work moves to another harness (Claude ↔ Codex),
-  another machine or cloud container, another person, or a side task forked to
-  a second agent. When the work stays in the same harness and checkout, use
-  `/compact`.
-- **Where:** `.claude/handoff/<yyyy-mm-dd>-<topic>.md` on the working branch.
-  Commit and push it, then give the next session the branch and the path; a
-  new cloud session gets the branch as its `source_revision`. One file per
-  piece of work: a later handoff replaces the earlier one.
-- **What:** the state, the open decisions, the next step, and the skills the
-  next agent should load (the Superpowers skill for the current phase, the
-  `flutter-*` skills the task touches). Plans, specs, ADRs, PRs and commits
-  appear as paths or URLs, never copied. Label every claim this session did
-  not verify as an assumption, because the next agent takes the file as fact.
-  Leave out secrets and personal data.
-- **Lifetime:** delete the file when completing the branch, before the merge,
-  so `master` never carries a handoff.
+## Project invariants
 
-### Hooks
-
-- Hooks are repo-owned and small: `.claude/hooks/` and `.claude/settings.json`.
-- They run the repo's own tools, such as `dart format`, `flutter analyze` and
-  the guard. They never run third-party scripts, including ECC's hooks.
-- The full test suite stays at the task gate, not at every edit or commit.
-  Goldens render in the Linux container only
-  (`.claude/skills/flutter-testing/scripts/golden.Dockerfile`); on Windows the
-  gate runs `flutter test --exclude-tags golden` and never `--update-goldens`.
-
-### Golden review
-
-The owner reviews golden changes as pictures.
-
-- **When:** a branch adds, updates or deletes any `test/**/goldens/*.png`.
-- **What:** a private Artifact page showing each changed golden as Before ·
-  After · Diff side by side, with a sentence on what changed and why, built with
-  the `golden-compare` skill. Its link goes in the reply that asks the owner to
-  review, approve or merge. Changed images on their own do not count as a
-  review.
-- **Where:** the page and its images live in the scratchpad and on claude.ai,
-  never in the repo.
-
-## V7 is a reference, not a template
-
-V7 is a reference implementation only.
-
-Do not copy V7 architecture, folder structure, state management, routing,
-dependency wiring, UI implementation, or abstractions.
-
-Exception: the layer architecture (`domain/ data/ presentation/ di/` with
-repository contracts, Drift tables in `lib/core/database/`), feature folder
-names and the Flutter version follow
-[ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md).
-
-Preserve V7 business behavior and required data compatibility unless an
-approved V8 specification explicitly changes them.
-
-## Backend: Supabase
-
-The server is a Supabase project ([ADR-015](docs/shared/decisions/ADR-015-supabase-lam-backend.md)).
-Business rules and SRS live only in the app; the server checks integrity.
-
-- **Code:** `supabase/migrations/` (SQL and PL/pgSQL). Clients call only
-  `sync_push`, `sync_changes`, `ping`, the log RPCs (`log_push`; for an
-  admin, `log_query`, `log_get` and `log_set_status`, [ADR-018](docs/shared/decisions/ADR-018-log-tap-trung-va-monitoring.md))
-  and the account RPCs (`me`, `account_claim_begin`, `account_merge`,
-  `account_merge_ack`, `account_delete`; for an admin, `role_list` and
-  `role_set`, [auth spec](docs/superpowers/specs/2026-09-30-auth-design.md));
-  tables have RLS on, no policy and no client privilege; helpers live in the
-  unexposed `private` schema.
-- **Gate:** `npx supabase db start` then `npx supabase test db` (pgTAP in
-  `supabase/tests/`; needs Docker). CI runs it in the `supabase` job.
-- **Owner setup:** [supabase/README.md](supabase/README.md).
-- **`memox-api-services/` is frozen:** kept as a reference for server logic
-  that may come later (sharing, secrets, heavy batch, AI), out of CI, not
-  developed. Its conventions stay in `spring-boot-mybatis-review`.
-
-## UI source of truth
-
-The visual authority for every V8 screen is the app itself, recorded in
-[`DESIGN.md`](DESIGN.md) and in the goldens the owner reviewed
-([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)). The artifact
-"MemoX — Mobile UI Kit v3" is retired and is never read as a source.
-
-- **Precedence:** a BR or UC beats `DESIGN.md`; `DESIGN.md` and the reviewed
-  goldens beat a screen's detail file.
-- **Where it is described:**
-  - [`DESIGN.md`](DESIGN.md) holds the foundations, the theme binding, the
-    shared widgets and the copy voice;
-  - the [screen index](docs/shared/ui/screen-handoff/00-index.md) holds the
-    screen numbers, FE items, status and the rules every screen shares; each
-    screen's detail file holds its layout, states with goldens, rulings and copy;
-  - known UI debt is in the UI-base register
-    ([§9](docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md)).
-- **Changing UI:** update `DESIGN.md` when the visual system changes and the
-  screen's detail file when the screen changes, in the same PR.
-- **After building a screen,** update its row in the screen index.
-
-## Vendored ECC skills
-
-`.claude/skills/` holds 19 skills copied, unchanged, from
-[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) at commit
-`bf70150eb2df8070024e5bdf08e4aa08959e2735`:
-
-| Area | Skills |
-|---|---|
-| Flutter/Dart | `dart-flutter-patterns`, `flutter-dart-code-review` |
-| Java/Spring | `java-coding-standards`, `jpa-patterns`, `springboot-patterns`, `springboot-security`, `springboot-tdd`, `springboot-verification` |
-| Security | `security-review` |
-| Mobile | `android-clean-architecture`, `compose-multiplatform-patterns`, `kotlin-coroutines-flows`, `swiftui-patterns`, `swift-concurrency-6-2`, `swift-actor-persistence`, `swift-protocol-di-testing`, `react-native-patterns`, `foundation-models-on-device`, `liquid-glass-design` |
-
-- **They are reference material, not process.** When one conflicts with the
-  rest of this file, this file wins: Superpowers and Impeccable own the
-  workflows. The same holds for the repo's own skills (`flutter-*`), the ADRs
-  (ADR-010, ADR-011, ADR-012) and the guard. For example, V8 uses Riverpod
-  and Drift, not BLoC or Freezed, and calls APIs through Retrofit on one shared
-  Dio client (ADR-012), never with hand-written Dio calls.
-- **Java/Spring skills apply to the frozen `memox-api-services/` only**
-  ([Backend](#backend-supabase)), never to the Flutter app.
-  The repo's own `spring-boot-mybatis-review` skill wins over the ECC
-  `springboot-*` and `jpa-patterns` skills.
-- **Skills only.** ECC's agents, rules, hooks, commands and memory are not
-  used here. A plan task never delegates to an ECC agent; its implementer
-  reads the relevant skill instead.
-- **Not vendored:** `ios-icon-gen` ships executable scripts, and `security-scan`
-  runs the npm package `ecc-agentshield`. Both run third-party code.
-- **To update:** copy the new versions from a pinned ECC commit, review the
-  diff, and update the commit above.
-
-## No speculative structure
-
-Avoid speculative abstractions.
-
-- Do not scaffold layers or folders "for later".
-- Do not create pass-through layers or single-implementation interfaces
-  without a concrete architectural reason.
+- **Backend is Supabase** ([ADR-015](docs/shared/decisions/ADR-015-supabase-lam-backend.md)).
+  Business rules and SRS live only in the app; the server checks integrity.
+  Clients call only the RPCs listed in [supabase/README.md](supabase/README.md#rules);
+  tables have RLS on, no policy and no client privilege. Its gate is
+  `npx supabase db start` then `npx supabase test db`.
+  `memox-api-services/` is frozen: a reference only, out of CI, not developed.
+- **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)):
+  `DESIGN.md` and the reviewed goldens. The "Mobile UI Kit v3" artifact is
+  retired and never read. A BR or UC beats `DESIGN.md`; `DESIGN.md` and the
+  goldens beat a screen's detail file. A PR that changes the visual system
+  updates `DESIGN.md`; one that changes a screen updates its detail file and
+  its row in the screen index.
+- **Stack and layers:** the layer architecture and folder names follow
+  [ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md);
+  Riverpod and Drift, not BLoC or Freezed, whatever an ECC skill shows.
+- **No speculative structure.** No layers or folders "for later", no
+  pass-through layers, no single-implementation interfaces without a concrete
+  architectural reason.
 
 ## Asking the owner
 
 Every question to the owner goes through the `AskUserQuestion` popup, never as
-plain chat text. This covers:
+plain chat text:
 
 - clarifying questions and choices between options;
 - approvals of a design, spec, plan or deviation;
 - requests to act: starting a phase, running a command with side effects,
-  installing a tool, opening or merging a PR;
+  installing a tool, adding or changing a dependency in `pubspec.yaml`,
+  opening or merging a PR;
 - reuse-or-write calls: adding or promoting code into `lib/core/` or
-  `lib/shared/`, or taking a shortcut (reusing, skipping or trimming) in
-  place of code the task asked for. The agent weighs the options and
-  recommends one; the owner decides.
+  `lib/shared/`, or taking a shortcut (reusing, skipping or trimming) in place
+  of code the task asked for. Weigh the options and recommend one; the owner
+  decides.
 
 End a presented design, spec or plan with the popup (approve / request
 changes), not with a question in prose.
 
 ## Language
 
-Always reply to the user in Vietnamese. Code, identifiers, commit messages and
-PR text keep their existing language conventions.
-
-Messages printed by the scripts in `tools/` (errors, warnings, status lines,
-CLI help) are in English. Strings that belong to a document format, such as the
-Vietnamese section headings a script checks or text it writes into generated
-docs, follow the docs.
+Reply to the owner in Vietnamese. Code, identifiers, commit messages and PR
+text keep their existing conventions. Messages printed by the scripts in
+`tools/` are in English; strings that belong to a document format follow the
+docs.
