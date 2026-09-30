@@ -8,6 +8,9 @@ approved in the brainstorm of 2026-09-29/30, the UI brief in the Impeccable
 and the owner's setup SB-A4 of `docs/wbs_supabase.md`. Decisions extend
 [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md) and
 [ADR-018](../../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) §7.
+§7 and §8 are settled for P3 by
+[the account UI addendum](2026-09-30-account-ui-design.md), which wins where
+they differ.
 
 ## 1. Intent and owner rulings
 
