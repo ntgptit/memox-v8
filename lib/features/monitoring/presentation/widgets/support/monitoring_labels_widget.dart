@@ -39,11 +39,12 @@ String monitoringStatusLabel(AppLocalizations l10n, LogStatus status) =>
       LogStatus.fixed => l10n.monitoringStatusFixed,
     };
 
-/// An open problem is a warning-toned pill, a fixed one the green: the label
-/// says it too, so the tone is never the only cue.
+/// An open problem is a warning-toned pill, a fixed one success: the label
+/// says it too, so the tone is never the only cue (critique 2026-09-30 tone
+/// pass, T7).
 MxBadgeTone monitoringStatusTone(LogStatus status) => switch (status) {
   LogStatus.open => MxBadgeTone.warning,
-  LogStatus.fixed => MxBadgeTone.mastery,
+  LogStatus.fixed => MxBadgeTone.success,
 };
 
 String monitoringWindowLabel(AppLocalizations l10n, LogWindow window) =>

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
@@ -83,6 +84,15 @@ void main() {
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await _tap(tester, _en.importPreviewAction);
+    // Ready is a fine state, not learning progress (tone pass T6).
+    expect(
+      tester
+          .widget<MxBadge>(
+            find.widgetWithText(MxBadge, _en.importBadgeReady(2)),
+          )
+          .tone,
+      MxBadgeTone.success,
+    );
     // The chips carry the breakdown and the button the count: no header
     // total, no caption (critique 2026-09-30 part 3b).
     expect(find.textContaining('rows ready'), findsNothing);

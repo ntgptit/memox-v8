@@ -91,6 +91,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 - **Owner 2026-09-29, UI-base row 147:** code uses `MxTextStyles.code`: the system monospace at `bodySmall` size, tabular figures.
 - **Owner 2026-09-29 (Impeccable audit):** the detail shows the level and status first, then the message, error, trace and context, then compact Details without an Event row.
 - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; the detail shows the full date and `HH:mm:ss`, 24-hour in every language.
+- **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists' success state tints with success.
 
 ## Copy
 

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/features/srs/domain/models/review_kind_model.dart';
+import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -308,5 +312,46 @@ void main() {
           .length,
       lessThan(ReviewHistoryPage.size),
     );
+  });
+
+  libraryTest('a lapse is warning, relearning neutral, any other answer '
+      'success (critique 2026-09-30 tone pass, T5)', (tester, env) async {
+    ReviewHistoryEntry entry(ReviewKind kind, Enum action) =>
+        ReviewHistoryEntry(
+          id: 'r',
+          generation: 1,
+          schedulerType: SchedulerType.eightBox,
+          kind: kind,
+          mode: 'recall',
+          action: action,
+          answeredAt: DateTime(2026, 9, 1, 8),
+          isTimedOut: false,
+          usedHint: null,
+          nextDueAt: null,
+          previousBox: null,
+          nextBox: null,
+          previousEaseFactor: null,
+          nextEaseFactor: null,
+          previousIntervalDays: null,
+          nextIntervalDays: null,
+        );
+    for (final (kind, action, tone) in [
+      (ReviewKind.scheduled, EightBoxAction.remembered, MxBadgeTone.success),
+      (ReviewKind.learning, Sm2Action.good, MxBadgeTone.success),
+      (ReviewKind.scheduled, EightBoxAction.forgotten, MxBadgeTone.warning),
+      (ReviewKind.scheduled, Sm2Action.again, MxBadgeTone.warning),
+      (ReviewKind.relearning, Sm2Action.good, MxBadgeTone.neutral),
+    ]) {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(body: CardHistoryEventWidget(entry: entry(kind, action))),
+      );
+      expect(
+        tester.widget<MxBadge>(find.byType(MxBadge)).tone,
+        tone,
+        reason: '$kind $action',
+      );
+    }
   });
 }

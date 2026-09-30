@@ -29,10 +29,12 @@ class CardHistoryEventWidget extends StatelessWidget {
     final action = entry.action;
     final isLapse =
         action == EightBoxAction.forgotten || action == Sm2Action.again;
+    // A right answer is success, never mastery or the action Indigo
+    // (DESIGN.md; critique 2026-09-30 tone pass, T5).
     final (tone, icon) = switch (entry.kind) {
       _ when isLapse => (MxBadgeTone.warning, AppIcons.lapses),
       ReviewKind.relearning => (MxBadgeTone.neutral, AppIcons.repeat),
-      _ => (MxBadgeTone.primary, AppIcons.check),
+      _ => (MxBadgeTone.success, AppIcons.check),
     };
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.control),

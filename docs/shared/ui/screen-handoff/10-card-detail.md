@@ -46,6 +46,7 @@ Every state above is built.
 - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide convention.
 - **§9 row 115:** in-flow cards are `MxCard` at radius 12.
 - The load error uses the app's shared local-first body "Nothing was lost. Try again in a moment." (as screens 06 and 23).
+- **Critique 2026-09-30 tone pass, T5:** a history badge is success for a right answer, warning for a lapse and neutral for relearning.
 
 ## Copy
 

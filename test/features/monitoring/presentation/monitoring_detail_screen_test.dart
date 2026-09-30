@@ -217,6 +217,10 @@ void main() {
     await _pump(tester, env, repository);
 
     expect(find.widgetWithText(MxBadge, 'Fixed'), findsOneWidget);
+    expect(
+      tester.widget<MxBadge>(find.widgetWithText(MxBadge, 'Fixed')).tone,
+      MxBadgeTone.success,
+    );
     expect(find.text('Fixed by'), findsOneWidget);
     expect(find.text(monitoringIdText('admin-1')), findsOneWidget);
     expect(find.text('Fixed at'), findsOneWidget);

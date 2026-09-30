@@ -89,7 +89,7 @@ class _Mark extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final (icon, color) = switch (kind) {
-      ImportRowKind.ready => (AppIcons.check, context.semanticColors.mastery),
+      ImportRowKind.ready => (AppIcons.check, context.derivedColors.successInk),
       // The legend badge's glyph; an X would read as a dismiss control.
       ImportRowKind.invalid => (
         AppIcons.alert,

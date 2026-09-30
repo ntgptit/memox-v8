@@ -44,7 +44,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
             if (preview.ready > 0)
               MxBadge(
                 label: l10n.importBadgeReady(preview.ready),
-                tone: MxBadgeTone.mastery,
+                tone: MxBadgeTone.success,
                 icon: AppIcons.check,
               ),
             if (preview.invalid > 0)
