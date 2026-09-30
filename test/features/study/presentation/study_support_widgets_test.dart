@@ -75,10 +75,7 @@ void main() {
     expect(_fillOf(tester), 14000 / 20000);
   });
 
-  libraryTest('two actions share the row; at large text they stack', (
-    tester,
-    env,
-  ) async {
+  libraryTest('two actions share the row', (tester, env) async {
     const row = StudyCtaRowWidget(
       children: [
         MxButton(label: 'Forgot', isBlock: true, onPressed: null),
@@ -91,12 +88,6 @@ void main() {
       tester.getCenter(find.text('Remembered')).dy,
     );
     expect(tester.getSize(find.byType(MxButton).first).width, 160);
-
-    await pumpLibraryScreen(tester, env, _host(row), textScale: 1.3);
-    expect(
-      tester.getCenter(find.text('Forgot')).dy,
-      lessThan(tester.getCenter(find.text('Remembered')).dy),
-    );
   });
   libraryTest('a face with more below fades its bottom edge (audit P1)', (
     tester,
@@ -145,7 +136,6 @@ void main() {
       tester,
       env,
       _host(const SessionContextLineWidget(text: text)),
-      textScale: 2,
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
@@ -160,7 +150,6 @@ void main() {
       tester,
       env,
       _host(const SessionFooterHintWidget(icon: AppIcons.check, text: text)),
-      textScale: 2,
     );
     final hint = tester.widget<Text>(find.text(text));
 

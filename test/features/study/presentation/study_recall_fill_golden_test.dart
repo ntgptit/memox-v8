@@ -84,18 +84,11 @@ void main() {
       LibraryEnv env,
       StudyMode mode,
       String name,
-      Future<void> Function() act, {
-      double textScale = 1,
-    }) async {
+      Future<void> Function() act,
+    ) async {
       final id = await _review(env, mode);
       await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          _screen(id),
-          brightness,
-          textScale: textScale,
-        );
+        await pumpLibraryGolden(tester, env, _screen(id), brightness);
         await _frames(tester);
         await act();
         await expectBoundaryGolden(tester, 'goldens/study_${name}_$theme.png');
@@ -124,13 +117,6 @@ void main() {
       });
     });
 
-    libraryTest('recall, large text, $theme', (tester, env) async {
-      await shoot(tester, env, StudyMode.recall, 'recall_large_text', () async {
-        await tester.tap(find.text(_en.studyRecallShowMeaning));
-        await _frames(tester);
-      }, textScale: 2);
-    });
-
     libraryTest('fill, input, $theme', (tester, env) async {
       await shoot(tester, env, StudyMode.fill, 'fill_input', () async {
         await tester.enterText(find.byType(TextField), 'reserv');
@@ -153,13 +139,6 @@ void main() {
         await tester.tap(find.text(_en.studyFillCheck));
         await _frames(tester);
       });
-    });
-
-    libraryTest('fill, large text, $theme', (tester, env) async {
-      await shoot(tester, env, StudyMode.fill, 'fill_large_text', () async {
-        await tester.enterText(find.byType(TextField), 'reserv');
-        await tester.pump();
-      }, textScale: 2);
     });
   }
 }

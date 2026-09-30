@@ -39,8 +39,6 @@ submits nothing (BR-STUDY-029).
 | input | `study_fill_input_light.png` | `study_fill_input_dark.png` | No edit button (see Rulings). |
 | hint | `study_fill_hint_light.png` | `study_fill_hint_dark.png` | "Show hint" is gone once used, "Check" remains. |
 | wrong | `study_fill_wrong_light.png` | `study_fill_wrong_dark.png` | With the corrected footer copy. |
-Other goldens: `study_fill_large_text_light.png` / `study_fill_large_text_dark.png` (input at large text).
-
 
 Not captured: the correct-answer path has no dedicated visual — the turn
 commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).
@@ -52,7 +50,7 @@ when the turn opens, Check waits for a non-empty answer, and IME Done checks
 until Continue, the typed text struck through in the error ink beside the right term
 (BR-STUDY-059, BR-STUDY-064). Show hint appears only for a card with a hint not yet shown
 (BR-STUDY-028). The typed text is never kept (BR-STUDY-027). Goldens:
-`test/features/study/presentation/goldens/study_fill_{input,hint,wrong,large_text}_*`.
+`test/features/study/presentation/goldens/study_fill_{input,hint,wrong}_*`.
 
 ## Rulings
 

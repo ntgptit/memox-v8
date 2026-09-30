@@ -127,14 +127,6 @@ void main() {
     expect(find.byType(BackdropFilter), findsOneWidget);
   });
 
-  testWidgets('2x text grows the bar instead of overflowing (R3)', (
-    tester,
-  ) async {
-    await pumpMx(tester, _nav(), textScale: 2);
-
-    expect(tester.takeException(), isNull);
-  });
-
   test('selectedIndex outside the destinations is rejected', () {
     expect(() => _nav(selected: 4), throwsAssertionError);
   });

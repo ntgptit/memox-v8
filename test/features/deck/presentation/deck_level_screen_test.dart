@@ -240,12 +240,12 @@ void main() {
     expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
   });
 
-  libraryTest('a long Korean name at 2x ellipsizes without overflow (RF5)', (
+  libraryTest('a long Korean name meets the target guidelines (RF5)', (
     tester,
     env,
   ) async {
     await env.decks.root(List.filled(12, '한국어 어휘 공부').join(' '));
-    await pumpLibraryScreen(tester, env, deckScreen(), textScale: 2);
+    await pumpLibraryScreen(tester, env, deckScreen());
     // The FAB scales in once a deck has loaded; measure it at rest.
     await tester.pumpAndSettle();
 

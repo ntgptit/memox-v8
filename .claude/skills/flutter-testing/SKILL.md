@@ -121,19 +121,19 @@ Put the wrapper in `test/support/` once. Every test writing its own is how they
 drift apart and stop reflecting the real app.
 
 Cover per screen: main text and actions, loading, empty, error, validation
-messages, small-screen overflow, dark mode, and large text scale.
+messages, small-screen overflow and dark mode, at the default text scale only
+(large text is not a design target, PRODUCT.md 2026-09-30).
 
 Overflow is caught by checking for an exception after pumping:
 
 ```dart
-testWidgets('renders at 2x text scale without overflow', (tester) async {
+testWidgets('renders on a small phone without overflow', (tester) async {
   tester.view.physicalSize = const Size(320, 568);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
 
   await tester.pumpWidget(wrap(
     const DeckListScreen(),
-    textScale: 2.0,
     overrides: [/* ... */],
   ));
   await tester.pumpAndSettle();

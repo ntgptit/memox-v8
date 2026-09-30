@@ -79,20 +79,6 @@ void main() {
     );
   });
 
-  testWidgets('the text switch renders everything at 2x', (tester) async {
-    await _pumpGallery(tester);
-    await tester.tap(find.byTooltip('Large text'));
-    await tester.pump();
-
-    expect(
-      MediaQuery.textScalerOf(tester.element(find.byType(MxAppBar).first))
-          .scale(10),
-      20,
-    );
-    await _scrollThrough(tester);
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('Settings opens the gallery and back returns', (
     tester,
     env,

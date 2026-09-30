@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
@@ -88,22 +87,6 @@ void main() {
     );
     await _settle(tester);
     expect(find.text(_stale), findsNothing);
-  });
-
-  libraryTest('Vietnamese at text scale 2 does not overflow', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      locale: const Locale('vi'),
-      textScale: 2,
-      overrides: syncOverrides(const SyncStatus(rejectedCount: 1234)),
-    );
-    await _settle(tester);
-    expect(tester.takeException(), isNull);
   });
 
   libraryTest('the notice hides when the status stream fails (spec §6)', (

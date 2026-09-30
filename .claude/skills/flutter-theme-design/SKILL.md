@@ -53,7 +53,7 @@ lý do sửa checklist — sửa checklist cần quyết định của chủ d�
 - [ ] Feature chỉ chọn semantic variant.
 - [ ] Widget tự đảm bảo ≥ 48×48 interactive target.
 - [ ] Widget hỗ trợ RTL.
-- [ ] Widget không clip ở text scale 2.0.
+- [ ] Widget không clip ở text scale mặc định (cỡ chữ lớn không còn là mục tiêu, PRODUCT.md 2026-09-30).
 - [ ] Widget có semantics/accessibility name phù hợp.
 - [ ] Không expose parameter chỉ vì raw Flutter widget có parameter đó.
 - [ ] Escape hatch visual chỉ tồn tại nếu có use case được design system công

@@ -204,7 +204,6 @@ void main() {
           CardScheduleWidget(detail: detail),
         ],
       ),
-      textScale: 2,
     );
     await tester.pumpAndSettle();
 

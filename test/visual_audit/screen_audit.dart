@@ -7,13 +7,13 @@ typedef AuditPump = Future<void> Function(
   double textScale,
 );
 
-/// The text scales every production screen is audited at: the default and
-/// the 200% a low-vision user sets.
-const List<double> auditTextScales = [1, 2];
+/// The text scale every production screen is audited at: the default only.
+/// Large text is not a design target (PRODUCT.md, owner 2026-09-30).
+const List<double> auditTextScales = [1];
 
 /// The strict audit every production screen companion runs (MX-VIS-001).
 ///
-/// Each theme at each text scale must show [screen], lay out without an
+/// Each theme must show [screen], lay out without an
 /// exception (an overflow fails the test), and meet Android's 48 dp and iOS's
 /// 44 pt tap targets, with a label on every tappable node. Contrast is checked
 /// from the tokens (`test/core/theme/token_contrast_test.dart`, FE-C1): the

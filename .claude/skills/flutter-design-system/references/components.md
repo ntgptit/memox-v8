@@ -107,7 +107,7 @@ Before a component is done:
 - [ ] Loading state if it can trigger async work.
 - [ ] Semantic label on anything without visible text.
 - [ ] Touch target ≥ 48×48.
-- [ ] Survives 2.0× text scale without overflow.
+- [ ] Grows with the text; no fixed height around text (large text itself is not tested).
 - [ ] Survives a 320px-wide screen.
 - [ ] Long text truncates or wraps deliberately, not by accident.
 - [ ] Golden test for light and dark (`flutter-testing`).

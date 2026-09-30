@@ -53,7 +53,7 @@ void main() {
     );
   });
 
-  testWidgets('a long title stays one line at 2x; rows keep one height', (
+  testWidgets('a long title stays one line; rows keep one height', (
     tester,
   ) async {
     await pumpMx(
@@ -70,7 +70,6 @@ void main() {
           ],
         ),
       ),
-      textScale: 2,
     );
 
     expect(tester.takeException(), isNull);

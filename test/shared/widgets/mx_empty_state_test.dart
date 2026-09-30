@@ -100,20 +100,6 @@ void main() {
     expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 24);
   });
 
-  testWidgets('long copy at 2x text does not overflow', (tester) async {
-    await pumpMx(
-      tester,
-      const MxEmptyState(
-        icon: AppIcons.inbox,
-        title: 'Nothing is due today across every deck you study',
-        body: 'Every card is resting until its next review date arrives.',
-      ),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('a footnote sits 20 below the action as a note', (tester) async {
     await pumpMx(
       tester,

@@ -79,8 +79,7 @@ One `MxBottomSheet`, "Sort & filter":
 | deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
 | deckDelete | no golden | no golden | As rootDelete. |
 | deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
-Other goldens: `library_decks_2x_light.png` / `library_decks_2x_dark.png` (the root at text scale 2); `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
-
+Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
 
 ## Rulings
 

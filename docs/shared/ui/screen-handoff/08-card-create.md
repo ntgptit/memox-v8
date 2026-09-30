@@ -34,8 +34,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | deckRejects | no golden | no golden | Caption "This deck can't take cards now." and banner "It now holds sub-decks."; no path exists here to choose another deck (see Rulings). |
 | saving | no golden | no golden | The button shows only its spinner in place of the label — no "Saving…" text inside the button (see Rulings). |
 | saveFailed | no golden | no golden | — |
-Other goldens: `card_editor_create_2x_light.png` / `card_editor_create_2x_dark.png` (the empty form at text scale 2); `card_editor_create_keyboard_light.png` / `card_editor_create_keyboard_dark.png` (the form with the keyboard open).
-
+Other goldens: `card_editor_create_keyboard_light.png` / `card_editor_create_keyboard_dark.png` (the form with the keyboard open).
 
 Two further states, both built as
 extensions of ruling P4a-L1…L5 (§9 row 79, "gone state" + discard confirm) from

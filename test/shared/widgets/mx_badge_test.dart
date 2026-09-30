@@ -79,9 +79,8 @@ void main() {
 
     await pumpMx(tester, const MxBadge(label: '1 due'));
     final short = tester.getSize(find.byType(MxBadge)).width;
-    await pumpMx(tester, const MxBadge(label: '12345 due'), textScale: 2);
+    await pumpMx(tester, const MxBadge(label: '12345 due'));
     expect(tester.getSize(find.byType(MxBadge)).width, greaterThan(short));
-    expect(tester.getSize(find.byType(MxBadge)).height, greaterThan(22));
     expect(tester.takeException(), isNull);
   });
 }

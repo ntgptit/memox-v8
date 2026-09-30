@@ -51,8 +51,7 @@ with the prompt, and no grade should ever be committed by accident.
 | saving | The grade row is locked on the tapped grade, with no spinner under 300 ms. |
 | saveFailed | The session ends as `failed` and the summary (21, Save error) opens (BR-STUDY-018). |
 | stale | A reset or algorithm change elsewhere invalidates the session on the next write, and the summary (21) opens with its reason (BR-STUDY-015, BR-STUDY-016, BR-STUDY-017). |
-Other goldens: `study_self_assess_prompt_light.png` / `study_self_assess_prompt_dark.png` (the prompt before the reveal); `study_self_assess_revealed_light.png` / `study_self_assess_revealed_dark.png` (revealed, with the grades); `study_self_assess_meaning_first_light.png` / `study_self_assess_meaning_first_dark.png` (a meaning-first row); `study_self_assess_relearning_light.png` / `study_self_assess_relearning_dark.png` (a relearning card); `study_self_assess_large_text_light.png` / `study_self_assess_large_text_dark.png` (revealed at large text).
-
+Other goldens: `study_self_assess_prompt_light.png` / `study_self_assess_prompt_dark.png` (the prompt before the reveal); `study_self_assess_revealed_light.png` / `study_self_assess_revealed_dark.png` (revealed, with the grades); `study_self_assess_meaning_first_light.png` / `study_self_assess_meaning_first_dark.png` (a meaning-first row); `study_self_assess_relearning_light.png` / `study_self_assess_relearning_dark.png` (a relearning card).
 
 The goldens `study_self_assess_*` in `test/features/study/presentation/goldens/` are its
 record.
@@ -71,7 +70,7 @@ same `SrsScheduler.next` the write runs; null on a learning or relearning turn. 
 hints as the other session screens: "Recall the answer, then show it" / "Be honest —
 grade how well you remembered". After "Show answer" leaves, the answer face is the next
 node TalkBack reads. Goldens:
-`test/features/study/presentation/goldens/study_self_assess_{prompt,revealed,relearning,meaning_first,large_text}_*`.
+`test/features/study/presentation/goldens/study_self_assess_{prompt,revealed,relearning,meaning_first}_*`.
 
 ## Rulings
 

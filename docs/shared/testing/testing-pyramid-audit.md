@@ -108,7 +108,7 @@ thành hai ID độc lập (xem tiêu đề kịch bản gốc), vẫn cùng m�
 | IT-MODE-010 | `HOST-FLOW` | Fill folding rules (BR-STUDY-026/137/138) — a pure comparison plus what is written. |
 | IT-MODE-011 | `HOST-FLOW` | Hint recorded without changing the action, one submission only (BR-STUDY-027/136/137/138). |
 | IT-MODE-012 | `HOST-WIDGET` | Self assess shows actions only after a flip. |
-| IT-MODE-013 | `HOST-WIDGET` | Screen reader and large text — meetsGuideline and textScaler are host matchers. No device needed. |
+| IT-MODE-013 | `HOST-WIDGET` | Screen reader — meetsGuideline is a host matcher. No device needed. |
 | IT-MODE-014 | `HOST-FLOW` | Atomic block when a question cannot be built (BR-STUDY-037/124) — a store refusal, not a fault-injection UI. |
 | IT-MODE-015 | `HOST-FLOW` | Distractors come from the same tree and never leak an unseen new card (BR-STUDY-037/122/123). |
 | IT-NAV-001 | `HOST-WIDGET` | Router lands on the deck list. Real cold start is proved once by IT-PLAT-001. |

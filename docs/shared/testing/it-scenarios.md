@@ -46,17 +46,16 @@ Kịch bản IT không truy vết về UC/BR của feature nào, và phần gi�
 
 ## Nhóm: Kịch bản IT — Sáu chế độ học
 
-## IT-MODE-013 — Các chế độ học dùng được với trình đọc màn hình và cỡ chữ lớn
+## IT-MODE-013 — Các chế độ học dùng được với trình đọc màn hình
 
 - **Ưu tiên:** P1
-- **Tiền điều kiện:** `SETUP-STUDY-ALL-MODES`; bật được dịch vụ hỗ trợ tiếp cận/trình đọc màn hình Android; cỡ chữ 200%.
+- **Tiền điều kiện:** `SETUP-STUDY-ALL-MODES`; bật được dịch vụ hỗ trợ tiếp cận/trình đọc màn hình Android; cỡ chữ mặc định (cỡ chữ lớn không còn là mục tiêu, PRODUCT.md 2026-09-30).
 
 | Bước | Thao tác người dùng | Kết quả mong đợi |
 |---|---|---|
 | 1 | Duyệt thanh trên bằng trình đọc màn hình | Đọc được nút đóng phiên, chế độ, ngữ cảnh và tiến độ/đồng hồ bằng chữ; không chỉ bằng màu/biểu tượng |
 | 2 | Duyệt `Match`/`Guess` | Mỗi lựa chọn có nhãn rõ; A–E không che nghĩa; trạng thái được chọn/đúng/sai/bị vô hiệu hóa được đọc |
 | 3 | Duyệt `Recall`/`Fill` | Đọc được “đáp án đang ẩn”, đồng hồ, gợi ý, ô nhập và kết cục sau chấm |
-| 4 | Quan sát ở cỡ chữ 200% | Nội dung quan trọng không bị cắt, chồng hoặc đẩy hành động ra ngoài màn; có thể cuộn tới mọi hành động |
 
 ## Nhóm: Kịch bản ranh giới nền tảng
 

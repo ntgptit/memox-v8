@@ -278,14 +278,14 @@ void main() {
     expect(find.text(_en.studyHomeResumeRefused), findsOneWidget);
   });
 
-  libraryTest('at twice the text size nothing overflows, each row is at '
+  libraryTest('nothing overflows, each row is at '
       'least 48 tall, and no row cuts a count (BR-STUDY-076)', (
     tester,
     env,
   ) async {
     await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
     await _newRoot(env, 'Spanish', 2);
-    await pumpLibraryScreen(tester, env, _screen(_Taps()), textScale: 2);
+    await pumpLibraryScreen(tester, env, _screen(_Taps()));
     await _settle(tester);
 
     expect(tester.takeException(), isNull);

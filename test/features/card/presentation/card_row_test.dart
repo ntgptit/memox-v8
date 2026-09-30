@@ -184,7 +184,6 @@ void main() {
           onTap: () {},
         ),
       ]),
-      textScale: 2,
     );
 
     expect(tester.takeException(), isNull);

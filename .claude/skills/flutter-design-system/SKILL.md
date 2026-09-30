@@ -101,8 +101,8 @@ rebuild on every keyboard animation frame and hardcode assumptions about what
 The four checks that catch nearly everything:
 
 1. **Small screen** — 320×568 logical. Overflow shows here first.
-2. **Large text scale** — 1.5× minimum, 2.0× ideally. Fixed-height containers
-   with text inside break here.
+2. **Large text scale** — not tested: large text is not a design target (PRODUCT.md, 2026-09-30). Text still grows and is
+   never clamped, so avoid fixed heights around text.
 3. **Keyboard open** — does the focused field stay visible, does the submit
    button stay reachable.
 4. **Landscape** — usually a scroll problem.

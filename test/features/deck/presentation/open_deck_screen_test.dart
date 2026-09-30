@@ -138,23 +138,6 @@ void main() {
     expect(find.text('Verbs'), findsOneWidget);
   });
 
-  libraryTest('the unset actions fit at twice the text size (M3-D5)', (
-    tester,
-    env,
-  ) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    await pumpLibraryScreen(
-      tester,
-      env,
-      deckScreen(deckId: words.id, onAddCard: (_) {}),
-      textScale: 2,
-    );
-
-    expect(find.text(_en.deckUnsetTitle), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('an empty sub-deck imports cards from a file (UC-TRANSFER-001)', (
     tester,
     env,
@@ -335,28 +318,6 @@ void main() {
     expect(find.text(overline.toUpperCase()), findsOneWidget);
   });
 
-  libraryTest('the summary with its donut holds at text scale 2 on a 360 '
-      'phone', (tester, env) async {
-    final korean = await env.decks.root('Korean');
-    final words = await env.decks.sub(korean.id, 'Words');
-    await insertCard(
-      env.db,
-      id: 'late',
-      deckId: words.id,
-      learnedAt: DateTime(2026, 9, 1),
-      dueAt: DateTime(2026, 9, 22),
-    );
-    await pumpLibraryScreen(
-      tester,
-      env,
-      deckScreen(deckId: korean.id),
-      textScale: 2,
-    );
-
-    expect(find.byType(MxMasteryDonut), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   libraryTest('the summary counts every sub-deck under the due filter', (
     tester,
     env,
@@ -401,7 +362,7 @@ void main() {
     expect(find.text(_en.deckDepthHeader(1).toUpperCase()), findsOneWidget);
   });
 
-  libraryTest('a 10-level path at 2x keeps the current level in view (RF4)', (
+  libraryTest('a 10-level path keeps the current level in view (RF4)', (
     tester,
     env,
   ) async {
@@ -410,12 +371,7 @@ void main() {
       DeckEntity.maxDepth,
       (level) => 'Từ vựng tiếng Hàn cấp $level',
     );
-    await pumpLibraryScreen(
-      tester,
-      env,
-      deckScreen(deckId: chain.last.id),
-      textScale: 2,
-    );
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: chain.last.id));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

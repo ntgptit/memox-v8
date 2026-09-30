@@ -168,10 +168,10 @@ void main() {
     expect(find.text('term 2'), findsOneWidget);
   });
 
-  libraryTest('at twice the text size nothing overflows and each option is '
+  libraryTest('nothing overflows and each option is '
       'at least 48 tall (C4)', (tester, env) async {
     final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+    await pumpLibraryScreen(tester, env, _screen(id));
 
     expect(tester.takeException(), isNull);
     final row = find.ancestor(
@@ -179,29 +179,6 @@ void main() {
       matching: find.byType(GestureDetector),
     );
     expect(tester.getSize(row.first).height, greaterThanOrEqualTo(48));
-  });
-
-  libraryTest('on a short phone at twice the text size a fade says more is '
-      'below, until the end is reached (Impeccable after P3)', (
-    tester,
-    env,
-  ) async {
-    final id = await _guess(env);
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-    tester.view.physicalSize = const Size(360, 560);
-    await tester.pumpAndSettle();
-
-    final fade = find.byKey(const ValueKey('study-scroll-fade'));
-    expect(fade, findsOneWidget);
-
-    await tester.dragUntilVisible(
-      find.text('elder'),
-      find.byType(CustomScrollView),
-      const Offset(0, -200),
-    );
-    await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));
-    await tester.pumpAndSettle();
-    expect(fade, findsNothing);
   });
 
   libraryTest('at normal size no fade is drawn', (tester, env) async {

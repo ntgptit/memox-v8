@@ -211,11 +211,8 @@ void main() {
     expect(find.text('Words'), findsOneWidget);
   });
 
-  libraryTest('tags and fields hold at 2x and meet the guidelines', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _host(const _Tags()), textScale: 2);
+  libraryTest('tags and fields meet the guidelines', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _host(const _Tags()));
     await tester.tap(find.text(_en.cardAddTag));
     await tester.pump();
     await tester.enterText(find.byType(EditableText), 'từ vựng tiếng Hàn');
@@ -311,16 +308,5 @@ void main() {
     await tester.tap(find.byType(CardAddDetailsWidget));
     expect(opened, 1);
     handle.dispose();
-  });
-
-  libraryTest('Add details holds at 2x', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _host(CardAddDetailsWidget(onPressed: () {})),
-      textScale: 2,
-    );
-
-    expect(tester.takeException(), isNull);
   });
 }

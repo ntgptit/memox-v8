@@ -240,14 +240,13 @@ void main() {
     expect(find.text(_en.cardTagFilterTitle), findsNothing);
   });
 
-  libraryTest('at text scale 2 in Vietnamese the sheet fits a 360 dp phone, '
+  libraryTest('in Vietnamese the sheet fits a 360 dp phone, '
       'with 48 dp targets', (tester, env) async {
     final vi = lookupAppLocalizations(const Locale('vi'));
     await pumpLibraryScreen(
       tester,
       env,
       _section(await _seed(env, extraTags: 6)),
-      textScale: 2,
       locale: const Locale('vi'),
     );
     await tester.ensureVisible(

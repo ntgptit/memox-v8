@@ -23,8 +23,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_match_board_light.png` | `study_match_board_dark.png` | — |
-Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the wrong-pair flash); `study_match_large_text_light.png` / `study_match_large_text_dark.png` (the board at large text).
-
+Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the wrong-pair flash).
 
 Not captured: the tile's `idle`/`selected`/`matched` micro-states and the
 wrong-pair flash are interactions inside `default`, not separate screen
@@ -34,7 +33,7 @@ states.
 terms on the left and its meanings on the right, in their stored order, as
 `StudyChoiceWidget` tiles. Tap a term, then a meaning; the pair is answered on that term
 through the session controller, on any pending pair of the board (BR-STUDY-049). Goldens:
-`test/features/study/presentation/goldens/study_match_{board,wrong,large_text}_*`.
+`test/features/study/presentation/goldens/study_match_{board,wrong}_*`.
 
 ## Rulings
 

@@ -32,7 +32,6 @@ Future<void> _pump(
   LibraryEnv env,
   FakeMonitoringRepository repository, {
   bool isLocal = false,
-  double textScale = 1,
   Locale locale = const Locale('en'),
 }) async {
   await pumpLibraryScreen(
@@ -40,7 +39,6 @@ Future<void> _pump(
     env,
     MonitoringDetailScreen(logId: 'a', isLocal: isLocal),
     overrides: _overrides(repository),
-    textScale: textScale,
     locale: locale,
   );
   tester.view.physicalSize = const Size(360, 4000);
@@ -456,25 +454,4 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(SelectableText), findsWidgets);
   });
-
-  for (final locale in [const Locale('en'), const Locale('vi')]) {
-    libraryTest('${locale.languageCode} at text scale 2 does not overflow', (
-      tester,
-      env,
-    ) async {
-      final repository = FakeMonitoringRepository()
-        ..servers['a'] = record(
-          'a',
-          event: 'db.slow_query.${'very_long_segment.' * 6}end',
-          status: LogStatus.fixed,
-          statusNote: 'A note that is long enough to wrap onto several lines',
-          statusChangedBy: '00000000-0000-0000-0000-0000000000ad',
-          statusChangedAt: DateTime.utc(2026, 9, 27, 9, 30, 5),
-        );
-
-      await _pump(tester, env, repository, textScale: 2, locale: locale);
-
-      expect(tester.takeException(), isNull);
-    });
-  }
 }

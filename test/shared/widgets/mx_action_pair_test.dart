@@ -74,24 +74,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('text scale 2.0 stacks a pair that fits at 1.0', (tester) async {
-    await pumpMx(
-      tester,
-      _bar(
-        MxActionPair(
-          leading: _button('Import another'),
-          trailing: _button('View cards', icon: Icons.style),
-        ),
-      ),
-      textScale: 2,
-    );
-    final first = tester.getRect(_labelled('Import another'));
-    final second = tester.getRect(_labelled('View cards'));
-
-    expect(second.top, greaterThan(first.bottom));
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('no leading: the trailing button alone, full width', (
     tester,
   ) async {

@@ -24,8 +24,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | default | `study_guess_idle_light.png` | `study_guess_idle_dark.png` | — |
-Other goldens: `study_guess_right_light.png` / `study_guess_right_dark.png` (answered right); `study_guess_wrong_light.png` / `study_guess_wrong_dark.png` (answered wrong); `study_guess_blocked_light.png` / `study_guess_blocked_dark.png` (a question that can't be shown); `study_guess_large_text_light.png` / `study_guess_large_text_dark.png` (answered at large text).
-
+Other goldens: `study_guess_right_light.png` / `study_guess_right_dark.png` (answered right); `study_guess_wrong_light.png` / `study_guess_wrong_dark.png` (answered wrong); `study_guess_blocked_light.png` / `study_guess_blocked_dark.png` (a question that can't be shown).
 
 Not captured: the pre-tap idle appearance of the five options is an
 interaction inside `default`, not a separate capture.
@@ -35,7 +34,7 @@ face ("What is this?" in flow) over five `StudyChoiceWidget` rows lettered A–E
 pick's write commits, the pick and the right option (found by card id, BR-STUDY-041)
 take their tones, the rest fade, and the outcome is announced; the turn is held for
 1200 ms or until a tap. Goldens:
-`test/features/study/presentation/goldens/study_guess_{idle,wrong,right,large_text,blocked}_*`.
+`test/features/study/presentation/goldens/study_guess_{idle,wrong,right,blocked}_*`.
 
 ## Rulings
 

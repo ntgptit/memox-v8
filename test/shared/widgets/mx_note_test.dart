@@ -44,22 +44,14 @@ void main() {
     );
   });
 
-  for (final scale in [1.0, 2.0]) {
-    testWidgets('the glyph centres on the first line at ${scale}x', (
-      tester,
-    ) async {
-      final long = List.filled(12, _rule).join(' ');
-      await pumpMx(
-        tester,
-        SizedBox(width: 328, child: MxNote(text: long)),
-        textScale: scale,
-      );
-      final firstLine = 12 * scale * 1.5;
+  testWidgets('the glyph centres on the first line', (tester) async {
+    final long = List.filled(12, _rule).join(' ');
+    await pumpMx(tester, SizedBox(width: 328, child: MxNote(text: long)));
+    const firstLine = 12 * 1.5;
 
-      expect(
-        tester.getCenter(find.byType(Icon)).dy,
-        tester.getTopLeft(find.text(long)).dy + firstLine / 2,
-      );
-    });
-  }
+    expect(
+      tester.getCenter(find.byType(Icon)).dy,
+      tester.getTopLeft(find.text(long)).dy + firstLine / 2,
+    );
+  });
 }

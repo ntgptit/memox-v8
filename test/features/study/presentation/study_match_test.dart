@@ -179,10 +179,10 @@ void main() {
     expect(find.text(_en.summaryReviewFinished), findsOneWidget);
   });
 
-  libraryTest('at twice the text size nothing overflows and each tile is at '
+  libraryTest('nothing overflows and each tile is at '
       'least 48 tall (C4)', (tester, env) async {
     final id = await _match(env);
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+    await pumpLibraryScreen(tester, env, _screen(id));
 
     expect(tester.takeException(), isNull);
     expect(
@@ -313,30 +313,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
     handle.dispose();
-  });
-
-  libraryTest('at twice the text size a long word shrinks to stay whole, a '
-      'short one does not (Impeccable after P3)', (tester, env) async {
-    final id = await _match(env);
-    await env.db.customStatement(
-      "UPDATE card SET front = 'reservationist' WHERE id = 'ST-01'",
-    );
-    await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
-
-    // Drawn size over laid-out size: below 1 is a shrink.
-    double drawnScaleOf(String text) =>
-        tester.getRect(find.text(text)).width /
-        tester.getSize(find.text(text)).width;
-    // Whole: the paragraph is at least as wide as its widest word.
-    bool isWhole(String text) {
-      final paragraph = tester.renderObject<RenderParagraph>(find.text(text));
-      return paragraph.getMinIntrinsicWidth(double.infinity) <=
-          paragraph.size.width + 0.01;
-    }
-
-    expect(drawnScaleOf('reservationist'), lessThan(1));
-    expect(isWhole('reservationist'), isTrue);
-    expect(drawnScaleOf('term 2'), 1);
   });
 
   libraryTest('at normal size no fade is drawn', (tester, env) async {

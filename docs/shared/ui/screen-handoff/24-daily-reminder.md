@@ -45,7 +45,6 @@ Built from UC-REMINDER-001:
 - **E7, a read that failed:** `MxErrorState` "Couldn't read the reminder setting" /
   "Nothing was changed. Try reading it again." / Retry, in place of every row. Golden
   `reminder_read_error_*`.
-- Large text (scale 2): golden `reminder_large_text_*`; rows wrap, nothing is cut.
 
 **Built (FE-B5):** `ReminderScreen` over `reminderStatusProvider` (the stream of
 `WatchReminderUseCase`) and `ReminderController` (Enable, Disable and Change time, each

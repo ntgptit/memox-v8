@@ -268,38 +268,6 @@ void main() {
     expect(repository.lastQuery.filter.search, 'push');
   });
 
-  for (final locale in [const Locale('en'), const Locale('vi')]) {
-    libraryTest('${locale.languageCode} at text scale 2 lays out a long event '
-        'name without overflow', (tester, env) async {
-      final repository = FakeMonitoringRepository()
-        ..autoPage = LogPage(
-          items: [
-            summary(
-              'a',
-              event: 'db.slow_query.${'very_long_segment.' * 6}end',
-              message: 'A message that is long enough to be cut at one line',
-            ),
-            summary('b', level: LogLevel.warning),
-          ],
-        );
-
-      await pumpMonitoring(
-        tester,
-        env,
-        repository,
-        textScale: 2,
-        locale: locale,
-      );
-
-      expect(tester.takeException(), isNull);
-      final title = tester.widget<Text>(
-        find.textContaining('db.slow_query.very_long').first,
-      );
-      expect(title.overflow, TextOverflow.ellipsis);
-      expect(find.byType(MxListRow), findsNWidgets(2));
-    });
-  }
-
   libraryTest('an info row has no status and a debug row its own glyph', (
     tester,
     env,

@@ -71,18 +71,11 @@ void main() {
       LibraryEnv env,
       StudyMode mode,
       String name,
-      Future<void> Function() act, {
-      double textScale = 1,
-    }) async {
+      Future<void> Function() act,
+    ) async {
       final id = await _review(env, mode);
       await withRealShadows(() async {
-        await pumpLibraryGolden(
-          tester,
-          env,
-          _screen(id),
-          brightness,
-          textScale: textScale,
-        );
+        await pumpLibraryGolden(tester, env, _screen(id), brightness);
         await tester.pumpAndSettle();
         await act();
         await _golden(tester, name, theme);
@@ -119,17 +112,6 @@ void main() {
         StudyMode.guess,
         'guess_right',
         () => pick(tester, 'đặt chỗ trước'),
-      );
-    });
-
-    libraryTest('guess, large text, $theme', (tester, env) async {
-      await shoot(
-        tester,
-        env,
-        StudyMode.guess,
-        'guess_large_text',
-        () => pick(tester, 'hóa đơn'),
-        textScale: 2,
       );
     });
 
@@ -181,17 +163,6 @@ void main() {
         // Past the tone's ease, inside the 600 ms flash.
         await tester.pump(const Duration(milliseconds: 300));
       });
-    });
-
-    libraryTest('match, large text, $theme', (tester, env) async {
-      await shoot(
-        tester,
-        env,
-        StudyMode.match,
-        'match_large_text',
-        () async {},
-        textScale: 2,
-      );
     });
   }
 }

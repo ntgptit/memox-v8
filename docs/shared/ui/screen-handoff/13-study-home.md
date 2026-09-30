@@ -30,8 +30,6 @@ snapshot. UC-STUDY-002.
 | error | `study_home_error_light.png` | `study_home_error_dark.png` | `MxErrorState` with Retry; no table or query names (BR-STUDY-077). |
 | syncRejected | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_rejected_dark.png) | (SB-U1) the sync banner, refused rows. Golden `study_home_sync_rejected_*`. |
 | syncStale | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_light.png) | ![](../../../../test/features/study/presentation/goldens/study_home_sync_stale_dark.png) | (SB-U1) the sync banner, a change waiting over a day. Golden `study_home_sync_stale_*`. |
-Other goldens: `study_home_large_text_light.png` / `study_home_large_text_dark.png` (loaded at large text).
-
 
 Every state above is built.
 
@@ -44,7 +42,7 @@ Every state above is built.
   Library root, and "Browse starter decks" the Starter Library. All navigate into the
   Library branch, as the summary's "Study this deck" does.
 - Goldens:
-  `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error,large_text}_*`.
+  `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error}_*`.
 
 ## Rulings
 
