@@ -133,6 +133,12 @@ components:
     rounded: "{rounded.md}"
     height: "48px"
     padding: "0 16px"
+  button-text:
+    textColor: "{colors.primary}"
+    typography: "{typography.button-label}"
+    rounded: "{rounded.md}"
+    height: "48px"
+    padding: "0 16px"
   button-destructive:
     backgroundColor: "{colors.error-fill}"
     textColor: "{colors.on-error-fill}"
@@ -317,7 +323,7 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 

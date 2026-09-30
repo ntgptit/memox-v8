@@ -61,6 +61,9 @@ flutter:
     # files, not its subfolders, so each folder is listed.
     - assets/templates/
     - assets/templates/en/
+    # Google's G for "Continue with Google" (account UI spec U6), rendered
+    # from the official path at 1x–4x; Flutter picks the density variant.
+    - assets/brand/
   fonts:
     # Variable font (wght axis). Weights are set through
     # AppTypography.withWeight, which moves the axis with fontWeight.

@@ -374,6 +374,57 @@ void main() {
     );
     expect(loading, idle);
   });
+  testWidgets('text tone has no fill and no edge, in primaryInk', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Skip', tone: MxButtonTone.text, onPressed: () {}),
+    );
+    final material = _material(tester);
+
+    expect(material.color?.a ?? 0, 0);
+    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
+    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+  });
+
+  testWidgets('a brand mark is painted at 18 in the icon\'s place, and '
+      'TalkBack reads the label only', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(
+        label: 'Continue with Google',
+        mark: const AssetImage('assets/brand/google_g.png'),
+        onPressed: () {},
+      ),
+    );
+    final image = find.byType(Image);
+
+    expect(tester.getSize(image), const Size.square(18));
+    expect(tester.widget<Image>(image).excludeFromSemantics, isTrue);
+    expect(find.bySemanticsLabel('Continue with Google'), findsOneWidget);
+  });
+
+  testWidgets('naturalWidth counts the brand mark and its gap', (tester) async {
+    late double plain;
+    late double marked;
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          plain = MxButton(label: 'Go', onPressed: () {}).naturalWidth(context);
+          marked = MxButton(
+            label: 'Go',
+            mark: const AssetImage('assets/brand/google_g.png'),
+            onPressed: () {},
+          ).naturalWidth(context);
+          return const SizedBox();
+        },
+      ),
+    );
+
+    expect(marked - plain, 18 + 4);
+  });
 }
 
 double _ratio(Color a, Color b) {
