@@ -35,6 +35,7 @@ colors:
   success: "#2BA88B"
   warning: "#F59E0B"
   on-warning: "#3A2A00"
+  warning-ink: "#895806"
   error-fill: "#DC2D4E"
   on-error-fill: "#FFFFFF"
   status-new: "#8C95B8"
@@ -243,7 +244,7 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 ### Semantic
 - **Mastery Green** (`mastery`, #1F8A5B; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery.
 - **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
-- **Warning Amber** (`warning`, `on-warning`): a refusal or a limit where nothing was lost.
+- **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.79:1 or more on every ground and tint), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
 - **Error** (`error`, #C02447) is the text/icon/edge role; **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
 - **Streak Orange** (`streak`): the Progress flame only.
 - **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.

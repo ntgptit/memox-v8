@@ -74,10 +74,12 @@ final class MxDerivedColors {
       ghostBorder: scheme.primary.withValues(
         alpha: isDark ? _ghostBorderDark : _ghostBorderLight,
       ),
-      // Kit-scoped (FieldMessage contract): the warning FILL fails as 12px
-      // text on light surfaces, so light inks with onWarning and dark with
-      // the amber itself.
-      warningInk: isDark ? semantic.warning : semantic.onWarning,
+      // Warning TEXT and glyphs. The amber fill fails as 12px text on light
+      // surfaces, and onWarning (the ink on an amber fill) reads as body
+      // text, so light uses the amber's hue at 28% lightness: 4.79:1 or more
+      // on every ground and tint (critique 2026-09-30 tone pass, T1). Dark
+      // inks with the amber itself.
+      warningInk: isDark ? semantic.warning : _warningInkLight,
       // Status TEXT (StatusBadge label, the workload "new" term): the
       // status colour pulled toward onSurface until it reads at 4.5:1 on
       // every ground and on its own 12% tint (library spec §7, ruling L6).
@@ -142,6 +144,7 @@ final class MxDerivedColors {
   static const double _reviewingInkDark = 0.10;
   static const double _masteredInkLight = 0.25;
   static const double _masteredInkDark = 0;
+  static const Color _warningInkLight = Color(0xFF895806);
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
   static const double _outlineEdgeDark = 0.25;

@@ -90,9 +90,34 @@ void main() {
     expect(dark.ghostBorder, isColorCloseTo(0x295265F5));
   });
 
-  test('warningInk is onWarning in light and the amber in dark (I1)', () {
-    expect(light.warningInk, MxSemanticColors.light.onWarning);
+  test('warningInk is #895806 in light and the amber in dark (critique '
+      '2026-09-30 tone pass, T1)', () {
+    expect(light.warningInk, isColorCloseTo(0xFF895806));
     expect(dark.warningInk, MxSemanticColors.dark.warning);
+  });
+
+  test('warningInk reads at 4.5:1 on every ground, the amber tint and the '
+      'warning ground (T1)', () {
+    for (final (scheme, semantic) in [
+      (AppColorSchemes.light, MxSemanticColors.light),
+      (AppColorSchemes.dark, MxSemanticColors.dark),
+    ]) {
+      final derived = MxDerivedColors.resolve(scheme, semantic);
+      for (final ground in [
+        scheme.surface,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainer,
+      ]) {
+        final tint = Color.alphaBlend(
+          semantic.warning.withValues(alpha: 0.12),
+          ground,
+        );
+        final soft = Color.alphaBlend(derived.warningSoft, ground);
+        expect(_ratio(derived.warningInk, ground), greaterThanOrEqualTo(4.5));
+        expect(_ratio(derived.warningInk, tint), greaterThanOrEqualTo(4.5));
+        expect(_ratio(derived.warningInk, soft), greaterThanOrEqualTo(4.5));
+      }
+    }
   });
 
   test('warningBorder: warning at 26% light, 32% dark (O6)', () {
@@ -101,13 +126,6 @@ void main() {
   });
 
   test('status inks reach 4.5:1 on every ground and tint (L6)', () {
-    double ratio(Color a, Color b) {
-      final la = a.computeLuminance();
-      final lb = b.computeLuminance();
-      final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-      return (hi + 0.05) / (lo + 0.05);
-    }
-
     for (final (scheme, semantic) in [
       (AppColorSchemes.light, MxSemanticColors.light),
       (AppColorSchemes.dark, MxSemanticColors.dark),
@@ -125,8 +143,8 @@ void main() {
           scheme.surfaceContainer,
         ]) {
           final tint = Color.alphaBlend(status.withValues(alpha: 0.12), ground);
-          expect(ratio(ink, ground), greaterThanOrEqualTo(4.5));
-          expect(ratio(ink, tint), greaterThanOrEqualTo(4.5));
+          expect(_ratio(ink, ground), greaterThanOrEqualTo(4.5));
+          expect(_ratio(ink, tint), greaterThanOrEqualTo(4.5));
         }
       }
     }
