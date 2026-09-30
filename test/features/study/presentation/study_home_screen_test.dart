@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:memox/core/auth/account_user.dart';
+import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/providers/study_home_provider.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
@@ -17,6 +19,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
+import '../../../support/account_harness.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -40,6 +43,24 @@ StudyHomeScreen _screen(_Taps taps) => StudyHomeScreen(
   onOpenLibrary: () => taps.library++,
   onOpenStarterDecks: () => taps.starterDecks++,
   onOpenSync: () {},
+);
+
+/// Screen 13 with the account feature's re-auth notice in its slot (P3b
+/// B5).
+StudyHomeScreen _screenWith(Widget reauthNotice) => StudyHomeScreen(
+  onOpenSession: (_) {},
+  onOpenDeck: (_) {},
+  onOpenLibrary: () {},
+  onOpenStarterDecks: () {},
+  onOpenSync: () {},
+  reauthNotice: reauthNotice,
+);
+
+const _account = AccountUser(
+  id: 'x',
+  email: 'a@example.com',
+  isAnonymous: false,
+  role: AccountRole.user,
 );
 
 Future<void> _settle(WidgetTester tester) async {
@@ -74,6 +95,31 @@ Future<void> _restingRoot(LibraryEnv env, DateTime dueAt) async {
 }
 
 void main() {
+  libraryTest('an expired sign-in takes the notice slot over sync (P3b B5)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screenWith(const Text('reauth')),
+      overrides: [authStateOf(const ReauthRequired(_account))],
+    );
+    await _settle(tester);
+
+    expect(find.text('reauth'), findsOneWidget);
+  });
+
+  libraryTest('without an expired sign-in, the slot stays empty', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _screenWith(const Text('reauth')));
+    await _settle(tester);
+
+    expect(find.text('reauth'), findsNothing);
+  });
+
   libraryTest('loaded: the Resume card, the workload hero with its four '
       'terms, and the decks in BR-STUDY-076 order (13 loaded)', (
     tester,

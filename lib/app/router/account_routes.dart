@@ -50,4 +50,8 @@ GoRoute signInRoute(GlobalKey<NavigatorState> rootNavigator) => GoRoute(
 Widget accountSettingsSection(BuildContext context) =>
     AccountSettingsSectionWidget(
       onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
+      onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
+      onSignInAgain: () => unawaited(
+        context.push(AppRoutes.settingsSignInReauth(from: AppRoutes.settings)),
+      ),
     );
