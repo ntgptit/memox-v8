@@ -17,8 +17,8 @@ sheet. UC-DECK-002 (change scheduler), UC-SRS-001 (reset learning progress).
 
 Algorithm descriptions:
 
-- **Eight boxes:** "Remembered → one box up; forgotten → back to box 1. Forgiving of long breaks. Review modes: match, guess, recall, fill."
-- **SM-2:** "Intervals adapt to how well you recall each card. You grade yourself: again, hard, good or easy. Review mode: self-assess."
+- **Eight boxes:** "Remembered moves a card up a box and forgotten sends it back to box 1; reviews use match, guess, recall or fill."
+- **SM-2:** "Intervals adapt as you grade each card again, hard, good or easy in self-assess reviews."
 
 ## States
 
@@ -58,4 +58,4 @@ Beyond the states above:
 - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxSheetActions.isConfirmLoading`), with no "Resetting…" text, as every async confirm.
 - **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) on an 8% mastery tint; over 12% the ink falls to 4.4:1.
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
-
+- **Critique 2026-09-30:** each algorithm is described in one sentence.

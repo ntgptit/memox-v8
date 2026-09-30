@@ -66,7 +66,7 @@ turns the reminder on.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.
 - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` with Hour and Minute `MxStepper`s.
 - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`.
-- The note uses `MxNote`'s default info glyph; the time button is a compact `MxButton`.
+- The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a compact `MxButton`.
 - "What it says" is built from the notification's own strings, in en and vi, so it matches what is shown.
 
 ## Accessibility

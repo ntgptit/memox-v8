@@ -73,6 +73,7 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - Paste field and header cells use the body font; the theme has no monospace role.
 - **Amends spec §5.1:** the file name shows in the chip while the wizard is open; it is never logged or stored.
 - **FE-B3 plan 1:** Import is live from the deck actions.
+- **Critique 2026-09-30:** the file helper ("importHelperBody") has a close button and stays hidden once dismissed on this device; the "mapped for you" note is an `MxNote.hint`.
 
 ## Copy
 
