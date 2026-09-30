@@ -107,6 +107,8 @@ void main() {
         scheme.surface,
         scheme.surfaceContainerLowest,
         scheme.surfaceContainer,
+        // The sheet and dialog ground.
+        scheme.surfaceContainerHigh,
       ]) {
         final tint = Color.alphaBlend(
           semantic.warning.withValues(alpha: 0.12),
@@ -116,6 +118,31 @@ void main() {
         expect(_ratio(derived.warningInk, ground), greaterThanOrEqualTo(4.5));
         expect(_ratio(derived.warningInk, tint), greaterThanOrEqualTo(4.5));
         expect(_ratio(derived.warningInk, soft), greaterThanOrEqualTo(4.5));
+      }
+    }
+  });
+
+  test('dangerInk is error pulled toward onSurface, 10% light and 30% dark '
+      '(critique 2026-09-30 tone pass, final review)', () {
+    expect(light.dangerInk, isColorCloseTo(0xFFAE2346));
+    expect(dark.dangerInk, isColorCloseTo(0xFFF7AABD));
+  });
+
+  test('dangerInk reads at 4.5:1 on the danger ground over every surface, '
+      'the sheet included', () {
+    for (final (scheme, semantic) in [
+      (AppColorSchemes.light, MxSemanticColors.light),
+      (AppColorSchemes.dark, MxSemanticColors.dark),
+    ]) {
+      final derived = MxDerivedColors.resolve(scheme, semantic);
+      for (final ground in [
+        scheme.surface,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainer,
+        scheme.surfaceContainerHigh,
+      ]) {
+        final soft = Color.alphaBlend(derived.dangerSoft, ground);
+        expect(_ratio(derived.dangerInk, soft), greaterThanOrEqualTo(4.5));
       }
     }
   });

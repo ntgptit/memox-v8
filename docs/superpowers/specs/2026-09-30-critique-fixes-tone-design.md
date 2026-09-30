@@ -106,6 +106,17 @@ Fill, Green Means Progress, and "a right answer is success, never mastery".
   `successInk` (it tinted and inked with the mastery fill). This reaches the caught-up states
   of screens 13 and 14, the import result (11) and Monitoring's empty lists (28).
 
+### 3.8 Final-review amendments (owner, 2026-09-30)
+
+- **Danger ink.** A danger banner title is text on the danger ground, and `error` there is
+  4.20:1 (light) and 4.05:1 (dark) inside a sheet. The title uses `dangerInk`: `error`
+  pulled toward `onSurface`, 10% in light (#AE2346) and 30% in dark (#F7AABD), 4.5:1 or
+  more on every surface. The glyph keeps `error` (3:1). This amends T2's "danger in
+  `error`".
+- **`MxOutcomeTile` Kept** is success (success at 8% under `successInk`, 4.53:1 on the dialog
+  ground), not mastery.
+- The gallery's "12 ready" sample uses the success tone, as screen 11 does.
+
 ## 4. Verification
 
 - A test written first for each behaviour: the `warningInk` value and its four contrast

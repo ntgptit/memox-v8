@@ -44,17 +44,21 @@ class MxInlineBanner extends StatelessWidget {
     final colors = context.colors;
     final derived = context.derivedColors;
     final styles = context.textStyles;
-    final (ground, edge, ink) = switch (tone) {
+    final (ground, edge, ink, titleInk) = switch (tone) {
       MxBannerTone.warning => (
         derived.warningSoft,
         derived.warningBorder,
         // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
         derived.warningInk,
+        derived.warningInk,
       ),
+      // The glyph needs 3:1 and keeps error; the title is text and reads in
+      // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
       MxBannerTone.danger => (
         derived.dangerSoft,
         derived.dangerBorder,
         colors.error,
+        derived.dangerInk,
       ),
     };
     final messageStyle = styles.bannerMessage(isLead: title == null);
@@ -112,7 +116,7 @@ class MxInlineBanner extends StatelessWidget {
                       if (title case final lead?) ...[
                         Text(
                           lead,
-                          style: styles.bannerTitle.copyWith(color: ink),
+                          style: styles.bannerTitle.copyWith(color: titleInk),
                         ),
                         const SizedBox(height: _titleGap),
                       ],

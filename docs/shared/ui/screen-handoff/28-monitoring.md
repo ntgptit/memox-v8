@@ -82,7 +82,7 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 ## Rulings
 
 - **ADR-018 §8, Impeccable shape 2026-09-29:** screen 28 is built from the shared widgets.
-- **Plan ruling 1, UI-base row 147:** open and fixed are `MxBadge`s, open in the warning tone and fixed in the mastery tone, each with its word; `MxStatusBadge` names a card lifecycle.
+- **Plan ruling 1, UI-base row 147:** open and fixed are `MxBadge`s, open in the warning tone and fixed in the success tone (tone pass T7; it was mastery), each with its word; `MxStatusBadge` names a card lifecycle.
 - **Plan ruling 2:** Level, Status and Category filter with toggles; only the one-choice Time uses `MxOptionRow`.
 - **Plan ruling 3:** a category shows its stored code, from `LogCategory.values`.
 - **Plan ruling 4:** the device / user filter is a sheet of two text fields, a device id and a user id.

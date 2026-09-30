@@ -59,3 +59,4 @@ Beyond the states above:
 - **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) on an 8% mastery tint; over 12% the ink falls to 4.4:1.
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
+- **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.

@@ -21,6 +21,7 @@ final class MxDerivedColors {
     required this.chromeGlass,
     required this.ghostBorder,
     required this.warningInk,
+    required this.dangerInk,
     required this.statusNewInk,
     required this.statusLearningInk,
     required this.statusReviewingInk,
@@ -76,10 +77,19 @@ final class MxDerivedColors {
       ),
       // Warning TEXT and glyphs. The amber fill fails as 12px text on light
       // surfaces, and onWarning (the ink on an amber fill) reads as body
-      // text, so light uses the amber's hue at 28% lightness: 4.79:1 or more
-      // on every ground and tint (critique 2026-09-30 tone pass, T1). Dark
+      // text, so light uses the amber's hue at 28% lightness: 4.5:1 or more
+      // on every ground and tint, the sheet included (critique 2026-09-30 tone pass, T1). Dark
       // inks with the amber itself.
       warningInk: isDark ? semantic.warning : _warningInkLight,
+      // Danger TEXT on the danger ground (a banner title). Error alone is
+      // 4.20:1 (light) and 4.05:1 (dark) on that ground inside a sheet, so
+      // it is pulled toward onSurface: 10% light, 30% dark, 4.5:1 or more on
+      // every surface (critique 2026-09-30 tone pass, final review).
+      dangerInk: _ink(
+        scheme.error,
+        scheme,
+        isDark ? _dangerInkDark : _dangerInkLight,
+      ),
       // Status TEXT (StatusBadge label, the workload "new" term): the
       // status colour pulled toward onSurface until it reads at 4.5:1 on
       // every ground and on its own 12% tint (library spec §7, ruling L6).
@@ -145,6 +155,8 @@ final class MxDerivedColors {
   static const double _masteredInkLight = 0.25;
   static const double _masteredInkDark = 0;
   static const Color _warningInkLight = Color(0xFF895806);
+  static const double _dangerInkLight = 0.10;
+  static const double _dangerInkDark = 0.30;
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
   static const double _outlineEdgeDark = 0.25;
@@ -200,6 +212,10 @@ final class MxDerivedColors {
 
   /// Warning TEXT (FieldMessage), never the warning fill.
   final Color warningInk;
+
+  /// Danger TEXT on the danger ground (an MxInlineBanner title); glyphs and
+  /// fills keep error.
+  final Color dangerInk;
 
   /// Status TEXT inks (StatusBadge label, WorkloadBreakdownLine new term),
   /// never the status dot or fill.

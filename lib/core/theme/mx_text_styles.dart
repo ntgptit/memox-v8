@@ -506,7 +506,8 @@ final class MxTextStyles {
   TextStyle get dialogBody =>
       _texts.bodyMedium!.copyWith(color: _scheme.onSurface);
 
-  /// InlineBanner title: 12/700 at line-height 1.55, onSurface.
+  /// InlineBanner title: 12/700 at line-height 1.55, onSurface; the banner
+  /// recolours it with its tone's ink (critique 2026-09-30 tone pass).
   TextStyle get bannerTitle => AppTypography.withWeight(
     _texts.labelSmall!,
     FontWeight.w700,

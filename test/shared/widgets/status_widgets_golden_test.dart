@@ -37,7 +37,7 @@ void main() {
               MxBadge(label: '23 due', isSolid: true),
               MxBadge(
                 label: '12 ready',
-                tone: MxBadgeTone.mastery,
+                tone: MxBadgeTone.success,
                 icon: AppIcons.check,
               ),
             ],

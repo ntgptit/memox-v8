@@ -208,7 +208,7 @@ void main() {
       'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
     for (final (tone, ink) in [
       (MxBannerTone.warning, derived.warningInk),
-      (MxBannerTone.danger, scheme.error),
+      (MxBannerTone.danger, derived.dangerInk),
     ]) {
       await pumpMx(
         tester,
