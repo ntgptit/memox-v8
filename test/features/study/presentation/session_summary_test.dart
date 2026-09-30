@@ -37,8 +37,8 @@ Future<void> _pump(
 );
 
 void main() {
-  libraryTest('a finished review: title, body and three stats, stated once: no '
-      'fact list repeats them (handoff 21 loaded; critique 2026-09-30, R3)', (
+  libraryTest('a finished review: the body states the count; the one tile is '
+      'wrong turns, explained (critique 2026-09-30 part 3c-1, R3)', (
     tester,
     env,
   ) async {
@@ -68,12 +68,9 @@ void main() {
         ))
           (tile.label, tile.value),
       ],
-      [
-        (_en.summaryStatReviewed, '20'),
-        (_en.summaryStatAnswered, '20'),
-        (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
-      ],
+      [(_en.summaryStatWrong, _en.summaryWrongOf(3, 23))],
     );
+    expect(find.text(_en.summaryWrongExplained), findsOneWidget);
     expect(find.byType(MxListRow), findsNothing);
     expect(find.text(_en.summaryFactsHeader.toUpperCase()), findsNothing);
 
@@ -107,6 +104,47 @@ void main() {
     expect(find.text(_en.summaryLeftEarlyLearningBody(4, 8)), findsOneWidget);
     expect(find.text(_en.summaryFactLearned), findsNothing);
     expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
+    // Answered (9) differs from the 4 learned, so it has a tile.
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          tile.label,
+      ],
+      [_en.summaryStatAnswered, _en.summaryStatWrong],
+    );
+  });
+
+  libraryTest('a clean learning session: answered equals learned, so only '
+      'wrong turns show, with no explanation at zero (critique 2026-09-30 '
+      'part 3c-1, R3)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        kind: SessionKind.learning,
+        summary: const SessionSummary(
+          cardCount: 12,
+          learnedCardCount: 12,
+          wrongTurnCount: 0,
+          answeredCardCount: 12,
+          turnCount: 12,
+          cardLimit: 20,
+        ),
+      ),
+      SummaryOutcome.learningFinished,
+    );
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          (tile.label, tile.value),
+      ],
+      [(_en.summaryStatWrong, _en.summaryWrongOf(0, 12))],
+    );
+    expect(find.text(_en.summaryWrongExplained), findsNothing);
   });
 
   libraryTest('an ended or failed session draws no stats and offers no '
@@ -141,6 +179,13 @@ void main() {
 
     expect(find.byType(MxListRow), findsNothing);
     expect(find.text(_en.summaryNoteHistory), findsOneWidget);
+    // The footer hides Study this deck here, so the copy points to Done
+    // (critique 2026-09-30 part 3c-1).
+    expect(find.text(_en.summarySchedulerChangedBody), findsOneWidget);
+    expect(
+      _en.summarySchedulerChangedBody,
+      contains('Done takes you back to the deck'),
+    );
   });
 
   libraryTest('a session that ended before its first turn draws neither '

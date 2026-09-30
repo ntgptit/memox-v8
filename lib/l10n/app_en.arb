@@ -4883,7 +4883,7 @@
   "@summarySchedulerChanged": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero title, scheduler changed (BR-STUDY-016)."
   },
-  "summarySchedulerChangedBody": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; start learning from the deck.",
+  "summarySchedulerChangedBody": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; Done takes you back to the deck to start learning.",
   "@summarySchedulerChangedBody": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, scheduler changed."
   },
@@ -4902,14 +4902,6 @@
   "summarySaveErrorBody": "An answer could not be written to this device, so the session stopped. Everything saved before that is kept; the unanswered cards are still due.",
   "@summarySaveErrorBody": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, save error."
-  },
-  "summaryStatReviewed": "Reviewed",
-  "@summaryStatReviewed": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
-  },
-  "summaryStatLearned": "Learned",
-  "@summaryStatLearned": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
   },
   "summaryStatAnswered": "Answered",
   "@summaryStatAnswered": {
@@ -4930,6 +4922,10 @@
       }
     },
     "description": "Screen handoff 21 (FE-A6 P1c): wrong turns out of all turns."
+  },
+  "summaryWrongExplained": "Wrong cards came back in later rounds.",
+  "@summaryWrongExplained": {
+    "description": "Screen 21: under the wrong-turns tile when wrong > 0; the facts card that explained it is hidden whenever the hero has stats (critique 2026-09-30 part 3c-1)."
   },
   "summaryFactsHeader": "This session",
   "@summaryFactsHeader": {

@@ -175,7 +175,9 @@ class _BodyText extends StatelessWidget {
   }
 }
 
-/// Finished, answered, wrong out of all turns (kit; FE-A6 D11).
+/// What the body does not state: answered only when it differs from the
+/// finished count the body bolds, and wrong turns with their meaning
+/// (critique 2026-09-30 part 3c-1, R3; amends FE-A6 D17's three stats).
 class _Stats extends StatelessWidget {
   const _Stats({required this.view, required this.summary});
 
@@ -186,33 +188,39 @@ class _Stats extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final finished = summaryFinishedCount(view, summary);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.control,
+    final answered = summary.answeredCardCount;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.micro,
       children: [
-        Expanded(
-          child: MxStatTile(
-            value: l10n.studyCount(finished),
-            label: view.kind == SessionKind.learning
-                ? l10n.summaryStatLearned
-                : l10n.summaryStatReviewed,
-          ),
-        ),
-        Expanded(
-          child: MxStatTile(
-            value: l10n.studyCount(summary.answeredCardCount),
-            label: l10n.summaryStatAnswered,
-          ),
-        ),
-        Expanded(
-          child: MxStatTile(
-            value: l10n.summaryWrongOf(
-              summary.wrongTurnCount,
-              summary.turnCount,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.control,
+          children: [
+            if (answered != finished)
+              Expanded(
+                child: MxStatTile(
+                  value: l10n.studyCount(answered),
+                  label: l10n.summaryStatAnswered,
+                ),
+              ),
+            Expanded(
+              child: MxStatTile(
+                value: l10n.summaryWrongOf(
+                  summary.wrongTurnCount,
+                  summary.turnCount,
+                ),
+                label: l10n.summaryStatWrong,
+              ),
             ),
-            label: l10n.summaryStatWrong,
-          ),
+          ],
         ),
+        if (summary.wrongTurnCount > 0)
+          Text(
+            l10n.summaryWrongExplained,
+            textAlign: TextAlign.center,
+            style: context.textStyles.emptyBody,
+          ),
       ],
     );
   }
