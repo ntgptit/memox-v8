@@ -461,6 +461,31 @@ scale 2.0 in en and vi, dark theme, TalkBack labels (the code field reads
 | Goldens | after the shape | every new screen, light and dark, with a golden-compare page |
 | Device | recorded in this spec | after SB-A4: real Google, real OTP mail, merge across two emulators, killed mid-merge, delete, offline then online |
 
+### 9.1 Device check (after SB-A4)
+
+Two Android devices or emulators, A and B, on a build with the three defines
+and signed by a key registered in SB-A4 (`supabase/README.md`, "Sign-in
+setup"). Each starts fresh (clear the app's data) with a deck or two of its
+own. The dashboard's **Authentication → Users** and **Table Editor →
+`profiles`** show the server side. Record each row's date, result and any
+note; a failure becomes a WBS row before it is fixed. This check closes P3
+and P4.
+
+| # | Steps | Expected | Result |
+|---|---|---|---|
+| D1 | A: Welcome → Sign in → an email with no account → the code from the mail | The mail arrives through the custom SMTP within a minute and shows the code; A is signed in; Authentication → Users shows the **same user id** as before, now with the email; A's decks stay | — |
+| D2 | A: Settings → Account → Switch account → Google → a Google account with no MemoX account | The account picker opens; A is signed in as that Google account; no nonce or client ID error | — |
+| D3 | B (anonymous, own decks): Sign in with A's email → the code | The merge sheet opens; "Merge into the account" keeps B's decks and adds the account's; after a sync A shows B's decks too; B's anonymous user is gone from Users | — |
+| D4 | Repeat D3 on B with "Discard this phone's data" (clear B first) | B's own decks are removed; B shows only the account's decks | — |
+| D5 | Repeat D3, and force-stop B while the transition layer shows | On reopen the layer resumes and ends in the same state as D3; no duplicated decks | — |
+| D6 | B, online: Account → Sign out | The changes are sent first; B returns to a new anonymous user with no decks; signing in again brings them back | — |
+| D7 | B, flight mode, edit a card, then Sign out | The dialog names the unsent changes that will be lost; cancelling keeps everything | — |
+| D8 | A signed in: in the SQL Editor, `delete from auth.sessions where user_id = '<A's id>';`, then reopen A after its access token expires (at most an hour) | Settings shows the re-auth banner and Study home the notice; "Sign in" with the same email returns to where it started; nothing is lost | — |
+| D9 | Android Back on 30, 31, 32, the merge sheet and the transition layer | Back leaves 30–32; on the sheet it cancels, merging and discarding nothing; the layer ignores Back while it runs | — |
+| D10 | An admin on A: Settings → Admin → Users; make B's account an admin, then a user; try to demote yourself as the only admin from B | The list shows both accounts; the badge changes and B's Settings shows or hides Admin after a restart; the last admin is refused with the in-sheet banner | — |
+| D11 | A second account, online: Account → Delete account | The account and its rows are gone from the dashboard; the device returns to a fresh anonymous user. Offline, the confirm is disabled and says why | — |
+| D12 | A, flight mode: Welcome → Sign in → Send code; then back online | Offline says so and nothing changes; online, sign-in and sync resume | — |
+
 ## 10. Risks
 
 - **Supabase's built-in mailer** sends only a few emails an hour; OTP needs

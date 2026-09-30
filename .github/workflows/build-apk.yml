@@ -49,13 +49,16 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          # Native Google sign-in (auth spec O11, supabase/README.md SB-A4);
+          # empty leaves email sign-in only.
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
         run: |
           set -euo pipefail
           if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_PUBLISHABLE_KEY" ]]; then
             echo "::warning::SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is not set; this APK builds without sync."
           fi
           defines="$RUNNER_TEMP/dart-defines.json"
-          jq -n '{SUPABASE_URL: env.SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY: env.SUPABASE_PUBLISHABLE_KEY}' > "$defines"
+          jq -n '{SUPABASE_URL: env.SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY: env.SUPABASE_PUBLISHABLE_KEY, GOOGLE_WEB_CLIENT_ID: env.GOOGLE_WEB_CLIENT_ID}' > "$defines"
           flutter build apk --release --dart-define-from-file="$defines"
           sha8="${GITHUB_SHA:0:8}"
           name="memox-${GITHUB_RUN_NUMBER}-${sha8}.apk"
