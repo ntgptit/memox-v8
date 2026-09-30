@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/account/di/user_role_repository_provider.dart';
 import 'package:memox/features/account/presentation/screens/users_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -160,6 +161,9 @@ void main() {
     await pump(tester, env);
 
     expect(find.text(_en.usersOfflineTitle), findsOneWidget);
+    // A network failure keeps the cloud-off glyph; alert is the default
+    // for every other failure (critique 2026-09-30 part 1).
+    expect(find.byIcon(AppIcons.offline), findsOneWidget);
     await tester.tap(find.text(_en.commonRetry));
     await _settle(tester);
     expect(find.text('ann@example.com'), findsOneWidget);
