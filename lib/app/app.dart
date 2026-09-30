@@ -6,12 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/font_license.dart';
+import 'package:memox/app/router/account_redirect.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_layer_host_widget.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
@@ -49,9 +52,20 @@ class MemoxApp extends ConsumerStatefulWidget {
 }
 
 class _MemoxAppState extends ConsumerState<MemoxApp> {
+  /// Runs the router's account rules again when their inputs change.
+  final _accountRoutes = AccountRouteRefresh();
+
   // Owned here, not at top level, so each app instance starts at its initial
   // location and a disposed app releases its router.
-  late final GoRouter _router = buildAppRouter(hasGallery: widget.hasGallery);
+  late final GoRouter _router = buildAppRouter(
+    hasGallery: widget.hasGallery,
+    refreshListenable: _accountRoutes,
+    redirect: (context, state) => accountRedirect(
+      state.uri,
+      isWelcomeDue: ref.read(welcomeDueProvider),
+      hasAccount: ref.read(currentAccountProvider)?.isAnonymous == false,
+    ),
+  );
 
   /// A resume after a day away purges what expired meanwhile (UC-TRASH-001
   /// A4); a resume and a pause are logged (ADR-018).
@@ -91,6 +105,11 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     );
     _followReminderTaps();
     unawaited(_reconcileReminder());
+    // Account UI spec §4: the welcome flag and the account drive the
+    // redirect.
+    ref
+      ..listenManual(welcomeDueProvider, (_, _) => _accountRoutes.ping())
+      ..listenManual(currentAccountProvider, (_, _) => _accountRoutes.ping());
   }
 
   /// A tap on the reminder opens Study Home, whether the app was running or
@@ -153,6 +172,7 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   void dispose() {
     _lifecycle.dispose();
     unawaited(_reminderTaps?.cancel());
+    _accountRoutes.dispose();
     _router.dispose();
     super.dispose();
   }
