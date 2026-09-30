@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -141,6 +142,17 @@ void main() {
 
     expect(find.text(_en.studyHomeDueTitle(5)), findsOneWidget);
     expect(find.textContaining(_en.studyHomeAcrossDecks(2)), findsOneWidget);
+    // A summary, not a door: no hero ground (critique 2026-09-30 part 3c-1,
+    // R2; DESIGN.md: a hero leads somewhere tappable).
+    final block = tester.widget<MxCard>(
+      find
+          .descendant(
+            of: find.byType(StudyHomeWorkloadWidget),
+            matching: find.byType(MxCard),
+          )
+          .first,
+    );
+    expect(block.isHero, isFalse);
     // Critique 2026-09-30 (BR-STUDY-068): the hero states only what is due,
     // overdue and today; new and scheduled cards are in the deck rows.
     final hero = tester.widget<MxWorkloadBreakdownLine>(

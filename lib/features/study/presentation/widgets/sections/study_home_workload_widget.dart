@@ -11,9 +11,10 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
-/// Screen 13's workload hero: the cards due across the library, stated as
-/// Overdue · Due today · New · Scheduled (BR-STUDY-068, FE-A8 S1). A summary,
-/// not a start: sessions start per deck. With nothing to do it is the calm
+/// Screen 13's workload card: the cards due across the library, stated as
+/// the Due total over overdue · today (BR-STUDY-068, FE-A8 S1). A summary,
+/// not a start: sessions start per deck, so it is no hero (critique
+/// 2026-09-30 part 3c-1). With nothing to do it is the calm
 /// caught-up card, neither an error nor an achievement (BR-STUDY-008, S2).
 class StudyHomeWorkloadWidget extends StatelessWidget {
   const StudyHomeWorkloadWidget({
@@ -34,8 +35,9 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     final l10n = context.l10n;
     final styles = context.textStyles;
     final ink = context.derivedColors.primaryInk;
+    // A summary card, not a hero: sessions start per deck, so it leads
+    // nowhere (critique 2026-09-30 part 3c-1, R2).
     return MxCard(
-      isHero: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.micro,
