@@ -13,8 +13,7 @@ import 'library_harness.dart';
 
 /// A widget test over the library backend and one device of [AuthWorld],
 /// started on its first anonymous user. The tree goes before the world's
-/// database closes, so no stream outlives the test. If `start()` ever
-/// stalls under the widget clock, run it in `tester.runAsync`.
+/// database closes, so no stream outlives the test.
 void accountTest(
   String description,
   Future<void> Function(WidgetTester tester, LibraryEnv env, AuthWorld world)
@@ -30,7 +29,9 @@ void accountTest(
     } finally {
       await tester.pumpWidget(const SizedBox());
       await tester.pump(Duration.zero);
-      await world.close();
+      // Its database and coordinator close on the real clock, not the
+      // widget test's.
+      await tester.runAsync(world.close);
     }
   });
 }
