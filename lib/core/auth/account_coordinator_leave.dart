@@ -59,6 +59,9 @@ extension AccountLeaving on AccountCoordinator {
       ReauthRequired(:final last) => last,
       _ => throw StateError('Only a refused sign-in continues without it'),
     };
+    // A Google account picked for the refused one is not the new user's
+    // (P3b final review I1).
+    _pendingGoogle = null;
     return _begin(
       _newTransition(
         TransitionKind.clearToAnon,

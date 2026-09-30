@@ -127,7 +127,11 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
       confirmLabel: l10n.accountContinue,
       isDestructive: true,
     );
-    if (!isSure || !mounted) return;
+    if (!isSure) {
+      if (isGoogle) _controller.forgetPickedGoogle();
+      return;
+    }
+    if (!mounted) return;
     if (isGoogle) return _google(confirmedLoss: true);
     return _send(confirmedLoss: true);
   }

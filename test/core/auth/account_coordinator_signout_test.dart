@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/account_user.dart';
+import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
 
@@ -97,6 +98,50 @@ void main() {
     await world.coordinator.verifyCode('y@example.com', code);
 
     expect((world.state as Ready).user.email, 'y@example.com');
+  });
+
+  test('a Google account refused for its loss is not kept past continuing '
+      'without an account (final review I1)', () async {
+    await reauthRequired();
+    world.gateway.google = const GoogleCredential(
+      idToken: 'other',
+      email: 'other@example.com',
+    );
+    await expectLater(
+      world.coordinator.continueWithGoogle(),
+      throwsA(isA<UnsentChangesFailure>()),
+    );
+
+    await world.coordinator.continueWithoutAccount();
+    world.gateway.google = const GoogleCredential(
+      idToken: 'fresh',
+      email: 'fresh@example.com',
+    );
+    await world.coordinator.continueWithGoogle();
+
+    expect((world.state as Ready).user.email, 'fresh@example.com');
+  });
+
+  test('a Google account refused for its loss can be forgotten, so the '
+      'picker shows again (final review I1)', () async {
+    await reauthRequired();
+    world.gateway.google = const GoogleCredential(
+      idToken: 'other',
+      email: 'other@example.com',
+    );
+    await expectLater(
+      world.coordinator.continueWithGoogle(),
+      throwsA(isA<UnsentChangesFailure>()),
+    );
+
+    world.coordinator.forgetPickedGoogle();
+    world.gateway.google = const GoogleCredential(
+      idToken: 'same',
+      email: xEmail,
+    );
+    await world.coordinator.continueWithGoogle();
+
+    expect((world.state as Ready).user.email, xEmail);
   });
 
   test(

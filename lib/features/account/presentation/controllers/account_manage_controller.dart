@@ -38,6 +38,10 @@ class AccountManageController extends _$AccountManageController {
     return ref.read(syncControlProvider).pendingCount();
   }
 
+  /// The changes not sent yet: what continuing without an account loses
+  /// (P3b final review I2).
+  Future<int> unsentChanges() => ref.read(syncControlProvider).pendingCount();
+
   /// A deletion needs the network (spec §9 B6).
   Future<bool> canDelete() => ref.read(networkStatusProvider).isOnline;
 

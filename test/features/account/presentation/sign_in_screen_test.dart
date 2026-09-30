@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
@@ -195,6 +196,55 @@ void main() {
       await tester.tap(find.widgetWithText(MxButton, _en.accountContinue));
       await _settle(tester);
       expect(codesSent, ['b@example.com']);
+    });
+
+    accountTest('a cancelled loss forgets the Google account, so the next '
+        'press picks again (final review I1)', (tester, env, world) async {
+      await refuseSession(world);
+      world.gateway.google = const GoogleCredential(
+        idToken: 'other',
+        email: 'other@example.com',
+      );
+      await pumpLibraryScreen(
+        tester,
+        env,
+        reauth(),
+        overrides: accountOverrides(world),
+      );
+      await _settle(tester);
+
+      await tester.tap(find.text(_en.accountContinueGoogle));
+      await _settle(tester);
+      expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
+      await tester.tap(find.text(_en.commonCancel));
+      await _settle(tester);
+
+      world.gateway.google = const GoogleCredential(
+        idToken: 'same',
+        email: 'a@example.com',
+      );
+      await tester.tap(find.text(_en.accountContinueGoogle));
+      await _settle(tester);
+
+      expect(find.text(_en.accountUnsentTitle(2)), findsNothing);
+      expect(signIns, 1);
+    });
+
+    accountTest('Continue without an account names the changes it loses '
+        '(final review I2)', (tester, env, world) async {
+      await refuseSession(world);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        reauth(),
+        overrides: accountOverrides(world),
+      );
+      await _settle(tester);
+
+      await tester.tap(find.text(_en.accountContinueWithout));
+      await _settle(tester);
+
+      expect(find.text(_en.accountUnsentBody(2)), findsOneWidget);
     });
 
     accountTest('Continue without an account asks, then leaves the account', (

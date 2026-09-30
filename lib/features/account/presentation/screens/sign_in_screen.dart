@@ -17,6 +17,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
@@ -103,11 +104,21 @@ class SignInScreen extends ConsumerWidget {
   Future<void> _leave(BuildContext context, WidgetRef ref) async {
     final controller = ref.read(accountManageControllerProvider.notifier);
     final email = ref.read(deviceAccountProvider)?.email ?? '';
+    final unsent = await controller.unsentChanges();
+    if (!context.mounted) return;
     final l10n = context.l10n;
     final isSure = await confirmAccountStep(
       context,
       title: l10n.accountWithoutTitle,
       body: l10n.accountWithoutBody(email),
+      // The refused account cannot send them: they go with it (final
+      // review I2), named as the merge sheet names a discard.
+      note: unsent == 0
+          ? null
+          : MxInlineBanner(
+              tone: MxBannerTone.danger,
+              message: l10n.accountUnsentBody(unsent),
+            ),
       confirmLabel: l10n.accountContinueWithout,
       isDestructive: true,
     );

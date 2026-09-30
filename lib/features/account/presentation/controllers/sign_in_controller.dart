@@ -21,6 +21,11 @@ class SignInController extends _$SignInController {
         (accounts) => accounts.continueWithGoogle(confirmedLoss: confirmedLoss),
       );
 
+  /// The loss was declined: the Google account picked for it is dropped
+  /// (P3b final review I1).
+  void forgetPickedGoogle() =>
+      ref.read(accountCoordinatorProvider)?.forgetPickedGoogle();
+
   /// A text that is not an address is refused here, before anything is
   /// sent.
   Future<SignInOutcome> sendCode(
