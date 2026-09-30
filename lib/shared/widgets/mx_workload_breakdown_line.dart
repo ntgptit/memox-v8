@@ -118,19 +118,23 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
         (scheduledCount, label, muted, null),
     ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();
     if (hasIcons) return _GlyphStatement(terms: terms, fallback: fallback);
+    // Only the Scheduled term has no glyph. Without an overdue, today or new
+    // term the fallback still says nothing is due, and Scheduled follows it
+    // (critique 2026-09-30 part 3b review).
+    final isFallbackShown = !terms.any((term) => term.$4 != null);
     return Text.rich(
       TextSpan(
         style: styles.workloadText,
         children: [
+          if (isFallbackShown) TextSpan(text: fallback),
           for (final (index, (count, label, ink, _)) in terms.indexed) ...[
-            if (index > 0)
+            if (index > 0 || isFallbackShown)
               TextSpan(text: canWrap ? _gluedSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
               style: count > 0 ? styles.workloadTerm(ink) : styles.workloadText,
             ),
           ],
-          if (terms.isEmpty) TextSpan(text: fallback),
           if (suffix case final clause?) ...[
             const TextSpan(text: _space),
             TextSpan(text: clause),

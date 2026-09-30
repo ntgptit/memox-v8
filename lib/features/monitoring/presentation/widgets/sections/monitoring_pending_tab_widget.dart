@@ -39,7 +39,8 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     ];
     return Column(
       children: [
-        if (state.logs.hasValue)
+        // Only while logs wait: an empty buffer says so below.
+        if (state.logs.value case final logs? when logs.total > 0)
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.gutter,

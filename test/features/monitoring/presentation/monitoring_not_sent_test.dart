@@ -88,10 +88,14 @@ void main() {
     repository.watches.single.feed.add(const PendingLogs(items: [], total: 0));
     await settleMonitoring(tester);
     expect(find.text('Nothing waiting'), findsOneWidget);
+    // An empty buffer has no logs waiting: the note would contradict it
+    // (critique 2026-09-30 part 3b review).
+    expect(find.textContaining('These logs wait'), findsNothing);
 
     repository.watches.single.feed.add(const PendingLogs(items: [], total: 4));
     await settleMonitoring(tester);
     expect(find.text('No logs at these levels'), findsOneWidget);
+    expect(find.textContaining('These logs wait'), findsOneWidget);
   });
 
   libraryTest('switching tabs keeps the pages of the server tab', (

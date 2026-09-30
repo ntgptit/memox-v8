@@ -147,6 +147,27 @@ void main() {
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
   });
 
+  testWidgets('with only scheduled cards the line still says nothing is '
+      'due, then the scheduled term (critique 2026-09-30 part 3b review)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxWorkloadBreakdownLine(
+        overdueCount: 0,
+        todayCount: 0,
+        newCount: 0,
+        scheduledCount: 3,
+        overdueLabel: (n) => '$n overdue',
+        todayLabel: (n) => '$n today',
+        newLabel: (n) => '$n new',
+        scheduledLabel: (n) => '$n scheduled',
+        fallback: '12 cards · nothing due',
+      ),
+    );
+    expect(_plain(tester), '12 cards · nothing due · 3 scheduled');
+  });
+
   testWidgets('a hero line wraps instead of cutting its suffix (FE-A8, kit '
       'hero)', (tester) async {
     await pumpMx(
