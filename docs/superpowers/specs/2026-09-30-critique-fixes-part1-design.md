@@ -1,6 +1,6 @@
 # Whole-app critique 2026-09-30 (31/40), part 1: shared components and the six Majors — design
 
-Status: approved in conversation 2026-09-30, written spec pending review ·
+Status: approved 2026-09-30 ·
 Path: architectural (shared widget APIs, one new provider) · Owner rulings 2026-09-30 (§3): R1–R6
 
 ## 1. Intent
