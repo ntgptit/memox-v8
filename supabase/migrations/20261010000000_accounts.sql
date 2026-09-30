@@ -120,3 +120,79 @@ $$;
 revoke all on function public.me() from public, anon, authenticated;
 grant execute on function public.me() to authenticated;
 revoke all on all functions in schema private from public, anon, authenticated;
+
+-- Roles are changed one at a time, so two admins demoting each other cannot leave none.
+create function private.lock_roles() returns void
+language sql set search_path = '' as $$
+  select pg_advisory_xact_lock(hashtext('public.profiles.role'))
+$$;
+
+create function public.role_list(p_query text, p_after text) returns jsonb
+language plpgsql stable security definer set search_path = '' as $$
+declare
+  v_limit constant integer := 50;
+  v_items jsonb;
+  v_next text;
+begin
+  if not private.is_admin() then
+    raise exception 'FORBIDDEN';
+  end if;
+  with page as (
+    select u.id, u.email, p.role, u.created_at, u.last_sign_in_at,
+           row_number() over (order by u.email) as n
+    from auth.users u join public.profiles p on p.id = u.id
+    where not u.is_anonymous and u.email is not null
+      and (coalesce(p_query, '') = '' or strpos(lower(u.email), lower(p_query)) > 0)
+      and (p_after is null or u.email > p_after)
+    order by u.email
+    limit v_limit + 1
+  )
+  select coalesce(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'role', role,
+           'createdAt', private.wire_time(created_at), 'lastSignInAt', private.wire_time(last_sign_in_at))
+           order by email) filter (where n <= v_limit), '[]'),
+         case when count(*) > v_limit then max(email) filter (where n = v_limit) end
+  into v_items, v_next
+  from page;
+  return jsonb_build_object('items', v_items, 'next', v_next);
+end
+$$;
+
+create function public.role_set(p_user uuid, p_role text) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_anonymous boolean;
+  v_current text;
+begin
+  if not private.is_admin() then
+    raise exception 'FORBIDDEN';
+  end if;
+  if p_role is null or p_role not in ('user', 'admin') then
+    raise exception 'INVALID_ROLE';
+  end if;
+  perform private.lock_roles();
+  if not private.is_admin() then  -- demoted while waiting for the lock
+    raise exception 'FORBIDDEN';
+  end if;
+  select u.is_anonymous, p.role into v_anonymous, v_current
+  from auth.users u join public.profiles p on p.id = u.id
+  where u.id = p_user;
+  if not found then
+    raise exception 'NOT_FOUND';
+  end if;
+  if p_role = 'admin' and v_anonymous then
+    raise exception 'ANONYMOUS_USER';
+  end if;
+  if v_current = 'admin' and p_role = 'user'
+     and (select count(*) from public.profiles where role = 'admin') <= 1 then
+    raise exception 'LAST_ADMIN';
+  end if;
+  update public.profiles
+  set role = p_role, role_changed_by = auth.uid(), role_changed_at = now(), updated_at = now()
+  where id = p_user;
+  return jsonb_build_object('id', p_user, 'role', p_role);
+end
+$$;
+revoke all on function public.role_list(text, text), public.role_set(uuid, text)
+  from public, anon, authenticated;
+grant execute on function public.role_list(text, text), public.role_set(uuid, text) to authenticated;
+revoke all on all functions in schema private from public, anon, authenticated;
