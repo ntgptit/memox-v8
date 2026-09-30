@@ -74,6 +74,35 @@ void main() {
 
     await expectLater(control.pushPending(), throwsA(isA<OfflineFailure>()));
   });
+
+  test(
+    'I2: a row the server refused is still unsent; pushing all says so',
+    () async {
+      final db = openTestDatabase();
+      addTearDown(db.close);
+      final store = SyncStore(db);
+      final server = FakeSyncServer()
+        ..rejectNext['tag/t'] = 'VALIDATION_FAILED';
+      final control = AppSyncControl(
+        scheduler: null,
+        coordinator: SyncCoordinator(
+          api: server,
+          store: store,
+          adapters: [TagSyncAdapter(db, store)],
+        ),
+        store: store,
+      );
+      await db.customStatement(
+        "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t', 'T', 't', 0)",
+      );
+
+      await expectLater(
+        control.pushPending(),
+        throwsA(isA<UnsentChangesFailure>().having((f) => f.count, 'count', 1)),
+      );
+      expect(await control.pendingCount(), 1);
+    },
+  );
 }
 
 class _OfflineApi extends FakeSyncServer {

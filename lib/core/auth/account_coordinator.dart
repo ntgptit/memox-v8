@@ -39,6 +39,7 @@ class AccountCoordinator {
     this._newOpId = newId,
     this._now = DateTime.now,
     this._logger,
+    this._retryDelay = defaultAccountRetryDelay,
   });
 
   final AuthGateway _gateway;
@@ -53,6 +54,9 @@ class AccountCoordinator {
   final String Function() _newOpId;
   final DateTime Function() _now;
   final AppLogger? _logger;
+  final Duration Function(int attempt) _retryDelay;
+  Timer? _retryTimer;
+  var _retries = 0;
 
   AppLogger get _log => _logger ?? appLogger;
 
@@ -114,6 +118,13 @@ class AccountCoordinator {
         _gateway.userIds.listen(
           (userId) =>
               _background('session_event_failed', () => _onUserId(userId)),
+          // GoTrue reports a failed refresh, offline for one, on this stream
+          // (final review I3). The next event or call tells what it meant.
+          onError: (Object error) => _log.info(
+            'auth.session_event_error',
+            category: LogCategory.state,
+            message: '$error',
+          ),
         ),
       );
     final pending = await _store.transition();
@@ -144,6 +155,7 @@ class AccountCoordinator {
   }
 
   Future<void> dispose() async {
+    _retryTimer?.cancel();
     await Future.wait([
       for (final subscription in _subscriptions) subscription.cancel(),
     ]);
@@ -155,17 +167,29 @@ class AccountCoordinator {
 
   Future<void> _settle() async {
     final userId = _gateway.currentUserId; // R1
+    final last = await _store.lastKnown();
     if (userId != null) {
-      final last = await _store.lastKnown();
       if (last != null && last.id != userId) return _adopt(last, userId);
       return _validate(); // #2, #5
     }
+    // No session, yet the device's data belongs to an account: its session
+    // was refused or lost, never a fresh start (final review C1).
+    if (last != null) return _lost(sessionInvalid: true);
     if (!await _network.isOnline) return _emit(const LocalOnly()); // #3
     _emit(const Bootstrapping());
     try {
       await _gateway.signInAnonymously(); // #6
     } on OfflineFailure {
       return _emit(const LocalOnly()); // #7
+    } on Failure catch (error, stackTrace) {
+      _log.warning(
+        'auth.bootstrap_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      _emit(const LocalOnly());
+      return _scheduleRetry();
     }
     return _validate();
   }
@@ -176,6 +200,8 @@ class AccountCoordinator {
     try {
       final me = await _api.me();
       await _store.saveLastKnown(me, _now());
+      _retryTimer?.cancel();
+      _retries = 0;
       _emit(Ready(me));
       _sync.resume(); // #9
       _log.info(
@@ -189,7 +215,27 @@ class AccountCoordinator {
       return _lost(sessionInvalid: true);
     } on ProfileGoneFailure {
       return _lost(sessionInvalid: false);
+    } on Failure catch (error, stackTrace) {
+      // A server error of its own: stays Validating and tries again later
+      // (final review I5).
+      _log.warning(
+        'auth.validate_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+      _scheduleRetry();
     }
+  }
+
+  /// Tries a refused start again after a delay; a reconnect or a Retry may
+  /// come first.
+  void _scheduleRetry() {
+    _retryTimer?.cancel();
+    _retryTimer = Timer(
+      _retryDelay(_retries++),
+      () => _background('retry_failed', _resume),
+    );
   }
 
   /// The session is refused (#10, #13, #14).
@@ -389,4 +435,10 @@ class AccountCoordinator {
     _state = state;
     if (!_states.isClosed) _states.add(state);
   }
+}
+
+/// 30 s, doubling up to 5 minutes.
+Duration defaultAccountRetryDelay(int attempt) {
+  final seconds = 30 * (1 << attempt.clamp(0, 4));
+  return Duration(seconds: seconds > 300 ? 300 : seconds);
 }

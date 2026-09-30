@@ -127,6 +127,14 @@ extension AccountSwitching on AccountCoordinator {
   /// replaces it with B's. A refused sign-in changes nothing.
   Future<void> _signInTarget(Future<void> Function() signIn) async {
     final t = (await _store.transition())!;
+    // The reset at #27 assumes the source was sent (and, for a merge,
+    // claimed) first (final review I6).
+    final sourceReady = t.merges
+        ? !t.stage.isBefore(TransitionStage.claimed)
+        : !t.stage.isBefore(TransitionStage.sourcePushed);
+    if (!sourceReady) {
+      throw StateError('The source is not sent yet: retry or cancel first');
+    }
     _liveOpId = t.opId;
     final source = t.sourceUserId;
     if (t.merges &&

@@ -43,11 +43,20 @@ class AppSyncControl implements SyncControl {
   @override
   void resume() => _scheduler?.resume();
 
+  /// The outbox and the rows the server refused without a copy of its own:
+  /// both exist on this device only (sync status spec §4, final review I2).
   @override
-  Future<int> pendingCount() => _store.pendingCount();
+  Future<int> pendingCount() async =>
+      await _store.pendingCount() + (await _store.rejections()).length;
 
+  /// Throws [UnsentChangesFailure] when rows are still unsent after the
+  /// push: refused ones, or ones the server did not answer.
   @override
-  Future<void> pushPending() => _mapped(_coordinator.pushAll);
+  Future<void> pushPending() async {
+    await _mapped(_coordinator.pushAll);
+    final left = await pendingCount();
+    if (left > 0) throw UnsentChangesFailure(count: left);
+  }
 
   @override
   Future<void> pullAll() => _mapped(_coordinator.pullAll);

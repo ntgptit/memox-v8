@@ -122,6 +122,11 @@ class FakeAuthGateway implements AuthGateway {
     _set(null);
   }
 
+  /// The SDK's auth stream reports an error, as GoTrue does for a token
+  /// refresh that fails offline (final review I3).
+  void emitError() =>
+      _ids.addError(const OfflineFailure(cause: 'refresh failed offline'));
+
   /// The SDK lost its session without telling the server (a cleared app
   /// store, a kill mid-write): the refresh tokens stay valid.
   void forgetSession() => _set(null);
@@ -242,6 +247,9 @@ class FakeAccountApi implements AccountApi {
   KillSwitch? kill;
   var meCalls = 0;
 
+  /// How many next `me()` calls the server answers with an error of its own.
+  var serverFailuresOnMe = 0;
+
   FakeUser _caller() {
     final id = gateway.currentUserId;
     if (id == null) throw const SessionInvalidFailure();
@@ -253,6 +261,10 @@ class FakeAccountApi implements AccountApi {
     kill?.step();
     server.checkOnline();
     meCalls++;
+    if (serverFailuresOnMe > 0) {
+      serverFailuresOnMe--;
+      throw const ServerFailure(cause: 'fake 5xx');
+    }
     final user = _caller();
     return AccountUser(
       id: user.id,

@@ -9,6 +9,7 @@ import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/database/app_database.dart' hide AccountTransition;
 import 'package:memox/core/database/local_data_reset.dart';
 import 'package:memox/core/database/mutation_gate.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/network/network_status.dart';
 import 'package:memox/core/sync/sync_control.dart';
@@ -48,6 +49,9 @@ class FakeDevice {
   String? owner;
   var rows = 0;
   var pending = 0;
+
+  /// Rows the server refused without a copy of its own: they exist only here.
+  var refused = 0;
   final pushes = <({String? signedIn, String? owner})>[];
   final pulls = <String?>[];
   var resets = 0;
@@ -74,7 +78,7 @@ class FakeSyncControl implements SyncControl {
   }
 
   @override
-  Future<int> pendingCount() async => device.pending;
+  Future<int> pendingCount() async => device.pending + device.refused;
 
   @override
   Future<void> pushPending() async {
@@ -82,6 +86,9 @@ class FakeSyncControl implements SyncControl {
     server.checkOnline();
     device.pushes.add((signedIn: gateway.currentUserId, owner: device.owner));
     device.pending = 0;
+    if (device.refused > 0) {
+      throw UnsentChangesFailure(count: device.refused);
+    }
   }
 
   @override
@@ -115,7 +122,8 @@ class FakeLocalDataReset implements LocalDataReset {
       ..resets += 1
       ..owner = null
       ..rows = 0
-      ..pending = 0;
+      ..pending = 0
+      ..refused = 0;
   }
 }
 
@@ -225,6 +233,7 @@ class AuthWorld {
       network: network,
       flushLogs: () async => logFlushes++,
       newOpId: () => 'op-${_opIds++}',
+      retryDelay: (_) => Duration.zero,
       logger: AppLogger(sinks: const []),
     );
     coordinator.notices.listen(notices.add);

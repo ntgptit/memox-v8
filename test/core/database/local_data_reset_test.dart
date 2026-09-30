@@ -85,4 +85,29 @@ void main() {
     expect(await _count(db, 'deck'), 0);
     expect(await _count(db, 'sync_outbox'), 0);
   });
+
+  test('C2: screens watching the data see it go', () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    await _seed(db);
+    final decks = <int>[];
+    final settings = <String>[];
+    final deckWatch = db
+        .select(db.deck)
+        .watch()
+        .listen((rows) => decks.add(rows.length));
+    final settingsWatch = db
+        .select(db.appSettings)
+        .watchSingle()
+        .listen((row) => settings.add(row.themeMode));
+    addTearDown(deckWatch.cancel);
+    addTearDown(settingsWatch.cancel);
+    await pumpEventQueue();
+
+    await LocalDataReset(db).run();
+    await pumpEventQueue();
+
+    expect(decks.last, 0);
+    expect(settings.last, 'system');
+  });
 }

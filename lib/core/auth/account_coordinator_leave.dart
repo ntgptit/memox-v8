@@ -8,6 +8,18 @@ extension AccountLeaving on AccountCoordinator {
   /// session goes, the device's account data is cleared, and a new
   /// anonymous user starts.
   Future<void> signOut({bool discardUnsent = false}) => _serial(() async {
+    final pending = await _store.transition();
+    if (pending != null &&
+        pending.kind == TransitionKind.signOut &&
+        pending.stage == TransitionStage.started) {
+      // The same sign-out asked again, after it stopped on unsent changes:
+      // now perhaps with their loss accepted (final review I2).
+      final next = discardUnsent
+          ? await _save(pending.copyWith(choice: TransitionChoice.discard))
+          : pending;
+      _liveOpId = next.opId;
+      return _drive(next);
+    }
     await _ensureNoTransition();
     final user = _readyUser();
     return _begin(
@@ -107,7 +119,8 @@ extension AccountLeaving on AccountCoordinator {
         await _sync.pushPending(); // #39
       } on Failure catch (error) {
         final accepted =
-            error is OfflineFailure && s.choice == TransitionChoice.discard;
+            (error is OfflineFailure || error is UnsentChangesFailure) &&
+            s.choice == TransitionChoice.discard;
         if (!accepted) return _emit(_inTransition(s, error: error));
       }
       await _flushLogsQuietly();
@@ -117,6 +130,13 @@ extension AccountLeaving on AccountCoordinator {
         await _api.deleteAccount(); // #42
       } on ProfileGoneFailure {
         // #43: an earlier try already deleted it.
+      } on SessionInvalidFailure catch (error) {
+        // No session to ask with: whether the server took it is unknown, so
+        // nothing is cleared. The account waits for a sign-in; the user can
+        // delete again or give it up (final review I1).
+        await _drop(s);
+        _notice(DeleteRefused(error));
+        return _lost(sessionInvalid: true);
       } on LastAdminFailure catch (error) {
         return _refuseDelete(s, error); // #44
       } on OfflineFailure catch (error) {

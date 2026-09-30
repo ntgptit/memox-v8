@@ -79,11 +79,12 @@ final class AccountTransition {
   AccountTransition copyWith({
     TransitionStage? stage,
     String? targetUserId,
+    TransitionChoice? choice,
     DateTime? updatedAt,
   }) => AccountTransition(
     opId: opId,
     kind: kind,
-    choice: choice,
+    choice: choice ?? this.choice,
     sourceUserId: sourceUserId,
     sourceIsAnonymous: sourceIsAnonymous,
     targetUserId: targetUserId ?? this.targetUserId,

@@ -12,6 +12,9 @@ Future<void> initializeSupabase(SupabaseConfig config) => Supabase.initialize(
   url: config.url,
   publishableKey: config.publishableKey,
   httpClient: LoggingHttpClient(inner: http.Client()),
+  // Sign-in is by code and native Google only: no link may carry a session
+  // into the SDK (final review I4).
+  authOptions: const FlutterAuthClientOptions(detectSessionInUri: false),
 );
 
 /// Calls the Postgres function [function] and returns its decoded JSON.

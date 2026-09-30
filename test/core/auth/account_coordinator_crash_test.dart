@@ -37,6 +37,8 @@ Future<void> _run(AuthWorld world, List<_Step> steps) async {
       return;
     } on Failure {
       // Shown on screen; the next step is the user's next tap.
+    } on StateError {
+      // A command the state does not take: the screen would not offer it.
     }
   }
 }

@@ -20,24 +20,44 @@ class LocalDataReset {
   final AppDatabase _db;
   final DateTime Function() _now;
 
-  Future<void> run() => _db.transaction(() async {
-    await _db.customStatement(
-      'INSERT OR REPLACE INTO sync_state (name, value) VALUES (?, ?)',
-      [syncApplyingRemoteKey, '1'],
-    );
-    for (final table in ['card', 'deck', 'delete_batches', 'tags']) {
-      await _db.customStatement('DELETE FROM $table');
-    }
-    await _db.customStatement(
-      "UPDATE app_settings SET card_limit = 20, new_card_order = 'created', "
-      "theme_mode = 'system', language = 'system', updated_at = ? "
-      'WHERE id = $appSettingsRowId',
-      [_now().millisecondsSinceEpoch ~/ 1000],
-    );
-    await _db.customStatement('DELETE FROM sync_state WHERE name <> ?', [
-      syncDeviceIdKey,
+  Future<void> run() async {
+    await _db.transaction(() async {
+      await _db.customStatement(
+        'INSERT OR REPLACE INTO sync_state (name, value) VALUES (?, ?)',
+        [syncApplyingRemoteKey, '1'],
+      );
+      for (final table in ['card', 'deck', 'delete_batches', 'tags']) {
+        await _db.customStatement('DELETE FROM $table');
+      }
+      await _db.customStatement(
+        "UPDATE app_settings SET card_limit = 20, new_card_order = 'created', "
+        "theme_mode = 'system', language = 'system', updated_at = ? "
+        'WHERE id = $appSettingsRowId',
+        [_now().millisecondsSinceEpoch ~/ 1000],
+      );
+      await _db.customStatement('DELETE FROM sync_state WHERE name <> ?', [
+        syncDeviceIdKey,
+      ]);
+      await _db.customStatement('DELETE FROM sync_outbox');
+      await _db.customStatement('DELETE FROM sync_rejection');
+    });
+    // Raw statements do not notify Drift's stream queries: every screen that
+    // watches these tables reads them again (final review C2).
+    _db.markTablesUpdated([
+      _db.card,
+      _db.deck,
+      _db.deleteBatches,
+      _db.tags,
+      _db.cardTags,
+      _db.cardSchedule,
+      _db.reviewLog,
+      _db.studySession,
+      _db.studyQueueItems,
+      _db.studyGuessOptions,
+      _db.appSettings,
+      _db.syncState,
+      _db.syncOutbox,
+      _db.syncRejection,
     ]);
-    await _db.customStatement('DELETE FROM sync_outbox');
-    await _db.customStatement('DELETE FROM sync_rejection');
-  });
+  }
 }
