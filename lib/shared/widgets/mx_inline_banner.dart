@@ -106,8 +106,14 @@ class MxInlineBanner extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // The title carries the tone, as the glyph does; the
+                      // message stays neutral (critique 2026-09-30 tone
+                      // pass, T2).
                       if (title case final lead?) ...[
-                        Text(lead, style: styles.bannerTitle),
+                        Text(
+                          lead,
+                          style: styles.bannerTitle.copyWith(color: ink),
+                        ),
                         const SizedBox(height: _titleGap),
                       ],
                       Text(message, style: messageStyle),
