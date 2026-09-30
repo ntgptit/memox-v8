@@ -209,6 +209,7 @@ GoRouter buildAppRouter({
                   // Screen 27 sits under the Settings branch; Back from it
                   // lands on Settings (SB-U1).
                   onOpenSync: () => context.go(AppRoutes.settingsSync),
+                  reauthNotice: accountReauthNotice(context),
                 ),
               ),
             ],
@@ -290,6 +291,7 @@ GoRouter buildAppRouter({
                     builder: (context, state) => const SyncScreen(),
                   ),
                   signInRoute(rootNavigator),
+                  accountRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,
