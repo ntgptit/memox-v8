@@ -44,7 +44,6 @@ class SyncScreen extends ConsumerWidget {
     );
     final task = ref.watch(syncControllerProvider.select((s) => s.task));
     final status = ref.watch(syncStatusProvider);
-    final shown = status.value;
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.syncTitle,
@@ -55,13 +54,6 @@ class SyncScreen extends ConsumerWidget {
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
       ),
-      notice: shown != null && SyncNoticeWidget.shows(shown)
-          ? SyncNoticeWidget(
-              status: shown,
-              task: task,
-              onRun: (next) => _run(ref, next),
-            )
-          : null,
       body: switch (status) {
         AsyncData(:final value?) => MxScreenScroll(
           children: [
@@ -70,6 +62,14 @@ class SyncScreen extends ConsumerWidget {
               status: value,
               now: ref.watch(dayClockProvider).now(),
             ),
+            // A problem sits by the status it explains and the button that
+            // acts on it (critique 2026-09-30).
+            if (SyncNoticeWidget.shows(value))
+              SyncNoticeWidget(
+                status: value,
+                task: task,
+                onRun: (next) => _run(ref, next),
+              ),
             const SizedBox(height: AppSpacing.gutter),
             MxButton(
               label: l10n.syncNow,

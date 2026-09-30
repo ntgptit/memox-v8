@@ -15,6 +15,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/settings.drift',
     'package:memox/core/database/tables/trash.drift',
     'package:memox/core/database/tables/sync.drift',
+    'package:memox/core/database/tables/ui_state.drift',
     'package:memox/core/database/queries/card_queries.drift',
     'package:memox/core/database/queries/deck_queries.drift',
     'package:memox/core/database/queries/trash_queries.drift',
@@ -27,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   final DateTime Function() _now;
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -158,6 +159,10 @@ class AppDatabase extends _$AppDatabase {
             'answered_at, id',
           ),
         );
+      },
+      from10To11: (m, schema) async {
+        // Critique 2026-09-30: dismissed one-time notes, device-local.
+        await m.createTable(schema.dismissedNote);
       },
     ),
     beforeOpen: (details) async {

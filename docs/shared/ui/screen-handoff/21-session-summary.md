@@ -64,6 +64,7 @@ A session that ended before its first turn shows the hero without stats and no F
 - The app bar title uses the content bar's title role; the hero glyph is `MxIconTile` large (44) in the outcome tone.
 - Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in the row's sub-line slot.
 - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's three stats: finished, answered, wrong/total.
+- **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{wrong} trên {total}").
 
 ## Copy
 
@@ -80,7 +81,7 @@ A session that ended before its first turn shows the hero without stats and no F
   again; start learning from the deck." · "An answer could not be written to this device, so the session
   stopped. Everything saved before that is kept; the unanswered cards are still due."
 - Facts: "This session" · "Cards that finished learning" / "Cards reviewed" · "Now scheduled, due
-  tomorrow" / "Schedules updated" · "Cards answered" · "Wrong turns" · "of {total} turns" · "wrong cards
+  tomorrow" / "Schedules updated" · "Cards answered" · "Wrong turns" · "{wrong} of {total}" · "of {total} turns" · "wrong cards
   came back in later rounds".
 - End note: "Nothing was lost — the answers are in the history." (`schedulerChanged` only, in V8).
 - Footer: "Study this deck" · "Done" · "Done returns you to the deck." · "Loading your summary…".

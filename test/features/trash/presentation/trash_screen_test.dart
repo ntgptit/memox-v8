@@ -210,4 +210,18 @@ void main() {
     expect(find.widgetWithText(MxBadge, _en.trashDaysLeft(30)), findsNothing);
     expect(find.text(_en.trashDaysLeft(30)), findsOneWidget);
   });
+
+  libraryTest('the retention note can be hidden, and stays hidden '
+      '(critique 2026-09-30)', (tester, env) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+
+    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.trashNote), findsNothing);
+
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await tester.pumpAndSettle();
+    expect(find.text(_en.trashNote), findsNothing);
+  });
 }

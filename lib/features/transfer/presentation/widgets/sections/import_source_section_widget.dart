@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -8,6 +13,7 @@ import 'package:memox/features/transfer/presentation/states/card_import_state.da
 import 'package:memox/features/transfer/presentation/widgets/items/import_source_option_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/import_option_sheet_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -24,7 +30,7 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 /// Step 1 of the import (kit 11). While choosing: the two sources, then the
 /// file picker, the pasted text, the problem or the reading card. Once the
 /// source is read, only its chip stays (kit deviation K1).
-class ImportSourceSectionWidget extends StatefulWidget {
+class ImportSourceSectionWidget extends ConsumerStatefulWidget {
   const ImportSourceSectionWidget({
     super.key,
     required this.draft,
@@ -43,11 +49,12 @@ class ImportSourceSectionWidget extends StatefulWidget {
   final ValueChanged<int> onChooseSheet;
 
   @override
-  State<ImportSourceSectionWidget> createState() =>
+  ConsumerState<ImportSourceSectionWidget> createState() =>
       _ImportSourceSectionWidgetState();
 }
 
-class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
+class _ImportSourceSectionWidgetState
+    extends ConsumerState<ImportSourceSectionWidget> {
   late final _pasted = TextEditingController(
     text: switch (widget.draft.source) {
       PastedSource(:final text) => text,
@@ -59,6 +66,25 @@ class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
   void dispose() {
     _pasted.dispose();
     super.dispose();
+  }
+
+  /// The file helper and its gap, until the person hides it (critique
+  /// 2026-09-30).
+  List<Widget> _helper(AppLocalizations l10n) {
+    final dismissed = ref.watch(dismissedNotesProvider).value;
+    if (dismissed == null || dismissed.contains(NoteKeys.importHelper)) {
+      return const [];
+    }
+    return [
+      const SizedBox(height: AppSpacing.grouped),
+      MxNote(
+        text: l10n.importHelperBody,
+        dismissLabel: l10n.commonDismissNote,
+        onDismiss: () => unawaited(
+          ref.read(dismissedNoteStoreProvider).dismiss(NoteKeys.importHelper),
+        ),
+      ),
+    ];
   }
 
   @override
@@ -143,11 +169,7 @@ class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
       ];
     }
     if (draft.sourceKind == CardImportSourceKind.paste && isChoosing) {
-      return [
-        _pasteField(context),
-        const SizedBox(height: AppSpacing.grouped),
-        MxNote(text: l10n.importHelperBody),
-      ];
+      return [_pasteField(context), ..._helper(l10n)];
     }
     if (draft.source == null) {
       return [
@@ -161,8 +183,7 @@ class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
             onAction: widget.onChooseFile,
           ),
         ),
-        const SizedBox(height: AppSpacing.grouped),
-        MxNote(text: l10n.importHelperBody),
+        ..._helper(l10n),
       ];
     }
     return [
@@ -171,10 +192,7 @@ class _ImportSourceSectionWidgetState extends State<ImportSourceSectionWidget> {
         onClear: draft.isBusy ? null : widget.onClear,
         onChooseSheet: widget.onChooseSheet,
       ),
-      if (isChoosing) ...[
-        const SizedBox(height: AppSpacing.grouped),
-        MxNote(text: l10n.importHelperBody),
-      ],
+      if (isChoosing) ..._helper(l10n),
     ];
   }
 

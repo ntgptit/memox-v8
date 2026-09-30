@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
+import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
@@ -12,20 +14,20 @@ import 'package:memox/features/trash/presentation/providers/trash_entries_provid
 import 'package:memox/features/trash/presentation/states/trash_state.dart';
 import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_entry_actions_sheet_widget.dart';
-import 'package:memox/features/trash/presentation/widgets/overlays/trash_restore_sheet_widget.dart';
-import 'package:memox/shared/widgets/mx_inline_banner.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
-import 'package:memox/features/trash/presentation/widgets/sections/trash_selection_bar_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_purge_dialog_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/overlays/trash_restore_sheet_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/sections/trash_selection_bar_widget.dart';
+import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -186,6 +188,13 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     );
   }
 
+  /// Once the dismissed notes are read, [key] shows unless it was hidden.
+  bool _showsNote(String key) =>
+      ref.watch(dismissedNotesProvider).value?.contains(key) == false;
+
+  void _dismissNote(String key) =>
+      unawaited(ref.read(dismissedNoteStoreProvider).dismiss(key));
+
   /// The note, the filters with their counts (A6, none while selecting),
   /// the header, the rows, then why the other kind waits and what a purge
   /// skipped (spec D6).
@@ -197,8 +206,14 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     return [
       const SizedBox(height: AppSpacing.control),
       // Read before selecting; the selection gives the list the room.
-      if (!state.isSelecting) ...[
-        MxNote(icon: AppIcons.history, text: l10n.trashNote),
+      // Critique 2026-09-30: a note the person hid stays hidden.
+      if (!state.isSelecting && _showsNote(NoteKeys.trashRetention)) ...[
+        MxNote(
+          icon: AppIcons.history,
+          text: l10n.trashNote,
+          dismissLabel: l10n.commonDismissNote,
+          onDismiss: () => _dismissNote(NoteKeys.trashRetention),
+        ),
         const SizedBox(height: AppSpacing.grouped),
       ],
       if (!state.isSelecting)

@@ -332,6 +332,13 @@ void main() {
     );
     expect(_en.algorithmSwitchNote, isNot(contains('re-initialises')));
     expect(_en.algorithmEightBoxDescription, isNot(contains('128')));
+    // One sentence per algorithm (critique 2026-09-30).
+    for (final text in [
+      _en.algorithmEightBoxDescription,
+      _en.algorithmSm2Description,
+    ]) {
+      expect(RegExp(r'\.').allMatches(text), hasLength(1), reason: text);
+    }
   });
 
   test('plain copy for the study caption and the wrong-turns stat '
@@ -341,5 +348,6 @@ void main() {
       'SM-2 · up to 20 cards per session',
     );
     expect(_en.summaryStatWrong, 'Wrong turns');
+    expect(_en.summaryWrongOf(3, 23), '3 of 23');
   });
 }

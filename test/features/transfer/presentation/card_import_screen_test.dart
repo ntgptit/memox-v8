@@ -267,4 +267,20 @@ void main() {
     };
     expect(rights, hasLength(1));
   });
+
+  libraryTest('the file helper can be hidden, and stays hidden '
+      '(critique 2026-09-30)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id);
+    expect(find.text(_en.importHelperBody), findsOneWidget);
+
+    await tester.tap(find.byTooltip(_en.commonDismissNote));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.importHelperBody), findsNothing);
+
+    await _pump(tester, env, deck.id);
+    await tester.pumpAndSettle();
+    expect(find.text(_en.importHelperBody), findsNothing);
+  });
 }
