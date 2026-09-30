@@ -42,4 +42,16 @@ void main() {
       throwsA(isA<TestFailure>()),
     );
   });
+
+  testWidgets('no primary where one is due fails', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Edit', tone: MxButtonTone.outline, onPressed: () {}),
+    );
+    expect(
+      () => expectOnePrimaryPerDecision(tester),
+      throwsA(isA<TestFailure>()),
+    );
+    expectOnePrimaryPerDecision(tester, expected: 0);
+  });
 }
