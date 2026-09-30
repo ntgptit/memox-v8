@@ -66,4 +66,26 @@ void main() {
     expect(find.text('WRONG'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a long value keeps one line in a narrow column (critique '
+      '2026-09-30 part 3c-1)', (tester) async {
+    await pumpMx(
+      tester,
+      const Center(
+        child: SizedBox(
+          width: 96,
+          child: MxStatTile(value: '241 of 241', label: 'Wrong turns'),
+        ),
+      ),
+    );
+    expect(tester.widget<Text>(find.text('241 of 241')).maxLines, 1);
+    expect(
+      find.ancestor(
+        of: find.text('241 of 241'),
+        matching: find.byType(FittedBox),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

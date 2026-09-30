@@ -46,7 +46,15 @@ class MxStatTile extends StatelessWidget {
           : CrossAxisAlignment.center,
       spacing: AppSpacing.micro,
       children: [
-        Text(value, style: styles.statValue(ink)),
+        // The value keeps one line and scales down in a narrow column
+        // (critique 2026-09-30 part 3c-1: "41 of / 241").
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: isBoxed
+              ? AlignmentDirectional.centerStart
+              : Alignment.center,
+          child: Text(value, maxLines: 1, style: styles.statValue(ink)),
+        ),
         Text(label.toUpperCase(), style: styles.statLabel),
       ],
     );
