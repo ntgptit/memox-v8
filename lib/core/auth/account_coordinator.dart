@@ -124,15 +124,22 @@ class AccountCoordinator {
   // --- Sign-in and switch commands -----------------------------------------
 
   /// Sends a 6-digit code to [email]: to attach it to this anonymous user
-  /// (#16), or to sign in to the switch's target (#21). Throws
-  /// [IdentityTakenFailure] when [email] already has an account; the caller
-  /// then asks merge or discard (#17).
-  Future<void> requestCode(String email) => _serial(() async {
-    return switch (await _signInContext()) {
-      _SignIn.link => _gateway.requestEmailLink(email),
-      _SignIn.target => _gateway.requestEmailSignIn(email),
-    };
-  });
+  /// (#16), to sign in to the switch's target (#21), or to sign in again
+  /// (#36). Throws [IdentityTakenFailure] when a link's email has an account
+  /// (#17). Throws [UnsentChangesFailure] when a re-auth names another
+  /// account while changes are unsent, unless [confirmedLoss] (ruling 6).
+  Future<void> requestCode(String email, {bool confirmedLoss = false}) =>
+      _serial(() async {
+        switch (await _signInContext()) {
+          case _SignIn.link:
+            return _gateway.requestEmailLink(email);
+          case _SignIn.target:
+            return _gateway.requestEmailSignIn(email);
+          case _SignIn.reauth:
+            await _checkReplace(email, confirmedLoss: confirmedLoss);
+            return _gateway.requestEmailSignIn(email);
+        }
+      });
 
   Future<void> verifyCode(String email, String code) => _serial(() async {
     switch (await _signInContext()) {
@@ -143,27 +150,40 @@ class AccountCoordinator {
         return _signInTarget(
           () => _gateway.verifyEmailSignIn(email, code),
         ); // #21
+      case _SignIn.reauth:
+        await _gateway.verifyEmailSignIn(email, code);
+        return _afterReauth(); // #36, #37
     }
   });
 
-  Future<void> continueWithGoogle() => _serial(() async {
-    final context = await _signInContext();
-    final credential = _pendingGoogle ?? await _gateway.pickGoogle();
-    try {
-      switch (context) {
-        case _SignIn.link:
-          await _gateway.linkGoogle(credential);
-          _pendingGoogle = null;
-          await _validate(); // #16
-        case _SignIn.target:
-          await _signInTarget(() => _gateway.signInGoogle(credential)); // #21
-          _pendingGoogle = null;
+  Future<void> continueWithGoogle({bool confirmedLoss = false}) => _serial(
+    () async {
+      final context = await _signInContext();
+      final credential = _pendingGoogle ?? await _gateway.pickGoogle();
+      try {
+        switch (context) {
+          case _SignIn.link:
+            await _gateway.linkGoogle(credential);
+            _pendingGoogle = null;
+            await _validate(); // #16
+          case _SignIn.target:
+            await _signInTarget(() => _gateway.signInGoogle(credential));
+            _pendingGoogle = null; // #21
+          case _SignIn.reauth:
+            await _checkReplace(credential.email, confirmedLoss: confirmedLoss);
+            await _gateway.signInGoogle(credential);
+            _pendingGoogle = null;
+            await _afterReauth(); // #36, #37
+        }
+      } on IdentityTakenFailure {
+        _pendingGoogle = credential; // #17
+        rethrow;
+      } on UnsentChangesFailure {
+        _pendingGoogle = credential; // asked again with confirmedLoss
+        rethrow;
       }
-    } on IdentityTakenFailure {
-      _pendingGoogle = credential; // #17
-      rethrow;
-    }
-  });
+    },
+  );
 
   /// Starts moving this device to another account: #18 from an anonymous
   /// user whose identity is taken, #34 "Switch account" from an account.
@@ -210,6 +230,92 @@ class AccountCoordinator {
     return _lost(sessionInvalid: true);
   });
 
+  /// Signs this device out (#39–#41). X's changes are sent first; offline,
+  /// that waits unless [discardUnsent]. Then the logs are shipped, the
+  /// session goes, the device's account data is cleared, and a new
+  /// anonymous user starts.
+  Future<void> signOut({bool discardUnsent = false}) => _serial(() async {
+    await _ensureNoTransition();
+    final user = _readyUser();
+    return _begin(
+      _newTransition(
+        TransitionKind.signOut,
+        choice: discardUnsent ? TransitionChoice.discard : null,
+        sourceUserId: user.id,
+        sourceIsAnonymous: user.isAnonymous,
+      ),
+    );
+  });
+
+  /// Deletes the account on the server, then clears the device like a
+  /// sign-out (#42–#44). Online only: offline, it refuses before anything
+  /// changes.
+  Future<void> deleteAccount() => _serial(() async {
+    await _ensureNoTransition();
+    final user = _readyUser();
+    if (!await _network.isOnline) {
+      throw const OfflineFailure(
+        cause: 'deleting an account needs the network',
+      );
+    }
+    return _begin(
+      _newTransition(
+        TransitionKind.delete,
+        sourceUserId: user.id,
+        sourceIsAnonymous: user.isAnonymous,
+      ),
+    );
+  });
+
+  /// From REAUTH_REQUIRED: gives up the refused account. Its data on this
+  /// device goes, and a new anonymous user starts (#38).
+  Future<void> continueWithoutAccount() => _serial(() async {
+    final last = switch (_state) {
+      ReauthRequired(:final last) => last,
+      _ => throw StateError('Only a refused sign-in continues without it'),
+    };
+    return _begin(
+      _newTransition(
+        TransitionKind.clearToAnon,
+        sourceUserId: last.id,
+        sourceIsAnonymous: false,
+      ),
+    );
+  });
+
+  /// Ruling 6: a re-auth as another account clears this device, so unsent
+  /// changes are confirmed first.
+  Future<void> _checkReplace(
+    String? email, {
+    required bool confirmedLoss,
+  }) async {
+    final last = (_state as ReauthRequired).last;
+    if (confirmedLoss || _sameEmail(email, last.email)) return;
+    final count = await _sync.pendingCount();
+    if (count > 0) throw UnsentChangesFailure(count: count);
+  }
+
+  static bool _sameEmail(String? a, String? b) =>
+      a != null &&
+      b != null &&
+      a.trim().toLowerCase() == b.trim().toLowerCase();
+
+  /// #36: the same account, validated. #37: another one, a discard switch
+  /// that is past the sign-in.
+  Future<void> _afterReauth() async {
+    final last = (_state as ReauthRequired).last;
+    final userId = _gateway.currentUserId!;
+    if (userId == last.id) return _validate();
+    return _begin(
+      _newTransition(
+        TransitionKind.switchAccount,
+        choice: TransitionChoice.discard,
+        sourceUserId: last.id,
+        sourceIsAnonymous: false,
+      ).copyWith(targetUserId: userId, stage: TransitionStage.targetSignedIn),
+    );
+  }
+
   Future<_SignIn> _signInContext() async {
     final pending = await _store.transition();
     if (pending != null) {
@@ -218,6 +324,7 @@ class AccountCoordinator {
     }
     return switch (_state) {
       Ready(:final user) when user.isAnonymous => _SignIn.link,
+      ReauthRequired() => _SignIn.reauth,
       _ => throw StateError('No account step takes a sign-in in $_state'),
     };
   }
@@ -546,14 +653,7 @@ class AccountCoordinator {
       case TransitionKind.signOut:
       case TransitionKind.delete:
       case TransitionKind.clearToAnon:
-        // Tasks 11 and 12 of the core-auth plan drive these. Until then a
-        // pending one keeps the gate shut.
-        _log.error(
-          'auth.transition_unsupported',
-          category: LogCategory.state,
-          context: {'kind': t.kind.name},
-        );
-        return _emit(Recovering(t, stuck: true));
+        return _driveSignOut(t);
     }
   }
 
@@ -592,6 +692,68 @@ class AccountCoordinator {
     ); // plan ruling 7: the device's data now belongs to the new user
     await _drop(s);
     return _validate();
+  }
+
+  /// #39–#45: send (sign-out), delete on the server (deletion), sign out,
+  /// clear the device, start anonymous. Every step is idempotent, so a
+  /// launch continues from the saved stage.
+  Future<void> _driveSignOut(AccountTransition t) async {
+    _gate.close();
+    await _sync.pause();
+    _emit(_inTransition(t));
+    var s = t;
+    if (s.stage == TransitionStage.started &&
+        s.kind == TransitionKind.signOut) {
+      try {
+        await _sync.pushPending(); // #39
+      } on Failure catch (error) {
+        final accepted =
+            error is OfflineFailure && s.choice == TransitionChoice.discard;
+        if (!accepted) return _emit(_inTransition(s, error: error));
+      }
+      await _flushLogsQuietly();
+    }
+    if (s.stage == TransitionStage.started && s.kind == TransitionKind.delete) {
+      try {
+        await _api.deleteAccount(); // #42
+      } on ProfileGoneFailure {
+        // #43: an earlier try already deleted it.
+      } on LastAdminFailure catch (error) {
+        return _refuseDelete(s, error); // #44
+      } on OfflineFailure catch (error) {
+        return _refuseDelete(s, error); // #44
+      }
+      s = await _save(s.copyWith(stage: TransitionStage.serverDeleted));
+    }
+    if (s.stage != TransitionStage.signedOut) {
+      if (_gateway.currentUserId != null) await _gateway.signOutLocal(); // #40
+      s = await _save(s.copyWith(stage: TransitionStage.signedOut));
+    }
+    await _localReset.run(); // #41
+    await _store.clearLastKnown();
+    await _drop(s);
+    return _settle();
+  }
+
+  Future<void> _refuseDelete(AccountTransition s, Failure failure) async {
+    await _drop(s);
+    _notice(DeleteRefused(failure));
+    return _validate();
+  }
+
+  /// The logs go before the session does (spec §4: LogDatabase is kept, and
+  /// shipped before sign-out). A failure costs only logs.
+  Future<void> _flushLogsQuietly() async {
+    try {
+      await _flushLogs?.call();
+    } on Object catch (error, stackTrace) {
+      _log.warning(
+        'auth.logs_not_shipped',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   /// The end of a transition: its secrets and record go, the gate opens.
@@ -674,4 +836,4 @@ class AccountCoordinator {
 }
 
 /// What a sign-in command does in the current state.
-enum _SignIn { link, target }
+enum _SignIn { link, target, reauth }
