@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(71);
+select plan(80);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
@@ -66,6 +66,17 @@ create function public.t_owned(p_user uuid) returns int language sql as $$
     + (select count(*) from public.user_sync_version where user_id = p_user)
     + (select count(*) from public.app_log where user_id = p_user))::int $$;
 
+-- A sync_push request that creates one root deck.
+create function public.t_root_push(p_id uuid) returns jsonb language sql as $$
+  select jsonb_build_object('deviceId', '00000000-0000-0000-0000-0000000000d1',
+    'operations', jsonb_build_array(jsonb_build_object('opId', gen_random_uuid(), 'entityType', 'deck',
+      'entityId', p_id, 'op', 'upsert', 'row', jsonb_build_object(
+        'id', p_id, 'name', 'Back', 'parentId', null, 'rootId', p_id, 'depth', 1, 'contentType', 'deck',
+        'schedulerType', 'eight_box', 'schedulerVersion', 1, 'schedulerConfig', '{}',
+        'studyConfig', '{}', 'generation', 1, 'firstAnsweredAt', null, 'sourceTemplateId', null,
+        'sourceTemplateVersion', null, 'deleteBatchId', null, 'siblingPosition', 0,
+        'createdAt', '2026-09-30T00:00:00.000Z', 'updatedAt', '2026-09-30T00:00:00.000Z')))) $$;
+
 select has_table('public', 'profiles', 'profiles exists');
 select ok((select relrowsecurity from pg_class where oid = 'public.profiles'::regclass),
   'RLS is on for profiles');
@@ -118,24 +129,17 @@ select lives_ok($$ delete from auth.users where id = '12000000-0000-0000-0000-00
 select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0, 'nothing of it is left');
 select is(public.t_owned('12000000-0000-0000-0000-000000000005'), 10, 'another user keeps all of theirs');
 
--- An access token outlives its user; the keys stop it from writing (spec §10).
+-- An access token outlives its user; the keys stop it from writing (spec §10): sync_push
+-- rejects the operation (the key violation is caught per operation), and nothing is stored.
 set local role authenticated;
 select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000004',
   'role', 'authenticated')::text, true);
-do $$
-begin
-  perform public.sync_push(jsonb_build_object('deviceId', '00000000-0000-0000-0000-0000000000d1',
-    'operations', jsonb_build_array(jsonb_build_object('opId', gen_random_uuid(), 'entityType', 'deck',
-      'entityId', '12000000-0000-0000-0000-0000000000f1', 'op', 'upsert', 'row', jsonb_build_object(
-        'id', '12000000-0000-0000-0000-0000000000f1', 'name', 'Back', 'parentId', null,
-        'rootId', '12000000-0000-0000-0000-0000000000f1', 'depth', 1, 'contentType', 'deck',
-        'schedulerType', 'eight_box', 'schedulerVersion', 1, 'schedulerConfig', '{}',
-        'studyConfig', '{}', 'generation', 1, 'firstAnsweredAt', null, 'sourceTemplateId', null,
-        'sourceTemplateVersion', null, 'deleteBatchId', null, 'siblingPosition', 0,
-        'createdAt', '2026-09-30T00:00:00.000Z', 'updatedAt', '2026-09-30T00:00:00.000Z')))));
-exception when others then null;
-end
-$$;
+select is(public.sync_push(public.t_root_push('12000000-0000-0000-0000-0000000000f1'))->'results'->0->>'code',
+  'VALIDATION_FAILED', 'a deleted user''s push is rejected');
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000005',
+  'role', 'authenticated')::text, true);
+select is(public.sync_push(public.t_root_push('12000000-0000-0000-0000-0000000000f2'))->'results'->0->>'status',
+  'applied', 'the same push from a live user is applied');
 reset role;
 select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0,
   'deleted user cannot recreate persisted data through sync_push');
@@ -368,6 +372,63 @@ select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-0
 select is((select array_agg(operation_id::text order by operation_id) from public.account_merge_receipt
   where target_user_id = '12000000-0000-0000-0000-000000000024'),
   array['12000000-0000-0000-0000-0000000000e2'], 'expired or acknowledged receipts go, a fresh one stays');
+
+
+-- Final review I1/I2: sync or log activity keeps an anonymous user even before the app calls
+-- me(); an admin is never cleaned up.
+select public.t_user('12000000-0000-0000-0000-000000000031', null, true);
+select public.t_user('12000000-0000-0000-0000-000000000032', null, true);
+select public.t_user('12000000-0000-0000-0000-000000000033', null, true);
+update public.profiles set last_active_at = now() - interval '120 days'
+  where id in ('12000000-0000-0000-0000-000000000031', '12000000-0000-0000-0000-000000000032',
+    '12000000-0000-0000-0000-000000000033');
+update public.profiles set role = 'admin' where id = '12000000-0000-0000-0000-000000000033';
+insert into public.sync_applied_op (user_id, op_id, server_version)
+values ('12000000-0000-0000-0000-000000000031', gen_random_uuid(), 1);
+insert into public.app_log (id, occurred_at, level, category, event, user_id)
+values (gen_random_uuid(), now(), 'info', 'sync', 't12.active', '12000000-0000-0000-0000-000000000032');
+select private.cleanup_accounts();
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000031'),
+  'a push in the last 90 days keeps an anonymous user');
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000032'),
+  'a log in the last 90 days keeps an anonymous user');
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000033'),
+  'an admin is never cleaned up');
+
+-- Final review I2: a merge never deletes the last admin.
+select public.t_user('12000000-0000-0000-0000-000000000034', null, true);
+update public.profiles set role = case when id = '12000000-0000-0000-0000-000000000034' then 'admin' else 'user' end
+  where role = 'admin' or id = '12000000-0000-0000-0000-000000000034';
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000034',
+  'role', 'authenticated')::text, true);
+select set_config('t.token4', public.account_claim_begin()::text, true);
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000015',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_merge(current_setting('t.token4')::uuid,
+  '12000000-0000-0000-0000-0000000000c5') $$, 'P0001', 'LAST_ADMIN', 'the last admin is not merged away');
+reset role;
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000034'),
+  'the last admin keeps their user');
+
+-- Final review: a source that became an account after its claim is not merged away.
+select public.t_user('12000000-0000-0000-0000-000000000035', null, true);
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000035',
+  'role', 'authenticated')::text, true);
+select set_config('t.token5', public.account_claim_begin()::text, true);
+reset role;
+update auth.users set is_anonymous = false, email = 'linked@example.com'
+  where id = '12000000-0000-0000-0000-000000000035';
+set local role authenticated;
+select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000015',
+  'role', 'authenticated')::text, true);
+select throws_ok($$ select public.account_merge(current_setting('t.token5')::uuid,
+  '12000000-0000-0000-0000-0000000000c6') $$, 'P0001', 'CLAIM_INVALID',
+  'a claim of a user who has since linked an account is refused');
+reset role;
+select ok(exists (select 1 from auth.users where id = '12000000-0000-0000-0000-000000000035'),
+  'the linked account is untouched');
 
 select * from finish();
 rollback;

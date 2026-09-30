@@ -48,8 +48,11 @@ One new migration (after `20261009000000`), pgTAP in
   `delete_user_data`, `merge_user_data`, `touch_user_activity`), never
   exposed.
 - `alter default privileges in schema public revoke execute on functions from
-  public, anon, authenticated`; each RPC is granted explicitly (the existing
-  per-function revoke/grant stays).
+  public, anon, authenticated` drops Supabase's per-schema grant to `anon` and
+  `authenticated`. It cannot drop the global EXECUTE-to-PUBLIC default, so
+  every function still revokes from `public, anon, authenticated` and grants
+  explicitly; a pgTAP allowlist (`04_function_privileges.sql`) fails on any
+  public function a client can run that is not on the list.
 - Every RPC: `security definer`, `set search_path = ''`, schema-qualified
   names, its own authorization check first.
 

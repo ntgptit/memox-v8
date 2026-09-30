@@ -1,7 +1,10 @@
 -- SB-A1 / auth spec 2026-09-30 §2: profiles with a role, owned rows keyed to auth.users,
 -- and the account RPCs. Our tables live in public, internal functions in private.
 
--- A function created from here on is closed to clients until granted (spec §2.1).
+-- Drops Supabase's per-schema grant to anon and authenticated on functions created from here on
+-- (spec §2.1). The EXECUTE grant to PUBLIC is a global default that a per-schema statement
+-- cannot remove, so every function below still revokes it itself; 04_function_privileges.sql
+-- holds the allowlist.
 alter default privileges in schema public revoke execute on functions from public, anon, authenticated;
 
 -- The business user, one per auth user (spec §2.2).
@@ -349,6 +352,16 @@ begin
   if v_source = v_target then
     raise exception 'CLAIM_INVALID';
   end if;
+  -- Only an anonymous source is merged away: one that linked an account after its claim
+  -- keeps it. The raise rolls the consumed claim back with everything else.
+  if not coalesce((select u.is_anonymous from auth.users u where u.id = v_source), false) then
+    raise exception 'CLAIM_INVALID';
+  end if;
+  perform private.lock_roles();
+  if (select role from public.profiles where id = v_source) = 'admin'
+     and (select count(*) from public.profiles where role = 'admin') <= 1 then
+    raise exception 'LAST_ADMIN';
+  end if;
   perform private.merge_user_data(v_source, v_target);
   insert into public.account_merge_receipt (operation_id, source_user_id, target_user_id)
   values (p_operation_id, v_source, v_target);
@@ -404,8 +417,14 @@ declare
   v_user uuid;
 begin
   for v_user in
+    -- Activity is a me() call, a sync push or a log push, so a user whose app never
+    -- called me() is still seen. An admin is never cleaned up (LAST_ADMIN).
     select u.id from auth.users u join public.profiles p on p.id = u.id
-    where u.is_anonymous and p.last_active_at < now() - interval '90 days'
+    where u.is_anonymous and p.role = 'user' and p.last_active_at < now() - interval '90 days'
+      and not exists (select 1 from public.sync_applied_op o
+                      where o.user_id = u.id and o.applied_at >= now() - interval '90 days')
+      and not exists (select 1 from public.app_log l
+                      where l.user_id = u.id and l.received_at >= now() - interval '90 days')
   loop
     perform private.delete_user_data(v_user);
   end loop;
