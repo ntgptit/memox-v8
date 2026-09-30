@@ -64,6 +64,12 @@ void main() {
     expect(find.text(_en.progressTodaySplit(5, 12)), findsOneWidget);
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
+    // The segment states the range and Today the once-a-day rule; the list
+    // header and the footer do not repeat them (critique 2026-09-30 part 3b).
+    expect(find.text(_en.progressByDeck.toUpperCase()), findsOneWidget);
+    expect(find.textContaining('LAST 7 DAYS'), findsNothing);
+    expect(find.text(_en.progressFooter), findsOneWidget);
+    expect(find.textContaining('counts once'), findsOneWidget);
     // Critique 2026-09-30: Today's figure is stated once, in the Today card.
     expect(find.text(_en.progressToday.toUpperCase()), findsOneWidget);
     // M3-D3: every section gap on the overview is AppSpacing.gutter.

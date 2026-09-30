@@ -4643,21 +4643,13 @@
   "@progressRangeMonth": {
     "description": "Screen handoff 22 (FE-A9): the range tray option for thirty days."
   },
-  "progressByDeckWeek": "By deck · last 7 days",
-  "@progressByDeckWeek": {
-    "description": "Screen handoff 22 (FE-A9): the library level's list header at seven days."
+  "progressByDeck": "By deck",
+  "@progressByDeck": {
+    "description": "Screen 22: the library's deck list header; the range segment above states the range (critique 2026-09-30 part 3b)."
   },
-  "progressByDeckMonth": "By deck · last 30 days",
-  "@progressByDeckMonth": {
-    "description": "Screen handoff 22 (FE-A9): the library level's list header at thirty days."
-  },
-  "progressSubDecksWeek": "Sub-decks · last 7 days",
-  "@progressSubDecksWeek": {
-    "description": "Screen handoff 22 (FE-A9): a deck level's list header at seven days."
-  },
-  "progressSubDecksMonth": "Sub-decks · last 30 days",
-  "@progressSubDecksMonth": {
-    "description": "Screen handoff 22 (FE-A9): a deck level's list header at thirty days."
+  "progressSubDecks": "Sub-decks",
+  "@progressSubDecks": {
+    "description": "Screen 22: a deck's sub-deck list header; the range segment above states the range (critique 2026-09-30 part 3b)."
   },
   "progressAllDecks": "All decks",
   "@progressAllDecks": {
@@ -4722,9 +4714,9 @@
   "@progressLeafNote": {
     "description": "Screen handoff 22 (FE-A9): a deck level with no sub-deck (UC-PROGRESS-002 A1)."
   },
-  "progressFooter": "Read-only · a card studied several times in a day counts once · resets change nothing here",
+  "progressFooter": "Read-only · resets change nothing here",
   "@progressFooter": {
-    "description": "Screen handoff 22 (FE-A9): the line at the end of every level."
+    "description": "Screen handoff 22 (FE-A9): the line at the end of every level; the Today card states the once-a-day rule (critique 2026-09-30 part 3b)."
   },
   "progressErrorTitle": "Couldn't summarise your progress",
   "@progressErrorTitle": {

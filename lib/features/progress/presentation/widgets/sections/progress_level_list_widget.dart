@@ -34,12 +34,9 @@ class ProgressLevelListWidget extends ConsumerWidget {
     final range = ref.watch(progressRangeChoiceProvider);
     final total = level.total.of(range);
     final decks = level.decksFor(range);
-    final header = switch ((isDeckLevel, range)) {
-      (false, ProgressRange.week) => l10n.progressByDeckWeek,
-      (false, ProgressRange.month) => l10n.progressByDeckMonth,
-      (true, ProgressRange.week) => l10n.progressSubDecksWeek,
-      (true, ProgressRange.month) => l10n.progressSubDecksMonth,
-    };
+    // The range segment above states the range (critique 2026-09-30
+    // part 3b).
+    final header = isDeckLevel ? l10n.progressSubDecks : l10n.progressByDeck;
     final note = switch ((decks.isEmpty, total.hasActivity, range)) {
       (true, _, _) => l10n.progressLeafNote,
       (false, false, ProgressRange.week) => l10n.progressQuietWeek,
