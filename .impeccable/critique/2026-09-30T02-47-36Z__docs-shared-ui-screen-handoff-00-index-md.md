@@ -83,3 +83,15 @@ MxInlineBanner/MxFloatingNotice action tone yields when page has a primary (13, 
 - If banners and the footer yield tone automatically, how many One Indigo breaks disappear?
 - Should "state a number once" be a golden-review checklist item rather than per-screen fixes?
 - Should Session summary be a weighted "done" moment (centred hero, one key number) or a stats table?
+
+## Resolution (part 1, branch ccr-9f407421-jaecla)
+
+Fixed by spec `docs/superpowers/specs/2026-09-30-critique-fixes-part1-design.md` and plan `docs/superpowers/plans/2026-09-30-critique-fixes-part1.md`:
+
+- Priority 1 (27 Sync refused rows): fixed — a5f0fe1.
+- Priority 2 (14 Study entry resume): fixed — d21ff54, 0b95a97+ (Try again too).
+- Priority 3 (07 Card search): fixed — c37e7b8.
+- Priority 4 (11 Import mapping): fixed — 2fd4577.
+- Priority 5 (24 Reminder preview): fixed — 7b464a1, 8875de1 (use case).
+- Shared: outline edge dark a16a521; MxOptionRow 5488a84; MxSettingsRow cad77a6; MxErrorState c270249; one-primary helper f0362f1; 12 formats and 01 unset FAB e011f3a.
+- Open: part 2 (section-label typography) and the per-screen Minors.
