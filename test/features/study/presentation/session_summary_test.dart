@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
@@ -25,9 +29,11 @@ Future<void> _pump(
   SummaryOutcome outcome, {
   VoidCallback? onDone,
   VoidCallback? onStudyDeck,
+  double textScale = 1,
 }) => pumpLibraryScreen(
   tester,
   env,
+  textScale: textScale,
   SessionSummaryWidget(
     view: view,
     outcome: outcome,
@@ -303,5 +309,32 @@ void main() {
     expect(pair.trailingFlex, 6);
     expect(pair.leading!.label, _en.studyThisDeck);
     expect(pair.leading!.isSingleLine, isTrue);
+  });
+
+  libraryTest('a short summary sits centred above the footer (critique '
+      '2026-09-30 part 3c-1, R4)', (tester, env) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+    final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
+    final bar = tester.getRect(find.byType(MxAppBar));
+    final footer = tester.getRect(find.byType(MxFooterBar));
+    final spaceCentre = (bar.bottom + footer.top) / 2;
+    expect((hero.center.dy - spaceCentre).abs(), lessThan(AppSpacing.gutter));
+  });
+
+  libraryTest('a long summary still scrolls from the top, clipping nothing', (
+    tester,
+    env,
+  ) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(),
+      SummaryOutcome.reviewFinished,
+      textScale: 2,
+    );
+    final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
+    final bar = tester.getRect(find.byType(MxAppBar));
+    expect(hero.top - bar.bottom, lessThan(AppSpacing.section));
+    expect(tester.takeException(), isNull);
   });
 }

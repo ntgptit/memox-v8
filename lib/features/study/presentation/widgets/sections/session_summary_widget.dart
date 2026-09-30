@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -11,7 +13,6 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Screen 21, the session summary (kit StudyResultScreenV3): how the
@@ -47,7 +48,7 @@ class SessionSummaryWidget extends StatelessWidget {
         title: l10n.summaryAppBar,
         density: MxAppBarDensity.content,
       ),
-      body: MxScreenScroll(
+      body: _CentredScroll(
         children: [
           const SizedBox(height: AppSpacing.micro),
           if (summary != null) ...[
@@ -107,5 +108,41 @@ class SessionSummaryWidget extends StatelessWidget {
     };
     if (note == null) return const [];
     return [const SizedBox(height: AppSpacing.grouped), note];
+  }
+}
+
+/// The summary's one moment: centred between the app bar and the footer when
+/// it fits, scrolled from the top when it does not (critique 2026-09-30 part
+/// 3c-1, R4). One caller, so it lives here rather than in `MxScreenScroll`.
+class _CentredScroll extends StatelessWidget {
+  const _CentredScroll({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: EdgeInsetsDirectional.only(
+          start: AppSpacing.gutter,
+          end: AppSpacing.gutter,
+          bottom: AppSpacing.section + bottomInset,
+        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: math.max(
+              0,
+              constraints.maxHeight - AppSpacing.section - bottomInset,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
+          ),
+        ),
+      ),
+    );
   }
 }
