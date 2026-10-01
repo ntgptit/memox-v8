@@ -29,7 +29,6 @@ final class MxTextStyles {
   static const double _rowDescriptionHeight = 1.45;
   static const double _overlineTracking = 0.6;
   static const double _overlineSize = 13;
-  static const double _compactOverlineSize = 12;
   static const double _eyebrowSize = 12;
   static const double _eyebrowTracking = 0.8;
   static const double _fieldLabelSize = 14;
@@ -299,12 +298,6 @@ final class MxTextStyles {
         fontFeatures: _tabular,
         color: _scheme.onSurface,
       );
-
-  /// The overline at 12, for a label inside a card that 13 would wrap on a
-  /// phone: the deck summary's progress line (owner 2026-09-26, register
-  /// row 119).
-  TextStyle get compactOverline =>
-      overline.copyWith(fontSize: _compactOverlineSize);
 
   /// Eyebrow: the context line above a big title or number (critique
   /// 2026-09-30 part 2, P2). The caller upper-cases the app's own words,

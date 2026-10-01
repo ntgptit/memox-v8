@@ -40,7 +40,7 @@ class CardScheduleWidget extends StatelessWidget {
             Text(
               title.toUpperCase(),
               semanticsLabel: title,
-              style: styles.overline,
+              style: styles.eyebrow,
             ),
             if (box != null) ...[
               _BoxRamp(box: box, count: _boxCount),

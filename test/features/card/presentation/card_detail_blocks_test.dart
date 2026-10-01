@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
@@ -122,6 +123,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardScheduleBox(3, 8).toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester
+          .widget<Text>(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+          .style,
+      tester
+          .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+          .textStyles
+          .eyebrow,
+    );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);
     expect(
       find.text(DateFormat.yMMMd('en').format(DateTime(2026, 9, 28))),

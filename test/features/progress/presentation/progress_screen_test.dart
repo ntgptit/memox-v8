@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -72,6 +73,14 @@ void main() {
     expect(find.textContaining('counts once'), findsOneWidget);
     // Critique 2026-09-30: Today's figure is stated once, in the Today card.
     expect(find.text(_en.progressToday.toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester.widget<Text>(find.text(_en.progressToday.toUpperCase())).style,
+      tester
+          .element(find.text(_en.progressToday.toUpperCase()))
+          .textStyles
+          .eyebrow,
+    );
     // M3-D3: every section gap on the overview is AppSpacing.gutter.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -

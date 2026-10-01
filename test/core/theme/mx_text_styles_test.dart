@@ -249,8 +249,6 @@ void main() {
       styles.overline.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
-    // D7: the deck summary label keeps 12, otherwise the same overline.
-    expect(styles.compactOverline, styles.overline.copyWith(fontSize: 12));
   });
 
   test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {

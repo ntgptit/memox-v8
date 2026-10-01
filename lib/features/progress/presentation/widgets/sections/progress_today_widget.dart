@@ -42,7 +42,7 @@ class ProgressTodayWidget extends StatelessWidget {
           Text(
             l10n.progressToday.toUpperCase(),
             semanticsLabel: l10n.progressToday,
-            style: styles.overline,
+            style: styles.eyebrow,
           ),
           const SizedBox(height: AppSpacing.micro),
           Text(

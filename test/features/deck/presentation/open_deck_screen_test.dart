@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_summary_card_widget.dart';
@@ -376,6 +377,11 @@ void main() {
     expect(donut.fraction, 0.5);
     final overline = _en.deckSummaryMastered(_en.deckSchedulerEightBox);
     expect(find.text(overline.toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester.widget<Text>(find.text(overline.toUpperCase())).style,
+      tester.element(find.text(overline.toUpperCase())).textStyles.eyebrow,
+    );
   });
 
   libraryTest('the summary counts every sub-deck under the due filter', (
