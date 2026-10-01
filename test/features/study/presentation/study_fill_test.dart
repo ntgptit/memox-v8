@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -239,5 +240,50 @@ void main() {
     await tester.tap(find.text(_en.studyContinue));
     await _settle(tester);
     expect(find.text('banana'), findsOneWidget);
+  });
+
+  libraryTest('Show hint moves nothing: the hint line is reserved, at the '
+      'study detail role (critique 2026-09-30 part 3c-2, R4)', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    final before = tester.getTopLeft(find.byType(TextField)).dy;
+    expect(find.bySemanticsLabel(_en.studyFillHintRow('hint 1')), findsNothing);
+
+    await tester.tap(find.text(_en.studyFillShowHint));
+    await _settle(tester);
+
+    expect(tester.getTopLeft(find.byType(TextField)).dy, before);
+    expect(
+      find.bySemanticsLabel(_en.studyFillHintRow('hint 1')),
+      findsOneWidget,
+    );
+    final hint = find.text('hint 1');
+    expect(
+      tester.widget<Text>(hint).style,
+      tester.element(hint).textStyles.studyDetail,
+    );
+    handle.dispose();
+  });
+
+  libraryTest('a hint that wraps is reserved whole too (R4)', (
+    tester,
+    env,
+  ) async {
+    final id = await _fill(env);
+    await env.db.customStatement(
+      "UPDATE card SET hint = 'starts with the letter t and has two "
+      "syllables, the second one a number' WHERE id = 'ST-01'",
+    );
+    await pumpLibraryScreen(tester, env, _screen(id));
+    final before = tester.getTopLeft(find.byType(TextField)).dy;
+
+    await tester.tap(find.text(_en.studyFillShowHint));
+    await _settle(tester);
+
+    expect(tester.getTopLeft(find.byType(TextField)).dy, before);
   });
 }

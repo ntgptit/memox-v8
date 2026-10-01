@@ -144,7 +144,16 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                             mainAxisSize: MainAxisSize.min,
                             spacing: AppSpacing.grouped,
                             children: [
-                              if (isHintShown) _HintRow(hint: hint),
+                              // Laid out from the start, so showing it moves
+                              // nothing (critique 2026-09-30 part 3c-2, R4).
+                              if (hint != null)
+                                Visibility(
+                                  visible: isHintShown,
+                                  maintainSize: true,
+                                  maintainAnimation: true,
+                                  maintainState: true,
+                                  child: _HintRow(hint: hint),
+                                ),
                               MxTextField(
                                 controller: _answer,
                                 focusNode: _focus,
@@ -207,7 +216,8 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
   }
 }
 
-/// The card's hint, shown on request (BR-STUDY-028).
+/// The card's hint, shown on request (BR-STUDY-028), at the study detail
+/// role (M3 body-medium; critique 2026-09-30 part 3c-2, R4).
 class _HintRow extends StatelessWidget {
   const _HintRow({required this.hint});
 
@@ -233,7 +243,7 @@ class _HintRow extends StatelessWidget {
           child: Text(
             hint,
             textAlign: TextAlign.center,
-            style: context.textStyles.sessionHint,
+            style: context.textStyles.studyDetail,
           ),
         ),
       ],
