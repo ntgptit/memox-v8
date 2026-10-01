@@ -10,11 +10,13 @@ import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.d
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -264,5 +266,37 @@ void main() {
       tester.widget<EditableText>(find.byType(EditableText)).controller.text,
       'a',
     );
+  });
+
+  libraryTest('the add FAB steps aside while search is open, so it covers '
+      'no row (critique 2026-09-30 part 3d-1)', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CardListSectionWidget(
+          deckId: deckId,
+          algorithm: 'Eight boxes',
+          onAddCard: () {},
+          onOpenCard: (_) {},
+          onExport: (_) {},
+        ),
+        floatingActionButton: CardAddFabWidget(
+          deckId: deckId,
+          onAddCard: () {},
+        ),
+      ),
+    );
+    expect(find.byType(MxFab), findsOneWidget);
+
+    await _openSearch(tester, deckId);
+    expect(find.byType(MxFab), findsNothing);
+
+    ProviderScope.containerOf(
+      tester.element(find.byType(CardListSectionWidget)),
+    ).read(cardSearchOpenProvider(deckId).notifier).close();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxFab), findsOneWidget);
   });
 }
