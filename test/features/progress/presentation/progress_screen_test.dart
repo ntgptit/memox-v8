@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -89,12 +90,34 @@ void main() {
     );
     final total = await _row(tester, _en.progressAllDecks);
     expect(
-      find.descendant(of: total, matching: find.text('26')),
+      find.descendant(
+        of: total,
+        matching: find.text(_en.progressRowCardsDays(26, 6)),
+      ),
       findsOneWidget,
+    );
+    // The total opens nothing, so it has no chevron (D3).
+    expect(
+      find.descendant(of: total, matching: find.byIcon(AppIcons.chevronRight)),
+      findsNothing,
     );
     final topik = await _row(tester, 'Tiếng Hàn TOPIK I · Từ vựng');
     expect(
-      find.descendant(of: topik, matching: find.text('13')),
+      find.descendant(
+        of: topik,
+        matching: find.text(_en.progressRowCardsDays(13, 6)),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: topik,
+        matching: find.textContaining(_en.progressRowCardDaysLead),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: topik, matching: find.byIcon(AppIcons.chevronRight)),
       findsOneWidget,
     );
   });
@@ -137,7 +160,8 @@ void main() {
     expect(find.byType(MxSkeletonList), findsNothing);
     final basics = await _row(tester, 'Korean Basics');
     expect(
-      find.descendant(of: basics, matching: find.text('10')),
+      // The card count leads the meta line (critique 2026-09-30 part 3d-1).
+      find.descendant(of: basics, matching: find.textContaining('10 cards · ')),
       findsOneWidget,
     );
     final it = await _row(tester, 'IT');
@@ -195,6 +219,14 @@ void main() {
     await _settle(tester);
 
     expect(find.byType(MxDashedNote), findsNWidgets(2));
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.progressStartStudying),
+          )
+          .tone,
+      MxButtonTone.primary,
+    );
     await tester.tap(find.text(_en.progressStartStudying));
     expect(taps.study, 1);
     expect(find.text(_en.progressAllDecks), findsNothing);
@@ -307,5 +339,29 @@ void main() {
 
     expect(find.bySemanticsLabel(_en.progressLoading), findsOneWidget);
     handle.dispose();
+  });
+
+  libraryTest('a deck row reads its card-days in Vietnamese (D3)', (
+    tester,
+    env,
+  ) async {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    await progressLibrary(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(_Taps()),
+      locale: const Locale('vi'),
+    );
+    await _settle(tester);
+
+    final topik = await _row(tester, 'Tiếng Hàn TOPIK I · Từ vựng');
+    expect(
+      find.descendant(
+        of: topik,
+        matching: find.textContaining(vi.progressRowCardDaysLead),
+      ),
+      findsOneWidget,
+    );
   });
 }
