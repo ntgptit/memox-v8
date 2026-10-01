@@ -53,7 +53,10 @@ presses queue rather than kill a run that may be mid-publish.
    file is written to `$RUNNER_TEMP` from the `SUPABASE_URL` and
    `SUPABASE_PUBLISHABLE_KEY` secrets (ADR-015; a missing secret warns and
    the APK builds without sync) and the `GOOGLE_WEB_CLIENT_ID` secret (auth
-   spec 2026-09-30 O11; empty leaves email sign-in only), then rename
+   spec 2026-09-30 O11; empty leaves email sign-in only), signed by the
+   release key when the `ANDROID_KEY*` secrets are set (the keystore decoded
+   into `$RUNNER_TEMP`, `android/key.properties` pointing at it; otherwise
+   the debug key, with a warning), then rename
    `build/app/outputs/flutter-apk/app-release.apk` to
    `memox-<run_number>-<sha8>.apk`.
 7. **Publish.** `gh release create build-<run_number>-<sha8> <apk>
