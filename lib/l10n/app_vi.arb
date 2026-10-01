@@ -1007,6 +1007,7 @@
   "studyOptionsCardLimitRange": "1 đến {max}",
   "studyOptionsFixLimit": "Sửa giới hạn để lưu được.",
   "studyOptionsSaveFailed": "Chưa lưu được. Bộ thẻ vẫn dùng {count} thẻ, {order}.",
+  "studyOptionsNotSavedTitle": "Chưa lưu",
   "studyOptionsLocalOnly": "Chỉ lưu trên thiết bị này.",
   "studyOptionsSaving": "Đang lưu…",
   "studyOptionsSaved": "Đã lưu · áp dụng cho phiên sau",

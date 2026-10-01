@@ -5283,6 +5283,7 @@
     },
     "description": "Screen handoff 15 (FE-A3 plan 2): footer caption after a failed save (E4); {order} is …Short."
   },
+  "studyOptionsNotSavedTitle": "Not saved",
   "studyOptionsLocalOnly": "Saved to this device only.",
   "@studyOptionsLocalOnly": {
     "description": "Screen handoff 15 (FE-A3 plan 2): footer caption."

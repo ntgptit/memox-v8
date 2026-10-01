@@ -245,4 +245,43 @@ void main() {
     expect(find.byType(MxSkeletonList), findsOneWidget);
     expect(find.text(_en.cardSave), findsNothing);
   });
+
+  libraryTest('a failed save shows a danger banner at the top; the caption '
+      'stays the local-only line (critique 2026-09-30 part 3d-1)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..isFailing = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(ids.subId),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardSave));
+    await tester.pumpAndSettle();
+
+    final banner = find.widgetWithText(
+      MxInlineBanner,
+      _en.studyOptionsNotSavedTitle,
+    );
+    expect(banner, findsOneWidget);
+    expect(tester.widget<MxInlineBanner>(banner).tone, MxBannerTone.danger);
+    expect(
+      find.descendant(
+        of: banner,
+        matching: find.text(
+          _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(_en.studyOptionsLocalOnly), findsOneWidget);
+  });
 }
