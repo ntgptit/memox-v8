@@ -23,7 +23,7 @@ class SessionContextLineWidget extends StatelessWidget {
       text.toUpperCase(),
       semanticsLabel: text,
       textAlign: TextAlign.center,
-      style: context.textStyles.overline,
+      style: context.textStyles.eyebrow,
     ),
   );
 }

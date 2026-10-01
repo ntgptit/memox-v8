@@ -43,7 +43,7 @@ class StudyEntryHeroWidget extends StatelessWidget {
               Text(
                 algorithm.toUpperCase(),
                 semanticsLabel: algorithm,
-                style: styles.overline,
+                style: styles.eyebrow,
               ),
               Text(
                 l10n.studyEntryLimit(entry.cardLimit),

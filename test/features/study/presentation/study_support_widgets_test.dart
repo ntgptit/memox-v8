@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -212,5 +213,32 @@ void main() {
       tester.getSize(find.byType(MxButton)).width,
       2 * 160 + AppSpacing.control,
     );
+  });
+
+  libraryTest('the face label and the context line are eyebrows (critique '
+      '2026-09-30 part 2, P2)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        const Column(
+          children: [
+            SessionContextLineWidget(text: 'Words · Review'),
+            SizedBox(
+              height: 300,
+              child: StudyFaceCardWidget(label: 'Term', child: Text('x')),
+            ),
+          ],
+        ),
+      ),
+    );
+    for (final text in ['WORDS · REVIEW', 'TERM']) {
+      final label = find.text(text);
+      expect(
+        tester.widget<Text>(label).style,
+        tester.element(label).textStyles.eyebrow,
+        reason: text,
+      );
+    }
   });
 }

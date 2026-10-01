@@ -302,4 +302,18 @@ void main() {
     expect(find.byType(StudyEntryScreen), findsNothing);
     expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
   });
+
+  libraryTest('the hero overline is an eyebrow (critique 2026-09-30 part 2, '
+      'P2)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    await _learned(env, root.id, 'd1', DateTime(2026, 9, 20));
+    await lockScheduler(env.db, root.id);
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+
+    final overline = find.text(_en.deckSchedulerEightBox.toUpperCase());
+    expect(
+      tester.widget<Text>(overline).style,
+      tester.element(overline).textStyles.eyebrow,
+    );
+  });
 }
