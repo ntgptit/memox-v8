@@ -111,18 +111,21 @@ class DeckLibraryRootWidget extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.micro,
-              AppSpacing.gutter,
-              AppSpacing.control,
+          // Reorder mode leaves the deck list alone, as it leaves out the
+          // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
+          if (!isReordering)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.gutter,
+                AppSpacing.micro,
+                AppSpacing.gutter,
+                AppSpacing.control,
+              ),
+              child: MxSearchField.trigger(
+                hintText: l10n.searchFieldHint,
+                onTap: onSearch,
+              ),
             ),
-            child: MxSearchField.trigger(
-              hintText: l10n.searchFieldHint,
-              onTap: onSearch,
-            ),
-          ),
           Expanded(
             child: DeckLevelBodyWidget(
               parentId: null,

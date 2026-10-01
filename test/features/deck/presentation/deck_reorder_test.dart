@@ -14,6 +14,7 @@ import 'package:memox/features/deck/presentation/providers/reorder_deck_use_case
 import 'package:memox/features/deck/presentation/widgets/items/deck_reorder_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -285,5 +286,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(_shownOrder(tester), ['B', 'A', 'Cc']);
     expect(await _rootOrder(env), ['B', 'A', 'Cc']);
+  });
+
+  libraryTest('reorder hides the search field; Done brings it back '
+      '(critique 2026-09-30 part 3d-2, E3)', (tester, env) async {
+    for (final name in ['A', 'B']) {
+      await env.decks.root(name);
+    }
+    await pumpLibraryScreen(tester, env, deckScreen());
+    expect(find.byType(MxSearchField), findsOneWidget);
+
+    await _startReorder(tester);
+    expect(find.byType(MxSearchField), findsNothing);
+
+    await tester.tap(find.text(_en.libraryReorderDone));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxSearchField), findsOneWidget);
+  });
+
+  test('the recent sort is named by date added, its hint says the order '
+      '(critique 2026-09-30 part 3d-2, E2)', () {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    expect(_en.deckSortRecent, 'Date added');
+    expect(_en.deckSortRecentHint, 'Newest first');
+    expect(vi.deckSortRecent, 'Ngày tạo');
   });
 }

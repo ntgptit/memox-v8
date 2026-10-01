@@ -136,7 +136,7 @@
   "@deckSortName": {
     "description": "Deck order: by name."
   },
-  "deckSortRecent": "Newest",
+  "deckSortRecent": "Date added",
   "@deckSortRecent": {
     "description": "Deck order: newest first."
   },
