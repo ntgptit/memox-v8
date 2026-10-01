@@ -30,6 +30,9 @@ final class MxTextStyles {
   static const double _overlineTracking = 0.6;
   static const double _overlineSize = 13;
   static const double _compactOverlineSize = 12;
+  static const double _eyebrowSize = 12;
+  static const double _eyebrowTracking = 0.8;
+  static const double _fieldLabelSize = 14;
   static const double _pillHeight = 1;
   static const double _noteHeight = 1.5;
   static const double _workloadHeight = 1.5;
@@ -284,7 +287,8 @@ final class MxTextStyles {
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Overline (Section, ListSectionHeader, field labels): 13/700, 0.6
+  /// Section label: the overline that introduces a list or settings group,
+  /// and nothing else (critique 2026-09-30 part 2, P1): 13/700, 0.6
   /// tracking, onSurface, so a group title reads as a boundary (spec
   /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
   /// a trailing static count lines up. The widget upper-cases the text.
@@ -302,6 +306,24 @@ final class MxTextStyles {
   TextStyle get compactOverline =>
       overline.copyWith(fontSize: _compactOverlineSize);
 
+  /// Eyebrow: the context line above a big title or number (critique
+  /// 2026-09-30 part 2, P2). The caller upper-cases the app's own words,
+  /// never user data.
+  TextStyle get eyebrow =>
+      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w600).copyWith(
+        fontSize: _eyebrowSize,
+        letterSpacing: _eyebrowTracking,
+        fontFeatures: _tabular,
+        color: _scheme.onSurfaceVariant,
+      );
+
+  /// Field label: names an input or a read-only field, in sentence case
+  /// (critique 2026-09-30 part 2, P3).
+  TextStyle get fieldLabel => AppTypography.withWeight(
+    _texts.labelLarge!,
+    FontWeight.w600,
+  ).copyWith(fontSize: _fieldLabelSize, color: _scheme.onSurface);
+
   /// A stat's figure (StatTile): the headline role at 700, tabular, tight
   /// line box, in the ink the tile's emphasis picks (FE-A6 D17).
   TextStyle statValue(Color ink) => AppTypography.withWeight(
@@ -309,15 +331,16 @@ final class MxTextStyles {
     FontWeight.w700,
   ).copyWith(height: _statValueHeight, fontFeatures: _tabular, color: ink);
 
-  /// A stat's label: the overline. The widget upper-cases it.
-  TextStyle get statLabel => overline;
+  /// A stat's label: the eyebrow. The widget upper-cases it.
+  TextStyle get statLabel => eyebrow;
 
   /// A card row's status label (screen 07): the overline's 12/700 and 0.6
   /// tracking, in its status ink. The widget upper-cases the text.
   TextStyle statusLabel(Color ink) => overline.copyWith(color: ink);
 
-  /// A card field's "Required" marker: the overline in primary (kit 08).
-  TextStyle get requiredMarker => overline.copyWith(color: _primaryInk);
+  /// A field's "Required" caption: the optional caption's size in primary
+  /// ink (critique 2026-09-30 part 2, P3).
+  TextStyle get requiredMarker => rowDescription.copyWith(color: _primaryInk);
 
   /// A card field's count (kit FieldHeader): the counter at 0.2 tracking, in
   /// error past the limit.

@@ -273,7 +273,9 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Body** (400, 14px, 1.5): default running text.
 - **Caption** (600, 12px, 1.4): metadata, counts, chips. 12px is a hard floor; nothing renders smaller than 12 except the 9px donut centre label.
 - **Button Label** (600, 14px, 1.5, 0.1px): component override of Body; compact and chip buttons use the small label.
-- **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group (see Do's and Don'ts).
+- **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group, and nothing else.
+- **Eyebrow** (600, 12px, 0.8px, tabular, `on-surface-variant`): the context line above a big title or number; the app's own words upper-cased, user data as typed (critique 2026-09-30 part 2).
+- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in primary ink.
 
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
@@ -377,4 +379,4 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Don't** add hover states (Android only) or a global text style for one component.
 - **Don't** put text below 12px (the 9px donut label is the sole exception, inside a fixed ring) or a fixed height around text.
 - **Don't** put failure copy in a component, or word a load failure as though data was lost.
-- **Don't** introduce an all-caps overline above headings as decoration; the section label exists to introduce a list or settings group and nowhere else.
+- **Don't** introduce an all-caps overline above headings as decoration; the section label introduces a list or settings group, the eyebrow is the one context line above a title or number, and user data is never upper-cased.
