@@ -58,6 +58,11 @@ void main() {
     // 2026-09-30 part 3b).
     expect(find.textContaining(' OF '), findsNothing);
     expect(find.text(_en.trashKindLock), findsOneWidget);
+    // Above the list, not after it (critique 2026-09-30 part 3d-1, D4).
+    expect(
+      tester.getTopLeft(find.text(_en.trashKindLock)).dy,
+      lessThan(tester.getTopLeft(find.text('meokda · eat')).dy),
+    );
 
     // A deck cannot join a selection of cards.
     await _tap(tester, find.text('Basics'));
@@ -158,6 +163,12 @@ void main() {
     expect(
       find.text(_en.trashPurgeBlocked('Food', 'bap · rice')),
       findsOneWidget,
+    );
+    expect(
+      tester
+          .getTopLeft(find.text(_en.trashPurgeBlocked('Food', 'bap · rice')))
+          .dy,
+      lessThan(tester.getTopLeft(find.text('Food')).dy),
     );
   });
 
