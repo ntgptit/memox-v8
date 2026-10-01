@@ -79,8 +79,8 @@ fails.
 
           keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
 
-      One Android client per signing key: another machine, and later a
-      release key, each need their own.
+      One Android client per signing key: another machine and the release
+      key of step 6 each need their own.
 2. **Supabase → Authentication → Sign In / Providers:**
    - **Google:** on. *Client IDs*: the Web client ID **first**, then every
      Android client ID, separated by commas. *Client Secret*: the Web
@@ -115,11 +115,41 @@ fails.
    `GOOGLE_WEB_CLIENT_ID`. Without it, email sign-in still works and Google
    does not.
 
-**Known limit:** the Build APK workflow signs with a debug key that the runner
-creates on each run, so no Android client can match its SHA-1, and Google
-sign-in fails on those APKs; email works. Google works on a build signed by a
-key registered in step 1.3, such as `flutter run` from your machine. A fixed
-release key, kept as a secret, would remove this limit.
+6. **The release key for the Build APK workflow.** Without it the workflow
+   signs with a debug key the runner creates on each run: no Android client
+   can match it, Google sign-in fails on those APKs (email works), and a new
+   APK cannot be installed over the last one. Once:
+   1. Create the key with the JDK's `keytool` (in the JDK's `bin`, also on
+      Windows). Its password: letters and digits only (the workflow writes it
+      into a `.properties` file, where `\` escapes). The keystore is PKCS12,
+      which has one password: if `keytool` asks for a key password, press
+      RETURN to reuse it.
+
+          keytool -genkeypair -keystore memox-release.jks -alias memox -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=MemoX"
+
+      Keep the `.jks` and its password somewhere safe outside the repo:
+      without them no later APK installs over one signed by this key (on
+      Google Play it would become the upload key).
+   2. The keystore as one line of base64:
+
+          base64 -w0 memox-release.jks                                          # Linux
+          base64 -i memox-release.jks                                           # macOS
+          [Convert]::ToBase64String([IO.File]::ReadAllBytes("memox-release.jks"))  # PowerShell
+
+      Repository secrets: `ANDROID_KEYSTORE_BASE64` (that line),
+      `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD` (both the one
+      password), and `ANDROID_KEY_ALIAS` (`memox`).
+   3. Run Build APK by hand. Its job summary shows the APK's signer; add its
+      SHA-1 as another Android client (step 1.3), and that client ID to
+      Supabase's *Client IDs* (step 2).
+   4. The first APK with this key does not install over an older one, and
+      uninstalling removes the phone's data. An anonymous install cannot get
+      it back: a reinstall is a new anonymous user. So first sign in with an
+      email code on the old APK and let it sync; then uninstall, install the
+      new APK, and sign in with the same email.
+
+   The workflow fails if a key is given and the APK still carries the debug
+   key; `flutter run` on your machine keeps the debug key.
 
 After setup, run the device check (auth spec §9.1) and record its results
 there.
