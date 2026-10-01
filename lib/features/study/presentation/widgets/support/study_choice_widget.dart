@@ -19,6 +19,7 @@ class StudyChoiceWidget extends StatelessWidget {
     this.padding = EdgeInsets.zero,
     this.isSelected = false,
     this.isFaded = false,
+    this.isRecessed = false,
     this.sortKey,
     this.onTap,
   });
@@ -35,6 +36,9 @@ class StudyChoiceWidget extends StatelessWidget {
 
   /// Out of play once the turn is answered (kit Guess).
   final bool isFaded;
+
+  /// An idle tile on the recessed ground (Match's meanings).
+  final bool isRecessed;
 
   /// Its place in TalkBack's reading order, when it is not the layout's.
   final SemanticsSortKey? sortKey;
@@ -57,7 +61,12 @@ class StudyChoiceWidget extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
       child: TweenAnimationBuilder<Decoration>(
         tween: DecorationTween(
-          end: AppDecorations.studyChoice(colors, derived, tone),
+          end: AppDecorations.studyChoice(
+            colors,
+            derived,
+            tone,
+            isRecessed: isRecessed,
+          ),
         ),
         duration: motion,
         curve: Easing.standard,

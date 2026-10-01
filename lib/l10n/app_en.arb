@@ -4260,7 +4260,7 @@
   "@studyGuessBlockedBody": {
     "description": "Screen handoff 18 (FE-A6 P3): a blocked question body."
   },
-  "studyMatchHint": "Tap a term, then its meaning to match",
+  "studyMatchHint": "Tap a term and its meaning, in either order",
   "@studyMatchHint": {
     "description": "Screen handoff 17 (FE-A6 P3): footer hint."
   },
