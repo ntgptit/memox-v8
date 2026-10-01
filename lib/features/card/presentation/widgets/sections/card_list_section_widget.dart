@@ -26,6 +26,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_tool
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -96,7 +97,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// Ruling E-L6: the last Flag failed; the selection stays. Flag's sheet
   /// closes before the write, so the section says so; Move, Tag and Delete
   /// keep their overlay open and say it there.
-  var _hasBulkFailed = false;
+  /// The flag write that failed, kept so Retry repeats it as it was
+  /// (critique 2026-09-30 part 3d-1); null when nothing failed.
+  (Set<String>, bool)? _failedFlag;
+
+  bool get _hasBulkFailed => _failedFlag != null;
 
   @override
   void dispose() {
@@ -127,12 +132,18 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     _selection().clear();
   }
 
-  /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
-  /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6).
   Future<void> _flag(Set<String> cardIds) async {
-    setState(() => _hasBulkFailed = false);
+    setState(() => _failedFlag = null);
     final isFlagged = await showCardFlagSheet(context);
     if (isFlagged == null || !mounted) return;
+    await _writeFlag(cardIds, isFlagged);
+  }
+
+  /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
+  /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6), and
+  /// Retry repeats it (critique 2026-09-30 part 3d-1).
+  Future<void> _writeFlag(Set<String> cardIds, bool isFlagged) async {
+    setState(() => _failedFlag = null);
     try {
       final outcome = await ref
           .read(cardActionsControllerProvider.notifier)
@@ -153,7 +164,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       }
     } on Failure {
       if (!mounted) return;
-      setState(() => _hasBulkFailed = true);
+      setState(() => _failedFlag = (cardIds, isFlagged));
     }
   }
 
@@ -161,7 +172,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// landed. The section may be gone by then (the deck emptied), hence the
   /// `mounted` check.
   Future<void> _clearAfter(Future<bool> write) async {
-    setState(() => _hasBulkFailed = false);
+    setState(() => _failedFlag = null);
     if (await write && mounted) _selection().clear();
   }
 
@@ -326,6 +337,14 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
                 tone: MxBannerTone.danger,
                 title: l10n.cardBulkFailedTitle,
                 message: l10n.cardBulkFailedBody,
+                actions: [
+                  if (_failedFlag case (final ids, final isFlagged))
+                    MxButton(
+                      label: l10n.commonRetry,
+                      size: MxButtonSize.compact,
+                      onPressed: () => unawaited(_writeFlag(ids, isFlagged)),
+                    ),
+                ],
               ),
             ),
           if (isSelecting) CardBulkBarWidget(actions: _bulkActions(selected)),

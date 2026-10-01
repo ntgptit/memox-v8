@@ -15,6 +15,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
@@ -75,6 +76,28 @@ final class _FailingFlags implements CardRepository {
     required bool isFlagged,
     DateTime? now,
   }) => Future.error(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Fails the first write and any while [isFailing]; counts every call.
+final class _FlakyFlags implements CardRepository {
+  final calls = <(Set<String>, bool)>[];
+  var isFailing = true;
+
+  @override
+  Future<Outcome<void, CardRejection>> setFlagged({
+    required Set<String> cardIds,
+    required bool isFlagged,
+    DateTime? now,
+  }) {
+    calls.add((cardIds, isFlagged));
+    if (isFailing) {
+      return Future.error(const UnknownDatabaseFailure(cause: 'locked'));
+    }
+    return Future.value(const Ok(null));
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -298,5 +321,58 @@ void main() {
     ).read(cardSearchOpenProvider(deckId).notifier).close();
     await tester.pumpAndSettle();
     expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  Future<_FlakyFlags> failOneFlag(WidgetTester tester, LibraryEnv env) async {
+    final flags = _FlakyFlags();
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(deckId),
+      overrides: [
+        setCardsFlaggedUseCaseProvider.overrideWithValue(
+          SetCardsFlaggedUseCase(flags),
+        ),
+      ],
+    );
+    await tester.longPress(find.text('annyeong'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardFlag));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardFlagSet));
+    await tester.pumpAndSettle();
+    return flags;
+  }
+
+  libraryTest('Retry repeats the failed flag with the same cards and choice '
+      '(critique 2026-09-30 part 3d-1)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+    flags.isFailing = false;
+
+    await tester.tap(find.widgetWithText(MxButton, _en.commonRetry));
+    await tester.pumpAndSettle();
+
+    expect(flags.calls, hasLength(2));
+    expect(flags.calls.last, flags.calls.first);
+    expect(find.text(_en.cardBulkFailedTitle), findsNothing);
+    expect(find.text(_en.cardFlaggedToast(1)), findsOneWidget);
+  });
+
+  libraryTest('a retry that fails again keeps the banner and the selection '
+      '(Review Focus 2)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+
+    await tester.tap(find.widgetWithText(MxButton, _en.commonRetry));
+    await tester.pumpAndSettle();
+
+    expect(flags.calls, hasLength(2));
+    expect(find.text(_en.cardBulkFailedTitle), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      ),
+      findsOneWidget,
+    );
   });
 }
