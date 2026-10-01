@@ -22,9 +22,8 @@ against the schedule (BR-MODE-005, BR-MODE-006). FE-A6; UC-STUDY-001 (steps
 Common to Browse, Match, Guess, Recall and Fill (17–20).
 
 - **`MxStudyTopBar`.** Close icon exits the session (see Exit/abandon below).
-  Mode badge: the mode name, uppercase, tinted with the bar's accent (primary
-  by default; Recall and Fill pass the mastery colour instead — no BR found
-  for that choice, ruled below). Progress track and
+  Mode badge: the mode name, uppercase, tinted with the bar's Indigo, in every
+  mode (critique 2026-09-30 part 3c-2, R8). Progress track and
   counter: for the four round-based modes the fraction is the **round's**
   position and size, never the board's (BR-STUDY-049 says this explicitly for
   Match's boards); for Browse and `self_assess` it is the stage's whole queue,
@@ -95,6 +94,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 - The card follows the finger without a tilt while dragged, and stays still with reduced motion.
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.
+- **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the footer hint's glyph sits inline before the first line and the hint reserves two lines, so the CTA stands still (R6); the bar is Indigo in every mode (R8); the context line holds two lines at most (R9).
 
 ## Copy
 
