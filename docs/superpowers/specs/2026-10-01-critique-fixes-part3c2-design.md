@@ -1,7 +1,7 @@
 # Whole-app critique 2026-09-30, part 3c-2: the session screens — design
 
-Status: draft 2026-10-01 ·
-Path: architectural (one shared widget loses a parameter, three new study-local behaviours, five
+Status: approved 2026-10-01 ·
+Path: architectural (two shared widgets narrowed, three new study-local behaviours, five
 screens) · Owner rulings 2026-10-01 (§2): R1–R9
 
 ## 1. Intent
@@ -44,8 +44,8 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
 - **R2.** Guess keeps its hold: 1200 ms or until a tap, right or wrong (FE-A6 G1 stands).
 - **R3.** Match: meaning cells take the recessed ground of an answer face; term cells stay raised.
   The hint reads "Tap a term and its meaning, in either order".
-- **R4.** Fill: the card's hint gets a larger size, and its line is reserved before it shows, so
-  the typed text never moves.
+- **R4.** Fill: the card's hint takes a Material 3 type-scale role larger than the footer's
+  12 px, and its line is reserved before it shows, so the typed text never moves.
 - **R5.** Guess blocked: the notice is centred vertically, and "Close the session" carries no ×
   glyph; the top bar's × and the notice's glyph remain.
 - **R6.** Footer hint: the glyph sits inline before the text's first line and wraps with it; the
@@ -101,10 +101,10 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
 
 ### 3.4 Fill's hint (R4)
 
-- The card's hint row uses `studyDetail` (14/400, variant ink), the role a study card already
-  gives its pronunciation and example. The owner's popup named "13 px, caption size", but the
-  caption is 12 px and the type scale has no 13 px body role; 14 px is the nearest study role.
-  The owner confirms this with the spec.
+- The card's hint row uses `studyDetail`, the Material 3 body-medium role (14/400, variant
+  ink) that a study card already gives its pronunciation and example. The owner ruled for the
+  M3 type scale (2026-10-01): the popup's "13 px, caption size" has no role in it, as the
+  caption is 12 px.
 - When the card has a hint, its row is laid out from the start and stays invisible, without
   semantics, until the hint is shown. The field never moves. A card without a hint reserves
   nothing.
@@ -115,14 +115,16 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
   as the summary does (3c-1 R4). The summary's private `_CentredScroll` moves to a study-local
   support widget, `StudyCentredScrollWidget`, and both screens use it. It stays in the study
   feature: both callers are there.
-- The `MxErrorState` call drops `actionIcon`; the button reads "Close the session" alone.
+- The button reads "Close the session" alone. `MxErrorState.actionIcon` defaults to the retry
+  glyph and cannot be empty today, so it becomes nullable: null draws no glyph, and the
+  default stays.
 
 ### 3.6 Recall and Fill accent (R8)
 
 - `StudySessionScreen` passes no accent: every mode's top bar is Indigo, its chip text in
   `primaryInk`.
 - `MxStudyTopBar` loses `accent` and `accentInk`: no product screen passes them any more (no
-  speculative structure). The gallery's mastery sample goes with them.
+  speculative structure; owner, 2026-10-01). The gallery's Recall sample keeps its full track and drops the accent.
 - The detail files of 16, 19 and 20 drop "mastery accent"; DESIGN.md's `MxStudyTopBar` line
   says the bar is Indigo in every mode.
 
