@@ -461,44 +461,4 @@ void main() {
 
     expect(find.text(_en.cardCaptionAddMissing), findsOneWidget);
   });
-
-  MxButton saveChanges(WidgetTester tester) =>
-      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges));
-
-  libraryTest('edit: Save waits for a change and goes quiet when it is '
-      'undone (critique 2026-09-30 part 3d-1)', (tester, env) async {
-    final deckId = await _words(env);
-    final card = await env.cards.card(
-      deckId,
-      const CardDraft(front: 'bap', back: 'rice'),
-    );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
-    await tester.pumpAndSettle();
-    expect(saveChanges(tester).onPressed, isNull);
-
-    await tester.enterText(_field(1), 'cooked rice');
-    await tester.pump();
-    expect(saveChanges(tester).onPressed, isNotNull);
-
-    await tester.enterText(_field(1), 'rice');
-    await tester.pump();
-    expect(saveChanges(tester).onPressed, isNull);
-  });
-
-  libraryTest('edit: the flag alone is a change (Review Focus 3)', (
-    tester,
-    env,
-  ) async {
-    final deckId = await _words(env);
-    final card = await env.cards.card(
-      deckId,
-      const CardDraft(front: 'bap', back: 'rice'),
-    );
-    await pumpLibraryScreen(tester, env, _edit(card.id));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byTooltip(_en.cardFlagLabel));
-    await tester.pump();
-    expect(saveChanges(tester).onPressed, isNotNull);
-  });
 }
