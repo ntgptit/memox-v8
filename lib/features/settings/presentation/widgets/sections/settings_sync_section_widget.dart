@@ -31,9 +31,11 @@ class SettingsSyncSectionWidget extends StatelessWidget {
           label: l10n.settingsSync,
           subtitle: syncStatusLine(l10n, status, now),
           icon: AppIcons.sync,
-          iconTone: syncIsSettled(status)
-              ? MxIconTileTone.success
-              : MxIconTileTone.tinted,
+          iconTone: switch (status) {
+            _ when syncNeedsAttention(status) => MxIconTileTone.warning,
+            _ when syncIsSettled(status) => MxIconTileTone.success,
+            _ => MxIconTileTone.tinted,
+          },
           onTap: onOpenSync,
         ),
       ],

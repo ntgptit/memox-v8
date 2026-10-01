@@ -6249,6 +6249,7 @@
   "@syncNote": {
     "description": "Screen 27 (SB-U1): the Status section note."
   },
+  "syncSyncing": "Syncing…",
   "syncNow": "Sync now",
   "@syncNow": {
     "description": "Screen 27 (SB-U1): the button that runs a sync."

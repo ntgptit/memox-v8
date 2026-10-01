@@ -96,4 +96,19 @@ void main() {
       isFalse,
     );
   });
+
+  test('needs attention: the last run failed or a change was refused '
+      '(critique 2026-09-30 part 3d-1, D5)', () {
+    final at = DateTime(2026, 9, 28, 0, 10);
+    expect(syncNeedsAttention(const SyncStatus()), isFalse);
+    expect(syncNeedsAttention(SyncStatus(lastSuccessAt: at)), isFalse);
+    expect(syncNeedsAttention(const SyncStatus(pendingCount: 2)), isFalse);
+    expect(syncNeedsAttention(const SyncStatus(rejectedCount: 1)), isTrue);
+    expect(
+      syncNeedsAttention(
+        SyncStatus(lastFailure: LastSyncFailure(SyncFailureKind.network, at)),
+      ),
+      isTrue,
+    );
+  });
 }

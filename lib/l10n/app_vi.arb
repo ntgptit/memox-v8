@@ -1185,6 +1185,7 @@
   "syncWaitingCount": "{count, plural, other{{count} thay đổi}}",
   "syncWaitingNone": "Không có gì đang chờ",
   "syncNote": "MemoX tự đồng bộ khi có mạng. Việc học không bao giờ phải chờ đồng bộ.",
+  "syncSyncing": "Đang đồng bộ…",
   "syncNow": "Đồng bộ ngay",
   "syncRejectedTitle": "{count, plural, other{{count} thay đổi chưa được máy chủ nhận}}",
   "syncTryAgain": "Thử lại",

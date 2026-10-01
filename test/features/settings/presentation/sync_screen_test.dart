@@ -345,4 +345,44 @@ void main() {
     expect(find.byType(SyncStatusSectionWidget), findsOneWidget);
     expect(syncCheck(), findsNothing);
   });
+
+  libraryTest('while Sync now runs the screen says Syncing…; the button comes '
+      'back after (critique 2026-09-30 part 3d-1, D5)', (tester, env) async {
+    final commands = FakeSyncCommands()..hold = Completer<bool>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await _settle(tester);
+
+    expect(find.text('Syncing…'), findsOneWidget);
+    expect(find.text('Sync now'), findsNothing);
+
+    commands.hold!.complete(true);
+    await _settle(tester);
+    expect(find.text('Sync now'), findsOneWidget);
+    expect(find.text('Syncing…'), findsNothing);
+  });
+
+  libraryTest('a sync that fails while Syncing… shows brings the button and '
+      'the failure back (Review Focus 5)', (tester, env) async {
+    final commands = FakeSyncCommands()..hold = Completer<bool>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const SyncScreen(),
+      overrides: syncOverrides(const SyncStatus(), commands),
+    );
+    await tester.tap(find.text('Sync now'));
+    await _settle(tester);
+
+    commands.hold!.complete(false);
+    await _settle(tester);
+    expect(find.text('Sync now'), findsOneWidget);
+    expect(find.text('Syncing…'), findsNothing);
+    expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
+  });
 }

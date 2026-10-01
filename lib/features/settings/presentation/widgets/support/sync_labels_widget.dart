@@ -51,6 +51,12 @@ bool syncIsSettled(SyncStatus status) =>
     status.rejectedCount == 0 &&
     status.lastFailure == null;
 
+/// Something needs the person: the last run failed or a change was
+/// refused. Screen 23's Sync tile turns warning (critique 2026-09-30 part
+/// 3d-1, D5).
+bool syncNeedsAttention(SyncStatus status) =>
+    status.lastFailure != null || status.rejectedCount > 0;
+
 /// Screen 27's failure banner (spec §5.4): local-first, no code or message.
 String syncFailureSentence(AppLocalizations l10n, SyncFailureKind kind) =>
     switch (kind) {
