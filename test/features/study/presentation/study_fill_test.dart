@@ -300,4 +300,23 @@ void main() {
 
     expect(tester.getTopLeft(find.byType(TextField)).dy, before);
   });
+
+  libraryTest('a double tap on Show hint does not check a half-typed '
+      'answer: Check settles first (critique 2026-09-30 part 3c-2, final '
+      'review)', (tester, env) async {
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _type(tester, 'te');
+    await tester.tap(find.text(_en.studyFillShowHint));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyFillCheck), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(await _loggedTurns(env), 0);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'te',
+    );
+  });
 }

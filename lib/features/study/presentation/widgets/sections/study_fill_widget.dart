@@ -170,39 +170,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
             ),
           ),
         ),
-        StudySettleGuardWidget(
-          phase: _isWrong,
-          child: ListenableBuilder(
-            listenable: _answer,
-            builder: (context, _) => StudyCtaRowWidget(
-              children: _isWrong
-                  ? [
-                      MxButton(
-                        label: l10n.studyContinue,
-                        size: MxButtonSize.study,
-                        onPressed: widget.isBusy ? null : widget.onContinue,
-                      ),
-                    ]
-                  : [
-                      if (canShowHint)
-                        MxButton(
-                          label: l10n.studyFillShowHint,
-                          tone: MxButtonTone.outline,
-                          size: MxButtonSize.study,
-                          icon: AppIcons.hint,
-                          isBlock: true,
-                          onPressed: widget.isBusy ? null : widget.onShowHint,
-                        ),
-                      MxButton(
-                        label: l10n.studyFillCheck,
-                        size: MxButtonSize.study,
-                        isBlock: canShowHint,
-                        onPressed: _canCheck ? _check : null,
-                      ),
-                    ],
-            ),
-          ),
-        ),
+        _actions(context, canShowHint: canShowHint),
         SessionFooterHintWidget(
           icon: AppIcons.edit,
           text: _isWrong
@@ -212,6 +180,46 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
               : l10n.studyFillHintInput,
         ),
       ],
+    );
+  }
+
+  /// The CTA row. Show hint going away is a swap as much as Check becoming
+  /// Continue: a double tap on Show hint must not check a half-typed answer
+  /// (critique 2026-09-30 part 3c-2, R1 and its final review).
+  Widget _actions(BuildContext context, {required bool canShowHint}) {
+    final l10n = context.l10n;
+    return StudySettleGuardWidget(
+      phase: (_isWrong, canShowHint),
+      child: ListenableBuilder(
+        listenable: _answer,
+        builder: (context, _) => StudyCtaRowWidget(
+          children: _isWrong
+              ? [
+                  MxButton(
+                    label: l10n.studyContinue,
+                    size: MxButtonSize.study,
+                    onPressed: widget.isBusy ? null : widget.onContinue,
+                  ),
+                ]
+              : [
+                  if (canShowHint)
+                    MxButton(
+                      label: l10n.studyFillShowHint,
+                      tone: MxButtonTone.outline,
+                      size: MxButtonSize.study,
+                      icon: AppIcons.hint,
+                      isBlock: true,
+                      onPressed: widget.isBusy ? null : widget.onShowHint,
+                    ),
+                  MxButton(
+                    label: l10n.studyFillCheck,
+                    size: MxButtonSize.study,
+                    isBlock: canShowHint,
+                    onPressed: _canCheck ? _check : null,
+                  ),
+                ],
+        ),
+      ),
     );
   }
 }
