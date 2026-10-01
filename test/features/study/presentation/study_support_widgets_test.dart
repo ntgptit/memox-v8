@@ -169,11 +169,9 @@ void main() {
     );
   });
 
-  libraryTest('a one-line and a two-line hint take the same height, so the '
-      'CTA stands still (critique 2026-09-30 part 3c-2, R6)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a hint is as tall as its own lines: no empty reserved line '
+      'under a one-line hint, and a wrapped one still grows (owner, critique '
+      '2026-09-30 part 3c-2 golden review; amends R6)', (tester, env) async {
     Future<double> heightOf(String text, {double textScale = 1}) async {
       await pumpLibraryScreen(
         tester,
@@ -187,23 +185,21 @@ void main() {
     const short = 'Tap to flip';
     const long =
         'Swipe left for next, right to look back · nothing is graded here';
-    const threeLines =
-        'Swipe left for next, right to look back · nothing is graded here, '
-        'and nothing you do on this screen changes when a card comes back';
 
-    expect(await heightOf(short), await heightOf(long));
-    expect(await heightOf(threeLines), greaterThan(await heightOf(long)));
-    // Review Focus 4: the reserve follows the text scale.
-    expect(
-      await heightOf(short, textScale: 2),
-      greaterThan(await heightOf(short)),
-    );
-    // Two lines at scale 2: the reserve still holds the CTA in place.
-    const twoLinesAtScale2 = 'Recall the meaning before the time runs out';
-    expect(
-      await heightOf(short, textScale: 2),
-      await heightOf(twoLinesAtScale2, textScale: 2),
-    );
+    final shortHeight = await heightOf(short);
+    final line = tester
+        .getSize(
+          find
+              .descendant(
+                of: find.textContaining(short),
+                matching: find.byType(RichText),
+              )
+              .first,
+        )
+        .height;
+    expect(shortHeight, line + AppSpacing.control + AppSpacing.gutter);
+    expect(await heightOf(long), greaterThan(shortHeight));
+    expect(await heightOf(short, textScale: 2), greaterThan(shortHeight));
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -295,36 +291,54 @@ void main() {
   });
 
   for (final locale in const [Locale('en'), Locale('vi')]) {
-    libraryTest("Browse's hint fits one line in ${locale.languageCode} "
-        '(owner, critique 2026-09-30 part 3c-2 golden review)', (
-      tester,
-      env,
-    ) async {
-      final hint = lookupAppLocalizations(locale).studyBrowseHint;
-      await pumpLibraryScreen(
-        tester,
-        env,
-        _host(SessionFooterHintWidget(icon: AppIcons.check, text: hint)),
-        locale: locale,
-      );
-      final paragraph = tester.renderObject<RenderParagraph>(
-        find
-            .descendant(
-              of: find.textContaining(hint),
-              matching: find.byType(RichText),
-            )
-            .first,
-      );
+    libraryTest('every footer hint fits one line in ${locale.languageCode}, '
+        'so the CTA stands in one place (owner, critique 2026-09-30 part 3c-2 '
+        'golden review)', (tester, env) async {
+      final l10n = lookupAppLocalizations(locale);
+      final hints = [
+        l10n.studyBrowseHint,
+        l10n.studySelfAssessHintPrompt,
+        l10n.studySelfAssessHintGrade,
+        l10n.studyMatchHint,
+        l10n.studyMatchHintWrong,
+        l10n.studyGuessHintIdle,
+        l10n.studyGuessHintAnswered,
+        l10n.studyRecallHintCounting,
+        l10n.studyRecallHintRevealed,
+        l10n.studyRecallHintTimedOut,
+        l10n.studyFillHintInput,
+        l10n.studyFillHintUsed,
+        l10n.studyFillHintWrong,
+      ];
+      for (final hint in hints) {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _host(SessionFooterHintWidget(icon: AppIcons.check, text: hint)),
+          locale: locale,
+        );
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find
+              .descendant(
+                of: find.textContaining(hint),
+                matching: find.byType(RichText),
+              )
+              .first,
+        );
+        // Past the glyph's placeholder: every box of the text on one line.
+        final boxes = paragraph.getBoxesForSelection(
+          TextSelection(
+            baseOffset: 1,
+            extentOffset: paragraph.text.toPlainText().length,
+          ),
+        );
 
-      // Past the glyph's placeholder: every box of the text on one line.
-      final boxes = paragraph.getBoxesForSelection(
-        TextSelection(
-          baseOffset: 1,
-          extentOffset: paragraph.text.toPlainText().length,
-        ),
-      );
-
-      expect(boxes.map((box) => box.top.round()).toSet(), hasLength(1));
+        expect(
+          boxes.map((box) => box.top.round()).toSet(),
+          hasLength(1),
+          reason: hint,
+        );
+      }
     });
   }
 }

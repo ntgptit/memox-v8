@@ -49,7 +49,9 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
 - **R5.** Guess blocked: the notice is centred vertically, and "Close the session" carries no ×
   glyph; the top bar's × and the notice's glyph remain.
 - **R6.** Footer hint: the glyph sits inline before the text's first line and wraps with it; the
-  hint always reserves two lines, so the CTA stands in one place in every mode.
+  hint always reserves two lines, so the CTA stands in one place in every mode. Amended at the
+  golden review (owner, 2026-10-01): every hint is one line in both languages and nothing is
+  reserved below it (§3.2).
 - **R7.** 16a's grades keep their rounded-rectangle shape.
 - **R8.** Recall and Fill take Indigo, the default accent (part 1 R6, tone pass T8).
 - **R9.** The context line holds at most two lines; Guess drops "first pick counts", which its
@@ -80,9 +82,11 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
 - `SessionFooterHintWidget` draws one centred `Text.rich`: the glyph as an inline span before
   the text, aligned to the first line's middle, then the text. A wrapped line starts under the
   glyph, not beside a detached one.
-- The hint's box is at least two lines of `sessionHint` at the current text scale, so a one-line
-  hint and a two-line hint put the CTA row at the same height. A third line still grows the box
-  (the Text Grows Rule).
+- Every hint is one line at normal size, in English and Vietnamese, so the CTA row stands at one
+  height in every mode with no empty line reserved under it; a test checks each hint in both
+  languages. A hint that wraps at a larger text scale still grows the box (the Text Grows Rule).
+  This amends R6's two-line reserve (owner, golden review 2026-10-01): the second line was empty
+  in 13 of 13 English hints and left 59 dp under the CTA.
 - The glyph stays excluded from semantics; the text is read as before. The hint still steps aside
   while the keyboard is up.
 
@@ -95,8 +99,8 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
   an idle term tile stays raised (`surfaceContainerLowest`). Selected, right and wrong tiles keep
   the surfaces they have today in both columns: those states carry their own colour, and their
   inks were measured on those grounds.
-- `studyMatchHint`: "Tap a term and its meaning, in either order" / "Chạm một thuật ngữ và nghĩa
-  của nó, theo thứ tự nào cũng được".
+- `studyMatchHint`: "Tap a term and its meaning, in either order" / "Chạm thuật ngữ và nghĩa, thứ
+  tự nào cũng được".
 - TalkBack: a selected meaning reads as selected, as a term does today.
 
 ### 3.4 Fill's hint (R4)
