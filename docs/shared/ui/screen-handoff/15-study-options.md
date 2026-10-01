@@ -29,7 +29,7 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
 | Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("In order" · "Random"; critique 2026-09-30 part 3a, R2), as screen 23 draws it; each row carries its icon, as on screen 23. While the toggle is on, the two rows show their values as plain text at full contrast, with no stepper or tray (critique 2026-09-30); turning it off brings the controls back with the same values. |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper (UC E1). |
-| Footer | `MxFooterBar` + `MxButton` | "Save", enabled only for a valid change (D9); spinning while it runs; "Retry save" after a failure. The caption: "Saved to this device only.", "Fix the limit to enable save." or "Couldn't save. The deck still uses {n} cards, {order}." |
+| Footer | `MxFooterBar` + `MxButton` | "Save", enabled only for a valid change (D9); spinning while it runs; "Retry save" after a failure. The caption: "Saved to this device only." or "Fix the limit to enable save."; a failed save is the danger banner "Not saved" at the top of the page (critique 2026-09-30 part 3d-1). |
 | Toast | `MxSnackbar` | "Saved · applies to the next session". |
 
 Save runs Use app defaults when the toggle is on and the root had its own options, and

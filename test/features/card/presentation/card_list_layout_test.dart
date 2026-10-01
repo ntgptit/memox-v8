@@ -375,4 +375,17 @@ void main() {
       findsOneWidget,
     );
   });
+
+  libraryTest('a changed selection drops the failed flag: Retry never writes '
+      'the cards of an earlier attempt (critique 2026-09-30 part 3d-1, final '
+      'review)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+
+    await tester.tap(find.text('gamsa'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardBulkFailedTitle), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.commonRetry), findsNothing);
+    expect(flags.calls, hasLength(1));
+  });
 }

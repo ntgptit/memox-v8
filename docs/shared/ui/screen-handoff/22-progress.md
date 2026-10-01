@@ -62,7 +62,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 
 - **UC-PROGRESS-001 step 4, UC-PROGRESS-002 step 1, D10:** the range tray sits directly above the list it changes.
 - **BR-PROGRESS-001, D2:** the list has a total row with the four numbers, no header totals.
-- **Critique P2, D11:** an idle deck row keeps full contrast, its 0 muted.
+- **Critique P2, D11:** an idle deck row keeps full contrast and reads "No activity in this range" (its 0 went with the trailing count, critique 2026-09-30 part 3d-1).
 - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start studying" to the Study tab.
 - **UI-base row 125:** loading shows skeleton rows.
 - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are built from the UC.

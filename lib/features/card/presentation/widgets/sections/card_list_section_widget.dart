@@ -257,6 +257,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     ref.listen(cardSearchOpenProvider(widget.deckId), _onSearchOpen);
+    // A failed flag belongs to the selection it was made on; once that
+    // changes, Retry would write other cards (critique 2026-09-30 part 3d-1,
+    // final review).
+    ref.listen(cardSelectionProvider(widget.deckId), (_, _) {
+      if (_failedFlag != null) setState(() => _failedFlag = null);
+    });
     final request = ref.watch(cardListRequestProvider(widget.deckId));
     final selected = ref.watch(cardSelectionProvider(widget.deckId));
     final isSelecting = selected.isNotEmpty;

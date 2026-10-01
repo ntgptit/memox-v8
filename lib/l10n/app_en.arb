@@ -5287,6 +5287,9 @@
     "description": "Screen handoff 15 (FE-A3 plan 2): footer caption after a failed save (E4); {order} is …Short."
   },
   "studyOptionsNotSavedTitle": "Not saved",
+  "@studyOptionsNotSavedTitle": {
+    "description": "Screen handoff 15: the title of the danger banner when saving the deck's study options failed (critique 2026-09-30 part 3d-1)."
+  },
   "studyOptionsLocalOnly": "Saved to this device only.",
   "@studyOptionsLocalOnly": {
     "description": "Screen handoff 15 (FE-A3 plan 2): footer caption."
@@ -6250,6 +6253,9 @@
     "description": "Screen 27 (SB-U1): the Status section note."
   },
   "syncSyncing": "Syncing…",
+  "@syncSyncing": {
+    "description": "Screen handoff 27: stands beside the spinner in Sync now's place while a manual sync runs (critique 2026-09-30 part 3d-1, D5)."
+  },
   "syncNow": "Sync now",
   "@syncNow": {
     "description": "Screen 27 (SB-U1): the button that runs a sync."
