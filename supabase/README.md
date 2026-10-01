@@ -149,7 +149,8 @@ fails.
       new APK, and sign in with the same email.
 
    The workflow fails if a key is given and the APK still carries the debug
-   key; `flutter run` on your machine keeps the debug key.
+   key, or its signer cannot be read; without a key it only warns.
+   `flutter run` on your machine keeps the debug key.
 
 After setup, run the device check (auth spec §9.1) and record its results
 there.

@@ -78,6 +78,6 @@ void main() {
     expect(workflow, contains('ANDROID_KEYSTORE_BASE64'));
     expect(workflow, contains(r'$RUNNER_TEMP/memox-release.jks'));
     expect(workflow, contains('android/key.properties'));
-    expect(workflow, contains('apksigner'));
+    expect(workflow, contains('.github/scripts/apk-signer.sh'));
   });
 }
