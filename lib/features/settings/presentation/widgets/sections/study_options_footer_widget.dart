@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -17,12 +16,10 @@ class StudyOptionsFooterWidget extends ConsumerWidget {
   const StudyOptionsFooterWidget({
     super.key,
     required this.deckId,
-    required this.stored,
     required this.form,
   });
 
   final String deckId;
-  final EffectiveStudyOptions stored;
   final StudyOptionsForm form;
 
   /// Read in the callback only, never while building.
