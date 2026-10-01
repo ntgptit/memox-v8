@@ -30,7 +30,8 @@ class DeckLockStripWidget extends StatelessWidget {
     return Semantics(
       container: true,
       child: MxCard(
-        isHero: !isLocked,
+        // Status, not a door: no hero ground (critique 2026-09-30 part 3d-2,
+        // E5; DESIGN.md "a hero leads somewhere tappable").
         isWarning: isLocked,
         // The tile centres on the title and body (owner 2026-09-26).
         child: Row(

@@ -28,8 +28,8 @@ class StudyEntryHeroWidget extends StatelessWidget {
     final l10n = context.l10n;
     final styles = context.textStyles;
     final algorithm = l10n.studyScheduler(entry.schedulerType);
+    // A summary, not a door (critique 2026-09-30 part 3d-2, E5).
     return MxCard(
-      isHero: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.grouped,

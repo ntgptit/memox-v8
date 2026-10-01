@@ -139,6 +139,9 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         confirmLabel: l10n.resetConfirm(_nextCycle(view)),
         confirmIcon: AppIcons.resetProgress,
         isConfirmLoading: _isResetting,
+        // An irreversible loss of progress, not of data: warning, as the
+        // Lost tile (critique 2026-09-30 part 3d-2, E4).
+        isWarning: true,
         onConfirm: summary != null && !_isResetting
             ? () => unawaited(_reset(view, summary))
             : null,

@@ -347,4 +347,26 @@ void main() {
     expect(_en.summaryStatWrong, 'Wrong turns');
     expect(_en.summaryWrongOf(3, 23), '3 of 23');
   });
+
+  libraryTest('the unlocked strip is a plain card; the locked one warning '
+      '(critique 2026-09-30 part 3d-2, E5)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+    MxCard strip() => tester.widget<MxCard>(
+      find.descendant(
+        of: find.byType(DeckLockStripWidget),
+        matching: find.byType(MxCard),
+      ),
+    );
+    expect(strip().isHero, isFalse);
+    expect(strip().isWarning, isFalse);
+
+    await lockScheduler(env.db, korean.id);
+    await tester.pumpAndSettle();
+    expect(strip().isWarning, isTrue);
+  });
 }

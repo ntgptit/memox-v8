@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_hero_widget.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -321,5 +323,23 @@ void main() {
       tester.widget<Text>(overline).style,
       tester.element(overline).textStyles.eyebrow,
     );
+  });
+
+  libraryTest('the hero is a plain card: it leads nowhere (critique '
+      '2026-09-30 part 3d-2, E5)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final leaf = await env.decks.sub(root.id, 'Lesson');
+    await insertCard(env.db, id: 'n1', deckId: leaf.id);
+    await pumpLibraryScreen(tester, env, _screen(leaf.id));
+
+    final card = tester.widget<MxCard>(
+      find
+          .descendant(
+            of: find.byType(StudyEntryHeroWidget),
+            matching: find.byType(MxCard),
+          )
+          .first,
+    );
+    expect(card.isHero, isFalse);
   });
 }
