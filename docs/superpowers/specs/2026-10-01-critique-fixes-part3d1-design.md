@@ -1,6 +1,6 @@
 # Whole-app critique 2026-09-30, part 3d-1: per-screen flows — design
 
-Status: draft 2026-10-01 ·
+Status: approved 2026-10-01 ·
 Path: architectural (seven screens, no new shared widget) ·
 Owner rulings 2026-10-01 (§2): D1–D5
 
