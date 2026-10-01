@@ -1051,7 +1051,6 @@
   "tagsSearchHint": "Tìm tag",
   "tagsSearchClear": "Xoá tìm kiếm",
   "tagsCount": "{count} tag",
-  "tagsNone": "Không có tag",
   "tagsNoMatches": "Không khớp",
   "tagsOrder": "A→Z",
   "tagsCardCount": "{count} thẻ",

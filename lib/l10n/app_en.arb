@@ -5508,10 +5508,6 @@
     },
     "description": "Screen 05: the header over the tags shown."
   },
-  "tagsNone": "No tags",
-  "@tagsNone": {
-    "description": "Screen 05: the header when the library has no tag."
-  },
   "tagsNoMatches": "No matches",
   "@tagsNoMatches": {
     "description": "Screen 05: the header when the search finds no tag."
