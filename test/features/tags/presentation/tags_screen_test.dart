@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -302,5 +303,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.tagsGone('tạm')), findsOneWidget);
+  });
+
+  libraryTest('the rename field label is sentence case (critique 2026-09-30 '
+      'part 2, P3)', (tester, env) async {
+    await _pump(tester, env);
+    await _openRename(tester, 'động từ');
+
+    final label = find.text(_en.tagsNewName);
+    expect(
+      tester.widget<Text>(label).style,
+      tester.element(label).textStyles.fieldLabel,
+    );
+    expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });
 }

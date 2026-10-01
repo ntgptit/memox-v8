@@ -113,11 +113,7 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               spacing: AppSpacing.micro,
               children: [
                 const Icon(AppIcons.tag, size: AppIconSize.inline),
-                Text(
-                  l10n.cardTags.toUpperCase(),
-                  semanticsLabel: l10n.cardTags,
-                  style: styles.overline,
-                ),
+                Text(l10n.cardTags, style: styles.fieldLabel),
                 Flexible(
                   child: Text(
                     l10n.cardTagsMeta(widget.tags.length, TagEntity.maxPerCard),

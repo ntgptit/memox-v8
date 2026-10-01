@@ -97,9 +97,15 @@ class _StarterAlgorithmSheetWidgetState
               style: styles.footerCaption,
             ),
             const SizedBox(height: AppSpacing.control),
-            Text(
-              l10n.starterSheetOverline.toUpperCase(),
-              style: styles.overline,
+            // A field label and its Required caption (critique 2026-09-30
+            // part 2, P3).
+            Wrap(
+              spacing: AppSpacing.micro,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(l10n.starterSheetAlgorithmLabel, style: styles.fieldLabel),
+                Text(l10n.starterSheetRequired, style: styles.requiredMarker),
+              ],
             ),
           ],
         ),

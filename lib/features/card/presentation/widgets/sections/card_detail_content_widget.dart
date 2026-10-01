@@ -106,11 +106,7 @@ class _OptionalField extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.micro,
             children: [
-              Text(
-                label.toUpperCase(),
-                semanticsLabel: label,
-                style: styles.overline,
-              ),
+              Text(label, style: styles.fieldLabel),
               Text(value, style: styles.dialogBody),
             ],
           ),

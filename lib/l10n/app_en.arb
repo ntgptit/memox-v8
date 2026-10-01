@@ -5414,9 +5414,13 @@
     },
     "description": "Screen 03 algorithm sheet: what the copy holds."
   },
-  "starterSheetOverline": "Review algorithm · required",
-  "@starterSheetOverline": {
-    "description": "Screen 03 algorithm sheet: the header above the two schedulers."
+  "starterSheetAlgorithmLabel": "Review algorithm",
+  "@starterSheetAlgorithmLabel": {
+    "description": "Screen 03 algorithm sheet: the field label above the two schedulers."
+  },
+  "starterSheetRequired": "Required",
+  "@starterSheetRequired": {
+    "description": "Screen 03 algorithm sheet: the Required caption after the label."
   },
   "starterSm2Description": "grade yourself, intervals adapt",
   "@starterSm2Description": {

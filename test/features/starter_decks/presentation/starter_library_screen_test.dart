@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -320,5 +322,17 @@ void main() {
     await _pump(tester, env, StarterLibraryFake(env));
     await tester.pumpAndSettle();
     expect(find.text(_en.starterNote), findsNothing);
+  });
+
+  libraryTest('the algorithm sheet labels its choice in sentence case with a '
+      'Required caption (critique 2026-09-30 part 2, P3)', (tester, env) async {
+    await _pump(tester, env, StarterLibraryFake(env));
+    await _addHangul(tester, _en.starterAddToLibrary);
+
+    final label = find.text(_en.starterSheetAlgorithmLabel);
+    final required = find.text(_en.starterSheetRequired);
+    final styles = tester.element(label).textStyles;
+    expect(tester.widget<Text>(label).style, styles.fieldLabel);
+    expect(tester.widget<Text>(required).style, styles.requiredMarker);
   });
 }

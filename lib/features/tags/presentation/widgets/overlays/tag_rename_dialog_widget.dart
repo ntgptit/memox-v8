@@ -149,12 +149,7 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  l10n.tagsNewName.toUpperCase(),
-                  style: styles.overline,
-                ),
-              ),
+              Expanded(child: Text(l10n.tagsNewName, style: styles.fieldLabel)),
               if (isTooLong)
                 Text(
                   l10n.tagsLength(_length, TagEntity.maxNameLength),
