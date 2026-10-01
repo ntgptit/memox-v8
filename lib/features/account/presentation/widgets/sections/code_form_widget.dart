@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/code_controller.dart';
+import 'package:memox/features/account/presentation/states/code_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -61,10 +63,22 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
     widget.onSignedIn?.call();
   }
 
-  Future<void> _resend() async {
-    final isSent = await _controller.resend();
-    if (!mounted || !isSent) return;
-    showMxSnackbar(context, message: context.l10n.accountCodeResent);
+  Future<void> _resend({bool confirmedLoss = false}) async {
+    final outcome = await _controller.resend(confirmedLoss: confirmedLoss);
+    if (!mounted) return;
+    switch (outcome) {
+      case ResendOutcome.sent:
+        showMxSnackbar(context, message: context.l10n.accountCodeResent);
+      case ResendOutcome.unsentChanges:
+        final count = ref
+            .read(codeControllerProvider(widget.email, widget.purpose))
+            .unsentCount;
+        final isSure = await confirmUnsentLoss(context, count);
+        if (!isSure || !mounted) return;
+        await _resend(confirmedLoss: true);
+      case ResendOutcome.refused:
+        return;
+    }
   }
 
   /// The wait as m:ss.

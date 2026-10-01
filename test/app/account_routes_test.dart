@@ -171,6 +171,65 @@ void main() {
     expect(world.state, isA<Ready>());
   });
 
+  test('only a location inside the app is a way back (P3b minor M1)', () {
+    for (final inside in ['/study', '/settings/account', '/decks?x=1']) {
+      expect(AppRoutes.inAppOr(inside, AppRoutes.decks), inside);
+    }
+    for (final outside in [
+      null,
+      '',
+      'study',
+      '//evil.example/x',
+      'https://evil.example/x',
+      'memox://app/study',
+      '/\\evil.example',
+    ]) {
+      expect(AppRoutes.inAppOr(outside, AppRoutes.decks), AppRoutes.decks);
+    }
+  });
+
+  accountTest('Welcome goes on to its fallback when `from` leaves the app '
+      '(P3b minor M1)', (tester, env, world) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        ...accountOverrides(world),
+        welcomeDueProvider.overrideWithBuild((ref, _) => true),
+      ],
+    );
+
+    _router(tester).go(AppRoutes.welcomeFrom('https://evil.example/study'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountContinueWithout));
+    await tester.pumpAndSettle();
+
+    expect(
+      _router(tester).routeInformationProvider.value.uri.toString(),
+      AppRoutes.decks,
+    );
+  });
+
+  accountTest('a re-auth whose `from` leaves the app ends on Settings '
+      '(P3b minor M1)', (tester, env, world) async {
+    await refuseSession(world);
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester)
+        .go(AppRoutes.settingsSignInReauth(from: '//evil.example/study'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(_en.accountSendCode));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), FakeAuthGateway.code);
+    await tester.pumpAndSettle();
+
+    expect(
+      _router(tester).routeInformationProvider.value.uri.toString(),
+      AppRoutes.settings,
+    );
+    expect(world.state, isA<Ready>());
+  });
+
   accountTest('signing out from screen 32 lands on Settings', (
     tester,
     env,

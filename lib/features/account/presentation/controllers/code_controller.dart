@@ -56,33 +56,40 @@ class CodeController extends _$CodeController {
     return problem == null;
   }
 
-  /// True when a new code is on its way; the wait starts again.
-  Future<bool> resend() async {
+  /// A new code, once the wait is over; the wait starts again when it
+  /// went out. A re-auth to another account names its unsent changes again,
+  /// as screen 30 did (P3b minor M7): the link to this screen may not have
+  /// passed there.
+  Future<ResendOutcome> resend({bool confirmedLoss = false}) async {
     final accounts = ref.read(accountCoordinatorProvider);
-    if (accounts == null || !state.canResend) return false;
+    if (accounts == null || !state.canResend) return ResendOutcome.refused;
     state = const CodeState(isResending: true);
     SignInProblem? problem;
     try {
-      // P3b plan ruling 8: a re-auth's first code went out only once any
-      // loss was accepted on screen 30; a resend does not ask again.
-      await accounts.requestCode(
-        email,
-        confirmedLoss: purpose == SignInPurpose.reauth,
-      );
+      await accounts.requestCode(email, confirmedLoss: confirmedLoss);
+    } on UnsentChangesFailure catch (error) {
+      if (ref.mounted) {
+        state = CodeState(
+          isVerifying: state.isVerifying,
+          unsentCount: error.count,
+        );
+      }
+      return ResendOutcome.unsentChanges;
     } on Failure catch (error) {
       problem = signInProblemOf(error);
     } on StateError {
       problem = SignInProblem.failed; // The account moved on meanwhile.
     }
-    if (!ref.mounted) return problem == null;
     final isSent = problem == null;
+    final outcome = isSent ? ResendOutcome.sent : ResendOutcome.refused;
+    if (!ref.mounted) return outcome;
     state = CodeState(
       isVerifying: state.isVerifying,
       problem: problem,
       resendIn: isSent ? resendWait : Duration.zero,
     );
     if (isSent) _startWait();
-    return isSent;
+    return outcome;
   }
 
   void _startWait() {

@@ -90,61 +90,55 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final canSave = _choice != widget.user.role && !_isSaving;
-    return PopScope(
-      canPop: !_isSaving,
-      child: MxBottomSheet(
-        header: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.card,
-            AppSpacing.micro,
-            AppSpacing.card,
-            AppSpacing.grouped,
-          ),
-          child: Text(
-            widget.user.email,
-            style: context.textStyles.compactTitle,
-          ),
+    // Held while saving: Back, a scrim tap and a drag wait, so the answer
+    // always has a sheet to be said in (P4 minor M3).
+    return MxBottomSheet(
+      isHeld: _isSaving,
+      header: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.card,
+          AppSpacing.micro,
+          AppSpacing.card,
+          AppSpacing.grouped,
         ),
-        footer: MxSheetActions(
-          isInSheet: true,
-          cancelLabel: l10n.commonCancel,
-          onCancel: _isSaving ? null : () => Navigator.of(context).pop(),
-          confirmLabel: l10n.usersSave,
-          isConfirmLoading: _isSaving,
-          onConfirm: canSave ? () => unawaited(_save()) : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            MxOptionRow(
-              title: l10n.usersRoleUser,
-              description: l10n.usersRoleUserHint,
-              isSelected: _choice == AccountRole.user,
-              onSelected: () => _choose(AccountRole.user),
-            ),
-            MxOptionRow(
-              title: l10n.usersRoleAdmin,
-              description: l10n.usersRoleAdminHint,
-              isSelected: _choice == AccountRole.admin,
-              onSelected: () => _choose(AccountRole.admin),
-              hasDivider: false,
-            ),
-            if (_problem case final text?)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.gutter,
-                  AppSpacing.grouped,
-                  AppSpacing.gutter,
-                  0,
-                ),
-                // Nothing changed, so the warning tone.
-                child: MxInlineBanner(
-                  tone: MxBannerTone.warning,
-                  message: text,
-                ),
+        child: Text(widget.user.email, style: context.textStyles.compactTitle),
+      ),
+      footer: MxSheetActions(
+        isInSheet: true,
+        cancelLabel: l10n.commonCancel,
+        onCancel: _isSaving ? null : () => Navigator.of(context).pop(),
+        confirmLabel: l10n.usersSave,
+        isConfirmLoading: _isSaving,
+        onConfirm: canSave ? () => unawaited(_save()) : null,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MxOptionRow(
+            title: l10n.usersRoleUser,
+            description: l10n.usersRoleUserHint,
+            isSelected: _choice == AccountRole.user,
+            onSelected: () => _choose(AccountRole.user),
+          ),
+          MxOptionRow(
+            title: l10n.usersRoleAdmin,
+            description: l10n.usersRoleAdminHint,
+            isSelected: _choice == AccountRole.admin,
+            onSelected: () => _choose(AccountRole.admin),
+            hasDivider: false,
+          ),
+          if (_problem case final text?)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.gutter,
+                AppSpacing.grouped,
+                AppSpacing.gutter,
+                0,
               ),
-          ],
-        ),
+              // Nothing changed, so the warning tone.
+              child: MxInlineBanner(tone: MxBannerTone.warning, message: text),
+            ),
+        ],
       ),
     );
   }

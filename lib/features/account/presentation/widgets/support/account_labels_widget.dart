@@ -24,26 +24,25 @@ String signInProblemText(AppLocalizations l10n, SignInProblem problem) =>
       SignInProblem.failed => l10n.accountFailed,
     };
 
-/// The toast after an account is attached (spec §5.2): its email once
-/// `me()` confirmed it.
-void saySignedIn(BuildContext context, AccountUser? account) {
+/// The toast after a sign-in (spec §5.2), from [state] right after it: its
+/// email once `me()` confirmed the account, "Signed in" while it is still
+/// being checked, and nothing while the account moves, such as a switch
+/// that stopped on the way, which the transition layer speaks for (P3b
+/// minor M2, final review I1).
+void saySignedIn(BuildContext context, AuthState? state) {
   final l10n = context.l10n;
-  final email = account?.email;
-  showMxSnackbar(
-    context,
-    message: email == null
-        ? l10n.accountSignedIn
-        : l10n.accountSignedInAs(email),
-  );
+  final message = switch (state) {
+    Ready(user: AccountUser(:final email?)) => l10n.accountSignedInAs(email),
+    Ready() || Validating() => l10n.accountSignedIn,
+    _ => null,
+  };
+  if (message != null) showMxSnackbar(context, message: message);
 }
 
-/// The account right after a command attached it. The coordinator's own
-/// state, since the provider hears of the change a frame later.
-AccountUser? attachedAccount(WidgetRef ref) =>
-    switch (ref.read(accountCoordinatorProvider)?.state) {
-      Ready(:final user) => user,
-      _ => null,
-    };
+/// The coordinator's state right after a command. Its own, since the
+/// provider hears of the change a frame later.
+AuthState? stateAfterCommand(WidgetRef ref) =>
+    ref.read(accountCoordinatorProvider)?.state;
 
 /// The layer's line for [step] (spec §5.4).
 String accountStepText(AppLocalizations l10n, AccountStep step) =>

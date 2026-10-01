@@ -50,7 +50,7 @@ class CodeScreen extends ConsumerWidget {
             purpose: purpose,
             onUseAnotherEmail: back,
             onSignedIn: () {
-              saySignedIn(context, attachedAccount(ref));
+              saySignedIn(context, stateAfterCommand(ref));
               onSignedIn();
             },
           ),

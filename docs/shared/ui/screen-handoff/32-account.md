@@ -28,7 +28,8 @@ delete. FE-B10, SB-A5; spec
 | Delete | `MxSection` "DELETE" | "Delete account" · "Your account and its data, for good". A neutral row; the danger colour is only the dialog's confirm (B12). |
 
 The three command rows are disabled before `Ready` (auth spec #39 needs a confirmed
-account). Every command asks first, in the Reset dialog's form (§9.1, P3b plan ruling 6);
+account). One command runs at a time: a tap while one asks or runs is ignored, so no second
+dialog opens (P3b minor M3). Every command asks first, in the Reset dialog's form (§9.1, P3b plan ruling 6);
 the transition layer shows what follows.
 
 | Dialog | Design |

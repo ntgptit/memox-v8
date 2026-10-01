@@ -209,4 +209,61 @@ void main() {
       ),
     );
   });
+
+  test('a list in flight does not bring the rows back over "not an admin" '
+      '(P4 minor M1)', () async {
+    await pumpEventQueue();
+    final held = roles.holdList = Completer<void>();
+    controller().retry();
+    await pumpEventQueue();
+    roles.failNextSet = const NotAdminFailure(cause: 'x');
+    await controller().setRole(
+      managedUser('bob@example.com'),
+      AccountRole.admin,
+    );
+
+    held.complete();
+    await pumpEventQueue();
+
+    expect(
+      state().content,
+      isA<UsersFailed>().having(
+        (c) => c.failure,
+        'failure',
+        UsersLoadFailure.notAdmin,
+      ),
+    );
+  });
+
+  test('a refresh asked before a save does not put the old role back '
+      '(P4 minor M2)', () async {
+    await pumpEventQueue();
+    final held = roles.holdList = Completer<void>();
+    final refreshed = controller().refresh();
+    await pumpEventQueue();
+
+    expect(
+      await controller().setRole(
+        managedUser('bob@example.com'),
+        AccountRole.admin,
+      ),
+      RoleChange.saved,
+    );
+    held.complete();
+    await refreshed;
+    await pumpEventQueue();
+
+    expect((state().content as UsersLoaded).users[1].role, AccountRole.admin);
+  });
+
+  test('a search that differs only in spaces does not ask again '
+      '(P4 minor M5)', () async {
+    await pumpEventQueue();
+
+    controller().search('  ');
+    await Future<void>.delayed(usersSearchDebounce);
+    await pumpEventQueue();
+
+    expect(roles.lists, [('', null)]);
+  });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,6 +119,32 @@ void main() {
 
     expect(find.byType(MxBottomSheet), findsOneWidget);
     // Said inside the sheet, which a toast would sit behind (final review I2).
+    expect(
+      find.descendant(
+        of: find.byType(MxBottomSheet),
+        matching: find.text(_en.usersLastAdmin),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a drag while saving keeps the sheet, so a refusal is still '
+      'said (P4 minor M3)', (tester, env) async {
+    await pump(tester, env);
+    final held = roles.holdSet = Completer<void>();
+    roles.failNextSet = const LastAdminFailure();
+
+    await tester.tap(find.text('ann@example.com'));
+    await _settle(tester);
+    await tester.tap(find.text(_en.usersRoleUserHint));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(MxButton, _en.usersSave));
+    await tester.pump();
+    await tester.drag(find.byType(MxBottomSheet), const Offset(0, 500));
+    await _settle(tester);
+    held.complete();
+    await _settle(tester);
+
     expect(
       find.descendant(
         of: find.byType(MxBottomSheet),

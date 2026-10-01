@@ -18,7 +18,7 @@ auth spec O9; spec
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content) + back | "Users". |
-| Search | `MxSearchField` | "Search by email"; asks 400 ms after the last keystroke; hidden on the not-admin state. |
+| Search | `MxSearchField` | "Search by email"; asks 400 ms after the last keystroke, and not at all when only spaces changed (P4 minor M5); hidden on the not-admin state. |
 | Overline | `MxListSectionHeader` | "ACCOUNTS" (no count: `role_list` has no total). |
 | Rows | `MxListRow` | Person tile (tinted, the same for all), the email, "Joined {date}" (locale medium date), `MxBadge` "Admin" (primary) or "User" (neutral); no chevron. The admin's own row reads "Joined {date} · You" and does not tap (U1); not dimmed. |
 | End | as screen 28 | The next page loads near the end; "No more users"; a failed page is a danger `MxInlineBanner` with Retry; a page refused as not an admin turns the screen to the not-admin state (final review I1). |
@@ -26,7 +26,9 @@ auth spec O9; spec
 **Role sheet** (`MxBottomSheet`, the merge sheet's form): the email as title; `MxOptionRow`s
 "User" · "Studies and syncs their own decks" and "Admin" · "Sees logs and manages roles", the
 current role selected; Cancel · "Save" (primary), enabled only when the choice differs and
-spinning while it runs.
+spinning while it runs. While it runs the sheet is held: Back, a scrim tap and a drag wait,
+so the answer always has a sheet to be said in (P4 minor M3). A save lands over any list
+still loading, and "not an admin" over any page in flight (P4 minors M1, M2).
 
 | Outcome | Shows |
 |---|---|
