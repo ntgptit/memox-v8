@@ -4184,15 +4184,6 @@
     },
     "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
   },
-  "studyContextFirstPick": "{context} · first pick counts",
-  "@studyContextFirstPick": {
-    "placeholders": {
-      "context": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 18 (FE-A6 P3): the context line of a guess stage."
-  },
   "studyGuessPrompt": "What is this?",
   "@studyGuessPrompt": {
     "description": "Screen handoff 18 (FE-A6 P3): the prompt face overline."

@@ -127,7 +127,8 @@ void main() {
 
     expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
   });
-  libraryTest('the context line wraps, never cut, and is heard whole', (
+  libraryTest('the context line holds two lines at most, ends in an '
+      'ellipsis, and is heard whole (critique 2026-09-30 part 3c-2, R9)', (
     tester,
     env,
   ) async {
@@ -140,7 +141,7 @@ void main() {
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
-    expect((line.maxLines, line.overflow), (null, null));
+    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
     expect(line.semanticsLabel, text);
   });
 

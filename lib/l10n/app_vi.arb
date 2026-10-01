@@ -801,7 +801,6 @@
   "studyIntervalYearsLong": "{years} năm",
   "studyGradeNextIn": "{grade}, lần tới sau {interval}",
   "studyContextRound": "{context} · vòng {round}",
-  "studyContextFirstPick": "{context} · chỉ tính lần chọn đầu",
   "studyGuessPrompt": "Đây là gì?",
   "studyGuessHintIdle": "Chỉ tính lần chọn đầu tiên",
   "studyGuessHintAnswered": "Đã hiện đáp án — lựa chọn đúng được tô sáng",

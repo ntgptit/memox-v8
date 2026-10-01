@@ -242,19 +242,40 @@ void main() {
     }
   });
 
-  libraryTest('the context line names the round and the first-pick rule '
-      '(M3)', (tester, env) async {
+  libraryTest('the context line names the round, not the first-pick rule, '
+      'which the footer states (critique 2026-09-30 part 3c-2, R9)', (
+    tester,
+    env,
+  ) async {
     final handle = tester.ensureSemantics();
     final id = await _guess(env);
     await pumpLibraryScreen(tester, env, _screen(id));
+    final round = _en.studyContextRound(
+      _en.studyContextReview('Lesson', _en.studyKindReview),
+      1,
+    );
+
+    expect(find.bySemanticsLabel(round), findsOneWidget);
+    expect(find.textContaining(_en.studyGuessHintIdle), findsOneWidget);
+    handle.dispose();
+  });
+
+  libraryTest('in Vietnamese too (R9)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    final id = await _guess(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(id),
+      locale: const Locale('vi'),
+    );
 
     expect(
       find.bySemanticsLabel(
-        _en.studyContextFirstPick(
-          _en.studyContextRound(
-            _en.studyContextReview('Lesson', _en.studyKindReview),
-            1,
-          ),
+        vi.studyContextRound(
+          vi.studyContextReview('Lesson', vi.studyKindReview),
+          1,
         ),
       ),
       findsOneWidget,
