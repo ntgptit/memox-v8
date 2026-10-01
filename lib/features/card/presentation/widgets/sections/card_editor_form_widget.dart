@@ -197,8 +197,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     return _isCreating ? l10n.cardCaptionKeepAdding : l10n.cardCaptionEdit;
   }
 
+  /// In edit, Save waits for a change (critique 2026-09-30 part 3d-1);
+  /// create saves whatever is valid.
   VoidCallback? get _onSave =>
-      _draft().check() is Ok && !_isSaving && !_deckRejects
+      _draft().check() is Ok &&
+          !_isSaving &&
+          !_deckRejects &&
+          (_isCreating || _isDirty)
       ? () => unawaited(_save())
       : null;
 
