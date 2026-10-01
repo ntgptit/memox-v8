@@ -56,7 +56,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(id));
 
     expect(find.text('apple'), findsOneWidget);
-    expect(find.text(_en.studyFillHintInput), findsOneWidget);
+    expect(find.textContaining(_en.studyFillHintInput), findsOneWidget);
     expect(_button(tester, _en.studyFillCheck).onPressed, isNull);
 
     await _type(tester, '   ');
@@ -122,7 +122,7 @@ void main() {
     expect(struck.style!.decoration, TextDecoration.lineThrough);
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
-    expect(find.text(_en.studyFillHintWrong), findsOneWidget);
+    expect(find.textContaining(_en.studyFillHintWrong), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
@@ -159,7 +159,7 @@ void main() {
 
     expect(find.text('hint 1'), findsOneWidget);
     expect(find.text(_en.studyFillShowHint), findsNothing);
-    expect(find.text(_en.studyFillHintUsed), findsOneWidget);
+    expect(find.textContaining(_en.studyFillHintUsed), findsOneWidget);
     expect(
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       'ter',

@@ -144,7 +144,8 @@ void main() {
     expect(line.semanticsLabel, text);
   });
 
-  libraryTest('the footer hint wraps, never cut', (tester, env) async {
+  libraryTest('the footer hint wraps, never cut, its glyph inline on the '
+      'first line (critique 2026-09-30 part 3c-2, R6)', (tester, env) async {
     const text =
         'Swipe left for next, right to look back · nothing is graded here';
     await pumpLibraryScreen(
@@ -152,9 +153,48 @@ void main() {
       env,
       _host(const SessionFooterHintWidget(icon: AppIcons.check, text: text)),
     );
-    final hint = tester.widget<Text>(find.text(text));
+    final hint = tester.widget<Text>(find.textContaining(text));
 
     expect((hint.maxLines, hint.overflow), (null, null));
+    expect(hint.semanticsLabel, text);
+    expect(
+      find.descendant(
+        of: find.byType(RichText),
+        matching: find.byIcon(AppIcons.check),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a one-line and a two-line hint take the same height, so the '
+      'CTA stands still (critique 2026-09-30 part 3c-2, R6)', (
+    tester,
+    env,
+  ) async {
+    Future<double> heightOf(String text, {double textScale = 1}) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host(SessionFooterHintWidget(icon: AppIcons.check, text: text)),
+        textScale: textScale,
+      );
+      return tester.getSize(find.byType(SessionFooterHintWidget)).height;
+    }
+
+    const short = 'Tap to flip';
+    const long =
+        'Swipe left for next, right to look back · nothing is graded here';
+    const threeLines =
+        'Swipe left for next, right to look back · nothing is graded here, '
+        'and nothing you do on this screen changes when a card comes back';
+
+    expect(await heightOf(short), await heightOf(long));
+    expect(await heightOf(threeLines), greaterThan(await heightOf(long)));
+    // Review Focus 4: the reserve follows the text scale.
+    expect(
+      await heightOf(short, textScale: 2),
+      greaterThan(await heightOf(short)),
+    );
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -167,12 +207,12 @@ void main() {
         footer: SessionFooterHintWidget(icon: AppIcons.edit, text: 'Type it'),
       ),
     );
-    expect(find.text('Type it'), findsOneWidget);
+    expect(find.textContaining('Type it'), findsOneWidget);
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 300);
     await tester.pump();
 
-    expect(find.text('Type it'), findsNothing);
+    expect(find.textContaining('Type it'), findsNothing);
   });
 
   libraryTest('an option out of play stays readable: it fades to the muted '

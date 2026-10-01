@@ -65,7 +65,7 @@ void main() {
       tester.getCenter(find.text('term 1')).dx,
       lessThan(tester.getCenter(find.text('apple')).dx),
     );
-    expect(find.text(_en.studyMatchHint), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
   });
 
   libraryTest('a term, then its meaning: both are matched, in the success '
@@ -116,7 +116,7 @@ void main() {
     // The same cards' other sides are not part of the wrong pair.
     expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
-    expect(find.text(_en.studyMatchHintWrong), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHintWrong), findsOneWidget);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
       contains(_en.studyMatchHintWrong),
@@ -127,7 +127,7 @@ void main() {
 
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, StudyChoiceTone.idle);
-    expect(find.text(_en.studyMatchHint), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
     expect(await turnKindsOf(env.db, 'ST-01'), hasLength(1));
     handle.dispose();
   });

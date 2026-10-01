@@ -79,7 +79,7 @@ void main() {
     expect(tester.takeAnnouncements().map((a) => a.message), [
       _en.studyGuessAnnounceRight,
     ]);
-    expect(find.text(_en.studyGuessHintAnswered), findsOneWidget);
+    expect(find.textContaining(_en.studyGuessHintAnswered), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1200));
     await tester.pumpAndSettle();

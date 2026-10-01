@@ -81,7 +81,7 @@ void main() {
     expect(find.text('apple'), findsNothing);
     expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.text(_en.studyRecallCaptionCounting), findsOneWidget);
-    expect(find.text(_en.studyRecallHintCounting), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintCounting), findsOneWidget);
 
     await tester.pump(const Duration(seconds: 6));
     expect(find.text('14s / 20s'), findsOneWidget);
@@ -100,7 +100,7 @@ void main() {
     await _settle(tester);
     expect(find.text('apple'), findsOneWidget);
     expect(find.text(_en.studyRecallCaptionRevealed), findsOneWidget);
-    expect(find.text(_en.studyRecallHintRevealed), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintRevealed), findsOneWidget);
     expect(await _rowOf(env.db, id), (15000, true));
 
     // No timeout after a reveal.
@@ -143,7 +143,7 @@ void main() {
     expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
     expect(find.text(_en.studyRecallTagTimedOut.toUpperCase()), findsOneWidget);
     expect(find.text('apple'), findsOneWidget);
-    expect(find.text(_en.studyRecallHintTimedOut), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintTimedOut), findsOneWidget);
     expect(await _logOf(env.db), ('forgotten', 'timeout'));
     expect(
       tester.takeAnnouncements().map((a) => a.message),
