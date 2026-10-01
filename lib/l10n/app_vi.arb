@@ -375,7 +375,6 @@
   "searchHintDeckExample": "TOPIK, Học qua phim",
   "searchAccentNote": "Chữ hoa hay thường không quan trọng, dấu thì có: “hoc” không tìm ra “học”. Ví dụ, gợi ý và phát âm không được tìm.",
   "searchSearching": "Đang tìm “{term}”…",
-  "searchResultsFor": "Kết quả cho “{term}”",
   "searchDecksGroup": "Bộ thẻ",
   "searchGroupCount": "{count}",
   "searchHoldsCards": "{path} · chứa thẻ",

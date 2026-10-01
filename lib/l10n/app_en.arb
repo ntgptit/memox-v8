@@ -1980,15 +1980,6 @@
     },
     "description": "Screen handoff 01/04 (library alignment phase C): searchSearching."
   },
-  "searchResultsFor": "Results for “{term}”",
-  "@searchResultsFor": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 01/04 (library alignment phase C): searchResultsFor."
-  },
   "searchDecksGroup": "Decks",
   "@searchDecksGroup": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchDecksGroup."

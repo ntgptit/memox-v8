@@ -144,10 +144,10 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen());
     await _search(tester, 'học');
 
-    expect(
-      find.text(_en.searchResultsFor('học').toUpperCase()),
-      findsOneWidget,
-    );
+    // The field shows the term; no header repeats it (critique 2026-09-30
+    // part 2, P4).
+    expect(find.textContaining('“'), findsNothing);
+    expect(find.textContaining('RESULTS'), findsNothing);
     final decks = find.text(_en.searchDecksGroup.toUpperCase());
     final cards = find.text(_en.searchCardsGroup.toUpperCase());
     expect(decks, findsOneWidget);
