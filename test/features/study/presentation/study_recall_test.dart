@@ -10,6 +10,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
+
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -120,6 +122,7 @@ void main() {
     await tester.tap(find.text(_en.studyRecallShowMeaning));
     await _settle(tester);
 
+    await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyRecallForgot));
     await _settle(tester);
 
@@ -263,5 +266,44 @@ void main() {
         reason: label,
       );
     }
+  });
+
+  libraryTest('a double tap on Show the meaning answers nothing: Forgot and '
+      'Remembered settle first (critique 2026-09-30 part 3c-2, R1)', (
+    tester,
+    env,
+  ) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyRecallRemembered), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(
+      await env.db.customSelect('SELECT id FROM review_log').get(),
+      isEmpty,
+    );
+    expect(find.text('apple'), findsOneWidget);
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.text(_en.studyRecallRemembered));
+    await _settle(tester);
+    expect(find.text('term 2'), findsOneWidget);
+  });
+
+  libraryTest('a tap in the instant the clock runs out does not skip the '
+      'timed-out turn (Review Focus 2)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.pump(const Duration(seconds: 21));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyContinue), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
+    expect(find.text('term 1'), findsOneWidget);
   });
 }

@@ -10,6 +10,7 @@ import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
@@ -22,7 +23,8 @@ import 'package:memox/shared/widgets/mx_button.dart';
 /// 20-second clock (BR-STUDY-031). Revealing records nothing; only the
 /// self-check after it does, and the next card follows at once
 /// (BR-STUDY-032, BR-STUDY-065). At zero the turn counts as forgot and waits
-/// for Continue (BR-STUDY-033, BR-STUDY-066).
+/// for Continue (BR-STUDY-033, BR-STUDY-066). Its actions settle after a
+/// swap (critique 2026-09-30 part 3c-2, R1).
 ///
 /// The clock is this widget's (spec D12): it stops whenever the app leaves
 /// the foreground, and saves the time left on pause and when the turn's
@@ -217,7 +219,10 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
             ),
           ),
         ),
-        StudyCtaRowWidget(children: _actions(isTimedOut, isRevealed)),
+        StudySettleGuardWidget(
+          phase: (isTimedOut, isRevealed),
+          child: StudyCtaRowWidget(children: _actions(isTimedOut, isRevealed)),
+        ),
         SessionFooterHintWidget(
           icon: AppIcons.check,
           text: isTimedOut

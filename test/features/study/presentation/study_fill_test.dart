@@ -7,6 +7,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
+
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -127,6 +129,7 @@ void main() {
       contains(_en.studyFillAnnounceWrong('term 1')),
     );
 
+    await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyContinue));
     await _settle(tester);
     expect(find.text('banana'), findsOneWidget);
@@ -213,5 +216,28 @@ void main() {
     final struck = tester.widget<Text>(find.text('term 9'));
     expect(struck.style!.decoration, TextDecoration.lineThrough);
     expect(find.text(_en.studyFillTagWrong.toUpperCase()), findsOneWidget);
+  });
+
+  libraryTest('a double tap on Check does not skip the wrong answer: '
+      'Continue settles first (critique 2026-09-30 part 3c-2, R1)', (
+    tester,
+    env,
+  ) async {
+    final id = await _fill(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _type(tester, 'term 9');
+    await tester.tap(find.text(_en.studyFillCheck));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyContinue), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(find.text('term 9'), findsOneWidget);
+    expect(find.text('banana'), findsNothing);
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.text(_en.studyContinue));
+    await _settle(tester);
+    expect(find.text('banana'), findsOneWidget);
   });
 }
