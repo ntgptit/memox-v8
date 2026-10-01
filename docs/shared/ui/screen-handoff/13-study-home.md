@@ -61,6 +61,7 @@ Every state above is built.
 - `MxEmptyState` actions carry no glyph.
 - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.
 - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows under the sync status rules (ADR-015).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** "Continue studying" and "Waiting for you" are eyebrows; Waiting for you no longer borrows the Required style, and its glyph follows the eyebrow's colour.
 
 ## Accessibility
 

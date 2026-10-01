@@ -78,6 +78,7 @@ node TalkBack reads. Goldens:
 - **Plan R2:** the recessed answer face is always laid out, with a still placeholder bar until the reveal; the answer fades in inside it, so the prompt never moves.
 - **Plan R3:** while the grade is written the row takes no tap and draws no change; a local write is well under 300 ms.
 - **Plan R4:** the interval preview is read when the card is served, so the grades have it at the reveal.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
 
 ## Accessibility
 

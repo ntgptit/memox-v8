@@ -42,4 +42,4 @@ Nothing pending since FE-A10.
 - **Spec D26:** group labels are `MxListSectionHeader` without a glyph, with the count as a neutral `MxBadge` at the end.
 - The match is emphasised with `rowTitleMatch` (primary, 700) and no background mark.
 - The field in the app bar is `MxSearchField` at its 52 input floor inside the 56 bar.
-
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** no header repeats the query (the field shows it, and user data is never upper-cased); Decks and Cards stay section labels.

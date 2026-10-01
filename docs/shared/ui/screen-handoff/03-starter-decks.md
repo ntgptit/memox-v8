@@ -52,6 +52,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 - **UI-base row 125:** loading shows the note, then generic skeleton rows.
 - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for a template already in the library, is secondary.
 - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the algorithm sheet labels its choice "Review algorithm" as a field label with a Required caption, not one all-caps line.
 
 ## Copy
 

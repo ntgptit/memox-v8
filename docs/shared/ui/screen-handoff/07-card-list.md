@@ -88,6 +88,7 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **E-L2:** the flag uses the warning colour; the theme has no streak token.
 - **E-L3:** "Select all" is a compact secondary `MxButton`.
 - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow.
 
 ## Copy
 

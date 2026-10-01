@@ -95,6 +95,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart, as in
   browse mode.
 - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at large text, between whole terms; only the deck name keeps one line.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow (12/600 muted); the list headers stay section labels.
 
 ## Pending
 

@@ -67,6 +67,7 @@ A session that ended before its first turn shows the hero without stats and no F
 - Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in the row's sub-line slot.
 - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's three stats: finished, answered, wrong/total.
 - **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{wrong} trên {total}").
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the hero's overline is an eyebrow that keeps the deck name as typed ("REVIEW SESSION · Nhà hàng"); the stat labels are eyebrows.
 
 ## Copy
 

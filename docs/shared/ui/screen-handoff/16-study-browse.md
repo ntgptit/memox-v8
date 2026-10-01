@@ -94,6 +94,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 - **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep studying or Stop.
 - The card follows the finger without a tilt while dragged, and stays still with reduced motion.
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.
 
 ## Copy
 

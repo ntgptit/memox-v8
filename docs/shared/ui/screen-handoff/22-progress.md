@@ -66,6 +66,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start studying" to the Study tab.
 - **UI-base row 125:** loading shows skeleton rows.
 - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are built from the UC.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the Today label and the streak labels are eyebrows; the list headers stay section labels.
 
 ## Copy
 

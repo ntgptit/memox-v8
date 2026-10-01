@@ -47,6 +47,7 @@ Every state above is built.
 - **§9 row 115:** in-flow cards are `MxCard` at radius 12.
 - The load error uses the app's shared local-first body "Nothing was lost. Try again in a moment." (as screens 06 and 23).
 - **Critique 2026-09-30 tone pass, T5:** a history badge is success for a right answer, warning for a lapse and neutral for relearning.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the schedule card's title is an eyebrow; the read-only field labels are field labels in sentence case; the history's cycle headers stay section labels.
 
 ## Copy
 

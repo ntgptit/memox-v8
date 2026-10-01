@@ -49,6 +49,7 @@ card?") when leaving a dirty new-card form without saving.
 - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no dashed-border token.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
 
 ## Copy
 

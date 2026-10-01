@@ -81,6 +81,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - **FE-A6 P3 ruling C5:** `eightBox` picks the first available mode at first; the pick is not kept.
 - The Learn button is the secondary tone with the sparkles glyph.
 - **BR-CARD-002:** direction descriptions name no language ("See the term, recall the meaning").
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the hero's algorithm overline is an eyebrow.
 
 ## Copy
 

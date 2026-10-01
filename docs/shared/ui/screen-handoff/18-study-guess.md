@@ -42,6 +42,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 - **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This question can't be shown", whose Close ends the session; nothing is written or skipped.
 - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" button instead of advancing by itself.
 - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick counts".
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
 
 ## Accessibility
 

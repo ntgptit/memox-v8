@@ -41,6 +41,7 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 - **P3 ruling C7:** during a wrong pair's flash the footer hint reads "Not a match — this pair comes back next round".
 - **BR-STUDY-063, BR-STUDY-070:** a wrong pair flashes the error tone on both tiles after the write commits, then both settle back to `idle` and stay pending on the board.
 - **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this board and is guaranteed one slot in the next round, even if matched correctly later in this round.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
 
 ## Accessibility
 

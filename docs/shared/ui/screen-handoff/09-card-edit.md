@@ -50,6 +50,7 @@ Every state above is built.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header, above the scrolling history strip.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
 - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide convention (screens 15, 22, 23, 25, 26 do the same).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
 
 ## Copy
 

@@ -57,6 +57,7 @@ Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea
 - **BR-TAG-003, critique P2b:** there is one order (the store's folded order, diacritics folded), so "A→Z" is plain text with no sort glyph.
 - **UC-TAG-001 E1, D10:** a read failure shows `MxErrorState` with Retry.
 - Dialogs quote tag names, carry no glyph and are left-aligned (`MxDialog`); toasts are one sentence (`MxSnackbarContent`).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the rename dialog's "New name" is a field label in sentence case.
 
 ## Copy
 
