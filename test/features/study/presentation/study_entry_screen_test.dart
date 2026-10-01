@@ -191,7 +191,13 @@ void main() {
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnCount(1, 1)), findsOneWidget);
-    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsOneWidget);
+    // Only new cards: the footer offers Learn, the row does not (critique
+    // 2026-09-30 part 3d-1, D2).
+    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsNothing);
+    expect(
+      find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('with nothing due, no review mode is listed: only the Learn '

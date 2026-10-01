@@ -37,7 +37,7 @@ void main() {
     tester,
     env,
   ) async {
-    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 2);
     String? opened;
     await pumpLibraryScreen(
       tester,
@@ -340,5 +340,22 @@ void main() {
     );
     gate.complete();
     await tester.pumpAndSettle();
+  });
+
+  libraryTest('with only new cards Learn is offered once, in the footer '
+      '(critique 2026-09-30 part 3d-1, D2)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryLearn), findsNothing);
+    expect(_button(_en.studyEntryLearnCta(2)), findsOneWidget);
+  });
+
+  libraryTest('with a review in the footer the Learn row keeps its button '
+      '(D2; Review Focus 1)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 2);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryLearn), findsOneWidget);
   });
 }
