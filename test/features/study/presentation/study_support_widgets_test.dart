@@ -136,7 +136,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _host(const SessionContextLineWidget(text: text)),
+      _host(SessionContextLineWidget(text: text, shown: text.toUpperCase())),
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
@@ -223,7 +223,10 @@ void main() {
       _host(
         const Column(
           children: [
-            SessionContextLineWidget(text: 'Words · Review'),
+            SessionContextLineWidget(
+              text: 'Words · Review',
+              shown: 'WORDS · REVIEW',
+            ),
             SizedBox(
               height: 300,
               child: StudyFaceCardWidget(label: 'Term', child: Text('x')),

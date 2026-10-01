@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
@@ -363,6 +364,21 @@ void main() {
         (_en.summaryStatReviewed, '20'),
         (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
       ],
+    );
+  });
+
+  libraryTest('the overline keeps the deck name as typed and reads the plain '
+      'sentence (critique 2026-09-30 part 2, P4)', (tester, env) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+
+    final overline = find.text('REVIEW SESSION · Nhà hàng');
+    expect(overline, findsOneWidget);
+    expect(find.text('REVIEW SESSION · NHÀ HÀNG'), findsNothing);
+    final text = tester.widget<Text>(overline);
+    expect(text.style, tester.element(overline).textStyles.eyebrow);
+    expect(
+      text.semanticsLabel,
+      _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),
     );
   });
 }

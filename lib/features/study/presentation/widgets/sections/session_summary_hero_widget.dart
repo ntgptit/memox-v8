@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
+import 'package:memox/features/study/presentation/states/upper_around_name_state.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -31,10 +32,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
     final l10n = context.l10n;
     final styles = context.textStyles;
     final tone = outcome.tone;
-    final overline = l10n.summaryOverline(
-      view.kind == SessionKind.learning
-          ? l10n.summaryKindLearning
-          : l10n.summaryKindReview,
+    final kind = view.kind == SessionKind.learning
+        ? l10n.summaryKindLearning
+        : l10n.summaryKindReview;
+    final overline = l10n.summaryOverline(kind, view.deckName);
+    // The app's words upper-cased, the deck name as typed (critique
+    // 2026-09-30 part 2, P4).
+    final shown = upperAroundName(
+      (name) => l10n.summaryOverline(kind, name),
       view.deckName,
     );
     final (body, strong) = _bodyOf(l10n);
@@ -56,10 +61,10 @@ class SessionSummaryHeroWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.grouped),
           Text(
-            overline.toUpperCase(),
+            shown,
             semanticsLabel: overline,
             textAlign: TextAlign.center,
-            style: styles.overline,
+            style: styles.eyebrow,
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
