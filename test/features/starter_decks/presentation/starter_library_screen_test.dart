@@ -120,7 +120,10 @@ void main() {
     await _addHangul(tester, _en.starterAddToLibrary);
 
     expect(find.text(_en.starterSheetTitle(hangulTemplate.title)), findsOne);
-    expect(find.text(_en.starterSheetBody(60, 2)), findsOneWidget);
+    // The lock, not the counts the card already states (critique
+    // 2026-09-30 part 3d-2, E6).
+    expect(find.text(_en.deckSchedulerNote), findsOneWidget);
+    expect(find.textContaining('sub-decks, as a new deck'), findsNothing);
     final sm2 = tester.widget<MxOptionRow>(
       find.widgetWithText(MxOptionRow, 'SM-2'),
     );

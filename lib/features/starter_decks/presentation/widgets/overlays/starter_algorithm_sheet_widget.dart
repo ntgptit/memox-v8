@@ -89,13 +89,9 @@ class _StarterAlgorithmSheetWidgetState
               l10n.starterSheetTitle(widget.entry.title),
               style: styles.compactTitle,
             ),
-            Text(
-              l10n.starterSheetBody(
-                widget.entry.cardCount,
-                widget.entry.subDeckCount,
-              ),
-              style: styles.footerCaption,
-            ),
+            // The lock, before the choice (BR-SRS-003; critique 2026-09-30
+            // part 3d-2, E6). The card above states the counts.
+            Text(l10n.deckSchedulerNote, style: styles.footerCaption),
             const SizedBox(height: AppSpacing.control),
             // A field label and its Required caption (critique 2026-09-30
             // part 2, P3).

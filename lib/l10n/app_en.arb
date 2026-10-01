@@ -5386,18 +5386,6 @@
     },
     "description": "Screen 03 algorithm sheet: the title."
   },
-  "starterSheetBody": "{cards, plural, =1{1 card} other{{cards} cards}} in {decks, plural, =1{1 sub-deck} other{{decks} sub-decks}}, as a new deck of your own.",
-  "@starterSheetBody": {
-    "placeholders": {
-      "cards": {
-        "type": "int"
-      },
-      "decks": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 03 algorithm sheet: what the copy holds."
-  },
   "starterSheetAlgorithmLabel": "Review algorithm",
   "@starterSheetAlgorithmLabel": {
     "description": "Screen 03 algorithm sheet: the field label above the two schedulers."

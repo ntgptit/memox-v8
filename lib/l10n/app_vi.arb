@@ -1027,7 +1027,6 @@
   "starterLanguageLatin": "Chữ Latinh",
   "starterSourceFixture": "Dữ liệu mẫu",
   "starterSheetTitle": "Thêm “{title}”",
-  "starterSheetBody": "{cards} thẻ trong {decks} deck con, thành một deck mới của riêng bạn.",
   "starterSheetAlgorithmLabel": "Thuật toán ôn tập",
   "starterSheetRequired": "Bắt buộc",
   "starterSm2Description": "tự chấm điểm, khoảng cách tự điều chỉnh",
