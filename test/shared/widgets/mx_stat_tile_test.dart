@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
@@ -87,5 +88,16 @@ void main() {
       findsOneWidget,
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the label is an eyebrow (critique 2026-09-30 part 2, P1)', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxStatTile(value: '3', label: 'Wrong turns'));
+    final label = find.text('WRONG TURNS');
+    expect(
+      tester.widget<Text>(label).style,
+      tester.element(label).textStyles.eyebrow,
+    );
   });
 }
