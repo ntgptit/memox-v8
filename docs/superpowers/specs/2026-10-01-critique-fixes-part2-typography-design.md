@@ -98,6 +98,8 @@ Sentence case, 14/600, no upper-casing:
   the plain sentence.
 - Search drops `MxListSectionHeader(label: searchResultsFor(term))`; the "Decks" and "Cards"
   section labels stay. The `searchResultsFor` key goes from both ARBs.
+- The search loading header ("Searching for “…”…") names no query either: it reads "Searching…"
+  (final review, 2026-10-01).
 
 ## 4. Verification
 

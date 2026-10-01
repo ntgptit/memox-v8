@@ -1971,14 +1971,9 @@
   "@searchAccentNote": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchAccentNote."
   },
-  "searchSearching": "Searching for “{term}”…",
+  "searchSearching": "Searching…",
   "@searchSearching": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 01/04 (library alignment phase C): searchSearching."
+    "description": "Screen 04 loading header. It names no query: the field shows it, and user data is never upper-cased (critique 2026-09-30 part 2)."
   },
   "searchDecksGroup": "Decks",
   "@searchDecksGroup": {

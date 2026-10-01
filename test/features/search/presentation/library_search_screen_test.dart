@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -387,6 +389,34 @@ void main() {
     expect(find.text(_en.searchLoadMoreFailed), findsOneWidget);
     expect(find.byType(SearchCardHitRowWidget), findsWidgets);
   });
+
+  libraryTest('while it searches, the header names no query, so nothing the '
+      'person typed is upper-cased (critique 2026-09-30 part 2, P4)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: [searchRepositoryProvider.overrideWithValue(_PendingSearch())],
+    );
+    await _search(tester, 'Học');
+
+    expect(find.text(_en.searchSearching.toUpperCase()), findsOneWidget);
+    expect(find.textContaining('HỌC'), findsNothing);
+  });
+}
+
+/// A read that never answers: the loading state stays.
+final class _PendingSearch implements SearchRepository {
+  final _pending = StreamController<LibrarySearchResults>();
+
+  @override
+  Stream<LibrarySearchResults> watchSearch({
+    required String foldedTerm,
+    SearchCursor? through,
+  }) => _pending.stream;
 }
 
 SearchRepository _inner(LibraryEnv env) => SearchRepositoryImpl(env.db);

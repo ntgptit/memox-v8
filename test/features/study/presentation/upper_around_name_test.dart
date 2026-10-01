@@ -17,4 +17,11 @@ void main() {
       'PHIÊN ÔN TẬP · nhà hàng',
     );
   });
+
+  test('a name holding the placeholder code point stays as typed', () {
+    expect(
+      upperAroundName((name) => 'review · $name', 'a\u{F8FF}b'),
+      'REVIEW · a\u{F8FF}b',
+    );
+  });
 }

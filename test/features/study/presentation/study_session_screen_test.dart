@@ -126,10 +126,7 @@ void main() {
     expect(
       // The deck name keeps its case (critique 2026-09-30 part 2, P4).
       find.text(
-        _en
-            .studyContextLearning('\u{F8FF}', _en.studyKindLearning, 1, stages)
-            .toUpperCase()
-            .replaceAll('\u{F8FF}', 'Lesson'),
+        'Lesson · ${_en.studyKindLearning.toUpperCase()} · STAGE 1 OF $stages',
       ),
       findsOneWidget,
     );
