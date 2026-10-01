@@ -4042,7 +4042,7 @@
   "@studyBrowseMeaning": {
     "description": "Screen handoff 16 (FE-A6 P1c): the meaning half's label."
   },
-  "studyBrowseHint": "Swipe left for next, right to look back · nothing is graded here",
+  "studyBrowseHint": "Swipe for next or back · nothing is graded",
   "@studyBrowseHint": {
     "description": "Screen handoff 16 (FE-A6 P1c): the footer hint (BR-MODE-005)."
   },

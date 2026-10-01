@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -13,6 +14,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_cta_row_
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -196,6 +198,12 @@ void main() {
       await heightOf(short, textScale: 2),
       greaterThan(await heightOf(short)),
     );
+    // Two lines at scale 2: the reserve still holds the CTA in place.
+    const twoLinesAtScale2 = 'Recall the meaning before the time runs out';
+    expect(
+      await heightOf(short, textScale: 2),
+      await heightOf(twoLinesAtScale2, textScale: 2),
+    );
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -285,4 +293,38 @@ void main() {
       );
     }
   });
+
+  for (final locale in const [Locale('en'), Locale('vi')]) {
+    libraryTest("Browse's hint fits one line in ${locale.languageCode} "
+        '(owner, critique 2026-09-30 part 3c-2 golden review)', (
+      tester,
+      env,
+    ) async {
+      final hint = lookupAppLocalizations(locale).studyBrowseHint;
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host(SessionFooterHintWidget(icon: AppIcons.check, text: hint)),
+        locale: locale,
+      );
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find
+            .descendant(
+              of: find.textContaining(hint),
+              matching: find.byType(RichText),
+            )
+            .first,
+      );
+
+      // Past the glyph's placeholder: every box of the text on one line.
+      final boxes = paragraph.getBoxesForSelection(
+        TextSelection(
+          baseOffset: 1,
+          extentOffset: paragraph.text.toPlainText().length,
+        ),
+      );
+
+      expect(boxes.map((box) => box.top.round()).toSet(), hasLength(1));
+    });
+  }
 }

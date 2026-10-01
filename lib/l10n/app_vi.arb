@@ -779,7 +779,7 @@
   "studyContextLearning": "{deck} · {kind} · giai đoạn {stage}/{stages}",
   "studyBrowseTerm": "Thuật ngữ",
   "studyBrowseMeaning": "Nghĩa",
-  "studyBrowseHint": "Vuốt trái để sang thẻ tiếp, vuốt phải để xem lại · ở đây không chấm điểm",
+  "studyBrowseHint": "Vuốt để sang hoặc quay lại · không chấm điểm",
   "studyBrowseLookingBack": "Đang xem lại",
   "studyBrowseNext": "Thẻ tiếp theo",
   "studyBrowsePrevious": "Thẻ trước",

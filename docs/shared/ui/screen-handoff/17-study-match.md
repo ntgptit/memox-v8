@@ -13,7 +13,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 | Region | Widget | Design |
 |---|---|---|
-| Top bar | `MxStudyTopBar` | Primary accent (default); see the shared section. |
+| Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8); see the shared section. |
 | Context line | `SessionContextLine` | "{deck} · {Learning/Review} · round {n}". |
 | Board | grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; not `MxCard` — a small grid tile, not a padded card) | Term tile (front) and meaning tile (back) per pair; states `idle` / `selected` / `matched`, plus a wrong-pair state (see Rulings). A board with an odd remainder may hold one pair (BR-STUDY-049). |
 | Footer hint | `SessionFooterHint` | "Tap a term and its meaning, in either order". |

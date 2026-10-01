@@ -72,7 +72,7 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
   - 20 `StudyFillWidget`: wrong or not.
 - TalkBack: the guarded row keeps its semantics; focus moves too slowly for a double tap, and a
   tap that lands inside the window is simply ignored.
-- DESIGN.md's Motion records the rule: an action swapped in place under the finger settles for
+- DESIGN.md's `StudyCtaRow` line records the rule (it has no Motion section): an action swapped in place under the finger settles for
   400 ms before it takes a tap.
 
 ### 3.2 Footer hint (R6)
@@ -167,7 +167,7 @@ is a fix, not a choice. No BR fixes the accent, the hint or the guard.
 
 ## 5. Records
 
-- DESIGN.md: the settle rule under Motion, the footer hint's inline glyph and two-line reserve,
+- DESIGN.md: the settle rule on the `StudyCtaRow` line, the footer hint's inline glyph and two-line reserve,
   `MxStudyTopBar` Indigo in every mode, Match's recessed meaning column.
 - Detail files 16, 16a, 17, 18, 19 and 20: one ruling line each.
 - `docs/wbs_FE.md`: a row FE-D14 for part 3c-2.

@@ -180,7 +180,7 @@ void main() {
     );
   });
 
-  testWidgets('MxStudyTopBar default and mastery accent', (tester) async {
+  testWidgets('MxStudyTopBar mid-session and complete', (tester) async {
     await expectThemedGoldens(
       tester,
       'mx_study_top_bar',
