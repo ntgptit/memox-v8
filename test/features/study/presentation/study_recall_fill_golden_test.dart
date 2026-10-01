@@ -4,11 +4,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -71,8 +72,9 @@ Future<void> _frames(WidgetTester tester) async {
   await tester.pump();
   await tester.pump();
   await tester.pump();
-  // Past the faces' fade.
-  await tester.pump(AppDurations.standard);
+  // Past the faces' fade and a swapped row's settle (critique 2026-09-30
+  // part 3c-2, R1), so the shot is the settled screen.
+  await tester.pump(StudySettleGuardWidget.settle);
 }
 
 void main() {
