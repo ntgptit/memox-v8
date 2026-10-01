@@ -136,4 +136,26 @@ void main() {
     expect(find.byIcon(AppIcons.offline), findsOneWidget);
     expect(find.byIcon(AppIcons.alert), findsNothing);
   });
+
+  testWidgets('a null actionIcon draws the action with no glyph (critique '
+      '2026-09-30 part 3c-2, R5)', (tester) async {
+    await pumpMx(
+      tester,
+      MxErrorState(
+        title: 'Stuck',
+        body: 'Nothing to ask',
+        retryLabel: 'Close the session',
+        onRetry: () {},
+        actionIcon: null,
+      ),
+    );
+
+    expect(
+      find.descendant(
+        of: find.widgetWithText(MxButton, 'Close the session'),
+        matching: find.byType(Icon),
+      ),
+      findsNothing,
+    );
+  });
 }

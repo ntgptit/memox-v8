@@ -10,6 +10,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
@@ -18,7 +19,6 @@ import 'package:memox/features/study/presentation/widgets/support/study_whole_wo
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// Screen 18, Guess: the term and five meanings; only the first pick counts
 /// (BR-STUDY-037, BR-STUDY-042). Once its write commits, the pick and the
@@ -110,7 +110,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
     final question = widget.item.guess!;
     if (question.isBlocked) {
       // Close ends the session: nothing here can be retried (BR-STUDY-040).
-      return MxScreenScroll(
+      return StudyCentredScrollWidget(
         children: [
           MxErrorState(
             title: l10n.studyGuessBlockedTitle,
@@ -118,7 +118,9 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
             icon: AppIcons.close,
             retryLabel: l10n.studySessionClose,
             onRetry: widget.onClose,
-            actionIcon: AppIcons.close,
+            // The top bar and the notice already show a ×
+            // (critique 2026-09-30 part 3c-2, R5).
+            actionIcon: null,
           ),
         ],
       );

@@ -1,10 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_facts_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -48,7 +47,7 @@ class SessionSummaryWidget extends StatelessWidget {
         title: l10n.summaryAppBar,
         density: MxAppBarDensity.content,
       ),
-      body: _CentredScroll(
+      body: StudyCentredScrollWidget(
         children: [
           const SizedBox(height: AppSpacing.micro),
           if (summary != null) ...[
@@ -108,41 +107,5 @@ class SessionSummaryWidget extends StatelessWidget {
     };
     if (note == null) return const [];
     return [const SizedBox(height: AppSpacing.grouped), note];
-  }
-}
-
-/// The summary's one moment: centred between the app bar and the footer when
-/// it fits, scrolled from the top when it does not (critique 2026-09-30 part
-/// 3c-1, R4). One caller, so it lives here rather than in `MxScreenScroll`.
-class _CentredScroll extends StatelessWidget {
-  const _CentredScroll({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        padding: EdgeInsetsDirectional.only(
-          start: AppSpacing.gutter,
-          end: AppSpacing.gutter,
-          bottom: AppSpacing.section + bottomInset,
-        ),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: math.max(
-              0,
-              constraints.maxHeight - AppSpacing.section - bottomInset,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: children,
-          ),
-        ),
-      ),
-    );
   }
 }

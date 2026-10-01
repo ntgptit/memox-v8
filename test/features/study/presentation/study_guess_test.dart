@@ -4,6 +4,8 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -210,6 +212,19 @@ void main() {
       expect(find.text('apple'), findsNothing);
       // Close ends the session; it is not a retry.
       expect(find.byIcon(AppIcons.retry), findsNothing);
+      // Critique 2026-09-30 part 3c-2, R5: centred, and Close has no glyph.
+      final body = tester.getRect(find.byType(StudyGuessWidget));
+      expect(
+        tester.getCenter(find.byType(MxErrorState)).dy,
+        closeTo(body.center.dy - AppSpacing.section / 2, 1),
+      );
+      expect(
+        find.descendant(
+          of: find.widgetWithText(MxButton, _en.studySessionClose),
+          matching: find.byType(Icon),
+        ),
+        findsNothing,
+      );
 
       await tester.tap(find.text(_en.studySessionClose));
       await tester.pumpAndSettle();
@@ -245,5 +260,30 @@ void main() {
       findsOneWidget,
     );
     handle.dispose();
+  });
+
+  testWidgets('at text scale 2 the blocked notice scrolls from the top and '
+      'nothing overflows (Review Focus 5)', (tester) async {
+    final env = LibraryEnv(
+      openTestDatabase(interceptor: ThinMeaningSource(4)),
+      FakeDayClock(libraryToday),
+    );
+    try {
+      final id = await _guess(env);
+      await pumpLibraryScreen(tester, env, _screen(id), textScale: 2);
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.ancestor(
+          of: find.byType(MxErrorState),
+          matching: find.byType(Scrollable),
+        ),
+        findsOneWidget,
+      );
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(Duration.zero);
+      await env.db.close();
+    }
   });
 }
