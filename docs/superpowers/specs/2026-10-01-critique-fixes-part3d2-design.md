@@ -1,6 +1,6 @@
 # Whole-app critique 2026-09-30, part 3d-2: low-impact and cosmetic findings — design
 
-Status: draft 2026-10-01 ·
+Status: approved 2026-10-01 ·
 Path: architectural (eleven screens, two shared widgets widened) ·
 Owner rulings 2026-10-01 (§2): E1–E14
 
