@@ -25,7 +25,7 @@ The library level, top to bottom:
 | Today | `MxCard` | The overline "Today", the day's card-days, and "{l} learning · {r} reviewing · a card counts once per day", "No cards studied yet today" or "Nothing studied yet". Below, `MxStackedDayBars`: the last seven days, learning over reviewing, today at full strength, labelled by narrow weekday and "Today", with the legend. |
 | Streak | `MxCard` | One tile, "Current" (the flame in the `streak` colour, "{n} days", and "includes today", "held from yesterday" or "no study yesterday"); Today's figure is the Today card's alone (critique 2026-09-30). A held streak adds "Study one card today and the streak continues at {n}."; a lost one "The streak ended on {day}. It starts again with the next card you study." |
 | Range | `MxSegmentedTray` (wide) | "Last 7 days" · "Last 30 days", directly above the list (D10). |
-| List | `MxListSectionHeader` + `MxCard` + `MxListRow`s | "By deck" (the range segment above states the range; critique 2026-09-30 part 3b); the total row "All decks" (D2), then a row per root deck: the name, "{d} active days · {l} learning · {r} reviewing" (learning in the learning ink, reviewing in the primary ink), and the active cards over "cards". An idle deck reads "No activity in this range", its 0 muted, nothing dimmed (D11). |
+| List | `MxListSectionHeader` + `MxCard` + `MxListRow`s | "By deck" (the range segment above states the range; critique 2026-09-30 part 3b); the total row "All decks" (D2), then a row per root deck: the name, then "{n} cards · {d} active days" and "Card-days: {l} learning · {r} reviewing" (learning in the learning ink, reviewing in the primary ink), and a chevron on a deck row, none on the total (critique 2026-09-30 part 3d-1, D3). An idle deck reads "No activity in this range", nothing dimmed (D11). |
 | Note | `MxNote` | A quiet range: "Nothing studied in the last 7 days. Switch to Last 30 days to see older study." (at 30 days, the first sentence only). |
 | Footer line | text | "Read-only · resets change nothing here" (Today states the once-a-day rule; critique 2026-09-30 part 3b). |
 
@@ -46,7 +46,7 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | held | `progress_held_light.png` | `progress_held_dark.png` | — |
 | lost | `progress_lost_light.png` | `progress_lost_dark.png` | The note names the weekday within six days, else a short date. |
 | deck | `deck_progress_deck_light.png` | `deck_progress_deck_dark.png` | "Whole deck" total row (D2). |
-| never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2); no range and no by-deck list, which would read 0 everywhere (critique 2026-09-30). |
+| never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" (primary, the only action) under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2); no range and no by-deck list, which would read 0 everywhere (critique 2026-09-30). |
 | loading | `progress_loading_light.png` | `progress_loading_dark.png` | Skeleton rows (UI-base row 125). |
 | error | `progress_error_light.png` | `progress_error_dark.png` | With Retry, under the alert glyph: a local read failed, not the network (critique 2026-09-30). |
 | quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
@@ -67,6 +67,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **UI-base row 125:** loading shows skeleton rows.
 - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are built from the UC.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the Today label and the streak labels are eyebrows; the list headers stay section labels.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a deck row's meta reads "{n} cards · {d} active days" then "Card-days: {l} learning · {r} reviewing", and it ends in a chevron; the total row has none; the never-studied "Start studying" is primary (D3).
 
 ## Copy
 

@@ -82,6 +82,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - The Learn button is the secondary tone with the sparkles glyph.
 - **BR-CARD-002:** direction descriptions name no language ("See the term, recall the meaning").
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the hero's algorithm overline is an eyebrow.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** with only new cards, Learn is offered by the footer alone; the Learn row keeps its button when a review leads the footer (D2).
 
 ## Copy
 

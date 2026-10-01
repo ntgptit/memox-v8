@@ -58,6 +58,7 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 - **D9:** Save is enabled only for a valid change; while saving the button spins (`MxButton.isLoading`).
 - **Spec §6, UI-base row 129:** a gone root shows the Library's gone state with Back.
 - **M3 review 2026-09-28 E1, E2:** new-card order is one `MxSettingsRow` + `MxSegmentedTray`, with icons on every row.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a failed save shows a danger banner, "Not saved", at the top of the page; the footer keeps Retry save and its local-only caption.
 
 ## Copy
 

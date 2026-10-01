@@ -70,6 +70,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens screen 32; an expired sign-in's banner leads the Account section, since 23 owns the problem.
 - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds Monitoring and Users, drawn by Settings from rows the features supply, only while the account is an admin.
 - **Critique 2026-09-30 tone pass, T4:** the Sync row's tile is success when sync is settled, tinted otherwise.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the Sync row's icon tile is warning when the last run failed or a change was refused, success when settled, tinted otherwise (D5).
 
 ## Copy
 

@@ -69,6 +69,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the meta line wraps to two lines, 8 apart.
 - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other kind dims to 0.38, and "Cards and decks can't be selected together." shows.
 - **Critique 2026-09-30:** the retention note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`). The kind-lock note is not dismissible.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the kind-lock note and the purge-blocked banners sit above the list, under the retention note (D4).
 
 ## Copy
 
