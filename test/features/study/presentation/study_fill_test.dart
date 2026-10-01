@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -181,16 +182,29 @@ void main() {
     expect(find.text(_en.studyFillCheck), findsOneWidget);
   });
 
-  libraryTest('the top bar carries the mastery accent (R3)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the top bar is Indigo, as in every mode (critique 2026-09-30 '
+      'part 3c-2, R8)', (tester, env) async {
     final id = await _fill(env);
     await pumpLibraryScreen(tester, env, _screen(id));
+    final bar = find.byType(MxStudyTopBar);
+    final fill = tester.widget<ColoredBox>(
+      find.descendant(
+        of: find.descendant(
+          of: bar,
+          matching: find.byType(FractionallySizedBox),
+        ),
+        matching: find.byType(ColoredBox),
+      ),
+    );
+    final chip = find.descendant(
+      of: bar,
+      matching: find.text(_en.studyMode(StudyMode.fill).toUpperCase()),
+    );
 
+    expect(fill.color, AppColorSchemes.light.primary);
     expect(
-      tester.widget<MxStudyTopBar>(find.byType(MxStudyTopBar)).accent,
-      MxSemanticColors.light.mastery,
+      tester.widget<Text>(chip).style?.color,
+      tester.element(chip).derivedColors.primaryInk,
     );
   });
 

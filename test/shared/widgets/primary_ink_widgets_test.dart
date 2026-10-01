@@ -161,23 +161,19 @@ void main() {
     expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
   });
 
-  testWidgets('MxStudyTopBar: the badge text is primaryInk, or the accent a '
-      'caller passes', (tester) async {
-    Widget bar({Color? accent}) => MxStudyTopBar(
-      modeLabel: 'Match',
-      current: 1,
-      total: 5,
-      counterLabel: '1 / 5',
-      closeLabel: 'Close',
-      onClose: () {},
-      accent: accent,
+  testWidgets('MxStudyTopBar: the badge text is primaryInk', (tester) async {
+    await pumpDark(
+      tester,
+      MxStudyTopBar(
+        modeLabel: 'Match',
+        current: 1,
+        total: 5,
+        counterLabel: '1 / 5',
+        closeLabel: 'Close',
+        onClose: () {},
+      ),
     );
-    await pumpDark(tester, bar());
     expect(textColor(tester, 'MATCH'), ink);
-
-    const accent = Color(0xFF00AA55);
-    await pumpDark(tester, bar(accent: accent));
-    expect(textColor(tester, 'MATCH'), accent);
   });
 
   testWidgets('MxSpinner: off a fill the arc is primaryInk; on a fill it is '

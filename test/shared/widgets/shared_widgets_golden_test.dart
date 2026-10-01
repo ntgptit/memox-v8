@@ -4,7 +4,6 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -202,7 +201,6 @@ void main() {
             counterLabel: '10 / 10',
             closeLabel: 'Close',
             onClose: () {},
-            accent: MxSemanticColors.light.mastery,
           ),
         ],
       ),

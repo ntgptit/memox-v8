@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/widget_harness.dart';
 
-MxStudyTopBar _bar({int current = 3, int total = 10, Color? accent}) =>
-    MxStudyTopBar(
-      modeLabel: 'Review',
-      current: current,
-      total: total,
-      counterLabel: '$current / $total',
-      closeLabel: 'Close session',
-      onClose: () {},
-      accent: accent,
-    );
+MxStudyTopBar _bar({int current = 3, int total = 10}) => MxStudyTopBar(
+  modeLabel: 'Review',
+  current: current,
+  total: total,
+  counterLabel: '$current / $total',
+  closeLabel: 'Close session',
+  onClose: () {},
+);
 
 double _fill(WidgetTester tester) => tester
     .widget<FractionallySizedBox>(find.byType(FractionallySizedBox))
@@ -38,24 +35,22 @@ void main() {
     expect(find.text('REVIEW'), findsOneWidget);
   });
 
-  testWidgets('accent defaults to primary and follows the caller', (
-    tester,
-  ) async {
-    Color fillColor() => tester
-        .widget<ColoredBox>(
-          find.descendant(
-            of: find.byType(FractionallySizedBox),
-            matching: find.byType(ColoredBox),
-          ),
-        )
-        .color;
+  testWidgets(
+    'the fill is primary, in every mode (critique 2026-09-30 part 3c-2, R8)',
+    (tester) async {
+      Color fillColor() => tester
+          .widget<ColoredBox>(
+            find.descendant(
+              of: find.byType(FractionallySizedBox),
+              matching: find.byType(ColoredBox),
+            ),
+          )
+          .color;
 
-    await pumpMx(tester, _bar());
-    expect(fillColor(), AppColorSchemes.light.primary);
-
-    await pumpMx(tester, _bar(accent: MxSemanticColors.light.mastery));
-    expect(fillColor(), MxSemanticColors.light.mastery);
-  });
+      await pumpMx(tester, _bar());
+      expect(fillColor(), AppColorSchemes.light.primary);
+    },
+  );
 
   testWidgets('the track is progress-track (R6)', (tester) async {
     await pumpMx(tester, _bar());

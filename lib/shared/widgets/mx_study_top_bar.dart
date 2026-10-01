@@ -9,8 +9,8 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 /// Session chrome for the study modes: close, mode badge, a thin progress
-/// track and a counter. [accent] (primary by default) drives the
-/// badge, its tint and the fill, so one bar carries every mode's colour.
+/// track and a counter. Indigo in every mode (critique 2026-09-30 part 3c-2,
+/// R8): the badge, its tint and the fill.
 class MxStudyTopBar extends StatelessWidget {
   const MxStudyTopBar({
     super.key,
@@ -20,8 +20,6 @@ class MxStudyTopBar extends StatelessWidget {
     required this.counterLabel,
     required this.closeLabel,
     required this.onClose,
-    this.accent,
-    this.accentInk,
   }) : assert(total >= 1, 'a session has at least one card'),
        assert(
          current >= 1 && current <= total,
@@ -42,10 +40,6 @@ class MxStudyTopBar extends StatelessWidget {
 
   /// Leaving mid-session is the screen's decision; this bar only reports it.
   final VoidCallback onClose;
-  final Color? accent;
-
-  /// The mode chip's text colour, when [accent] fails as text on its tint.
-  final Color? accentInk;
 
   static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
@@ -59,11 +53,9 @@ class MxStudyTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final accentColor = accent ?? colors.primary;
-    // The badge text is ink: primaryInk unless the caller names an accent,
-    // or the accent's own ink.
-    final accentInk =
-        this.accentInk ?? accent ?? context.derivedColors.primaryInk;
+    final accentColor = colors.primary;
+    // The badge text is ink: primaryInk on the primary tint.
+    final accentInk = context.derivedColors.primaryInk;
     final styles = context.textStyles;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
