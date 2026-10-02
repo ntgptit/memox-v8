@@ -11,7 +11,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 |---|---|---|
 | App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05) and Trash (screen 06) (FE-B2 + FE-B4 D2). |
 | Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
-| Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today · new. A tap opens Study home; a trailing chevron says so (critique 2026-09-30, R4). Hidden when the library holds no card. |
+| Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today (New is not due, BR-STUDY-068). A tap opens Study home; a trailing chevron says so (critique 2026-09-30, R4). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
 | Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on `surfaceContainerLow`; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
 | FAB | `MxFab` | "New deck". |
@@ -97,6 +97,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at large text, between whole terms; only the deck name keeps one line.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow (12/600 muted); the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the recent sort is labelled "Date added" (vi "Ngày tạo") with the hint "Newest first"; the search field is hidden while decks are reordered, as the summary, the due strip and the sort pill are, and returns with Done.
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due strip's breakdown is overdue · today, the two halves of its total; New stays on each deck row (BR-STUDY-068).
 
 ## Pending
 

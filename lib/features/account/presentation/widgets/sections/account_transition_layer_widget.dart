@@ -17,6 +17,7 @@ import 'package:memox/features/account/presentation/widgets/sections/code_form_w
 import 'package:memox/features/account/presentation/widgets/sections/sign_in_form_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -56,7 +57,13 @@ class _LayerPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final view = blockingViewOf(ref.watch(authStateProvider).value);
     if (view == null) return const SizedBox.shrink();
-    final canCancel = canCancelSwitch(view.transition) && !view.isStuck;
+    final transition = view.transition;
+    final isStopped = view.error != null || view.isStuck;
+    // A sign-out cancels only once it has stopped: one queued behind a
+    // running push would land after it moved on (critique 2026-10-02, R4).
+    final canCancel =
+        (canCancelSwitch(transition) && !view.isStuck) ||
+        (canCancelSignOut(transition) && isStopped);
     final isSigningIn = view.isAwaitingTargetSignIn && !view.isStuck;
     return MxAppShell(
       appBar: canCancel
@@ -68,7 +75,8 @@ class _LayerPage extends ConsumerWidget {
                   label: context.l10n.commonCancel,
                   tone: MxButtonTone.text,
                   size: MxButtonSize.small,
-                  onPressed: () => unawaited(_cancel(context, ref)),
+                  onPressed: () =>
+                      unawaited(_cancel(context, ref, transition.kind)),
                 ),
               ],
             )
@@ -81,15 +89,23 @@ class _LayerPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _cancel(BuildContext context, WidgetRef ref) async {
+  Future<void> _cancel(
+    BuildContext context,
+    WidgetRef ref,
+    TransitionKind kind,
+  ) async {
+    final coordinator = ref.read(accountCoordinatorProvider);
     try {
-      await ref.read(accountCoordinatorProvider)?.cancelSwitch();
+      await (kind == TransitionKind.signOut
+          ? coordinator?.cancelSignOut()
+          : coordinator?.cancelSwitch());
     } on Failure catch (error) {
       if (context.mounted) {
         showMxSnackbar(context, message: context.l10n.failure(error));
       }
     } on StateError {
-      // The switch passed the target sign-in meanwhile; the layer follows.
+      // The transition moved past where it can go back meanwhile; the layer
+      // follows.
       return;
     }
   }
@@ -188,11 +204,7 @@ class _Progress extends ConsumerWidget {
                     liveRegion: true,
                     child: MxInlineBanner(
                       tone: MxBannerTone.warning,
-                      message: view.isStuck
-                          ? l10n.accountLayerStuck
-                          : error is OfflineFailure
-                          ? l10n.accountLayerOffline
-                          : l10n.accountLayerFailed,
+                      message: _stoppedMessage(l10n, error),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.gutter),
@@ -234,6 +246,16 @@ class _Progress extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// What stopped it. A sign-out stopped offline has removed nothing yet,
+  /// beside its loss button (critique 2026-10-02, F2).
+  String _stoppedMessage(AppLocalizations l10n, Failure? error) {
+    if (view.isStuck) return l10n.accountLayerStuck;
+    if (error is! OfflineFailure) return l10n.accountLayerFailed;
+    return view.transition.kind == TransitionKind.signOut
+        ? l10n.accountSignOutStoppedOffline
+        : l10n.accountLayerOffline;
   }
 
   /// Auth spec #39: offline, a sign-out waits to send unless its loss is

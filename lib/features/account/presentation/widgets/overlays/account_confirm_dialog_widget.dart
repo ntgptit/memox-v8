@@ -16,6 +16,7 @@ Future<bool> confirmAccountStep(
   Widget? note,
   IconData? confirmIcon,
   bool isDestructive = false,
+  bool isWarning = false,
   bool canConfirm = true,
 }) async =>
     await showMxDialog<bool>(
@@ -27,6 +28,7 @@ Future<bool> confirmAccountStep(
         note: note,
         confirmIcon: confirmIcon,
         isDestructive: isDestructive,
+        isWarning: isWarning,
         canConfirm: canConfirm,
       ),
     ) ??
@@ -79,6 +81,7 @@ class AccountConfirmDialogWidget extends StatelessWidget {
     this.note,
     this.confirmIcon,
     this.isDestructive = false,
+    this.isWarning = false,
     this.canConfirm = true,
   });
 
@@ -90,6 +93,9 @@ class AccountConfirmDialogWidget extends StatelessWidget {
   final Widget? note;
   final IconData? confirmIcon;
   final bool isDestructive;
+
+  /// A confirm that changes a lot but loses nothing (critique 2026-10-02).
+  final bool isWarning;
 
   /// False disables the confirm, as a deletion offline (spec §9 B6).
   final bool canConfirm;
@@ -105,6 +111,7 @@ class AccountConfirmDialogWidget extends StatelessWidget {
       confirmLabel: confirmLabel,
       confirmIcon: confirmIcon,
       isDestructive: isDestructive,
+      isWarning: isWarning,
       onConfirm: canConfirm ? () => Navigator.of(context).pop(true) : null,
     ),
   );
