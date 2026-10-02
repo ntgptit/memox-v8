@@ -1,7 +1,7 @@
 import '../tables/deck.drift';
 
 -- Spec §6: the (template id, version) of every copy outside the Trash.
-starterCopies:
+starterCopies AS StarterCopyRow:
 SELECT source_template_id AS template_id,
   source_template_version AS template_version
 FROM deck

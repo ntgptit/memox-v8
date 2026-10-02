@@ -22,7 +22,7 @@ cardsCarryingTagIn(:tag_id AS TEXT):
 SELECT card_id FROM card_tags WHERE card_id IN :card_ids AND tag_id = :tag_id
 ORDER BY card_id;
 
-tagCountsOfCardsIn:
+tagCountsOfCardsIn AS CardTagCountRow:
 SELECT card_id, COUNT(tag_id) AS tag_count FROM card_tags
 WHERE card_id IN :card_ids GROUP BY card_id ORDER BY card_id;
 
