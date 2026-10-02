@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show SelectedContent;
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -7,8 +10,8 @@ enum _CardKind { code, prose, error, stackTrace }
 
 /// One block of text under a title: the message, the error, a stack trace, or
 /// the context as JSON. The text is selectable, and long lines wrap. Code is
-/// set in the monospace [MxTextStyles.code]. It is a `SelectableText`, not a
-/// `Text`: a log is the one place the app shows an error's own words, on
+/// set in the monospace [MxTextStyles.code]. It is a `SelectableText` (a
+/// stack trace, rows in a `SelectionArea`), not a plain `Text`: a log is the one place the app shows an error's own words, on
 /// purpose (ADR-018 §1; BR-CORE-005 is about what a user sees).
 class MonitoringCodeCardWidget extends StatelessWidget {
   /// JSON or any other code.
@@ -94,7 +97,10 @@ class MonitoringCodeCardWidget extends StatelessWidget {
   }
 }
 
-class _StackTrace extends StatelessWidget {
+/// One frame per row, the `#n` in a cell as wide as the trace's largest
+/// frame number; a copy gives the trace back as written (critique
+/// 2026-09-30 part 3d-2, final review).
+class _StackTrace extends StatefulWidget {
   const _StackTrace({
     required this.text,
     required this.style,
@@ -105,49 +111,134 @@ class _StackTrace extends StatelessWidget {
   final TextStyle style;
   final TextStyle frameStyle;
 
-  static final RegExp _frame = RegExp(r'^#\d+');
+  @override
+  State<_StackTrace> createState() => _StackTraceState();
+}
 
-  /// The cell holds "#99" and a space, in the code face at the text scale.
-  static const String _cellSample = '#99 ';
+class _StackTraceState extends State<_StackTrace> {
+  static final RegExp _frame = RegExp(r'^(#\d+)(\s*)');
+
+  /// A copy ends each line with a new line.
+  final _lines = _JoiningDelegate('\n');
+
+  /// Per frame, its `#n` and its text joined by the frame's own gap.
+  var _frames = <_JoiningDelegate?>[];
+  var _rows = <String>[];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _split();
+  }
+
+  @override
+  void didUpdateWidget(_StackTrace oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text == widget.text) return;
+    _disposeFrames();
+    _split();
+  }
+
+  @override
+  void dispose() {
+    _disposeFrames();
+    _lines.dispose();
+    super.dispose();
+  }
+
+  void _split() {
+    _rows = widget.text.split('\n');
+    _frames = [
+      for (final row in _rows)
+        if (_frame.matchAsPrefix(row) case final match?)
+          _JoiningDelegate(match[2]!.isEmpty ? ' ' : match[2]!)
+        else
+          null,
+    ];
+  }
+
+  void _disposeFrames() {
+    for (final delegate in _frames) {
+      delegate?.dispose();
+    }
+  }
+
+  /// The cell fits the largest frame number and a space, in the code face
+  /// at the text scale.
+  double _cellWidth(BuildContext context) {
+    var digits = 2;
+    for (final row in _rows) {
+      if (_frame.matchAsPrefix(row) case final match?) {
+        digits = math.max(digits, match[1]!.length - 1);
+      }
+    }
     final painter = TextPainter(
-      text: TextSpan(text: _cellSample, style: style),
+      text: TextSpan(text: '#${'9' * digits} ', style: widget.style),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
-    final cell = painter.width;
+    final width = painter.width;
     painter.dispose();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final line in text.split('\n'))
-          // The #n stands on the frame's first line, in the cell the text
-          // keeps clear; not a row of marks to centre.
-          if (_frame.matchAsPrefix(line) case final match?)
-            Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.only(start: cell),
-                  child: Text(
-                    line.substring(match.end).trimLeft(),
-                    style: style,
-                  ),
+    return width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cell = _cellWidth(context);
+    return SelectionContainer(
+      delegate: _lines,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, row) in _rows.indexed)
+            if (_frame.matchAsPrefix(row) case final match?)
+              // The #n stands on the frame's first line, in the cell the
+              // text keeps clear; not a row of marks to centre.
+              SelectionContainer(
+                delegate: _frames[index]!,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: cell),
+                      child: Text(
+                        row.substring(match.end),
+                        style: widget.style,
+                      ),
+                    ),
+                    PositionedDirectional(
+                      start: 0,
+                      top: 0,
+                      child: Text(match[1]!, style: widget.frameStyle),
+                    ),
+                  ],
                 ),
-                PositionedDirectional(
-                  start: 0,
-                  top: 0,
-                  child: Text(match[0]!, style: frameStyle),
-                ),
-              ],
-            )
-          else
-            Padding(
-              padding: EdgeInsetsDirectional.only(start: cell),
-              child: Text(line.trimLeft(), style: style),
-            ),
-      ],
+              )
+            else
+              Padding(
+                padding: EdgeInsetsDirectional.only(start: cell),
+                child: Text(row, style: widget.style),
+              ),
+        ],
+      ),
     );
+  }
+}
+
+/// Joins what its children copy with [separator]; Flutter's own delegate
+/// joins with nothing.
+class _JoiningDelegate extends StaticSelectionContainerDelegate {
+  _JoiningDelegate(this.separator);
+
+  final String separator;
+
+  @override
+  SelectedContent? getSelectedContent() {
+    final parts = [
+      for (final selectable in selectables)
+        if (selectable.getSelectedContent() case final content?)
+          content.plainText,
+    ];
+    if (parts.isEmpty) return null;
+    return SelectedContent(plainText: parts.join(separator));
   }
 }

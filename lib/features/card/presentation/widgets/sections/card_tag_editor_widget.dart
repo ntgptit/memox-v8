@@ -103,8 +103,14 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
 
   /// Save adds what is typed, as Done would (critique 2026-09-30 part 3d-2,
   /// E8). False when the name is refused: the caller saves nothing.
-  bool commitPending() =>
-      _input.text.trim().isEmpty || _add(_input.text, keepsFocus: false);
+  bool commitPending() {
+    if (_input.text.trim().isEmpty) return true;
+    final isAdded = _add(_input.text, keepsFocus: false);
+    // A refused name takes the focus, which brings its error into view
+    // (critique 2026-09-30 part 3d-2, final review).
+    if (!isAdded) _focus.requestFocus();
+    return isAdded;
+  }
 
   /// The next card's form starts with an empty, closed input.
   void clearInput() {

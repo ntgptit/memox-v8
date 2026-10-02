@@ -167,4 +167,25 @@ void main() {
       findsNothing,
     );
   });
+
+  libraryTest('create: a refused tag stops Save and takes the focus, so its '
+      'error is in view (final review)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.enterText(_field(0), 'bap');
+    await tester.enterText(_field(1), 'rice');
+    await _openTag(tester, 'x' * 51);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+
+    await tester.tap(_button(_en.cardSaveCard));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.cardRejection(CardRejection.invalidTagName)),
+      findsOneWidget,
+    );
+    expect(tester.widget<EditableText>(_tagField).focusNode.hasFocus, isTrue);
+    expect(await _tagsOf(env, 'bap'), isEmpty);
+  });
 }
