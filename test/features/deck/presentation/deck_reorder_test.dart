@@ -205,7 +205,7 @@ void main() {
     handle.dispose();
   });
 
-  libraryTest('a dragged row is decorated by a proxy, flat with a ghost edge '
+  libraryTest('a dragged row is returned as is, without the elevated lift '
       '(audit 2026-10-03 Theming)', (tester, env) async {
     for (final name in ['A', 'B']) {
       await env.decks.root(name);
@@ -213,11 +213,13 @@ void main() {
     await pumpLibraryScreen(tester, env, deckScreen());
     await _startReorder(tester);
 
+    final decorator = tester
+        .widget<ReorderableListView>(find.byType(ReorderableListView))
+        .proxyDecorator!;
+    const probe = SizedBox(key: ValueKey('probe'));
     expect(
-      tester
-          .widget<ReorderableListView>(find.byType(ReorderableListView))
-          .proxyDecorator,
-      isNotNull,
+      identical(decorator(probe, 0, const AlwaysStoppedAnimation(1)), probe),
+      isTrue,
     );
   });
 
