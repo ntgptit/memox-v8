@@ -200,6 +200,7 @@ SCOPES_PATH = (
 # scope's temporary exclude. Each phase adds the files it migrates.
 MIGRATED_TO_DRIFT: tuple[str, ...] = (
     "lib/features/account/data/datasources/account_device_dao.dart",
+    "lib/features/trash/data/datasources/trash_dao.dart",
 )
 
 # The exceptions ADR-020 grants for good, which no phase removes.

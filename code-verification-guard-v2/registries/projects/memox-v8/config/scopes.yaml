@@ -359,7 +359,6 @@ scopes:
       - lib/features/study/data/datasources/study_session_dao.dart
       - lib/features/study/data/datasources/study_view_dao.dart
       - lib/features/tags/data/datasources/tag_dao.dart
-      - lib/features/trash/data/datasources/trash_dao.dart
 
   test_files:
     include:
