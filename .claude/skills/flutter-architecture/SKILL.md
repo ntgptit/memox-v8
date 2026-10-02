@@ -114,7 +114,7 @@ presentation ──► domain ◄── data
 Verify mechanically rather than by eye:
 
 ```bash
-flutter test test/architecture
+bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/architecture
 python3 .claude/skills/flutter-architecture/scripts/check_architecture.py
 ```
 

@@ -236,3 +236,42 @@ the tag. That is the same per-file cost as §1.1, paid 529 times for 40 files.
 - `--update` rewrote no picture: the render was identical and every write went to the right
   place.
 
+## 8. Addendum 2026-10-02: subset runs and the test-command hook
+
+Owner ruling R5, 2026-10-02.
+
+**The problem.** An agent ran this:
+
+```
+flutter test test/features --exclude-tags golden -j 2 2>&1 | grep … | tail -5; flutter test test/features --exclude-tags golden -j 2 2>&1 | tail -15
+```
+
+It took 8 m 24 s, for four reasons:
+- It ran the same 283 files twice, only to filter the output two ways.
+- `flutter test <dir>` bypasses the bundles, which only `dod_check.sh` used.
+- `-j 2` capped the run at two processes.
+- `tail` hid all progress until the end.
+
+The same targets bundled took 1 m 33 s in a single run.
+
+**Design.**
+- **`run_tests.sh [target…]`.** Runs any files or directories (default `test`) bundled,
+  with `-r failures-only`, then prints `test_report.py`'s summary. A failed run keeps its bundles
+  and JSON report under `.dart_tool/memox_test_bundles/run-<pid>/`. `MEMOX_TEST_BUNDLES=0`, or no
+  python, runs the targets file by file.
+- **`dod_check.sh` runs its host tests through `run_tests.sh`** in all three modes, so a subset run
+  by hand and the gate run tests the same way. `--changed` passes the plan's compressed
+  `local_test_targets`: `bundle_tests.py` expands a directory to exactly the runnable tests below
+  it.
+- **The `check_test_command.py` hook** (PreToolUse, Bash) returns `additionalContext`, never a
+  permission decision. It fires when a command runs `flutter test` over a directory, the whole
+  suite or more than three files (`run_tests.sh`), runs a broad `--tags golden`
+  (`run_goldens.sh`), or runs the same tests twice. It is silent:
+  - for one to three files;
+  - for the gate scripts;
+  - under `MEMOX_TEST_BUNDLES=0`.
+- **Docs that taught the direct command now name the scripts:**
+  - `CLAUDE.md`, whose Windows line pointed at a whole-suite `flutter test`;
+  - the `flutter-testing`, `flutter-architecture`, `flutter-drift` and `flutter-ship` skills;
+  - the testing README.
+

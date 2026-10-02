@@ -69,8 +69,11 @@ project goes into the repo through a PR.
   format, analyze, generated code, architecture, docs, the guard and the full
   suite. Goldens run after it, in the Linux container only
   (`bash .claude/skills/flutter-workflow/scripts/run_goldens.sh`, `--update`
-  to rewrite them); on Windows run `flutter test --exclude-tags golden` and
-  never `--update-goldens`.
+  to rewrite them); on Windows run the gate alone and never `--update-goldens`.
+- Part of the suite runs through
+  `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`
+  (bundled, failures only), once; `flutter test` on a directory or the whole
+  suite compiles every file on its own and is several times slower.
 - **Golden review:** when a branch adds, updates or deletes a
   `test/**/goldens/*.png`, the owner gets a before · after · diff page built
   with the `golden-compare` skill before any approve or merge. Changed images
