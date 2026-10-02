@@ -1,0 +1,39 @@
+import '../tables/deck.drift';
+
+-- Sync reads and writes a deck in any state: a deck in the Trash carries its
+-- delete_batch_id to and from the server (ADR-013). The server derives
+-- root_id and depth; pulled values are written as they come.
+
+syncDeckRow(:id AS TEXT):
+SELECT * FROM deck WHERE id = :id;
+
+-- A pulled deck: the columns the server sends, and its version. owner_id is
+-- left as it is.
+upsertSyncedDeck: INSERT INTO deck $row
+ON CONFLICT (id) DO UPDATE SET
+  name = excluded.name,
+  parent_id = excluded.parent_id,
+  root_id = excluded.root_id,
+  depth = excluded.depth,
+  content_type = excluded.content_type,
+  scheduler_type = excluded.scheduler_type,
+  scheduler_version = excluded.scheduler_version,
+  scheduler_config = excluded.scheduler_config,
+  study_config = excluded.study_config,
+  generation = excluded.generation,
+  first_answered_at = excluded.first_answered_at,
+  source_template_id = excluded.source_template_id,
+  source_template_version = excluded.source_template_version,
+  delete_batch_id = excluded.delete_batch_id,
+  sibling_position = excluded.sibling_position,
+  created_at = excluded.created_at,
+  updated_at = excluded.updated_at,
+  server_version = excluded.server_version;
+
+-- A deck the server tombstoned; local cascades follow.
+deleteSyncedDeck(:id AS TEXT):
+DELETE FROM deck WHERE id = :id;
+
+-- The version the server gave to the pushed state.
+acknowledgeDeck(:id AS TEXT, :server_version AS INTEGER):
+UPDATE deck SET server_version = :server_version WHERE id = :id;

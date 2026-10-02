@@ -1,0 +1,9 @@
+import '../tables/srs.drift';
+
+-- Sync of review_log: append-only, so a pulled log the device already has
+-- is left as it is.
+
+syncReviewLogRow(:id AS TEXT):
+SELECT * FROM review_log WHERE id = :id;
+
+insertSyncedReviewLog: INSERT OR IGNORE INTO review_log $row;

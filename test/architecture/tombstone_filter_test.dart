@@ -8,9 +8,15 @@ import 'tombstone_rules.dart';
 /// with its reason (trash spec §11). A statement that reads active content
 /// gets the filter, not an entry.
 const _readsTombstones = <String, String>{
-  'lib/core/sync/deck_sync_adapter.dart#readRow':
+  'lib/core/database/queries/sync_deck_queries.drift#syncDeckRow':
       'sync uploads a deck in any state: a deck in the Trash carries its '
       'delete_batch_id to the server (ADR-013)',
+  'lib/core/database/queries/sync_deck_queries.drift#deleteSyncedDeck':
+      'a deck the server tombstoned goes in any state, in the Trash too '
+      '(ADR-013)',
+  'lib/core/database/queries/sync_deck_queries.drift#acknowledgeDeck':
+      'the server acknowledges a pushed deck in any state, a deck in the '
+      'Trash too (ADR-013)',
   'lib/core/database/tables/sync.drift#card_tags_sync_delete':
       'a link change queues its card in any state, a card in the Trash too; '
       'the check only keeps a card delete from turning into an upsert (SB-S3)',

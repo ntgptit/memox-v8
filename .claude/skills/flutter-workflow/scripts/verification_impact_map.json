@@ -74,6 +74,9 @@
     "study_round_queries": ["study"],
     "study_session_queries": ["study"],
     "study_view_queries": ["study"],
+    "sync_deck_queries": [],
+    "sync_delete_batch_queries": [],
+    "sync_review_log_queries": [],
     "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
   },

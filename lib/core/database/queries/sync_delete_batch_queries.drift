@@ -1,0 +1,22 @@
+import '../tables/trash.drift';
+
+-- Sync of delete_batches (trash spec, ADR-013).
+
+syncDeleteBatchRow(:id AS TEXT):
+SELECT * FROM delete_batches WHERE id = :id;
+
+-- A pulled batch: the columns the server sends, and its version. owner_id is
+-- left as it is.
+upsertSyncedDeleteBatch: INSERT INTO delete_batches $row
+ON CONFLICT (id) DO UPDATE SET
+  item_type = excluded.item_type,
+  root_item_id = excluded.root_item_id,
+  deleted_at = excluded.deleted_at,
+  server_version = excluded.server_version;
+
+-- A batch the server tombstoned; local cascades follow.
+deleteSyncedDeleteBatch(:id AS TEXT):
+DELETE FROM delete_batches WHERE id = :id;
+
+acknowledgeDeleteBatch(:id AS TEXT, :server_version AS INTEGER):
+UPDATE delete_batches SET server_version = :server_version WHERE id = :id;
