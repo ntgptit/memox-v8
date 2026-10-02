@@ -124,6 +124,26 @@ void main() {
     expect(summary.kind, ImportSummaryKind.success);
   });
 
+  test('a partial import with a commit-time duplicate and an invalid row: '
+      'the counts are the list (final review)', () async {
+    final rows = await previewOf('front,back\na,b\nc,\nd,e');
+    await insertCard(db, id: 'raced', deckId: leaf.id, front: 'a', back: 'b');
+
+    final summary = _ok(
+      await commit(deckId: leaf.id, preview: rows, includeDuplicates: false),
+    );
+
+    expect(summary.kind, ImportSummaryKind.partial);
+    expect(
+      [for (final row in summary.skipped) (row.rowNumber, row.kind)],
+      [(2, ImportRowKind.duplicateInDeck), (3, ImportRowKind.invalid)],
+    );
+    expect(
+      (summary.written, summary.duplicatesSkipped, summary.invalid),
+      (1, 1, 1),
+    );
+  });
+
   test(
     'rows that became duplicates after the preview end on none (spec §8.1)',
     () async {

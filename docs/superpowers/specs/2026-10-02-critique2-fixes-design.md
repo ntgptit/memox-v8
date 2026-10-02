@@ -103,7 +103,7 @@ asks for counts; §3.4 adds the rows and updates the UC. The auth spec's transit
 - The stopped banner's message, beside the "Sign out now and lose N changes" button, no longer
   says "Your data is safe on this phone." For a stopped sign-out it reads a new key
   `accountSignOutStoppedOffline`: en "No connection. Nothing has been removed yet.", vi "Không có
-  kết nối. Chưa có gì bị xoá." The switch and other layers keep their copy.
+  mạng. Chưa có gì bị xoá." (as the plan's binding copy and the other layer lines word it) The switch and other layers keep their copy.
 - The auth spec gains a row after #39: "Sign-out | cancelled at started | drop record; open gate;
   resume sync | READY(A)".
 

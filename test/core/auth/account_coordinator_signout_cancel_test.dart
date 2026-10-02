@@ -79,4 +79,15 @@ void main() {
 
     await expectLater(world.coordinator.cancelSignOut(), throwsStateError);
   });
+
+  test('a Cancel that arrives after the reconnect finished the sign-out is '
+      'refused, and the sign-out stands (final review)', () async {
+    await stoppedOffline();
+    world.network.goOnline();
+    await pumpEventQueue();
+
+    await expectLater(world.coordinator.cancelSignOut(), throwsStateError);
+    expect(world.device.resets, 1);
+    expect(await world.store.transition(), isNull);
+  });
 }
