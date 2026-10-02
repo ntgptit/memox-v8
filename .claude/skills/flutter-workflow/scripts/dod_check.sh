@@ -16,14 +16,16 @@
 #           --fast) before you commit, and always before a merge.
 #   --fix   apply `dart format` instead of only reporting drift
 #   --force ignore the pass stamp and run even if this exact tree already passed
+#   MEMOX_TEST_BUNDLES=<n>  host test bundles (default: one per core); 0 runs
+#           the test files one by one, the way the suite ran before 2026-10-02
 #
 # **The pass stamp, and why it exists.** Running this twice on an unchanged tree
 # is not caution, it is the same answer bought twice — and it happens on every
 # change, because "before commit", "before push" and "before the PR" feel like
 # three moments and are one state. A successful run now records a fingerprint of
 # the tree it verified; a later run with the same fingerprint prints what it
-# already knows and exits at once: 0.03s against 266s for a full run, measured
-# in the cloud container on 2026-09-26.
+# already knows and exits at once: 0.03s against 134s for a full run with the
+# host tests bundled, measured in the cloud container on 2026-10-02.
 #
 # A `full` pass satisfies `--changed` and `--fast`, because it is a superset of
 # both. The reverse never holds.
@@ -350,29 +352,91 @@ else
     "$GUARD_PY '$GUARD_RUNNER' check --project '$REPO_ROOT' --ruleset memox-v8"
 fi
 
+# **Bundled, unless `MEMOX_TEST_BUNDLES=0`.** `flutter test` compiles every
+# test file on its own and starts a fresh process for it, so the suite paid
+# ~1.4 s per file however small the file: 13m31s for 483 files on 2026-10-02.
+# `bundle_tests.py` folds the selected files into one entrypoint per core and
+# the same 3411 tests ran in 2m12s (spec 2026-10-02-test-suite-bundling).
+# `MEMOX_TEST_BUNDLES=0` runs the same targets file by file, as before: the
+# rollback, and the way to tell a real failure from state one file leaks into
+# the next.
+#
+# **`TZ=UTC`, and never goldens here.** Goldens are generated and compared only
+# in the Linux container (golden.Dockerfile, CLAUDE.md); a host run compares
+# them against a different rasteriser and fails on pixels that are not defects.
+# A bundle could not run them anyway: `matchesGoldenFile` resolves the PNG
+# beside the test file, so `bundle_tests.py` leaves golden files out.
+#
+# Either way `test_report.py` prints the slowest tests and, on a failure, each
+# failing file with the command that re-runs it alone. It never changes the
+# verdict: the subshell exits with `flutter test`'s own code.
+BUNDLE_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/bundle_tests.py"
+REPORT_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/test_report.py"
+# **Repo-relative, and one directory per run.** Relative so Git Bash hands
+# `json:<path>` to `flutter test` without converting it; per run so a second
+# gate in this checkout cannot rewrite these bundles while they compile. The
+# EXIT trap removes it with $WORK.
+BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"
+TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"
+TEST_TARGETS_NUL="$WORK/test-targets.nul"
+trap 'rm -rf "$WORK" "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"' EXIT
+
+# plan_host_tests <scope> <per-file targets...>
+# Bundles the targets listed in $TEST_TARGETS_NUL, or with
+# MEMOX_TEST_BUNDLES=0 (or no python) runs the per-file targets as given.
+plan_host_tests() {
+  local scope="$1"
+  shift
+  local quoted="" report_tail="; exit \$?)"
+  [[ -n "$PY" ]] &&
+    report_tail="; rc=\$?; '$PY' '$REPORT_PY' '$TEST_REPORT' --root '$REPO_ROOT'; exit \$rc)"
+  if [[ "${MEMOX_TEST_BUNDLES:-}" == "0" || -z "$PY" ]]; then
+    mkdir -p "$BUNDLE_RUN_DIR"
+    [[ $# -gt 0 ]] && printf -v quoted " %q" "$@"
+    plan test "flutter test ($scope, file by file, no goldens, TZ=UTC)" \
+      "(TZ=UTC flutter test --exclude-tags golden --file-reporter json:'$TEST_REPORT'$quoted$report_tail"
+    return
+  fi
+  local bundle_out bundles=()
+  if ! bundle_out="$("$PY" "$BUNDLE_PY" --root "$REPO_ROOT" --out "$BUNDLE_RUN_DIR" --paths-file "$TEST_TARGETS_NUL" 2>"$WORK/bundle.err")"; then
+    step "test bundling"
+    cat "$WORK/bundle.err"
+    FAILED+=("test bundling — see above")
+    return
+  fi
+  [[ -n "$bundle_out" ]] && mapfile -t bundles <<<"$bundle_out"
+  # A Windows Python can end each line with `\r`, which would end up in a path.
+  [[ ${#bundles[@]} -gt 0 ]] && bundles=("${bundles[@]%$'\r'}")
+  if [[ ${#bundles[@]} -eq 0 ]]; then
+    FAILED+=("test plan selected no test files")
+    return
+  fi
+  printf -v quoted " %q" "${bundles[@]}"
+  plan test "flutter test ($scope, ${#bundles[@]} bundles, no goldens, TZ=UTC)" \
+    "(cat '$WORK/bundle.err'; TZ=UTC flutter test -j ${#bundles[@]} --exclude-tags golden --file-reporter json:'$TEST_REPORT'$quoted$report_tail"
+}
+
 if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
   if [[ ! -d test ]]; then
     FAILED+=("selected host tests unavailable: no test/ directory")
   elif [[ $CHANGED -eq 1 ]]; then
+    # The bundles take the exact `test_files`; the per-file run keeps the
+    # compressed `local_test_targets`, which fit a Windows command line.
+    "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); sys.stdout.buffer.write(b''.join(x.encode() + b'\\0' for x in p['test_files']))" "$PLAN_JSON" >"$TEST_TARGETS_NUL"
     mapfile -d '' CHANGED_TEST_TARGETS < <(
       "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); sys.stdout.buffer.write(b'\\0'.join(x.encode() for x in p['local_test_targets']) + b'\\0')" "$PLAN_JSON"
     )
     if [[ ${#CHANGED_TEST_TARGETS[@]} -eq 0 ]]; then
       FAILED+=("test plan selected no test files")
     else
-      printf -v QUOTED_TEST_TARGETS " %q" "${CHANGED_TEST_TARGETS[@]}"
-      plan test "flutter test (--changed: ${#CHANGED_TEST_TARGETS[@]} compressed targets, no goldens)" \
-        "TZ=UTC flutter test --exclude-tags golden${QUOTED_TEST_TARGETS}"
+      plan_host_tests "--changed" "${CHANGED_TEST_TARGETS[@]}"
     fi
   elif [[ $FAST -eq 1 ]]; then
-    plan test "flutter test (--fast: Deck + app subset, no goldens)" \
-      "TZ=UTC flutter test --exclude-tags golden test/app test/features/deck"
+    printf '%s\0' test/app test/features/deck >"$TEST_TARGETS_NUL"
+    plan_host_tests "--fast: Deck + app subset" test/app test/features/deck
   else
-    # **`TZ=UTC`, and never goldens here.** Goldens are generated and compared
-    # only in the Linux container (golden.Dockerfile, CLAUDE.md); a host run
-    # compares them against a different rasteriser and fails on pixels that
-    # are not defects.
-    plan test "flutter test (full suite, no goldens, TZ=UTC)"       "TZ=UTC flutter test --exclude-tags golden"
+    printf '%s\0' test >"$TEST_TARGETS_NUL"
+    plan_host_tests "full suite"
   fi
 fi
 
