@@ -180,6 +180,9 @@ void main() {
       );
 
       expect((result.written, result.skippedDuplicates), (1, 2));
+      // The drafts the commit dropped, by their place in the batch
+      // (critique 2026-10-02, F4).
+      expect(result.skippedIndexes, [0, 2]);
       expect(await _count(db, 'card'), 2);
     });
 
