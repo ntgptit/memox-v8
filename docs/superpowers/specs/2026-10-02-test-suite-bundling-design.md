@@ -70,7 +70,8 @@ A new script, `.claude/skills/flutter-workflow/scripts/bundle_tests.py`, sits be
   `@TestOn`, `@Timeout`, `@Skip`, `@OnPlatform`) makes the script exit non-zero and name the
   file. Those annotations are read from the file that `flutter test` is given, so a bundle
   would drop them silently. The fix is to move the annotation onto the `group` or `test`.
-  No file has one today.
+  No file has one today. A byte-order mark, whitespace and comments may come before the
+  annotation; the planner's golden-only check reads past the same prefix.
 - **Async `main`.** `group` refuses an async body, so a file whose `main` is `async` is
   refused the same way, with the fix in the message: make `main` synchronous and move the
   awaits into `setUpAll`. No file has one today.
@@ -117,8 +118,9 @@ bundle_tests.py <files> → TZ=UTC flutter test -j <n> --exclude-tags golden \
 
 - `-j` equals the bundle count.
 - The JSON report goes to `.dart_tool/memox_test_bundles/run-<pid>/report.jsonl`. The path
-  is repo-relative so that Git Bash passes `json:<path>` through unconverted, and the EXIT
-  trap removes the directory.
+  is repo-relative so that Git Bash passes `json:<path>` through unconverted. The EXIT trap
+  removes the directory, except after a failed test step. In that case the report points
+  into those bundles to show which files ran before the failing one, so they are kept.
 - `MEMOX_TEST_BUNDLES=0` runs the same targets file by file, as before; the only addition
   is the JSON report that feeds §3.3. It is the rollback, and the way to check whether a
   failure only happens bundled.
@@ -134,9 +136,13 @@ following below the test step's output:
 
 - the wall clock, the test count, and the time of each bundle;
 - the ten slowest tests, each with its original file (taken from the group name);
-- when tests failed: each failing test grouped under its original file, and a ready
-  `TZ=UTC flutter test <file>` line for each file. If a file passes alone but fails bundled,
-  that is a leak between files, and it is still a failure.
+- when tests failed: each failing test grouped under its original file, a ready
+  `TZ=UTC flutter test --exclude-tags golden <file>` line for each file, and the bundle the
+  file ran in. If a file passes alone but fails bundled, that is a leak from a file listed
+  before it in that bundle, and it is still a failure;
+- when a suite failed to load: its name, with the `MEMOX_TEST_BUNDLES=0` hint only when it
+  is a bundle;
+- a count of report lines it could not parse (a run killed mid-write), rather than no report.
 
 The report never changes the gate's verdict. The exit code of `flutter test` alone decides
 pass or fail.

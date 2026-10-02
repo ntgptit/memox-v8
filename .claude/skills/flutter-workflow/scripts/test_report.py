@@ -23,11 +23,13 @@ from pathlib import Path
 
 
 TOP_DEFAULT = 10
+BUNDLE_MARKER = "memox_test_bundles/"
 
 
 @dataclass
 class TestResult:
     file: str
+    suite: str
     name: str
     millis: int
     passed: bool
@@ -40,9 +42,12 @@ class RunSummary:
     suite_millis: dict[str, int] = field(default_factory=dict)
     results: list[TestResult] = field(default_factory=list)
     load_failures: list[str] = field(default_factory=list)
+    unreadable_lines: int = 0
 
 
-def _relative(path: str, root: str) -> str:
+def _relative(path: str | None, root: str) -> str:
+    if not path:
+        return "?"
     path = path.replace("\\", "/")
     prefix = root.replace("\\", "/").rstrip("/") + "/"
     return path[len(prefix):] if path.startswith(prefix) else path
@@ -59,7 +64,13 @@ def summarise(lines: list[str], root: str) -> RunSummary:
     for line in lines:
         if not line.strip():
             continue
-        event = json.loads(line)
+        # A run killed mid-write leaves a torn last line; the lines before it
+        # still tell the story.
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            summary.unreadable_lines += 1
+            continue
         kind = event.get("type")
         if kind == "suite":
             suites[event["suite"]["id"]] = _relative(event["suite"]["path"], root)
@@ -96,6 +107,7 @@ def _record(summary, event, tests, started, suites, groups, suite_span) -> None:
     summary.results.append(
         TestResult(
             file=file,
+            suite=suite,
             name=name,
             millis=event["time"] - started[event["testID"]],
             passed=passed,
@@ -132,20 +144,33 @@ def render(summary: RunSummary, top: int) -> str:
     for result in sorted(counted, key=lambda item: -item.millis)[:top]:
         lines.append(f"  {result.millis / 1000:6.1f} s  {result.file} :: {result.name}")
     failed = [result for result in counted if not result.passed]
-    by_file: dict[str, list[str]] = defaultdict(list)
+    by_file: dict[str, list[TestResult]] = defaultdict(list)
     for result in failed:
-        by_file[result.file].append(result.name)
+        by_file[result.file].append(result)
     if failed:
         lines.append(f"failures: {len(failed)} test(s) in {len(by_file)} file(s)")
         for file in sorted(by_file):
             lines.append(f"  {file}")
-            lines.extend(f"    - {name}" for name in by_file[file])
-            lines.append(f"    re-run alone: TZ=UTC flutter test {file}")
+            lines.extend(f"    - {result.name}" for result in by_file[file])
+            lines.append(f"    re-run alone: TZ=UTC flutter test --exclude-tags golden {file}")
+            suite = by_file[file][0].suite
+            if BUNDLE_MARKER in suite:
+                # The bundle imports its files in run order, so it also lists
+                # which files ran before this one in the same process.
+                lines.append(
+                    f"    ran in {suite}; if it passes alone, a file listed "
+                    "before it there leaks state"
+                )
     for suite in summary.load_failures:
-        lines.append(
-            f"failed to load: {suite}. The compile error above names the file; "
-            "MEMOX_TEST_BUNDLES=0 runs the files one by one"
-        )
+        if BUNDLE_MARKER in suite:
+            lines.append(
+                f"failed to load: {suite}. The compile error above names the file; "
+                "MEMOX_TEST_BUNDLES=0 runs the files one by one"
+            )
+        else:
+            lines.append(f"failed to load: {suite}. The compile error above says why")
+    if summary.unreadable_lines:
+        lines.append(f"{summary.unreadable_lines} unreadable line(s) skipped in the report")
     return "\n".join(lines)
 
 

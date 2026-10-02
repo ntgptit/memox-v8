@@ -22,7 +22,12 @@ import re
 import sys
 from pathlib import Path
 
-from build_verification_plan import discover_tests, is_golden_only_test, normalize_path
+from build_verification_plan import (
+    LEADING_TRIVIA,
+    discover_tests,
+    is_golden_only_test,
+    normalize_path,
+)
 
 
 BUNDLE_DIR = ".dart_tool/memox_test_bundles"
@@ -39,7 +44,7 @@ TEST_CONFIG = "test/flutter_test_config.dart"
 # file it is handed, so inside a bundle it would be dropped without a word; and
 # `group` refuses an async body, so an async `main` cannot be wrapped. Both are
 # refused by name rather than run differently from how they read.
-_LEADING_ANNOTATION = re.compile(r"\A(?:\s|//[^\n]*\n|/\*[\s\S]*?\*/)*@(\w+)")
+_LEADING_ANNOTATION = re.compile(r"\A" + LEADING_TRIVIA + r"@(\w+)")
 _ASYNC_MAIN = re.compile(
     r"(?m)^[ \t]*(?:"
     r"(?:void|dynamic|Future(?:Or)?(?:<[^>\n]*>)?)?\s*main\s*\([^)]*\)\s*async\b"
