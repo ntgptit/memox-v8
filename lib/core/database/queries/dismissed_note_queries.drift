@@ -1,0 +1,10 @@
+import '../tables/ui_state.drift';
+
+-- The note keys dismissed on this device (never synced).
+dismissedNoteKeys:
+SELECT note_key FROM dismissed_note ORDER BY note_key;
+
+-- Hides :note_key from now on; dismissing it again changes nothing.
+insertDismissedNote(:note_key AS TEXT, :dismissed_at AS DATETIME):
+INSERT OR IGNORE INTO dismissed_note (note_key, dismissed_at)
+VALUES (:note_key, :dismissed_at);

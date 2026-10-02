@@ -192,6 +192,31 @@ void main() {
     );
   });
 
+  test('with no override, the options in force follow a change of the app '
+      'defaults alone (UC-SETTINGS-001 A1)', () async {
+    await _insertTree(db);
+    final seen = <EffectiveStudyOptions?>[];
+    final subscription = settings
+        .watchStudyOptions(deckId: 's')
+        .listen(seen.add);
+    await pumpEventQueue();
+
+    await settings.saveStudyDefaults(
+      options: const StudyOptions(
+        cardLimit: 7,
+        newCardOrder: NewCardOrder.created,
+      ),
+    );
+    await pumpEventQueue();
+    await subscription.cancel();
+
+    expect(seen, hasLength(2));
+    expect(
+      (seen.last?.options.cardLimit, seen.last?.source),
+      (7, StudyOptionsSource.appDefaults),
+    );
+  });
+
   test("saving a root's options writes its override and nothing else "
       '(BR-SETTINGS-003)', () async {
     await _insertTree(db);

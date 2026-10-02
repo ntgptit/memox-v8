@@ -336,7 +336,6 @@ scopes:
       # ---- not yet migrated (temporary) ----
       - lib/core/auth/account_store.dart
       - lib/core/database/log/log_database.dart
-      - lib/core/notes/dismissed_note_store.dart
       - lib/core/sync/account_settings_sync_adapter.dart
       - lib/core/sync/card_schedule_sync_adapter.dart
       - lib/core/sync/card_sync_adapter.dart
@@ -350,14 +349,11 @@ scopes:
       - lib/features/deck/data/datasources/deck_dao.dart
       - lib/features/progress/data/datasources/progress_dao.dart
       - lib/features/search/data/datasources/search_dao.dart
-      - lib/features/settings/data/datasources/settings_dao.dart
       - lib/features/srs/data/datasources/srs_dao.dart
-      - lib/features/starter_decks/data/datasources/starter_dao.dart
       - lib/features/study/data/datasources/study_queue_dao.dart
       - lib/features/study/data/datasources/study_round_dao.dart
       - lib/features/study/data/datasources/study_session_dao.dart
       - lib/features/study/data/datasources/study_view_dao.dart
-      - lib/features/tags/data/datasources/tag_dao.dart
 
   test_files:
     include:

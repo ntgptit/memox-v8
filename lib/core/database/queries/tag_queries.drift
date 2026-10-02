@@ -1,0 +1,67 @@
+import '../tables/tags.drift';
+import '../tables/card.drift';
+
+-- The local profile's tag (owner_id NULL, schema.md) with :name_folded.
+localTagByFoldedName(:name_folded AS TEXT):
+SELECT * FROM tags WHERE owner_id IS NULL AND name_folded = :name_folded;
+
+-- Tag management spec D13: the local profile's tag :tag_id.
+localTagById(:tag_id AS TEXT):
+SELECT * FROM tags WHERE owner_id IS NULL AND id = :tag_id;
+
+createTag: INSERT INTO tags $row;
+
+-- BE-C2: how many of :card_ids are live cards; read one chunk at a time.
+liveCardCountIn:
+SELECT COUNT(*) FROM card WHERE id IN :card_ids AND delete_batch_id IS NULL;
+
+tagIdsOfCard(:card_id AS TEXT):
+SELECT tag_id FROM card_tags WHERE card_id = :card_id ORDER BY tag_id;
+
+cardsCarryingTagIn(:tag_id AS TEXT):
+SELECT card_id FROM card_tags WHERE card_id IN :card_ids AND tag_id = :tag_id
+ORDER BY card_id;
+
+tagCountsOfCardsIn AS CardTagCountRow:
+SELECT card_id, COUNT(tag_id) AS tag_count FROM card_tags
+WHERE card_id IN :card_ids GROUP BY card_id ORDER BY card_id;
+
+linkCardTag(:card_id AS TEXT, :tag_id AS TEXT):
+INSERT INTO card_tags (card_id, tag_id) VALUES (:card_id, :tag_id);
+
+unlinkCardsFromTagIn(:tag_id AS TEXT):
+DELETE FROM card_tags WHERE card_id IN :card_ids AND tag_id = :tag_id;
+
+-- Tag management spec §5: every local tag whose folded name holds
+-- :folded_term, with its active cards, in :deck_id when given; by folded
+-- name then id. instr finds an empty term everywhere.
+tagCountRows(:deck_id AS TEXT OR NULL, :folded_term AS TEXT) AS TagCountRow:
+SELECT t.id, t.name, (
+  SELECT COUNT(*) FROM card_tags ct JOIN card c ON c.id = ct.card_id
+  WHERE ct.tag_id = t.id AND c.delete_batch_id IS NULL
+    AND (:deck_id IS NULL OR c.deck_id = :deck_id)
+) AS card_count
+FROM tags t
+WHERE t.owner_id IS NULL AND instr(t.name_folded, :folded_term) > 0
+ORDER BY t.name_folded, t.id;
+
+-- BR-TAG-010: the distinct active cards carrying any of :tag_ids.
+activeCardCountOfTags:
+SELECT COUNT(DISTINCT ct.card_id) FROM card_tags ct
+INNER JOIN card c ON c.id = ct.card_id
+WHERE ct.tag_id IN :tag_ids AND c.delete_batch_id IS NULL;
+
+-- BR-TAG-006: a rename keeps the id and the links.
+renameTagRow(:tag_id AS TEXT, :name AS TEXT, :name_folded AS TEXT):
+UPDATE tags SET name = :name, name_folded = :name_folded WHERE id = :tag_id;
+
+-- BR-TAG-007, BR-TAG-010: every card of :source_id, in the Trash or not,
+-- carries :target_id; one that already did keeps it once (OR IGNORE).
+mergeTagLinks(:target_id AS TEXT, :source_id AS TEXT):
+INSERT OR IGNORE INTO card_tags (card_id, tag_id)
+SELECT card_id, :target_id FROM card_tags WHERE tag_id = :source_id;
+
+-- The links go by the cascade of card_tags, and its update rule tells the
+-- watchers of card_tags as well.
+deleteTagRow(:tag_id AS TEXT):
+DELETE FROM tags WHERE id = :tag_id;
