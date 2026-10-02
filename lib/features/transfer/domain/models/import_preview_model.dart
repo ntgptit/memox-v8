@@ -65,12 +65,6 @@ final class ImportPreview {
         row,
   ];
 
-  /// The drafts a commit hands to the card feature, in source order.
-  List<CardDraft> draftsToWrite({required bool includeDuplicates}) => [
-    for (final row in rowsToWrite(includeDuplicates: includeDuplicates))
-      row.draft!,
-  ];
-
   int _count(ImportRowKind kind) =>
       rows.where((row) => row.kind == kind).length;
 }

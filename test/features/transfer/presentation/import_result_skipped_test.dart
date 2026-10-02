@@ -93,4 +93,21 @@ void main() {
     expect(find.byType(ImportPreviewRowWidget), findsNothing);
     expect(find.text(_en.importSkippedHeader.toUpperCase()), findsNothing);
   });
+
+  libraryTest('the duplicate rule shows only where duplicates were skipped '
+      '(final review)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(ImportSummary(written: 3, blank: 0, skipped: [_invalid(3)])),
+    );
+    expect(find.text(_en.importSkipNote), findsNothing);
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(ImportSummary(written: 0, blank: 0, skipped: [_duplicate(2)])),
+    );
+    expect(find.text(_en.importSkipNote), findsOneWidget);
+  });
 }

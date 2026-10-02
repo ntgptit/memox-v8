@@ -56,8 +56,8 @@ class ImportResultWidget extends StatelessWidget {
             _Counts(summary: summary),
           ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),
-          if (summary.kind == ImportSummaryKind.partial)
-            MxNote(text: l10n.importSkipNote),
+          // The rule explains the duplicate rows only (final review).
+          if (summary.duplicatesSkipped > 0) MxNote(text: l10n.importSkipNote),
         ],
       ),
       CardImportFailed(isTargetRejected: true) => MxEmptyState(

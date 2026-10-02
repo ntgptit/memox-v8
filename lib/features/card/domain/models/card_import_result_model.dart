@@ -7,6 +7,4 @@ final class CardImportResult {
   /// The places, in the drafts handed in, of those the duplicate policy
   /// dropped inside the commit (BR-TRANSFER-003), in order.
   final List<int> skippedIndexes;
-
-  int get skippedDuplicates => skippedIndexes.length;
 }
