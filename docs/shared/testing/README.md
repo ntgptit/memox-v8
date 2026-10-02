@@ -141,6 +141,14 @@ AI agent MUST hiểu cột bên trái là ngôn ngữ rà soát; cột bên ph�
   liệu trong cùng tiến trình test (mục 6.1 của
   [`agent-execution-guide.md`](agent-execution-guide.md)), bằng chứng
   thấp hơn một lần hệ điều hành thật thu hồi tiến trình.
+- **Gate chạy test theo bundle.** `dod_check.sh` gộp các file `_test.dart` (trừ
+  golden) thành mỗi core một entrypoint dưới `.dart_tool/memox_test_bundles/`, nên
+  nhiều file chạy chung một tiến trình. Một file test MUST trả lại mọi global state
+  nó đổi (biến static, `debug*`, `HttpOverrides.global`, `tester.view`) bằng
+  `addTearDown`, MUST NOT có annotation mức library ngoài `@Tags(['golden'])`, và
+  `main` MUST đồng bộ. Một test chỉ fail khi chạy chung: chạy riêng file đó bằng
+  lệnh mà báo cáo của gate in ra, hoặc chạy cả gate với `MEMOX_TEST_BUNDLES=0`
+  ([spec](../../superpowers/specs/2026-10-02-test-suite-bundling-design.md)).
 
 ### 4.2. Dữ liệu tạo qua UI
 

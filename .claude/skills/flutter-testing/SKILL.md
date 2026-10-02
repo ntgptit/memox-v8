@@ -38,6 +38,15 @@ Fakes of the domain contracts, not mocks: `test/support/` holds the shared ones
 (`fake_day_clock.dart`, `fake_reminder_platform.dart`, …), so a changed
 signature is a compile error where it matters.
 
+The gate runs the host suite bundled: `bundle_tests.py` folds every non-golden
+test file into one entrypoint per core, so files share a process. A test file
+therefore restores any global state it changes (statics, `debug*` overrides,
+`HttpOverrides.global`, `tester.view`) through `addTearDown`, keeps library-level
+annotations to `@Tags(['golden'])`, and has a synchronous `main`; the bundler
+refuses the last two by name. When a test fails only bundled, run its file alone
+with the command the gate's report prints, or the whole gate with
+`MEMOX_TEST_BUNDLES=0`.
+
 ## Unit tests
 
 Cover use cases, repositories, mappers, validators, Drift queries, migrations

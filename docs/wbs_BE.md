@@ -136,6 +136,7 @@ giữ tiến độ sync và login từ nay; các dòng dưới đây ở lại l
 | BE-D8 | Log tập trung (ADR-018), đợt B1: `core/logging` (`AppLogger`, sink console và bộ đệm `memox_logs`, `LogShipper` đẩy lên `log_push`), tracing mọi câu lệnh Drift, bắt lỗi chưa xử lý, provider lỗi, điều hướng, vòng đời, sync và nhắc học; bảng `public.app_log` với RPC admin và `pg_cron` giữ 7/180 ngày | xong | BE-E8 | L | [PR #153](https://github.com/ntgptit/memox-v8/pull/153); [spec](superpowers/specs/2026-09-29-app-logging-design.md), [plan](superpowers/plans/2026-09-29-app-logging-pipeline.md); test trong `test/core/logging/`, `test/core/database/tracing_interceptor_test.dart`, `test/core/database/log/`, `test/architecture/logging_rules_test.dart`; pgTAP `supabase/tests/database/09_app_log.sql` (31). BR-CORE-002 hết hiệu lực | Chủ dự án đặt vai trò admin (README `supabase/` bước 6) sau khi migration lên project; rồi B2: màn Settings › Monitoring (Impeccable `shape` trước, không có trong kit) |
 | BE-D9 | Log tập trung, đợt việc nhỏ sau B1 (ADR-018): tracer giữ `args` của tối đa 50 lần chạy đầu của một batch và ghi `runs`, `db.transaction` đo từ lúc bắt đầu tới hết commit hoặc rollback (`commit_ms` riêng); sink console chỉ trong bản debug; bản build không có project Supabase không cài `BufferSink`; chỉ đẩy log khi app ở foreground; `AppLogger` gộp cơn bão `warning`/`error` trùng trong 5 giây (`context.repeated`); `log_query` kiểm tra admin trước khi ép kiểu, coi null hoặc sai kiểu là không lọc, tìm literal, trả hàng gọn; RPC mới `log_get`; BR-REMINDER-005, doc của `Failure` và spec khớp ADR-018 | xong | BE-D8 | M | Nhánh `claude/logging-minors`; test trong `test/core/database/tracing_interceptor_test.dart`, `test/core/logging/app_logger_test.dart`, `test/core/logging/log_scheduler_test.dart`, `test/app/logging_bootstrap_test.dart`, `test/features/reminders/di/reminder_background_bindings_test.dart`; pgTAP `supabase/tests/database/10_log_admin_reads.sql` (23); đợt 2 (sau review của PR #157): dedupe LRU, lượt thử lại theo backoff cũng chỉ chạy ở foreground, trạng thái lifecycle chưa có coi là foreground, migration `20261008000000_log_query_safe_scalars.sql` coi `limit`/cursor/`from`/`to`/`userId` sai kiểu là không lọc | Cùng việc tiếp theo của BE-D8 |
 | BE-D10 | Log mạng (sub-project D, ADR-018): mọi request của Supabase client (đăng nhập, RPC) ghi method, đường dẫn, header, body (64 KB đầu), mã trạng thái và thời gian với category `network`; trừ `log_push` để không vòng lặp; server nhận category mới | xong | BE-D8 | S | [spec](superpowers/specs/2026-09-29-network-logging-design.md), [plan](superpowers/plans/2026-09-29-network-logging.md); `test/core/network/logging_http_client_test.dart` (11), `test/core/logging/app_logger_test.dart`; pgTAP `09_app_log.sql` (33); migration `20261005000000_log_network_category.sql` | — |
+| BE-D11 | Gate chạy host test theo bundle: `bundle_tests.py` gộp các file `_test.dart` không phải golden thành mỗi core một entrypoint dưới `.dart_tool/memox_test_bundles/`, `test_report.py` in test chậm nhất và lệnh chạy riêng file fail; `dod_check.sh` dùng cho cả ba mode, `MEMOX_TEST_BUNDLES=0` chạy từng file như trước. Suite non-golden từ 13 phút 31 giây xuống khoảng 2 phút trên 4 core, cùng 3411 test; cả gate full 2 phút 14 giây | đang làm | BE-D5 | M | [spec](superpowers/specs/2026-10-02-test-suite-bundling-design.md) và [plan](superpowers/plans/2026-10-02-test-suite-bundling.md); `test_bundle_tests.py` và `test_test_report.py` trong `.claude/skills/flutter-workflow/scripts/tests/` | Mở PR và merge, rồi đổi `xong` |
 
 ## Đã xong và đã kiểm chứng
 
@@ -205,7 +206,12 @@ giữ tiến độ sync và login từ nay; các dòng dưới đây ở lại l
 
 ## Đang làm
 
-Không có.
+- **BE-D11** ([spec](superpowers/specs/2026-10-02-test-suite-bundling-design.md),
+  [plan](superpowers/plans/2026-10-02-test-suite-bundling.md)): gate full xanh với bước
+  test chạy theo bundle, cùng số test non-golden như trước (3411); `--changed`, `--fast`
+  với `MEMOX_TEST_BUNDLES=0`, một test fail cố ý và một file không compile đều được kiểm
+  chứng làm gate đỏ hoặc xanh đúng như spec §4; final review toàn nhánh trước khi mở PR.
+  Đo trong cloud container 4 core: gate full 2 phút 14 giây với 3411 test trong 4 bundle.
 
 ## Điểm chặn và quyết định còn mở
 
@@ -308,3 +314,7 @@ Không có.
 - **Hoãn hoặc cắt:** giữ nguyên dòng, đổi trạng thái và ghi lý do.
 - **ID hạng mục:** không đánh số lại; hạng mục mới lấy số tiếp theo trong nhóm của nó.
 - **Cập nhật ngày 2026-09-28:** chủ dự án quyết 8 `OPEN QUESTION` của BE-D4 và 2 dòng edge case chưa gắn BR. Sửa UC theo app: UC-DECK-006 (Reorder kéo thả, Move up/down là action TalkBack), UC-STUDY-001 A5 (tổng kết trước khi về danh sách). Sửa app theo UC/BR: UC-DECK-001 A1 (hỏi trước khi bỏ deck đang tạo) và E3 (không chọn sẵn scheduler, BR-SRS-001), UC-STUDY-001 A4 (tổng kết nêu số thẻ còn đến hạn), UC-STUDY-003 E1 (`modeNotOffered` là thay đổi giữa chừng, có banner riêng), UC-PROGRESS-002 E1 (lỗi đọc theo kiểu failure). Hai edge case trích BR-DECK-014/015, BR-STUDY-008/054 và UC-STARTER-001, BR-STARTER-001/003.
+- **Cập nhật ngày 2026-10-02:** BE-D11 (đang làm, chờ PR): gate chạy host test theo bundle (spec
+  2026-10-02-test-suite-bundling-design.md). Đo trong cloud container 4 core: suite
+  non-golden từ 13 phút 31 giây xuống 128 giây, cả gate full (chạy song song) còn 2 phút
+  14 giây.
