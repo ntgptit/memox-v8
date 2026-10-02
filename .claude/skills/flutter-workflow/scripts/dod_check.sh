@@ -24,7 +24,7 @@
 # change, because "before commit", "before push" and "before the PR" feel like
 # three moments and are one state. A successful run now records a fingerprint of
 # the tree it verified; a later run with the same fingerprint prints what it
-# already knows and exits at once: 0.03s against 184s for a full run with the
+# already knows and exits at once: 0.03s against 134s for a full run with the
 # host tests bundled, measured in the cloud container on 2026-10-02.
 #
 # A `full` pass satisfies `--changed` and `--fast`, because it is a superset of
@@ -372,8 +372,14 @@ fi
 # verdict: the subshell exits with `flutter test`'s own code.
 BUNDLE_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/bundle_tests.py"
 REPORT_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/test_report.py"
-TEST_REPORT="$WORK/test-report.jsonl"
+# **Repo-relative, and one directory per run.** Relative so Git Bash hands
+# `json:<path>` to `flutter test` without converting it; per run so a second
+# gate in this checkout cannot rewrite these bundles while they compile. The
+# EXIT trap removes it with $WORK.
+BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"
+TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"
 TEST_TARGETS_NUL="$WORK/test-targets.nul"
+trap 'rm -rf "$WORK" "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"' EXIT
 
 # plan_host_tests <scope> <per-file targets...>
 # Bundles the targets listed in $TEST_TARGETS_NUL, or with
@@ -385,19 +391,22 @@ plan_host_tests() {
   [[ -n "$PY" ]] &&
     report_tail="; rc=\$?; '$PY' '$REPORT_PY' '$TEST_REPORT' --root '$REPO_ROOT'; exit \$rc)"
   if [[ "${MEMOX_TEST_BUNDLES:-}" == "0" || -z "$PY" ]]; then
+    mkdir -p "$BUNDLE_RUN_DIR"
     [[ $# -gt 0 ]] && printf -v quoted " %q" "$@"
     plan test "flutter test ($scope, file by file, no goldens, TZ=UTC)" \
       "(TZ=UTC flutter test --exclude-tags golden --file-reporter json:'$TEST_REPORT'$quoted$report_tail"
     return
   fi
   local bundle_out bundles=()
-  if ! bundle_out="$("$PY" "$BUNDLE_PY" --root "$REPO_ROOT" --paths-file "$TEST_TARGETS_NUL" 2>"$WORK/bundle.err")"; then
+  if ! bundle_out="$("$PY" "$BUNDLE_PY" --root "$REPO_ROOT" --out "$BUNDLE_RUN_DIR" --paths-file "$TEST_TARGETS_NUL" 2>"$WORK/bundle.err")"; then
     step "test bundling"
     cat "$WORK/bundle.err"
     FAILED+=("test bundling — see above")
     return
   fi
   [[ -n "$bundle_out" ]] && mapfile -t bundles <<<"$bundle_out"
+  # A Windows Python can end each line with `\r`, which would end up in a path.
+  [[ ${#bundles[@]} -gt 0 ]] && bundles=("${bundles[@]%$'\r'}")
   if [[ ${#bundles[@]} -eq 0 ]]; then
     FAILED+=("test plan selected no test files")
     return

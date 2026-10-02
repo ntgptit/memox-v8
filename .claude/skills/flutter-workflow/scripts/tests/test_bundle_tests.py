@@ -102,6 +102,53 @@ class BundleTestsTest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("test/late_test.dart: an async main", err)
 
+    def test_every_async_main_form_is_refused(self) -> None:
+        forms = [
+            "void main() async {}\n",
+            "Future main() async {}\n",
+            "FutureOr<void> main() async {}\n",
+            "Future<void>main() async {}\n",
+            "void main()async{}\n",
+            "Future<void> main() => Future.value();\n",
+        ]
+        for form in forms:
+            with self.subTest(form=form):
+                self._tmp.cleanup()
+                self.root.mkdir()
+                code, _, err = self._bundle({"test/late_test.dart": form}, "test")
+                self.assertEqual(code, 1)
+                self.assertIn("test/late_test.dart: an async main", err)
+
+    def test_a_synchronous_main_is_not_mistaken_for_an_async_one(self) -> None:
+        files = {"test/a_test.dart": "void main() {\n  test('async work', () async {});\n}\n"}
+        code, bundles, _ = self._bundle(files, "test")
+        self.assertEqual(code, 0)
+        self.assertEqual(len(bundles), 1)
+
+    def test_a_missing_directory_target_is_an_error(self) -> None:
+        code, _, err = self._bundle({"test/a_test.dart": _PLAIN}, "test/gone")
+        self.assertEqual(code, 1)
+        self.assertIn("no such test directory: test/gone", err)
+
+    def test_two_runs_with_their_own_out_dirs_do_not_touch_each_other(self) -> None:
+        files = {f"test/f{index}_test.dart": _PLAIN for index in range(3)}
+        _repo(self.root, files)
+        with unittest.mock.patch.dict("os.environ", {"MEMOX_TEST_BUNDLES": "1"}):
+            with contextlib.redirect_stdout(io.StringIO()) as first, contextlib.redirect_stderr(io.StringIO()):
+                bundle_tests.main(["--root", str(self.root), "--out", ".dart_tool/memox_test_bundles/run-1", "test"])
+            with contextlib.redirect_stdout(io.StringIO()) as second, contextlib.redirect_stderr(io.StringIO()):
+                bundle_tests.main(["--root", str(self.root), "--out", ".dart_tool/memox_test_bundles/run-2", "test/f0_test.dart"])
+        first_bundle = first.getvalue().split()[0]
+        self.assertEqual(first_bundle, ".dart_tool/memox_test_bundles/run-1/bundle_0_test.dart")
+        self.assertEqual(second.getvalue().split(), [".dart_tool/memox_test_bundles/run-2/bundle_0_test.dart"])
+        text = (self.root / first_bundle).read_text(encoding="utf-8")
+        self.assertEqual(text.count("import '../../../test/f"), 3)
+
+    def test_an_out_dir_outside_dart_tool_is_refused(self) -> None:
+        code, _, err = self._bundle({"test/a_test.dart": _PLAIN}, "--out", "test/bundles", "test")
+        self.assertEqual(code, 1)
+        self.assertIn("must be under .dart_tool/memox_test_bundles", err)
+
     def test_the_partition_is_the_same_whatever_order_the_targets_come_in(self) -> None:
         files = {f"test/f{index}_test.dart": _PLAIN for index in range(7)}
         _, first, _ = self._bundle(files, *sorted(files))
@@ -143,6 +190,8 @@ class BundleTestsTest(unittest.TestCase):
 
     def test_the_bundle_count_reads_the_environment_then_the_cores(self) -> None:
         self.assertEqual(bundle_tests.bundle_count(None, 6), 6)
+        self.assertEqual(bundle_tests.bundle_count(None, 32), 8)
+        self.assertEqual(bundle_tests.bundle_count("16", 32), 16)
         self.assertEqual(bundle_tests.bundle_count("", None), 1)
         self.assertEqual(bundle_tests.bundle_count("3", 6), 3)
         for bad in ("0", "-1", "four"):
@@ -159,6 +208,27 @@ class BundleTestsTest(unittest.TestCase):
 
     def test_a_quote_or_dollar_in_a_path_is_escaped(self) -> None:
         self.assertEqual(bundle_tests._dart_string("test/it's_$x.dart"), "'test/it\\'s_\\$x.dart'")
+
+
+class GateBundledRunTest(unittest.TestCase):
+    """What `dod_check.sh` hands the bundler and the reporter."""
+
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+
+    def test_each_run_bundles_into_its_own_directory(self) -> None:
+        gate = self._gate()
+        self.assertIn('BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"', gate)
+        self.assertIn('--out "$BUNDLE_RUN_DIR"', gate)
+
+    def test_the_report_path_is_repo_relative_so_git_bash_needs_no_conversion(self) -> None:
+        gate = self._gate()
+        self.assertIn('TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"', gate)
+        self.assertNotIn('TEST_REPORT="$WORK', gate)
+
+    def test_a_carriage_return_is_stripped_from_each_bundle_path(self) -> None:
+        self.assertIn("bundles=(\"${bundles[@]%$'\\r'}\")", self._gate())
 
 
 if __name__ == "__main__":

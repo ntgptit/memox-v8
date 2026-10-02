@@ -39,7 +39,7 @@ Fakes of the domain contracts, not mocks: `test/support/` holds the shared ones
 signature is a compile error where it matters.
 
 The gate runs the host suite bundled: `bundle_tests.py` folds every non-golden
-test file into one entrypoint per core, so files share a process. A test file
+test file into one entrypoint per core (at most 8), so files share a process. A test file
 therefore restores any global state it changes (statics, `debug*` overrides,
 `HttpOverrides.global`, `tester.view`) through `addTearDown`, keeps library-level
 annotations to `@Tags(['golden'])`, and has a synchronous `main`; the bundler

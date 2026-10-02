@@ -79,9 +79,14 @@ A new script, `.claude/skills/flutter-workflow/scripts/bundle_tests.py`, sits be
   (60–87 s per bundle). Bundles that would be empty are not written, so *n* larger than the
   file count is fine.
 - **Bundle count.** `MEMOX_TEST_BUNDLES=<n>` sets it. The default is `os.cpu_count()`, which
-  measured best (§1.1). `MEMOX_TEST_BUNDLES=0` means do not bundle (§3.2).
-- **Output.** The script deletes the old `.dart_tool/memox_test_bundles/*.dart` files, then
-  writes `bundle_<k>_test.dart` there and prints their paths. `.dart_tool/` is ignored by git,
+  measured best (§1.1), capped at 8. Each bundle is a `flutter_tester` of about 300 MB
+  running beside the analyzer and the guard, and `os.cpu_count()` ignores container quotas.
+  `MEMOX_TEST_BUNDLES=0` means do not bundle (§3.2).
+- **Output.** The gate gives each run its own `--out` directory,
+  `.dart_tool/memox_test_bundles/run-<pid>/`. Two gate runs in one checkout therefore cannot
+  rewrite each other's bundles while those are still compiling. The script refuses an `--out`
+  outside `.dart_tool/memox_test_bundles/`. It deletes the old `*.dart` files in that
+  directory, writes `bundle_<k>_test.dart` there and prints their paths. `.dart_tool/` is ignored by git,
   by the analyzer and by the guard, and regenerating on every run means a bundle is never
   stale. Each bundle:
 
@@ -111,6 +116,9 @@ bundle_tests.py <files> → TZ=UTC flutter test -j <n> --exclude-tags golden \
 ```
 
 - `-j` equals the bundle count.
+- The JSON report goes to `.dart_tool/memox_test_bundles/run-<pid>/report.jsonl`. The path
+  is repo-relative so that Git Bash passes `json:<path>` through unconverted, and the EXIT
+  trap removes the directory.
 - `MEMOX_TEST_BUNDLES=0` runs the same targets file by file, as before; the only addition
   is the JSON report that feeds §3.3. It is the rollback, and the way to check whether a
   failure only happens bundled.
