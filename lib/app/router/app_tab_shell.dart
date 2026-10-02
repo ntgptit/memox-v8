@@ -23,8 +23,8 @@ class AppTabShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final destinations = _destinations(context.l10n);
     final selectedIndex = navigationShell.currentIndex;
-    final media = MediaQuery.of(context);
-    if (media.size.width < AppSize.navRailBreakpoint) {
+    // sizeOf: the keyboard's frames must not rebuild the nav (audit Perf).
+    if (MediaQuery.sizeOf(context).width < AppSize.navRailBreakpoint) {
       return MxAppShell(
         body: navigationShell,
         bottomBar: MxBottomNav(
@@ -34,6 +34,7 @@ class AppTabShell extends StatelessWidget {
         ),
       );
     }
+    final media = MediaQuery.of(context);
     return ColoredBox(
       color: context.colors.surface,
       child: Row(

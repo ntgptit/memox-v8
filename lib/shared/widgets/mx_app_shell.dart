@@ -88,13 +88,17 @@ class MxAppShell extends StatelessWidget {
                       removeBottom: footer != null,
                       child: _NoticeLayer(
                         notice: notice,
+                        // Side insets (a landscape cutout or 3-button bar) for
+                        // body and footer as the app bar already takes them
+                        // (audit 2026-10-03 Adaptivity, SP1 §5.2).
                         child: appBar == null
                             ? SafeArea(bottom: false, child: body)
-                            : body,
+                            : SafeArea(top: false, bottom: false, child: body),
                       ),
                     ),
                   ),
-                  ?footer,
+                  if (footer case final footer?)
+                    SafeArea(top: false, bottom: false, child: footer),
                 ],
               ),
             ),

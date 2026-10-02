@@ -216,6 +216,44 @@ void main() {
     }
   });
 
+  for (final direction in TextDirection.values) {
+    testWidgets('body and footer clear both side insets ($direction)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(780, 360);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      const bodyKey = ValueKey('body');
+      const footerKey = ValueKey('footer');
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildLightTheme(),
+          home: Directionality(
+            textDirection: direction,
+            child: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  viewPadding: const EdgeInsets.symmetric(horizontal: 40),
+                ),
+                child: const MxAppShell(
+                  appBar: SizedBox(height: 56),
+                  body: SizedBox.expand(key: bodyKey),
+                  footer: SizedBox(key: footerKey, height: 48),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      for (final key in [bodyKey, footerKey]) {
+        final rect = tester.getRect(find.byKey(key));
+        expect(rect.left, greaterThanOrEqualTo(40));
+        expect(rect.right, lessThanOrEqualTo(780 - 40));
+      }
+    });
+  }
+
   testWidgets('a notice floats over the bottom of the body', (tester) async {
     await pumpMxPage(
       tester,
