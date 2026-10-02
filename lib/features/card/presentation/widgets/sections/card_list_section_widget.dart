@@ -343,32 +343,36 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               ),
             ),
           ),
-          if (isSelecting && _hasBulkFailed)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-              ),
-              child: MxInlineBanner(
-                tone: MxBannerTone.danger,
-                title: l10n.cardBulkFailedTitle,
-                message: l10n.cardBulkFailedBody,
-                actions: [
-                  if (_failedFlag case (final ids, final isFlagged))
-                    MxButton(
-                      label: l10n.commonRetry,
-                      size: MxButtonSize.compact,
-                      isLoading: _isFlagging,
-                      onPressed: _isFlagging
-                          ? null
-                          : () => unawaited(_writeFlag(ids, isFlagged)),
-                    ),
-                ],
-              ),
-            ),
+          if (isSelecting && _hasBulkFailed) _bulkFailedBanner(),
           if (isSelecting)
             IgnorePointer(
               ignoring: _isFlagging,
               child: CardBulkBarWidget(actions: _bulkActions(selected)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// A failed bulk flag: what happened, and Retry, which spins while it
+  /// runs (critique 2026-09-30 parts 3d-1 and 3d-2).
+  Widget _bulkFailedBanner() {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      child: MxInlineBanner(
+        tone: MxBannerTone.danger,
+        title: l10n.cardBulkFailedTitle,
+        message: l10n.cardBulkFailedBody,
+        actions: [
+          if (_failedFlag case (final ids, final isFlagged))
+            MxButton(
+              label: l10n.commonRetry,
+              size: MxButtonSize.compact,
+              isLoading: _isFlagging,
+              onPressed: _isFlagging
+                  ? null
+                  : () => unawaited(_writeFlag(ids, isFlagged)),
             ),
         ],
       ),

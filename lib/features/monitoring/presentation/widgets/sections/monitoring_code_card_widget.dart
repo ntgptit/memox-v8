@@ -123,19 +123,22 @@ class _StackTrace extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final line in text.split('\n'))
+          // The #n stands on the frame's first line, in the cell the text
+          // keeps clear; not a row of marks to centre.
           if (_frame.matchAsPrefix(line) case final match?)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Stack(
               children: [
-                SizedBox(
-                  width: cell,
-                  child: Text(match[0]!, style: frameStyle),
-                ),
-                Expanded(
+                Padding(
+                  padding: EdgeInsetsDirectional.only(start: cell),
                   child: Text(
                     line.substring(match.end).trimLeft(),
                     style: style,
                   ),
+                ),
+                PositionedDirectional(
+                  start: 0,
+                  top: 0,
+                  child: Text(match[0]!, style: frameStyle),
                 ),
               ],
             )
