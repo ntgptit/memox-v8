@@ -50,5 +50,5 @@
 ### Task 3: the exclude ends
 
 - [ ] Delete the temporary exclude from `scopes.yaml`. Make the guard test assert there is none, and update its comment.
-- [ ] Mark FE-D25 done, then run the docs generator and the gate.
+- [ ] Mark FE-D26 done, then run the docs generator and the gate.
 - [ ] Run the final review, then open the PR stacked on P7 (#187).

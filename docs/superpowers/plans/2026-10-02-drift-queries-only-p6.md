@@ -110,7 +110,7 @@ These are the same as P2–P5:
 
 ### Task 4: WBS and gate
 
-- [ ] **Step 1: WBS.** Set FE-D23 to done, with its plan link. Run `python3 tools/docs/generate.py`.
+- [ ] **Step 1: WBS.** Set FE-D24 to done, with its plan link. Run `python3 tools/docs/generate.py`.
 - [ ] **Step 2: Gate.** `bash .claude/skills/flutter-workflow/scripts/dod_check.sh` must be green.
 - [ ] **Step 3: Review and PR.**
   - Run the final whole-branch review and fix its findings.

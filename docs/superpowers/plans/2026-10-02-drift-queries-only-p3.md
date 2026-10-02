@@ -383,4 +383,4 @@ final class DeckDao extends DatabaseAccessor<AppDatabase>
 ### Task 2: WBS and gate
 
 - [ ] Run `dod_check.sh`. Expected: green.
-- [ ] Set FE-D20 to `xong` in `docs/wbs_FE.md`, regenerate the docs and check them, then commit `docs(wbs): FE-D20 done`.
+- [ ] Set FE-D21 to `xong` in `docs/wbs_FE.md`, regenerate the docs and check them, then commit `docs(wbs): FE-D21 done`.

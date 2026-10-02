@@ -263,4 +263,4 @@ final class SrsDao extends DatabaseAccessor<AppDatabase> with _$SrsDaoMixin {
 ### Task 2: WBS and gate
 
 - [ ] Run `dod_check.sh`. Expected: green.
-- [ ] Set FE-D21 to `xong`, regenerate and check the docs, then commit `docs(wbs): FE-D21 done`.
+- [ ] Set FE-D22 to `xong`, regenerate and check the docs, then commit `docs(wbs): FE-D22 done`.

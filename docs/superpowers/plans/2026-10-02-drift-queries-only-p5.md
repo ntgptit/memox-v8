@@ -520,4 +520,4 @@ SELECT
 ### Task 5: WBS and gate
 
 - [ ] Run `dod_check.sh`. Expected: green.
-- [ ] Set FE-D22 to `xong`, regenerate and check the docs, then commit `docs(wbs): FE-D22 done`.
+- [ ] Set FE-D23 to `xong`, regenerate and check the docs, then commit `docs(wbs): FE-D23 done`.
