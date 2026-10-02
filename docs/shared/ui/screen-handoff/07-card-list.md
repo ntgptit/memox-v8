@@ -38,7 +38,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | — |
 | noMoveTarget | no golden | no golden | — |
-| bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
+| bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
@@ -90,6 +90,7 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** while a failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as before.
 
 ## Copy
 

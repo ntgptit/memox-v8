@@ -10,7 +10,7 @@ sheet. UC-DECK-002 (change scheduler), UC-SRS-001 (reset learning progress).
 | Region | Widget | Design |
 |---|---|---|
 | App bar, breadcrumb | `MxAppBar`, `MxBreadcrumb` | Back, "Review algorithm"; Library › root › Review algorithm. |
-| Lock strip | `MxCard` + `MxIconTile` | Unlocked: hero ground, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: warning-soft ground, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
+| Lock strip | `MxCard` + `MxIconTile` | Unlocked: plain card, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: warning-soft ground, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
 | ALGORITHM | `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s | The current algorithm selected; both disabled when locked. |
 | Note | `MxNote`, above the options (critique 2026-09-30) | Unlocked: "Switching resets every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing." Locked (lock icon): "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle." |
 | START OVER | `MxListSectionHeader`, `MxCard`, `MxButton` (outline) | "Reset learning progress" / "Every card in this tree becomes new and a new cycle begins. You choose the algorithm for it. Decks, cards, tags and past history are kept." / "Reset learning progress…". |
@@ -48,7 +48,7 @@ Beyond the states above:
   - Lost: "Every card's schedule, due date and progress; the open session. All {count} cards become new"
 - Nothing to lose: "Nothing has been studied in this cycle yet, so there is nothing to lose. A new cycle starts with the algorithm you pick."
 - "Algorithm for the new cycle": "Keep {current}" · "Switch to {other}"
-- Buttons: "Cancel" · "Reset and start cycle {n+1}"; while it runs the confirm spins and Cancel is off
+- Buttons: "Cancel" · "Reset and start cycle {n+1}" (warning tone); while it runs the confirm spins and Cancel is off
 - Done: "Cycle {n+1} started · {count} cards are new again"
 - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry"
 
@@ -60,3 +60,4 @@ Beyond the states above:
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the unlocked lock strip is a plain card with no hero ground (it states status and is not a door; DESIGN.md "a hero leads somewhere tappable"); the reset confirm "Reset and start cycle {n}" takes the warning tone, as the dialog's Lost tile does.

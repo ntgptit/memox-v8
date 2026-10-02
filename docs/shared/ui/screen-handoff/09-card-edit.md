@@ -16,7 +16,7 @@ touch the study state or history).
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card. |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
-| Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create. |
+| Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create, including the "Add" button and Save adding the tag still typed (invalid: error, nothing saved). |
 | More | `CardTrashSectionWidget` (`MxCard`, `MxButton` outline "Move to Trash") | "Move this card to Trash" / "Leaves this deck and can be restored from Trash for 30 days, schedule and history included."; opens the shared delete dialog (FE-B1 D13). |
 | Footer | `CardEditorFooterWidget` | Cancel + "Save changes" / "Retry save"; danger banner after a failed save. |
 | Move to Trash dialog | `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxSheetActions`) | "Move this card to Trash?", a front/back preview card, "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected."; the confirm spins while it moves (FE-B1 D15). |
@@ -52,6 +52,7 @@ Every state above is built.
 - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide convention (screens 15, 22, 23, 25, 26 do the same).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** in edit, Save is enabled only once the draft differs from the saved card; create is unchanged.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has the same "Add" button and add rule as create; Save adds the tag still typed (so pending tag text enables Save, and is saved), and an invalid one shows its error and saves nothing.
 
 ## Copy
 

@@ -47,7 +47,7 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | lost | `progress_lost_light.png` | `progress_lost_dark.png` | The note names the weekday within six days, else a short date. |
 | deck | `deck_progress_deck_light.png` | `deck_progress_deck_dark.png` | "Whole deck" total row (D2). |
 | never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" (primary, the only action) under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2); no range and no by-deck list, which would read 0 everywhere (critique 2026-09-30). |
-| loading | `progress_loading_light.png` | `progress_loading_dark.png` | Skeleton rows (UI-base row 125). |
+| loading | `progress_loading_light.png` | `progress_loading_dark.png` | The screen's own skeleton: Today card, Streak card, deck-list card; deck progress shows the deck-list card under its range control (UI-base row 125, part 3d-2). |
 | error | `progress_error_light.png` | `progress_error_dark.png` | With Retry, under the alert glyph: a local read failed, not the network (critique 2026-09-30). |
 | quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
 | no decks | — | — | (A2) only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
@@ -64,10 +64,11 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **BR-PROGRESS-001, D2:** the list has a total row with the four numbers, no header totals.
 - **Critique P2, D11:** an idle deck row keeps full contrast and reads "No activity in this range" (its 0 went with the trailing count, critique 2026-09-30 part 3d-1).
 - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start studying" to the Study tab.
-- **UI-base row 125:** loading shows skeleton rows.
+- **UI-base row 125:** loading shows the screen's own skeleton (Today, Streak and deck-list cards), not generic rows (part 3d-2).
 - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are built from the UC.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the Today label and the streak labels are eyebrows; the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a deck row's meta reads "{n} cards · {d} active days" then "Card-days: {l} learning · {r} reviewing", and it ends in a chevron; the total row has none; the never-studied "Start studying" is primary (D3).
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows the screen's own skeleton, a Today card, a Streak card and a deck-list card (`MxSkeletonPulse`, `MxCard`, `MxSkeleton`, `MxSkeletonRow`); deck progress keeps its range control and shows the deck-list card.
 
 ## Copy
 

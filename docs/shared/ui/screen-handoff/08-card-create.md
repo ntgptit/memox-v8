@@ -16,7 +16,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Overline "Front · Term", "Required", live "{count} / 60"; inline error once the field is touched (ruling P4a-L2). |
 | Back | `CardFieldWidget` (`MxTextFieldVariant.meaning`) | Overline "Back · Meaning", "Required", "{count} / 240"; inline error once touched. |
 | Optional details | `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidget` (3 × `CardFieldWidget`, `MxTextFieldVariant.detail`) | "Add details · example · hint · pronunciation"; opens example, hint, pronunciation, each "· optional", "{count} / 240". |
-| Tags | `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Add tag", `MxFieldMessage`) | "Tags · optional · {n} / 10"; removable chips, an inline add input. At 10 tags, Add tag is withdrawn and a warning message shows (BR-TAG-002). |
+| Tags | `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Add tag", `MxFieldMessage`) | "Tags · optional · {n} / 10"; removable chips, an inline add input with an "Add" button beside it (enabled while the field holds text; Done adds too). At 10 tags, Add tag is withdrawn and a warning message shows (BR-TAG-002). |
 | Footer | `CardEditorFooterWidget` (`MxFooterBar`) | Caption line; Cancel (`MxButton` outline) + a block primary "Save card" / "Retry save"; a danger `MxInlineBanner` after a failed save. |
 | Discard dialog | `CardDiscardDialogWidget` (`MxDialog`, `MxSheetActions`) | "Discard this card?" / "What you typed is not saved."; Keep editing / Discard. Guards leaving a dirty new-card form (ruling P4a-L5). |
 | Gone state | `CardGoneWidget` (`MxEmptyState`) | "This deck is no longer here" / "It was moved to Trash or deleted while you were adding cards. This card was not saved."; Back to deck + Open Trash (FE-B1 D11). |
@@ -50,6 +50,7 @@ card?") when leaving a dirty new-card form without saving.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has an "Add" button (`cardTagConfirm`) beside it, enabled while the field holds text; Done or Add adds the tag through the same checks (BR-TAG-001, BR-TAG-002); Save first adds the tag still typed, and an invalid one shows its error and saves nothing; "Save and add another" clears the tag field with the rest of the form.
 
 ## Copy
 
@@ -57,7 +58,7 @@ card?") when leaving a dirty new-card form without saving.
 - Fields: "Front · Term" · "Back · Meaning" · "Required" · "{count} / {limit}" · "The term you want to remember" · "The meaning; separate several with commas" · "Add details" · "example · hint · pronunciation" · "Optional details" · "· optional" · "Example sentence" · "Hint" · "Pronunciation" · "A sentence using this term" · "A clue that jogs memory without giving the answer" · "Romanisation or a note on how to say it".
 - Errors: "Add the term to remember." · "The term can be at most 60 characters. Move the rest into the meaning or an example." · "Add a meaning so this card can be answered." · "The meaning can be at most 240 characters." · "Keep this to 240 characters."
 - Deck rejects: "This deck no longer accepts cards." · "It now holds sub-decks."
-- Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Remove {tag}" · "A card can carry 10 tags. Remove one to add another."
+- Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Add" · "Remove {tag}" · "A card can carry 10 tags. Remove one to add another."
 - Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothing was lost. Tap Save to try again."
 - Discard: "Discard this card?" · "What you typed is not saved." · "Keep editing" · "Discard".
 - Gone: "This deck is no longer here" · "It was moved to Trash or deleted while you were adding cards. This card was not saved." · "Back to deck" · "Open Trash".

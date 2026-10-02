@@ -22,7 +22,7 @@ UC-REMINDER-001; spec
 | Reminder section | `MxSection` with note, two `MxSettingsRow`s | Row bell "Daily reminder" with `MxToggle` (an `MxSpinner` while turning on or off); row clock "Time" with a compact `MxButton` "{HH:mm}", disabled while off. The note: "Fires once a day, only when cards are due. Never for new cards, never twice." |
 | Banner | `MxInlineBanner` | Only after an operation left a problem: E1 `warning`, E3 `danger`, E6 `warning`. |
 | What it says | `MxSection` "What it says", one `MxSettingsRow` | The notification's own sentence, from the strings the notification uses, over the live workload read when the screen opens (`ReadReminderPreviewUseCase` behind `reminderPreviewDigestProvider`); "Nothing is due right now, so today's reminder would stay silent." when nothing is due or the read fails (critique 2026-09-30 part 1); while the read runs the row keeps its place with its hint and shows no error; the line that it never carries a card, a tag or history. |
-| Time dialog | `MxDialog` + two `MxStepper`s + `MxSheetActions` | "Reminder time": Hour 0–23, Minute 0–59 (hold repeats, tap to type), the chosen "HH:mm", Cancel / Save. |
+| Time dialog | `MxDialog` + two `MxStepper`s + `MxSheetActions` | "Reminder time": Hour 0–23, Minute 0–59 shown in two digits ("07" : "05"; hold repeats, tap to type), the chosen "HH:mm", Cancel / Save. |
 
 ## States
 
@@ -64,6 +64,7 @@ turns the reminder on.
 ## Rulings
 
 - **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample counts), and the Time row's hint stays at full ink while the row is disabled (`MxSettingsRow`).
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hour and minute steppers read in two digits ("07" : "05", `MxStepper` `minDigits: 2`), matching the "07:05" preview.
 - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` with Try again, which cancels again and writes nothing; `MxInlineBanner` has no info tone.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.
 - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` with Hour and Minute `MxStepper`s.

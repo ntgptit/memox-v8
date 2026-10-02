@@ -39,7 +39,7 @@ included, or at once for a typed value. A segment tap saves at once (D1).
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
 | loaded | `settings_loaded_light.png` | `settings_loaded_dark.png` | Theme is a row that opens screen 25 (D2); the Daily reminder row reads "Off" or "On · {HH:mm}" and opens screen 24 (FE-B5). |
-| loading | `settings_loading_light.png` | `settings_loading_dark.png` | Skeleton rows (UI-base row 125). |
+| loading | `settings_loading_light.png` | `settings_loading_dark.png` | Three section-shaped skeleton cards of `MxSkeletonRow`s (UI-base row 125, part 3d-2). |
 | saving | `settings_saving_light.png` | `settings_saving_dark.png` | The stepper's spinner; the other rows stay usable. |
 | saved | `settings_saved_light.png` | `settings_saved_dark.png` | — |
 | invalidLimit | `settings_invalid_limit_light.png` | `settings_invalid_limit_dark.png` | The message sits under the stepper and the sub-line stays (UC E1). |
@@ -63,7 +63,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **D2 (owner), UI-base row 124:** Theme is a row naming the choice and opens screen 25.
 - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the stepper and the sub-line stays.
 - **D6 (owner), UI-base row 126:** the stepper takes −/+, a hold that repeats, and a typed number.
-- **UI-base row 125, UC E3:** loading is `MxSkeletonList`; a read error is `MxErrorState` with Retry.
+- **UI-base row 125, UC E3:** loading is three section-shaped skeleton cards (part 3d-2); a read error is `MxErrorState` with Retry.
 - **UI-base row 127:** tray options stack when their labels do not fit.
 - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens screen 27.
 - **UI-base row 128:** the tile sits beside the label on a row with a wide control.
@@ -71,6 +71,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s
 - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds Monitoring and Users, drawn by Settings from rows the features supply, only while the account is an admin.
 - **Critique 2026-09-30 tone pass, T4:** the Sync row's tile is success when sync is settled; warning when the last run failed or a change was refused (part 3d-1, D5); tinted otherwise.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the Sync row's icon tile is warning when the last run failed or a change was refused, success when settled, tinted otherwise (D5).
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows section-shaped skeleton cards (three) of `MxSkeletonRow`s, not a generic list.
 
 ## Copy
 

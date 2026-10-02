@@ -11,7 +11,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 |---|---|---|
 | App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16), and the trailing "Study options" icon, which opens screen 15 (FE-A3 D3). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
-| Hero | `MxCard` (hero) + `MxStatTile` × 2 (FE-A6 spec D17) | The overline names the algorithm alone ("EIGHT BOXES", "SM-2"); a plain line under it reads "Up to {n} cards per session" (BR-STUDY-024), so no word is left alone on a wrapped line (critique 2026-09-30 part 3c-1, R5); two stat tiles, New and Due: Due above zero in primary, New above zero muted, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning ink, when any are overdue. |
+| Hero | `MxCard` (plain, not a hero card: a summary, not a door) + `MxStatTile` × 2 (FE-A6 spec D17) | The overline names the algorithm alone ("EIGHT BOXES", "SM-2"); a plain line under it reads "Up to {n} cards per session" (BR-STUDY-024), so no word is left alone on a wrapped line (critique 2026-09-30 part 3c-1, R5); two stat tiles, New and Due: Due above zero in primary, New above zero muted, a zero in plain ink (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning ink, when any are overdue. |
 | Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |
 | Nothing-due state | `MxEmptyState` (compact, success tone) | "Nothing to do right now" (BR-STUDY-008, BR-STUDY-054). |
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing compact `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051) while a review leads the footer; with only new cards the footer offers Learn and the row has no button (critique 2026-09-30 part 3d-1, D2). |
@@ -83,6 +83,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - **BR-CARD-002:** direction descriptions name no language ("See the term, recall the meaning").
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the hero's algorithm overline is an eyebrow.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** with only new cards, Learn is offered by the footer alone; the Learn row keeps its button when a review leads the footer (D2).
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hero is a plain `MxCard` (a summary, not a door; DESIGN.md "a hero leads somewhere tappable"); its tiles and lines are unchanged.
 
 ## Copy
 
