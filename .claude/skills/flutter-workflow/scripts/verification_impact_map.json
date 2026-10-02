@@ -70,6 +70,7 @@
     "study_queue_queries": ["study"],
     "study_round_queries": ["study"],
     "study_session_queries": ["study"],
+    "study_view_queries": ["study"],
     "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
   },

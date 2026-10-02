@@ -1,0 +1,115 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/srs.drift';
+import '../tables/study.drift';
+
+-- BR-TRASH-002: a session's row with its deck's name and its root's
+-- scheduler; nothing once its deck or root is in the Trash.
+sessionWithDeckOf(:session_id AS TEXT) AS SessionDeckRow:
+SELECT s.**, d.name AS deck_name, r.scheduler_type AS root_scheduler
+FROM study_session s
+JOIN deck d ON d.id = s.deck_id
+JOIN deck r ON r.id = s.root_id
+WHERE s.id = :session_id
+  AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL;
+
+-- BR-STUDY-075, Study Home spec D6: the sessions Continue and Resume may
+-- take up: open, started on or after :start_of_today, at the root's
+-- generation, out of the Trash and with a queue row left; the newest, of
+-- two started at once the higher id. Of any deck:
+resumableSession(:start_of_today AS DATETIME) AS ResumableSessionRow:
+SELECT s.**, d.name AS deck_name
+FROM study_session s
+JOIN deck d ON d.id = s.deck_id
+JOIN deck r ON r.id = s.root_id
+WHERE s.status = 'in_progress' AND s.started_at >= :start_of_today
+  AND s.generation = r.generation
+  AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL
+  AND EXISTS (SELECT 1 FROM study_queue_items q WHERE q.session_id = s.id)
+ORDER BY s.started_at DESC, s.id DESC
+LIMIT 1;
+
+-- The same, of :deck_id only.
+resumableSessionOfDeck(:start_of_today AS DATETIME, :deck_id AS TEXT)
+  AS ResumableDeckSessionRow:
+SELECT s.**, d.name AS deck_name
+FROM study_session s
+JOIN deck d ON d.id = s.deck_id
+JOIN deck r ON r.id = s.root_id
+WHERE s.status = 'in_progress' AND s.started_at >= :start_of_today
+  AND s.generation = r.generation
+  AND d.delete_batch_id IS NULL AND r.delete_batch_id IS NULL
+  AND EXISTS (SELECT 1 FROM study_queue_items q WHERE q.session_id = s.id)
+  AND s.deck_id = :deck_id
+ORDER BY s.started_at DESC, s.id DESC
+LIMIT 1;
+
+-- Study Home spec D4: the earliest due date after :now of a learned card
+-- out of the Trash.
+nextDueAtAfter(:now AS DATETIME):
+SELECT MIN(cs.due_at) FROM card c
+JOIN deck k ON k.id = c.deck_id
+JOIN card_schedule cs ON cs.card_id = c.id
+WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+  AND cs.learned_at IS NOT NULL AND cs.due_at > :now;
+
+modesOfSession(:session_id AS TEXT):
+SELECT DISTINCT mode FROM study_queue_items WHERE session_id = :session_id
+ORDER BY mode;
+
+roundCountsOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER)
+  AS RoundCountsRow:
+SELECT COALESCE(SUM(status = 'completed'), 0) AS completed,
+  COUNT(*) AS total
+FROM study_queue_items
+WHERE session_id = :session_id AND mode = :mode AND round = :round;
+
+-- Graded modes spec §9, BR-TRASH-002: the options of a guess question in
+-- the order shown; an option card in the Trash is left out.
+guessOptionsOf(:session_id AS TEXT, :round AS INTEGER, :card_id AS TEXT)
+  AS GuessOptionRow:
+SELECT o.option_card_id, c.back FROM study_guess_options o
+JOIN card c ON c.id = o.option_card_id
+WHERE o.session_id = :session_id AND o.round = :round
+  AND o.card_id = :card_id AND c.delete_batch_id IS NULL
+ORDER BY o.slot;
+
+-- Graded modes spec §9: the pairs of a round between two positions, a
+-- board, in position order.
+boardPairsOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :from_position AS INTEGER, :to_position AS INTEGER) AS BoardPairRow:
+SELECT q.card_id, q.status, q.meaning_slot, c.front, c.back
+FROM study_queue_items q
+JOIN card c ON c.id = q.card_id AND c.delete_batch_id IS NULL
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.round = :round
+  AND q.position BETWEEN :from_position AND :to_position
+ORDER BY q.position;
+
+-- BR-STUDY-048, BR-TRASH-002: the completed rows of a round in the order
+-- served; a card in the Trash is left out.
+trailOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER) AS TrailRow:
+SELECT c.id, c.front, c.back, c.pronunciation, c.example
+FROM study_queue_items q
+JOIN card c ON c.id = q.card_id AND c.delete_batch_id IS NULL
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.round = :round
+  AND q.status = 'completed' AND q.position >= 0
+ORDER BY q.position;
+
+-- FE-A6 D11: the distinct cards of the session's queue, those now learned,
+-- its graded turns and the distinct cards they answered, and its logs whose
+-- action is one of :lapse_actions.
+summaryCountsOf(:session_id AS TEXT) AS SummaryCountsRow:
+SELECT
+  (SELECT COUNT(DISTINCT card_id) FROM study_queue_items
+   WHERE session_id = :session_id) AS card_count,
+  (SELECT COUNT(DISTINCT q.card_id) FROM study_queue_items q
+   JOIN card_schedule cs ON cs.card_id = q.card_id
+   WHERE q.session_id = :session_id AND cs.learned_at IS NOT NULL)
+    AS learned_count,
+  (SELECT COUNT(DISTINCT card_id) FROM review_log
+   WHERE session_id = :session_id) AS answered_count,
+  (SELECT COUNT(*) FROM review_log WHERE session_id = :session_id)
+    AS turn_count,
+  (SELECT COUNT(*) FROM review_log
+   WHERE session_id = :session_id AND "action" IN :lapse_actions)
+    AS wrong_count;
