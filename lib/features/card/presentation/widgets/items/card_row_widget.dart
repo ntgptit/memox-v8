@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -59,7 +60,14 @@ class CardRowWidget extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.control),
           child: GestureDetector(
-            onLongPress: onLongPress,
+            onLongPress: switch (onLongPress) {
+              null => null,
+              // A selection begins: a tick under the thumb (audit Platform).
+              final start => () {
+                HapticFeedback.selectionClick();
+                start();
+              },
+            },
             child: MxCard(
               isFullBleed: true,
               isSelected: isSelected,

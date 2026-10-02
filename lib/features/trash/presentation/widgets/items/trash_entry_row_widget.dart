@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -92,7 +93,14 @@ class TrashEntryRowWidget extends StatelessWidget {
               enabled: onTap != null,
               label: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
               child: GestureDetector(
-                onLongPress: onLongPress,
+                onLongPress: switch (onLongPress) {
+                  null => null,
+                  // A selection begins: a tick under the thumb (audit Platform).
+                  final start => () {
+                    HapticFeedback.selectionClick();
+                    start();
+                  },
+                },
                 child: MxRowInk(
                   onTap: onTap,
                   child: Padding(
