@@ -55,6 +55,7 @@
   },
   "database_query_features": {
     "account_device_queries": ["account"],
+    "card_list_queries": ["card"],
     "card_queries": ["card"],
     "card_row_queries": ["card", "transfer", "trash"],
     "deck_queries": ["deck"],
