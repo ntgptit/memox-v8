@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_page_transitions.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
@@ -31,5 +32,8 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     dialogTheme: AppComponentThemes.dialogs(scheme, texts),
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
     snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {TargetPlatform.android: AppPageTransitionsBuilder()},
+    ),
   );
 }
