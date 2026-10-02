@@ -60,6 +60,7 @@
     "card_row_queries": ["card", "transfer", "trash"],
     "deck_queries": ["deck"],
     "deck_row_queries": ["deck", "trash"],
+    "deck_tree_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],
     "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
     "live_row_queries": ["card", "deck", "settings"],

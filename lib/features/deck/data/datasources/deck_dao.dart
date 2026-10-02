@@ -6,12 +6,13 @@ part 'deck_dao.g.dart';
 
 /// Row access for `deck` (`deck_row_queries.drift`). It returns Drift rows,
 /// never domain entities, and runs inside the caller's transaction:
-/// `DeckRepositoryImpl` owns that. The level, path, move-target and
-/// deletion-summary reads are `deck_queries.drift`'s, still on
-/// [AppDatabase] while other features share their result classes.
+/// `DeckRepositoryImpl` owns that. The level and path reads are
+/// `deck_queries.drift`'s, still on [AppDatabase] until P6 moves their last
+/// caller from another feature (ADR-020).
 @DriftAccessor(
   include: {
     'package:memox/core/database/queries/deck_row_queries.drift',
+    'package:memox/core/database/queries/deck_tree_queries.drift',
     'package:memox/core/database/queries/live_row_queries.drift',
     'package:memox/core/database/queries/delete_batch_queries.drift',
   },
@@ -58,14 +59,14 @@ final class DeckDao extends DatabaseAccessor<AppDatabase> with _$DeckDaoMixin {
   Stream<List<DeckForestRow>> watchMoveTargetRows(
     String id, {
     required int maxDepth,
-  }) => attachedDatabase.deckMoveTargets(id, false, maxDepth).watch();
+  }) => deckMoveTargets(id, false, maxDepth).watch();
 
   /// The decks a restore of [itemId], the item root of a batch, may pick,
   /// and the decks on their paths (BR-TRASH-006).
   Future<List<DeckForestRow>> restoreTargetRows(
     String itemId, {
     required int maxDepth,
-  }) => attachedDatabase.deckMoveTargets(itemId, true, maxDepth).get();
+  }) => deckMoveTargets(itemId, true, maxDepth).get();
 
   /// Fires once, then after every write to the decks or the batches: where
   /// the decks of a Trash selection may go follows both (E2).
@@ -74,10 +75,10 @@ final class DeckDao extends DatabaseAccessor<AppDatabase> with _$DeckDaoMixin {
     attachedDatabase.deleteBatches,
   ]);
 
-  /// One statement (`deck_queries.drift`); null when [id] is not an active
+  /// One statement (`deck_tree_queries.drift`); null when [id] is not an active
   /// deck.
   Future<DeckDeletionSummaryResult?> deletionSummary(String id) =>
-      attachedDatabase.deckDeletionSummary(id).getSingleOrNull();
+      deckDeletionSummary(id).getSingleOrNull();
 
   Future<void> insert(DeckCompanion row) => createDeck(row);
 
