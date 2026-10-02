@@ -58,7 +58,7 @@
     "card_list_queries": ["card"],
     "card_queries": ["card"],
     "card_row_queries": ["card", "transfer", "trash"],
-    "deck_queries": ["deck"],
+    "deck_queries": ["deck", "study", "reminders", "progress"],
     "deck_row_queries": ["deck", "trash"],
     "deck_tree_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],

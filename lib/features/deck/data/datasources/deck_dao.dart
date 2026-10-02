@@ -7,10 +7,11 @@ part 'deck_dao.g.dart';
 /// Row access for `deck` (`deck_row_queries.drift`). It returns Drift rows,
 /// never domain entities, and runs inside the caller's transaction:
 /// `DeckRepositoryImpl` owns that. The level and path reads are
-/// `deck_queries.drift`'s, still on [AppDatabase] until P6 moves their last
-/// caller from another feature (ADR-020).
+/// `deck_queries.drift`'s, which every feature that reads them includes
+/// (ADR-020).
 @DriftAccessor(
   include: {
+    'package:memox/core/database/queries/deck_queries.drift',
     'package:memox/core/database/queries/deck_row_queries.drift',
     'package:memox/core/database/queries/deck_tree_queries.drift',
     'package:memox/core/database/queries/live_row_queries.drift',
@@ -43,17 +44,15 @@ final class DeckDao extends DatabaseAccessor<AppDatabase> with _$DeckDaoMixin {
     required DateTime startOfToday,
   }) {
     if (parentId == null) {
-      return attachedDatabase.deckLevelOfRoots(startOfToday, now).watch();
+      return deckLevelOfRoots(startOfToday, now).watch();
     }
-    return attachedDatabase
-        .deckLevelOfChildren(parentId, startOfToday, now)
-        .watch();
+    return deckLevelOfChildren(parentId, startOfToday, now).watch();
   }
 
   /// [id] and every deck above it, root first; empty when [id] is not an
   /// active deck.
   Stream<List<Deck>> watchDeckAndAncestors(String id) =>
-      attachedDatabase.deckAndAncestors(id).watch();
+      deckAndAncestors(id).watch();
 
   /// The decks a move of [id] may pick, and the decks on their paths.
   Stream<List<DeckForestRow>> watchMoveTargetRows(
