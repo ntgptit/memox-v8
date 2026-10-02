@@ -19,10 +19,6 @@ INNER JOIN deck root ON root.id = d.root_id AND root.delete_batch_id IS NULL
 INNER JOIN app_settings settings ON settings.id = :row_id
 WHERE d.id = :deck_id AND d.delete_batch_id IS NULL;
 
--- The deck :deck_id names, unless it is in the Trash.
-liveDeckRow(:deck_id AS TEXT):
-SELECT * FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL;
-
 -- The study override of a root; NULL removes it. Only a root outside the
 -- Trash takes one (BR-TRASH-002); the caller has just read it as such.
 setDeckStudyConfig(:deck_id AS TEXT, :study_config AS TEXT OR NULL,

@@ -8,7 +8,10 @@ part 'settings_dao.g.dart';
 /// returns Drift rows, never domain values, and runs inside the caller's
 /// transaction.
 @DriftAccessor(
-  include: {'package:memox/core/database/queries/settings_queries.drift'},
+  include: {
+    'package:memox/core/database/queries/settings_queries.drift',
+    'package:memox/core/database/queries/live_row_queries.drift',
+  },
 )
 final class SettingsDao extends DatabaseAccessor<AppDatabase>
     with _$SettingsDaoMixin {

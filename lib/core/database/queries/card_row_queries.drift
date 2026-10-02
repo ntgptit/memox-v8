@@ -1,0 +1,83 @@
+import '../tables/card.drift';
+import '../tables/deck.drift';
+import '../tables/trash.drift';
+
+-- Spec §8: a card or deck in the Trash is out of reach of every read and
+-- write here, except where a query says why.
+
+-- BE-C2: the active cards among :card_ids, one chunk at a time.
+liveCardsIn:
+SELECT * FROM card WHERE id IN :card_ids AND delete_batch_id IS NULL
+ORDER BY id;
+
+-- BE-C2: the active decks among :deck_ids, one chunk at a time.
+liveDecksIn:
+SELECT * FROM deck WHERE id IN :deck_ids AND delete_batch_id IS NULL
+ORDER BY id;
+
+-- BR-TRANSFER-003: the folded faces of the live cards of :deck_id.
+liveCardFacesOfDeck(:deck_id AS TEXT) AS CardFacesRow:
+SELECT front_folded, back_folded FROM card
+WHERE deck_id = :deck_id AND delete_batch_id IS NULL;
+
+liveCardCountOfDeck(:deck_id AS TEXT):
+SELECT COUNT(*) FROM card WHERE deck_id = :deck_id AND delete_batch_id IS NULL;
+
+-- BR-TRANSFER-010: the live cards of :deck_id by created_at, then id.
+exportCardsOfDeck(:deck_id AS TEXT):
+SELECT * FROM card WHERE deck_id = :deck_id AND delete_batch_id IS NULL
+ORDER BY created_at, id;
+
+-- BR-TRANSFER-010, BE-C2: those among :card_ids, one chunk at a time.
+exportCardsIn(:deck_id AS TEXT):
+SELECT * FROM card
+WHERE deck_id = :deck_id AND delete_batch_id IS NULL AND id IN :card_ids
+ORDER BY created_at, id;
+
+createCard: INSERT INTO card $row;
+
+updateLiveCard(:card_id AS TEXT):
+UPDATE card SET $values WHERE id = :card_id AND delete_batch_id IS NULL;
+
+-- BR-TRASH-001: the card goes to the Trash as the item root of :batch_id.
+markCardDeleted(:card_id AS TEXT, :batch_id AS TEXT):
+UPDATE card SET delete_batch_id = :batch_id
+WHERE id = :card_id AND delete_batch_id IS NULL;
+
+-- BR-TRASH-001: the card of :batch_id when the batch holds one, still
+-- marked with that batch.
+cardOfBatch(:batch_id AS TEXT):
+SELECT c.* FROM delete_batches b
+JOIN card c ON c.id = b.root_item_id AND c.delete_batch_id = b.id
+WHERE b.id = :batch_id AND b.item_type = 'card';
+
+-- BR-TRASH-006: the roots of :deck_ids, active or in the Trash: a restore
+-- checks a card against the root of its deck, which may be in the Trash.
+deckRootsInAnyState:
+SELECT root_id FROM deck WHERE id IN :deck_ids ORDER BY root_id;
+
+-- BR-TRASH-007: the card comes back from the batch it is marked with.
+restoreCard(:card_id AS TEXT, :batch_id AS TEXT):
+UPDATE card SET $values WHERE id = :card_id AND delete_batch_id = :batch_id;
+
+-- BE-C2: moves the live cards among :card_ids into :deck_id.
+moveLiveCardsIn(:deck_id AS TEXT, :now AS DATETIME):
+UPDATE card SET deck_id = :deck_id, updated_at = :now
+WHERE id IN :card_ids AND delete_batch_id IS NULL;
+
+-- BE-C2: writes only the live cards whose flag differs from :flag.
+flagLiveCardsIn(:flag AS INTEGER, :now AS DATETIME):
+UPDATE card SET is_flagged = :flag, updated_at = :now
+WHERE id IN :card_ids AND is_flagged <> :flag AND delete_batch_id IS NULL;
+
+-- Invariant 29: whether :deck_id still holds a live card.
+deckHoldsLiveCards(:deck_id AS TEXT):
+SELECT EXISTS (
+  SELECT 1 FROM card WHERE deck_id = :deck_id AND delete_batch_id IS NULL
+);
+
+-- A deck in the Trash keeps its row as it is.
+setLiveDeckContentType(:deck_id AS TEXT, :content_type AS TEXT,
+  :now AS DATETIME):
+UPDATE deck SET content_type = :content_type, updated_at = :now
+WHERE id = :deck_id AND delete_batch_id IS NULL;
