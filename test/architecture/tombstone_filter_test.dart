@@ -40,14 +40,14 @@ const _readsTombstones = <String, String>{
   'lib/core/database/queries/card_row_queries.drift#deckRootsInAnyState':
       'a restore checks a card against the root of its deck, which may be in '
       'the Trash (BR-TRASH-006)',
-  'lib/features/deck/data/datasources/deck_dao.dart#nextSiblingPosition':
+  'lib/core/database/queries/deck_row_queries.drift#nextSiblingPositionUnder':
       "D9: a new sibling's position counts the tombstones, so an Undo finds "
       'its place free',
-  'lib/features/deck/data/datasources/deck_dao.dart#subtreeHeight':
+  'lib/core/database/queries/deck_row_queries.drift#deckSubtreeHeight':
       "D10: a subtree's height counts the tombstones that move with it",
-  'lib/features/deck/data/datasources/deck_dao.dart#moveSubtree':
+  'lib/core/database/queries/deck_row_queries.drift#reRootDeckSubtree':
       'D10: the tombstones of a subtree move with it (BR-TRASH-007)',
-  'lib/features/deck/data/datasources/deck_dao.dart#rowInAnyState':
+  'lib/core/database/queries/deck_row_queries.drift#deckInAnyState':
       "a restore checks its item against the item's own root, which may be "
       'in the Trash too (BR-TRASH-006)',
   'lib/features/search/data/datasources/search_dao.dart#_cardHits':
