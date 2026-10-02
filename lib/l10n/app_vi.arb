@@ -1340,6 +1340,7 @@
   "accountStepDeleting": "Đang xoá tài khoản…",
   "accountSafeToClose": "Đóng app cũng không mất gì.",
   "accountLayerOffline": "Không có mạng. Dữ liệu vẫn an toàn trên điện thoại này.",
+  "accountSignOutStoppedOffline": "Không có mạng. Chưa có gì bị xoá.",
   "accountLayerFailed": "Đã có lỗi. Dữ liệu vẫn an toàn trên điện thoại này.",
   "accountLayerStuck": "Đã có lỗi khi chuyển tài khoản. Dữ liệu vẫn an toàn trên điện thoại này.",
   "accountSignOutLosing": "Đăng xuất ngay, mất {count} thay đổi",

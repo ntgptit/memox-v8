@@ -6955,6 +6955,10 @@
   "@accountLayerOffline": {
     "description": "Transition layer: a network error."
   },
+  "accountSignOutStoppedOffline": "No connection. Nothing has been removed yet.",
+  "@accountSignOutStoppedOffline": {
+    "description": "Transition layer (critique 2026-10-02, F2): a sign-out stopped offline before anything on the phone was removed; it can be cancelled or finished with the loss."
+  },
   "accountLayerFailed": "Something went wrong. Your data is safe on this phone.",
   "@accountLayerFailed": {
     "description": "Transition layer: any other error."
