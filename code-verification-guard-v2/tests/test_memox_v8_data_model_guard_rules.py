@@ -203,6 +203,7 @@ MIGRATED_TO_DRIFT: tuple[str, ...] = (
     "lib/features/trash/data/datasources/trash_dao.dart",
     "lib/features/starter_decks/data/datasources/starter_dao.dart",
     "lib/core/notes/dismissed_note_store.dart",
+    "lib/features/settings/data/datasources/settings_dao.dart",
 )
 
 # The exceptions ADR-020 grants for good, which no phase removes.
