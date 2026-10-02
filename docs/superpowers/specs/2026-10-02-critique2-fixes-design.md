@@ -1,6 +1,6 @@
 # Whole-app critique 2026-10-02 (28/40): P1s and single-screen P2s — design
 
-Status: draft 2026-10-02, awaiting owner review ·
+Status: approved by the owner 2026-10-02 ·
 Path: architectural (one coordinator path in `lib/core/auth`, one shared widget changed, nine
 screens) · Owner rulings 2026-10-02 (§2): F1–F10
 
