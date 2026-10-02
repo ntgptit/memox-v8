@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -41,7 +42,6 @@ class MxStudyTopBar extends StatelessWidget {
   /// Leaving mid-session is the screen's decision; this bar only reports it.
   final VoidCallback onClose;
 
-  static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
 
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
@@ -86,7 +86,9 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: _badgeTint),
+                        color: accentColor.withValues(
+                          alpha: AppOpacity.tintSoft,
+                        ),
                         borderRadius: BorderRadius.circular(AppRadius.full),
                       ),
                       child: Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
@@ -25,7 +26,6 @@ class MxOutcomeTile extends StatelessWidget {
   /// Lighter than the 12% status tint: on the dialog's surface the success
   /// ink reaches 4.53:1 over 8% (light). Kept is a fine state, so success,
   /// not mastery (critique 2026-09-30 tone pass, final review).
-  static const double _keptTint = 0.08;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class MxOutcomeTile extends StatelessWidget {
     final styles = context.textStyles;
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.semanticColors.success.withValues(alpha: _keptTint),
+        context.semanticColors.success.withValues(alpha: AppOpacity.tintFaint),
         derived.ghostBorder,
         derived.successInk,
       ),
