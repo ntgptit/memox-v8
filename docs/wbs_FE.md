@@ -141,6 +141,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D23 | `.drift` P5: `study_queue_dao`, `study_session_dao`, `study_round_dao`, `study_view_dao` | xong | FE-D22 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p5.md); `dod_check.sh` xanh | FE-D24 |
 | FE-D24 | `.drift` P6: `progress_dao`, `search_dao`; `deck_queries.drift` rời `AppDatabase` và `reminder_workload_dao`, `deck_dao`, `study_view_dao` tự include | xong | FE-D23 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p6.md); `dod_check.sh` xanh | FE-D25 |
 | FE-D25 | `.drift` P7: `core/sync`, `core/auth/account_store` (upsert thay `batch`, đo pull 1.000 dòng) | xong | FE-D24 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p7.md); `dod_check.sh` xanh | FE-D26 |
+| FE-D27 | UI hardening SP1 Foundations: MxDialog (bàn phím, hinge, `isHeld`), MxStepper commit, footer caption, heading, nav semantics, system bars, launch window, page transition, tint rungs, MxChipTrigger, haptics, luật DESIGN.md | đang làm | — | L | [spec](superpowers/specs/2026-10-03-ui-hardening-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp1-foundations.md) | SP2 |
 | FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | xong | FE-D19…FE-D25 | S | [plan](superpowers/plans/2026-10-02-drift-queries-only-p8.md); `dod_check.sh` xanh | — |
 
 ## Đã xong và đã kiểm chứng

@@ -246,7 +246,7 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
 - **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
 - **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
-- **Streak Orange** (`streak`): the Progress flame only.
+- **Streak Orange** (`streak`): the Progress flame only. Its glyph uses **Streak Ink** (`streakInk`): pulled 20% toward `on-surface` in light (3:1 on the card and its tint), the colour itself in dark (SP1 2026-10-03).
 - **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.
 
 ### Named Rules
@@ -257,6 +257,8 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 **The Ink Is Not The Fill Rule.** Text, icons and focus rings use the derived ink (primary ink, status inks, success ink, warning ink, `error`), never the fill colour, because the fills fail 4.5:1 as text on light surfaces.
 
 **The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Pull the ink, not the ground, to pass.
+
+**No Dynamic Color.** Material You's wallpaper scheme is not used: the authored Tokyo palette is the identity (SP1 2026-10-03).
 
 ## Typography
 
@@ -312,7 +314,7 @@ Hybrid, tonal first. Depth is conveyed by stepping through the surface-container
 - **Chrome** (`0 -2px 12px` at 5% light, `0 -2px 14px` at 36% dark): bottom sheet and bottom chrome, cast upward.
 - **Overlay** (`0 12px 32px` at 10% light, `0 16px 40px` at 42% dark): dialogs.
 - **FAB** (`0 8px 24px` at 12% light, `0 10px 28px` at 50% dark): the floating action.
-- **Scrim** (scheme `scrim` at 45%): behind every dialog and sheet. The bottom bar is translucent glass (surface at 84% with an 18 blur).
+- **Scrim** (scheme `scrim` at 45%): behind every dialog and sheet. The bottom bar is translucent (surface at 84%), with no blur: it never sits over content.
 
 ### Named Rules
 **The Hairline Before Shadow Rule.** Group with tone and a 1px ghost edge first; reach for a shadow only for a surface that floats above content.
@@ -332,14 +334,14 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 
 ### Containers
 - **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
-- **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
+- **MxDialog** (widths 340, 320, 300; scale-in; `isHeld` holds a writing dialog against Back and the scrim; it rises above the keyboard), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption in variant ink at full strength, 7.2:1 (owner R2, 2026-10-03)).
 
 ### Inputs
 - **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
-- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
+- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2; a typed value is handed over on a tap outside the field and when the screen is left), **MxToggle** (44x26 track, 20 thumb; the ON thumb is on-primary), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (chip that opens a menu: a ghost hairline at rest, the primary container while it holds a non-default choice).
 
 ### Navigation
-- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
+- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (translucent bar, outlined resting glyph, filled selected glyph, tinted pill; each destination reads "Tab n of m". Custom rather than Material's NavigationBar by owner ruling R4, 2026-10-03), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
 - **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; the glyph reads in warning ink or error and the bold title in warning ink or danger ink, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6), **MxEmptyState** (tones primary, neutral, success, warning, danger; success tints with success and draws its glyph in success ink, critique 2026-09-30 tone pass; warning draws its glyph in warning ink, part 3d-2), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in its success ink; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
@@ -351,7 +353,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **SessionFooterHint**: the glyph sits inline before the first line and wraps with the text; every hint is one line at normal size in English and Vietnamese, so the CTA above it stands in one place in every mode with no empty line under it (critique 2026-09-30 part 3c-2).
 
 ### Data Display
-- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in its ink; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
+- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader** (a TalkBack heading), **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in its ink; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
 
 ## Do's and Don'ts
 
@@ -372,6 +374,11 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.
+- **Do** show "no connection" as a neutral `MxNote`. Warning amber means a refusal, a limit or something not done; danger means a loss. Offline is never either (SP1 2026-10-03).
+- **Do** let a note say something the screen does not already show, and place it after the decision it explains, never before it.
+- **Do** name the loss on a destructive confirm: "Lose changes and continue", "Discard and continue", never a bare "Continue".
+- **Do** give a footer caption a fact of its own: it never restates the button or contradicts the screen's state.
+- **Do** keep an eyebrow inside the card it introduces.
 
 ### Don't:
 - **Don't** use a fill colour as text (primary fill, warning fill, success fill, status colour); use its ink.
@@ -381,3 +388,5 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Don't** put text below 12px (the 9px donut label is the sole exception, inside a fixed ring) or a fixed height around text.
 - **Don't** put failure copy in a component, or word a load failure as though data was lost.
 - **Don't** introduce an all-caps overline above headings as decoration; the section label introduces a list or settings group, the eyebrow is the one context line above a title or number, and user data is never upper-cased.
+- **Don't** put an overline over a one-row group, unless it sets apart a destructive group.
+- **Don't** lead every row with the same tile: a lead tile appears only when its glyph or tone varies with the row.
