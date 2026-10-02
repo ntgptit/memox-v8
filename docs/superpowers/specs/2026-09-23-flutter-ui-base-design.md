@@ -566,6 +566,9 @@ item names where it comes from.
 | 161 | 07: changing the selection while a bulk flag write runs can bring back a stale Retry for the earlier cards | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 | 162 | 15: a draft edited back to the stored values leaves "Not saved" beside a disabled "Retry save" | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 | 163 | 24: the reminder dialog passes the literal `minDigits: 2` beside its `_digits` constant | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
+| 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

@@ -89,7 +89,7 @@ void main() {
       final deckId = await _seed(env);
       await withRealShadows(() async {
         await pump(tester, env, deckId);
-        await _tap(tester, _en.importPickAction);
+        await _tap(tester, _en.importSourceFile);
         await _tap(tester, _en.importReadAction);
         await expectBoundaryGolden(tester, 'goldens/import_mapping_$theme.png');
       });
@@ -101,7 +101,7 @@ void main() {
       final deckId = await _seed(env);
       await withRealShadows(() async {
         await pump(tester, env, deckId);
-        await _tap(tester, _en.importPickAction);
+        await _tap(tester, _en.importSourceFile);
         await _tap(tester, _en.importReadAction);
         await _tap(tester, _en.importHeaderToggle);
         await expectBoundaryGolden(
@@ -115,7 +115,7 @@ void main() {
       final deckId = await _seed(env);
       await withRealShadows(() async {
         await pump(tester, env, deckId);
-        await _tap(tester, _en.importPickAction);
+        await _tap(tester, _en.importSourceFile);
         await _tap(tester, _en.importReadAction);
         await _tap(tester, _en.importPreviewAction);
         await expectBoundaryGolden(tester, 'goldens/import_preview_$theme.png');
@@ -126,7 +126,7 @@ void main() {
       final deckId = await _seed(env);
       await withRealShadows(() async {
         await pump(tester, env, deckId);
-        await _tap(tester, _en.importPickAction);
+        await _tap(tester, _en.importSourceFile);
         await _tap(tester, _en.importReadAction);
         await _tap(tester, _en.importPreviewAction);
         await _tap(tester, _en.importCommitAction(1));

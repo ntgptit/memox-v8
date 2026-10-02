@@ -10,8 +10,9 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 
-/// Screen 21's facts (kit Facts): what finished, what was answered, and the
-/// wrong turns out of all, each a row with its value on the right.
+/// Screen 21's facts (kit Facts), shown only where the hero draws no stats:
+/// an ended or failed session. What it finished is kept in the history, what
+/// was answered, and the wrong turns out of all (critique 2026-10-02, F1).
 class SessionSummaryFactsWidget extends StatelessWidget {
   const SessionSummaryFactsWidget({
     super.key,
@@ -42,16 +43,11 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 title: isLearning
                     ? l10n.summaryFactLearned
                     : l10n.summaryFactReviewed,
-                subtitle: isLearning
-                    ? l10n.summaryFactLearnedSub
-                    : l10n.summaryFactReviewedSub,
-                leading: const MxIconTile(
-                  icon: AppIcons.learned,
-                  tone: MxIconTileTone.success,
-                ),
+                subtitle: l10n.summaryFactKeptSub,
+                leading: const MxIconTile(icon: AppIcons.learned),
                 trailing: Text(
                   l10n.studyCount(summaryFinishedCount(view, summary)),
-                  style: styles.factValue(context.derivedColors.successInk),
+                  style: styles.factValue(colors.onSurface),
                 ),
               ),
               MxListRow(
@@ -66,9 +62,7 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 title: l10n.summaryFactWrong,
                 // The kit wraps this line; the row's own subtitle is one.
                 meta: Text(
-                  wrong > 0
-                      ? l10n.summaryFactWrongCameBack(turns)
-                      : l10n.summaryFactWrongSub(turns),
+                  l10n.summaryFactWrongSub(turns),
                   style: styles.noteText,
                 ),
                 // The glyph takes its value's tone (kit ResultRow).

@@ -191,6 +191,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 37 | REAUTH_REQUIRED(X) | sign-in, uid Y ≠ X; user confirmed losing N unsent changes | record Switch{source X, discard, targetSignedIn(Y)} → #27 | READY(Y) |
 | 38 | REAUTH_REQUIRED(X) | "Continue without an account"; confirmed | record ClearToAnon | TRANSITIONING |
 | 39 | READY | sign out (outbox empty, or loss accepted offline) | record SignOut; gate; push; ship logs | — |
+| 39a | SignOut, stage started (nothing local removed) | "Cancel" (critique 2026-10-02) | drop record; open gate; `me()` (#8/#9) | VALIDATING → READY(X) |
 | 40 | SignOut / ClearToAnon | pushed | `signOut(local)`; stage = signedOut | — |
 | 41 | SignOut / ClearToAnon | signedOut (R1: no session) | `LocalDataReset`; clear `lastKnownAccount` and record; open gate | BOOTSTRAPPING |
 | 42 | READY(account) | delete (online) | record Delete; gate; `account_delete()` | — |

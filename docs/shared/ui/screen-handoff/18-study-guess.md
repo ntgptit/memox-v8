@@ -44,6 +44,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick counts".
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the hold stays 1200 ms or until a tap (R2); the blocked notice is centred and its Close has no glyph (R5); the context line drops "first pick counts", which the footer states (R9).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the footer hint's glyph is info (F7).
 
 ## Accessibility
 

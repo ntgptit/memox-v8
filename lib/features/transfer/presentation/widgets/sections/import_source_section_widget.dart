@@ -110,8 +110,13 @@ class _ImportSourceSectionWidgetState
                   label: l10n.importSourceFile,
                   hint: l10n.importSourceFileHint,
                   isSelected: !isPaste,
+                  // The card picks the file, selected or not (critique
+                  // 2026-10-02, F9).
                   onSelected: canChange
-                      ? () => widget.onChooseKind(CardImportSourceKind.file)
+                      ? () {
+                          widget.onChooseKind(CardImportSourceKind.file);
+                          widget.onChooseFile();
+                        }
                       : null,
                 ),
               ),
@@ -176,14 +181,13 @@ class _ImportSourceSectionWidgetState
     if (draft.source == null) {
       return [
         // MxEmptyState draws its own surface (critique 2026-09-30 part 3d-2,
-        // E10).
+        // E10); the "Choose a file" card above picks (critique 2026-10-02,
+        // F9).
         MxEmptyState(
           icon: AppIcons.fileUp,
           title: l10n.importPickTitle,
           body: l10n.importPickBody,
           isCompact: true,
-          actionLabel: l10n.importPickAction,
-          onAction: widget.onChooseFile,
         ),
         ..._helper(l10n),
       ];
