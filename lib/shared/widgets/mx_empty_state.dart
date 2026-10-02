@@ -103,6 +103,9 @@ class MxEmptyState extends StatelessWidget {
                 ink: switch (tone) {
                   MxEmptyStateTone.primary => context.derivedColors.primaryInk,
                   MxEmptyStateTone.success => context.derivedColors.successInk,
+                  // As the caution tile and the warning banner (critique
+                  // 2026-09-30 part 3d-2, E14).
+                  MxEmptyStateTone.warning => context.derivedColors.warningInk,
                   _ => toneColor,
                 },
                 isCompact: isCompact,
@@ -185,7 +188,8 @@ class _Tile extends StatelessWidget {
   final Color color;
 
   /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
-  /// successInk for success (critique 2026-09-30 tone pass, T7).
+  /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
+  /// for warning (part 3d-2, E14).
   final Color ink;
   final bool isCompact;
 

@@ -35,6 +35,7 @@ class MxStepper extends StatefulWidget {
     this.editHint,
     this.onValueSubmitted,
     this.maxDigits = _defaultMaxDigits,
+    this.minDigits = 1,
     this.isInvalid = false,
     this.isBusy = false,
     this.isEnabled = true,
@@ -58,6 +59,10 @@ class MxStepper extends StatefulWidget {
 
   /// How many digits the field takes.
   final int maxDigits;
+
+  /// The value shows at least this many digits, zero-padded: a clock's
+  /// minute reads "05" (critique 2026-09-30 part 3d-2, E14).
+  final int minDigits;
   final bool isInvalid;
 
   /// A spinner replaces the number while the write is in flight.
@@ -80,6 +85,8 @@ class _MxStepperState extends State<MxStepper> {
   final _focus = FocusNode();
   var _isEditing = false;
 
+  String get _text => widget.value.toString().padLeft(widget.minDigits, '0');
+
   bool get _canEdit =>
       widget.onValueSubmitted != null && widget.isEnabled && !widget.isBusy;
 
@@ -99,7 +106,7 @@ class _MxStepperState extends State<MxStepper> {
   }
 
   void _edit() {
-    final text = widget.value.toString();
+    final text = _text;
     _field.value = TextEditingValue(
       text: text,
       selection: TextSelection(baseOffset: 0, extentOffset: text.length),
@@ -191,7 +198,7 @@ class _MxStepperState extends State<MxStepper> {
                 onSubmitted: (_) => _submit(),
               ),
             ),
-            _ => Text(widget.value.toString(), style: style),
+            _ => Text(_text, style: style),
           },
         ),
       ),
@@ -202,7 +209,7 @@ class _MxStepperState extends State<MxStepper> {
       excludeSemantics: true,
       button: _canEdit,
       label: widget.valueLabel,
-      value: widget.value.toString(),
+      value: _text,
       onTap: _canEdit ? _edit : null,
       onTapHint: _canEdit ? widget.editHint : null,
       child: GestureDetector(
