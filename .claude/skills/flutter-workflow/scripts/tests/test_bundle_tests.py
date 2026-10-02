@@ -234,31 +234,45 @@ class BundleTestsTest(_FixtureRepoCase):
 
 
 class GateBundledRunTest(unittest.TestCase):
-    """What `dod_check.sh` hands the bundler and the reporter."""
+    """How host tests run: `run_tests.sh`, which `dod_check.sh` calls in every mode."""
 
     @staticmethod
-    def _gate() -> str:
-        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+    def _runner() -> str:
+        return (SCRIPTS / "run_tests.sh").read_text(encoding="utf-8")
+
+    @staticmethod
+    def _gate_code() -> str:
+        return "\n".join(
+            line for line in (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8").splitlines()
+            if not line.lstrip().startswith("#")
+        )
+
+    def test_the_gate_runs_host_tests_only_through_run_tests(self) -> None:
+        gate = self._gate_code()
+        for needle in (
+            'RUN_TESTS="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/run_tests.sh"',
+            "bash '$RUN_TESTS'",
+        ):
+            self.assertTrue(needle in gate, f"dod_check.sh lacks {needle}")
+        for needle in ("flutter test --exclude-tags golden", "BUNDLE_PY"):
+            self.assertFalse(needle in gate, f"dod_check.sh still runs tests itself: {needle}")
 
     def test_each_run_bundles_into_its_own_directory(self) -> None:
-        gate = self._gate()
-        self.assertIn('BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"', gate)
-        self.assertIn('--out "$BUNDLE_RUN_DIR"', gate)
+        runner = self._runner()
+        self.assertIn('BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"', runner)
+        self.assertIn('--out "$BUNDLE_RUN_DIR"', runner)
 
     def test_the_report_path_is_repo_relative_so_git_bash_needs_no_conversion(self) -> None:
-        gate = self._gate()
-        self.assertIn('TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"', gate)
-        self.assertNotIn('TEST_REPORT="$WORK', gate)
-
-    def test_a_failed_run_keeps_its_bundles_for_the_report_to_point_at(self) -> None:
-        trap = next(line for line in self._gate().splitlines() if line.startswith("trap ") and "BUNDLE_RUN_DIR" in line)
-        self.assertIn('"$WORK/test.rc"', trap)
-        self.assertLess(trap.index("test.rc"), trap.index('rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"'))
+        runner = self._runner()
+        self.assertIn('TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"', runner)
 
     def test_a_carriage_return_is_stripped_from_each_bundle_path(self) -> None:
-        self.assertIn("bundles=(\"${bundles[@]%$'\\r'}\")", self._gate())
+        self.assertIn("bundles=(\"${bundles[@]%$'\\r'}\")", self._runner())
 
-
+    def test_a_failed_run_keeps_its_bundles_for_the_report_to_point_at(self) -> None:
+        trap = next(line for line in self._runner().splitlines() if line.startswith("trap "))
+        self.assertIn('"$RC_FILE"', trap)
+        self.assertLess(trap.index("RC_FILE"), trap.index('rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"'))
 
 class GoldenBundleTest(_FixtureRepoCase):
     """`--goldens`: the golden files alone, each compared beside itself."""
@@ -312,13 +326,13 @@ exit "${FAKE_FLUTTER_EXIT:-0}"
 """
 
 
-@unittest.skipIf(os.name == "nt" or shutil.which("bash") is None, "needs a POSIX bash")
-@unittest.skipUnless((SCRIPTS.parents[3] / "pubspec.yaml").is_file(), "needs the app tree")
-class RunGoldensTest(unittest.TestCase):
-    """`run_goldens.sh` against the real tree, with a `flutter` that only
+class _ScriptCase(unittest.TestCase):
+    """A gate script run against the real tree, with a `flutter` that only
     records what it was asked to run."""
 
-    def _run(self, *args: str, exit_code: int = 0) -> tuple[int, list[str]]:
+    script = ""
+
+    def _run(self, *args: str, exit_code: int = 0, env_extra: dict[str, str] | None = None):
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp, True)
         fake = tmp / "flutter"
@@ -332,20 +346,72 @@ class RunGoldensTest(unittest.TestCase):
             FAKE_FLUTTER_EXIT=str(exit_code),
         )
         env.pop("MEMOX_TEST_BUNDLES", None)
+        env.update(env_extra or {})
         # A failed run keeps its bundles on purpose; the test removes the ones
         # it caused, and only those.
         bundles = SCRIPTS.parents[3] / bundle_tests.BUNDLE_DIR
-        before = set(bundles.glob("golden-*"))
+        before = set(bundles.glob("*"))
         self.addCleanup(
-            lambda: [shutil.rmtree(d, True) for d in set(bundles.glob("golden-*")) - before]
+            lambda: [shutil.rmtree(d, True) for d in set(bundles.glob("*")) - before]
         )
         completed = subprocess.run(
-            ["bash", str(SCRIPTS / "run_goldens.sh"), *args],
+            ["bash", str(SCRIPTS / self.script), *args],
             cwd=SCRIPTS.parents[3], env=env, capture_output=True, text=True,
         )
         argv = recorded.read_text(encoding="utf-8").split("\n") if recorded.exists() else []
-        self.output = completed.stdout
+        self.output = completed.stdout + completed.stderr
         return completed.returncode, [arg for arg in argv if arg]
+
+
+_needs_bash = unittest.skipIf(os.name == "nt" or shutil.which("bash") is None, "needs a POSIX bash")
+_needs_app = unittest.skipUnless((SCRIPTS.parents[3] / "pubspec.yaml").is_file(), "needs the app tree")
+
+
+@_needs_bash
+@_needs_app
+class RunTestsTest(_ScriptCase):
+    """`run_tests.sh`: any host targets, bundled, one run."""
+
+    script = "run_tests.sh"
+
+    def test_targets_run_bundled_and_print_only_failures(self) -> None:
+        code, argv = self._run("test/features/deck")
+        self.assertEqual(code, 0)
+        self.assertEqual(argv[0], "test")
+        self.assertIn("-j", argv)
+        self.assertEqual(argv[argv.index("--exclude-tags") + 1], "golden")
+        self.assertEqual(argv[argv.index("-r") + 1], "failures-only")
+        self.assertTrue([arg for arg in argv if "/memox_test_bundles/run-" in arg], argv)
+        self.assertNotIn("test/features/deck", argv)
+
+    def test_no_target_means_the_whole_host_suite(self) -> None:
+        code, argv = self._run()
+        self.assertEqual(code, 0)
+        self.assertRegex(self.output, r"bundle_tests: \d{3,} test files in \d+ bundles")
+
+    def test_bundles_zero_runs_the_targets_file_by_file(self) -> None:
+        code, argv = self._run("test/features/deck", env_extra={"MEMOX_TEST_BUNDLES": "0"})
+        self.assertEqual(code, 0)
+        self.assertIn("test/features/deck", argv)
+        self.assertFalse([arg for arg in argv if "/memox_test_bundles/run-" in arg and arg.endswith(".dart")])
+
+    def test_a_failed_run_fails_the_script(self) -> None:
+        code, _ = self._run("test/features/deck", exit_code=1)
+        self.assertEqual(code, 1)
+
+    def test_a_target_naming_nothing_fails_before_flutter_runs(self) -> None:
+        code, argv = self._run("test/no_such_dir")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(argv, [])
+        self.assertIn("no such test directory: test/no_such_dir", self.output)
+
+
+@_needs_bash
+@_needs_app
+class RunGoldensTest(_ScriptCase):
+    """`run_goldens.sh` against the real tree."""
+
+    script = "run_goldens.sh"
 
     def test_a_comparison_runs_the_golden_bundles(self) -> None:
         code, argv = self._run()

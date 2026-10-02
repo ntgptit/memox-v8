@@ -22,7 +22,7 @@ dart run drift_dev schema generate drift_schemas/ test/drift/generated/
 # 5. Write the onUpgrade step.
 # 6. Write the data-integrity test.
 # 7. Run the suite.
-flutter test test/database/
+bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/database test/drift
 ```
 
 `schema steps` writes the versioned schemas that `stepByStep` hands each step,

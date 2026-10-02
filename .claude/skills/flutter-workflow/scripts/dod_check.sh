@@ -352,79 +352,36 @@ else
     "$GUARD_PY '$GUARD_RUNNER' check --project '$REPO_ROOT' --ruleset memox-v8"
 fi
 
-# **Bundled, unless `MEMOX_TEST_BUNDLES=0`.** `flutter test` compiles every
-# test file on its own and starts a fresh process for it, so the suite paid
-# ~1.4 s per file however small the file: 13m31s for 483 files on 2026-10-02.
-# `bundle_tests.py` folds the selected files into one entrypoint per core and
-# the same 3411 tests ran in 2m12s (spec 2026-10-02-test-suite-bundling).
+# **Host tests run through run_tests.sh, in every mode.** It bundles the
+# targets into one entrypoint per core (bundle_tests.py), runs them once with
+# failures-only output, and prints test_report.py's summary: `flutter test`
+# compiling and starting every file on its own took 13m31s for 483 files on
+# 2026-10-02, and the same tests bundled about 2 minutes. One script, so a
+# subset run by hand and the gate run tests the same way.
 # `MEMOX_TEST_BUNDLES=0` runs the same targets file by file, as before: the
 # rollback, and the way to tell a real failure from state one file leaks into
 # the next.
 #
-# **`TZ=UTC`, and never goldens here.** Goldens are generated and compared only
-# in the Linux container (golden.Dockerfile, CLAUDE.md); a host run compares
-# them against a different rasteriser and fails on pixels that are not defects.
-# A bundle could not run them anyway: `matchesGoldenFile` resolves the PNG
-# beside the test file, so `bundle_tests.py` leaves golden files out.
-#
-# Either way `test_report.py` prints the slowest tests and, on a failure, each
-# failing file with the command that re-runs it alone. It never changes the
-# verdict: the subshell exits with `flutter test`'s own code.
-BUNDLE_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/bundle_tests.py"
-REPORT_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/test_report.py"
-# **Repo-relative, and one directory per run.** Relative so Git Bash hands
-# `json:<path>` to `flutter test` without converting it; per run so a second
-# gate in this checkout cannot rewrite these bundles while they compile. The
-# EXIT trap removes it with $WORK, except after a failed test step: the report
-# then points into these bundles (which file ran before which), so they stay
-# until someone deletes them or `flutter clean` does.
-BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"
-TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"
-TEST_TARGETS_NUL="$WORK/test-targets.nul"
-trap '[[ "$(cat "$WORK/test.rc" 2>/dev/null || echo 0)" == "0" ]] && rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"; rm -rf "$WORK"' EXIT
+# **`TZ=UTC`, and never goldens here.** run_tests.sh excludes them; they are
+# compared only in the Linux container and in CI (run_goldens.sh, CLAUDE.md).
+RUN_TESTS="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/run_tests.sh"
 
-# plan_host_tests <scope> <per-file targets...>
-# Bundles the targets listed in $TEST_TARGETS_NUL, or with
-# MEMOX_TEST_BUNDLES=0 (or no python) runs the per-file targets as given.
+# plan_host_tests <scope> [target ...]
 plan_host_tests() {
-  local scope="$1"
+  local scope="$1" quoted=""
   shift
-  local quoted="" report_tail="; exit \$?)"
-  [[ -n "$PY" ]] &&
-    report_tail="; rc=\$?; '$PY' '$REPORT_PY' '$TEST_REPORT' --root '$REPO_ROOT'; exit \$rc)"
-  if [[ "${MEMOX_TEST_BUNDLES:-}" == "0" || -z "$PY" ]]; then
-    mkdir -p "$BUNDLE_RUN_DIR"
-    [[ $# -gt 0 ]] && printf -v quoted " %q" "$@"
-    plan test "flutter test ($scope, file by file, no goldens, TZ=UTC)" \
-      "(TZ=UTC flutter test --exclude-tags golden --file-reporter json:'$TEST_REPORT'$quoted$report_tail"
-    return
-  fi
-  local bundle_out bundles=()
-  if ! bundle_out="$("$PY" "$BUNDLE_PY" --root "$REPO_ROOT" --out "$BUNDLE_RUN_DIR" --paths-file "$TEST_TARGETS_NUL" 2>"$WORK/bundle.err")"; then
-    step "test bundling"
-    cat "$WORK/bundle.err"
-    FAILED+=("test bundling — see above")
-    return
-  fi
-  [[ -n "$bundle_out" ]] && mapfile -t bundles <<<"$bundle_out"
-  # A Windows Python can end each line with `\r`, which would end up in a path.
-  [[ ${#bundles[@]} -gt 0 ]] && bundles=("${bundles[@]%$'\r'}")
-  if [[ ${#bundles[@]} -eq 0 ]]; then
-    FAILED+=("test plan selected no test files")
-    return
-  fi
-  printf -v quoted " %q" "${bundles[@]}"
-  plan test "flutter test ($scope, ${#bundles[@]} bundles, no goldens, TZ=UTC)" \
-    "(cat '$WORK/bundle.err'; TZ=UTC flutter test -j ${#bundles[@]} --exclude-tags golden --file-reporter json:'$TEST_REPORT'$quoted$report_tail"
+  [[ $# -gt 0 ]] && printf -v quoted " %q" "$@"
+  plan test "host tests ($scope, no goldens, TZ=UTC)" "bash '$RUN_TESTS'$quoted"
 }
 
 if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
-  if [[ ! -d test ]]; then
+  if [[ ! -f "$RUN_TESTS" ]]; then
+    FAILED+=("host test runner missing at $RUN_TESTS")
+  elif [[ ! -d test ]]; then
     FAILED+=("selected host tests unavailable: no test/ directory")
   elif [[ $CHANGED -eq 1 ]]; then
-    # The bundles take the exact `test_files`; the per-file run keeps the
-    # compressed `local_test_targets`, which fit a Windows command line.
-    "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); sys.stdout.buffer.write(b''.join(x.encode() + b'\\0' for x in p['test_files']))" "$PLAN_JSON" >"$TEST_TARGETS_NUL"
+    # The compressed targets: a directory stands for every runnable test below
+    # it, which is exactly what bundle_tests.py expands it to.
     mapfile -d '' CHANGED_TEST_TARGETS < <(
       "$PY" -c "import json,sys; p=json.load(open(sys.argv[1], encoding='utf-8')); sys.stdout.buffer.write(b'\\0'.join(x.encode() for x in p['local_test_targets']) + b'\\0')" "$PLAN_JSON"
     )
@@ -434,10 +391,8 @@ if [[ $NEEDS_HOST_TESTS -eq 1 ]] && command -v flutter >/dev/null 2>&1; then
       plan_host_tests "--changed" "${CHANGED_TEST_TARGETS[@]}"
     fi
   elif [[ $FAST -eq 1 ]]; then
-    printf '%s\0' test/app test/features/deck >"$TEST_TARGETS_NUL"
     plan_host_tests "--fast: Deck + app subset" test/app test/features/deck
   else
-    printf '%s\0' test >"$TEST_TARGETS_NUL"
     plan_host_tests "full suite"
   fi
 fi

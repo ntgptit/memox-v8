@@ -34,6 +34,21 @@ with the UI are in place: visual audits under `test/visual_audit/` (MX-VIS-001,
 which the guard's `memox.visual.*` rules also target) and goldens beside the
 widget tests. A device end-to-end suite does not exist yet.
 
+## Running tests
+
+- A file: `flutter test test/path/x_test.dart`.
+- Anything larger, a directory, several files or the suite:
+  `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`.
+  It bundles the files (one entrypoint per core), prints only failures and a
+  summary, and keeps the JSON report and bundles under
+  `.dart_tool/memox_test_bundles/` when a test fails. `flutter test <dir>`
+  compiles and starts every file on its own, several times slower; a hook
+  notes it when it happens.
+- Run once. The summary lists every failing file with the command that
+  re-runs it alone; running the same tests again only to filter the output
+  another way pays the whole run twice.
+- Goldens: `run_goldens.sh` (`--update` to rewrite), in the Linux container.
+
 Fakes of the domain contracts, not mocks: `test/support/` holds the shared ones
 (`fake_day_clock.dart`, `fake_reminder_platform.dart`, …), so a changed
 signature is a compile error where it matters.
