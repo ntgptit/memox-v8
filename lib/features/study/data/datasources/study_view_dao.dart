@@ -54,6 +54,7 @@ typedef TrailRecord = ({
 /// domain values.
 @DriftAccessor(
   include: {
+    'package:memox/core/database/queries/deck_queries.drift',
     'package:memox/core/database/queries/study_view_queries.drift',
     'package:memox/core/database/queries/live_row_queries.drift',
   },
@@ -119,11 +120,10 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
 
   /// Every root deck with the workload of its whole tree: the statement the
   /// Library's root level reads (BR-STUDY-076, BR-STUDY-068).
-  /// `deck_queries.drift` stays on [AppDatabase] until P6 (ADR-020).
   Future<List<DeckTileRow>> rootDeckRows({
     required DateTime now,
     required DateTime startOfToday,
-  }) => attachedDatabase.deckLevelOfRoots(startOfToday, now).get();
+  }) => deckLevelOfRoots(startOfToday, now).get();
 
   /// The earliest due date after [now] of a learned card out of the Trash
   /// (Study Home spec D4); null when none waits.

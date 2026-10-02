@@ -50,12 +50,6 @@ const _readsTombstones = <String, String>{
   'lib/core/database/queries/deck_row_queries.drift#deckInAnyState':
       "a restore checks its item against the item's own root, which may be "
       'in the Trash too (BR-TRASH-006)',
-  'lib/features/search/data/datasources/search_dao.dart#_cardHits':
-      "filtered by `_live`, the search's one predicate (Search spec D8), "
-      'which the scan cannot read through',
-  'lib/features/search/data/datasources/search_dao.dart#deckForest':
-      "filtered by `_live`, the search's one predicate (Search spec D8), "
-      'which the scan cannot read through',
   'lib/core/database/queries/srs_queries.drift#deleteTreeSchedules':
       'trash spec D11: a reset or a scheduler change rewrites the schedules of the '
       "tree's tombstones too",

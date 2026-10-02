@@ -1,0 +1,149 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/srs.drift';
+
+-- The answers that count are r with its card c and its deck k: live cards
+-- only, never a browse row (BR-PROGRESS-012), on the local day at :offset
+-- (Progress spec §6.1). A card-day with a learning answer is Learning
+-- (BR-PROGRESS-005). Each query writes them out; the local day is cast,
+-- since Drift types answered_at + :offset as a date.
+
+-- UC-PROGRESS-001 step 2, BR-PROGRESS-016: every local day with activity up
+-- to :today, oldest first; the streak's days.
+progressActiveDays(:offset AS INTEGER, :today AS INTEGER):
+SELECT DISTINCT CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day
+FROM review_log r
+JOIN card c ON c.id = r.card_id
+JOIN deck k ON k.id = c.deck_id
+WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+  AND r.mode <> 'browse' AND (r.answered_at + :offset) / 86400 <= :today
+ORDER BY day;
+
+-- BR-PROGRESS-014, BR-PROGRESS-015: the days from :week_start to :today with
+-- activity, with their Learning and Reviewing card-days.
+progressWeekActivity(:offset AS INTEGER, :week_start AS INTEGER,
+  :today AS INTEGER) AS WeekActivityRow:
+WITH card_days AS (
+  SELECT c.id AS card_id,
+    CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
+    MAX(r.kind = 'learning') AS is_learning
+  FROM review_log r
+  JOIN card c ON c.id = r.card_id
+  JOIN deck k ON k.id = c.deck_id
+  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+    AND r.mode <> 'browse'
+    AND (r.answered_at + :offset) / 86400 BETWEEN :week_start AND :today
+  GROUP BY c.id, day)
+SELECT day,
+  COUNT(*) FILTER (WHERE is_learning) AS learning,
+  COUNT(*) FILTER (WHERE NOT is_learning) AS reviewing
+FROM card_days GROUP BY day ORDER BY day;
+
+-- BR-PROGRESS-002, BR-PROGRESS-004: every active root deck with the numbers
+-- of its whole tree, grouped by root_id, then the library's total from the
+-- same statement (Progress spec D5). The week counts the days from
+-- :week_start, the month every day from :month_start to :today
+-- (BR-PROGRESS-001). A deck with no activity has no tiles row.
+progressRootLevel(:offset AS INTEGER, :week_start AS INTEGER,
+  :month_start AS INTEGER, :today AS INTEGER) AS ProgressLevelRow:
+WITH card_days AS (
+  SELECT c.id AS card_id, k.root_id AS tile_id,
+    CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
+    MAX(r.kind = 'learning') AS is_learning
+  FROM review_log r
+  JOIN card c ON c.id = r.card_id
+  JOIN deck k ON k.id = c.deck_id
+  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+    AND r.mode <> 'browse'
+    AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
+  GROUP BY c.id, day),
+tiles AS (
+  SELECT tile_id,
+    COUNT(DISTINCT card_id) FILTER (WHERE day >= :week_start) AS week_cards,
+    COUNT(DISTINCT day) FILTER (WHERE day >= :week_start) AS week_days,
+    COUNT(*) FILTER (WHERE day >= :week_start AND is_learning)
+      AS week_learning,
+    COUNT(*) FILTER (WHERE day >= :week_start AND NOT is_learning)
+      AS week_reviewing,
+    COUNT(DISTINCT card_id) AS month_cards,
+    COUNT(DISTINCT day) AS month_days,
+    COUNT(*) FILTER (WHERE is_learning) AS month_learning,
+    COUNT(*) FILTER (WHERE NOT is_learning) AS month_reviewing
+  FROM card_days GROUP BY tile_id)
+SELECT d.id AS deck_id, d.name AS name,
+  tiles.week_cards, tiles.week_days, tiles.week_learning,
+  tiles.week_reviewing, tiles.month_cards, tiles.month_days,
+  tiles.month_learning, tiles.month_reviewing
+FROM deck d LEFT JOIN tiles ON tiles.tile_id = d.id
+WHERE d.parent_id IS NULL AND d.delete_batch_id IS NULL
+UNION ALL
+SELECT NULL, NULL,
+  COUNT(DISTINCT card_id) FILTER (WHERE day >= :week_start),
+  COUNT(DISTINCT day) FILTER (WHERE day >= :week_start),
+  COUNT(*) FILTER (WHERE day >= :week_start AND is_learning),
+  COUNT(*) FILTER (WHERE day >= :week_start AND NOT is_learning),
+  COUNT(DISTINCT card_id),
+  COUNT(DISTINCT day),
+  COUNT(*) FILTER (WHERE is_learning),
+  COUNT(*) FILTER (WHERE NOT is_learning)
+FROM card_days;
+
+-- BR-PROGRESS-002, BR-PROGRESS-004: every active direct child of :deck_id
+-- with the numbers of its subtree, then the total of :deck_id's whole
+-- subtree from the same statement. Each child's subtree is walked as
+-- deckLevelOfChildren walks it (UNION, cycle safe, no cap), its tile_id the
+-- child; :deck_id itself has no tile, so its own cards count in the total
+-- only.
+progressChildLevel(:deck_id AS TEXT, :offset AS INTEGER,
+  :week_start AS INTEGER, :month_start AS INTEGER, :today AS INTEGER)
+  AS ProgressLevelRow:
+WITH RECURSIVE tree(tile_id, deck_id) AS (
+  SELECT id, id FROM deck
+  WHERE parent_id = :deck_id AND delete_batch_id IS NULL
+  UNION
+  SELECT tree.tile_id, d.id FROM deck d JOIN tree ON d.parent_id = tree.deck_id
+  WHERE d.delete_batch_id IS NULL),
+scope(tile_id, deck_id) AS (
+  SELECT tile_id, deck_id FROM tree UNION ALL SELECT NULL, :deck_id),
+card_days AS (
+  SELECT c.id AS card_id, s.tile_id AS tile_id,
+    CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
+    MAX(r.kind = 'learning') AS is_learning
+  FROM review_log r
+  JOIN card c ON c.id = r.card_id
+  JOIN deck k ON k.id = c.deck_id
+  JOIN scope s ON s.deck_id = k.id
+  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+    AND r.mode <> 'browse'
+    AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
+  GROUP BY c.id, day),
+tiles AS (
+  SELECT tile_id,
+    COUNT(DISTINCT card_id) FILTER (WHERE day >= :week_start) AS week_cards,
+    COUNT(DISTINCT day) FILTER (WHERE day >= :week_start) AS week_days,
+    COUNT(*) FILTER (WHERE day >= :week_start AND is_learning)
+      AS week_learning,
+    COUNT(*) FILTER (WHERE day >= :week_start AND NOT is_learning)
+      AS week_reviewing,
+    COUNT(DISTINCT card_id) AS month_cards,
+    COUNT(DISTINCT day) AS month_days,
+    COUNT(*) FILTER (WHERE is_learning) AS month_learning,
+    COUNT(*) FILTER (WHERE NOT is_learning) AS month_reviewing
+  FROM card_days GROUP BY tile_id)
+SELECT d.id AS deck_id, d.name AS name,
+  tiles.week_cards, tiles.week_days, tiles.week_learning,
+  tiles.week_reviewing, tiles.month_cards, tiles.month_days,
+  tiles.month_learning, tiles.month_reviewing
+FROM deck d LEFT JOIN tiles ON tiles.tile_id = d.id
+WHERE d.parent_id = :deck_id AND d.delete_batch_id IS NULL
+UNION ALL
+SELECT NULL, NULL,
+  COUNT(DISTINCT card_id) FILTER (WHERE day >= :week_start),
+  COUNT(DISTINCT day) FILTER (WHERE day >= :week_start),
+  COUNT(*) FILTER (WHERE day >= :week_start AND is_learning),
+  COUNT(*) FILTER (WHERE day >= :week_start AND NOT is_learning),
+  COUNT(DISTINCT card_id),
+  COUNT(DISTINCT day),
+  COUNT(*) FILTER (WHERE is_learning),
+  COUNT(*) FILTER (WHERE NOT is_learning)
+FROM card_days;

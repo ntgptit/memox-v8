@@ -1,0 +1,72 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/tags.drift';
+
+-- Every read of the search is out of the Trash (BR-SEARCH-001; Search spec
+-- D8). A field's tier for :term is the index of the SearchTier that
+-- searchTierOf gives, by = and instr: 0 exact, 1 prefix, 2 contains, 3 no
+-- tier. Never LIKE, so % and _ are plain characters, and never lower()
+-- (Search spec D4). A test pins SearchTier's order to these literals.
+
+-- BR-SEARCH-009: every active deck in one statement, the decks to match and
+-- the paths of every hit of the snapshot.
+searchDeckForest AS SearchDeckForestRow:
+SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
+  d.created_at
+FROM deck d WHERE d.delete_batch_id IS NULL;
+
+-- BR-SEARCH-001, BR-SEARCH-004, BR-SEARCH-006, BR-SEARCH-007: every live
+-- card whose front, back or tag name holds :term, one row each from
+-- correlated subqueries (never DISTINCT over a join), with the tier of each
+-- face and of its best tag, the name of its best matching tag, and its tier,
+-- the best of the three. In the card group's order, the key
+-- (tier, front_folded, created_at, id): after the :after_* key when it is
+-- given, through the :through_* key when it is given, at most :limit rows
+-- when it is given (-1 is no limit), never an OFFSET.
+searchCardHits(:term AS TEXT,
+  :after_tier AS INTEGER OR NULL, :after_text AS TEXT OR NULL,
+  :after_created_at AS DATETIME OR NULL, :after_id AS TEXT OR NULL,
+  :through_tier AS INTEGER OR NULL, :through_text AS TEXT OR NULL,
+  :through_created_at AS DATETIME OR NULL, :through_id AS TEXT OR NULL,
+  :limit AS INTEGER OR NULL) AS SearchCardHitRow:
+WITH hits AS (
+  SELECT c.id, c.deck_id, c.front, c.back, c.front_folded, c.created_at,
+    CASE WHEN c.front_folded = :term THEN 0
+      WHEN instr(c.front_folded, :term) = 1 THEN 1
+      WHEN instr(c.front_folded, :term) > 0 THEN 2
+      ELSE 3 END AS front_tier,
+    CASE WHEN c.back_folded = :term THEN 0
+      WHEN instr(c.back_folded, :term) = 1 THEN 1
+      WHEN instr(c.back_folded, :term) > 0 THEN 2
+      ELSE 3 END AS back_tier,
+    COALESCE((
+      SELECT MIN(CASE WHEN t.name_folded = :term THEN 0
+        WHEN instr(t.name_folded, :term) = 1 THEN 1
+        WHEN instr(t.name_folded, :term) > 0 THEN 2
+        ELSE 3 END)
+      FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
+      WHERE ct.card_id = c.id), 3) AS tag_tier,
+    (SELECT t.name
+     FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
+     WHERE ct.card_id = c.id AND instr(t.name_folded, :term) > 0
+     ORDER BY CASE WHEN t.name_folded = :term THEN 0
+       WHEN instr(t.name_folded, :term) = 1 THEN 1
+       WHEN instr(t.name_folded, :term) > 0 THEN 2
+       ELSE 3 END, t.name_folded, t.id
+     LIMIT 1) AS tag_name
+  FROM card c JOIN deck k ON k.id = c.deck_id
+  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL),
+tiered AS (
+  SELECT hits.*, MIN(front_tier, back_tier, tag_tier) AS tier FROM hits)
+SELECT id, deck_id, front, back, front_folded, created_at, front_tier,
+  back_tier, tier, tag_name
+FROM tiered
+WHERE tier < 3
+  AND (:after_tier IS NULL
+    OR (tier, front_folded, created_at, id)
+      > (:after_tier, :after_text, :after_created_at, :after_id))
+  AND (:through_tier IS NULL
+    OR (tier, front_folded, created_at, id)
+      <= (:through_tier, :through_text, :through_created_at, :through_id))
+ORDER BY tier, front_folded, created_at, id
+LIMIT COALESCE(:limit, -1);

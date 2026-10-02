@@ -27,6 +27,15 @@ void main() {
     expect(searchTierOf('hoc qua phim', 'học'), isNull);
   });
 
+  test('the tiers keep the order search_queries.drift writes as 0, 1 and 2, '
+      'with 3 as no tier (Search spec D4)', () {
+    expect(SearchTier.values, [
+      SearchTier.exact,
+      SearchTier.prefix,
+      SearchTier.contains,
+    ]);
+  });
+
   test('every deck comes before every card, whatever its tier and text '
       '(BR-SEARCH-005)', () {
     final deck = _cursor(tier: SearchTier.contains, sortText: 'z');
