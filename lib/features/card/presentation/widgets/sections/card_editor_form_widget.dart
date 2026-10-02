@@ -81,6 +81,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   var _isGone = false;
   var _isLeaving = false;
   var _hasPendingTag = false;
+  final _tagEditor = GlobalKey<CardTagEditorWidgetState>();
 
   bool get _isCreating => widget.detail == null;
 
@@ -211,6 +212,9 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   Future<void> _save() async {
     if (_isSaving) return;
+    // The tag still in its field is part of the card (critique 2026-09-30
+    // part 3d-2, E8); a refused one stops the save, saying why.
+    if (!(_tagEditor.currentState?.commitPending() ?? true)) return;
     final draft = _draft();
     setState(() {
       _isSaving = true;
@@ -260,6 +264,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     for (final controller in _controllers) {
       controller.clear();
     }
+    _tagEditor.currentState?.clearInput();
     setState(() {
       _tags = [];
       _isFlagged = false;
@@ -412,6 +417,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       pronunciation: _input(_Field.pronunciation, _pronunciation, errors),
     ),
     CardTagEditorWidget(
+      key: _tagEditor,
       tags: _tags,
       onChanged: (tags) => setState(() => _tags = tags),
       onPendingChanged: (isPending) =>
