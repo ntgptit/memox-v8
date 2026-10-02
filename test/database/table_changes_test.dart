@@ -74,4 +74,16 @@ void main() {
 
     expect(firings, 1);
   });
+
+  testWidgets('a first taken in a widget test lets the test go on', (
+    tester,
+  ) async {
+    // The test passes by finishing: waiting on Drift's own cancel would hold
+    // the fake zone, and the pump after it, until the test times out.
+    await tableChanges(db, [db.deck]).first;
+    await tableChanges(db, [
+      db.deck,
+    ]).asyncMap((_) => Future<void>.value()).first;
+    await tester.pump();
+  });
 }
