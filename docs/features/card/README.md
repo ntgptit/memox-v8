@@ -1,6 +1,6 @@
 ---
 feature: card
-code: [lib/features/card/domain, lib/features/card/data, lib/features/card/di, lib/core/database/queries/card_queries.drift]
+code: [lib/features/card/domain, lib/features/card/data, lib/features/card/di, lib/core/database/queries/card_queries.drift, lib/core/database/queries/card_row_queries.drift, lib/core/database/queries/card_list_queries.drift, lib/core/database/queries/live_row_queries.drift]
 depends_on: [deck]
 ---
 ## Phạm vi
