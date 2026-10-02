@@ -3412,9 +3412,9 @@
   "@importPickTitle": {
     "description": "Import: the empty file picker card title."
   },
-  "importPickBody": ".csv, .tsv or .xlsx · UTF-8 · nothing is added until you confirm",
+  "importPickBody": "Nothing is added until you confirm.",
   "@importPickBody": {
-    "description": "Import: the empty file picker card body."
+    "description": "Import: the empty file picker body; the formats are stated by the Choose a file option."
   },
   "importPickAction": "Choose file",
   "@importPickAction": {

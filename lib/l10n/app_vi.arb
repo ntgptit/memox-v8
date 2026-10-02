@@ -657,7 +657,7 @@
   "importSourcePaste": "Dán văn bản",
   "importSourcePasteHint": "Các dòng tách bằng tab hoặc dấu phẩy",
   "importPickTitle": "Chọn một bảng tính hoặc tệp văn bản",
-  "importPickBody": ".csv, .tsv hoặc .xlsx · UTF-8 · chưa thêm gì cho tới khi bạn xác nhận",
+  "importPickBody": "Chưa thêm gì cho tới khi bạn xác nhận.",
   "importPickAction": "Chọn tệp",
   "importPasteHint": "Dán các dòng vào đây",
   "importPastedLines": "{count, plural, other{{count} dòng}}",

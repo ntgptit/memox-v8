@@ -175,15 +175,15 @@ class _ImportSourceSectionWidgetState
     }
     if (draft.source == null) {
       return [
-        MxCard(
-          child: MxEmptyState(
-            icon: AppIcons.fileUp,
-            title: l10n.importPickTitle,
-            body: l10n.importPickBody,
-            isCompact: true,
-            actionLabel: l10n.importPickAction,
-            onAction: widget.onChooseFile,
-          ),
+        // MxEmptyState draws its own surface (critique 2026-09-30 part 3d-2,
+        // E10).
+        MxEmptyState(
+          icon: AppIcons.fileUp,
+          title: l10n.importPickTitle,
+          body: l10n.importPickBody,
+          isCompact: true,
+          actionLabel: l10n.importPickAction,
+          onAction: widget.onChooseFile,
         ),
         ..._helper(l10n),
       ];

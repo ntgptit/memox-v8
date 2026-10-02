@@ -68,12 +68,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.grouped),
-        MxSection(
-          note: preview.total > shown.length
-              ? l10n.importShowingFirst(shown.length, preview.total)
-              : null,
-          children: [for (final row in shown) ImportPreviewRowWidget(row: row)],
-        ),
+        // Before the rows it governs (critique 2026-09-30 part 3d-2, E10).
         if (preview.duplicates > 0)
           MxSection(
             children: [
@@ -89,6 +84,12 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               ),
             ],
           ),
+        MxSection(
+          note: preview.total > shown.length
+              ? l10n.importShowingFirst(shown.length, preview.total)
+              : null,
+          children: [for (final row in shown) ImportPreviewRowWidget(row: row)],
+        ),
       ],
     );
   }
