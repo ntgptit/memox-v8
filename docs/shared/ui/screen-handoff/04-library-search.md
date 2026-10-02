@@ -11,8 +11,8 @@ and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-sear
 |---|---|---|
 | App bar | `MxAppBar` with its title-widget slot | Back, then `MxSearchField` (focused on entry), hint "Search decks, cards, tags". No title. |
 | Empty query | label, `MxCard` of `MxListRow`s, `MxNote` | No query runs (BR-SEARCH-003). "SEARCH FINDS"; three read-only hint rows: "a deck name" / "TOPIK, Học qua phim", "a card term or meaning" / "학생, học sinh, homework", "a tag name" / "verb, Học"; note "Case does not matter, accents do: “hoc” will not find “học”. Examples, hints and pronunciation are not searched." |
-| Searching | label, skeleton groups | "Searching for “{query}”…", then two groups, each a short header bar and three skeleton rows inside an `MxCard`. |
-| Results | label, group headers, `MxCard`s of `MxListRow`s | "Results for “{query}”"; group **Decks** then group **Cards** (BR-SEARCH-005), a group with no row has no header; each header counts the rows loaded, "{n}+" on the last group while another page follows. Deck row: tile by content type, name with the match emphasised, "{path} · holds cards / sub-decks / empty", chevron. Card row: card tile, "{front} · {back}" with the match emphasised in the face that holds it, a sub-line with the matched tag's `MxTagChip` when the card was found by a tag only, then the deck path; chevron; opens the card detail. |
+| Searching | label, skeleton groups | "Searching…" (no query: the field shows it, and user data is never upper-cased), then two groups, each a short header bar and three skeleton rows inside an `MxCard`. |
+| Results | group headers, `MxCard`s of `MxListRow`s | No header repeats the query (critique 2026-09-30 part 2); group **Decks** then group **Cards** (BR-SEARCH-005), a group with no row has no header; each header counts the rows loaded, "{n}+" on the last group while another page follows. Deck row: tile by content type, name with the match emphasised, "{path} · holds cards / sub-decks / empty", chevron. Card row: card tile, "{front} · {back}" with the match emphasised in the face that holds it, a sub-line with the matched tag's `MxTagChip` when the card was found by a tag only, then the deck path; chevron; opens the card detail. |
 | More | `MxButton` (secondary, block) | "Load more results" while another page follows (BR-SEARCH-007), busy while it reads. |
 | Footer | caption | "Decks first, then cards · case-insensitive, accents matter". |
 | No results | `MxEmptyState` (neutral, compact) | Search-off glyph; "No matches for “{query}”" / "Accents matter — “hoc” does not find “học”. Search covers deck names, card terms and meanings, and tag names." |
@@ -42,4 +42,4 @@ Nothing pending since FE-A10.
 - **Spec D26:** group labels are `MxListSectionHeader` without a glyph, with the count as a neutral `MxBadge` at the end.
 - The match is emphasised with `rowTitleMatch` (primary, 700) and no background mark.
 - The field in the app bar is `MxSearchField` at its 52 input floor inside the 56 bar.
-
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** no header repeats the query (the field shows it, and user data is never upper-cased); Decks and Cards stay section labels.

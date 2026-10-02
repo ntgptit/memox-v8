@@ -61,7 +61,7 @@ class CardDeckSummaryWidget extends StatelessWidget {
                       Text(
                         overline.toUpperCase(),
                         semanticsLabel: overline,
-                        style: styles.compactOverline,
+                        style: styles.eyebrow,
                       ),
                       Text(
                         l10n.cardMasteredOf(states.mastered, total),

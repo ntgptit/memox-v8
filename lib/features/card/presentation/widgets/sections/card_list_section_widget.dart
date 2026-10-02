@@ -26,6 +26,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_tool
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -36,7 +37,8 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// A deck's cards (screen 07, UC-CARD-001): the search the app bar reveals,
-/// the deck summary, the filters, "Showing n of total" with the sort, then
+/// the deck summary, the filters, the header ("Cards", or "Showing n of
+/// total" while narrowed) with the sort, then
 /// one card per row. A long-press starts selection: the app bar turns into
 /// the selection header (spec A14) and the bulk bar shows.
 class CardListSectionWidget extends ConsumerStatefulWidget {
@@ -95,7 +97,15 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// Ruling E-L6: the last Flag failed; the selection stays. Flag's sheet
   /// closes before the write, so the section says so; Move, Tag and Delete
   /// keep their overlay open and say it there.
-  var _hasBulkFailed = false;
+  /// The flag write that failed, kept so Retry repeats it as it was
+  /// (critique 2026-09-30 part 3d-1); null when nothing failed.
+  (Set<String>, bool)? _failedFlag;
+
+  /// A flag write is running: Retry spins and the bulk bar holds still
+  /// (critique 2026-09-30 part 3d-2).
+  var _isFlagging = false;
+
+  bool get _hasBulkFailed => _failedFlag != null;
 
   @override
   void dispose() {
@@ -126,18 +136,27 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     _selection().clear();
   }
 
-  /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
-  /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6).
   Future<void> _flag(Set<String> cardIds) async {
-    setState(() => _hasBulkFailed = false);
+    setState(() => _failedFlag = null);
     final isFlagged = await showCardFlagSheet(context);
     if (isFlagged == null || !mounted) return;
+    await _writeFlag(cardIds, isFlagged);
+  }
+
+  /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
+  /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6), and
+  /// Retry repeats it (critique 2026-09-30 part 3d-1), the banner staying
+  /// while it runs (part 3d-2).
+  Future<void> _writeFlag(Set<String> cardIds, bool isFlagged) async {
+    if (_isFlagging) return;
+    setState(() => _isFlagging = true);
     try {
       final outcome = await ref
           .read(cardActionsControllerProvider.notifier)
           .setFlagged(cardIds: cardIds, isFlagged: isFlagged);
       if (!mounted) return;
       final l10n = context.l10n;
+      setState(() => _failedFlag = null);
       switch (outcome) {
         case Ok():
           _selection().clear();
@@ -152,7 +171,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       }
     } on Failure {
       if (!mounted) return;
-      setState(() => _hasBulkFailed = true);
+      setState(() => _failedFlag = (cardIds, isFlagged));
+    } finally {
+      if (mounted) setState(() => _isFlagging = false);
     }
   }
 
@@ -160,7 +181,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// landed. The section may be gone by then (the deck emptied), hence the
   /// `mounted` check.
   Future<void> _clearAfter(Future<bool> write) async {
-    setState(() => _hasBulkFailed = false);
+    setState(() => _failedFlag = null);
     if (await write && mounted) _selection().clear();
   }
 
@@ -245,6 +266,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     ref.listen(cardSearchOpenProvider(widget.deckId), _onSearchOpen);
+    // A failed flag belongs to the selection it was made on; once that
+    // changes, Retry would write other cards (critique 2026-09-30 part 3d-1,
+    // final review).
+    ref.listen(cardSelectionProvider(widget.deckId), (_, _) {
+      if (_failedFlag != null) setState(() => _failedFlag = null);
+    });
     final request = ref.watch(cardListRequestProvider(widget.deckId));
     final selected = ref.watch(cardSelectionProvider(widget.deckId));
     final isSelecting = selected.isNotEmpty;
@@ -316,18 +343,37 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               ),
             ),
           ),
-          if (isSelecting && _hasBulkFailed)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-              ),
-              child: MxInlineBanner(
-                tone: MxBannerTone.danger,
-                title: l10n.cardBulkFailedTitle,
-                message: l10n.cardBulkFailedBody,
-              ),
+          if (isSelecting && _hasBulkFailed) _bulkFailedBanner(),
+          if (isSelecting)
+            IgnorePointer(
+              ignoring: _isFlagging,
+              child: CardBulkBarWidget(actions: _bulkActions(selected)),
             ),
-          if (isSelecting) CardBulkBarWidget(actions: _bulkActions(selected)),
+        ],
+      ),
+    );
+  }
+
+  /// A failed bulk flag: what happened, and Retry, which spins while it
+  /// runs (critique 2026-09-30 parts 3d-1 and 3d-2).
+  Widget _bulkFailedBanner() {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      child: MxInlineBanner(
+        tone: MxBannerTone.danger,
+        title: l10n.cardBulkFailedTitle,
+        message: l10n.cardBulkFailedBody,
+        actions: [
+          if (_failedFlag case (final ids, final isFlagged))
+            MxButton(
+              label: l10n.commonRetry,
+              size: MxButtonSize.compact,
+              isLoading: _isFlagging,
+              onPressed: _isFlagging
+                  ? null
+                  : () => unawaited(_writeFlag(ids, isFlagged)),
+            ),
         ],
       ),
     );
@@ -358,11 +404,14 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           ),
         ),
       if (!isSelecting) ...[
-        CardDeckSummaryWidget(
-          view: view,
-          algorithm: widget.algorithm,
-          onStudy: widget.onStudy,
-        ),
+        // Search keeps the filters but not the summary, so the first
+        // results sit above the keyboard (critique 2026-09-30 part 1).
+        if (!isSearchOpen)
+          CardDeckSummaryWidget(
+            view: view,
+            algorithm: widget.algorithm,
+            onStudy: widget.onStudy,
+          ),
         CardListToolbarWidget(
           deckId: widget.deckId,
           request: request,
@@ -370,18 +419,20 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           onFilter: _show,
         ),
       ],
-      MxListSectionHeader(
-        label: isSelecting
-            ? l10n.cardSelectedOf(selected.length, total)
-            : l10n.cardShowingOf(view.items.length, total),
-        trailing: isSelecting
-            ? null
-            : MxChipTrigger(
-                label: l10n.cardSort(request.sort),
-                icon: AppIcons.sort,
-                onPressed: () => _sort(request),
-              ),
-      ),
+      // A number is stated once (critique 2026-09-30 part 3b): the chips
+      // count every filter, so the header names the list unless something
+      // narrows it; while selecting the app bar holds the count.
+      if (!isSelecting)
+        MxListSectionHeader(
+          label: request.isNarrowed
+              ? l10n.cardShowingOf(total, view.statusCounts.total)
+              : l10n.cardListHeader,
+          trailing: MxChipTrigger(
+            label: l10n.cardSort(request.sort),
+            icon: AppIcons.sort,
+            onPressed: () => _sort(request),
+          ),
+        ),
       if (view.items.isEmpty)
         CardListEmptyWidget(
           request: request,

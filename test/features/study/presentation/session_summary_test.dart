@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
@@ -25,9 +30,11 @@ Future<void> _pump(
   SummaryOutcome outcome, {
   VoidCallback? onDone,
   VoidCallback? onStudyDeck,
+  double textScale = 1,
 }) => pumpLibraryScreen(
   tester,
   env,
+  textScale: textScale,
   SessionSummaryWidget(
     view: view,
     outcome: outcome,
@@ -37,8 +44,8 @@ Future<void> _pump(
 );
 
 void main() {
-  libraryTest('a finished review: title, body and three stats, stated once: no '
-      'fact list repeats them (handoff 21 loaded; critique 2026-09-30, R3)', (
+  libraryTest('a finished review: the body states the count; the one tile is '
+      'wrong turns, explained (critique 2026-09-30 part 3c-1, R3)', (
     tester,
     env,
   ) async {
@@ -68,12 +75,9 @@ void main() {
         ))
           (tile.label, tile.value),
       ],
-      [
-        (_en.summaryStatReviewed, '20'),
-        (_en.summaryStatAnswered, '20'),
-        (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
-      ],
+      [(_en.summaryStatWrong, _en.summaryWrongOf(3, 23))],
     );
+    expect(find.text(_en.summaryWrongExplained), findsOneWidget);
     expect(find.byType(MxListRow), findsNothing);
     expect(find.text(_en.summaryFactsHeader.toUpperCase()), findsNothing);
 
@@ -107,6 +111,47 @@ void main() {
     expect(find.text(_en.summaryLeftEarlyLearningBody(4, 8)), findsOneWidget);
     expect(find.text(_en.summaryFactLearned), findsNothing);
     expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
+    // Answered (9) differs from the 4 learned, so it has a tile.
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          tile.label,
+      ],
+      [_en.summaryStatAnswered, _en.summaryStatWrong],
+    );
+  });
+
+  libraryTest('a clean learning session: answered equals learned, so only '
+      'wrong turns show, with no explanation at zero (critique 2026-09-30 '
+      'part 3c-1, R3)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        kind: SessionKind.learning,
+        summary: const SessionSummary(
+          cardCount: 12,
+          learnedCardCount: 12,
+          wrongTurnCount: 0,
+          answeredCardCount: 12,
+          turnCount: 12,
+          cardLimit: 20,
+        ),
+      ),
+      SummaryOutcome.learningFinished,
+    );
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          (tile.label, tile.value),
+      ],
+      [(_en.summaryStatWrong, _en.summaryWrongOf(0, 12))],
+    );
+    expect(find.text(_en.summaryWrongExplained), findsNothing);
   });
 
   libraryTest('an ended or failed session draws no stats and offers no '
@@ -141,6 +186,13 @@ void main() {
 
     expect(find.byType(MxListRow), findsNothing);
     expect(find.text(_en.summaryNoteHistory), findsOneWidget);
+    // The footer hides Study this deck here, so the copy points to Done
+    // (critique 2026-09-30 part 3c-1).
+    expect(find.text(_en.summarySchedulerChangedBody), findsOneWidget);
+    expect(
+      _en.summarySchedulerChangedBody,
+      contains('Done takes you back to the deck'),
+    );
   });
 
   libraryTest('a session that ended before its first turn draws neither '
@@ -258,5 +310,75 @@ void main() {
     expect(pair.trailingFlex, 6);
     expect(pair.leading!.label, _en.studyThisDeck);
     expect(pair.leading!.isSingleLine, isTrue);
+  });
+
+  libraryTest('a short summary sits centred above the footer (critique '
+      '2026-09-30 part 3c-1, R4)', (tester, env) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+    final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
+    final bar = tester.getRect(find.byType(MxAppBar));
+    final footer = tester.getRect(find.byType(MxFooterBar));
+    final spaceCentre = (bar.bottom + footer.top) / 2;
+    expect((hero.center.dy - spaceCentre).abs(), lessThan(AppSpacing.gutter));
+  });
+
+  libraryTest('a long summary still scrolls from the top, clipping nothing', (
+    tester,
+    env,
+  ) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(),
+      SummaryOutcome.reviewFinished,
+      textScale: 2,
+    );
+    final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
+    final bar = tester.getRect(find.byType(MxAppBar));
+    expect(hero.top - bar.bottom, lessThan(AppSpacing.section));
+    expect(tester.takeException(), isNull);
+  });
+
+  libraryTest("an interrupted session's body states no count, so the finished "
+      'tile stays (critique 2026-09-30 part 3c-1 review, R3)', (
+    tester,
+    env,
+  ) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        status: SessionStatus.abandoned,
+        reason: SessionEndReason.interrupted,
+      ),
+      SummaryOutcome.interrupted,
+    );
+    expect(
+      [
+        for (final tile in tester.widgetList<MxStatTile>(
+          find.byType(MxStatTile),
+        ))
+          (tile.label, tile.value),
+      ],
+      [
+        (_en.summaryStatReviewed, '20'),
+        (_en.summaryStatWrong, _en.summaryWrongOf(3, 23)),
+      ],
+    );
+  });
+
+  libraryTest('the overline keeps the deck name as typed and reads the plain '
+      'sentence (critique 2026-09-30 part 2, P4)', (tester, env) async {
+    await _pump(tester, env, summaryView(), SummaryOutcome.reviewFinished);
+
+    final overline = find.text('REVIEW SESSION · Nhà hàng');
+    expect(overline, findsOneWidget);
+    expect(find.text('REVIEW SESSION · NHÀ HÀNG'), findsNothing);
+    final text = tester.widget<Text>(overline);
+    expect(text.style, tester.element(overline).textStyles.eyebrow);
+    expect(
+      text.semanticsLabel,
+      _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),
+    );
   });
 }

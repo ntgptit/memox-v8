@@ -62,6 +62,9 @@ class StudyOptionsFormWidget extends ConsumerWidget {
     final isSaving = ref.watch(
       studyOptionsControllerProvider(deckId).select((s) => s.isSaving),
     );
+    final save = ref.watch(
+      studyOptionsControllerProvider(deckId).select((s) => s.save),
+    );
     // While Save runs the controls keep their look, as the kit draws it;
     // the controller ignores them until it ends (A4).
     final isEditable = !form.isUsingAppDefaults;
@@ -79,6 +82,19 @@ class StudyOptionsFormWidget extends ConsumerWidget {
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.studyOptionsUnreadable,
+          ),
+          const SizedBox(height: AppSpacing.gutter),
+        ],
+        if (save == StudyOptionsSave.failed) ...[
+          // A failed save leads the page, not a muted caption (critique
+          // 2026-09-30 part 3d-1); the footer keeps Retry save.
+          MxInlineBanner(
+            tone: MxBannerTone.danger,
+            title: l10n.studyOptionsNotSavedTitle,
+            message: l10n.studyOptionsSaveFailed(
+              stored.options.cardLimit,
+              studyOptionsOrderName(l10n, stored.options.newCardOrder),
+            ),
           ),
           const SizedBox(height: AppSpacing.gutter),
         ],

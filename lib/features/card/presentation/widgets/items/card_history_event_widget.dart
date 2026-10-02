@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -29,10 +28,12 @@ class CardHistoryEventWidget extends StatelessWidget {
     final action = entry.action;
     final isLapse =
         action == EightBoxAction.forgotten || action == Sm2Action.again;
+    // A right answer is success, never mastery or the action Indigo
+    // (DESIGN.md; critique 2026-09-30 tone pass, T5).
     final (tone, icon) = switch (entry.kind) {
       _ when isLapse => (MxBadgeTone.warning, AppIcons.lapses),
       ReviewKind.relearning => (MxBadgeTone.neutral, AppIcons.repeat),
-      _ => (MxBadgeTone.primary, AppIcons.check),
+      _ => (MxBadgeTone.success, AppIcons.check),
     };
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.control),
@@ -47,20 +48,21 @@ class CardHistoryEventWidget extends StatelessWidget {
               spacing: AppSpacing.control,
               runSpacing: AppSpacing.micro,
               children: [
-                // The badge holds the short kind only: it never wraps, so
-                // the action beside it can at large text sizes.
+                // The badge is the outcome its tone states, short enough
+                // never to wrap; the kind is text beside it and can (critique
+                // 2026-09-30 part 3d-2, E9).
                 Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: AppSpacing.control,
                   runSpacing: AppSpacing.micro,
                   children: [
                     MxBadge(
-                      label: l10n.cardHistoryKind(entry.kind),
+                      label: l10n.cardHistoryAction(action),
                       tone: tone,
                       icon: icon,
                     ),
                     Text(
-                      l10n.cardHistoryAction(action),
+                      l10n.cardHistoryKind(entry.kind),
                       style: context.textStyles.rowTitle,
                     ),
                   ],
@@ -77,8 +79,10 @@ class CardHistoryEventWidget extends StatelessWidget {
               spacing: AppSpacing.grouped,
               runSpacing: AppSpacing.micro,
               children: [
-                for (final (icon, text) in _meta(l10n, locale))
-                  _Meta(icon: icon, text: text),
+                // Text only: the badge is the event's one glyph (critique
+                // 2026-09-30 part 3d-2, E9).
+                for (final text in _meta(l10n, locale))
+                  Text(text, style: context.textStyles.rowDescription),
               ],
             ),
           ],
@@ -88,48 +92,26 @@ class CardHistoryEventWidget extends StatelessWidget {
   }
 
   /// Only what the row stored; before → after only when both are stored.
-  List<(IconData, String)> _meta(AppLocalizations l10n, String locale) {
+  List<String> _meta(AppLocalizations l10n, String locale) {
     final ease = NumberFormat(_easePattern, locale).format;
     return [
-      (AppIcons.study, l10n.cardHistoryMode(entry.mode)),
+      l10n.cardHistoryMode(entry.mode),
       if ((entry.previousBox, entry.nextBox) case (final from?, final to?))
-        (AppIcons.progress, l10n.cardHistoryBoxMove(from, to)),
+        l10n.cardHistoryBoxMove(from, to),
       if ((entry.previousEaseFactor, entry.nextEaseFactor) case (
         final from?,
         final to?,
       ))
-        (AppIcons.progress, l10n.cardHistoryEaseMove(ease(from), ease(to))),
+        l10n.cardHistoryEaseMove(ease(from), ease(to)),
       if ((entry.previousIntervalDays, entry.nextIntervalDays) case (
         final from?,
         final to?,
       ))
-        (AppIcons.calendar, l10n.cardHistoryIntervalMove(from, to)),
-      if (entry.usedHint ?? false) (AppIcons.hint, l10n.cardHistoryHintUsed),
-      if (entry.isTimedOut) (AppIcons.timeout, l10n.cardHistoryTimedOut),
+        l10n.cardHistoryIntervalMove(from, to),
+      if (entry.usedHint ?? false) l10n.cardHistoryHintUsed,
+      if (entry.isTimedOut) l10n.cardHistoryTimedOut,
       if (entry.nextDueAt case final due?)
-        (
-          AppIcons.calendar,
-          l10n.cardHistoryNextDue(
-            DateFormat.MMMd(locale).format(due.toLocal()),
-          ),
-        ),
+        l10n.cardHistoryNextDue(DateFormat.MMMd(locale).format(due.toLocal())),
     ];
   }
-}
-
-class _Meta extends StatelessWidget {
-  const _Meta({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    spacing: AppSpacing.micro,
-    children: [
-      Icon(icon, size: AppIconSize.inline),
-      Flexible(child: Text(text, style: context.textStyles.rowDescription)),
-    ],
-  );
 }

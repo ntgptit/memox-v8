@@ -14,11 +14,11 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 | Region | Widget | Design |
 |---|---|---|
-| Top bar | `MxStudyTopBar` | Mastery accent (ruled in 16). |
+| Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8). |
 | Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
 | Prompt face | `StudyFaceCard` | The card's meaning. |
 | Answer face | `StudyFaceCard` (`role: answer`); the typed text itself: `MxTextField` (borderless, no visible chrome, the study answer text style) — its style comes from `MxTextStyles`, settled in the FE-A6 plan against the no-per-site-text-styling guard | `input`/`hint`: what has been typed so far with a blinking caret. `wrong`: the typed answer struck through, the correct term below it, tagged "Wrong · comes back next round" (see Rulings). |
-| Hint row | inline row inside the answer face, shown only in `hint` | Lightbulb glyph + the card's own hint text; only offered when the card has one (BR-STUDY-028). |
+| Hint row | inline row inside the answer face, shown only in `hint`, its line reserved from the start (3c-2 R4) | Lightbulb glyph + the card's own hint text; only offered when the card has one (BR-STUDY-028). |
 | CTA row | `StudyCtaRow` | `input`: "Show hint" (only if the card has a hint) + "Check". `hint`: "Check" only. `wrong`: one "Continue" button, as wide as a two-button row (critique 2026-09-30). |
 | Footer hint | `SessionFooterHint` | Varies by state; see Copy. |
 
@@ -58,6 +58,8 @@ until Continue, the typed text struck through in the error ink beside the right 
 - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read "Wrong · comes back next round": a wrong `fill` row leaves the current round and is enrolled exactly once in the next one.
 - **P4:** the prompt uses the study passage role at 16, and both faces carry their "Meaning" and "Term" labels in flow.
 - No card can be edited mid-session, so the prompt face has no edit button.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
+- **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** Continue after a wrong answer settles for 400 ms (R1); the card's hint is the study detail role with its line reserved (R4); the bar is Indigo (R8).
 
 ## Accessibility
 

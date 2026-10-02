@@ -195,14 +195,20 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   void _dismissNote(String key) =>
       unawaited(ref.read(dismissedNoteStoreProvider).dismiss(key));
 
-  /// The note, the filters with their counts (A6, none while selecting),
-  /// the header, the rows, then why the other kind waits and what a purge
-  /// skipped (spec D6).
+  /// The note, then why the other kind waits and what a purge skipped
+  /// (spec D6; above the rows, critique 2026-09-30 part 3d-1, D4), the
+  /// filters with their counts (A6, none while selecting), the header, then
+  /// the rows.
   List<Widget> _list(AppLocalizations l10n, List<TrashEntry> entries) {
     final state = ref.watch(trashControllerProvider);
     final now = ref.watch(dayClockProvider).now();
     final shown = entries.where(state.filter.accepts).toList();
     final kind = state.kindIn(entries);
+    final notices = [
+      if (kind != null) MxNote(text: l10n.trashKindLock),
+      for (final note in _blockedNotes(l10n, state, entries))
+        MxInlineBanner(tone: MxBannerTone.warning, message: note),
+    ];
     return [
       const SizedBox(height: AppSpacing.control),
       // Read before selecting; the selection gives the list the room.
@@ -216,6 +222,12 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         ),
         const SizedBox(height: AppSpacing.grouped),
       ],
+      // Why the other kind waits and what a purge skipped, above the rows
+      // they are about (critique 2026-09-30 part 3d-1, D4).
+      for (final notice in notices) ...[
+        notice,
+        const SizedBox(height: AppSpacing.grouped),
+      ],
       if (!state.isSelecting)
         _Filters(
           selected: state.filter,
@@ -223,7 +235,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           onSelected: _trash().chooseFilter,
         ),
       MxListSectionHeader(
-        label: _header(l10n, state, shown, kind),
+        label: _header(l10n, shown, kind),
         isAfterFilterBand: !state.isSelecting,
       ),
       for (final entry in shown)
@@ -244,27 +256,21 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
               : () => _trash().toggle(entry, entries),
           onActions: () => unawaited(_openActions(entry)),
         ),
-      if (kind != null) MxNote(text: l10n.trashKindLock),
-      for (final note in _blockedNotes(l10n, state, entries))
-        Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.control),
-          child: MxInlineBanner(tone: MxBannerTone.warning, message: note),
-        ),
     ];
   }
 
   String _header(
     AppLocalizations l10n,
-    TrashState state,
     List<TrashEntry> shown,
     TrashKind? kind,
   ) {
     int total(TrashKind of) =>
         shown.where((entry) => TrashKind.of(entry) == of).length;
-    final count = state.countIn(shown);
+    // While selecting, the title states the selection and the header the
+    // kind's total: each number once (critique 2026-09-30 part 3b).
     return switch (kind) {
-      TrashKind.card => l10n.trashSelectedOfCards(count, total(TrashKind.card)),
-      TrashKind.deck => l10n.trashSelectedOfDecks(count, total(TrashKind.deck)),
+      TrashKind.card => l10n.trashCardsHeader(total(TrashKind.card)),
+      TrashKind.deck => l10n.trashDecksHeader(total(TrashKind.deck)),
       null => l10n.trashEntriesHeader(shown.length),
     };
   }

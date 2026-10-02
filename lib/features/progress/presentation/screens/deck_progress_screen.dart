@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,6 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// Screen 22 inside a deck (UC-PROGRESS-002 at a deck's level): the deck's
 /// path, the range, the deck's total and a row per direct child, each
@@ -80,7 +80,10 @@ class DeckProgressScreen extends ConsumerWidget {
         children: [
           const ProgressRangeWidget(),
           const SizedBox(height: AppSpacing.gutter),
-          MxSkeletonList(semanticLabel: l10n.progressLoading),
+          ProgressSkeletonWidget(
+            semanticLabel: l10n.progressLoading,
+            hasSummary: false,
+          ),
         ],
       ),
     };

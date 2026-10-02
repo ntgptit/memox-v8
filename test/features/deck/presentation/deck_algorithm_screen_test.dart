@@ -343,11 +343,30 @@ void main() {
 
   test('plain copy for the study caption and the wrong-turns stat '
       '(critique 2026-09-30)', () {
-    expect(
-      _en.studyEntryOverline('SM-2', 20),
-      'SM-2 · up to 20 cards per session',
-    );
+    expect(_en.studyEntryLimit(20), 'Up to 20 cards per session');
     expect(_en.summaryStatWrong, 'Wrong turns');
     expect(_en.summaryWrongOf(3, 23), '3 of 23');
+  });
+
+  libraryTest('the unlocked strip is a plain card; the locked one warning '
+      '(critique 2026-09-30 part 3d-2, E5)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+    MxCard strip() => tester.widget<MxCard>(
+      find.descendant(
+        of: find.byType(DeckLockStripWidget),
+        matching: find.byType(MxCard),
+      ),
+    );
+    expect(strip().isHero, isFalse);
+    expect(strip().isWarning, isFalse);
+
+    await lockScheduler(env.db, korean.id);
+    await tester.pumpAndSettle();
+    expect(strip().isWarning, isTrue);
   });
 }

@@ -59,9 +59,12 @@ class UsersListWidget extends ConsumerWidget {
               tone: MxEmptyStateTone.neutral,
               isCompact: true,
             ),
+            // A network failure keeps the cloud-off glyph (critique
+            // 2026-09-30 part 1).
             UsersLoadFailure.offline => MxErrorState(
               title: l10n.usersOfflineTitle,
               body: l10n.usersOfflineBody,
+              icon: AppIcons.offline,
               retryLabel: l10n.commonRetry,
               onRetry: controller.retry,
             ),

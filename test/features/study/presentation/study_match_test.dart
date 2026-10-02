@@ -44,6 +44,23 @@ StudyChoiceWidget _tile(WidgetTester tester, String text) =>
       ),
     );
 
+Color? _groundOf(WidgetTester tester, String text) =>
+    (tester
+                .widget<DecoratedBox>(
+                  find
+                      .descendant(
+                        of: find.ancestor(
+                          of: find.text(text),
+                          matching: find.byType(StudyChoiceWidget),
+                        ),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration)
+        .color;
+
 Future<void> _pair(WidgetTester tester, String term, String meaning) async {
   await tester.tap(find.text(term));
   await tester.pump();
@@ -65,7 +82,7 @@ void main() {
       tester.getCenter(find.text('term 1')).dx,
       lessThan(tester.getCenter(find.text('apple')).dx),
     );
-    expect(find.text(_en.studyMatchHint), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
   });
 
   libraryTest('a term, then its meaning: both are matched, in the success '
@@ -116,7 +133,7 @@ void main() {
     // The same cards' other sides are not part of the wrong pair.
     expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
-    expect(find.text(_en.studyMatchHintWrong), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHintWrong), findsOneWidget);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
       contains(_en.studyMatchHintWrong),
@@ -127,19 +144,50 @@ void main() {
 
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, StudyChoiceTone.idle);
-    expect(find.text(_en.studyMatchHint), findsOneWidget);
+    expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
     expect(await turnKindsOf(env.db, 'ST-01'), hasLength(1));
     handle.dispose();
   });
 
-  libraryTest('a meaning with no term selected does nothing; a second term '
-      're-selects (M1)', (tester, env) async {
+  libraryTest('a meaning first, then its term: the pair is matched and '
+      'answered on the term (BR-STUDY-062; critique 2026-09-30 part 3c-2, '
+      'R3)', (tester, env) async {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
 
     await tester.tap(find.text('apple'));
     await tester.pump();
+    expect(_tile(tester, 'apple').tone, StudyChoiceTone.selected);
+
+    await tester.tap(find.text('term 1'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.right);
+    expect(_tile(tester, 'apple').tone, StudyChoiceTone.right);
+    expect(await turnKindsOf(env.db, 'ST-01'), isNotEmpty);
+  });
+
+  libraryTest('a second meaning moves the selection (R3)', (tester, env) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text('apple'));
+    await tester.pump();
+    await tester.tap(find.text('banana'));
+    await tester.pump();
+
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'banana').tone, StudyChoiceTone.selected);
+    expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+  });
+
+  libraryTest('a second term moves the selection (M1, R3)', (
+    tester,
+    env,
+  ) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
@@ -149,6 +197,43 @@ void main() {
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'term 2').tone, StudyChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+  });
+
+  libraryTest('a meaning, then the wrong term: both flash wrong, the turn is '
+      "the term's, and nothing stays selected (Review Focus 3)", (
+    tester,
+    env,
+  ) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text('apple'));
+    await tester.pump();
+    await tester.tap(find.text('term 2'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.wrong);
+    expect(_tile(tester, 'apple').tone, StudyChoiceTone.wrong);
+    expect(await turnKindsOf(env.db, 'ST-02'), isNotEmpty);
+    expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
+
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
+  });
+
+  libraryTest('idle meanings are recessed, idle terms raised (R3)', (
+    tester,
+    env,
+  ) async {
+    final id = await _match(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    final scheme = Theme.of(tester.element(find.text('apple'))).colorScheme;
+
+    expect(_groundOf(tester, 'apple'), scheme.surfaceContainerLow);
+    expect(_groundOf(tester, 'term 1'), scheme.surfaceContainerLowest);
   });
 
   libraryTest('tiles take no tap while a wrong pair flashes (BR-STUDY-004)', (

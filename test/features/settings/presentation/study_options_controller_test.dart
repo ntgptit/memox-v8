@@ -181,10 +181,16 @@ void main() {
     expect(_state(rig).cardLimit, 21);
     expect((await _stored(rig)).source, StudyOptionsSource.appDefaults);
 
+    // An edit keeps the failure in view until a save lands (critique
+    // 2026-09-30 part 3d-2, E13).
+    _controller(rig).stepCardLimit(1);
+    expect(_state(rig).save, StudyOptionsSave.failed);
+    expect(_state(rig).cardLimit, 22);
+
     rig.store.isFailing = false;
     await _controller(rig).save();
     await _settled();
-    expect((await _stored(rig)).options.cardLimit, 21);
+    expect((await _stored(rig)).options.cardLimit, 22);
     expect(_state(rig).save, StudyOptionsSave.idle);
   });
 

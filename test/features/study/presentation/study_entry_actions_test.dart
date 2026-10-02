@@ -12,6 +12,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
@@ -36,7 +37,7 @@ void main() {
     tester,
     env,
   ) async {
-    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 2);
     String? opened;
     await pumpLibraryScreen(
       tester,
@@ -84,6 +85,13 @@ void main() {
     );
     expect(termFirst.isSelected, isTrue);
     expect(find.text(_en.studyDirectionNote), findsOneWidget);
+    // The lock leads, above the options (BR-MODE-017; critique 2026-09-30
+    // part 3c-1).
+    expect(_en.studyDirectionNote, startsWith("The direction can't change"));
+    expect(
+      tester.getTopLeft(find.text(_en.studyDirectionNote)).dy,
+      lessThan(tester.getTopLeft(find.text(_en.studyDirectionTermFirst)).dy),
+    );
 
     await tester.tap(find.text(_en.studyDirectionMeaningFirst));
     await tester.pump();
@@ -139,6 +147,26 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(opened, isNotNull);
+  });
+
+  libraryTest('a failed start beside an open session keeps one primary '
+      '(final review, critique 2026-09-30 part 1)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 1);
+    await env.entries.openLearningSession(deckId: leaf);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+    env.entries.isFailing = true;
+
+    // The row's Learn starts directly (no direction sheet).
+    await tester.tap(_button(_en.studyEntryLearn));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyEntryStartFailedTitle), findsOneWidget);
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryTryAgain)).tone,
+      MxButtonTone.outline,
+    );
+    expectOnePrimaryPerDecision(tester);
   });
 
   libraryTest('a start the counts no longer allow is refused with the '
@@ -197,10 +225,30 @@ void main() {
       0,
     );
 
+    // An open session leads with Continue; the footer yields (critique
+    // 2026-09-30 part 1).
+    expect(
+      tester.widget<MxButton>(_button(_en.studyEntryReviewInstead)).tone,
+      MxButtonTone.outline,
+    );
+    expectOnePrimaryPerDecision(tester);
+
     await tester.tap(_button(_en.studyEntryContinue));
     await tester.pumpAndSettle();
 
     expect(opened, sessionId);
+  });
+
+  libraryTest('resume with only new cards keeps one primary', (
+    tester,
+    env,
+  ) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryContinue), findsOneWidget);
+    expectOnePrimaryPerDecision(tester);
   });
 
   libraryTest('while a session opens every action is locked and the footer '
@@ -244,9 +292,11 @@ void main() {
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeMatch, 5)),
+      find.text(_en.studyEntryModeCaption(_en.cardModeMatch)),
       findsOneWidget,
     );
+    // The start button states the count (R5, critique 2026-09-30 part 3b).
+    expect(find.textContaining('5 due cards ·'), findsNothing);
 
     await tester.tap(find.text(_en.cardModeGuess));
     await tester.pump();
@@ -254,7 +304,7 @@ void main() {
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeGuess, 5)),
+      find.text(_en.studyEntryModeCaption(_en.cardModeGuess)),
       findsOneWidget,
     );
 
@@ -290,5 +340,22 @@ void main() {
     );
     gate.complete();
     await tester.pumpAndSettle();
+  });
+
+  libraryTest('with only new cards Learn is offered once, in the footer '
+      '(critique 2026-09-30 part 3d-1, D2)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryLearn), findsNothing);
+    expect(_button(_en.studyEntryLearnCta(2)), findsOneWidget);
+  });
+
+  libraryTest('with a review in the footer the Learn row keeps its button '
+      '(D2; Review Focus 1)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2, dueCards: 2);
+    await pumpLibraryScreen(tester, env, _screen(leaf));
+
+    expect(_button(_en.studyEntryLearn), findsOneWidget);
   });
 }

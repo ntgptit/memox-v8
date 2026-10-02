@@ -1,6 +1,6 @@
 <!-- Hand-written screen record. -->
 
-# 16a · Study · Self-check
+# 16a · Study · Self-assess
 
 The `self_assess` session: `sm2`'s review mode, and the second stage of an `sm2`
 learning session (BR-MODE-004). Shaped by Impeccable before the plan: this file is its
@@ -18,8 +18,8 @@ with the prompt, and no grade should ever be committed by accident.
 
 | Region | Widget | Design |
 |---|---|---|
-| Top bar | `MxStudyTopBar` | Close, mode badge "Self-check", counter "{n} / {total}". Shared with 16–20 (see [16](16-study-browse.md#shared-by-the-session-screens)). |
-| Context line | as 16–20 | "{deck} · Review · Self-check" (learning session: "Learn"). |
+| Top bar | `MxStudyTopBar` | Close, mode badge "Self-assess", counter "{n} / {total}". Shared with 16–20 (see [16](16-study-browse.md#shared-by-the-session-screens)). |
+| Context line | as 16–20 | "{deck} · Review · Self-assess" (learning session: "Learn"). |
 | Prompt card | the study face card (as 19's term card) | The prompt side for this queue row's direction (BR-MODE-014): the term for `korean_to_meaning`, the meaning for `meaning_to_korean`; a `mixed` row carries its own (BR-MODE-015). The whole card is a button: tapping it reveals, same as "Show answer". |
 | Answer card | the study face card, answer tone | Hidden until revealed (BR-MODE-006), then shown under the prompt; the prompt stays in place. |
 | Action area, before reveal | primary block `MxButton` | "Show answer". |
@@ -78,6 +78,8 @@ node TalkBack reads. Goldens:
 - **Plan R2:** the recessed answer face is always laid out, with a still placeholder bar until the reveal; the answer fades in inside it, so the prompt never moves.
 - **Plan R3:** while the grade is written the row takes no tap and draws no change; a local write is well under 300 ms.
 - **Plan R4:** the interval preview is read when the card is served, so the grades have it at the reveal.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
+- **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the grades settle for 400 ms after Show answer, so a double tap grades nothing (R1); they keep their rounded rectangles, as they judge rather than act (R7).
 
 ## Accessibility
 

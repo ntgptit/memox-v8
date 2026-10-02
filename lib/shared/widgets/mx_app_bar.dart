@@ -60,7 +60,10 @@ class MxAppBar extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: AppSize.appBar),
           child: Padding(
             padding: EdgeInsetsDirectional.only(
-              start: side,
+              // A bar without a leading control starts its title on the
+              // gutter, in line with the body (critique 2026-09-30 part
+              // 3c-1).
+              start: leading == null ? AppSpacing.gutter : side,
               top: holdsField ? AppSpacing.control : 0,
               end: endsOnText || holdsField ? AppSpacing.gutter : side,
               bottom: holdsField ? AppSpacing.control : 0,

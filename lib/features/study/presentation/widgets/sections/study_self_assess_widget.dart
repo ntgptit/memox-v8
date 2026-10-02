@@ -6,6 +6,7 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
@@ -17,7 +18,8 @@ import 'package:memox/shared/widgets/mx_button.dart';
 /// four grades (BR-MODE-006, BR-MODE-011). Revealing writes nothing; one
 /// grade commits the turn with no confirm (16a). The side asked comes from
 /// the card's row (BR-MODE-014); a learning session's card asks term first.
-/// The screen keys it per turn, so each turn starts unrevealed.
+/// The screen keys it per turn, so each turn starts unrevealed. Its actions
+/// settle after a swap (critique 2026-09-30 part 3c-2, R1).
 class StudySelfAssessWidget extends StatefulWidget {
   const StudySelfAssessWidget({
     super.key,
@@ -88,21 +90,24 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
             ),
           ),
         ),
-        StudyCtaRowWidget(
-          children: [
-            if (_isRevealed)
-              StudyGradeRowWidget(
-                intervals: widget.intervals,
-                isBusy: widget.isBusy,
-                onGrade: widget.onGrade,
-              )
-            else
-              MxButton(
-                label: l10n.studySelfAssessShowAnswer,
-                size: MxButtonSize.study,
-                onPressed: _reveal,
-              ),
-          ],
+        StudySettleGuardWidget(
+          phase: _isRevealed,
+          child: StudyCtaRowWidget(
+            children: [
+              if (_isRevealed)
+                StudyGradeRowWidget(
+                  intervals: widget.intervals,
+                  isBusy: widget.isBusy,
+                  onGrade: widget.onGrade,
+                )
+              else
+                MxButton(
+                  label: l10n.studySelfAssessShowAnswer,
+                  size: MxButtonSize.study,
+                  onPressed: _reveal,
+                ),
+            ],
+          ),
         ),
         SessionFooterHintWidget(
           icon: AppIcons.check,

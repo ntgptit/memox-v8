@@ -36,7 +36,7 @@ void main() {
           .borderRadius,
       BorderRadius.circular(16),
     );
-    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.offline));
+    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
     expect((glyph.size, glyph.color), (24, scheme.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
@@ -125,5 +125,37 @@ void main() {
 
     expect(tester.widget<MxButton>(find.byType(MxButton)).icon, AppIcons.close);
     expect(find.byIcon(AppIcons.retry), findsNothing);
+  });
+
+  testWidgets('a network failure passes the cloud-off glyph (critique '
+      '2026-09-30)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxErrorState(title: _title, body: _body, icon: AppIcons.offline),
+    );
+    expect(find.byIcon(AppIcons.offline), findsOneWidget);
+    expect(find.byIcon(AppIcons.alert), findsNothing);
+  });
+
+  testWidgets('a null actionIcon draws the action with no glyph (critique '
+      '2026-09-30 part 3c-2, R5)', (tester) async {
+    await pumpMx(
+      tester,
+      MxErrorState(
+        title: 'Stuck',
+        body: 'Nothing to ask',
+        retryLabel: 'Close the session',
+        onRetry: () {},
+        actionIcon: null,
+      ),
+    );
+
+    expect(
+      find.descendant(
+        of: find.widgetWithText(MxButton, 'Close the session'),
+        matching: find.byType(Icon),
+      ),
+      findsNothing,
+    );
   });
 }

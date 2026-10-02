@@ -71,6 +71,8 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               decrementLabel: l10n.reminderEarlierHour,
               incrementLabel: l10n.reminderLaterHour,
               maxDigits: _digits,
+              // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
+              minDigits: 2,
               isInvalid: _isHourInvalid,
               onDecrement: _hour > 0 ? () => setState(() => _hour--) : null,
               onIncrement: _hour < _lastHour
@@ -95,6 +97,8 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               decrementLabel: l10n.reminderEarlierMinute,
               incrementLabel: l10n.reminderLaterMinute,
               maxDigits: _digits,
+              // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
+              minDigits: 2,
               isInvalid: _isMinuteInvalid,
               onDecrement: _minute > 0 ? () => setState(() => _minute--) : null,
               onIncrement: _minute < _lastMinute

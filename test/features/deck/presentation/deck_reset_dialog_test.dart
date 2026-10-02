@@ -301,4 +301,28 @@ void main() {
     expect(find.text(_en.resetDialogTitle), findsNothing);
     expect(find.text(_en.algorithmUnlockedTitle), findsOneWidget);
   });
+
+  libraryTest('the reset confirm is warning, not the action Indigo '
+      '(critique 2026-09-30 part 3d-2, E4)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(
+      env.db,
+      id: 'a',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 30),
+    );
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+    );
+    await _openReset(tester);
+
+    final actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
+    expect(actions.isWarning, isTrue);
+    expect(actions.isDestructive, isFalse);
+  });
 }

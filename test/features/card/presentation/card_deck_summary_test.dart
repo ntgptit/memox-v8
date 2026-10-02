@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -53,6 +54,16 @@ void main() {
     expect(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
       findsOneWidget,
+    );
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester
+          .widget<Text>(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+          .style,
+      tester
+          .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+          .textStyles
+          .eyebrow,
     );
     expect(find.text(_en.cardMasteredOf(80, 420)), findsOneWidget);
     expect(
@@ -161,14 +172,17 @@ void main() {
     expect(segments, findsNothing);
   });
 
-  libraryTest('the progress label keeps the 12 overline, one line on a phone '
-      '(owner 2026-09-26, register 119)', (tester, env) async {
+  libraryTest('the progress label keeps 12, one line on a phone, now as the '
+      'eyebrow (owner 2026-09-26, register 119; critique 2026-09-30 part 2)', (
+    tester,
+    env,
+  ) async {
     await pumpLibraryScreen(tester, env, _host());
 
     final label = tester.widget<Text>(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
     );
     expect(label.style!.fontSize, 12);
-    expect(label.style!.fontWeight, FontWeight.w700);
+    expect(label.style!.fontWeight, FontWeight.w600);
   });
 }

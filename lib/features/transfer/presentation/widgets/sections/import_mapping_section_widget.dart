@@ -34,6 +34,18 @@ class ImportMappingSectionWidget extends StatelessWidget {
         : null;
     String? headerOf(int column) =>
         header != null && column < header.length ? header[column] : null;
+    // The first data row, so a column is recognised by what it holds
+    // (critique 2026-09-30 part 1): row 2 under a header, else row 1.
+    final firstData = draft.hasHeaderRow ? 1 : 0;
+    final sampleRow = table.rows.length > firstData
+        ? table.rows[firstData]
+        : null;
+    String? sampleOf(int column) {
+      if (sampleRow == null || column >= sampleRow.length) return null;
+      final cell = sampleRow[column].trim();
+      return cell.isEmpty ? null : cell;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -56,6 +68,7 @@ class ImportMappingSectionWidget extends StatelessWidget {
               ImportMappingRowWidget(
                 column: column,
                 header: headerOf(column),
+                sample: sampleOf(column),
                 field: draft.mapping.fieldByColumn[column],
                 onAssign: (field) => onAssign(column, field),
               ),

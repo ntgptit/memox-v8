@@ -5,6 +5,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -141,6 +144,17 @@ void main() {
 
     expect(find.text(_en.studyHomeDueTitle(5)), findsOneWidget);
     expect(find.textContaining(_en.studyHomeAcrossDecks(2)), findsOneWidget);
+    // A summary, not a door: no hero ground (critique 2026-09-30 part 3c-1,
+    // R2; DESIGN.md: a hero leads somewhere tappable).
+    final block = tester.widget<MxCard>(
+      find
+          .descendant(
+            of: find.byType(StudyHomeWorkloadWidget),
+            matching: find.byType(MxCard),
+          )
+          .first,
+    );
+    expect(block.isHero, isFalse);
     // Critique 2026-09-30 (BR-STUDY-068): the hero states only what is due,
     // overdue and today; new and scheduled cards are in the deck rows.
     final hero = tester.widget<MxWorkloadBreakdownLine>(
@@ -405,5 +419,29 @@ void main() {
 
     expect(find.text(_en.studyHomeTitle), findsOneWidget);
     expect(find.byType(MxListRow), findsNothing);
+  });
+
+  libraryTest('the workload block leads with an eyebrow, not the Required '
+      'style (critique 2026-09-30 part 2, P2)', (tester, env) async {
+    await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
+    await pumpLibraryScreen(tester, env, _screen(_Taps()));
+    await _settle(tester);
+
+    final waiting = find.text(_en.studyHomeWaiting.toUpperCase());
+    expect(
+      tester.widget<Text>(waiting).style,
+      tester.element(waiting).textStyles.eyebrow,
+    );
+    // The glyph follows the eyebrow, not the Required ink.
+    final glyph = find
+        .descendant(
+          of: find.byType(StudyHomeWorkloadWidget),
+          matching: find.byIcon(AppIcons.dueNow),
+        )
+        .first;
+    expect(
+      IconTheme.of(tester.element(glyph)).color,
+      tester.element(glyph).colors.onSurfaceVariant,
+    );
   });
 }

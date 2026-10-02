@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/sync/sync_status.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
@@ -33,9 +36,24 @@ class SyncStatusSectionWidget extends StatelessWidget {
         ),
         MxSettingsRow(
           label: l10n.syncWaiting,
-          subtitle: status.pendingCount == 0
-              ? l10n.syncWaitingNone
-              : l10n.syncWaitingCount(status.pendingCount),
+          // With only refused rows left, "Nothing waiting" would contradict
+          // the banner below (critique 2026-09-30 part 1).
+          subtitle: switch ((status.pendingCount, status.rejectedCount)) {
+            (0, 0) => l10n.syncWaitingNone,
+            (0, _) => l10n.syncWaitingNoneOthers,
+            (final count, _) => l10n.syncWaitingCount(count),
+          },
+          // Settled: the subtitle already says "Nothing waiting", so the
+          // check is not read out (critique 2026-09-30 tone pass, T3).
+          trailing: syncIsSettled(status)
+              ? ExcludeSemantics(
+                  child: Icon(
+                    AppIcons.check,
+                    size: AppIconSize.compact,
+                    color: context.derivedColors.successInk,
+                  ),
+                )
+              : null,
         ),
       ],
     );

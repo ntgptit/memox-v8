@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
@@ -290,6 +292,13 @@ void main() {
 
     expect(find.textContaining(_en.cardAddDetails), findsOneWidget);
     expect(find.textContaining(_en.cardAddDetailsFields), findsOneWidget);
+    // A plus, not the sparkle, which implies AI (critique 2026-09-30 3a).
+    final disclosure = find.byType(CardAddDetailsWidget);
+    expect(
+      find.descendant(of: disclosure, matching: find.byIcon(AppIcons.add)),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.auto_awesome_outlined), findsNothing);
     expect(
       tester.getSize(find.byType(CardAddDetailsWidget)).height,
       greaterThanOrEqualTo(48),
@@ -308,5 +317,44 @@ void main() {
     await tester.tap(find.byType(CardAddDetailsWidget));
     expect(opened, 1);
     handle.dispose();
+  });
+
+  libraryTest('field labels are sentence case; Required is a caption '
+      '(critique 2026-09-30 part 2, P3)', (tester, env) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        Column(
+          children: [
+            CardFieldWidget(
+              label: _en.cardFieldFront,
+              hint: _en.cardFrontHint,
+              limit: 60,
+              controller: controller,
+              isRequired: true,
+            ),
+            const _Tags(),
+          ],
+        ),
+      ),
+    );
+
+    for (final (text, role) in [
+      (_en.cardFieldFront, 'fieldLabel'),
+      (_en.cardTags, 'fieldLabel'),
+      (_en.cardRequiredLegend, 'requiredMarker'),
+    ]) {
+      final label = find.text(text);
+      final styles = tester.element(label).textStyles;
+      expect(
+        tester.widget<Text>(label).style,
+        role == 'fieldLabel' ? styles.fieldLabel : styles.requiredMarker,
+        reason: text,
+      );
+    }
+    expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);
   });
 }

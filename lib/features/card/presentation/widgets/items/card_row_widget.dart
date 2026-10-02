@@ -11,7 +11,6 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
-import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
@@ -41,23 +40,13 @@ class CardRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = item.displayStatus;
-    // The dot or the checkbox and the trailing column centre on the row
-    // (spec 2026-09-26 D4, extended by the owner 2026-09-26).
+    // The checkbox, while selecting, and the trailing column centre on the
+    // row (spec 2026-09-26 D4, extended by the owner 2026-09-26). No status
+    // dot: the status line states it once (critique 2026-09-30 part 3b, R3).
     final row = Row(
       spacing: AppSpacing.grouped,
       children: [
-        if (isSelecting)
-          MxSelectionCheckbox(isChecked: isSelected)
-        else
-          // The status line already says it: one announcement per row.
-          ExcludeSemantics(
-            child: MxStatusBadge(
-              status: mxCardStatus(status),
-              label: context.l10n.cardStatus(status),
-              isDot: true,
-            ),
-          ),
+        if (isSelecting) MxSelectionCheckbox(isChecked: isSelected),
         Expanded(child: _Content(item: item)),
         _Trailing(item: item),
       ],

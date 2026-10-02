@@ -15,8 +15,10 @@ MxStepper _stepper({
   bool isInvalid = false,
   bool isBusy = false,
   bool isEnabled = true,
+  int minDigits = 1,
 }) => MxStepper(
   value: value,
+  minDigits: minDigits,
   decrementLabel: 'Fewer cards',
   incrementLabel: 'More cards',
   onDecrement: onDecrement ?? () {},
@@ -143,5 +145,22 @@ void main() {
           .opacity,
       0.38,
     );
+  });
+
+  testWidgets('minDigits pads the value and what it reads as (critique '
+      '2026-09-30 part 3d-2, E14)', (tester) async {
+    await pumpMx(tester, _stepper(value: 5, minDigits: 2));
+    expect(find.text('05'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.value == '05',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('by default a value keeps its digits', (tester) async {
+    await pumpMx(tester, _stepper(value: 5));
+    expect(find.text('5'), findsOneWidget);
   });
 }

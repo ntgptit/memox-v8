@@ -42,7 +42,6 @@ class SearchResultsWidget extends StatelessWidget {
     return MxScreenScroll(
       children: [
         const SizedBox(height: AppSpacing.control),
-        MxListSectionHeader(label: l10n.searchResultsFor(results.term)),
         if (decks.isNotEmpty) ...[
           MxListSectionHeader(
             label: l10n.searchDecksGroup,

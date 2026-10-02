@@ -83,4 +83,29 @@ void main() {
     expect(tester.getSize(find.byType(MxBadge)).width, greaterThan(short));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('success: the success tint under a success-ink label, in both '
+      'themes (critique 2026-09-30 tone pass, T6)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
+    );
+    expect(_pill(tester).color, semantic.success.withValues(alpha: 0.12));
+    expect(_ink(tester, 'Ready · 2'), derived.successInk);
+
+    final darkSemantic = MxSemanticColors.dark;
+    final darkDerived = MxDerivedColors.resolve(
+      AppColorSchemes.dark,
+      darkSemantic,
+    );
+    await pumpMx(
+      tester,
+      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
+      brightness: Brightness.dark,
+    );
+    // The theme change animates.
+    await tester.pumpAndSettle();
+    expect(_pill(tester).color, darkSemantic.success.withValues(alpha: 0.12));
+    expect(_ink(tester, 'Ready · 2'), darkDerived.successInk);
+  });
 }

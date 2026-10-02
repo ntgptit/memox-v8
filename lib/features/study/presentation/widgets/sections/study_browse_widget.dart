@@ -265,7 +265,7 @@ class _Half extends StatelessWidget {
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
-            style: styles.overline,
+            style: styles.eyebrow,
           ),
         ),
         Expanded(

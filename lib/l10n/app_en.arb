@@ -136,7 +136,7 @@
   "@deckSortName": {
     "description": "Deck order: by name."
   },
-  "deckSortRecent": "Newest",
+  "deckSortRecent": "Date added",
   "@deckSortRecent": {
     "description": "Deck order: newest first."
   },
@@ -1637,29 +1637,23 @@
     },
     "description": "Screen 06 app bar while decks are selected."
   },
-  "trashSelectedOfCards": "{count} of {total} cards",
-  "@trashSelectedOfCards": {
+  "trashCardsHeader": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@trashCardsHeader": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "total": {
-        "type": "int"
       }
     },
-    "description": "Screen 06 list header while cards are selected."
+    "description": "Screen 06: the list header while cards are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
-  "trashSelectedOfDecks": "{count} of {total} decks",
-  "@trashSelectedOfDecks": {
+  "trashDecksHeader": "{count, plural, =1{1 deck} other{{count} decks}}",
+  "@trashDecksHeader": {
     "placeholders": {
       "count": {
         "type": "int"
-      },
-      "total": {
-        "type": "int"
       }
     },
-    "description": "Screen 06 list header while decks are selected."
+    "description": "Screen 06: the list header while decks are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
   "trashSelectionClose": "Clear selection",
   "@trashSelectionClose": {
@@ -1791,6 +1785,10 @@
       }
     },
     "description": "Screen handoff 01/04 (library alignment phase C): deckSubDeckCount."
+  },
+  "deckSubDecksHeader": "Sub-decks",
+  "@deckSubDecksHeader": {
+    "description": "Screen 01: the sub-deck list header under an open deck's summary card, which already states the count (critique 2026-09-30 part 3b)."
   },
   "deckCardCount": "{count, plural, =1{1 card} other{{count} cards}}",
   "@deckCardCount": {
@@ -1927,14 +1925,14 @@
   "@deckReorderHint": {
     "description": "Screen handoff 01/04 (library alignment phase C): deckReorderHint."
   },
-  "deckScheduledCount": "· {count} scheduled",
+  "deckScheduledCount": "{count} scheduled",
   "@deckScheduledCount": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 01: the trailing clause of the open deck's workload line, after the overdue · today · new terms; it carries its own separator."
+    "description": "Screen handoff 01: the trailing clause of the open deck's workload line, after the overdue · today · new terms; it carries its own separator. A muted fourth term of the open deck's breakdown, wrapping whole (critique 2026-09-30 part 3b)."
   },
   "deckDepthHeader": "{count} sub-decks · level 10",
   "@deckDepthHeader": {
@@ -1973,23 +1971,9 @@
   "@searchAccentNote": {
     "description": "Screen handoff 01/04 (library alignment phase C): searchAccentNote."
   },
-  "searchSearching": "Searching for “{term}”…",
+  "searchSearching": "Searching…",
   "@searchSearching": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 01/04 (library alignment phase C): searchSearching."
-  },
-  "searchResultsFor": "Results for “{term}”",
-  "@searchResultsFor": {
-    "placeholders": {
-      "term": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 01/04 (library alignment phase C): searchResultsFor."
+    "description": "Screen 04 loading header. It names no query: the field shows it, and user data is never upper-cased (critique 2026-09-30 part 2)."
   },
   "searchDecksGroup": "Decks",
   "@searchDecksGroup": {
@@ -2222,7 +2206,7 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchedToast."
   },
-  "algorithmSwitchFailedTitle": "Couldn’t switch.",
+  "algorithmSwitchFailedTitle": "Couldn't switch.",
   "@algorithmSwitchFailedTitle": {
     "description": "Screen handoff 02 (library alignment phase D): algorithmSwitchFailedTitle."
   },
@@ -2369,17 +2353,9 @@
     },
     "description": "Card list header: cards shown out of the filter's total."
   },
-  "cardSelectedOf": "{selected} of {total} selected",
-  "@cardSelectedOf": {
-    "placeholders": {
-      "selected": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Card list header while selecting."
+  "cardListHeader": "Cards",
+  "@cardListHeader": {
+    "description": "Screen 07: the list header while every card of the deck shows; 'Showing {n} of {total}' only while a filter, a tag or search narrows it (critique 2026-09-30 part 3b)."
   },
   "cardSelectAllCount": "Select all {count}",
   "@cardSelectAllCount": {
@@ -3012,17 +2988,14 @@
   "@galleryN5": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "studyEntryOverline": "{algorithm} · up to {limit} cards per session",
-  "@studyEntryOverline": {
+  "studyEntryLimit": "Up to {limit} cards per session",
+  "@studyEntryLimit": {
     "placeholders": {
-      "algorithm": {
-        "type": "String"
-      },
       "limit": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 14 (FE-A6): the hero's overline, the deck's algorithm and the session limit (BR-STUDY-024)."
+    "description": "Screen 14: the plain line under the hero's overline, which names the algorithm alone (critique 2026-09-30 part 3c-1, R5)."
   },
   "studyEntryNew": "New",
   "@studyEntryNew": {
@@ -3278,17 +3251,14 @@
   "@studyEntryStartFailedBody": {
     "description": "Screen handoff 14 (FE-A6 P2): startFailed banner body."
   },
-  "studyEntryModeCaption": "{mode} · {count, plural, =1{1 due card} other{{count} due cards}} · oldest first",
+  "studyEntryModeCaption": "{mode} · oldest first",
   "@studyEntryModeCaption": {
     "placeholders": {
       "mode": {
         "type": "String"
-      },
-      "count": {
-        "type": "int"
       }
     },
-    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review."
+    "description": "Screen handoff 14 (FE-A6 P3): footer caption under an eight_box review; the start button states the count (R5, critique 2026-09-30 part 3b)."
   },
   "studyDirectionTitle": "Review · question direction",
   "@studyDirectionTitle": {
@@ -3318,7 +3288,7 @@
   "@studyDirectionMixedBody": {
     "description": "Screen handoff 14 (FE-A6 P2): direction sheet option description."
   },
-  "studyDirectionNote": "SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy. The direction cannot change once the session starts.",
+  "studyDirectionNote": "The direction can't change once the session starts. SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy.",
   "@studyDirectionNote": {
     "description": "Screen handoff 14 (FE-A6 P2): direction sheet note (BR-MODE-017)."
   },
@@ -3442,9 +3412,9 @@
   "@importPickTitle": {
     "description": "Import: the empty file picker card title."
   },
-  "importPickBody": ".csv, .tsv or .xlsx · UTF-8 · nothing is added until you confirm",
+  "importPickBody": "Nothing is added until you confirm.",
   "@importPickBody": {
-    "description": "Import: the empty file picker card body."
+    "description": "Import: the empty file picker body; the formats are stated by the Choose a file option."
   },
   "importPickAction": "Choose file",
   "@importPickAction": {
@@ -3583,18 +3553,6 @@
   "importMappingIncomplete": "Map one column to Term and one to Meaning. Both are required.",
   "@importMappingIncomplete": {
     "description": "Import mapping: front or back is not mapped (BR-TRANSFER-002)."
-  },
-  "importPreviewReady": "{ready} of {total} rows ready",
-  "@importPreviewReady": {
-    "placeholders": {
-      "ready": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Import preview: the ready count."
   },
   "importBadgeReady": "Ready · {count}",
   "@importBadgeReady": {
@@ -3755,18 +3713,13 @@
   "@importCaptionProblemPaste": {
     "description": "Import commit bar, step 1, the pasted text could not be read."
   },
-  "importCaptionColumns": "Next you’ll preview every row before anything is imported.",
+  "importCaptionColumns": "Next you'll preview every row before anything is imported.",
   "@importCaptionColumns": {
     "description": "Import commit bar caption at step 2."
   },
-  "importCaptionPreview": "{count, plural, =0{No row will be imported.} =1{1 row will become a new card.} other{{count} rows will become new cards.}}",
-  "@importCaptionPreview": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Import commit bar caption at step 3 (E3 when 0)."
+  "importCaptionNothingToImport": "No row will be imported.",
+  "@importCaptionNothingToImport": {
+    "description": "Screen 11: the caption under a locked Import button, saying why; with rows to import the button states the count (critique 2026-09-30 part 3b)."
   },
   "importImportingTitle": "{count, plural, =1{Adding 1 card…} other{Adding {count} cards…}}",
   "@importImportingTitle": {
@@ -3789,7 +3742,7 @@
   "@importProblemEncodingBody": {
     "description": "Import problem: how to fix the encoding."
   },
-  "importProblemUnreadableTitle": "This file can’t be read",
+  "importProblemUnreadableTitle": "This file can't be read",
   "@importProblemUnreadableTitle": {
     "description": "Import problem: E1."
   },
@@ -3838,7 +3791,7 @@
   "@importNoneBody": {
     "description": "Import result: none body."
   },
-  "importFailedTitle": "Import didn’t finish",
+  "importFailedTitle": "Import didn't finish",
   "@importFailedTitle": {
     "description": "Import result: E5."
   },
@@ -3995,7 +3948,7 @@
     },
     "description": "Toast once the share sheet took the file; never says where it was saved (BR-TRANSFER-014)."
   },
-  "exportFailedTitle": "Couldn’t prepare the file",
+  "exportFailedTitle": "Couldn't prepare the file",
   "@exportFailedTitle": {
     "description": "Export banner: the cards could not be read or the file written (E3, E4)."
   },
@@ -4003,7 +3956,7 @@
   "@exportFailedBody": {
     "description": "Export banner body for E3, E4."
   },
-  "exportShareFailedTitle": "Couldn’t hand the file over",
+  "exportShareFailedTitle": "Couldn't hand the file over",
   "@exportShareFailedTitle": {
     "description": "Export banner: the platform failed while sharing (E2)."
   },
@@ -4023,7 +3976,7 @@
   "@exportStaleTitle": {
     "description": "Export banner: a selected card is gone or moved (E6)."
   },
-  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Refresh the selection and export again.",
+  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again.",
   "@exportStaleBody": {
     "description": "Export banner body for E6."
   },
@@ -4089,7 +4042,7 @@
   "@studyBrowseMeaning": {
     "description": "Screen handoff 16 (FE-A6 P1c): the meaning half's label."
   },
-  "studyBrowseHint": "Swipe left for next, right to look back · nothing is graded here",
+  "studyBrowseHint": "Swipe for next or back · nothing is graded",
   "@studyBrowseHint": {
     "description": "Screen handoff 16 (FE-A6 P1c): the footer hint (BR-MODE-005)."
   },
@@ -4231,15 +4184,6 @@
     },
     "description": "Study session shell (FE-A6 P3): the context line of a round-based stage."
   },
-  "studyContextFirstPick": "{context} · first pick counts",
-  "@studyContextFirstPick": {
-    "placeholders": {
-      "context": {
-        "type": "String"
-      }
-    },
-    "description": "Screen handoff 18 (FE-A6 P3): the context line of a guess stage."
-  },
   "studyGuessPrompt": "What is this?",
   "@studyGuessPrompt": {
     "description": "Screen handoff 18 (FE-A6 P3): the prompt face overline."
@@ -4307,7 +4251,7 @@
   "@studyGuessBlockedBody": {
     "description": "Screen handoff 18 (FE-A6 P3): a blocked question body."
   },
-  "studyMatchHint": "Tap a term, then its meaning to match",
+  "studyMatchHint": "Tap a term and its meaning, in either order",
   "@studyMatchHint": {
     "description": "Screen handoff 17 (FE-A6 P3): footer hint."
   },
@@ -4681,21 +4625,13 @@
   "@progressRangeMonth": {
     "description": "Screen handoff 22 (FE-A9): the range tray option for thirty days."
   },
-  "progressByDeckWeek": "By deck · last 7 days",
-  "@progressByDeckWeek": {
-    "description": "Screen handoff 22 (FE-A9): the library level's list header at seven days."
+  "progressByDeck": "By deck",
+  "@progressByDeck": {
+    "description": "Screen 22: the library's deck list header; the range segment above states the range (critique 2026-09-30 part 3b)."
   },
-  "progressByDeckMonth": "By deck · last 30 days",
-  "@progressByDeckMonth": {
-    "description": "Screen handoff 22 (FE-A9): the library level's list header at thirty days."
-  },
-  "progressSubDecksWeek": "Sub-decks · last 7 days",
-  "@progressSubDecksWeek": {
-    "description": "Screen handoff 22 (FE-A9): a deck level's list header at seven days."
-  },
-  "progressSubDecksMonth": "Sub-decks · last 30 days",
-  "@progressSubDecksMonth": {
-    "description": "Screen handoff 22 (FE-A9): a deck level's list header at thirty days."
+  "progressSubDecks": "Sub-decks",
+  "@progressSubDecks": {
+    "description": "Screen 22: a deck's sub-deck list header; the range segment above states the range (critique 2026-09-30 part 3b)."
   },
   "progressAllDecks": "All decks",
   "@progressAllDecks": {
@@ -4705,14 +4641,21 @@
   "@progressWholeDeck": {
     "description": "Screen handoff 22 (FE-A9): a deck level's total row (FE-A9 D2)."
   },
-  "progressRowDays": "{count, plural, =1{1 active day} other{{count} active days}}",
-  "@progressRowDays": {
+  "progressRowCardsDays": "{cards, plural, =1{1 card} other{{cards} cards}} · {days, plural, =1{1 active day} other{{days} active days}}",
+  "@progressRowCardsDays": {
     "placeholders": {
-      "count": {
+      "cards": {
+        "type": "int"
+      },
+      "days": {
         "type": "int"
       }
     },
-    "description": "Screen handoff 22 (FE-A9): a row's active days in the range."
+    "description": "Screen handoff 22: a row's unique active cards and active days, the first meta line (critique 2026-09-30 part 3d-1, D3)."
+  },
+  "progressRowCardDaysLead": "Card-days: ",
+  "@progressRowCardDaysLead": {
+    "description": "Screen handoff 22: names the learning and reviewing card-days that follow on a row's second meta line (critique 2026-09-30 part 3d-1, D3)."
   },
   "progressRowLearning": "{count} learning",
   "@progressRowLearning": {
@@ -4731,10 +4674,6 @@
       }
     },
     "description": "Screen handoff 22 (FE-A9): a row's reviewing card-days, in the primary ink."
-  },
-  "progressRowCards": "cards",
-  "@progressRowCards": {
-    "description": "Screen handoff 22 (FE-A9): the word under a row's active cards."
   },
   "progressNoActivity": "No activity in this range",
   "@progressNoActivity": {
@@ -4760,9 +4699,9 @@
   "@progressLeafNote": {
     "description": "Screen handoff 22 (FE-A9): a deck level with no sub-deck (UC-PROGRESS-002 A1)."
   },
-  "progressFooter": "Read-only · a card studied several times in a day counts once · resets change nothing here",
+  "progressFooter": "Read-only · resets change nothing here",
   "@progressFooter": {
-    "description": "Screen handoff 22 (FE-A9): the line at the end of every level."
+    "description": "Screen handoff 22 (FE-A9): the line at the end of every level; the Today card states the once-a-day rule (critique 2026-09-30 part 3b)."
   },
   "progressErrorTitle": "Couldn't summarise your progress",
   "@progressErrorTitle": {
@@ -4924,7 +4863,7 @@
   "@summarySchedulerChanged": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero title, scheduler changed (BR-STUDY-016)."
   },
-  "summarySchedulerChangedBody": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; start learning from the deck.",
+  "summarySchedulerChangedBody": "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new again; Done takes you back to the deck to start learning.",
   "@summarySchedulerChangedBody": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, scheduler changed."
   },
@@ -4944,17 +4883,17 @@
   "@summarySaveErrorBody": {
     "description": "Screen handoff 21 (FE-A6 P1c): hero body, save error."
   },
-  "summaryStatReviewed": "Reviewed",
-  "@summaryStatReviewed": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
-  },
-  "summaryStatLearned": "Learned",
-  "@summaryStatLearned": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
-  },
   "summaryStatAnswered": "Answered",
   "@summaryStatAnswered": {
     "description": "Screen handoff 21 (FE-A6 P1c): a hero stat label."
+  },
+  "summaryStatReviewed": "Reviewed",
+  "@summaryStatReviewed": {
+    "description": "Screen 21: the finished tile of a review, shown only when the body states no count, as after an interruption (critique 2026-09-30 part 3c-1, R3)."
+  },
+  "summaryStatLearned": "Learned",
+  "@summaryStatLearned": {
+    "description": "Screen 21: the finished tile of a learning session, shown only when the body states no count (critique 2026-09-30 part 3c-1, R3)."
   },
   "summaryStatWrong": "Wrong turns",
   "@summaryStatWrong": {
@@ -4971,6 +4910,10 @@
       }
     },
     "description": "Screen handoff 21 (FE-A6 P1c): wrong turns out of all turns."
+  },
+  "summaryWrongExplained": "Wrong cards came back in later rounds.",
+  "@summaryWrongExplained": {
+    "description": "Screen 21: under the wrong-turns tile when wrong > 0; the facts card that explained it is hidden whenever the hero has stats (critique 2026-09-30 part 3c-1)."
   },
   "summaryFactsHeader": "This session",
   "@summaryFactsHeader": {
@@ -5139,7 +5082,7 @@
   "@settingsStudyDefaults": {
     "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
   },
-  "settingsStudyDefaultsNote": "Apply to sessions started from now on. A deck with its own study options keeps them.",
+  "settingsStudyDefaultsNote": "Applies to sessions started from now on. A deck with its own study options keeps them.",
   "@settingsStudyDefaultsNote": {
     "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
   },
@@ -5187,7 +5130,7 @@
   "@settingsNewCardOrderHint": {
     "description": "Line under New-card order."
   },
-  "settingsOrderCreated": "Created",
+  "settingsOrderCreated": "In order",
   "@settingsOrderCreated": {
     "description": "New-card order: the order cards were created."
   },
@@ -5302,7 +5245,7 @@
   "@studyOptionsOwn": {
     "description": "Screen handoff 15 (FE-A3 plan 2): the toggle sub-line while off."
   },
-  "studyOptionsOrderCreatedShort": "created order",
+  "studyOptionsOrderCreatedShort": "in creation order",
   "@studyOptionsOrderCreatedShort": {
     "description": "Screen handoff 15 (FE-A3 plan 2): the order inside a sentence."
   },
@@ -5342,6 +5285,10 @@
       }
     },
     "description": "Screen handoff 15 (FE-A3 plan 2): footer caption after a failed save (E4); {order} is …Short."
+  },
+  "studyOptionsNotSavedTitle": "Not saved",
+  "@studyOptionsNotSavedTitle": {
+    "description": "Screen handoff 15: the title of the danger banner when saving the deck's study options failed (critique 2026-09-30 part 3d-1)."
   },
   "studyOptionsLocalOnly": "Saved to this device only.",
   "@studyOptionsLocalOnly": {
@@ -5439,21 +5386,13 @@
     },
     "description": "Screen 03 algorithm sheet: the title."
   },
-  "starterSheetBody": "{cards, plural, =1{1 card} other{{cards} cards}} in {decks, plural, =1{1 sub-deck} other{{decks} sub-decks}}, as a new deck of your own.",
-  "@starterSheetBody": {
-    "placeholders": {
-      "cards": {
-        "type": "int"
-      },
-      "decks": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 03 algorithm sheet: what the copy holds."
+  "starterSheetAlgorithmLabel": "Review algorithm",
+  "@starterSheetAlgorithmLabel": {
+    "description": "Screen 03 algorithm sheet: the field label above the two schedulers."
   },
-  "starterSheetOverline": "Review algorithm · required",
-  "@starterSheetOverline": {
-    "description": "Screen 03 algorithm sheet: the header above the two schedulers."
+  "starterSheetRequired": "Required",
+  "@starterSheetRequired": {
+    "description": "Screen 03 algorithm sheet: the Required caption after the label."
   },
   "starterSm2Description": "grade yourself, intervals adapt",
   "@starterSm2Description": {
@@ -5568,10 +5507,6 @@
       }
     },
     "description": "Screen 05: the header over the tags shown."
-  },
-  "tagsNone": "No tags",
-  "@tagsNone": {
-    "description": "Screen 05: the header when the library has no tag."
   },
   "tagsNoMatches": "No matches",
   "@tagsNoMatches": {
@@ -6020,10 +5955,6 @@
   "@reminderPreviewTitle": {
     "description": "Screen handoff 24 (FE-B5): the preview section's title."
   },
-  "reminderPreviewDeck": "Tiếng Hàn TOPIK I · Từ vựng",
-  "@reminderPreviewDeck": {
-    "description": "Screen handoff 24 (FE-B5): the sample deck name in the preview; the kit writes it in Hangul, which the test fonts lack (FE-C2), so it reads as the fixtures do."
-  },
   "reminderPreviewQuoted": "“{text}”",
   "@reminderPreviewQuoted": {
     "placeholders": {
@@ -6032,6 +5963,10 @@
       }
     },
     "description": "Screen handoff 24 (FE-B5): the preview sentence in quotes; {text} is the notification's own body."
+  },
+  "reminderPreviewNothingDue": "Nothing is due right now, so today's reminder would stay silent.",
+  "@reminderPreviewNothingDue": {
+    "description": "Screen 24: What it says when no card is due now (BR-REMINDER-003; critique 2026-09-30 part 1)."
   },
   "reminderPreviewHint": "Deck name and counts only — never a card, tag or history, including on the lock screen. Opening it lands on Study.",
   "@reminderPreviewHint": {
@@ -6049,7 +5984,7 @@
   "@reminderTryAgain": {
     "description": "Screen handoff 24 (FE-B5): the action of the E1 and E6 banners."
   },
-  "reminderCouldNotTurnOnTitle": "Couldn’t schedule the reminder.",
+  "reminderCouldNotTurnOnTitle": "Couldn't schedule the reminder.",
   "@reminderCouldNotTurnOnTitle": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
   },
@@ -6057,7 +5992,7 @@
   "@reminderCouldNotTurnOnBody": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Enable (E3)."
   },
-  "reminderCouldNotChangeTimeTitle": "Couldn’t change the time.",
+  "reminderCouldNotChangeTimeTitle": "Couldn't change the time.",
   "@reminderCouldNotChangeTimeTitle": {
     "description": "Screen handoff 24 (FE-B5): schedule refused on Change time (E3)."
   },
@@ -6200,7 +6135,7 @@
   "@syncTitle": {
     "description": "Screen 27 (SB-U1): the app bar title."
   },
-  "syncStatusRejected": "{count, plural, =1{1 change kept only on this device} other{{count} changes kept only on this device}}",
+  "syncStatusRejected": "{count, plural, =1{1 change wasn't accepted} other{{count} changes weren't accepted}}",
   "@syncStatusRejected": {
     "placeholders": {
       "count": {
@@ -6301,11 +6236,15 @@
   "@syncNote": {
     "description": "Screen 27 (SB-U1): the Status section note."
   },
+  "syncSyncing": "Syncing…",
+  "@syncSyncing": {
+    "description": "Screen handoff 27: stands beside the spinner in Sync now's place while a manual sync runs (critique 2026-09-30 part 3d-1, D5)."
+  },
   "syncNow": "Sync now",
   "@syncNow": {
     "description": "Screen 27 (SB-U1): the button that runs a sync."
   },
-  "syncRejectedTitle": "{count, plural, =1{1 change is kept only on this device} other{{count} changes are kept only on this device}}",
+  "syncRejectedTitle": "{count, plural, =1{1 change wasn't accepted} other{{count} changes weren't accepted}}",
   "@syncRejectedTitle": {
     "placeholders": {
       "count": {
@@ -6321,6 +6260,27 @@
   "syncKeepOnDevice": "Keep on this device",
   "@syncKeepOnDevice": {
     "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
+  },
+  "syncRejectedBody": "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices.",
+  "@syncRejectedBody": {
+    "description": "Screen 27: the refused banner's message under its title (sync status spec §5.2; critique 2026-09-30 part 1)."
+  },
+  "syncWaitingNoneOthers": "No other changes waiting",
+  "@syncWaitingNoneOthers": {
+    "description": "Screen 27: the waiting row when only refused changes remain (critique 2026-09-30 part 1)."
+  },
+  "syncKeepTitle": "{count, plural, =1{Keep 1 change on this device only?} other{Keep {count} changes on this device only?}}",
+  "@syncKeepTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 27: the dialog that confirms Keep on this device (critique 2026-09-30 part 1, R4)."
+  },
+  "syncKeepBody": "They won't sync to your other devices. You can't undo this.",
+  "@syncKeepBody": {
+    "description": "Screen 27: the Keep dialog's body (critique 2026-09-30 part 1, R4)."
   },
   "syncFailedNetwork": "No connection. Your changes are safe on this device and will sync when you're back online.",
   "@syncFailedNetwork": {
@@ -6358,7 +6318,7 @@
   "@syncLoadErrorTitle": {
     "description": "Screen 27 (SB-U1): the status stream failed (spec §6)."
   },
-  "studyHomeSyncRejected": "{count, plural, =1{1 change is kept only on this device.} other{{count} changes are kept only on this device.}}",
+  "studyHomeSyncRejected": "{count, plural, =1{1 change wasn't accepted.} other{{count} changes weren't accepted.}}",
   "@studyHomeSyncRejected": {
     "placeholders": {
       "count": {
@@ -6536,24 +6496,6 @@
   "@monitoringUserInvalid": {
     "description": "Screen 28: the user field error when the text is not a uuid."
   },
-  "monitoringCountOpen": "{count} open",
-  "@monitoringCountOpen": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 28: the list header for the default filter; {count} is what has loaded."
-  },
-  "monitoringCountOpenMore": "{count}+ open",
-  "@monitoringCountOpenMore": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 28: the list header for the default filter while more pages exist."
-  },
   "monitoringCountLogs": "{count, plural, =1{1 log} other{{count} logs}}",
   "@monitoringCountLogs": {
     "placeholders": {
@@ -6616,14 +6558,18 @@
   "@monitoringNotAdminTitle": {
     "description": "Screen 28 and its detail: the server refused the call (FORBIDDEN)."
   },
-  "monitoringPendingNote": "{count, plural, =1{1 log waits on this device. It is sent when MemoX is online.} other{{count} logs wait on this device. They are sent when MemoX is online.}}",
+  "monitoringPendingNote": "These logs wait on this device. They are sent when MemoX is online.",
   "@monitoringPendingNote": {
+    "description": "Screen 28: the note of the Not sent tab; the tab label states how many (critique 2026-09-30 part 3b)."
+  },
+  "monitoringPendingCount": "{count} at these levels",
+  "@monitoringPendingCount": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 28: the note of the Not sent tab; {count} is every row of the buffer."
+    "description": "Screen 28: the Not sent list header, counting the rows shown at the chosen levels (critique 2026-09-30 part 3b)."
   },
   "monitoringPendingNoneTitle": "Nothing waiting",
   "@monitoringPendingNoneTitle": {

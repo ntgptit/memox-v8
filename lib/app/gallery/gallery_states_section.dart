@@ -48,6 +48,13 @@ class GalleryStatesSection extends StatelessWidget {
         onRetry: () {},
       ),
       MxErrorState(
+        title: context.l10n.galleryCouldNotLoadDecks,
+        body: context.l10n.galleryLoadErrorBody,
+        icon: AppIcons.offline,
+        retryLabel: context.l10n.commonRetry,
+        onRetry: () {},
+      ),
+      MxErrorState(
         title: context.l10n.galleryDeckNotFound,
         body: context.l10n.galleryItMayHaveBeenDeleted,
         icon: AppIcons.alert,

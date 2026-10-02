@@ -554,6 +554,18 @@ item names where it comes from.
 | 149 | Screen 29's head is an `MxIconTile` (large, tinted, the deck glyph): the launcher icon is still Flutter's default. Replace it with MemoX's icon when one exists | Account UI spec U5 (owner 2026-09-30) |
 | 150 | Screen 30's email field uses the form variant's text keyboard; an email keyboard needs an `MxTextField` variant, which U2 did not approve | P3a plan ruling 7 |
 | 151 | The re-auth banner on 23 and 32 sits above the Account section, not between its overline and its card: `MxSection` has no header slot | P3b plan ruling 1 |
+| 152 | 06: a trash row states two time forms, "deleted {ago}" and the time left | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 153 | 09: the optional fields are always open in edit (documented as intended in the 09 detail file) | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 154 | 10: the section header and the history's cycle header share one style | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 155 | 14: the session limit is reached only through the unlabeled Study options icon | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 156 | 15: read-only app defaults offer no way to Settings | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 157 | 22: the streak card nests a tile under two overlines; the deck name shows twice on deck progress (title and breadcrumb, global ruling P2-L4) | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 158 | 24: the denied banner says "turn the reminder on again" beside a "Try again" button | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 159 | 27: the status values (last synced, waiting) sit in the small subtitle line | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 160 | 05: the merge dialog is dense; the tag actions sheet's header differs from other sheets | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 161 | 07: changing the selection while a bulk flag write runs can bring back a stale Retry for the earlier cards | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
+| 162 | 15: a draft edited back to the stored values leaves "Not saved" beside a disabled "Retry save" | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
+| 163 | 24: the reminder dialog passes the literal `minDigits: 2` beside its `_digits` constant | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

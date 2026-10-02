@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
@@ -17,10 +21,12 @@ class MxSettingsRow extends StatelessWidget {
     required this.label,
     this.subtitle,
     this.icon,
+    this.iconTone = MxIconTileTone.tinted,
     this.trailing,
     this.wideControl,
     this.onTap,
     this.isEnabled = true,
+    this.isAction = false,
   }) : assert(trailing == null || wideControl == null, 'one control slot');
 
   final String label;
@@ -28,6 +34,11 @@ class MxSettingsRow extends StatelessWidget {
 
   /// Drawn as an MxIconTile at the medium step, centred in the 40 lead column.
   final IconData? icon;
+
+  /// The lead tile's tone: tinted by default; success when the setting's
+  /// state is fine, as screen 23's Sync row once sync is settled (critique
+  /// 2026-09-30 tone pass, T4).
+  final MxIconTileTone iconTone;
 
   /// A toggle, a time button or a value.
   final Widget? trailing;
@@ -39,8 +50,15 @@ class MxSettingsRow extends StatelessWidget {
   /// Navigates. The row then shows the chevron, unless it holds a control.
   final VoidCallback? onTap;
 
-  /// False dims the row while the setting is unavailable.
+  /// False dims the tile, the label and the control while the setting is
+  /// unavailable; the subtitle, which says why, keeps full ink (critique
+  /// 2026-09-30). A control that draws its own disabled state is left to it
+  /// (part 3a).
   final bool isEnabled;
+
+  /// Runs an action or opens a dialog: no chevron, since nothing is
+  /// navigated to (critique 2026-09-30).
+  final bool isAction;
 
   /// From this text scale on, a trailing control moves under the text, so
   /// the label keeps its width (audit 2026-09-29, screen 24).
@@ -53,7 +71,7 @@ class MxSettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final styles = context.textStyles;
     final isNavigable =
-        onTap != null && trailing == null && wideControl == null;
+        onTap != null && !isAction && trailing == null && wideControl == null;
     final isStacked =
         trailing != null &&
         MediaQuery.textScalerOf(context).scale(1) >= stackTextScale;
@@ -61,6 +79,7 @@ class MxSettingsRow extends StatelessWidget {
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
+      shouldDimWhenDisabled: false,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
         child: Padding(
@@ -81,9 +100,12 @@ class MxSettingsRow extends StatelessWidget {
                     width: _leadColumn,
                     child: Center(
                       heightFactor: 1,
-                      child: MxIconTile(
-                        icon: glyph,
-                        size: MxIconTileSize.medium,
+                      child: _dim(
+                        MxIconTile(
+                          icon: glyph,
+                          size: MxIconTileSize.medium,
+                          tone: iconTone,
+                        ),
                       ),
                     ),
                   ),
@@ -99,25 +121,27 @@ class MxSettingsRow extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(label, style: styles.settingsLabel),
+                      _dim(Text(label, style: styles.settingsLabel)),
                       if (subtitle case final text?) ...[
                         const SizedBox(height: _subtitleGap),
                         Text(text, style: styles.rowDescription),
                       ],
                       if (below case final control?) ...[
                         const SizedBox(height: AppSpacing.grouped),
-                        control,
+                        _dimControl(control),
                       ],
                     ],
                   ),
                 ),
               ),
-              if (!isStacked) ?trailing,
+              if (!isStacked && trailing != null) _dimControl(trailing!),
               if (isNavigable)
-                Icon(
-                  AppIcons.chevronRight,
-                  size: AppIconSize.compact,
-                  color: context.colors.onSurfaceVariant,
+                _dim(
+                  Icon(
+                    AppIcons.chevronRight,
+                    size: AppIconSize.compact,
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
             ],
           ),
@@ -125,4 +149,19 @@ class MxSettingsRow extends StatelessWidget {
       ),
     );
   }
+
+  /// MxButton, MxToggle and MxStepper draw their own disabled opacity, so
+  /// the row leaves them alone, also under a Semantics label, as the
+  /// reminder's time button is (critique 2026-09-30 part 3a).
+  static bool _drawsOwnDisabledState(Widget control) => switch (control) {
+    MxButton() || MxToggle() || MxStepper() => true,
+    Semantics(:final child?) => _drawsOwnDisabledState(child),
+    _ => false,
+  };
+
+  Widget _dimControl(Widget control) =>
+      _drawsOwnDisabledState(control) ? control : _dim(control);
+
+  Widget _dim(Widget child) =>
+      isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
 }

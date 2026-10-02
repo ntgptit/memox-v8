@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
 
 import '../../support/widget_harness.dart';
@@ -27,5 +28,16 @@ void main() {
       isSemantics(label: 'Hôm nay'),
     );
     handle.dispose();
+  });
+
+  testWidgets('the label is an eyebrow (critique 2026-09-30 part 2, P2)', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxDotOverline(label: 'Continue studying'));
+    final label = find.text('CONTINUE STUDYING');
+    expect(
+      tester.widget<Text>(label).style,
+      tester.element(label).textStyles.eyebrow,
+    );
   });
 }

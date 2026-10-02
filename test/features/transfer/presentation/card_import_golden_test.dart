@@ -95,6 +95,22 @@ void main() {
       });
     });
 
+    // Critique 2026-09-30 part 1: without a header each column still shows
+    // its first value.
+    libraryTest('import mapping, no header, $theme', (tester, env) async {
+      final deckId = await _seed(env);
+      await withRealShadows(() async {
+        await pump(tester, env, deckId);
+        await _tap(tester, _en.importPickAction);
+        await _tap(tester, _en.importReadAction);
+        await _tap(tester, _en.importHeaderToggle);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_mapping_no_header_$theme.png',
+        );
+      });
+    });
+
     libraryTest('import preview, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {

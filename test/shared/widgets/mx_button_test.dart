@@ -140,7 +140,7 @@ void main() {
     );
   });
 
-  testWidgets('outline tone has no fill, primaryInk, 1px outlineVariant', (
+  testWidgets('outline tone has no fill, primaryInk, 1px outlineEdge', (
     tester,
   ) async {
     await pumpMx(
@@ -153,7 +153,31 @@ void main() {
     expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
     expect(
       (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: scheme.outlineVariant),
+      BorderSide(
+        color: MxDerivedColors.resolve(
+          scheme,
+          MxSemanticColors.light,
+        ).outlineEdge,
+      ),
+    );
+  });
+
+  // Critique 2026-09-30 part 1 (R7): outlineVariant nearly vanished on the
+  // dark sheet (1.05:1).
+  testWidgets('dark: the outline edge is the dark outlineEdge', (tester) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
+      brightness: Brightness.dark,
+    );
+    expect(
+      (_material(tester).shape! as RoundedRectangleBorder).side,
+      BorderSide(
+        color: MxDerivedColors.resolve(
+          AppColorSchemes.dark,
+          MxSemanticColors.dark,
+        ).outlineEdge,
+      ),
     );
   });
 

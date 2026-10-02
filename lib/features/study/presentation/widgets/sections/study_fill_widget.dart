@@ -9,6 +9,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -20,7 +21,8 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 /// wrong one stays on screen, the typed text struck through beside the
 /// right term, until Continue (BR-STUDY-059, BR-STUDY-063, BR-STUDY-064).
 /// The typed text lives only here and in the one answer sent; it is never
-/// kept (BR-STUDY-027). The screen keys it per turn.
+/// kept (BR-STUDY-027). The screen keys it per turn. Its actions settle
+/// after a swap (critique 2026-09-30 part 3c-2, R1).
 class StudyFillWidget extends StatefulWidget {
   const StudyFillWidget({
     super.key,
@@ -142,7 +144,16 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                             mainAxisSize: MainAxisSize.min,
                             spacing: AppSpacing.grouped,
                             children: [
-                              if (isHintShown) _HintRow(hint: hint),
+                              // Laid out from the start, so showing it moves
+                              // nothing (critique 2026-09-30 part 3c-2, R4).
+                              if (hint != null)
+                                Visibility(
+                                  visible: isHintShown,
+                                  maintainSize: true,
+                                  maintainAnimation: true,
+                                  maintainState: true,
+                                  child: _HintRow(hint: hint),
+                                ),
                               MxTextField(
                                 controller: _answer,
                                 focusNode: _focus,
@@ -159,36 +170,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
             ),
           ),
         ),
-        ListenableBuilder(
-          listenable: _answer,
-          builder: (context, _) => StudyCtaRowWidget(
-            children: _isWrong
-                ? [
-                    MxButton(
-                      label: l10n.studyContinue,
-                      size: MxButtonSize.study,
-                      onPressed: widget.isBusy ? null : widget.onContinue,
-                    ),
-                  ]
-                : [
-                    if (canShowHint)
-                      MxButton(
-                        label: l10n.studyFillShowHint,
-                        tone: MxButtonTone.outline,
-                        size: MxButtonSize.study,
-                        icon: AppIcons.hint,
-                        isBlock: true,
-                        onPressed: widget.isBusy ? null : widget.onShowHint,
-                      ),
-                    MxButton(
-                      label: l10n.studyFillCheck,
-                      size: MxButtonSize.study,
-                      isBlock: canShowHint,
-                      onPressed: _canCheck ? _check : null,
-                    ),
-                  ],
-          ),
-        ),
+        _actions(context, canShowHint: canShowHint),
         SessionFooterHintWidget(
           icon: AppIcons.edit,
           text: _isWrong
@@ -200,9 +182,50 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
       ],
     );
   }
+
+  /// The CTA row. Show hint going away is a swap as much as Check becoming
+  /// Continue: a double tap on Show hint must not check a half-typed answer
+  /// (critique 2026-09-30 part 3c-2, R1 and its final review).
+  Widget _actions(BuildContext context, {required bool canShowHint}) {
+    final l10n = context.l10n;
+    return StudySettleGuardWidget(
+      phase: (_isWrong, canShowHint),
+      child: ListenableBuilder(
+        listenable: _answer,
+        builder: (context, _) => StudyCtaRowWidget(
+          children: _isWrong
+              ? [
+                  MxButton(
+                    label: l10n.studyContinue,
+                    size: MxButtonSize.study,
+                    onPressed: widget.isBusy ? null : widget.onContinue,
+                  ),
+                ]
+              : [
+                  if (canShowHint)
+                    MxButton(
+                      label: l10n.studyFillShowHint,
+                      tone: MxButtonTone.outline,
+                      size: MxButtonSize.study,
+                      icon: AppIcons.hint,
+                      isBlock: true,
+                      onPressed: widget.isBusy ? null : widget.onShowHint,
+                    ),
+                  MxButton(
+                    label: l10n.studyFillCheck,
+                    size: MxButtonSize.study,
+                    isBlock: canShowHint,
+                    onPressed: _canCheck ? _check : null,
+                  ),
+                ],
+        ),
+      ),
+    );
+  }
 }
 
-/// The card's hint, shown on request (BR-STUDY-028).
+/// The card's hint, shown on request (BR-STUDY-028), at the study detail
+/// role (M3 body-medium; critique 2026-09-30 part 3c-2, R4).
 class _HintRow extends StatelessWidget {
   const _HintRow({required this.hint});
 
@@ -228,7 +251,7 @@ class _HintRow extends StatelessWidget {
           child: Text(
             hint,
             textAlign: TextAlign.center,
-            style: context.textStyles.sessionHint,
+            style: context.textStyles.studyDetail,
           ),
         ),
       ],

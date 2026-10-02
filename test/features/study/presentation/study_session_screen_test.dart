@@ -124,10 +124,9 @@ void main() {
     // The stages the session has rows in (IT-MODE-001), read, not assumed.
     final stages = (await watchSessionOnce(env.db, id)).stages.length;
     expect(
+      // The deck name keeps its case (critique 2026-09-30 part 2, P4).
       find.text(
-        _en
-            .studyContextLearning('Lesson', _en.studyKindLearning, 1, stages)
-            .toUpperCase(),
+        'Lesson · ${_en.studyKindLearning.toUpperCase()} · STAGE 1 OF $stages',
       ),
       findsOneWidget,
     );
