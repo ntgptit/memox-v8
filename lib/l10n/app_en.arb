@@ -7020,9 +7020,9 @@
   "@accountSignOut": {
     "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
   },
-  "accountSignOutHint": "Your changes are sent first",
+  "accountSignOutHint": "Removes this phone's data · sign in again to get it back",
   "@accountSignOutHint": {
-    "description": "Screen 32: under Sign out (Account UI spec §9.1)."
+    "description": "Screen 32: under Sign out, what it does (Account UI spec §9.1; critique 2026-10-02, F3)."
   },
   "accountDeleteSection": "Delete",
   "@accountDeleteSection": {

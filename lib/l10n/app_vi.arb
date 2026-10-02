@@ -1355,7 +1355,7 @@
   "accountSwitch": "Đổi tài khoản",
   "accountSwitchHint": "Chuyển điện thoại này sang tài khoản khác",
   "accountSignOut": "Đăng xuất",
-  "accountSignOutHint": "Các thay đổi được gửi trước",
+  "accountSignOutHint": "Xoá dữ liệu trên máy này · đăng nhập lại để lấy lại",
   "accountDeleteSection": "Xoá",
   "accountDelete": "Xoá tài khoản",
   "accountDeleteHint": "Tài khoản và dữ liệu của nó, vĩnh viễn",
