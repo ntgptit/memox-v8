@@ -67,6 +67,7 @@
     "settings_queries": ["settings", "reminders", "study"],
     "srs_queries": ["srs", "study", "deck"],
     "starter_queries": ["starter_decks"],
+    "study_queue_queries": ["study"],
     "study_session_queries": ["study"],
     "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
