@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_summary_card_widget.dart';
@@ -13,9 +14,11 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
+import '../../../shared/expect_one_primary.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
 
@@ -125,6 +128,10 @@ void main() {
     expect(buttons, isNotEmpty);
     expect(buttons.every((b) => b.isBlock), isTrue);
     expect(buttons.first.label, _en.deckNewCard);
+    // Its empty state offers both; no FAB beside it (ruling R9, critique
+    // 2026-09-30 part 1).
+    expect(find.byType(MxFab), findsNothing);
+    expectOnePrimaryPerDecision(tester);
     await tester.tap(_unsetButton(_en.deckNewCard));
     expect(added, [words.id]);
 
@@ -171,6 +178,8 @@ void main() {
 
   libraryTest('the FAB opens the new sub-deck dialog', (tester, env) async {
     final korean = await env.decks.root('Korean');
+    // A deck of sub-decks keeps the FAB; an unset one has none (R9).
+    await env.decks.sub(korean.id, 'Words');
     await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
     await tester.tap(find.byType(MxFab));
     await tester.pumpAndSettle();
@@ -291,9 +300,61 @@ void main() {
       find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
       findsOneWidget,
     );
-    expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsOneWidget);
+    // The summary card states the count; the header names the list
+    // (critique 2026-09-30 part 3b).
+    expect(find.text(_en.deckSubDecksHeader.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.deckSubDeckCount(2).toUpperCase()), findsNothing);
+    // The breakdown wraps between whole terms, never "…" (Wrap Rule).
+    final breakdown = tester.widget<Text>(
+      find
+          .descendant(
+            of: find.descendant(
+              of: find.byType(DeckSummaryCardWidget),
+              matching: find.byType(MxWorkloadBreakdownLine),
+            ),
+            matching: find.byType(Text),
+          )
+          .first,
+    );
+    expect(breakdown.maxLines, isNull);
+    expect(breakdown.overflow, isNot(TextOverflow.ellipsis));
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeckDue(1)));
     expect(studied, [korean.id]);
+  });
+
+  libraryTest('the scheduled count is a whole term of the breakdown: it '
+      'wraps before "1 scheduled", never inside it (Wrap Rule; critique '
+      '2026-09-30 part 3b)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(
+      env.db,
+      id: 'late',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 22),
+    );
+    await insertCard(
+      env.db,
+      id: 'later',
+      deckId: words.id,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 12, 1),
+    );
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+
+    final line = tester.widget<Text>(
+      find
+          .descendant(
+            of: find.descendant(
+              of: find.byType(DeckSummaryCardWidget),
+              matching: find.byType(MxWorkloadBreakdownLine),
+            ),
+            matching: find.byType(Text),
+          )
+          .first,
+    );
+    expect(line.textSpan!.toPlainText(), contains('1\u00A0scheduled'));
   });
 
   libraryTest('the summary shows the level mastery donut beside "Mastered · '
@@ -316,6 +377,11 @@ void main() {
     expect(donut.fraction, 0.5);
     final overline = _en.deckSummaryMastered(_en.deckSchedulerEightBox);
     expect(find.text(overline.toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester.widget<Text>(find.text(overline.toUpperCase())).style,
+      tester.element(find.text(overline.toUpperCase())).textStyles.eyebrow,
+    );
   });
 
   libraryTest('the summary counts every sub-deck under the due filter', (

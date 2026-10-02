@@ -170,4 +170,39 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('a selected row that cannot change is not dimmed (critique '
+      '2026-09-30: the locked algorithm)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: true, onSelected: null),
+    );
+    expect(
+      find.ancestor(of: find.text('SM-2'), matching: find.byType(Opacity)),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a dimmed row keeps its description at full ink', (tester) async {
+    await pumpMx(
+      tester,
+      const MxOptionRow(
+        title: 'Guess',
+        description: 'Needs five different meanings',
+        isSelected: false,
+        onSelected: null,
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('Guess'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+    expect(
+      find.ancestor(
+        of: find.text('Needs five different meanings'),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+  });
 }

@@ -14,10 +14,8 @@ import '../../../support/library_harness.dart';
 /// Korean › Words holding a reviewed, flagged card with a two-cycle history.
 /// Romanized text: the golden font has no Hangul.
 Future<void> _seed(LibraryEnv env) async {
-  final words = await env.decks.sub(
-    (await env.decks.root('Korean')).id,
-    'Words',
-  );
+  final root = (await env.decks.root('Korean')).id;
+  final words = await env.decks.sub(root, 'Words');
   await insertCard(
     env.db,
     id: 'c',
@@ -28,6 +26,13 @@ Future<void> _seed(LibraryEnv env) async {
     learnedAt: DateTime(2026, 8, 20),
     dueAt: DateTime(2026, 9, 26),
     box: 5,
+  );
+  // The deck and the card's schedule are in the history's newest cycle.
+  await env.db.customStatement('UPDATE deck SET generation = 2 WHERE id = ?', [
+    root,
+  ]);
+  await env.db.customStatement(
+    "UPDATE card_schedule SET generation = 2 WHERE card_id = 'c'",
   );
   final answers = [
     (DateTime(2026, 9, 4, 19), 'recall', 4, 5, DateTime(2026, 9, 20)),

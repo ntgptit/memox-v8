@@ -27,20 +27,29 @@ class StudyEntryHeroWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final styles = context.textStyles;
-    final overline = l10n.studyEntryOverline(
-      l10n.studyScheduler(entry.schedulerType),
-      entry.cardLimit,
-    );
+    final algorithm = l10n.studyScheduler(entry.schedulerType);
+    // A summary, not a door (critique 2026-09-30 part 3d-2, E5).
     return MxCard(
-      isHero: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.grouped,
         children: [
-          Text(
-            overline.toUpperCase(),
-            semanticsLabel: overline,
-            style: styles.overline,
+          // The algorithm alone as overline, the limit its own line: no
+          // orphan word (critique 2026-09-30 part 3c-1, R5).
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.micro,
+            children: [
+              Text(
+                algorithm.toUpperCase(),
+                semanticsLabel: algorithm,
+                style: styles.eyebrow,
+              ),
+              Text(
+                l10n.studyEntryLimit(entry.cardLimit),
+                style: styles.rowDescription,
+              ),
+            ],
           ),
           Row(
             spacing: AppSpacing.control,

@@ -94,7 +94,7 @@ class ThemeScreen extends ConsumerWidget {
                 end: AppSpacing.micro,
                 top: AppSpacing.control,
               ),
-              child: MxNote(text: l10n.settingsAppliesAtOnce),
+              child: MxNote.hint(text: l10n.settingsAppliesAtOnce),
             ),
           ],
         ),

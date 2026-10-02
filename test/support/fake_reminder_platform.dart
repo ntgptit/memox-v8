@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/reminders/domain/failures/reminder_failure.dart';
 import 'package:memox/features/reminders/domain/models/reminder_digest_model.dart';
@@ -32,6 +34,9 @@ final class FakeReminderPlatform implements ReminderPlatformRepository {
   /// The calls the platform refuses, the way a failing plugin does.
   final Set<PlatformCall> refusing = {};
 
+  /// Holds requestPermission until completed, to see the busy state.
+  Completer<void>? permissionHold;
+
   /// Every call, in order.
   final List<PlatformCall> calls = [];
 
@@ -52,6 +57,7 @@ final class FakeReminderPlatform implements ReminderPlatformRepository {
 
   @override
   Future<ReminderPermission> requestPermission() async {
+    if (permissionHold case final gate?) await gate.future;
     calls.add(PlatformCall.requestPermission);
     return permission;
   }

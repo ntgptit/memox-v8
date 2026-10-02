@@ -42,7 +42,7 @@ class StudyFaceCardWidget extends StatelessWidget {
             child: Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: context.textStyles.overline,
+              style: context.textStyles.eyebrow,
             ),
           ),
           Expanded(

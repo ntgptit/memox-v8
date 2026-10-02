@@ -36,7 +36,7 @@ void main() {
     final success = DateTime(2026, 9, 28, 0, 10);
     expect(
       syncStatusLine(en, const SyncStatus(rejectedCount: 2), now),
-      '2 changes kept only on this device',
+      "2 changes weren't accepted",
     );
     expect(
       syncStatusLine(
@@ -60,5 +60,55 @@ void main() {
     for (final kind in SyncFailureKind.values) {
       expect(syncFailureSentence(en, kind), isNotEmpty);
     }
+  });
+
+  test('refused rows read in vi for one and for two (R3)', () {
+    for (final count in [1, 2]) {
+      expect(vi.syncRejectedTitle(count), contains('chưa được máy chủ nhận'));
+      expect(vi.syncStatusRejected(count), contains('chưa được máy chủ nhận'));
+      expect(
+        vi.studyHomeSyncRejected(count),
+        contains('chưa được máy chủ nhận'),
+      );
+    }
+  });
+
+  test('settled: synced once, nothing waiting, refused or failed (critique '
+      '2026-09-30 tone pass, T3)', () {
+    final success = DateTime(2026, 9, 28, 0, 10);
+    expect(syncIsSettled(SyncStatus(lastSuccessAt: success)), isTrue);
+    expect(syncIsSettled(const SyncStatus()), isFalse);
+    expect(
+      syncIsSettled(SyncStatus(lastSuccessAt: success, pendingCount: 1)),
+      isFalse,
+    );
+    expect(
+      syncIsSettled(SyncStatus(lastSuccessAt: success, rejectedCount: 1)),
+      isFalse,
+    );
+    expect(
+      syncIsSettled(
+        SyncStatus(
+          lastSuccessAt: success,
+          lastFailure: LastSyncFailure(SyncFailureKind.network, success),
+        ),
+      ),
+      isFalse,
+    );
+  });
+
+  test('needs attention: the last run failed or a change was refused '
+      '(critique 2026-09-30 part 3d-1, D5)', () {
+    final at = DateTime(2026, 9, 28, 0, 10);
+    expect(syncNeedsAttention(const SyncStatus()), isFalse);
+    expect(syncNeedsAttention(SyncStatus(lastSuccessAt: at)), isFalse);
+    expect(syncNeedsAttention(const SyncStatus(pendingCount: 2)), isFalse);
+    expect(syncNeedsAttention(const SyncStatus(rejectedCount: 1)), isTrue);
+    expect(
+      syncNeedsAttention(
+        SyncStatus(lastFailure: LastSyncFailure(SyncFailureKind.network, at)),
+      ),
+      isTrue,
+    );
   });
 }

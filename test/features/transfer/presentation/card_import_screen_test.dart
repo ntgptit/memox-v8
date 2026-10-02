@@ -3,10 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
+import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -82,7 +84,19 @@ void main() {
     expect(find.text(_en.importFieldFront), findsOneWidget);
 
     await _tap(tester, _en.importPreviewAction);
-    expect(find.text(_en.importPreviewReady(2, 2)), findsOneWidget);
+    // Ready is a fine state, not learning progress (tone pass T6).
+    expect(
+      tester
+          .widget<MxBadge>(
+            find.widgetWithText(MxBadge, _en.importBadgeReady(2)),
+          )
+          .tone,
+      MxBadgeTone.success,
+    );
+    // The chips carry the breakdown and the button the count: no header
+    // total, no caption (critique 2026-09-30 part 3b).
+    expect(find.textContaining('rows ready'), findsNothing);
+    expect(find.text('2 rows will become new cards.'), findsNothing);
 
     await _tap(tester, _en.importCommitAction(2));
     expect(find.text(_en.importDoneTitle), findsOneWidget);
@@ -206,7 +220,7 @@ void main() {
       await _tap(tester, _en.importPreviewAction);
 
       expect(find.text(_en.importRowDuplicateInDeck), findsOneWidget);
-      expect(find.text(_en.importCaptionPreview(0)), findsOneWidget);
+      expect(find.text(_en.importCaptionNothingToImport), findsOneWidget);
 
       await _tap(tester, _en.importIncludeDuplicates);
       expect(find.text(_en.importCommitAction(1)), findsOneWidget);
@@ -282,5 +296,70 @@ void main() {
     await _pump(tester, env, deck.id);
     await tester.pumpAndSettle();
     expect(find.text(_en.importHelperBody), findsNothing);
+  });
+
+  libraryTest('each column shows its first value, under the header when '
+      'there is one (critique 2026-09-30)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back,tags\nmul,water,noun\n'),
+    );
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text('mul'), findsOneWidget);
+    expect(find.text('water'), findsOneWidget);
+
+    await tester.tap(find.text(_en.importHeaderToggle));
+    await tester.pumpAndSettle();
+    // Without a header the first row is data.
+    expect(find.text('front'), findsOneWidget);
+  });
+
+  libraryTest('a short or blank sample cell shows no sample', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('front,back,tags\nmul, \n'));
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text('mul'), findsOneWidget);
+    // Columns B (a blank cell) and C (a missing one) show only their name
+    // and header, no sample line.
+    final rows = find.byType(ImportMappingRowWidget);
+    for (var i = 1; i < 3; i++) {
+      final labels = find.descendant(
+        of: rows.at(i),
+        matching: find.byType(Column),
+      );
+      expect(
+        find.descendant(of: labels.first, matching: find.byType(Text)),
+        findsNWidgets(2),
+      );
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('the file line counts data rows: a header row is not a row '
+      '(critique 2026-09-30 part 3b)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back\nmul,water\nbul,fire\n'),
+    );
+    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importReadAction);
+    expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
+
+    await _tap(tester, _en.importHeaderToggle);
+    expect(find.text(_en.importFileRead('CSV', 3, 2)), findsOneWidget);
   });
 }

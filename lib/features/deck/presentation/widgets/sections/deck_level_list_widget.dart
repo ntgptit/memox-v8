@@ -72,13 +72,14 @@ class DeckLevelListWidget extends ConsumerWidget {
           level.scheduledCount >
       0;
 
-  /// "6 decks" at the root, "4 sub-decks" in a deck, or the filter's
-  /// heading whichever level it is.
+  /// "6 decks" at the root, "Sub-decks" in a deck (its summary card states
+  /// the count; critique 2026-09-30 part 3b), or the filter's heading
+  /// whichever level it is.
   String _headerLabel(AppLocalizations l10n, DeckLevelFilter filter) {
     if (filter == DeckLevelFilter.due) return l10n.libraryDueDecksHeader;
     if (parentId == null) return l10n.libraryDecksCount(level.deckCount);
     if (hasDeepestSubDecks) return l10n.deckDepthHeader(level.deckCount);
-    return l10n.deckSubDeckCount(level.deckCount);
+    return l10n.deckSubDecksHeader;
   }
 
   void _showAll(WidgetRef ref) => ref

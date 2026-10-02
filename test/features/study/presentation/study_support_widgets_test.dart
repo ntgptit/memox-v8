@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -12,6 +14,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_cta_row_
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -126,7 +129,8 @@ void main() {
 
     expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
   });
-  libraryTest('the context line wraps, never cut, and is heard whole', (
+  libraryTest('the context line holds two lines at most, ends in an '
+      'ellipsis, and is heard whole (critique 2026-09-30 part 3c-2, R9)', (
     tester,
     env,
   ) async {
@@ -135,15 +139,16 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _host(const SessionContextLineWidget(text: text)),
+      _host(SessionContextLineWidget(text: text, shown: text.toUpperCase())),
     );
     final line = tester.widget<Text>(find.text(text.toUpperCase()));
 
-    expect((line.maxLines, line.overflow), (null, null));
+    expect((line.maxLines, line.overflow), (2, TextOverflow.ellipsis));
     expect(line.semanticsLabel, text);
   });
 
-  libraryTest('the footer hint wraps, never cut', (tester, env) async {
+  libraryTest('the footer hint wraps, never cut, its glyph inline on the '
+      'first line (critique 2026-09-30 part 3c-2, R6)', (tester, env) async {
     const text =
         'Swipe left for next, right to look back · nothing is graded here';
     await pumpLibraryScreen(
@@ -151,9 +156,50 @@ void main() {
       env,
       _host(const SessionFooterHintWidget(icon: AppIcons.check, text: text)),
     );
-    final hint = tester.widget<Text>(find.text(text));
+    final hint = tester.widget<Text>(find.textContaining(text));
 
     expect((hint.maxLines, hint.overflow), (null, null));
+    expect(hint.semanticsLabel, text);
+    expect(
+      find.descendant(
+        of: find.byType(RichText),
+        matching: find.byIcon(AppIcons.check),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a hint is as tall as its own lines: no empty reserved line '
+      'under a one-line hint, and a wrapped one still grows (owner, critique '
+      '2026-09-30 part 3c-2 golden review; amends R6)', (tester, env) async {
+    Future<double> heightOf(String text, {double textScale = 1}) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host(SessionFooterHintWidget(icon: AppIcons.check, text: text)),
+        textScale: textScale,
+      );
+      return tester.getSize(find.byType(SessionFooterHintWidget)).height;
+    }
+
+    const short = 'Tap to flip';
+    const long =
+        'Swipe left for next, right to look back · nothing is graded here';
+
+    final shortHeight = await heightOf(short);
+    final line = tester
+        .getSize(
+          find
+              .descendant(
+                of: find.textContaining(short),
+                matching: find.byType(RichText),
+              )
+              .first,
+        )
+        .height;
+    expect(shortHeight, line + AppSpacing.control + AppSpacing.gutter);
+    expect(await heightOf(long), greaterThan(shortHeight));
+    expect(await heightOf(short, textScale: 2), greaterThan(shortHeight));
   });
 
   libraryTest('the footer hint steps aside while the keyboard is up (Fill), '
@@ -166,12 +212,12 @@ void main() {
         footer: SessionFooterHintWidget(icon: AppIcons.edit, text: 'Type it'),
       ),
     );
-    expect(find.text('Type it'), findsOneWidget);
+    expect(find.textContaining('Type it'), findsOneWidget);
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 300);
     await tester.pump();
 
-    expect(find.text('Type it'), findsNothing);
+    expect(find.textContaining('Type it'), findsNothing);
   });
 
   libraryTest('an option out of play stays readable: it fades to the muted '
@@ -213,4 +259,86 @@ void main() {
       2 * 160 + AppSpacing.control,
     );
   });
+
+  libraryTest('the face label and the context line are eyebrows (critique '
+      '2026-09-30 part 2, P2)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        const Column(
+          children: [
+            SessionContextLineWidget(
+              text: 'Words · Review',
+              shown: 'WORDS · REVIEW',
+            ),
+            SizedBox(
+              height: 300,
+              child: StudyFaceCardWidget(label: 'Term', child: Text('x')),
+            ),
+          ],
+        ),
+      ),
+    );
+    for (final text in ['WORDS · REVIEW', 'TERM']) {
+      final label = find.text(text);
+      expect(
+        tester.widget<Text>(label).style,
+        tester.element(label).textStyles.eyebrow,
+        reason: text,
+      );
+    }
+  });
+
+  for (final locale in const [Locale('en'), Locale('vi')]) {
+    libraryTest('every footer hint fits one line in ${locale.languageCode}, '
+        'so the CTA stands in one place (owner, critique 2026-09-30 part 3c-2 '
+        'golden review)', (tester, env) async {
+      final l10n = lookupAppLocalizations(locale);
+      final hints = [
+        l10n.studyBrowseHint,
+        l10n.studySelfAssessHintPrompt,
+        l10n.studySelfAssessHintGrade,
+        l10n.studyMatchHint,
+        l10n.studyMatchHintWrong,
+        l10n.studyGuessHintIdle,
+        l10n.studyGuessHintAnswered,
+        l10n.studyRecallHintCounting,
+        l10n.studyRecallHintRevealed,
+        l10n.studyRecallHintTimedOut,
+        l10n.studyFillHintInput,
+        l10n.studyFillHintUsed,
+        l10n.studyFillHintWrong,
+      ];
+      for (final hint in hints) {
+        await pumpLibraryScreen(
+          tester,
+          env,
+          _host(SessionFooterHintWidget(icon: AppIcons.check, text: hint)),
+          locale: locale,
+        );
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find
+              .descendant(
+                of: find.textContaining(hint),
+                matching: find.byType(RichText),
+              )
+              .first,
+        );
+        // Past the glyph's placeholder: every box of the text on one line.
+        final boxes = paragraph.getBoxesForSelection(
+          TextSelection(
+            baseOffset: 1,
+            extentOffset: paragraph.text.toPlainText().length,
+          ),
+        );
+
+        expect(
+          boxes.map((box) => box.top.round()).toSet(),
+          hasLength(1),
+          reason: hint,
+        );
+      }
+    });
+  }
 }

@@ -6,6 +6,7 @@ import 'package:memox/features/settings/presentation/providers/app_settings_prov
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
@@ -89,5 +90,17 @@ void main() {
     expect(find.text(_en.settingsLoadErrorTitle), findsOneWidget);
     expect(find.text(_en.settingsThemeDark), findsNothing);
     expect(find.textContaining('memox.sqlite'), findsNothing);
+  });
+
+  libraryTest('the applies-at-once note is the footnote form, as Language and '
+      'Settings have it (critique 2026-09-30 3a)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, const ThemeScreen());
+
+    final note = find.byWidgetPredicate((w) => w is MxNote && w.isHint);
+    expect(note, findsOneWidget);
+    expect(
+      find.descendant(of: note, matching: find.text(_en.settingsAppliesAtOnce)),
+      findsOneWidget,
+    );
   });
 }

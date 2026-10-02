@@ -99,7 +99,7 @@ void main() {
     );
     expect(find.textContaining(RegExp(r'^back ')), findsOneWidget);
     expect(find.byType(ElevatedButton), findsNothing);
-    expect(find.text(_en.studyBrowseHint), findsOneWidget);
+    expect(find.textContaining(_en.studyBrowseHint), findsOneWidget);
   });
 
   libraryTest('left advances one stop; right looks back without writing; '

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +18,6 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// Screen 22, the Progress tab (UC-PROGRESS-001, UC-PROGRESS-002 at the
 /// library level): Today with the last seven days, the streak, the range,
@@ -52,7 +52,7 @@ class ProgressScreen extends ConsumerWidget {
         ),
       ],
       AsyncValue(:final value?) => _loaded(context, value),
-      _ => [MxSkeletonList(semanticLabel: l10n.progressLoading)],
+      _ => [ProgressSkeletonWidget(semanticLabel: l10n.progressLoading)],
     };
     return MxAppShell(
       appBar: MxAppBar(title: l10n.progressTitle),

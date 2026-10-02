@@ -15,6 +15,7 @@ import 'package:memox/features/search/presentation/controllers/search_screen_con
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -193,9 +194,14 @@ void main() {
               )
               .first,
         );
+        // scrollUntilVisible stops with the button on the screen's bottom
+        // edge, where a tap misses it; bring it fully into view first.
+        await tester.ensureVisible(find.text(_en.searchLoadMore));
+        await tester.pump();
         await tester.tap(find.text(_en.searchLoadMore));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 400));
+        expect(find.byType(MxInlineBanner), findsOneWidget);
         await expectBoundaryGolden(
           tester,
           'goldens/search_load_more_failed_$theme.png',

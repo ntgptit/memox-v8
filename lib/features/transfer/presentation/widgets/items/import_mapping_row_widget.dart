@@ -8,12 +8,14 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 /// One source column and the field it feeds (kit 11 mapping row): its
-/// position name, the header it had, and a picker of the six fields or none.
+/// position name, the header it had, its first value, and a picker of the
+/// six fields or none.
 class ImportMappingRowWidget extends StatelessWidget {
   const ImportMappingRowWidget({
     super.key,
     required this.column,
     required this.header,
+    this.sample,
     required this.field,
     required this.onAssign,
   });
@@ -22,6 +24,10 @@ class ImportMappingRowWidget extends StatelessWidget {
 
   /// The first row's cell, when the first row is a header.
   final String? header;
+
+  /// The first data row's cell, trimmed; null when empty or missing
+  /// (critique 2026-09-30 part 1).
+  final String? sample;
   final TransferField? field;
   final ValueChanged<TransferField?> onAssign;
 
@@ -53,6 +59,13 @@ class ImportMappingRowWidget extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: styles.contentTitle,
+                  ),
+                if (sample case final text?)
+                  Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: styles.rowDescription,
                   ),
               ],
             ),

@@ -38,10 +38,12 @@ class SearchBodyWidget extends ConsumerWidget {
     final l10n = context.l10n;
     return switch (ref.watch(searchScreenControllerProvider)) {
       SearchScreenIdle() => const SearchHintsWidget(),
-      SearchScreenLoading(:final term) => MxScreenScroll(
+      // The header names no query: the field shows it, and user data is
+      // never upper-cased (critique 2026-09-30 part 2, P4).
+      SearchScreenLoading() => MxScreenScroll(
         children: [
           const SizedBox(height: AppSpacing.control),
-          MxListSectionHeader(label: l10n.searchSearching(term)),
+          MxListSectionHeader(label: l10n.searchSearching),
           for (var group = 0; group < _skeletonGroups; group++) ...[
             // The group header's place: a short bar, as the kit draws it.
             const Padding(

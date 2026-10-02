@@ -15,16 +15,15 @@ against the schedule (BR-MODE-005, BR-MODE-006). FE-A6; UC-STUDY-001 (steps
 | Context line | new: `SessionContextLine` (feature-local, deliberately not a shared widget) | Centred overline: "{deck} · Learning · stage {n} of {total}" (BR-MODE-004 orders the stage). |
 | Card | `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is a different composition from this one) | Term half on top with its label and pronunciation, a hairline divider, meaning half below with its label and example when the card has one; both halves always visible (BR-MODE-006). |
 | Navigation | swipe on the card, and a "Next card" button (`StudyCtaRow`, critique 2026-09-30) | Left advances, right looks back one card already shown in this round (BR-STUDY-048); looking back does not re-record the card or move `cursor`. |
-| Footer hint | new: `SessionFooterHint` (feature-local) | "Swipe left for next, right to look back · nothing is graded here" (BR-MODE-005). |
+| Footer hint | new: `SessionFooterHint` (feature-local) | "Swipe for next or back · nothing is graded" (BR-MODE-005); one line in both languages (owner, 3c-2 golden review). |
 
 ## Shared by the session screens
 
 Common to Browse, Match, Guess, Recall and Fill (17–20).
 
 - **`MxStudyTopBar`.** Close icon exits the session (see Exit/abandon below).
-  Mode badge: the mode name, uppercase, tinted with the bar's accent (primary
-  by default; Recall and Fill pass the mastery colour instead — no BR found
-  for that choice, ruled below). Progress track and
+  Mode badge: the mode name, uppercase, tinted with the bar's Indigo, in every
+  mode (critique 2026-09-30 part 3c-2, R8). Progress track and
   counter: for the four round-based modes the fraction is the **round's**
   position and size, never the board's (BR-STUDY-049 says this explicitly for
   Match's boards); for Browse and `self_assess` it is the stage's whole queue,
@@ -94,8 +93,10 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 - **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep studying or Stop.
 - The card follows the finger without a tilt while dragged, and stays still with reduced motion.
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.
+- **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the footer hint's glyph sits inline before the first line, and every hint is one line in both languages, so the CTA stands still with no empty line under it (R6, amended at the owner's golden review); the bar is Indigo in every mode (R8); the context line holds two lines at most (R9).
 
 ## Copy
 
 - Context line: "{deck} · Learning · stage {n} of {total}".
-- Footer hint: "Swipe left for next, right to look back · nothing is graded here".
+- Footer hint: "Swipe for next or back · nothing is graded" / "Vuốt để sang hoặc quay lại · không chấm điểm".

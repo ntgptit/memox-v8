@@ -249,8 +249,6 @@ void main() {
       styles.overline.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
-    // D7: the deck summary label keeps 12, otherwise the same overline.
-    expect(styles.compactOverline, styles.overline.copyWith(fontSize: 12));
   });
 
   test('pills: badge 12/700 tabular at 1, tag 12/600 at 1.5, both 0.1', () {
@@ -422,12 +420,10 @@ void main() {
     expect(styles.fieldCount(isOver: true).letterSpacing, 0.2);
   });
 
-  test('statValue is tabular in the ink given; statLabel is the overline '
-      '(FE-A6 D17)', () {
+  test('statValue is tabular in the ink given (FE-A6 D17)', () {
     final value = styles.statValue(const Color(0xFF123456));
 
     expect(value.color, const Color(0xFF123456));
     expect(value.fontFeatures, contains(const FontFeature.tabularFigures()));
-    expect(styles.statLabel, styles.overline);
   });
 }

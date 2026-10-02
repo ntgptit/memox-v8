@@ -5,9 +5,12 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
 /// The centred glyph and caption stating a turn's rule (kit
-/// SessionFooterHint). Study-local, not shared. Two lines at most, the
-/// glyph centred on the row (the row-marks rule); it steps aside while the
-/// keyboard is up so the answer field keeps the room.
+/// SessionFooterHint). Study-local, not shared. The glyph sits inline before
+/// the first line and wraps with the text (critique 2026-09-30 part 3c-2,
+/// R6). Every hint is one line at normal size, in English and Vietnamese, so
+/// the CTA above it stands in one place in every mode with no empty line
+/// reserved under it (owner, 3c-2 golden review); a wrapped hint still grows.
+/// It steps aside while the keyboard is up so the answer field keeps the room.
 class SessionFooterHintWidget extends StatelessWidget {
   const SessionFooterHintWidget({
     super.key,
@@ -31,23 +34,30 @@ class SessionFooterHintWidget extends StatelessWidget {
         AppSpacing.gutter,
         AppSpacing.gutter,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: AppSpacing.control,
-        children: [
-          IconTheme.merge(
-            data: IconThemeData(color: style.color, size: AppIconSize.inline),
-            child: ExcludeSemantics(child: Icon(icon)),
-          ),
-          Flexible(
-            child: Text(
-              text,
-              semanticsLabel: text,
-              textAlign: TextAlign.center,
-              style: style,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  end: AppSpacing.control,
+                ),
+                child: IconTheme.merge(
+                  data: IconThemeData(
+                    color: style.color,
+                    size: AppIconSize.inline,
+                  ),
+                  child: ExcludeSemantics(child: Icon(icon)),
+                ),
+              ),
             ),
-          ),
-        ],
+            TextSpan(text: text),
+          ],
+        ),
+        semanticsLabel: text,
+        textAlign: TextAlign.center,
+        style: style,
       ),
     );
   }

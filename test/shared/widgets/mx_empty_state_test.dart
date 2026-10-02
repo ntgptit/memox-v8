@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -61,7 +62,7 @@ void main() {
     final tones = {
       MxEmptyStateTone.primary: scheme.primary,
       MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
-      MxEmptyStateTone.success: MxSemanticColors.light.mastery,
+      MxEmptyStateTone.success: MxSemanticColors.light.success,
       MxEmptyStateTone.warning: MxSemanticColors.light.warning,
       MxEmptyStateTone.danger: scheme.error,
     };
@@ -77,10 +78,16 @@ void main() {
         color.withValues(alpha: 0.10),
         reason: '$tone',
       );
-      // The primary glyph reads in primaryInk (spec 2026-09-27 D2).
-      final glyph = tone == MxEmptyStateTone.primary
-          ? MxDerivedColors.primaryInkOf(scheme)
-          : color;
+      // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
+      // success glyph in its ink (critique 2026-09-30 tone pass, T7).
+      final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+      final glyph = switch (tone) {
+        MxEmptyStateTone.primary => MxDerivedColors.primaryInkOf(scheme),
+        MxEmptyStateTone.success => derived.successInk,
+        // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
+        MxEmptyStateTone.warning => derived.warningInk,
+        _ => color,
+      };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
     }
   });
@@ -205,6 +212,23 @@ void main() {
         tertiaryActionLabel: 'Import',
       ),
       throwsAssertionError,
+    );
+  });
+
+  testWidgets('in dark the warning glyph reads in warning ink too (critique '
+      '2026-09-30 part 3d-2, E14)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'T',
+        tone: MxEmptyStateTone.warning,
+      ),
+      brightness: Brightness.dark,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
+      tester.element(find.byIcon(AppIcons.inbox)).derivedColors.warningInk,
     );
   });
 }

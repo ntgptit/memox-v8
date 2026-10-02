@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -295,22 +294,14 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ),
         closeLabel: l10n.studySessionClose,
         onClose: _abandon,
-        // Recall and Fill carry the mastery accent (kit; FE-A6 P4 R3); its
-        // chip text is the mastered ink, as the green is 3.65:1 there (FE-C1).
-        accent: switch (view.currentMode) {
-          StudyMode.recall || StudyMode.fill => context.semanticColors.mastery,
-          _ => null,
-        },
-        accentInk: switch (view.currentMode) {
-          StudyMode.recall ||
-          StudyMode.fill => context.derivedColors.statusMasteredInk,
-          _ => null,
-        },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SessionContextLineWidget(text: sessionContextOf(l10n, view)),
+          SessionContextLineWidget(
+            text: sessionContextOf(l10n, view),
+            shown: sessionContextShownOf(l10n, view),
+          ),
           if (turn.unsaved != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(

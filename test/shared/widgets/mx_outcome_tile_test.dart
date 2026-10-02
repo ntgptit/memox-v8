@@ -55,9 +55,8 @@ void main() {
     }
   }
 
-  testWidgets('kept reads in the mastered ink, lost in the warning ink', (
-    tester,
-  ) async {
+  testWidgets('kept reads in the success ink, lost in the warning ink '
+      '(critique 2026-09-30 tone pass, final review)', (tester) async {
     await pumpMx(
       tester,
       const Column(
@@ -71,7 +70,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('Kept')).style!.color,
-      context.derivedColors.statusMasteredInk,
+      context.derivedColors.successInk,
     );
     expect(
       tester.widget<Text>(find.text('Lost')).style!.color,

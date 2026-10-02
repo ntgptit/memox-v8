@@ -66,30 +66,34 @@ class MonitoringFilterBarWidget extends StatelessWidget {
             if (filter.window != LogWindow.all)
               monitoringWindowLabel(l10n, filter.window),
           ], () => unawaited(_pickWindow(context))),
+          // A device id and a user id are not names: a pair is counted.
           _chip(
             l10n,
             l10n.monitoringChipDevice,
             ids,
             () => unawaited(_pickDeviceUser(context)),
+            isPairNamed: false,
           ),
         ],
       ),
     );
   }
 
-  /// A chip that shows how many choices it holds and reads them all by name.
+  /// A chip that shows its choices (named up to two, counted from three)
+  /// and reads them all by name.
   Widget _chip(
     AppLocalizations l10n,
     String label,
     List<String> chosen,
-    VoidCallback onPressed,
-  ) => Semantics(
+    VoidCallback onPressed, {
+    bool isPairNamed = true,
+  }) => Semantics(
     button: true,
     excludeSemantics: true,
     onTap: onPressed,
     label: monitoringChipSemantics(l10n, label, chosen),
     child: MxChipTrigger(
-      label: monitoringChipLabel(l10n, label, chosen),
+      label: monitoringChipLabel(l10n, label, chosen, isPairNamed: isPairNamed),
       onPressed: onPressed,
     ),
   );

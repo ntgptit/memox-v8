@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
+import 'package:memox/features/study/presentation/states/upper_around_name_state.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -31,10 +32,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
     final l10n = context.l10n;
     final styles = context.textStyles;
     final tone = outcome.tone;
-    final overline = l10n.summaryOverline(
-      view.kind == SessionKind.learning
-          ? l10n.summaryKindLearning
-          : l10n.summaryKindReview,
+    final kind = view.kind == SessionKind.learning
+        ? l10n.summaryKindLearning
+        : l10n.summaryKindReview;
+    final overline = l10n.summaryOverline(kind, view.deckName);
+    // The app's words upper-cased, the deck name as typed (critique
+    // 2026-09-30 part 2, P4).
+    final shown = upperAroundName(
+      (name) => l10n.summaryOverline(kind, name),
       view.deckName,
     );
     final (body, strong) = _bodyOf(l10n);
@@ -56,10 +61,10 @@ class SessionSummaryHeroWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.grouped),
           Text(
-            overline.toUpperCase(),
+            shown,
             semanticsLabel: overline,
             textAlign: TextAlign.center,
-            style: styles.overline,
+            style: styles.eyebrow,
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
@@ -74,7 +79,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
           _BodyText(body: body, strong: strong),
           if (outcome.drawsStats && summary.hasAnswers) ...[
             const SizedBox(height: AppSpacing.grouped),
-            _Stats(view: view, summary: summary),
+            _Stats(
+              view: view,
+              summary: summary,
+              // Every body with stats states the finished count (bold, or
+              // "The {n} cards you finished…" when left early) but an
+              // interrupted one.
+              isFinishedStated: outcome != SummaryOutcome.interrupted,
+            ),
           ],
         ],
       ),
@@ -175,44 +187,69 @@ class _BodyText extends StatelessWidget {
   }
 }
 
-/// Finished, answered, wrong out of all turns (kit; FE-A6 D11).
+/// What the body does not state: the finished count when the body has none,
+/// answered only when it differs from it, and wrong turns with their meaning
+/// (critique 2026-09-30 part 3c-1, R3; amends FE-A6 D17's three stats).
 class _Stats extends StatelessWidget {
-  const _Stats({required this.view, required this.summary});
+  const _Stats({
+    required this.view,
+    required this.summary,
+    required this.isFinishedStated,
+  });
 
   final StudySessionView view;
   final SessionSummary summary;
+
+  /// The body states the finished count; an interrupted session's body does
+  /// not, so its finished tile stays.
+  final bool isFinishedStated;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final finished = summaryFinishedCount(view, summary);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.control,
+    final answered = summary.answeredCardCount;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.micro,
       children: [
-        Expanded(
-          child: MxStatTile(
-            value: l10n.studyCount(finished),
-            label: view.kind == SessionKind.learning
-                ? l10n.summaryStatLearned
-                : l10n.summaryStatReviewed,
-          ),
-        ),
-        Expanded(
-          child: MxStatTile(
-            value: l10n.studyCount(summary.answeredCardCount),
-            label: l10n.summaryStatAnswered,
-          ),
-        ),
-        Expanded(
-          child: MxStatTile(
-            value: l10n.summaryWrongOf(
-              summary.wrongTurnCount,
-              summary.turnCount,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.control,
+          children: [
+            if (!isFinishedStated)
+              Expanded(
+                child: MxStatTile(
+                  value: l10n.studyCount(finished),
+                  label: view.kind == SessionKind.learning
+                      ? l10n.summaryStatLearned
+                      : l10n.summaryStatReviewed,
+                ),
+              ),
+            if (answered != finished)
+              Expanded(
+                child: MxStatTile(
+                  value: l10n.studyCount(answered),
+                  label: l10n.summaryStatAnswered,
+                ),
+              ),
+            Expanded(
+              child: MxStatTile(
+                value: l10n.summaryWrongOf(
+                  summary.wrongTurnCount,
+                  summary.turnCount,
+                ),
+                label: l10n.summaryStatWrong,
+              ),
             ),
-            label: l10n.summaryStatWrong,
-          ),
+          ],
         ),
+        if (summary.wrongTurnCount > 0)
+          Text(
+            l10n.summaryWrongExplained,
+            textAlign: TextAlign.center,
+            style: context.textStyles.emptyBody,
+          ),
       ],
     );
   }

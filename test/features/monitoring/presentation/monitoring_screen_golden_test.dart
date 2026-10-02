@@ -99,11 +99,13 @@ List<LogSummaryEntity> _pending() => [
     status: null,
     at: libraryToday.subtract(const Duration(minutes: 40)),
   ),
+  // Every row is at the default levels, as the list's header counts them
+  // (critique 2026-09-30 part 3b).
   summary(
     'p3',
-    level: LogLevel.info,
-    event: 'lifecycle.resume',
-    message: '8.0.0',
+    level: LogLevel.error,
+    event: 'sync.pull_failed',
+    message: 'Server error',
     status: null,
     at: libraryToday.subtract(const Duration(hours: 2)),
   ),

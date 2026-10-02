@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 /// Asks before [tag] is deleted, saying no card is (UC-TAG-001 A3; kit 05
@@ -32,24 +30,10 @@ class TagDeleteDialogWidget extends StatelessWidget {
     return MxDialog(
       title: l10n.tagsDeleteTitle,
       body: l10n.tagsDeleteBody(tag.name, count),
-      content: MxCard(
-        isSuccess: true,
-        child: IconTheme.merge(
-          data: IconThemeData(color: context.derivedColors.successInk),
-          child: Row(
-            spacing: AppSpacing.control,
-            children: [
-              const Icon(AppIcons.safe),
-              Expanded(
-                child: Text(
-                  l10n.tagsDeleteSafe(count),
-                  style: context.textStyles.noteText,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      // A neutral note: the reassurance BR-TAG-008 asks for, without a
+      // success ground beside the destructive confirm (critique 2026-09-30
+      // part 3d-2, E7).
+      content: MxNote(icon: AppIcons.safe, text: l10n.tagsDeleteSafe(count)),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),

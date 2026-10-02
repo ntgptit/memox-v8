@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/features/study/presentation/widgets/sections/study_entry_hero_widget.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -137,6 +139,11 @@ void main() {
     await lockScheduler(env.db, root.id);
     await pumpLibraryScreen(tester, env, _screen(root.id));
 
+    // The algorithm alone as overline, the limit its own line: no orphan
+    // word (critique 2026-09-30 part 3c-1, R5).
+    expect(find.text(_en.deckSchedulerEightBox.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.studyEntryLimit(20)), findsOneWidget);
+
     final rows = tester.widgetList<MxOptionRow>(find.byType(MxOptionRow));
     expect(
       [for (final row in rows) row.title],
@@ -186,7 +193,13 @@ void main() {
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnCount(1, 1)), findsOneWidget);
-    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsOneWidget);
+    // Only new cards: the footer offers Learn, the row does not (critique
+    // 2026-09-30 part 3d-1, D2).
+    expect(find.widgetWithText(MxButton, _en.studyEntryLearn), findsNothing);
+    expect(
+      find.widgetWithText(MxButton, _en.studyEntryLearnCta(1)),
+      findsOneWidget,
+    );
   });
 
   libraryTest('with nothing due, no review mode is listed: only the Learn '
@@ -296,5 +309,37 @@ void main() {
 
     expect(find.byType(StudyEntryScreen), findsNothing);
     expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
+  });
+
+  libraryTest('the hero overline is an eyebrow (critique 2026-09-30 part 2, '
+      'P2)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    await _learned(env, root.id, 'd1', DateTime(2026, 9, 20));
+    await lockScheduler(env.db, root.id);
+    await pumpLibraryScreen(tester, env, _screen(root.id));
+
+    final overline = find.text(_en.deckSchedulerEightBox.toUpperCase());
+    expect(
+      tester.widget<Text>(overline).style,
+      tester.element(overline).textStyles.eyebrow,
+    );
+  });
+
+  libraryTest('the hero is a plain card: it leads nowhere (critique '
+      '2026-09-30 part 3d-2, E5)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final leaf = await env.decks.sub(root.id, 'Lesson');
+    await insertCard(env.db, id: 'n1', deckId: leaf.id);
+    await pumpLibraryScreen(tester, env, _screen(leaf.id));
+
+    final card = tester.widget<MxCard>(
+      find
+          .descendant(
+            of: find.byType(StudyEntryHeroWidget),
+            matching: find.byType(MxCard),
+          )
+          .first,
+    );
+    expect(card.isHero, isFalse);
   });
 }

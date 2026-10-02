@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
+
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
@@ -79,7 +83,7 @@ void main() {
     expect(find.text('apple'), findsNothing);
     expect(find.text('20s / 20s'), findsOneWidget);
     expect(find.text(_en.studyRecallCaptionCounting), findsOneWidget);
-    expect(find.text(_en.studyRecallHintCounting), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintCounting), findsOneWidget);
 
     await tester.pump(const Duration(seconds: 6));
     expect(find.text('14s / 20s'), findsOneWidget);
@@ -98,7 +102,7 @@ void main() {
     await _settle(tester);
     expect(find.text('apple'), findsOneWidget);
     expect(find.text(_en.studyRecallCaptionRevealed), findsOneWidget);
-    expect(find.text(_en.studyRecallHintRevealed), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintRevealed), findsOneWidget);
     expect(await _rowOf(env.db, id), (15000, true));
 
     // No timeout after a reveal.
@@ -120,6 +124,7 @@ void main() {
     await tester.tap(find.text(_en.studyRecallShowMeaning));
     await _settle(tester);
 
+    await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyRecallForgot));
     await _settle(tester);
 
@@ -140,7 +145,7 @@ void main() {
     expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
     expect(find.text(_en.studyRecallTagTimedOut.toUpperCase()), findsOneWidget);
     expect(find.text('apple'), findsOneWidget);
-    expect(find.text(_en.studyRecallHintTimedOut), findsOneWidget);
+    expect(find.textContaining(_en.studyRecallHintTimedOut), findsOneWidget);
     expect(await _logOf(env.db), ('forgotten', 'timeout'));
     expect(
       tester.takeAnnouncements().map((a) => a.message),
@@ -234,16 +239,29 @@ void main() {
     expect(await _rowOf(env.db, id), (17000, false));
   });
 
-  libraryTest('the top bar carries the mastery accent (R3)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the top bar is Indigo, as in every mode (critique 2026-09-30 '
+      'part 3c-2, R8)', (tester, env) async {
     final id = await _recall(env);
     await pumpLibraryScreen(tester, env, _screen(id));
+    final bar = find.byType(MxStudyTopBar);
+    final fill = tester.widget<ColoredBox>(
+      find.descendant(
+        of: find.descendant(
+          of: bar,
+          matching: find.byType(FractionallySizedBox),
+        ),
+        matching: find.byType(ColoredBox),
+      ),
+    );
+    final chip = find.descendant(
+      of: bar,
+      matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
+    );
 
+    expect(fill.color, AppColorSchemes.light.primary);
     expect(
-      tester.widget<MxStudyTopBar>(find.byType(MxStudyTopBar)).accent,
-      MxSemanticColors.light.mastery,
+      tester.widget<Text>(chip).style?.color,
+      tester.element(chip).derivedColors.primaryInk,
     );
   });
 
@@ -263,5 +281,44 @@ void main() {
         reason: label,
       );
     }
+  });
+
+  libraryTest('a double tap on Show the meaning answers nothing: Forgot and '
+      'Remembered settle first (critique 2026-09-30 part 3c-2, R1)', (
+    tester,
+    env,
+  ) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyRecallRemembered), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(
+      await env.db.customSelect('SELECT id FROM review_log').get(),
+      isEmpty,
+    );
+    expect(find.text('apple'), findsOneWidget);
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.text(_en.studyRecallRemembered));
+    await _settle(tester);
+    expect(find.text('term 2'), findsOneWidget);
+  });
+
+  libraryTest('a tap in the instant the clock runs out does not skip the '
+      'timed-out turn (Review Focus 2)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.pump(const Duration(seconds: 21));
+    await _settle(tester);
+    await tester.tap(find.text(_en.studyContinue), warnIfMissed: false);
+    await _settle(tester);
+
+    expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
+    expect(find.text('term 1'), findsOneWidget);
   });
 }

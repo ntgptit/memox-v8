@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
-
-final _en = lookupAppLocalizations(const Locale('en'));
 
 Widget _section(String deckId) => Scaffold(
   body: CardListSectionWidget(
@@ -44,8 +41,11 @@ Future<String> _deck(
   return words.id;
 }
 
-Finder _header(int count, int total) =>
-    find.text(_en.cardSelectedOf(count, total).toUpperCase());
+/// The checked rows: the selected count lives in the app bar title, which
+/// this section-only harness does not build (critique 2026-09-30 part 3b).
+final _checked = find.byWidgetPredicate(
+  (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+);
 
 void main() {
   libraryTest('a long-press selects that card', (tester, env) async {
@@ -54,7 +54,7 @@ void main() {
     await tester.longPress(find.text('annyeong'));
     await tester.pumpAndSettle();
 
-    expect(_header(1, 2), findsOneWidget);
+    expect(_checked, findsNWidgets(1));
     expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
     expect(
       tester.getSemantics(find.byType(CardRowWidget).last),
@@ -72,11 +72,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('gamsa'));
     await tester.pump();
-    expect(_header(2, 2), findsOneWidget);
+    expect(_checked, findsNWidgets(2));
 
     await tester.tap(find.text('gamsa'));
     await tester.pump();
-    expect(_header(1, 2), findsOneWidget);
+    expect(_checked, findsNWidgets(1));
     await tester.tap(find.text('annyeong'));
     await tester.pump();
     expect(find.byType(MxSelectionCheckbox), findsNothing);

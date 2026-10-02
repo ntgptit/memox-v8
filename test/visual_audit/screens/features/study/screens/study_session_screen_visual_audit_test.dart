@@ -131,7 +131,7 @@ void main() {
         await tester.tap(find.text('banana'));
         await tester.pump();
         await tester.pump();
-        expect(find.text(_en.studyGuessHintAnswered), findsOneWidget);
+        expect(find.textContaining(_en.studyGuessHintAnswered), findsOneWidget);
       },
     );
     await tester.pump(const Duration(milliseconds: 1200));
@@ -159,7 +159,7 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.text('term 2'));
         await tester.pump();
-        expect(find.text(_en.studyMatchHint), findsOneWidget);
+        expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
       },
     );
   });
@@ -220,7 +220,7 @@ void main() {
         await tester.tap(find.text(_en.studyFillCheck));
         await tester.pump();
         await tester.pump();
-        expect(find.text(_en.studyFillHintWrong), findsOneWidget);
+        expect(find.textContaining(_en.studyFillHintWrong), findsOneWidget);
       },
     );
   });

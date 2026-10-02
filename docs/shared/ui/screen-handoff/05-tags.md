@@ -17,12 +17,12 @@ each renamed, merged or deleted from its actions. UC-TAG-001; BR-TAG-001…011; 
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content) | Back and "Tags". |
-| Search | `MxSearchField` | "Search tags". It narrows the catalog with the fold the store writes and searches with (BR-TAG-003): `ĐỘNG TỪ` finds `động từ`. |
-| Header | `MxListSectionHeader` | "{n} tags", "No tags" or "No matches", with "A→Z" as plain text: there is one order, and nothing to tap (critique P2b). |
+| Search | `MxSearchField` | "Search tags". It narrows the catalog with the fold the store writes and searches with (BR-TAG-003): `ĐỘNG TỪ` finds `động từ`. With no tags at all it is not shown. |
+| Header | `MxListSectionHeader` | "{n} tags" or "No matches", with "A→Z" as plain text: there is one order, and nothing to tap (critique P2b). |
 | Rows | `MxSection` + `MxListRow` | A tag tile, the name (one line, ellipsis), "{n} cards" and ⋮ ("Actions for {tag}"). While the tag's write runs, ⋮ is a spinner and the row cannot be tapped. |
 | Action sheet | `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 | The chip "{tag} · {n}" and "Tag actions"; "Find cards with this tag" / "Search the library for “{tag}”"; "Rename tag" / "Renaming onto an existing name merges the two"; "Delete tag" / "Removes it from {n} cards · the cards stay" (destructive). |
 | Rename dialog | `MxDialog` + `MxTextField` + `MxSheetActions` | "Rename tag", "Renaming updates every card that uses “{tag}”.", the overline "NEW NAME", the field prefilled, "Tag names are case-insensitive."; Cancel / Rename. The name rules are checked as it is typed; what the rename would do is read 250 ms after the name stops changing (D8). Rename is off while the name is unchanged. |
-| Delete dialog | `MxDialog` + `MxCard` (success) + `MxSheetActions` | "Delete this tag?", "“{tag}” is removed from {n} cards and disappears from the catalog. Tags are not kept in Trash.", the note "No card is deleted, hidden or changed — all {n} cards stay exactly where they are."; Cancel / "Remove from {n} cards" (destructive). |
+| Delete dialog | `MxDialog` + `MxNote` + `MxSheetActions` | "Delete this tag?", "“{tag}” is removed from {n} cards and disappears from the catalog. Tags are not kept in Trash.", the note (a neutral `MxNote`, not a success card) "No card is deleted, hidden or changed — all {n} cards stay exactly where they are."; Cancel / "Remove from {n} cards" (destructive). |
 
 "Find cards with this tag" opens the Library search on the tag's name (D11). The search
 lives in the Library branch, under the shell, so Back from it returns to the Library,
@@ -34,7 +34,7 @@ not to Tags (plan C4).
 |---|---|---|---|
 | loaded | `tags_loaded_light.png` | `tags_loaded_dark.png` | Tags in the store's folded order (BR-TAG-003; UI-base row 137); no sort glyph. |
 | loading | `tags_loading_light.png` | `tags_loading_dark.png` | The search, then skeleton rows (UI-base row 125). |
-| empty | `tags_empty_light.png` | `tags_empty_dark.png` | "Go to library" goes back. |
+| empty | `tags_empty_light.png` | `tags_empty_dark.png` | Only the empty state: no search field, no header. "Go to library" goes back. |
 | searchEmpty | `tags_search_empty_light.png` | `tags_search_empty_dark.png` | "No tags match “{term}”" (A6), distinct from "No tags yet". |
 | sheet | `tags_sheet_light.png` | `tags_sheet_dark.png` | — |
 | rename | `tags_rename_light.png` | `tags_rename_dark.png` | The tag's name in quotes, not bold. |
@@ -57,10 +57,12 @@ Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea
 - **BR-TAG-003, critique P2b:** there is one order (the store's folded order, diacritics folded), so "A→Z" is plain text with no sort glyph.
 - **UC-TAG-001 E1, D10:** a read failure shows `MxErrorState` with Retry.
 - Dialogs quote tag names, carry no glyph and are left-aligned (`MxDialog`); toasts are one sentence (`MxSnackbarContent`).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the rename dialog's "New name" is a field label in sentence case.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** with no tags at all the screen shows only the empty state (no search field, no header); when tags exist and a search finds none, the field and "No matches" stay; the delete dialog's reassurance is a neutral `MxNote`, not a success card.
 
 ## Copy
 
-"Tags" · "Search tags" · "{n} tags" · "No tags" · "No matches" · "A→Z" · "{n} cards" ·
+"Tags" · "Search tags" · "{n} tags" · "No matches" · "A→Z" · "{n} cards" ·
 "Actions for {tag}" · "No tags yet" · "Tags appear here as you add them when creating or
 editing flashcards." · "Go to library" · "No tags match “{term}”" · "Try a different
 spelling. Tag search is case-insensitive." · "Couldn't load tags" · "Tag actions" · "Find

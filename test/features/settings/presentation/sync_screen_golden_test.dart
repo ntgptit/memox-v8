@@ -108,6 +108,20 @@ void main() {
       );
     });
 
+    // Critique 2026-09-30 part 1 (R4): Keep asks first.
+    libraryTest('sync, keep dialog, $theme', (tester, env) async {
+      await golden(
+        tester,
+        env,
+        'keep_dialog',
+        SyncStatus(lastSuccessAt: minutesAgo(env, 5), rejectedCount: 2),
+        act: () async {
+          await tester.tap(find.text('Keep on this device'));
+          await tester.pumpAndSettle();
+        },
+      );
+    });
+
     libraryTest('sync, syncing, $theme', (tester, env) async {
       final commands = FakeSyncCommands()..hold = Completer<bool>();
       await golden(

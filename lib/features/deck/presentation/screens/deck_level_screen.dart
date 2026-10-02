@@ -356,6 +356,9 @@ class _OpenDeckContent extends ConsumerWidget {
       // Ruling P4a-L9: a sub-deck where one fits, a card on a deck of cards.
       fab: switch (deck.contentType) {
         DeckContentType.card => cardFab(deck.id),
+        // An unset deck's empty state offers New card and New sub-deck
+        // itself (ruling R9, amending P4a-L9; critique 2026-09-30 part 1).
+        DeckContentType.unset => null,
         _ when canCreateDeck && !isReordering => MxFab(
           icon: AppIcons.add,
           semanticLabel: l10n.deckCreateSub,

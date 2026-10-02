@@ -100,9 +100,14 @@ class MxEmptyState extends StatelessWidget {
               _Tile(
                 icon: icon,
                 color: toneColor,
-                ink: tone == MxEmptyStateTone.primary
-                    ? context.derivedColors.primaryInk
-                    : toneColor,
+                ink: switch (tone) {
+                  MxEmptyStateTone.primary => context.derivedColors.primaryInk,
+                  MxEmptyStateTone.success => context.derivedColors.successInk,
+                  // As the caution tile and the warning banner (critique
+                  // 2026-09-30 part 3d-2, E14).
+                  MxEmptyStateTone.warning => context.derivedColors.warningInk,
+                  _ => toneColor,
+                },
                 isCompact: isCompact,
               ),
               // Ruling R7: the tile→title and title→body gaps are
@@ -163,7 +168,7 @@ class MxEmptyState extends StatelessWidget {
   Color _toneColor(BuildContext context) => switch (tone) {
     MxEmptyStateTone.primary => context.colors.primary,
     MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
-    MxEmptyStateTone.success => context.semanticColors.mastery,
+    MxEmptyStateTone.success => context.semanticColors.success,
     MxEmptyStateTone.warning => context.semanticColors.warning,
     MxEmptyStateTone.danger => context.colors.error,
   };
@@ -182,7 +187,9 @@ class _Tile extends StatelessWidget {
   /// The tint's base.
   final Color color;
 
-  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2).
+  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
+  /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
+  /// for warning (part 3d-2, E14).
   final Color ink;
   final bool isCompact;
 

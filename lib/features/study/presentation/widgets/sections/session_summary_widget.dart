@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_facts_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -11,7 +12,6 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// Screen 21, the session summary (kit StudyResultScreenV3): how the
@@ -47,7 +47,7 @@ class SessionSummaryWidget extends StatelessWidget {
         title: l10n.summaryAppBar,
         density: MxAppBarDensity.content,
       ),
-      body: MxScreenScroll(
+      body: StudyCentredScrollWidget(
         children: [
           const SizedBox(height: AppSpacing.micro),
           if (summary != null) ...[
