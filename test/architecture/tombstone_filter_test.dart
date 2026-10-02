@@ -56,8 +56,11 @@ const _readsTombstones = <String, String>{
   'lib/features/search/data/datasources/search_dao.dart#deckForest':
       "filtered by `_live`, the search's one predicate (Search spec D8), "
       'which the scan cannot read through',
-  'lib/features/srs/data/datasources/srs_dao.dart#replaceTreeSchedules':
-      'D11: a reset or a scheduler change rewrites the schedules of the '
+  'lib/core/database/queries/srs_queries.drift#deleteTreeSchedules':
+      'trash spec D11: a reset or a scheduler change rewrites the schedules of the '
+      "tree's tombstones too",
+  'lib/core/database/queries/srs_queries.drift#insertTreeSchedules':
+      'trash spec D11: a reset or a scheduler change rewrites the schedules of the '
       "tree's tombstones too",
 };
 
