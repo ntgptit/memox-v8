@@ -40,7 +40,7 @@ LIMIT :row_limit;
 -- an active deck. A restore names the root of its cards and excludes
 -- nothing. is_candidate marks a sub-deck that holds cards or nothing.
 cardMoveTargets(:root_id AS TEXT OR NULL, :source_deck_id AS TEXT OR NULL)
-  AS DeckForestRow:
+  AS CardMoveTargetRow:
 SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
   (d.parent_id IS NOT NULL AND d.content_type IN ('unset', 'card')
     AND d.id IS NOT :source_deck_id) AS is_candidate
