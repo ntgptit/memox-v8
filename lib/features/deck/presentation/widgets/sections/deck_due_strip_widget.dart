@@ -11,8 +11,8 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
 /// The Library root's bridge to study (screen 01): how many cards wait in
-/// the whole library, and overdue · today · new under it. A tap opens Study
-/// home (critique 2026-09-30, R4).
+/// the whole library, and overdue · today under it (New is not due,
+/// BR-STUDY-068). A tap opens Study home (critique 2026-09-30, R4).
 class DeckDueStripWidget extends StatelessWidget {
   const DeckDueStripWidget({super.key, required this.level, this.onOpen});
 
@@ -51,7 +51,9 @@ class DeckDueStripWidget extends StatelessWidget {
                     DeckWorkloadLineWidget(
                       overdueCount: level.overdueCount,
                       todayCount: level.dueTodayCount,
-                      newCount: level.newCount,
+                      // The two halves of the total; New stays on each deck
+                      // row (BR-STUDY-068; critique 2026-10-02).
+                      newCount: 0,
                       cardCount: due + level.newCount + level.scheduledCount,
                     ),
                   ],

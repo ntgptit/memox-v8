@@ -32,6 +32,25 @@ extension AccountLeaving on AccountCoordinator {
     );
   });
 
+  /// A sign-out stopped before anything on this device was removed (stage
+  /// `started`: the SDK still holds X, nothing reset) goes back to X as it
+  /// was: the record goes, the gate opens, and the session is checked again,
+  /// which resumes sync (#9) or, offline, waits for the network (#8). With
+  /// X's session gone meanwhile, X is lost as a cancelled switch's source is
+  /// (#22; critique 2026-10-02, F2).
+  Future<void> cancelSignOut() => _serial(() async {
+    final t = await _store.transition();
+    if (t == null ||
+        t.kind != TransitionKind.signOut ||
+        t.stage != TransitionStage.started) {
+      throw StateError('No sign-out to cancel before it signs out');
+    }
+    final userId = _gateway.currentUserId;
+    await _drop(t);
+    if (userId == t.sourceUserId) return _validate();
+    return _lost(sessionInvalid: true);
+  });
+
   /// Deletes the account on the server, then clears the device like a
   /// sign-out (#42–#44). Online only: offline, it refuses before anything
   /// changes.

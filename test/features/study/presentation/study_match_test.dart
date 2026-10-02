@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
@@ -69,6 +70,11 @@ Future<void> _pair(WidgetTester tester, String term, String meaning) async {
   await tester.pump();
 }
 
+/// The footer hint's glyph (critique 2026-10-02, F7).
+IconData _hintIcon(WidgetTester tester) => tester
+    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
+    .icon;
+
 void main() {
   libraryTest('terms on the left, meanings on the right, with the hint '
       '(BR-STUDY-049)', (tester, env) async {
@@ -83,6 +89,7 @@ void main() {
       lessThan(tester.getCenter(find.text('apple')).dx),
     );
     expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
+    expect(_hintIcon(tester), AppIcons.info);
   });
 
   libraryTest('a term, then its meaning: both are matched, in the success '
@@ -134,6 +141,7 @@ void main() {
     expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHintWrong), findsOneWidget);
+    expect(_hintIcon(tester), AppIcons.repeat);
     expect(
       tester.takeAnnouncements().map((a) => a.message),
       contains(_en.studyMatchHintWrong),
@@ -145,6 +153,7 @@ void main() {
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
     expect(_tile(tester, 'banana').tone, StudyChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
+    expect(_hintIcon(tester), AppIcons.info);
     expect(await turnKindsOf(env.db, 'ST-01'), hasLength(1));
     handle.dispose();
   });

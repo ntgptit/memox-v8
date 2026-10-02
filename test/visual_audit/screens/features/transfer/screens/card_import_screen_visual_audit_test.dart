@@ -66,9 +66,9 @@ void main() {
           ],
         );
         // The scope outlives a re-pump: drive the wizard only the first time.
-        if (find.text(_en.importPickAction).evaluate().isEmpty) return;
+        if (find.text(_en.importPickTitle).evaluate().isEmpty) return;
         for (final label in [
-          _en.importPickAction,
+          _en.importSourceFile,
           _en.importReadAction,
           _en.importPreviewAction,
         ]) {

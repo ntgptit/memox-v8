@@ -86,6 +86,9 @@ class SessionSummaryHeroWidget extends StatelessWidget {
               // "The {n} cards you finished…" when left early) but an
               // interrupted one.
               isFinishedStated: outcome != SummaryOutcome.interrupted,
+              // Only a finished session had later rounds (critique
+              // 2026-10-02, F1).
+              isWrongExplained: tone == SummaryTone.success,
             ),
           ],
         ],
@@ -195,6 +198,7 @@ class _Stats extends StatelessWidget {
     required this.view,
     required this.summary,
     required this.isFinishedStated,
+    required this.isWrongExplained,
   });
 
   final StudySessionView view;
@@ -203,6 +207,9 @@ class _Stats extends StatelessWidget {
   /// The body states the finished count; an interrupted session's body does
   /// not, so its finished tile stays.
   final bool isFinishedStated;
+
+  /// Wrong cards came back in later rounds only in a finished session.
+  final bool isWrongExplained;
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +251,7 @@ class _Stats extends StatelessWidget {
             ),
           ],
         ),
-        if (summary.wrongTurnCount > 0)
+        if (isWrongExplained && summary.wrongTurnCount > 0)
           Text(
             l10n.summaryWrongExplained,
             textAlign: TextAlign.center,
