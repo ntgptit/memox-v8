@@ -178,7 +178,12 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         children: [
           _Bounded(onSubmitted: submitted.add),
-          const SizedBox(key: ValueKey('outside'), width: 200, height: 48),
+          GestureDetector(
+            key: const ValueKey('outside'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () {},
+            child: const SizedBox(width: 200, height: 48),
+          ),
         ],
       ),
     );
@@ -191,25 +196,36 @@ void main() {
   });
 
   testWidgets(
-    'leaving the route with the field open submits once (harden 23)',
+    'the focus path submits once when the route is left, and a caller that '
+    'updates state in its callback does not throw',
     (tester) async {
       final submitted = <String>[];
+      final received = ValueNotifier<String>('');
+      addTearDown(received.dispose);
       await pumpMx(
         tester,
-        Builder(
-          builder: (context) => TextButton(
+        ValueListenableBuilder<String>(
+          valueListenable: received,
+          builder: (context, last, _) => TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => Scaffold(
-                  body: Center(child: _Bounded(onSubmitted: submitted.add)),
+                  body: Center(
+                    child: _Bounded(
+                      onSubmitted: (text) {
+                        submitted.add(text);
+                        received.value = text;
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
-            child: const Text('open'),
+            child: Text('open $last'),
           ),
         ),
       );
-      await tester.tap(find.text('open'));
+      await tester.tap(find.text('open '));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(_valueKey));
       await tester.pump();
