@@ -57,10 +57,10 @@ const _readsTombstones = <String, String>{
       "filtered by `_live`, the search's one predicate (Search spec D8), "
       'which the scan cannot read through',
   'lib/core/database/queries/srs_queries.drift#deleteTreeSchedules':
-      'D11: a reset or a scheduler change rewrites the schedules of the '
+      'trash spec D11: a reset or a scheduler change rewrites the schedules of the '
       "tree's tombstones too",
   'lib/core/database/queries/srs_queries.drift#insertTreeSchedules':
-      'D11: a reset or a scheduler change rewrites the schedules of the '
+      'trash spec D11: a reset or a scheduler change rewrites the schedules of the '
       "tree's tombstones too",
 };
 

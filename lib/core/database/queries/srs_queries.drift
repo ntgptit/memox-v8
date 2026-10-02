@@ -4,8 +4,8 @@ import '../tables/srs.drift';
 import '../tables/study.drift';
 
 -- BR-DECK-003, BE-C3: the root of :card_id's tree, reached through
--- card.deck_id and then deck.root_id; nothing when the card, its deck or
--- the root is in the Trash.
+-- card.deck_id and then deck.root_id, never COALESCE(parent_id, id);
+-- nothing when the card, its deck or the root is in the Trash.
 rootOfLiveCard(:card_id AS TEXT):
 SELECT root.* FROM card c
 JOIN deck d ON d.id = c.deck_id
@@ -52,14 +52,14 @@ createReviewLog: INSERT INTO review_log $row;
 updateLiveDeck(:deck_id AS TEXT):
 UPDATE deck SET $values WHERE id = :deck_id AND delete_batch_id IS NULL;
 
--- D11, schema.md: every schedule row of :root_id's tree, tombstones
+-- Trash spec D11, schema.md: every schedule row of :root_id's tree, tombstones
 -- included, goes before the tree gets new ones.
 deleteTreeSchedules(:root_id AS TEXT):
 DELETE FROM card_schedule WHERE card_id IN (
   SELECT c.id FROM card c JOIN deck d ON d.id = c.deck_id
   WHERE d.root_id = :root_id);
 
--- D11, schema.md: every card of :root_id's tree, at any depth and
+-- Trash spec D11, schema.md: every card of :root_id's tree, at any depth and
 -- tombstones included, gets a schedule row of these values.
 insertTreeSchedules(:scheduler_type AS TEXT, :scheduler_version AS INTEGER,
   :generation AS INTEGER, :learned_at AS DATETIME OR NULL,

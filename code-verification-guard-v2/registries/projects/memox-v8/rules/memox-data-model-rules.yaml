@@ -25,7 +25,7 @@ rules:
       - drift_sql_files
     # SQL in any case, in a `.drift` file or a Dart string, and Drift's
     # `coalesce([deck.parentId, …])`. A comment line that quotes the form is
-    # prose: `srs_dao.dart` says why it joins on `root_id` in these words.
+    # prose: `srs_queries.drift` says why it joins on `root_id` in these words.
     patterns:
       - '^(?!\s*(?://|\*|--)).*\b(?i:coalesce)\s*\(\s*\[?\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?(?:parent_id|parentId)\b'
     tags:
