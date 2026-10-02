@@ -58,6 +58,7 @@
     "card_queries": ["card"],
     "deck_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],
+    "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
     "starter_queries": ["starter_decks"],
     "trash_queries": ["trash"]
   },
