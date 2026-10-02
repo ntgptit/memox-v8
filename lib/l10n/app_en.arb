@@ -3821,12 +3821,12 @@
   },
   "importSkippedShowAll": "Show all {count}",
   "@importSkippedShowAll": {
-    "description": "Import result (critique 2026-10-02, F4): shows every skipped row past the first five.",
     "placeholders": {
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "Import result (critique 2026-10-02, F4): shows every skipped row past the first five."
   },
   "importSkipNote": "Duplicates are skipped by the case-insensitive term + meaning.",
   "@importSkipNote": {
