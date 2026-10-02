@@ -58,6 +58,7 @@
     "card_queries": ["card"],
     "deck_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],
+    "starter_queries": ["starter_decks"],
     "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [
