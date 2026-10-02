@@ -80,6 +80,7 @@ node TalkBack reads. Goldens:
 - **Plan R4:** the interval preview is read when the card is served, so the grades have it at the reveal.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** the grades settle for 400 ms after Show answer, so a double tap grades nothing (R1); they keep their rounded rectangles, as they judge rather than act (R7).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the footer hint's glyph is info (F7).
 
 ## Accessibility
 

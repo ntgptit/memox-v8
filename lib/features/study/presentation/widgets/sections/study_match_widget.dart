@@ -169,8 +169,10 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
             ),
           ),
         ),
+        // What to do is info; a pair that comes back is repeat (critique
+        // 2026-10-02, F7).
         SessionFooterHintWidget(
-          icon: AppIcons.check,
+          icon: _isWrongPair ? AppIcons.repeat : AppIcons.info,
           text: _isWrongPair ? l10n.studyMatchHintWrong : l10n.studyMatchHint,
         ),
       ],

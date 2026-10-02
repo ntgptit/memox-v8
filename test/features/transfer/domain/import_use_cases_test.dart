@@ -100,6 +100,16 @@ void main() {
       (1, 2, 1, 1),
     );
     expect(summary.kind, ImportSummaryKind.partial);
+    // Each skipped row, in source order, with why (critique 2026-10-02, F4);
+    // the blank row 5 is ignored, not listed.
+    expect(
+      [for (final row in summary.skipped) (row.rowNumber, row.kind)],
+      [
+        (3, ImportRowKind.invalid),
+        (4, ImportRowKind.duplicateInDeck),
+        (6, ImportRowKind.duplicateInSource),
+      ],
+    );
   });
 
   test('a clean source ends on success; a blank row alone does not make it partial', () async {
@@ -114,6 +124,26 @@ void main() {
     expect(summary.kind, ImportSummaryKind.success);
   });
 
+  test('a partial import with a commit-time duplicate and an invalid row: '
+      'the counts are the list (final review)', () async {
+    final rows = await previewOf('front,back\na,b\nc,\nd,e');
+    await insertCard(db, id: 'raced', deckId: leaf.id, front: 'a', back: 'b');
+
+    final summary = _ok(
+      await commit(deckId: leaf.id, preview: rows, includeDuplicates: false),
+    );
+
+    expect(summary.kind, ImportSummaryKind.partial);
+    expect(
+      [for (final row in summary.skipped) (row.rowNumber, row.kind)],
+      [(2, ImportRowKind.duplicateInDeck), (3, ImportRowKind.invalid)],
+    );
+    expect(
+      (summary.written, summary.duplicatesSkipped, summary.invalid),
+      (1, 1, 1),
+    );
+  });
+
   test(
     'rows that became duplicates after the preview end on none (spec §8.1)',
     () async {
@@ -125,6 +155,12 @@ void main() {
       );
 
       expect((summary.written, summary.kind), (0, ImportSummaryKind.none));
+      // The commit's re-check names the row it dropped.
+      expect(
+        [for (final row in summary.skipped) (row.rowNumber, row.kind)],
+        [(2, ImportRowKind.duplicateInDeck)],
+      );
+      expect(summary.duplicatesSkipped, 1);
     },
   );
 

@@ -78,11 +78,12 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - **Critique 2026-09-30:** the file helper ("importHelperBody") has a close button and stays hidden once dismissed on this device; the "mapped for you" note is an `MxNote.hint`.
 - **Critique 2026-09-30 tone pass, T6:** Ready (chip and row mark) is success; the step tracker's finished steps stay mastery (progress through the flow).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** in the preview "Include duplicates" sits after the badges and before the preview rows; the source step's "Pick a spreadsheet or text file" empty state has no wrapping card, its body reads "Nothing is added until you confirm.", and the formats are stated only by the "Choose a file" option's hint.
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the result lists each skipped row (its number, term, meaning, why and mark, drawn as in the preview) under "Skipped rows", five first and then "Show all {n}"; rows the commit's re-check dropped read "Already in this deck"; the skip note keeps only the duplicate rule (F4). Tapping the "Choose a file" card opens the picker, selected or not; the empty state below has no button (F9).
 
 ## Copy
 
 - Steps: "Source" · "Columns" · "Preview" · "Import" · "Step {n} of 4: {name}".
-- Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · "Paste text" · "Tab- or comma-separated rows" · "Pick a spreadsheet or text file" · "Nothing is added until you confirm." · "Choose file" · "Each row makes one card".
+- Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · "Paste text" · "Tab- or comma-separated rows" · "Pick a spreadsheet or text file" · "Nothing is added until you confirm." · "Each row makes one card".
 - Problems: "This file is not UTF-8" · "This file can’t be read" · "There are no rows to import".
 - Mapping: "2 · Map columns" · "First row is a header" · "Column {letter}" · "Term (front)" · "Meaning (back)" · "Example" · "Hint" · "Pronunciation" · "Tags" · "Not imported" · "Map one column to Term and one to Meaning. Both are required."
 - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".

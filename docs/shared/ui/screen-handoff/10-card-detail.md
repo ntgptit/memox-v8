@@ -49,6 +49,7 @@ Every state above is built.
 - **Critique 2026-09-30 tone pass, T5:** a history badge (it names the outcome, part 3d-2) is success for a right answer, warning for a lapse ("Again", "Forgot") and neutral for relearning.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the schedule card's title is an eyebrow; the read-only field labels are field labels in sentence case; the history's cycle headers stay section labels.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** a history badge names the outcome ("Again", "Good", "Remembered", "Forgot"…) in that outcome's tone (warning lapse, neutral relearning, success otherwise); the kind ("Learning", "Review", "Repeat") is plain text beside it; the metadata lines are text without glyphs; the schedule's "Algorithm" fact takes a full-width row of its own after the paired facts.
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink everywhere, the card list included (F6).
 
 ## Copy
 

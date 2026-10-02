@@ -57,12 +57,12 @@ final class ImportPreview {
   int willWrite({required bool includeDuplicates}) =>
       ready + (includeDuplicates ? duplicates : 0);
 
-  /// The drafts a commit hands to the card feature, in source order.
-  List<CardDraft> draftsToWrite({required bool includeDuplicates}) => [
+  /// The rows a commit writes, in source order (A4).
+  List<ImportRow> rowsToWrite({required bool includeDuplicates}) => [
     for (final row in rows)
       if (row.kind == ImportRowKind.ready ||
           (includeDuplicates && row.isDuplicate))
-        row.draft!,
+        row,
   ];
 
   int _count(ImportRowKind kind) =>
