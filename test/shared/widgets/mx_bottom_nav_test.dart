@@ -114,17 +114,30 @@ void main() {
     expect(picked, 2);
     expect(
       tester.getSemantics(find.text('Library')),
-      isSemantics(label: 'Library', isSelected: true, isButton: true),
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        isSelected: true,
+        isButton: true,
+      ),
     );
     handle.dispose();
   });
 
-  testWidgets('glass: a backdrop blur behind the chrome surface', (
+  testWidgets('each destination reads its tab position (R4)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav());
+
+    expect(find.bySemanticsLabel('Library\nTab 1 of 4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Settings\nTab 4 of 4'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('no backdrop blur: the bar never sits over content (R4)', (
     tester,
   ) async {
     await pumpMx(tester, _nav());
 
-    expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
   });
 
   test('selectedIndex outside the destinations is rejected', () {

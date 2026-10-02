@@ -126,7 +126,7 @@ void main() {
     expect(
       tester.getSemantics(_item('Library')),
       isSemantics(
-        label: 'Library',
+        label: 'Library\nTab 1 of 4',
         isButton: true,
         isSelected: true,
         hasSelectedState: true,
@@ -135,6 +135,15 @@ void main() {
     );
     handle.dispose();
     await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('each destination reads its tab position (R4)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail());
+
+    expect(find.bySemanticsLabel('Library\nTab 1 of 4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Settings\nTab 4 of 4'), findsOneWidget);
+    handle.dispose();
   });
 
   testWidgets('it takes the start inset only: left in LTR, right in RTL', (

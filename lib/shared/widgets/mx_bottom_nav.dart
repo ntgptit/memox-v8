@@ -1,8 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -23,9 +21,11 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a translucent glass bar, with a tinted pill
-/// behind the current glyph. It is in-flow, never over the scroll, and adds
-/// the gesture inset below itself.
+/// The top-level destinations on a translucent bar (surface at 84%) with a
+/// tinted pill behind the current glyph. It is in-flow, never over the scroll,
+/// so it carries no blur (SP1 §5.2). Custom by owner ruling R4: Material's
+/// NavigationBar would change the bar's look; this one reads its tab positions
+/// the same way. It adds the gesture inset below itself.
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -41,9 +41,6 @@ class MxBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -51,8 +48,8 @@ class MxBottomNav extends StatelessWidget {
     final inset = MediaQuery.paddingOf(context).bottom;
     final pillTint = colors.primary.withValues(
       alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
+          ? AppOpacity.navPillDark
+          : AppOpacity.navPillLight,
     );
     final radius = BorderRadius.circular(AppRadius.lg);
     return Padding(
@@ -64,40 +61,34 @@ class MxBottomNav extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: AppEffects.glassBlur,
-            sigmaY: AppEffects.glassBlur,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: derived.chromeGlass,
-              borderRadius: radius,
-              border: Border.all(
-                color: derived.ghostBorder,
-                width: AppStroke.hairline,
-              ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: derived.chromeGlass,
+            borderRadius: radius,
+            border: Border.all(
+              color: derived.ghostBorder,
+              width: AppStroke.hairline,
             ),
-            // Ruling R3: 64 at minimum, grows with text scaling.
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: AppSize.bottomNavBar,
-              ),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Row(
-                  children: [
-                    for (final (index, destination) in destinations.indexed)
-                      Expanded(
-                        child: _Item(
-                          destination: destination,
-                          isSelected: index == selectedIndex,
-                          pillTint: pillTint,
-                          onTap: () => onSelected(index),
-                        ),
+          ),
+          // Ruling R3: 64 at minimum, grows with text scaling.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Row(
+                children: [
+                  for (final (index, destination) in destinations.indexed)
+                    Expanded(
+                      child: _Item(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        pillTint: pillTint,
+                        tabIndex: index + 1,
+                        tabCount: destinations.length,
+                        onTap: () => onSelected(index),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -112,12 +103,16 @@ class _Item extends StatelessWidget {
     required this.destination,
     required this.isSelected,
     required this.pillTint,
+    required this.tabIndex,
+    required this.tabCount,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
   final Color pillTint;
+  final int tabIndex;
+  final int tabCount;
   final VoidCallback onTap;
 
   @override
@@ -155,6 +150,9 @@ class _Item extends StatelessWidget {
             ),
             Text(
               destination.label,
+              // The position, as Material's NavigationBar reads it (R4).
+              semanticsLabel:
+                  '${destination.label}\n${MaterialLocalizations.of(context).tabLabel(tabIndex: tabIndex, tabCount: tabCount)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textStyles.navLabel(isSelected: isSelected),
