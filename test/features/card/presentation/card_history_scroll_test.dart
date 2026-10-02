@@ -13,6 +13,7 @@ import 'package:memox/features/card/domain/usecases/load_card_history_page_use_c
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_history_event_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_history_scroll_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -154,15 +155,24 @@ void main() {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.text(_en.cardModeFill), findsOneWidget);
-    // The mode carries the Study glyph, not the Library's.
-    expect(
-      find.descendant(
-        of: find.byType(CardHistoryEventWidget),
-        matching: find.byIcon(AppIcons.study),
-      ),
-      findsNWidgets(2),
-    );
-    expect(find.byIcon(AppIcons.library), findsNothing);
+    // The badge is the event's one glyph; the metadata is text (critique
+    // 2026-09-30 part 3d-2, E9).
+    for (final glyph in [
+      AppIcons.study,
+      AppIcons.progress,
+      AppIcons.calendar,
+      AppIcons.hint,
+      AppIcons.timeout,
+    ]) {
+      expect(
+        find.descendant(
+          of: find.byType(CardHistoryEventWidget),
+          matching: find.byIcon(glyph),
+        ),
+        findsNothing,
+        reason: '$glyph',
+      );
+    }
     expect(find.text(_en.cardHistoryBoxMove(2, 3)), findsOneWidget);
     expect(find.text(_en.cardHistoryHintUsed), findsOneWidget);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
@@ -352,6 +362,11 @@ void main() {
         tone,
         reason: '$kind $action',
       );
+      final badge = tester.widget<MxBadge>(find.byType(MxBadge));
+      // The badge names the outcome it is toned by; the kind is text
+      // beside it (critique 2026-09-30 part 3d-2, E9).
+      expect(badge.label, _en.cardHistoryAction(action), reason: '$action');
+      expect(find.text(_en.cardHistoryKind(kind)), findsOneWidget);
     }
   });
 }

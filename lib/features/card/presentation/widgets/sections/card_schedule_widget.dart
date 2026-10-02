@@ -67,8 +67,23 @@ class CardScheduleWidget extends StatelessWidget {
                   ),
                 ],
               ),
+            // Its value is the longest; a row of its own keeps it on one
+            // line (critique 2026-09-30 part 3d-2, E9).
+            _schedulerFact(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _schedulerFact(BuildContext context) {
+    final l10n = context.l10n;
+    return _Fact(
+      icon: AppIcons.scheduler,
+      label: l10n.cardFactScheduler,
+      value: l10n.cardFactSchedulerValue(
+        l10n.cardScheduler(detail.schedulerType),
+        detail.schedule.generation,
       ),
     );
   }
@@ -114,14 +129,6 @@ class CardScheduleWidget extends StatelessWidget {
           value: number(schedule.lapseCount),
         ),
       ],
-      _Fact(
-        icon: AppIcons.scheduler,
-        label: l10n.cardFactScheduler,
-        value: l10n.cardFactSchedulerValue(
-          l10n.cardScheduler(detail.schedulerType),
-          schedule.generation,
-        ),
-      ),
       if (schedule.easeFactor case final ease?)
         _Fact(
           icon: AppIcons.progress,
