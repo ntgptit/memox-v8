@@ -76,7 +76,7 @@ void main() {
     );
 
     expect(find.text(_en.importPickTitle), findsOneWidget);
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
 
     await _tap(tester, _en.importReadAction);
@@ -119,7 +119,7 @@ void main() {
         file: _file('front,back\nmul,water\n'),
         onClose: () => closed++,
       );
-      await _tap(tester, _en.importPickAction);
+      await _tap(tester, _en.importSourceFile);
       await _tap(tester, _en.importReadAction);
 
       await tester.binding.handlePopRoute();
@@ -140,7 +140,7 @@ void main() {
     final root = await env.decks.root('Korean');
     final deck = await env.decks.sub(root.id, 'Words');
     await _pump(tester, env, deck.id, file: _file('term,meaning\nmul,water\n'));
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
 
     expect(find.text(_en.importMappingIncomplete), findsOneWidget);
@@ -165,7 +165,7 @@ void main() {
         bytes: Uint8List.fromList([0x63, 0xE9, 0x2C, 0x62]),
       ),
     );
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
 
     expect(find.text(_en.importProblemEncodingTitle), findsOneWidget);
@@ -215,7 +215,7 @@ void main() {
         back: 'water',
       );
       await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
-      await _tap(tester, _en.importPickAction);
+      await _tap(tester, _en.importSourceFile);
       await _tap(tester, _en.importReadAction);
       await _tap(tester, _en.importPreviewAction);
 
@@ -234,7 +234,7 @@ void main() {
     final root = await env.decks.root('Korean');
     final deck = await env.decks.sub(root.id, 'Words');
     await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
     await _tap(tester, _en.importPreviewAction);
     await _tap(tester, _en.importCommitAction(1));
@@ -270,7 +270,7 @@ void main() {
       deck.id,
       file: _file('front,back,tags\nmul,water,noun\n'),
     );
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
 
     expect(find.byIcon(AppIcons.arrowRight), findsNothing);
@@ -308,7 +308,7 @@ void main() {
       deck.id,
       file: _file('front,back,tags\nmul,water,noun\n'),
     );
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
     expect(find.text('mul'), findsOneWidget);
     expect(find.text('water'), findsOneWidget);
@@ -326,7 +326,7 @@ void main() {
     final root = await env.decks.root('Korean');
     final deck = await env.decks.sub(root.id, 'Words');
     await _pump(tester, env, deck.id, file: _file('front,back,tags\nmul, \n'));
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
     expect(find.text('mul'), findsOneWidget);
     // Columns B (a blank cell) and C (a missing one) show only their name
@@ -355,7 +355,7 @@ void main() {
       deck.id,
       file: _file('front,back\nmul,water\nbul,fire\n'),
     );
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
     expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
 

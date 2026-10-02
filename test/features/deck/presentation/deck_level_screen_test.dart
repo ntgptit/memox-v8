@@ -83,7 +83,10 @@ void main() {
     await pumpLibraryScreen(tester, env, deckScreen());
 
     expect(find.text(_en.libraryDueTitle(2)), findsOneWidget);
-    expect(_rich('1 overdue · 1 today · 1 new'), findsOneWidget);
+    // The strip states its total's two halves; New is not due
+    // (BR-STUDY-068; critique 2026-10-02).
+    expect(_rich('1 overdue · 1 today'), findsOneWidget);
+    expect(_rich('1 overdue · 1 today · 1 new'), findsNothing);
     expect(find.widgetWithText(MxBadge, _en.deckDueBadge(2)), findsOneWidget);
     expect(
       tester.getTopLeft(find.text(_en.libraryDueTitle(2))).dy,
@@ -166,7 +169,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(_rich('2 overdue · 1 new'), findsOneWidget);
+    // The strip leaves New out (BR-STUDY-068; critique 2026-10-02).
+    expect(_rich('2 overdue'), findsOneWidget);
   });
 
   libraryTest('loading shows skeleton rows', (tester, env) async {

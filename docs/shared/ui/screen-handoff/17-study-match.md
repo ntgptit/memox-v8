@@ -43,6 +43,7 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 - **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this board and is guaranteed one slot in the next round, even if matched correctly later in this round.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** a meaning may be tapped first, as BR-STUDY-062 requires; idle meanings sit on the recessed ground, terms stay raised; hint "Tap a term and its meaning, in either order" (R3).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the footer hint's glyph is info, and repeat while a wrong pair's "comes back next round" shows (F7).
 
 ## Accessibility
 

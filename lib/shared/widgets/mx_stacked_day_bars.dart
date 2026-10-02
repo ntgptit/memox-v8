@@ -35,7 +35,8 @@ final class MxDayBar {
   /// The day and its numbers: "Sunday: 17 cards, 5 learning, 12 reviewing".
   final String semanticLabel;
 
-  /// Drawn at full strength, with a bold label.
+  /// Labelled in bold; every day's bars draw at full strength (critique
+  /// 2026-10-02, F5).
   final bool isCurrent;
 
   int get total => base + top;
@@ -44,8 +45,9 @@ final class MxDayBar {
 /// A week of days as stacked bars (kit 22, FE-A9 D6): the [MxBarSeries.color]
 /// of the top series over the base series, scaled to the fullest day, with
 /// the labels under the bars and the legend under the labels. A day with
-/// nothing is a thin baseline. Each bar is one TalkBack node; the drawing
-/// and the legend say nothing more.
+/// nothing is a thin baseline. Every day draws at full strength; the current
+/// day is told by its bold label (critique 2026-10-02, F5). Each bar is one
+/// TalkBack node; the drawing and the legend say nothing more.
 class MxStackedDayBars extends StatelessWidget {
   const MxStackedDayBars({
     super.key,
@@ -61,10 +63,6 @@ class MxStackedDayBars extends StatelessWidget {
   static const double _chartHeight = 78;
   static const double _emptyHeight = 2;
   static const double _legendDot = 6;
-
-  /// The kit's fades of the days before the current one.
-  static const double _pastBaseOpacity = 0.55;
-  static const double _pastTopOpacity = 0.7;
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +121,6 @@ class MxStackedDayBars extends StatelessWidget {
       builder: (context, constraints) {
         final unit = constraints.maxHeight / most;
         const round = Radius.circular(AppRadius.xs);
-        final topFade = day.isCurrent ? 1.0 : _pastTopOpacity;
-        final baseFade = day.isCurrent ? 1.0 : _pastBaseOpacity;
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -141,7 +137,7 @@ class MxStackedDayBars extends StatelessWidget {
               Container(
                 height: day.top * unit,
                 decoration: BoxDecoration(
-                  color: top.color.withValues(alpha: topFade),
+                  color: top.color,
                   borderRadius: const BorderRadius.vertical(top: round),
                 ),
               ),
@@ -149,7 +145,7 @@ class MxStackedDayBars extends StatelessWidget {
               Container(
                 height: day.base * unit,
                 decoration: BoxDecoration(
-                  color: base.color.withValues(alpha: baseFade),
+                  color: base.color,
                   borderRadius: day.top > 0
                       ? const BorderRadius.vertical(bottom: round)
                       : const BorderRadius.all(round),

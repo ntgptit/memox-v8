@@ -45,14 +45,20 @@ void main() {
       _chart([_day('M', 10, 0), _day('Today', 12, 8, now: true)]),
     );
 
+    final reviewing = find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          (widget.decoration as BoxDecoration?)?.shape == BoxShape.rectangle &&
+          (widget.decoration as BoxDecoration?)?.color?.toARGB32() ==
+              _reviewing.color.toARGB32(),
+    );
     // Today: 8 learning over 12 reviewing fill the 78 of the chart.
     expect(_height(tester, _learning.color), closeTo(8 * 78 / 20, 0.01));
-    expect(_height(tester, _reviewing.color), closeTo(12 * 78 / 20, 0.01));
-    // Monday's reviewing is faded, and half of Today's 20.
-    expect(
-      _height(tester, _reviewing.color.withValues(alpha: 0.55)),
-      closeTo(10 * 78 / 20, 0.01),
-    );
+    expect(tester.getSize(reviewing.last).height, closeTo(12 * 78 / 20, 0.01));
+    // Monday is drawn as strongly as Today, half its 20 (critique
+    // 2026-10-02, F5).
+    expect(reviewing, findsNWidgets(2));
+    expect(tester.getSize(reviewing.first).height, closeTo(10 * 78 / 20, 0.01));
   });
 
   testWidgets('a day with nothing is a 2-high baseline', (tester) async {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -28,6 +30,11 @@ Future<void> _reveal(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// The footer hint's glyph (critique 2026-10-02, F7).
+IconData _hintIcon(WidgetTester tester) => tester
+    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
+    .icon;
+
 void main() {
   libraryTest('the prompt shows first, the answer waits for Show answer, and '
       'revealing writes nothing (IT-MODE-012, BR-MODE-006)', (
@@ -40,11 +47,13 @@ void main() {
     expect(find.text('term 1'), findsOneWidget);
     expect(find.text('meaning 1'), findsNothing);
     expect(find.text(_en.cardActionGood), findsNothing);
+    expect(_hintIcon(tester), AppIcons.info);
 
     await _reveal(tester);
 
     expect(find.text('meaning 1'), findsOneWidget);
     expect(find.text('example 1'), findsOneWidget);
+    expect(_hintIcon(tester), AppIcons.info);
     expect(find.text(_en.studySelfAssessShowAnswer), findsNothing);
     // M3-C3: the grades sit in the shared CTA row, at its full inner width.
     final grades = find.byType(StudyGradeRowWidget);

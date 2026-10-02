@@ -206,6 +206,28 @@ void main() {
     expect(find.byType(SignInFormWidget), findsOneWidget);
   });
 
+  accountTest('Cancel on a sign-out stopped offline keeps the account and '
+      'everything on the phone (critique 2026-10-02, F2)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await linkEmail(world);
+    world.device.pending = 2;
+    await _onThemePage(tester, env, world);
+    world.network.goOffline();
+    await world.coordinator.signOut();
+    await _settle(tester);
+
+    await tester.tap(find.text(_en.commonCancel));
+    await _settle(tester);
+
+    expect(find.byType(AccountTransitionLayerWidget), findsNothing);
+    expect(world.state, isA<Validating>());
+    expect(world.device.resets, 0);
+    expect(world.device.pending, 2);
+  });
+
   accountTest('a refused merge is said once the device is back', (
     tester,
     env,
@@ -241,8 +263,11 @@ void main() {
     expect(find.text(_en.accountLastAdmin), findsOneWidget);
   });
 
-  libraryTest('a sign-out stopped offline offers to go on and lose the '
-      'changes', (tester, env) async {
+  libraryTest('a sign-out stopped offline says nothing is removed yet, and '
+      'offers to lose the changes or cancel (critique 2026-10-02, F2)', (
+    tester,
+    env,
+  ) async {
     await pumpLibraryScreen(
       tester,
       env,
@@ -259,8 +284,30 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text(_en.accountLayerOffline), findsOneWidget);
+    expect(find.text(_en.accountSignOutStoppedOffline), findsOneWidget);
+    expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
+    expect(find.text(_en.commonCancel), findsOneWidget);
+  });
+
+  libraryTest('a sign-out still sending offers no Cancel (R4)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(TransitionKind.signOut, TransitionStage.started),
+          ),
+        ),
+      ],
+    );
+    await tester.pump();
+
     expect(find.text(_en.commonCancel), findsNothing);
   });
 

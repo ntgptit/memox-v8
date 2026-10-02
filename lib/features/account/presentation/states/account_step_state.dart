@@ -74,3 +74,8 @@ AccountStep accountStepOf(AccountTransition t) => switch (t.kind) {
 bool canCancelSwitch(AccountTransition t) =>
     t.kind == TransitionKind.switchAccount &&
     t.stage.isBefore(TransitionStage.targetSignedIn);
+
+/// Critique 2026-10-02 (F2): a sign-out goes back to where it started only
+/// before the SDK signs out, while nothing on this device is gone.
+bool canCancelSignOut(AccountTransition t) =>
+    t.kind == TransitionKind.signOut && t.stage == TransitionStage.started;

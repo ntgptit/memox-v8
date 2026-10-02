@@ -67,7 +67,7 @@ form inside it. Its content is centred in the page.
 | Running | `MxSpinner` (large), the step in `screenTitle` ("Sending your changes…", "Getting your decks ready…", "Merging…", "Downloading your decks…", "Signing out…", "Deleting your account…") as a live region, "Nothing is lost if you close the app." |
 | Network error | `MxInlineBanner` (warning) "No connection. Your data is safe on this phone." + Retry (primary). |
 | Other error | "Something went wrong. Your data is safe on this phone." + Retry. |
-| Sign-out stopped offline | The above + "Sign out now and lose {n} changes" (`dangerSoft`). |
+| Sign-out stopped offline | "No connection. Nothing has been removed yet." + Retry + "Sign out now and lose {n} changes" (`dangerSoft`) + Cancel (critique 2026-10-02). |
 | Target sign-in | The form above in target mode, the address pre-filled; the code step on the layer's own navigator. |
 | Stuck | "Something went wrong while moving your account. Your data is safe on this phone." + Retry only. |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
@@ -103,6 +103,7 @@ The images are the goldens.
 - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
 - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a sign-out stopped offline says "No connection. Nothing has been removed yet." and offers Cancel (top bar) beside Retry and "Sign out now and lose {n} changes"; Cancel keeps the account and every deck (F2; auth spec #39a).
 
 ## Copy
 

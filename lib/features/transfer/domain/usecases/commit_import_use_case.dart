@@ -6,7 +6,8 @@ import 'package:memox/features/transfer/domain/models/import_preview_model.dart'
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
 
 /// UC-TRANSFER-001 steps 6–8, E3, E4: the preview's drafts written in one
-/// transaction by the card feature, and the counts for the result screen.
+/// transaction by the card feature, and the result with every row skipped
+/// (critique 2026-10-02, F4).
 /// A database failure leaves as the thrown `Failure` (E5).
 final class CommitImportUseCase {
   const CommitImportUseCase(this._cards);
@@ -18,24 +19,26 @@ final class CommitImportUseCase {
     required ImportPreview preview,
     required bool includeDuplicates,
   }) async {
-    final drafts = preview.draftsToWrite(includeDuplicates: includeDuplicates);
-    if (drafts.isEmpty) {
+    final toWrite = preview.rowsToWrite(includeDuplicates: includeDuplicates);
+    if (toWrite.isEmpty) {
       return const Rejected(TransferRejection.nothingToImport);
     }
     final result = await _cards.importCards(
       deckId: deckId,
-      drafts: drafts,
+      drafts: [for (final row in toWrite) row.draft!],
       includeDuplicates: includeDuplicates,
     );
     return switch (result) {
       Ok(:final value) => Ok(
         ImportSummary(
           written: value.written,
-          duplicatesSkipped:
-              value.skippedDuplicates +
-              (includeDuplicates ? 0 : preview.duplicates),
-          invalid: preview.invalid,
           blank: preview.blank,
+          skipped: _skipped(
+            preview,
+            toWrite,
+            value.skippedIndexes,
+            includeDuplicates: includeDuplicates,
+          ),
         ),
       ),
       Rejected(reason: CardRejection.notFound) ||
@@ -48,5 +51,28 @@ final class CommitImportUseCase {
         'import refused a previewed draft: $reason',
       ),
     };
+  }
+
+  /// What the preview left out, and what the commit's re-check dropped as
+  /// already in the deck, in source order (critique 2026-10-02, F4).
+  static List<ImportRow> _skipped(
+    ImportPreview preview,
+    List<ImportRow> toWrite,
+    List<int> dropped, {
+    required bool includeDuplicates,
+  }) {
+    final droppedRows = {for (final index in dropped) toWrite[index].rowNumber};
+    return [
+      for (final row in preview.rows)
+        if (row.kind == ImportRowKind.invalid ||
+            (!includeDuplicates && row.isDuplicate))
+          row
+        else if (droppedRows.contains(row.rowNumber))
+          ImportRow(
+            rowNumber: row.rowNumber,
+            kind: ImportRowKind.duplicateInDeck,
+            draft: row.draft,
+          ),
+    ];
   }
 }
