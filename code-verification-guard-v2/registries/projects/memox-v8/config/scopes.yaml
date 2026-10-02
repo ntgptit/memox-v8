@@ -346,7 +346,6 @@ scopes:
       - lib/core/sync/tag_sync_adapter.dart
       - lib/features/progress/data/datasources/progress_dao.dart
       - lib/features/search/data/datasources/search_dao.dart
-      - lib/features/study/data/datasources/study_round_dao.dart
       - lib/features/study/data/datasources/study_view_dao.dart
 
   test_files:
