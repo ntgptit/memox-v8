@@ -110,7 +110,8 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
           ),
         ),
         SessionFooterHintWidget(
-          icon: AppIcons.check,
+          // Instructions take the info glyph (critique 2026-10-02, F7).
+          icon: AppIcons.info,
           text: _isRevealed
               ? l10n.studySelfAssessHintGrade
               : l10n.studySelfAssessHintPrompt,

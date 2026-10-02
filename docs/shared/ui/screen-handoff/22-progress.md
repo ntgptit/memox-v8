@@ -69,6 +69,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the Today label and the streak labels are eyebrows; the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a deck row's meta reads "{n} cards · {d} active days" then "Card-days: {l} learning · {r} reviewing", and it ends in a chevron; the total row has none; the never-studied "Start studying" is primary (D3).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows the screen's own skeleton, a Today card, a Streak card and a deck-list card (`MxSkeletonPulse`, `MxCard`, `MxSkeleton`, `MxSkeletonRow`); deck progress keeps its range control and shows the deck-list card.
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every day's bars draw at full strength, reviewing in primary and learning in its ink, each holding 3:1 on the card; Today is told by its bold label (F5).
 
 ## Copy
 

@@ -24,7 +24,7 @@ delete. FE-B10, SB-A5; spec
 | Re-auth banner | `MxInlineBanner` (warning) | Only in `ReauthRequired`: "Your sign-in expired. Your decks are still on this phone." · "Sign in" (compact primary) → 30 `reauth`, back to 32. |
 | Connection note | `MxNote` | Only in `Validating`: "Managing your account needs a connection. Your decks are safe on this phone." |
 | Account | `MxSection` "ACCOUNT" + `MxSettingsRow` | The person tile, the email (wraps, P3b plan ruling 2), "Signed in with Google" / "with email" / "with Google and email" from the session's identities (B1). Not tappable. |
-| This phone | `MxSection` "THIS PHONE" | "Switch account" · "Move this phone to another account"; "Sign out" · "Your changes are sent first". |
+| This phone | `MxSection` "THIS PHONE" | "Switch account" · "Move this phone to another account"; "Sign out" · "Removes this phone's data · sign in again to get it back" (critique 2026-10-02). |
 | Delete | `MxSection` "DELETE" | "Delete account" · "Your account and its data, for good". A neutral row; the danger colour is only the dialog's confirm (B12). |
 
 The three command rows are disabled before `Ready` (auth spec #39 needs a confirmed
@@ -35,7 +35,7 @@ the transition layer shows what follows.
 | Dialog | Design |
 |---|---|
 | Switch | "Switch account?" · "This phone's data is replaced by the other account's after your changes are sent." · shield note "Your changes are sent first." · Cancel · "Switch account" (primary). Then `beginSwitch(discard)`; the layer's target sign-in (R1). |
-| Sign out | Online, or nothing unsent: "Sign out?" · "Your changes are sent first, then this phone's data is removed. Sign in again to get it back." · "Sign out" (primary). Offline with n unsent: "Sign out and lose changes?" · "{n} changes aren't sent yet and will be lost." · "Sign out" (destructive), `discardUnsent` (B4). The network is read once as the dialog opens (B2). |
+| Sign out | Online, or nothing unsent: "Sign out?" · "Your changes are sent first, then this phone's data is removed. Sign in again to get it back." · "Sign out" (warning, critique 2026-10-02). Offline with n unsent: "Sign out and lose changes?" · "{n} changes aren't sent yet and will be lost." · "Sign out" (destructive), `discardUnsent` (B4). The network is read once as the dialog opens (B2). |
 | Delete | "Delete your account?" · "Your account and its decks, cards and progress are deleted from the server, and this phone's data is removed. This can't be undone." · "Delete account" (destructive, trash icon). Offline: note "Deleting your account needs a connection." and the confirm disabled (B6). |
 | Last admin | "An admin must remain" · "Give another person the admin role first, then delete the account." · OK. Opened by the app root on a refused deletion (B7, P3b plan ruling 7). |
 
@@ -66,6 +66,7 @@ The images are the goldens.
 - **P3b plan rulings 1, 2, 4–7, 9:** the banner above the section; the email wraps; the
   redirect reads the coordinator; finished flows land on 23; one confirm dialog; the
   last-admin dialog on the router's navigator; two new icons (`switchAccount`, `signOut`).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** Switch account, Sign out and Delete account are action rows (no chevron); Sign out's hint reads "Removes this phone's data · sign in again to get it back"; its online confirm is warning, the offline loss confirm destructive (F3).
 
 ## Copy
 

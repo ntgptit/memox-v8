@@ -3416,10 +3416,6 @@
   "@importPickBody": {
     "description": "Import: the empty file picker body; the formats are stated by the Choose a file option."
   },
-  "importPickAction": "Choose file",
-  "@importPickAction": {
-    "description": "Import: opens the system file picker."
-  },
   "importPasteHint": "Paste rows here",
   "@importPasteHint": {
     "description": "Import: the pasted text field's hint."
@@ -3819,7 +3815,20 @@
   "@importCountInvalid": {
     "description": "Import result count row."
   },
-  "importSkipNote": "Fix the invalid rows in your source and import again; duplicates are skipped by the case-insensitive term + meaning.",
+  "importSkippedHeader": "Skipped rows",
+  "@importSkippedHeader": {
+    "description": "Import result (critique 2026-10-02, F4): the header over the rows the import skipped, each with its number and why."
+  },
+  "importSkippedShowAll": "Show all {count}",
+  "@importSkippedShowAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Import result (critique 2026-10-02, F4): shows every skipped row past the first five."
+  },
+  "importSkipNote": "Duplicates are skipped by the case-insensitive term + meaning.",
   "@importSkipNote": {
     "description": "Import result: how skips work."
   },
@@ -4923,17 +4932,9 @@
   "@summaryFactLearned": {
     "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
   },
-  "summaryFactLearnedSub": "Now scheduled, due tomorrow",
-  "@summaryFactLearnedSub": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
-  },
   "summaryFactReviewed": "Cards reviewed",
   "@summaryFactReviewed": {
     "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
-  },
-  "summaryFactReviewedSub": "Schedules updated",
-  "@summaryFactReviewedSub": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
   },
   "summaryFactAnswered": "Cards answered",
   "@summaryFactAnswered": {
@@ -4952,14 +4953,9 @@
     },
     "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line."
   },
-  "summaryFactWrongCameBack": "of {total} turns · wrong cards came back in later rounds",
-  "@summaryFactWrongCameBack": {
-    "placeholders": {
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line when any was wrong."
+  "summaryFactKeptSub": "Kept in the history",
+  "@summaryFactKeptSub": {
+    "description": "Screen handoff 21 (critique 2026-10-02, F1): the finished-cards fact's sub-line after an ended or failed session; its answers are kept, nothing is scheduled by it."
   },
   "summaryNoteHistory": "Nothing was lost — the answers are in the history.",
   "@summaryNoteHistory": {
@@ -6968,6 +6964,10 @@
   "@accountLayerOffline": {
     "description": "Transition layer: a network error."
   },
+  "accountSignOutStoppedOffline": "No connection. Nothing has been removed yet.",
+  "@accountSignOutStoppedOffline": {
+    "description": "Transition layer (critique 2026-10-02, F2): a sign-out stopped offline before anything on the phone was removed; it can be cancelled or finished with the loss."
+  },
   "accountLayerFailed": "Something went wrong. Your data is safe on this phone.",
   "@accountLayerFailed": {
     "description": "Transition layer: any other error."
@@ -7029,9 +7029,9 @@
   "@accountSignOut": {
     "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
   },
-  "accountSignOutHint": "Your changes are sent first",
+  "accountSignOutHint": "Removes this phone's data · sign in again to get it back",
   "@accountSignOutHint": {
-    "description": "Screen 32: under Sign out (Account UI spec §9.1)."
+    "description": "Screen 32: under Sign out, what it does (Account UI spec §9.1; critique 2026-10-02, F3)."
   },
   "accountDeleteSection": "Delete",
   "@accountDeleteSection": {

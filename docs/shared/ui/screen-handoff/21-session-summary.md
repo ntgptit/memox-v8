@@ -68,6 +68,7 @@ A session that ended before its first turn shows the hero without stats and no F
 - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's three stats: finished, answered, wrong/total.
 - **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{wrong} trên {total}").
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the hero's overline is an eyebrow that keeps the deck name as typed ("REVIEW SESSION · Nhà hàng"); the stat labels are eyebrows.
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** "Wrong cards came back in later rounds." follows only a finished session; the facts of an ended or failed session read "Kept in the history" under the finished count, on a neutral tile with the value in plain ink, and "of {total} turns" under the wrong turns (F1).
 
 ## Copy
 
@@ -83,8 +84,7 @@ A session that ended before its first turn shows the hero without stats and no F
   "The deck switched to a different review algorithm, so its learning sequence changed. Every card is new
   again; Done takes you back to the deck to start learning." · "An answer could not be written to this device, so the session
   stopped. Everything saved before that is kept; the unanswered cards are still due."
-- Facts: "This session" · "Cards that finished learning" / "Cards reviewed" · "Now scheduled, due
-  tomorrow" / "Schedules updated" · "Cards answered" · "Wrong turns" · "{wrong} of {total}" · "of {total} turns" · "wrong cards
-  came back in later rounds".
+- Facts: "This session" · "Cards that finished learning" / "Cards reviewed" · "Kept in the history" ·
+  "Cards answered" · "Wrong turns" · "{wrong} of {total}" · "of {total} turns".
 - End note: "Nothing was lost — the answers are in the history." (`schedulerChanged` only, in V8).
 - Footer: "Study this deck" · "Done" · "Done returns you to the deck." · "Loading your summary…".
