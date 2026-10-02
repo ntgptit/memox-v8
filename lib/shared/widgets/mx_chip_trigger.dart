@@ -10,8 +10,10 @@ import 'package:memox/core/theme/app_button_style.dart';
 
 /// A chip that opens a menu (sort, filters). A ghost hairline marks it as a
 /// control; while it holds a choice other than the default ([isActive]) it
-/// fills with the primary container, so a filtered list says so
-/// (critique 2026-10-02 screen 28, SP1 §5.3). The menu is the caller's.
+/// fills with the primary container and draws a primary-ink edge, so a
+/// filtered list says so (critique 2026-10-02 screen 28, SP1 §5.3). The
+/// active edge carries the 3:1 cue: the fill alone is about 1.2:1 on its
+/// ground. The menu is the caller's.
 class MxChipTrigger extends StatelessWidget {
   const MxChipTrigger({
     super.key,
@@ -39,7 +41,10 @@ class MxChipTrigger extends StatelessWidget {
         fill: isActive ? colors.primaryContainer : null,
         ink: isActive ? colors.onPrimaryContainer : colors.onSurfaceVariant,
         edge: isActive
-            ? BorderSide.none
+            ? BorderSide(
+                color: context.derivedColors.primaryInk,
+                width: AppStroke.hairline,
+              )
             : BorderSide(
                 color: context.derivedColors.ghostBorder,
                 width: AppStroke.hairline,

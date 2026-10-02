@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
@@ -48,19 +50,25 @@ class MxNavRail extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
             child: Material(
               type: MaterialType.transparency,
-              child: Column(
-                spacing: AppSpacing.micro,
-                children: [
-                  for (final (index, destination) in destinations.indexed)
-                    _RailItem(
-                      destination: destination,
-                      isSelected: index == selectedIndex,
-                      pillTint: pillTint,
-                      tabIndex: index + 1,
-                      tabCount: destinations.length,
-                      onTap: () => onSelected(index),
-                    ),
-                ],
+              // The roles Material's NavigationBar gives its row and items.
+              child: Semantics(
+                role: SemanticsRole.tabBar,
+                explicitChildNodes: true,
+                container: true,
+                child: Column(
+                  spacing: AppSpacing.micro,
+                  children: [
+                    for (final (index, destination) in destinations.indexed)
+                      _RailItem(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        pillTint: pillTint,
+                        tabIndex: index + 1,
+                        tabCount: destinations.length,
+                        onTap: () => onSelected(index),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -93,6 +101,7 @@ class _RailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Semantics(
+      role: SemanticsRole.tab,
       container: true,
       selected: isSelected,
       button: true,

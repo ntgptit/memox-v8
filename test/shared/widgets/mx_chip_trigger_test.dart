@@ -53,9 +53,8 @@ void main() {
     );
   });
 
-  testWidgets('active: primaryContainer ground, onPrimaryContainer ink', (
-    tester,
-  ) async {
+  testWidgets('active: primaryContainer ground, onPrimaryContainer ink, '
+      'a primaryInk edge', (tester) async {
     await pumpMx(
       tester,
       MxChipTrigger(label: 'Level · Error', isActive: true, onPressed: () {}),
@@ -68,6 +67,12 @@ void main() {
     expect(
       style(tester).foregroundColor!.resolve(const {}),
       scheme.onPrimaryContainer,
+    );
+    final side = style(tester).side!.resolve(const {})!;
+    expect(side.width, AppStroke.hairline);
+    expect(
+      side.color,
+      MxDerivedColors.resolve(scheme, MxSemanticColors.light).primaryInk,
     );
   });
 }

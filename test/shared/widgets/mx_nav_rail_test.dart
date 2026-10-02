@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
@@ -104,6 +106,20 @@ void main() {
       (pill.decoration as BoxDecoration).color,
       scheme.primary.withValues(alpha: 0.14),
     );
+  });
+
+  testWidgets('the column is a tab bar and each destination a tab', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail());
+
+    expect(tester.getSemantics(_item('Library')).role, SemanticsRole.tab);
+    expect(
+      tester.getSemantics(find.byType(Column).first).role,
+      SemanticsRole.tabBar,
+    );
+    handle.dispose();
   });
 
   testWidgets('a tap reports its index, a re-tap of the current one too', (

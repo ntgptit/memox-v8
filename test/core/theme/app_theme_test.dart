@@ -47,9 +47,8 @@ void main() {
         );
       });
 
-      test('$name: refresh and selection use primary ink (audit Theming)', () {
+      test('$name: selection uses primary ink (audit Theming)', () {
         final ink = MxDerivedColors.primaryInkOf(scheme);
-        expect(theme.progressIndicatorTheme.color, ink);
         expect(theme.textSelectionTheme.cursorColor, ink);
         expect(theme.textSelectionTheme.selectionHandleColor, ink);
         expect(

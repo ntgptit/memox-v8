@@ -327,4 +327,27 @@ void main() {
     expect(started, isTrue);
     expect(haptics, ['HapticFeedbackType.selectionClick']);
   });
+
+  libraryTest('a long-press while already selecting does not click', (
+    tester,
+    env,
+  ) async {
+    final haptics = _recordHaptics(tester);
+    var pressed = false;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(),
+          isSelecting: true,
+          isSelected: false,
+          onLongPress: () => pressed = true,
+        ),
+      ]),
+    );
+    await tester.longPress(find.byType(CardRowWidget));
+    expect(pressed, isTrue);
+    expect(haptics, isEmpty);
+  });
 }

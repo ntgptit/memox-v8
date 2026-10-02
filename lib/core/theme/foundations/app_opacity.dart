@@ -5,8 +5,8 @@ abstract final class AppOpacity {
   /// Over the whole control, one value everywhere.
   static const double disabled = 0.38;
 
-  /// Readable content that steps back: an answered choice out of play, a
-  /// footer caption. `disabled` is for controls that cannot be used.
+  /// Readable content that steps back: an answered choice out of play.
+  /// `disabled` is for controls that cannot be used.
   static const double muted = 0.7;
 
   /// The platform pressed overlay.
@@ -26,6 +26,7 @@ abstract final class AppOpacity {
   static const double navPillLight = 0.14;
   static const double navPillDark = 0.20;
 
-  /// Selected text behind the cursor's handles (Material's default).
+  /// Selected text behind the cursor's handles. Deliberately lighter than
+  /// Material's 0.40, so selected study text stays readable.
   static const double selection = 0.24;
 }

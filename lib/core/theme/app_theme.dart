@@ -34,11 +34,8 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     dialogTheme: AppComponentThemes.dialogs(scheme, texts),
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
     snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
-    // The admin lists' RefreshIndicator and every text selection read in
-    // primary ink, not Material's raw primary (audit 2026-10-03 Theming).
-    progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: MxDerivedColors.primaryInkOf(scheme),
-    ),
+    // Text selection reads in primary ink, not Material's raw primary
+    // (audit 2026-10-03 Theming).
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: MxDerivedColors.primaryInkOf(scheme),
       selectionHandleColor: MxDerivedColors.primaryInkOf(scheme),

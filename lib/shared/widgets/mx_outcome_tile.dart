@@ -23,16 +23,15 @@ class MxOutcomeTile extends StatelessWidget {
   final String body;
   final MxOutcomeTone tone;
 
-  /// Lighter than the 12% status tint: on the dialog's surface the success
-  /// ink reaches 4.53:1 over 8% (light). Kept is a fine state, so success,
-  /// not mastery (critique 2026-09-30 tone pass, final review).
-
   @override
   Widget build(BuildContext context) {
     final derived = context.derivedColors;
     final styles = context.textStyles;
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
+        // Lighter than the 12% status tint: on the dialog's surface the
+        // success ink reaches 4.53:1 over 8% (light). Kept is a fine state,
+        // so success, not mastery (critique 2026-09-30 tone pass).
         context.semanticColors.success.withValues(alpha: AppOpacity.tintFaint),
         derived.ghostBorder,
         derived.successInk,

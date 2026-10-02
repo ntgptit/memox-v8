@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
@@ -25,7 +27,8 @@ final class MxNavDestination {
 /// tinted pill behind the current glyph. It is in-flow, never over the scroll,
 /// so it carries no blur (SP1 §5.2). Custom by owner ruling R4: Material's
 /// NavigationBar would change the bar's look; this one reads its tab positions
-/// the same way. It adds the gesture inset below itself.
+/// the same way, and carries its tab roles. It adds the insets below and on
+/// both sides itself (a landscape cutout).
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -45,7 +48,7 @@ class MxBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final derived = context.derivedColors;
-    final inset = MediaQuery.paddingOf(context).bottom;
+    final insets = MediaQuery.paddingOf(context);
     final pillTint = colors.primary.withValues(
       alpha: colors.brightness == Brightness.dark
           ? AppOpacity.navPillDark
@@ -54,10 +57,10 @@ class MxBottomNav extends StatelessWidget {
     final radius = BorderRadius.circular(AppRadius.lg);
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        AppSpacing.control,
+        AppSpacing.control + insets.left,
         AppSpacing.micro,
-        AppSpacing.control,
-        AppSpacing.grouped + inset,
+        AppSpacing.control + insets.right,
+        AppSpacing.grouped + insets.bottom,
       ),
       child: ClipRRect(
         borderRadius: radius,
@@ -75,20 +78,26 @@ class MxBottomNav extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
             child: Material(
               type: MaterialType.transparency,
-              child: Row(
-                children: [
-                  for (final (index, destination) in destinations.indexed)
-                    Expanded(
-                      child: _Item(
-                        destination: destination,
-                        isSelected: index == selectedIndex,
-                        pillTint: pillTint,
-                        tabIndex: index + 1,
-                        tabCount: destinations.length,
-                        onTap: () => onSelected(index),
+              // The roles Material's NavigationBar gives its row and items.
+              child: Semantics(
+                role: SemanticsRole.tabBar,
+                explicitChildNodes: true,
+                container: true,
+                child: Row(
+                  children: [
+                    for (final (index, destination) in destinations.indexed)
+                      Expanded(
+                        child: _Item(
+                          destination: destination,
+                          isSelected: index == selectedIndex,
+                          pillTint: pillTint,
+                          tabIndex: index + 1,
+                          tabCount: destinations.length,
+                          onTap: () => onSelected(index),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -119,6 +128,7 @@ class _Item extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Semantics(
+      role: SemanticsRole.tab,
       container: true,
       selected: isSelected,
       button: true,

@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
@@ -121,6 +123,37 @@ void main() {
       ),
     );
     handle.dispose();
+  });
+
+  testWidgets('the row is a tab bar and each destination a tab', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav());
+
+    expect(tester.getSemantics(find.text('Library')).role, SemanticsRole.tab);
+    expect(
+      tester.getSemantics(find.byType(Row).first).role,
+      SemanticsRole.tabBar,
+    );
+    handle.dispose();
+  });
+
+  testWidgets('side insets (a landscape cutout) pad the bar in', (
+    tester,
+  ) async {
+    await pumpMx(tester, _nav());
+    final plain = tester.getRect(find.byType(DecoratedBox).first);
+
+    await pumpMx(
+      tester,
+      _nav(),
+      padding: const EdgeInsets.only(left: 40, right: 24),
+    );
+    final padded = tester.getRect(find.byType(DecoratedBox).first);
+
+    expect(padded.left - plain.left, 40);
+    expect(plain.right - padded.right, 24);
   });
 
   testWidgets('each destination reads its tab position (R4)', (tester) async {

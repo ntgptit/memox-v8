@@ -63,8 +63,9 @@ class CardRowWidget extends StatelessWidget {
             onLongPress: switch (onLongPress) {
               null => null,
               // A selection begins: a tick under the thumb (audit Platform).
+              // Not while selecting: the long-press then only toggles.
               final start => () {
-                HapticFeedback.selectionClick();
+                if (!isSelecting) HapticFeedback.selectionClick();
                 start();
               },
             },
