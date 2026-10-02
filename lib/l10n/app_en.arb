@@ -3416,10 +3416,6 @@
   "@importPickBody": {
     "description": "Import: the empty file picker body; the formats are stated by the Choose a file option."
   },
-  "importPickAction": "Choose file",
-  "@importPickAction": {
-    "description": "Import: opens the system file picker."
-  },
   "importPasteHint": "Paste rows here",
   "@importPasteHint": {
     "description": "Import: the pasted text field's hint."
