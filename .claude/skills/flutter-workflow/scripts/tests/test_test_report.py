@@ -65,7 +65,14 @@ class TestReportTest(unittest.TestCase):
         self.assertIn("test report: 2 tests in 5.0 s wall clock", text)
         self.assertIn("     3.0 s  test/a_test.dart :: slow one", text)
         self.assertIn("failures: 1 test(s) in 1 file(s)", text)
-        self.assertIn("re-run alone: TZ=UTC flutter test test/a_test.dart", text)
+        self.assertIn(
+            "re-run alone: TZ=UTC flutter test --exclude-tags golden test/a_test.dart", text
+        )
+
+    def test_a_bundled_failure_names_the_bundle_it_ran_in(self) -> None:
+        text = test_report.render(test_report.summarise(_RECORDED, _ROOT), top=10)
+        self.assertIn("ran in .dart_tool/memox_test_bundles/bundle_0_test.dart", text)
+        self.assertIn("passes alone", text)
 
     def test_a_suite_that_fails_to_load_is_named(self) -> None:
         events = list(_RECORDED)
@@ -82,6 +89,28 @@ class TestReportTest(unittest.TestCase):
         ]
         summary = test_report.summarise(events, _ROOT)
         self.assertEqual([(r.file, r.name) for r in summary.results], [("test/b_test.dart", "works")])
+
+    def test_a_file_that_fails_to_load_alone_gets_no_bundle_hint(self) -> None:
+        events = [
+            _event(type="suite", suite={"id": 0, "path": "/repo/test/b_test.dart"}),
+            _event(type="testStart", time=0, test={"id": 1, "name": "loading /repo/test/b_test.dart", "suiteID": 0, "groupIDs": []}),
+            _event(type="testDone", time=10, testID=1, result="error", hidden=False, skipped=False),
+        ]
+        text = test_report.render(test_report.summarise(events, _ROOT), top=10)
+        self.assertIn("failed to load: test/b_test.dart", text)
+        self.assertNotIn("MEMOX_TEST_BUNDLES", text)
+
+    def test_a_truncated_last_line_keeps_the_rest_of_the_report(self) -> None:
+        events = list(_RECORDED[:-1]) + ['{"type":"testDo']
+        summary = test_report.summarise(events, _ROOT)
+        self.assertEqual(len([r for r in summary.results if not r.skipped]), 2)
+        self.assertIn("1 unreadable line(s) skipped", test_report.render(summary, top=10))
+
+    def test_a_suite_without_a_path_does_not_break_the_report(self) -> None:
+        events = list(_RECORDED)
+        events[0] = _event(type="suite", suite={"id": 0, "path": None})
+        summary = test_report.summarise(events, _ROOT)
+        self.assertEqual(summary.results[0].file, "test/a_test.dart")
 
     def test_a_missing_report_never_fails_the_gate(self) -> None:
         out = io.StringIO()

@@ -375,11 +375,13 @@ REPORT_PY="$REPO_ROOT/.claude/skills/flutter-workflow/scripts/test_report.py"
 # **Repo-relative, and one directory per run.** Relative so Git Bash hands
 # `json:<path>` to `flutter test` without converting it; per run so a second
 # gate in this checkout cannot rewrite these bundles while they compile. The
-# EXIT trap removes it with $WORK.
+# EXIT trap removes it with $WORK, except after a failed test step: the report
+# then points into these bundles (which file ran before which), so they stay
+# until someone deletes them or `flutter clean` does.
 BUNDLE_RUN_DIR=".dart_tool/memox_test_bundles/run-$$"
 TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"
 TEST_TARGETS_NUL="$WORK/test-targets.nul"
-trap 'rm -rf "$WORK" "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"' EXIT
+trap '[[ "$(cat "$WORK/test.rc" 2>/dev/null || echo 0)" == "0" ]] && rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"; rm -rf "$WORK"' EXIT
 
 # plan_host_tests <scope> <per-file targets...>
 # Bundles the targets listed in $TEST_TARGETS_NUL, or with

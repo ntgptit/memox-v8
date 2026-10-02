@@ -471,19 +471,21 @@ def discover_worktree_dart_files(root: Path) -> set[str]:
     return present
 
 
+# What may precede a library-level annotation in a Dart file: a byte-order
+# mark, whitespace, and comments. `bundle_tests.py` reads annotations through
+# the same prefix, so "golden-only" and "refused" agree on where a file starts.
+LEADING_TRIVIA = r"(?:\ufeff|\s|//[^\n]*\n|/\*[\s\S]*?\*/)*"
+_GOLDEN_TAGS = re.compile(
+    r"\A" + LEADING_TRIVIA + r"@Tags\s*\([^)]*?['\"]golden['\"][^)]*\)"
+)
+
+
 def is_golden_only_test(path: Path) -> bool:
     """Whether CI's `--exclude-tags golden` excludes the whole test file."""
     if not path.is_file():
         return False
     text = path.read_text(encoding="utf-8")
-    prefix = text[:512]
-    return bool(
-        path.name.endswith("_golden_test.dart")
-        or re.search(
-            r"\A\s*@Tags\s*\([\s\S]*?['\"]golden['\"][\s\S]*?\)\s*(?:library\s*;)?",
-            prefix,
-        )
-    )
+    return bool(path.name.endswith("_golden_test.dart") or _GOLDEN_TAGS.match(text))
 
 
 def discover_tests(root: Path) -> set[str]:

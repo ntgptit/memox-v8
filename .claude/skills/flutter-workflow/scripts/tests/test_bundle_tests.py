@@ -96,6 +96,23 @@ class BundleTestsTest(unittest.TestCase):
         self.assertEqual(bundles, [])
         self.assertIn("test/slow_test.dart: library-level @Timeout", err)
 
+    def test_a_bom_before_a_library_annotation_is_still_refused(self) -> None:
+        files = {"test/bom_test.dart": "\ufeff@Timeout(Duration(minutes: 2))\nlibrary;\n" + _PLAIN}
+        code, _, err = self._bundle(files, "test")
+        self.assertEqual(code, 1)
+        self.assertIn("test/bom_test.dart: library-level @Timeout", err)
+
+    def test_a_golden_file_behind_a_comment_or_a_bom_is_left_out_not_refused(self) -> None:
+        files = {
+            "test/commented_test.dart": "// Pixels, so Linux only.\n" + _GOLDEN,
+            "test/bom_test.dart": "\ufeff" + _GOLDEN,
+            "test/a_test.dart": _PLAIN,
+        }
+        code, bundles, err = self._bundle(files, "test")
+        self.assertEqual(code, 0)
+        self.assertNotIn("cannot bundle", err)
+        self.assertEqual(self._imported(bundles), ["test/a_test.dart"])
+
     def test_an_async_main_is_refused_by_name(self) -> None:
         files = {"test/late_test.dart": "Future<void> main() async {}\n"}
         code, _, err = self._bundle(files, "test")
@@ -226,6 +243,11 @@ class GateBundledRunTest(unittest.TestCase):
         gate = self._gate()
         self.assertIn('TEST_REPORT="$BUNDLE_RUN_DIR/report.jsonl"', gate)
         self.assertNotIn('TEST_REPORT="$WORK', gate)
+
+    def test_a_failed_run_keeps_its_bundles_for_the_report_to_point_at(self) -> None:
+        trap = next(line for line in self._gate().splitlines() if line.startswith("trap ") and "BUNDLE_RUN_DIR" in line)
+        self.assertIn('"$WORK/test.rc"', trap)
+        self.assertLess(trap.index("test.rc"), trap.index('rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"'))
 
     def test_a_carriage_return_is_stripped_from_each_bundle_path(self) -> None:
         self.assertIn("bundles=(\"${bundles[@]%$'\\r'}\")", self._gate())
