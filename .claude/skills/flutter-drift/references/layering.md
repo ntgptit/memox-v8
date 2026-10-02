@@ -7,7 +7,8 @@ they blur, a schema change reaches the UI and a UI change reaches the schema.
 ```
 AppDatabase      opens, composes, migrates. Nothing else.
    ↑
-DAO              generated queries, query composition, transactions, batches.
+DAO              a @DriftAccessor: calls the queries generated from its
+                 .drift files, builds $predicate/$order Expressions (ADR-020).
                  Speaks Drift rows and companions.
    ↑
 Data source      coordinates DAOs, maps database exceptions to data-layer

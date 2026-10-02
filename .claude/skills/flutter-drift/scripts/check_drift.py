@@ -80,7 +80,10 @@ GENERATED_FILES = ("lib/core/database/schema_versions.dart",)
 
 
 def is_generated(path: Path) -> bool:
-    return path.name.endswith(GENERATED_SUFFIXES) or rel(path) in GENERATED_FILES
+    return (
+        path.name.endswith(GENERATED_SUFFIXES)
+        or path.relative_to(REPO).as_posix() in GENERATED_FILES
+    )
 
 
 def dart_files(*globs: str) -> list[Path]:

@@ -326,8 +326,7 @@ scopes:
   # removes its own, P8 deletes the block. Never add a file back.
   drift_query_sites:
     include:
-      - lib/features/*/data/**/*.dart
-      - lib/core/**/*.dart
+      - lib/**/*.dart
     exclude:
       - '**/*.g.dart'
       - lib/core/database/schema_versions.dart

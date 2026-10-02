@@ -279,8 +279,10 @@ prevents. Read it before shipping a query whose shape a user can change.
 - [ ] Empty-collection semantics stated in code.
 - [ ] Result shape and join graph are fixed per read model; only filters vary.
 - [ ] Writes are named commands over specific columns.
-- [ ] `customSelect` declares `readsFrom`; `customUpdate` declares `updates`;
-      `CustomExpression` holds a constant fragment and no user input.
+- [ ] Every query is a generated `.drift` query (ADR-020). Inside the ADR's
+      exceptions only: `customSelect` declares `readsFrom`; `customUpdate`
+      declares `updates`; `CustomExpression` holds a constant fragment and no
+      user input.
 - [ ] Every query has a `LIMIT`, or a stated reason it cannot.
 - [ ] Tests: each filter alone, each sort, the main combinations, empty criteria,
       and pagination that neither duplicates nor drops a row.

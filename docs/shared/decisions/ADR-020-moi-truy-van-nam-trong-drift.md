@@ -22,6 +22,9 @@ Một DAO có thể đọc qua ba cách khác nhau, SQL của một màn không 
   khởi tạo `XDao(db)`. DAO gọi method Drift sinh ra; một file `.drift` có thể được
   nhiều DAO include; DAO không gọi DAO khác.
 - `@DriftDatabase` chỉ include `tables/*.drift`.
+- Đặt tên: query đọc là danh từ chỉ tập kết quả (`trashDeckEntries`), kết quả
+  có hình dạng riêng đặt `AS …Row`; query ghi là động từ (`purgeDeleteBatch`);
+  method public của DAO giữ tiền tố `get`/`find`/`list`/`watch`/`count`/`exists`.
 - Query builder của Drift chỉ còn dùng để dựng `Expression`/`OrderingTerm` truyền
   vào chỗ `$predicate`/`$order` của một query `.drift`.
 - Ngoại lệ, chỉ ba chỗ được giữ SQL trong Dart: code migration (`onUpgrade` trong

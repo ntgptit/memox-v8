@@ -1,6 +1,6 @@
 # Every query in `.drift`: DAOs become Drift accessors
 
-Status: draft for owner review · 2026-10-01 · infrastructure refactor, no behaviour change
+Status: approved by the owner 2026-10-01 (ADR-020) · 2026-10-01 · infrastructure refactor, no behaviour change
 
 ## 1. Intent
 

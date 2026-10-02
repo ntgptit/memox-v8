@@ -165,8 +165,10 @@ rules:
   # anywhere. Patterns are line-anchored with this file's comment exemption.
   # A builder call is caught three ways because a chain splits across lines:
   # on a database receiver, bare inside an accessor (a lowercase table
-  # argument, which keeps a `delete(String key)` declaration legal), or as a
-  # `.into(` / `.select(` link whose argument is a database table.
+  # argument, bare or on `attachedDatabase.` / `this.` / `db.`, which keeps a
+  # `delete(String key)` declaration legal), or as a `.into(` / `.select(`
+  # link whose argument is a database table. A `batch(` that ends its line is
+  # the shape `dart format` gives a multi-line batch.
   - id: memox.data_model.queries_in_drift
     type: regex
     severity: error
@@ -182,10 +184,10 @@ rules:
     patterns:
       - '^(?!\s*(?://|\*)).*\bcustom(?:Select|Update|Insert|Statement|WriteReturning)\s*\((?!\s*''PRAGMA)'
       - '^(?!\s*(?://|\*)).*\b(?:_db|db|attachedDatabase)\s*\.\s*(?:select|selectOnly|update|delete|into)\s*\('
-      - '^(?!\s*(?://|\*)).*(?<![\w$.])(?:select|selectOnly|update|delete|into)\s*\(\s*(?:[a-z_]\w*\s*[,)]|$)'
+      - '^(?!\s*(?://|\*)).*(?<![\w$.])(?:select|selectOnly|update|delete|into)\s*\(\s*(?:(?:(?:attachedDatabase|this|_?db)\.)?[a-z_]\w*\s*[,)]|$)'
       - '^(?!\s*(?://|\*)).*\.(?:select|selectOnly|update|delete|into)\s*\(\s*(?:_db|db|attachedDatabase)\.'
       - '^(?!\s*(?://|\*)).*\.join\s*\(\s*\['
-      - '^(?!\s*(?://|\*)).*\bbatch\s*\(\s*\('
+      - '^(?!\s*(?://|\*)).*\bbatch\s*\(\s*(?:\(|$)'
     tags:
       - memox
       - data-model

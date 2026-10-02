@@ -229,6 +229,14 @@ def test_queries_in_drift_goes_red_on_sql_strings_and_builder_chains(tmp_path: P
         "    (delete(logEntries)..where((t) => t.id.isIn(ids))).go();\n",
         "        _db.select(_card).join([\n",
         "    await _db.batch((b) => b.insertAll(_db.card, rows));\n",
+        # `dart format` splits these, and the guard reads one line at a time.
+        "  }) => _db.batch(\n",
+        "    await _db.batch(\n",
+        "  Future<void> write(List<LogEntry> rows) => batch(\n",
+        # Inside an accessor, a table the mixin does not expose.
+        "    final row = await (select(attachedDatabase.card)..limit(1)).get();\n",
+        "    await (delete(this.deleteBatches)..where((b) => b.id.equals(id))).go();\n",
+        "    final rows = await (_db.select(_db.card)).get();\n",
     ):
         assert _violations(QUERIES_IN_DRIFT, tmp_path, DAO, bad), bad
 
@@ -261,3 +269,9 @@ def test_drift_query_sites_keeps_adr_020_exceptions_and_never_readmits_a_migrate
 
     assert set(PERMANENT_EXCLUDES) <= excluded
     assert excluded.isdisjoint(MIGRATED_TO_DRIFT)
+
+
+def test_drift_query_sites_covers_all_of_lib() -> None:
+    # ADR-020 says "every query": lib/app, lib/shared and a feature's di/ are
+    # as much app code as a DAO.
+    assert _scope("drift_query_sites")["include"] == ["lib/**/*.dart"]
