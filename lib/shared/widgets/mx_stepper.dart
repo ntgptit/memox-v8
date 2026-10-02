@@ -99,6 +99,18 @@ class _MxStepperState extends State<MxStepper> {
   }
 
   @override
+  void deactivate() {
+    // Back with the keyboard up: the route goes before the field loses
+    // focus, so what was typed is handed over here (harden 15, 23; SP1
+    // §5.1). No setState: the subtree is leaving.
+    if (_isEditing) {
+      _isEditing = false;
+      widget.onValueSubmitted?.call(_field.text);
+    }
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     _field.dispose();
     _focus.dispose();
@@ -186,6 +198,9 @@ class _MxStepperState extends State<MxStepper> {
               child: TextField(
                 controller: _field,
                 focusNode: _focus,
+                // Android keeps focus on a tap elsewhere; the stepper does
+                // not, so Save reads the typed value (harden 15, SP1 §5.1).
+                onTapOutside: (_) => _focus.unfocus(),
                 style: style,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,

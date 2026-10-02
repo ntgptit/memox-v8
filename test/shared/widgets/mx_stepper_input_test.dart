@@ -167,4 +167,57 @@ void main() {
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     handle.dispose();
   });
+
+  testWidgets('a tap outside the field submits what was typed (harden 15)', (
+    tester,
+  ) async {
+    final submitted = <String>[];
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Bounded(onSubmitted: submitted.add),
+          const SizedBox(key: ValueKey('outside'), width: 200, height: 48),
+        ],
+      ),
+    );
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), '42');
+    await tester.tap(find.byKey(const ValueKey('outside')));
+    await tester.pump();
+    expect(submitted, ['42']);
+  });
+
+  testWidgets(
+    'leaving the route with the field open submits once (harden 23)',
+    (tester) async {
+      final submitted = <String>[];
+      await pumpMx(
+        tester,
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => Scaffold(
+                  body: Center(child: _Bounded(onSubmitted: submitted.add)),
+                ),
+              ),
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(_valueKey));
+      await tester.pump();
+      await tester.enterText(find.byType(TextField), '7');
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await tester.pumpAndSettle();
+      expect(submitted, ['7']);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
