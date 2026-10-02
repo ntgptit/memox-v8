@@ -3976,7 +3976,7 @@
   "@exportStaleTitle": {
     "description": "Export banner: a selected card is gone or moved (E6)."
   },
-  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Refresh the selection and export again.",
+  "exportStaleBody": "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again.",
   "@exportStaleBody": {
     "description": "Export banner body for E6."
   },

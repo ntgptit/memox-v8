@@ -768,7 +768,7 @@
   "exportNoTargetTitle": "Không ứng dụng nào trên máy nhận được tệp",
   "exportNoTargetBody": "Hãy cài một ứng dụng quản lý tệp, lưu trữ hoặc email, rồi xuất lại.",
   "exportStaleTitle": "Một thẻ đã chọn không còn trong bộ thẻ này",
-  "exportStaleBody": "Thẻ đó vừa được chuyển sang bộ thẻ khác hoặc vào Thùng rác. Chưa xuất gì. Hãy chọn lại rồi xuất lần nữa.",
+  "exportStaleBody": "Thẻ đó vừa được chuyển sang bộ thẻ khác hoặc vào Thùng rác. Chưa xuất gì. Hãy đóng bảng này, xem lại các thẻ đã chọn rồi xuất lần nữa.",
   "exportEmptyTitle": "Không có gì để xuất",
   "exportEmptyBody": "Bộ thẻ này chưa có thẻ. Hãy thêm hoặc nhập thẻ trước.",
   "deckActionExport": "Xuất thẻ",

@@ -319,4 +319,19 @@ void main() {
       );
     },
   );
+
+  test('the stale copy asks for what the sheet offers: Close (critique '
+      '2026-09-30 part 3d-2)', () {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    expect(
+      _en.exportStaleBody,
+      'It was moved to another deck or sent to Trash meanwhile. Nothing was '
+      'exported. Close this sheet, check your selection and export again.',
+    );
+    expect(
+      vi.exportStaleBody,
+      'Thẻ đó vừa được chuyển sang bộ thẻ khác hoặc vào Thùng rác. Chưa xuất '
+      'gì. Hãy đóng bảng này, xem lại các thẻ đã chọn rồi xuất lần nữa.',
+    );
+  });
 }
