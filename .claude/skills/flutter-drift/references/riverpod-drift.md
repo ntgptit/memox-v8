@@ -81,7 +81,8 @@ emits once and never re-emits on a write to that table.
 So, whenever a query reads a table only via subquery, or a read is assembled
 from several statements:
 
-1. **Check the generated `readsFrom`** in `app_database.g.dart` after building.
+1. **Check the generated `readsFrom`** in the DAO's `<dao>.g.dart` (or
+   `app_database.g.dart` for a query file still included there) after building.
 2. If a table is missing, **complete the dependency set in the DAO**: watch
    `db.tableUpdates(TableUpdateQuery.onAllTables([...]))` over every table the
    read touches and re-run the read on each update (`CardListDao.changes()`

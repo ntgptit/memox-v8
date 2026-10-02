@@ -1,0 +1,19 @@
+import '../tables/settings.drift';
+import '../tables/deck.drift';
+import '../tables/card.drift';
+
+-- Whether this device has answered Welcome (device-only, never synced).
+welcomeSeenFlag(:row_id AS INTEGER):
+SELECT welcome_seen FROM app_settings WHERE id = :row_id;
+
+-- Only welcome_seen changes, so the settings sync trigger, which watches the
+-- four synced columns, stays silent.
+markWelcomeSeen(:row_id AS INTEGER):
+UPDATE app_settings SET welcome_seen = 1 WHERE id = :row_id;
+
+-- Live decks, and live cards whose deck is live too.
+liveLibraryCounts AS LiveLibraryCountsRow:
+SELECT
+  (SELECT COUNT(*) FROM deck WHERE delete_batch_id IS NULL) AS decks,
+  (SELECT COUNT(*) FROM card c JOIN deck d ON d.id = c.deck_id
+   WHERE c.delete_batch_id IS NULL AND d.delete_batch_id IS NULL) AS cards;

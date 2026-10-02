@@ -26,7 +26,8 @@ lib/core/database/
 ├── migrations/                  the data a migration step rewrites
 ├── tables/                      deck, card, tags, srs, study, settings, trash,
 │                                sync (outbox, state, capture triggers)
-└── queries/                     card, deck and trash queries (.drift)
+└── queries/                     every query, by topic (.drift), included by
+                                 the DAOs' @DriftAccessor (ADR-020)
 
 lib/features/<feature>/data/
 ├── datasources/                 <name>_dao.dart · *_data_source.dart
@@ -48,6 +49,12 @@ both trees, and `delete_batches` owns rows of `deck` and `card`. Splitting the
 `.drift` files by feature would put cross-feature foreign keys in whichever
 folder won an argument, while the DAO — the part that genuinely belongs to one
 feature — is already feature-owned.
+
+Since ADR-020 a query file is included by the DAOs that use it, not by
+`AppDatabase`: `@DriftDatabase` keeps `tables/*.drift` (and, until the
+migration's P8, the query files DAOs not yet migrated still call through it).
+Migrations, `PRAGMA` and `local_data_reset.dart` are the only Dart that may
+hold SQL.
 
 ## Connection and PRAGMA
 

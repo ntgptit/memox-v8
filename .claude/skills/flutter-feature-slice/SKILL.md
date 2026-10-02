@@ -124,8 +124,12 @@ sync built per feature: triggers in `sync.drift` queue a synced table's
 writes, and one app-wide `SyncCoordinator` in `lib/core/sync/` pushes and
 pulls (ADR-013, ADR-015).
 
-SQL goes in `.drift` files under `lib/core/database/` so `drift_dev` type-checks
-it at build time. No business SQL in Dart. Multi-step writes run inside
+Every query, read or write, goes in a `.drift` file under
+`lib/core/database/queries/`, and the DAO is a `@DriftAccessor` that calls what
+Drift generates (ADR-020). No SQL string and no builder chain in Dart: the
+builder only builds an `Expression` for a `$predicate` / `$order` placeholder.
+The exceptions are migrations, `PRAGMA` and `local_data_reset.dart`; the guard's
+`memox.data_model.queries_in_drift` holds the line. Multi-step writes run inside
 `dao.runInTransaction`, and every guard that can refuse runs *before* the first
 mutation.
 

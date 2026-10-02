@@ -133,6 +133,15 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D15 | Critique 2026-09-30 phần 3d-1: 14 Learn chỉ ở footer khi chỉ có thẻ mới, 07 FAB ẩn khi tìm kiếm và Retry cho flag hàng loạt lỗi, 09 Save chờ thay đổi, 15 banner khi lưu lỗi, 22 hàng có chevron và nhãn card-days, nút Start studying primary, 06 banner lên trên danh sách, 27 "Đang đồng bộ…" và 23 ô icon warning khi sync lỗi | xong | FE-D14 | S | [spec](superpowers/specs/2026-10-01-critique-fixes-part3d1-design.md) và [plan](superpowers/plans/2026-10-01-critique-fixes-part3d1.md) | — |
 | FE-D16 | Critique 2026-09-30 phần 3d-2: 01 nhãn "Ngày tạo" và ẩn tìm kiếm khi sắp xếp, 02 Reset warning và dải mở khoá là card thường, 03 câu khoá trong sheet starter, 05 empty state gọn và ghi chú xoá trung tính, 08/09 nút Add và Save thêm tag đang gõ, 10 badge theo kết quả và Algorithm một hàng, 11 nút gạt trùng lên trước, 12 câu báo lỗi, 14 hero thường, 24 giờ phút hai chữ số, 28 header và stack trace, skeleton Progress/Settings, MxEmptyState warning ink, các lỗi nhỏ 07/15/27 | xong | FE-D15 | S | [spec](superpowers/specs/2026-10-01-critique-fixes-part3d2-design.md) và [plan](superpowers/plans/2026-10-01-critique-fixes-part3d2.md) | — |
 | FE-D17 | Critique 2026-10-02: 21 lời tóm tắt đúng theo kết cục, 30/32 huỷ sign-out khi chưa xoá gì và gợi ý Sign out nói rõ hệ quả, 11 liệt kê dòng bị bỏ và thẻ "Chọn tệp" mở picker, 16a–19 icon gợi ý, 22 cột ngày đủ đậm 3:1, 01 dải due bỏ new, 07 cờ màu chữ thường, 32 dòng hành động, 27 mất mạng là ghi chú trung tính | xong | FE-D16 | S | [spec](superpowers/specs/2026-10-02-critique2-fixes-design.md) và [plan](superpowers/plans/2026-10-02-critique2-fixes.md) | — |
+| FE-D18 | Mọi truy vấn trong `.drift` — P0: ADR-020, guard `queries_in_drift`, skill cập nhật, pilot `TrashDao` và `AccountDeviceDao` thành `@DriftAccessor` | xong | — | M | [spec](superpowers/specs/2026-10-01-drift-queries-only-design.md) và [plan](superpowers/plans/2026-10-02-drift-queries-only-p0.md); `dod_check.sh` xanh (3268 test); guard bắt vi phạm cài thử; `check_drift` 59 → 40 lỗi | FE-D19 |
+| FE-D19 | `.drift` P1: `tag_dao`, `settings_dao`, `starter_dao`, `dismissed_note_store` | chưa làm | FE-D18 | M | — | — |
+| FE-D20 | `.drift` P2: `card_dao`, `card_list_dao` (`$predicate`/`$order`), `card_detail_dao` | chưa làm | FE-D18 | L | — | — |
+| FE-D21 | `.drift` P3: `deck_dao`, `reminder_workload_dao` | chưa làm | FE-D18 | M | — | — |
+| FE-D22 | `.drift` P4: `srs_dao` | chưa làm | FE-D18 | M | — | — |
+| FE-D23 | `.drift` P5: `study_queue_dao`, `study_session_dao`, `study_round_dao`, `study_view_dao` | chưa làm | FE-D18 | L | — | — |
+| FE-D24 | `.drift` P6: `progress_dao`, `search_dao` | chưa làm | FE-D18 | L | — | — |
+| FE-D25 | `.drift` P7: `core/sync`, `core/auth/account_store` (upsert thay `batch`, đo pull 1.000 dòng) | chưa làm | FE-D18 | L | — | — |
+| FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | chưa làm | FE-D19…FE-D25 | S | — | — |
 
 ## Đã xong và đã kiểm chứng
 

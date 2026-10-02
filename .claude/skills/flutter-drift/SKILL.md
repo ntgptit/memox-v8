@@ -79,6 +79,11 @@ Tables live in `lib/core/database/tables/*.drift`, queries in
 `drift_dev` at build time; the same SQL in a Dart string is checked at runtime by
 your users.
 
+That holds for queries too, not only tables: every query lives in
+`lib/core/database/queries/<topic>_queries.drift`, and the DAO is a
+`@DriftAccessor(include: {...})` that calls the generated method (ADR-020).
+`TrashDao` and `AccountDeviceDao` are the reference shape.
+
 Conventions — naming, primary keys, nullability, constraints, `DATETIME`
 storage, enums as stable text codes — are in
 `references/schema-conventions.md`. Read it before adding a column; the
@@ -93,11 +98,10 @@ to design an index from a query rather than from a column list are in
 `references/query-conventions.md`.
 
 If the query's **shape** varies — an optional filter, a sort the user picks, a
-window — read `references/dynamic-sql.md` before writing it. The rule it exists
-to enforce is that dynamic SQL is structure composed through a type-safe API,
-never SQL text concatenated at runtime; the moment a column name or a clause is
-interpolated into a string, compile-time checking, stream dependencies and
-injection safety are all gone at once.
+window — read `references/dynamic-sql.md` before writing it. The shape varies
+through a `$predicate` / `$order` placeholder in the `.drift` query, filled by
+an `Expression` the DAO builds; it is never SQL text and never a builder chain
+standing in for the query (ADR-020).
 
 The order matters: **index after query, never before**. Every index is paid for
 on every insert into that table, forever. An index whose query nobody can name is
