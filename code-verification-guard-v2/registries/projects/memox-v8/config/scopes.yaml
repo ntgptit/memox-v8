@@ -320,6 +320,48 @@ scopes:
       - lib/**/*.drift
     exclude: []
 
+  # ADR-020: where a query may not be written outside `.drift`. The first five
+  # excludes are the ADR's exceptions and stay. The rest are the files not yet
+  # migrated (spec 2026-10-01-drift-queries-only-design.md §4): each phase
+  # removes its own, P8 deletes the block. Never add a file back.
+  drift_query_sites:
+    include:
+      - lib/features/*/data/**/*.dart
+      - lib/core/**/*.dart
+    exclude:
+      - '**/*.g.dart'
+      - lib/core/database/schema_versions.dart
+      - lib/core/database/migrations/**
+      - lib/core/database/app_database.dart
+      - lib/core/database/local_data_reset.dart
+      # ---- not yet migrated (temporary) ----
+      - lib/core/auth/account_store.dart
+      - lib/core/database/log/log_database.dart
+      - lib/core/notes/dismissed_note_store.dart
+      - lib/core/sync/account_settings_sync_adapter.dart
+      - lib/core/sync/card_schedule_sync_adapter.dart
+      - lib/core/sync/card_sync_adapter.dart
+      - lib/core/sync/deck_sync_adapter.dart
+      - lib/core/sync/delete_batch_sync_adapter.dart
+      - lib/core/sync/review_log_sync_adapter.dart
+      - lib/core/sync/sync_store.dart
+      - lib/core/sync/tag_sync_adapter.dart
+      - lib/features/account/data/datasources/account_device_dao.dart
+      - lib/features/card/data/datasources/card_dao.dart
+      - lib/features/card/data/datasources/card_list_dao.dart
+      - lib/features/deck/data/datasources/deck_dao.dart
+      - lib/features/progress/data/datasources/progress_dao.dart
+      - lib/features/search/data/datasources/search_dao.dart
+      - lib/features/settings/data/datasources/settings_dao.dart
+      - lib/features/srs/data/datasources/srs_dao.dart
+      - lib/features/starter_decks/data/datasources/starter_dao.dart
+      - lib/features/study/data/datasources/study_queue_dao.dart
+      - lib/features/study/data/datasources/study_round_dao.dart
+      - lib/features/study/data/datasources/study_session_dao.dart
+      - lib/features/study/data/datasources/study_view_dao.dart
+      - lib/features/tags/data/datasources/tag_dao.dart
+      - lib/features/trash/data/datasources/trash_dao.dart
+
   test_files:
     include:
       - test/**/*.dart

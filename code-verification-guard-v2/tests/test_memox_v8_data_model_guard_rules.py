@@ -183,3 +183,78 @@ def test_review_kind_leaves_a_comment_that_quotes_the_inference_alone(tmp_path: 
   /// The kind: previousBox != nextBox is not how a turn is labelled.
 """
     assert not _violations(KIND, tmp_path, MODEL, good)
+
+
+QUERIES_IN_DRIFT = "memox.data_model.queries_in_drift"
+
+SCOPES_PATH = (
+    Path(__file__).parents[1]
+    / "registries"
+    / "projects"
+    / "memox-v8"
+    / "config"
+    / "scopes.yaml"
+)
+
+# ADR-020: files that have moved to `.drift` and must never return to the
+# scope's temporary exclude. Each phase adds the files it migrates.
+MIGRATED_TO_DRIFT: tuple[str, ...] = ()
+
+# The exceptions ADR-020 grants for good, which no phase removes.
+PERMANENT_EXCLUDES = (
+    "**/*.g.dart",
+    "lib/core/database/schema_versions.dart",
+    "lib/core/database/migrations/**",
+    "lib/core/database/app_database.dart",
+    "lib/core/database/local_data_reset.dart",
+)
+
+
+def test_queries_in_drift_goes_red_on_sql_strings_and_builder_chains(tmp_path: Path) -> None:
+    for bad in (
+        "    final row = await _db.customSelect('SELECT 1').getSingle();\n",
+        "        .customSelect(\n",
+        "    await _db.customUpdate(\n",
+        "    await customInsert('INSERT INTO t VALUES (1)');\n",
+        "    await _db.customStatement('DELETE FROM sync_outbox');\n",
+        "      (_db.select(_db.card)..where((c) => c.id.equals(id))).getSingle();\n",
+        "    final byId = await (_db.select(\n",
+        "      .into(_db.card)\n",
+        "      (_db.update(_db.appSettings)\n",
+        "    await (select(logEntries)..limit(1)).get();\n",
+        "    final query = selectOnly(logEntries)\n",
+        "    (delete(logEntries)..where((t) => t.id.isIn(ids))).go();\n",
+        "        _db.select(_card).join([\n",
+        "    await _db.batch((b) => b.insertAll(_db.card, rows));\n",
+    ):
+        assert _violations(QUERIES_IN_DRIFT, tmp_path, DAO, bad), bad
+
+
+def test_queries_in_drift_leaves_generated_queries_pragmas_and_predicates_alone(
+    tmp_path: Path,
+) -> None:
+    good = """
+  /// Reads through `customSelect` were the old shape; ADR-020 moved them.
+  // await _db.customSelect('SELECT 1');
+  Future<List<TrashDeckEntryRow>> deckEntryRows() => trashDeckEntries().get();
+  Future<void> purge(String batchId) => purgeDeleteBatch(batchId);
+  Stream<void> entryChanges() =>
+      tableChanges(attachedDatabase, [attachedDatabase.deleteBatches]);
+  Future<void> defer() => _db.customStatement('PRAGMA defer_foreign_keys = ON');
+  Expression<bool> _predicate(Card c) => c.deckId.equals(deckId) & c.deleteBatchId.isNull();
+  Future<void> delete(String key) => _storage.delete(key: key);
+  final names = parts.join(', ');
+"""
+    assert not _violations(QUERIES_IN_DRIFT, tmp_path, DAO, good)
+
+
+def _scope(name: str) -> dict:
+    return yaml.safe_load(SCOPES_PATH.read_text(encoding="utf-8"))["scopes"][name]
+
+
+def test_drift_query_sites_keeps_adr_020_exceptions_and_never_readmits_a_migrated_file() -> None:
+    scope = _scope("drift_query_sites")
+    excluded = set(scope["exclude"])
+
+    assert set(PERMANENT_EXCLUDES) <= excluded
+    assert excluded.isdisjoint(MIGRATED_TO_DRIFT)
