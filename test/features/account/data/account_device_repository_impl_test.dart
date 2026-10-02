@@ -50,4 +50,20 @@ void main() {
     expect((library.decks, library.cards), (2, 1));
     expect(library.isEmpty, isFalse);
   });
+
+  test(
+    'a deck in the Trash, and every card under it, is not counted',
+    () async {
+      final decks = DeckRepositoryImpl(db);
+      final korean = await decks.root('Korean');
+      final english = await decks.root('English');
+      await insertCard(db, id: 'c1', deckId: korean.id);
+      await insertCard(db, id: 'c2', deckId: english.id);
+      await decks.deleteDeck(deckId: english.id);
+
+      final library = await repository.countLibrary();
+
+      expect((library.decks, library.cards), (1, 1));
+    },
+  );
 }

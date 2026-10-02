@@ -198,7 +198,9 @@ SCOPES_PATH = (
 
 # ADR-020: files that have moved to `.drift` and must never return to the
 # scope's temporary exclude. Each phase adds the files it migrates.
-MIGRATED_TO_DRIFT: tuple[str, ...] = ()
+MIGRATED_TO_DRIFT: tuple[str, ...] = (
+    "lib/features/account/data/datasources/account_device_dao.dart",
+)
 
 # The exceptions ADR-020 grants for good, which no phase removes.
 PERMANENT_EXCLUDES = (
