@@ -344,7 +344,6 @@ scopes:
       - lib/core/sync/review_log_sync_adapter.dart
       - lib/core/sync/sync_store.dart
       - lib/core/sync/tag_sync_adapter.dart
-      - lib/features/search/data/datasources/search_dao.dart
 
   test_files:
     include:
