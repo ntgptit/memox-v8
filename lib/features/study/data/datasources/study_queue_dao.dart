@@ -20,7 +20,7 @@ final class StudyQueueDao extends DatabaseAccessor<AppDatabase>
 
   /// Round 1 of [mode]: [cardIds] in serving order, each with its entry of
   /// [directions] when there are directions (BR-MODE-015). One insert per
-  /// card, inside the caller's transaction (ADR-020 D9).
+  /// card, inside the caller's transaction (`.drift` spec D9).
   Future<void> insertFirstRound(
     String sessionId,
     String mode,

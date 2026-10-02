@@ -14,7 +14,8 @@ import 'package:memox/core/database/app_database.dart';
 /// (each listener still gets its own first firing), and its cancel does not
 /// wait on Drift's: a single-subscription chain hands back a cancel future
 /// that completes in the root zone, which holds a `first` taken in a widget
-/// test's fake zone forever.
+/// test's fake zone forever. As a broadcast stream it is not paused by a
+/// paused listener: a read model over it keeps reading while paused.
 Stream<void> tableChanges(
   AppDatabase db,
   Iterable<ResultSetImplementation<Object?, Object?>> tables,

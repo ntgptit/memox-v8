@@ -69,7 +69,7 @@ final class StudyRoundDao extends DatabaseAccessor<AppDatabase>
 
   /// Replaces the options of [cardId]'s question in [round] with
   /// [optionIds], in the order shown; with none when [optionIds] is null.
-  /// One insert per option, inside the caller's transaction (ADR-020 D9).
+  /// One insert per option, inside the caller's transaction (`.drift` spec D9).
   Future<void> replaceOptions(
     String sessionId,
     int round,

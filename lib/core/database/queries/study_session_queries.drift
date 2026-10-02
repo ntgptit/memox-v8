@@ -8,7 +8,7 @@ import '../tables/study.drift';
 
 -- BR-STUDY-051, BR-STUDY-057: the active cards of :deck_id's whole subtree
 -- not learned yet, oldest first.
-newCardsOfSubtree(:deck_id AS TEXT) AS NewSubtreeCardRow:
+newCardsOfSubtree(:deck_id AS TEXT) AS SubtreeCardRow:
 WITH RECURSIVE subtree(id) AS (
   SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
   UNION
@@ -22,7 +22,7 @@ ORDER BY c.created_at, c.id;
 
 -- BR-STUDY-001, BR-STUDY-002, BR-STUDY-051: the active learned cards of
 -- :deck_id's whole subtree due at :now, earliest due first.
-dueCardsOfSubtree(:deck_id AS TEXT, :now AS DATETIME) AS DueSubtreeCardRow:
+dueCardsOfSubtree(:deck_id AS TEXT, :now AS DATETIME) AS SubtreeCardRow:
 WITH RECURSIVE subtree(id) AS (
   SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
   UNION
