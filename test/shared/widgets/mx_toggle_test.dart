@@ -58,7 +58,7 @@ void main() {
 
   testWidgets('off: a 2 outline edge, 3:1 on the row, and a variant-ink '
       'thumb, 3:1 on the track; '
-      'on: no edge, a bright thumb (FE-C1)', (tester) async {
+      'on: no edge, an onPrimary thumb (FE-C1)', (tester) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
@@ -73,7 +73,19 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.surfaceBright);
+    expect(_thumbColor(tester), scheme.onPrimary);
+  });
+
+  testWidgets('the ON thumb is onPrimary in dark (2.90:1 before)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
+      brightness: Brightness.dark,
+    );
+    await tester.pumpAndSettle();
+    expect(_thumbColor(tester), AppColorSchemes.dark.onPrimary);
   });
 
   testWidgets('a tap reports the flipped value', (tester) async {

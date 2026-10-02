@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -48,13 +47,12 @@ class MxFooterBar extends StatelessWidget {
           children: [
             child,
             if (caption case final caption? when !isTyping)
-              Opacity(
-                opacity: AppOpacity.muted,
-                child: Text(
-                  caption,
-                  textAlign: TextAlign.center,
-                  style: context.textStyles.footerCaption,
-                ),
+              // Full variant ink, 7.2:1; at AppOpacity.muted it was 3.50:1
+              // in light (audit 2026-10-03, owner R2).
+              Text(
+                caption,
+                textAlign: TextAlign.center,
+                style: context.textStyles.footerCaption,
               ),
           ],
         ),

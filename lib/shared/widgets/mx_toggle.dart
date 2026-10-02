@@ -80,9 +80,11 @@ class _MxToggleState extends State<MxToggle> {
         child: DecoratedBox(
           key: const ValueKey('mx-toggle-thumb'),
           decoration: BoxDecoration(
-            // Off, the thumb sits on the track's fill: variant ink holds 3:1
-            // there, where outline is 2.74 light and 1.96 dark (FE-C1).
-            color: widget.isOn ? colors.surfaceBright : colors.onSurfaceVariant,
+            // On, onPrimary on the primary track (4.63:1 both themes;
+            // surfaceBright was 2.90 in dark, SP1 §5.2). Off, the thumb sits
+            // on the track's fill: variant ink holds 3:1 there, where outline
+            // is 2.74 light and 1.96 dark (FE-C1).
+            color: widget.isOn ? colors.onPrimary : colors.onSurfaceVariant,
             shape: BoxShape.circle,
             boxShadow: AppShadows.whisper(colors),
           ),

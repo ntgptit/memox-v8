@@ -17,6 +17,7 @@ final class MxDerivedColors {
     required this.successSoft,
     required this.successBorder,
     required this.successInk,
+    required this.streakInk,
     required this.surfaceHero,
     required this.chromeGlass,
     required this.ghostBorder,
@@ -62,6 +63,11 @@ final class MxDerivedColors {
         semantic.success,
         scheme,
         isDark ? _successInkDark : _successInkLight,
+      ),
+      streakInk: _ink(
+        semantic.streak,
+        scheme,
+        isDark ? _streakInkDark : _streakInkLight,
       ),
       // The one derivation whose base changes with the theme.
       surfaceHero: Color.alphaBlend(
@@ -139,6 +145,8 @@ final class MxDerivedColors {
   static const double _successBorderDark = 0.32;
   static const double _successInkLight = 0.40;
   static const double _successInkDark = 0;
+  static const double _streakInkLight = 0.20;
+  static const double _streakInkDark = 0;
   static const double _surfaceHeroLight = 0.05;
   // 18 %, not the kit's 12 %: the deeper #5265F5 needs it to lift the hero
   // off the page and its boxed tiles as the kit's #8B9AFF did (spec
@@ -194,6 +202,10 @@ final class MxDerivedColors {
 
   /// Success TEXT and glyphs, never the success fill.
   final Color successInk;
+
+  /// The streak flame as a glyph: 3:1 on the card and its tint
+  /// (SP1 §5.2; the colour itself was 2.48 in light).
+  final Color streakInk;
 
   /// Primary text, icons and focus rings, never a fill.
   final Color primaryInk;
