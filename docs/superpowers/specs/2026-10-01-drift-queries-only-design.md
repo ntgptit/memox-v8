@@ -88,7 +88,7 @@ about to touch its files.
 
 ### 5.1 ADR-020
 
-`docs/shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md`, `status: accepted`
+`docs/shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md`, `status: active`
 once the owner approves this spec. Contents: context (§1 figures), decision
 (D1–D9), exceptions (D7), consequences (generated `readsFrom`/`updates`; `batch`
 becomes a loop; `AppDatabase` stops carrying queries), and rollback (an
@@ -104,8 +104,9 @@ In `code-verification-guard-v2/registries/projects/memox-v8/rules/memox-data-mod
     same line's first argument starts with `'PRAGMA`;
   - builder entry points on a database or accessor: `\b(?:select|selectOnly|update|delete|into)\s*\(\s*(?:_?db\.|attachedDatabase\.)?[a-z]\w*\s*\)`,
     `\.join\s*\(\s*\[`, `\bbatch\s*\(`.
-- Scope `drift_query_sites` in `code-verification-guard-v2/scopes/memox-scopes.yaml`:
-  include `lib/**/*.dart`, exclude `**/*.g.dart`,
+- Scope `drift_query_sites` in
+  `code-verification-guard-v2/registries/projects/memox-v8/config/scopes.yaml`:
+  include `lib/features/*/data/**/*.dart` and `lib/core/**/*.dart`, exclude `**/*.g.dart`,
   `lib/core/database/schema_versions.dart`, `lib/core/database/migrations/**`,
   `lib/core/database/app_database.dart`, `lib/core/database/local_data_reset.dart`,
   and the temporary list of files not yet migrated. That list sits under a
@@ -143,9 +144,13 @@ false ERRORs today). No new rule here (D10).
 
 ### 5.5 Pilot
 
-- `TrashDao`: becomes an accessor including `trash_queries.drift`. The file's
-  only caller is `TrashDao`, so its include leaves `@DriftDatabase` now. Its three
-  builder calls move into `trash_queries.drift`.
+- `TrashDao`: becomes an accessor including `trash_queries.drift`. That file
+  also holds `insertDeleteBatch`, `deckIsInTrash` and
+  `closeSessionsTouchingBatch`, which `card_dao` and `deck_dao` call through
+  `AppDatabase`. Those three move to a new `delete_batch_queries.drift` that
+  stays on `@DriftDatabase` until P2 and P3. The rest of `trash_queries.drift`
+  leaves `@DriftDatabase` now. `TrashDao`'s three builder calls move into
+  `trash_queries.drift`.
 - `AccountDeviceDao`: becomes an accessor including a new
   `account_device_queries.drift` for its `app_settings` read, its `welcome_seen`
   write and its one `customSelect`.
