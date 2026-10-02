@@ -61,6 +61,7 @@
     "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
     "settings_queries": ["settings", "reminders", "study"],
     "starter_queries": ["starter_decks"],
+    "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [
