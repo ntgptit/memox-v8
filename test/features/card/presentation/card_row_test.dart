@@ -220,7 +220,7 @@ void main() {
     expect(box.center.dy, closeTo(card.center.dy, 0.5));
   });
 
-  libraryTest('the status dot and the trailing column are centred on a tall '
+  libraryTest('the content and the trailing column are centred on a tall '
       'row (owner 2026-09-26)', (tester, env) async {
     await pumpLibraryScreen(
       tester,
@@ -245,7 +245,12 @@ void main() {
         matching: find.byType(MxCard),
       ),
       [
-        find.byType(MxStatusBadge),
+        find
+            .ancestor(
+              of: find.text('gongbuhada'),
+              matching: find.byType(Column),
+            )
+            .first,
         find
             .ancestor(
               of: find.byType(CardDueChipWidget),
@@ -254,5 +259,22 @@ void main() {
             .first,
       ],
     );
+  });
+
+  libraryTest('a row states its status once: the label, no dot (critique '
+      '2026-09-30 part 3b, R3)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(status: CardDisplayStatus.mastered),
+          isSelecting: false,
+          isSelected: false,
+        ),
+      ]),
+    );
+    expect(find.byType(MxStatusBadge), findsNothing);
+    expect(find.text(_en.cardStatusMastered.toUpperCase()), findsOneWidget);
   });
 }

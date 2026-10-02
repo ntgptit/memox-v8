@@ -58,7 +58,7 @@ class DeckSummaryCardWidget extends StatelessWidget {
                     Text(
                       overline.toUpperCase(),
                       semanticsLabel: overline,
-                      style: styles.compactOverline,
+                      style: styles.eyebrow,
                     ),
                     Text(
                       l10n.deckRowMeta(
@@ -77,9 +77,12 @@ class DeckSummaryCardWidget extends StatelessWidget {
                       fallback: cards == 0
                           ? l10n.workloadNoCards
                           : l10n.workloadNothingDue(cards),
-                      suffix: level.scheduledCount > 0
-                          ? l10n.deckScheduledCount(level.scheduledCount)
-                          : null,
+                      // A term of its own, so it wraps whole (Wrap Rule).
+                      scheduledCount: level.scheduledCount,
+                      scheduledLabel: l10n.deckScheduledCount,
+                      // A hero statement wraps between whole terms, never
+                      // "…" (the Wrap Rule; critique 2026-09-30 part 3b).
+                      canWrap: true,
                     ),
                   ],
                 ),

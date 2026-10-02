@@ -203,4 +203,53 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets('the title reads in its tone ink; an untitled lead stays '
+      'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
+    for (final (tone, ink) in [
+      (MxBannerTone.warning, derived.warningInk),
+      (MxBannerTone.danger, derived.dangerInk),
+    ]) {
+      await pumpMx(
+        tester,
+        _width(MxInlineBanner(tone: tone, title: 'Title', message: _message)),
+      );
+      expect(
+        tester.widget<Text>(find.text('Title')).style!.color,
+        ink,
+        reason: '$tone',
+      );
+      await pumpMx(
+        tester,
+        _width(MxInlineBanner(tone: tone, message: _message)),
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurface,
+        reason: '$tone untitled',
+      );
+    }
+
+    final darkDerived = MxDerivedColors.resolve(
+      AppColorSchemes.dark,
+      MxSemanticColors.dark,
+    );
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          title: 'Title',
+          message: _message,
+        ),
+      ),
+      brightness: Brightness.dark,
+    );
+    // The theme change animates.
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Text>(find.text('Title')).style!.color,
+      darkDerived.warningInk,
+    );
+  });
 }

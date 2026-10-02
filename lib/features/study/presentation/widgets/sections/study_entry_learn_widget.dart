@@ -12,7 +12,8 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 /// Screen 14's Learn row: the stages a learning session runs and how many
 /// new cards it takes (BR-STUDY-056, BR-STUDY-057). Its button starts the
 /// session directly (BR-STUDY-051); until every stage is built it says
-/// "Coming soon" instead (FE-A6 spec §3).
+/// "Coming soon" instead (FE-A6 spec §3). When the footer already offers
+/// Learn, the row has no button (critique 2026-09-30 part 3d-1, D2).
 class StudyEntryLearnWidget extends StatelessWidget {
   const StudyEntryLearnWidget({
     super.key,
@@ -48,7 +49,12 @@ class StudyEntryLearnWidget extends StatelessWidget {
 
   Widget? _trailing(BuildContext context) {
     final l10n = context.l10n;
-    if (!offer.canLearn) return null;
+    // With only new cards the footer offers Learn; the row does not offer
+    // it again (critique 2026-09-30 part 3d-1, D2).
+    if (!offer.canLearn ||
+        entryFooterActionOf(offer) == EntryFooterAction.learn) {
+      return null;
+    }
     return MxButton(
       label: l10n.studyEntryLearn,
       icon: AppIcons.starterDecks,

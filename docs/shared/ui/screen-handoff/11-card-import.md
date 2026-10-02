@@ -23,13 +23,13 @@ bar is gone while it is open.
 | App bar | `MxAppBar` (content) | Close; "Import cards", then "Import results" on the result. |
 | Deck context | `DeckContextHeaderWidget`, injected by `app/` | Library › ancestors › deck › "Import", and the deck's name. It stays above the scroll with the tracker, as on the card editor. |
 | Step tracker | `ImportStepTrackerWidget` | Source · Columns · Preview · Import (spec §8.1 ruling 4). Done steps check in the mastery colour, the current one is primary, later ones are muted. It stays on one row with stretching connectors and wraps at a large text scale. One semantic label: "Step {n} of 4: {name}". |
-| 1 · Choose a source | `MxCard` options (`isSelected`) | Choose a file · Paste text, shown only before a source is read (K1). The file option picks through `file_picker`; the paste option opens an `MxTextField`. |
-| Source chip | `MxCard` + `MxIconTile` | File name, then "{format} · UTF-8 · ready to read" or "{format} · {rows} · {columns}" once read; remove action. A workbook with several sheets adds a "Sheet: {name} ({i} of {n})" `MxChipTrigger` (ruling 2). |
-| 2 · Map columns | `MxSection` of `ImportMappingRowWidget` | "First row is a header" `MxSettingsRow` with an `MxToggle` and the header sample; one row per column: "Column {A}", its header cell, and an `MxChipTrigger` for the field, the chips ending on one edge with no arrow between (critique 2026-09-30) (six fields or "Not imported") in a bottom sheet. |
+| 1 · Choose a source | `MxCard` options (`isSelected`) | Choose a file · Paste text, shown only before a source is read (K1). The file option picks through `file_picker`; the paste option opens an `MxTextField`. The "Pick a spreadsheet or text file" empty state beneath is not wrapped in a card (`MxEmptyState` draws its own surface). |
+| Source chip | `MxCard` + `MxIconTile` | File name, then "{format} · UTF-8 · ready to read" or "{format} · {rows} · {columns}" once read, counting data rows (a header row is not one, as the preview skips it; critique 2026-09-30 part 3b); remove action. A workbook with several sheets adds a "Sheet: {name} ({i} of {n})" `MxChipTrigger` (ruling 2). |
+| 2 · Map columns | `MxSection` of `ImportMappingRowWidget` | "First row is a header" `MxSettingsRow` with an `MxToggle` and the header sample; one row per column: "Column {A}", its header cell, its first value (the first data row's cell, one line; none when empty; critique 2026-09-30 part 1), and an `MxChipTrigger` for the field, the chips ending on one edge with no arrow between (critique 2026-09-30) (six fields or "Not imported") in a bottom sheet. |
 | Mapping error | `MxInlineBanner` (warning) | Its own row when Term or Meaning is unmapped (K3). Preview is locked. |
-| 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | "{ready} of {total} rows ready"; Ready, Invalid, Duplicate and Blank badges, only for counts above 0; one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2); "Include duplicates" toggle when there is one. |
+| 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | The title alone (the badges carry the counts; critique 2026-09-30 part 3b); Ready, Invalid, Duplicate and Blank badges, only for counts above 0; the "Include duplicates" toggle when there is one (after the badges, before the rows); one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2). |
 | Importing | `MxCard` + `MxSpinner` | "Adding {n} cards…". Close and Back do nothing until the write ends. |
-| Footer | `MxFooterBar` | Cancel + the step action (Read and map columns · Preview rows · Import {n} cards) and a caption. |
+| Footer | `MxFooterBar` | Cancel + the step action (Read and map columns · Preview rows · Import {n} cards) and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
 | Result | `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` | By outcome (K4); see States. |
 
 ## States
@@ -43,6 +43,7 @@ bar is gone while it is open.
 | emptySheet | no golden | no golden | One copy for a file, a sheet or text with no row (E2); another sheet can still be chosen (A2). |
 | parsing | no golden | no golden | "Reading your file…" in the source area. |
 | mapping | `import_mapping_light.png` | `import_mapping_dark.png` | Only canonical header names map by themselves (D2); headers such as `term`/`meaning` stay unmapped. |
+| mappingNoHeader | `import_mapping_no_header_light.png` | `import_mapping_no_header_dark.png` | "First row is a header" off: each column shows its first value under "Column {A}" (critique 2026-09-30 part 1). |
 | mappingIncomplete | no golden | no golden | The error is a banner of its own, not a red border (K3). The "mapped for you" note shows only once the mapping is complete. |
 | previewAll | no golden | no golden | Rows stack front over back instead of three columns. |
 | previewMix | `import_preview_light.png` | `import_preview_dark.png` | As previewAll; the invalid row is not tinted, its reason and icon say it. |
@@ -62,6 +63,7 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 
 ## Rulings
 
+- **Critique 2026-09-30 part 1:** each mapping row shows its column's first value, so a headerless file or pasted text is not mapped blind.
 - **Spec §8.2 K1:** once read, the source step collapses to the source chip.
 - **Spec §8.2 K2, UC-TRANSFER-001 step 5:** the preview shows the first 50 rows and "Showing the first {n} of {m} rows".
 - **Spec §8.2 K3:** each status icon has a semantic label, a mapping error sits on its own row, and cells wrap to two lines; the preview is front over back in one column, since two-line cells do not fit three columns at 360 dp.
@@ -74,13 +76,15 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - **Amends spec §5.1:** the file name shows in the chip while the wizard is open; it is never logged or stored.
 - **FE-B3 plan 1:** Import is live from the deck actions.
 - **Critique 2026-09-30:** the file helper ("importHelperBody") has a close button and stays hidden once dismissed on this device; the "mapped for you" note is an `MxNote.hint`.
+- **Critique 2026-09-30 tone pass, T6:** Ready (chip and row mark) is success; the step tracker's finished steps stay mastery (progress through the flow).
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** in the preview "Include duplicates" sits after the badges and before the preview rows; the source step's "Pick a spreadsheet or text file" empty state has no wrapping card, its body reads "Nothing is added until you confirm.", and the formats are stated only by the "Choose a file" option's hint.
 
 ## Copy
 
 - Steps: "Source" · "Columns" · "Preview" · "Import" · "Step {n} of 4: {name}".
-- Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · "Paste text" · "Tab- or comma-separated rows" · "Pick a spreadsheet or text file" · ".csv, .tsv or .xlsx · UTF-8 · nothing is added until you confirm" · "Choose file" · "Each row makes one card".
+- Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · "Paste text" · "Tab- or comma-separated rows" · "Pick a spreadsheet or text file" · "Nothing is added until you confirm." · "Choose file" · "Each row makes one card".
 - Problems: "This file is not UTF-8" · "This file can’t be read" · "There are no rows to import".
 - Mapping: "2 · Map columns" · "First row is a header" · "Column {letter}" · "Term (front)" · "Meaning (back)" · "Example" · "Hint" · "Pronunciation" · "Tags" · "Not imported" · "Map one column to Term and one to Meaning. Both are required."
-- Preview: "3 · Preview" · "{ready} of {total} rows ready" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".
+- Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".
 - Footer: "Read and map columns" · "Preview rows" · "Import {n} cards" · "Importing…".
 - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t finish" · "This deck no longer accepts cards" · "Added as new cards" · "Skipped — duplicates" · "Skipped — invalid rows" · "View the cards" · "Import another file" · "Back to deck" · "Try again".

@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/study_options_form_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -18,12 +16,10 @@ class StudyOptionsFooterWidget extends ConsumerWidget {
   const StudyOptionsFooterWidget({
     super.key,
     required this.deckId,
-    required this.stored,
     required this.form,
   });
 
   final String deckId;
-  final EffectiveStudyOptions stored;
   final StudyOptionsForm form;
 
   /// Read in the callback only, never while building.
@@ -39,10 +35,6 @@ class StudyOptionsFooterWidget extends ConsumerWidget {
     );
     final caption = switch (save) {
       _ when form.isCardLimitInvalid => l10n.studyOptionsFixLimit,
-      StudyOptionsSave.failed => l10n.studyOptionsSaveFailed(
-        stored.options.cardLimit,
-        studyOptionsOrderName(l10n, stored.options.newCardOrder),
-      ),
       _ => l10n.studyOptionsLocalOnly,
     };
     final (label, icon) = switch (save) {

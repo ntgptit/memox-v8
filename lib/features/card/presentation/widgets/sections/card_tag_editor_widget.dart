@@ -14,8 +14,8 @@ import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 /// The card's tags (kit 08/09): "Tags · optional · n / 10", removable chips,
-/// and Add tag, which opens an inline input. Done adds the tag and keeps the
-/// input open for the next one; an empty Done closes it. A name already
+/// and Add tag, which opens an inline input. Done or Add adds the tag and
+/// keeps the input open for the next one; an empty Done closes it. A name already
 /// there, however spelled, adds nothing (BR-TAG-001). At the limit the
 /// button gives way to a warning (ruling P4a-L8).
 class CardTagEditorWidget extends StatefulWidget {
@@ -33,10 +33,12 @@ class CardTagEditorWidget extends StatefulWidget {
   final ValueChanged<bool>? onPendingChanged;
 
   @override
-  State<CardTagEditorWidget> createState() => _CardTagEditorWidgetState();
+  State<CardTagEditorWidget> createState() => CardTagEditorWidgetState();
 }
 
-class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
+/// Public so the form can add the typed name on Save, as a `Form` asks its
+/// `FormState` to validate (critique 2026-09-30 part 3d-2, E8).
+class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
   final _input = TextEditingController();
   final _focus = FocusNode();
   var _isAdding = false;
@@ -59,7 +61,7 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
   void _reportPending() {
     final isPending = _input.text.trim().isNotEmpty;
     if (isPending == _isPending) return;
-    _isPending = isPending;
+    setState(() => _isPending = isPending);
     widget.onPendingChanged?.call(isPending);
   }
 
@@ -70,30 +72,53 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
     });
   }
 
-  void _add(String name) {
+  /// Adds [name] as typed; false only when the tag rule refuses it, the
+  /// field then saying why.
+  bool _add(String name, {bool keepsFocus = true}) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) {
       setState(() {
         _isAdding = false;
         _error = null;
       });
-      return;
+      return true;
     }
     final folded = TagEntity.fold(trimmed);
     if (widget.tags.any((tag) => TagEntity.fold(tag) == folded)) {
       _input.clear();
-      _focus.requestFocus();
-      return;
+      if (keepsFocus) _focus.requestFocus();
+      return true;
     }
     final next = [...widget.tags, trimmed];
     if (CardDraft.checkTagNames(next) case Rejected(:final reason)) {
       setState(() => _error = context.l10n.cardRejection(reason));
-      return;
+      return false;
     }
     setState(() => _error = null);
     _input.clear();
     widget.onChanged(next);
-    _focus.requestFocus();
+    if (keepsFocus) _focus.requestFocus();
+    return true;
+  }
+
+  /// Save adds what is typed, as Done would (critique 2026-09-30 part 3d-2,
+  /// E8). False when the name is refused: the caller saves nothing.
+  bool commitPending() {
+    if (_input.text.trim().isEmpty) return true;
+    final isAdded = _add(_input.text, keepsFocus: false);
+    // A refused name takes the focus, which brings its error into view
+    // (critique 2026-09-30 part 3d-2, final review).
+    if (!isAdded) _focus.requestFocus();
+    return isAdded;
+  }
+
+  /// The next card's form starts with an empty, closed input.
+  void clearInput() {
+    _input.clear();
+    setState(() {
+      _isAdding = false;
+      _error = null;
+    });
   }
 
   @override
@@ -113,11 +138,7 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               spacing: AppSpacing.micro,
               children: [
                 const Icon(AppIcons.tag, size: AppIconSize.inline),
-                Text(
-                  l10n.cardTags.toUpperCase(),
-                  semanticsLabel: l10n.cardTags,
-                  style: styles.overline,
-                ),
+                Text(l10n.cardTags, style: styles.fieldLabel),
                 Flexible(
                   child: Text(
                     l10n.cardTagsMeta(widget.tags.length, TagEntity.maxPerCard),
@@ -155,7 +176,15 @@ class _CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               hintText: l10n.cardTagHint,
               errorText: _error,
               textInputAction: TextInputAction.done,
-              onSubmitted: _add,
+              onSubmitted: (name) => _add(name),
+              // Done is not the only way to add (critique 2026-09-30 part
+              // 3d-2, E8).
+              trailing: MxButton(
+                label: l10n.cardTagConfirm,
+                size: MxButtonSize.compact,
+                tone: MxButtonTone.text,
+                onPressed: _isPending ? () => _add(_input.text) : null,
+              ),
             ),
           if (isFull)
             MxFieldMessage(

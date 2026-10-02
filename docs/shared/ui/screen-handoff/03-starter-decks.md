@@ -21,7 +21,7 @@ person's own under the scheduler they choose. UC-STARTER-001; BR-STARTER-001…0
 | App bar | `MxAppBar` (content) | Back and "Starter decks". |
 | Note | `MxNote` (flask), dismissible | "These decks are practice fixtures for development and testing, not published course material. Anything you add is yours to edit." (BR-STARTER-010). Shown while the templates load too. |
 | A card per template | `MxCard` + `MxIconTile` (sparkles) + `MxBadge` | The title, "In library" once a copy is in the library, the facts "{front} · {back} · {n} cards · {m} sub-decks · {source}", then the add ("Add to library" in primary, or "Add another copy" in secondary, critique 2026-09-30) and "Suggests {algorithm}". The title wraps and the badge follows it; the suggestion drops below the button, whole, when both do not fit (critique P2a). The facts and the actions line up with the title, past the tile. |
-| Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "{n} cards in {m} sub-decks, as a new deck of your own.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add deck". |
+| Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "The scheduler locks after the first review. Changing it later resets learning progress.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add deck". |
 
 Language names come from a small table of the tags the build ships: English,
 Vietnamese, Korean, and "Latin" for a `-Latn` tag; any other tag shows as written (D7). The fixtures' source, "Development fixture", is named in the
@@ -52,14 +52,16 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 - **UI-base row 125:** loading shows the note, then generic skeleton rows.
 - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for a template already in the library, is secondary.
 - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`).
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the algorithm sheet labels its choice "Review algorithm" as a field label with a Required caption, not one all-caps line.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the algorithm sheet's body is the lock line (`deckSchedulerNote`: "The scheduler locks after the first review. Changing it later resets learning progress."), replacing the counts sentence; the card's facts line keeps the counts.
 
 ## Copy
 
 "Starter decks" · "These decks are practice fixtures for development and testing, not
 published course material. Anything you add is yours to edit." · "In library" · "{n}
 cards" · "{m} sub-decks" · "Add to library" · "Add another copy" · "Development fixture" · "Suggests {algorithm}"
-· "SM-2" · "Eight boxes" · "Add “{title}”" · "{n} cards in {m} sub-decks, as a new deck
-of your own." · "Review algorithm · required" · "grade yourself, intervals adapt" · "Boxes
+· "SM-2" · "Eight boxes" · "Add “{title}”" · "The scheduler locks after the first review.
+Changing it later resets learning progress." · "Review algorithm · required" · "grade yourself, intervals adapt" · "Boxes
 1–8 · match, guess, recall, fill" · "Suggested for this deck · {description}" · "Add
 deck" · "Try again" · "Couldn't add the deck." · "Nothing was copied — try again." ·
 "Added “{title}” · {algorithm} · {n} new cards" · "Open" · "Already in your library —

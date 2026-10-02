@@ -89,6 +89,18 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _tint(scheme.surfaceContainerLowest, AppOpacity.muted, page),
       _text,
     ),
+    // Critique 2026-09-30 part 1 (R7): the outline button's edge in dark
+    // holds 3:1 on every ground it sits on; light keeps outlineVariant.
+    if (scheme.brightness == Brightness.dark) ...[
+      ('outline edge on page', derived.outlineEdge, page, _nonText),
+      ('outline edge on sheet', derived.outlineEdge, sheet, _nonText),
+      (
+        'outline edge on the warning ground',
+        derived.outlineEdge,
+        Color.alphaBlend(derived.warningSoft, page),
+        _nonText,
+      ),
+    ],
   ];
 }
 

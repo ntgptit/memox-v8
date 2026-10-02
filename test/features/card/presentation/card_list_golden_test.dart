@@ -116,6 +116,32 @@ void main() {
       });
     });
 
+    // Matches with the keyboard up: the hero steps aside and the rows fill
+    // what is left (critique 2026-09-30 part 1).
+    libraryTest('card list, search results, $theme', (tester, env) async {
+      final deckId = await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          cardDeckScreen(deckId),
+          brightness,
+        );
+        await tester.tap(find.byTooltip(_en.cardSearchOpen));
+        await _settle(tester);
+        await tester.enterText(find.byType(EditableText), 'sa');
+        tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+        addTearDown(tester.view.resetViewInsets);
+        await tester.pumpAndSettle();
+        expect(find.text('sarang'), findsOneWidget);
+        expect(find.text('gamsahamnida'), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_list_search_results_$theme.png',
+        );
+      });
+    });
+
     libraryTest('move a card to Trash, $theme', (tester, env) async {
       final deckId = await _seed(env);
       await withRealShadows(() async {

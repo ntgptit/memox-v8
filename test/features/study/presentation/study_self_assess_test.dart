@@ -190,4 +190,22 @@ void main() {
 
     expect(find.text('meaning 1'), findsOneWidget);
   });
+
+  libraryTest('a double tap on Show answer grades nothing: the grades settle '
+      'first (critique 2026-09-30 part 3c-2, R1)', (tester, env) async {
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studySelfAssessShowAnswer));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardActionGood), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(await turnKindsOf(env.db, 'R1'), isEmpty);
+    expect(find.text(_en.cardActionGood), findsOneWidget);
+
+    await tester.tap(find.text(_en.cardActionGood));
+    await tester.pumpAndSettle();
+    expect(await turnKindsOf(env.db, 'R1'), ['scheduled']);
+  });
 }

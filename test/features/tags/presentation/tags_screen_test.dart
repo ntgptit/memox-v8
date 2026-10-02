@@ -2,12 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
@@ -103,9 +108,12 @@ void main() {
   ) async {
     await _pump(tester, env, isSeeded: false);
 
-    expect(find.text(_en.tagsNone.toUpperCase()), findsOneWidget);
+    // Only the empty state: no search over nothing, no header that says it
+    // twice (critique 2026-09-30 part 3d-2).
     expect(find.text(_en.tagsEmptyTitle), findsOneWidget);
     expect(find.text(_en.tagsGoToLibrary), findsOneWidget);
+    expect(find.byType(MxSearchField), findsNothing);
+    expect(find.byType(MxListSectionHeader), findsNothing);
   });
 
   libraryTest('a failed read shows the error with Retry (E1, D10)', (
@@ -233,6 +241,19 @@ void main() {
 
     expect(find.text(_en.tagsDeleteBody('động từ', 46)), findsOneWidget);
     expect(find.text(_en.tagsDeleteSafe(46)), findsOneWidget);
+    // A neutral note, not a success card beside a destructive confirm
+    // (critique 2026-09-30 part 3d-2, E7).
+    expect(
+      find.ancestor(
+        of: find.text(_en.tagsDeleteSafe(46)),
+        matching: find.byType(MxNote),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate((widget) => widget is MxCard && widget.isSuccess),
+      findsNothing,
+    );
     expect(
       _confirm(tester, _en.tagsDeleteConfirm(46)).tone,
       MxButtonTone.destructive,
@@ -302,5 +323,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.tagsGone('tạm')), findsOneWidget);
+  });
+
+  libraryTest('the rename field label is sentence case (critique 2026-09-30 '
+      'part 2, P3)', (tester, env) async {
+    await _pump(tester, env);
+    await _openRename(tester, 'động từ');
+
+    final label = find.text(_en.tagsNewName);
+    expect(
+      tester.widget<Text>(label).style,
+      tester.element(label).textStyles.fieldLabel,
+    );
+    expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });
 }

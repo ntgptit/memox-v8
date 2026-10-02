@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -188,6 +189,156 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxToggle)).dy,
       lessThan(tester.getBottomLeft(find.text('Daily reminder')).dy),
+    );
+  });
+
+  testWidgets('a disabled row keeps its subtitle at full ink (critique '
+      '2026-09-30, screen 24)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Time',
+          subtitle: 'Turn the reminder on to choose a time',
+          icon: AppIcons.clock,
+          isEnabled: false,
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(
+        of: find.text('Turn the reminder on to choose a time'),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+    expect(
+      tester
+          .widget<Opacity>(
+            find.ancestor(
+              of: find.text('Time'),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .opacity,
+      0.38,
+    );
+  });
+
+  testWidgets('an action row shows no chevron', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSettingsRow(label: 'Reset options', isAction: true, onTap: () {}),
+      ),
+    );
+    expect(find.byIcon(AppIcons.chevronRight), findsNothing);
+  });
+
+  testWidgets('a disabled row does not dim its control twice (critique '
+      '2026-09-30 part 3a)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Time',
+          subtitle: 'Turn the reminder on to choose a time',
+          icon: AppIcons.clock,
+          isEnabled: false,
+          trailing: MxButton(
+            label: '20:00',
+            size: MxButtonSize.compact,
+            onPressed: null,
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets("a disabled row's non-control trailing still dims", (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Time',
+          isEnabled: false,
+          trailing: Text('20:00'),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a control under a Semantics label is not dimmed twice either, '
+      "as the reminder's time button is (critique 2026-09-30 part 3a)", (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSettingsRow(
+          label: 'Time',
+          isEnabled: false,
+          trailing: Semantics(
+            label: 'Reminder time, 20:00',
+            excludeSemantics: true,
+            button: true,
+            child: const MxButton(
+              label: '20:00',
+              size: MxButtonSize.compact,
+              onPressed: null,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('iconTone reaches the lead tile, and a disabled row still dims '
+      'it (critique 2026-09-30 tone pass, T4)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(const MxSettingsRow(label: 'Sync', icon: AppIcons.sync)),
+    );
+    expect(
+      tester.widget<MxIconTile>(find.byType(MxIconTile)).tone,
+      MxIconTileTone.tinted,
+    );
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Sync',
+          icon: AppIcons.sync,
+          iconTone: MxIconTileTone.success,
+          isEnabled: false,
+        ),
+      ),
+    );
+    expect(
+      tester.widget<MxIconTile>(find.byType(MxIconTile)).tone,
+      MxIconTileTone.success,
+    );
+    expect(
+      find.ancestor(
+        of: find.byType(MxIconTile),
+        matching: find.byType(Opacity),
+      ),
+      findsOneWidget,
     );
   });
 }

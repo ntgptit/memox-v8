@@ -60,7 +60,13 @@ void main() {
     libraryTest('Library with decks, ${brightness.name}', (tester, env) async {
       await _seed(env);
       await withRealShadows(() async {
-        await pumpLibraryGolden(tester, env, deckScreen(), brightness);
+        // Wired as the app wires it, so the due strip draws its chevron.
+        await pumpLibraryGolden(
+          tester,
+          env,
+          deckScreen(onOpenStudyHome: () {}),
+          brightness,
+        );
         await expectBoundaryGolden(
           tester,
           'goldens/library_decks_${brightness.name}.png',

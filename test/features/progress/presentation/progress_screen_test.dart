@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_streak_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_today_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -15,6 +18,7 @@ import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
@@ -64,8 +68,22 @@ void main() {
     expect(find.text(_en.progressTodaySplit(5, 12)), findsOneWidget);
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
+    // The segment states the range and Today the once-a-day rule; the list
+    // header and the footer do not repeat them (critique 2026-09-30 part 3b).
+    expect(find.text(_en.progressByDeck.toUpperCase()), findsOneWidget);
+    expect(find.textContaining('LAST 7 DAYS'), findsNothing);
+    expect(find.text(_en.progressFooter), findsOneWidget);
+    expect(find.textContaining('counts once'), findsOneWidget);
     // Critique 2026-09-30: Today's figure is stated once, in the Today card.
     expect(find.text(_en.progressToday.toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester.widget<Text>(find.text(_en.progressToday.toUpperCase())).style,
+      tester
+          .element(find.text(_en.progressToday.toUpperCase()))
+          .textStyles
+          .eyebrow,
+    );
     // M3-D3: every section gap on the overview is AppSpacing.gutter.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -
@@ -74,12 +92,34 @@ void main() {
     );
     final total = await _row(tester, _en.progressAllDecks);
     expect(
-      find.descendant(of: total, matching: find.text('26')),
+      find.descendant(
+        of: total,
+        matching: find.text(_en.progressRowCardsDays(26, 6)),
+      ),
       findsOneWidget,
+    );
+    // The total opens nothing, so it has no chevron (D3).
+    expect(
+      find.descendant(of: total, matching: find.byIcon(AppIcons.chevronRight)),
+      findsNothing,
     );
     final topik = await _row(tester, 'Tiếng Hàn TOPIK I · Từ vựng');
     expect(
-      find.descendant(of: topik, matching: find.text('13')),
+      find.descendant(
+        of: topik,
+        matching: find.text(_en.progressRowCardsDays(13, 6)),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: topik,
+        matching: find.textContaining(_en.progressRowCardDaysLead),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: topik, matching: find.byIcon(AppIcons.chevronRight)),
       findsOneWidget,
     );
   });
@@ -122,7 +162,8 @@ void main() {
     expect(find.byType(MxSkeletonList), findsNothing);
     final basics = await _row(tester, 'Korean Basics');
     expect(
-      find.descendant(of: basics, matching: find.text('10')),
+      // The card count leads the meta line (critique 2026-09-30 part 3d-1).
+      find.descendant(of: basics, matching: find.textContaining('10 cards · ')),
       findsOneWidget,
     );
     final it = await _row(tester, 'IT');
@@ -180,6 +221,14 @@ void main() {
     await _settle(tester);
 
     expect(find.byType(MxDashedNote), findsNWidgets(2));
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.progressStartStudying),
+          )
+          .tone,
+      MxButtonTone.primary,
+    );
     await tester.tap(find.text(_en.progressStartStudying));
     expect(taps.study, 1);
     expect(find.text(_en.progressAllDecks), findsNothing);
@@ -291,6 +340,41 @@ void main() {
     );
 
     expect(find.bySemanticsLabel(_en.progressLoading), findsOneWidget);
+    // Shaped like the screen: Today, Streak, then the deck list (critique
+    // 2026-09-30 part 3d-2, E12).
+    expect(find.byType(ProgressSkeletonWidget), findsOneWidget);
+    expect(find.byType(MxSkeletonList), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(ProgressSkeletonWidget),
+        matching: find.byType(MxCard),
+      ),
+      findsNWidgets(3),
+    );
     handle.dispose();
+  });
+
+  libraryTest('a deck row reads its card-days in Vietnamese (D3)', (
+    tester,
+    env,
+  ) async {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    await progressLibrary(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(_Taps()),
+      locale: const Locale('vi'),
+    );
+    await _settle(tester);
+
+    final topik = await _row(tester, 'Tiếng Hàn TOPIK I · Từ vựng');
+    expect(
+      find.descendant(
+        of: topik,
+        matching: find.textContaining(vi.progressRowCardDaysLead),
+      ),
+      findsOneWidget,
+    );
   });
 }

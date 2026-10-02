@@ -140,31 +140,37 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
       body: MxScreenScroll(
         children: [
           const SizedBox(height: AppSpacing.control),
-          MxSearchField(
-            controller: _search,
-            hintText: l10n.tagsSearchHint,
-            clearLabel: l10n.tagsSearchClear,
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: AppSpacing.grouped),
-          ...switch (catalog) {
-            AsyncData(:final value) => _catalog(l10n, value),
-            AsyncError(:final isLoading) => [
-              MxErrorState(
-                title: l10n.tagsLoadErrorTitle,
-                body: l10n.libraryLoadErrorBody,
-                retryLabel: l10n.commonRetry,
-                onRetry: () => ref.invalidate(tagCatalogProvider),
-                isRetrying: isLoading,
-              ),
-            ],
-            _ => [
-              MxSkeletonList(
-                semanticLabel: l10n.commonLoading,
-                rows: _skeletonRows,
-              ),
-            ],
-          },
+          // Nothing to search in a catalog with no tags (critique 2026-09-30
+          // part 3d-2).
+          if (catalog case AsyncData(:final value) when value.isEmpty)
+            ..._catalog(l10n, value)
+          else ...[
+            MxSearchField(
+              controller: _search,
+              hintText: l10n.tagsSearchHint,
+              clearLabel: l10n.tagsSearchClear,
+              onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: AppSpacing.grouped),
+            ...switch (catalog) {
+              AsyncData(:final value) => _catalog(l10n, value),
+              AsyncError(:final isLoading) => [
+                MxErrorState(
+                  title: l10n.tagsLoadErrorTitle,
+                  body: l10n.libraryLoadErrorBody,
+                  retryLabel: l10n.commonRetry,
+                  onRetry: () => ref.invalidate(tagCatalogProvider),
+                  isRetrying: isLoading,
+                ),
+              ],
+              _ => [
+                MxSkeletonList(
+                  semanticLabel: l10n.commonLoading,
+                  rows: _skeletonRows,
+                ),
+              ],
+            },
+          ],
         ],
       ),
     );
@@ -179,16 +185,13 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     final shown = tags.matching(term);
     final busy = ref.watch(tagActionsControllerProvider);
     final header = MxListSectionHeader(
-      label: switch ((tags.isEmpty, shown.isEmpty)) {
-        (true, _) => l10n.tagsNone,
-        (false, true) => l10n.tagsNoMatches,
-        _ => l10n.tagsCount(shown.length),
-      },
+      label: shown.isEmpty ? l10n.tagsNoMatches : l10n.tagsCount(shown.length),
       trailing: Text(l10n.tagsOrder, style: context.textStyles.overline),
     );
+    // No tag at all: the empty state alone, no header saying it twice
+    // (critique 2026-09-30 part 3d-2).
     if (tags.isEmpty) {
       return [
-        header,
         MxEmptyState(
           icon: AppIcons.tag,
           title: l10n.tagsEmptyTitle,

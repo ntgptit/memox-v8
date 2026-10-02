@@ -25,7 +25,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | App bar | `MxAppBar` | Back, "Trash" and "Select" (a compact secondary `MxButton`; hidden when the Trash is empty). While selecting: close, then "Select entries", "{n} cards selected" or "{n} decks selected". |
 | Note | `MxNote` (history icon), dismissible | "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go." Hidden while selecting. |
 | Filters | `MxFilterChip` × 3 | All · Cards · Decks, each with its count (A6). Hidden while selecting. |
-| Header | `MxListSectionHeader` | "{n} entries · newest first"; while selecting, "{n} of {m} cards" or "decks". |
+| Header | `MxListSectionHeader` | "{n} entries · newest first"; while selecting, the kind's total, "{m} cards" or "{m} decks": the title states the selection (critique 2026-09-30 part 3b). |
 | Rows | `MxCard` + `MxRowInk` per entry | The kind's tile (a checkbox while selecting). The name ("front · back" for a card), and the time left on the right: a warning `MxBadge` under 3 days, grey text otherwise. Then "Card · deleted {ago}" or "Deck · {n} sub-decks · {m} cards · deleted {ago}" (up to two lines), then "Was in {path}" or "Was in Top level", 8 apart. Then `⋮`. While selecting, an entry of the other kind is dimmed to 0.38. The row is one TalkBack node with every fact (D15). |
 | Kind lock | `MxNote` | "Cards and decks can't be selected together." |
 | Blocked purge | `MxInlineBanner` (warning) | One per batch the last purge skipped (D6). |
@@ -69,6 +69,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the meta line wraps to two lines, 8 apart.
 - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other kind dims to 0.38, and "Cards and decks can't be selected together." shows.
 - **Critique 2026-09-30:** the retention note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`). The kind-lock note is not dismissible.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the kind-lock note and the purge-blocked banners sit above the list, under the retention note (D4).
 
 ## Copy
 
@@ -76,6 +77,6 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - Row: "Card · deleted {ago}" · "Deck · {n} sub-decks · {m} cards · deleted {ago}" · "just now" / "{n} minutes ago" / "{n} hours ago" / "yesterday" / "{n} days ago" · "{n} days left" · "{n}h left" · "Was in {path}" · "Top level" · "Actions for {name}".
 - Actions: "Restore…" · "Choose which deck it goes to" · "Delete permanently" · "Cannot be undone · history lost".
 - Restore: "Restore “{name}” to…" · "Its schedule, history, flag and tags come back with it. Only decks in the same tree that hold cards or are empty are offered." · "Nowhere to restore right now" · "No deck in “{root}” can hold cards at the moment. Create an empty sub-deck there, then restore." · "“{name}” restored to {deck}".
-- Selection: "Select entries" · "{n} cards selected" · "{n} of {m} cards" · "Cards and decks can't be selected together." · "Restore ({n})" · "Delete ({n})" · "Clear selection".
+- Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" · "Cards and decks can't be selected together." · "Restore ({n})" · "Delete ({n})" · "Clear selection".
 - Delete for good: "Delete {n} cards permanently?" · "They disappear for good, together with their study history. This cannot be undone." · "Keep in Trash" · "Delete {n}" · "{n} cards deleted permanently".
 - Empty and error: "Trash is empty" · "Decks and cards you delete stay here for 30 days before they are removed for good." · "Couldn't open Trash".

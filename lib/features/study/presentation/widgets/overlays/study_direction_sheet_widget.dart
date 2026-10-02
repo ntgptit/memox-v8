@@ -65,6 +65,17 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // The lock leads, above the choices (BR-MODE-017; critique
+          // 2026-09-30 part 3c-1).
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.gutter,
+              AppSpacing.micro,
+              AppSpacing.gutter,
+              AppSpacing.grouped,
+            ),
+            child: MxNote(text: l10n.studyDirectionNote),
+          ),
           for (final (index, choice) in choices.indexed)
             MxOptionRow(
               title: _title(l10n, choice),
@@ -73,15 +84,6 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
               onSelected: () => setState(() => _choice = choice),
               hasDivider: index < choices.length - 1,
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.grouped,
-              AppSpacing.gutter,
-              AppSpacing.gutter,
-            ),
-            child: MxNote(text: l10n.studyDirectionNote),
-          ),
         ],
       ),
     );

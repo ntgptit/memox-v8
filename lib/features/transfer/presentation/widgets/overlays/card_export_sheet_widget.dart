@@ -116,7 +116,9 @@ class CardExportSheetWidget extends ConsumerWidget {
                 format: format,
                 isSelected: state.format == format,
                 isLast: index == TransferFormat.values.length - 1,
-                onSelected: state.isPreparing
+                // A final problem leaves nothing to choose (critique
+                // 2026-09-30 part 1).
+                onSelected: state.isPreparing || (problem?.isFinal ?? false)
                     ? null
                     : () => _sheet(ref).chooseFormat(format),
               ),

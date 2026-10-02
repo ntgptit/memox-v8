@@ -10,12 +10,17 @@ import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.d
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_bulk_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -76,6 +81,28 @@ final class _FailingFlags implements CardRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Fails the first write and any while [isFailing]; counts every call.
+final class _FlakyFlags implements CardRepository {
+  final calls = <(Set<String>, bool)>[];
+  var isFailing = true;
+
+  @override
+  Future<Outcome<void, CardRejection>> setFlagged({
+    required Set<String> cardIds,
+    required bool isFlagged,
+    DateTime? now,
+  }) {
+    calls.add((cardIds, isFlagged));
+    if (isFailing) {
+      return Future.error(const UnknownDatabaseFailure(cause: 'locked'));
+    }
+    return Future.value(const Ok(null));
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   libraryTest('the search field waits for the search action; closing clears', (
     tester,
@@ -104,7 +131,10 @@ void main() {
   ) async {
     final deckId = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(deckId));
-    final header = find.text(_en.cardShowingOf(2, 2).toUpperCase());
+    // Every card shows: the chips count, the header only names the list
+    // (critique 2026-09-30 part 3b).
+    final header = find.text(_en.cardListHeader.toUpperCase());
+    expect(find.textContaining('SHOWING'), findsNothing);
 
     expect(find.byType(CardDeckSummaryWidget), findsOneWidget);
     expect(header, findsOneWidget);
@@ -129,7 +159,20 @@ void main() {
 
     expect(find.byType(CardDeckSummaryWidget), findsNothing);
     expect(find.byType(MxFilterChip), findsNothing);
-    expect(find.text(_en.cardSelectedOf(1, 2).toUpperCase()), findsOneWidget);
+    // The selected count lives in the app bar title only (critique
+    // 2026-09-30 part 3b).
+    expect(find.byType(MxListSectionHeader), findsNothing);
+  });
+
+  libraryTest('a filter narrows the list: the header says how many of the '
+      "deck's cards show (critique 2026-09-30 part 3b)", (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterDue));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardShowingOf(1, 2).toUpperCase()), findsOneWidget);
+    expect(find.text(_en.cardListHeader.toUpperCase()), findsNothing);
   });
 
   libraryTest('the bulk bar offers Move, Flag, Tag, Export, Delete (kit 07)', (
@@ -184,7 +227,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardBulkFailedTitle), findsOneWidget);
-    expect(find.text(_en.cardSelectedOf(1, 2).toUpperCase()), findsOneWidget);
+    // The selection stays after the failure.
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('sqlite'), findsNothing);
   });
 
@@ -240,5 +289,103 @@ void main() {
       tester.widget<EditableText>(find.byType(EditableText)).controller.text,
       'a',
     );
+  });
+
+  libraryTest('the add FAB steps aside while search is open, so it covers '
+      'no row (critique 2026-09-30 part 3d-1)', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CardListSectionWidget(
+          deckId: deckId,
+          algorithm: 'Eight boxes',
+          onAddCard: () {},
+          onOpenCard: (_) {},
+          onExport: (_) {},
+        ),
+        floatingActionButton: CardAddFabWidget(
+          deckId: deckId,
+          onAddCard: () {},
+        ),
+      ),
+    );
+    expect(find.byType(MxFab), findsOneWidget);
+
+    await _openSearch(tester, deckId);
+    expect(find.byType(MxFab), findsNothing);
+
+    ProviderScope.containerOf(
+      tester.element(find.byType(CardListSectionWidget)),
+    ).read(cardSearchOpenProvider(deckId).notifier).close();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  Future<_FlakyFlags> failOneFlag(WidgetTester tester, LibraryEnv env) async {
+    final flags = _FlakyFlags();
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(deckId),
+      overrides: [
+        setCardsFlaggedUseCaseProvider.overrideWithValue(
+          SetCardsFlaggedUseCase(flags),
+        ),
+      ],
+    );
+    await tester.longPress(find.text('annyeong'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardFlag));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardFlagSet));
+    await tester.pumpAndSettle();
+    return flags;
+  }
+
+  libraryTest('Retry repeats the failed flag with the same cards and choice '
+      '(critique 2026-09-30 part 3d-1)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+    flags.isFailing = false;
+
+    await tester.tap(find.widgetWithText(MxButton, _en.commonRetry));
+    await tester.pumpAndSettle();
+
+    expect(flags.calls, hasLength(2));
+    expect(flags.calls.last, flags.calls.first);
+    expect(find.text(_en.cardBulkFailedTitle), findsNothing);
+    expect(find.text(_en.cardFlaggedToast(1)), findsOneWidget);
+  });
+
+  libraryTest('a retry that fails again keeps the banner and the selection '
+      '(Review Focus 2)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+
+    await tester.tap(find.widgetWithText(MxButton, _en.commonRetry));
+    await tester.pumpAndSettle();
+
+    expect(flags.calls, hasLength(2));
+    expect(find.text(_en.cardBulkFailedTitle), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is MxSelectionCheckbox && widget.isChecked,
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a changed selection drops the failed flag: Retry never writes '
+      'the cards of an earlier attempt (critique 2026-09-30 part 3d-1, final '
+      'review)', (tester, env) async {
+    final flags = await failOneFlag(tester, env);
+
+    await tester.tap(find.text('gamsa'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardBulkFailedTitle), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.commonRetry), findsNothing);
+    expect(flags.calls, hasLength(1));
   });
 }

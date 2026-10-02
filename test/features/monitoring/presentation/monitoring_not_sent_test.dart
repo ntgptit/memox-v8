@@ -38,12 +38,16 @@ void main() {
     await tester.tap(find.text('Not sent (12)'));
     await tester.pumpAndSettle();
 
+    // The tab states the buffer's count; the list counts what it shows
+    // (critique 2026-09-30 part 3b).
     expect(
       find.text(
-        '12 logs wait on this device. They are sent when MemoX is online.',
+        'These logs wait on this device. They are sent when MemoX is online.',
       ),
       findsOneWidget,
     );
+    expect(find.textContaining('12 logs'), findsNothing);
+    expect(find.text('2 AT THESE LEVELS'), findsOneWidget);
     // A row keeps an invisible pill for the time column's height (F5).
     final shown = find
         .byType(MxBadge)
@@ -84,10 +88,14 @@ void main() {
     repository.watches.single.feed.add(const PendingLogs(items: [], total: 0));
     await settleMonitoring(tester);
     expect(find.text('Nothing waiting'), findsOneWidget);
+    // An empty buffer has no logs waiting: the note would contradict it
+    // (critique 2026-09-30 part 3b review).
+    expect(find.textContaining('These logs wait'), findsNothing);
 
     repository.watches.single.feed.add(const PendingLogs(items: [], total: 4));
     await settleMonitoring(tester);
     expect(find.text('No logs at these levels'), findsOneWidget);
+    expect(find.textContaining('These logs wait'), findsOneWidget);
   });
 
   libraryTest('switching tabs keeps the pages of the server tab', (
@@ -105,7 +113,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.queries, hasLength(1));
-    expect(find.text('3 OPEN'), findsOneWidget);
+    expect(find.text('3 LOGS'), findsOneWidget);
   });
 
   // Review focus: large text scale on a row with a long event name.

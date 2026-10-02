@@ -12,12 +12,12 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮`. Selecting: close, "{n} selected", "Select all {count}". |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
-| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new; mastery is stated once, with no four-state bar or legend (critique 2026-09-30, R2). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting. |
+| Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new; mastery is stated once, with no four-state bar or legend (critique 2026-09-30, R2). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting, and while search is open, so the first results sit above the keyboard (critique 2026-09-30 part 1). |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts, then Tags with the tag glyph: selected with the count of tags applied, and its tap opens the tag filter (FE-B2 D14). |
-| Header | `MxListSectionHeader` + `MxChipTrigger` | "Showing {n} of {total}" (selecting: "{n} of {total} selected"); sort "Newest first ⌄" / "Due first ⌄". |
-| Rows | card surface per row, 8 apart | Status dot (checkbox while selecting); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
+| Header | `MxListSectionHeader` + `MxChipTrigger` | "Cards" while every card of the deck shows; "Showing {n} of {total}" (matches of the deck's cards) while a filter, a tag or search narrows it; none while selecting, when the app bar holds the count (critique 2026-09-30 part 3b); sort "Newest ⇅" / "Due first ⇅" (the sort glyph, not a chevron). |
+| Rows | card surface per row, 8 apart | The checkbox while selecting (no status dot: the label states the status once, critique 2026-09-30 part 3b, R3); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in the warning colour (E-L2) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
-| FAB | `MxFab` | "New card" (#33); hidden while selecting. The list ends clear of it (`MxScrollClearance.fabAboveNav`), and drops that clearance while selecting (critique 2026-09-30). |
+| FAB | `MxFab` | "New card" (#33); hidden while selecting and while search is open (critique 2026-09-30 part 3d-1). The list ends clear of it (`MxScrollClearance.fabAboveNav`), and drops that clearance while selecting (critique 2026-09-30). |
 
 ## Deck action sheet (`⋮`)
 
@@ -38,11 +38,11 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | — |
 | noMoveTarget | no golden | no golden | — |
-| bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. |
+| bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
-Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open with matches).
+Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open, no match); `card_list_search_results_light.png` / `card_list_search_results_dark.png` (two matches with a 300 dp keyboard up: the summary card steps aside, critique 2026-09-30 part 3a).
 
 
 Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). The card
@@ -81,17 +81,21 @@ The goldens are in `test/features/card/presentation/goldens/`.
 
 ## Rulings
 
+- **Critique 2026-09-30 part 1:** search hides the summary card and keeps the filter row, so a filter still applies to the search and the results clear the keyboard.
 - **Move to Trash dialog:** no glyph (`MxDialog` has no glyph slot); the body reads "Recoverable from Trash for 30 days, with its schedule and history", since the dialog reads no history count.
 - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are applied.
 - **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 01's unset state shows.
 - **E-L2:** the flag uses the warning colour; the theme has no streak token.
 - **E-L3:** "Select all" is a compact secondary `MxButton`.
 - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow.
+- **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** while a failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as before.
 
 ## Copy
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
-- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Showing {n} of {total}" · "{n} of {total} selected" · "Newest first".
+- Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Cards" · "Showing {n} of {total}" · "Newest" · "Due first".
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Trash".
 - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."

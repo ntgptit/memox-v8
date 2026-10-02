@@ -28,6 +28,9 @@ class StudyHomeSyncBannerWidget extends StatelessWidget {
         MxButton(
           label: l10n.studyHomeSyncDetails,
           size: MxButtonSize.compact,
+          // A link out of a warning, not the screen's decision (critique
+          // 2026-09-30 part 1).
+          tone: MxButtonTone.outline,
           onPressed: onOpenSync,
         ),
       ],

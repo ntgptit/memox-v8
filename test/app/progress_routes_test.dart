@@ -56,7 +56,7 @@ void main() {
 
     expect(find.byType(DeckProgressScreen), findsOneWidget);
     expect(find.byType(MxBottomNav), findsOneWidget);
-    expect(find.text(_en.progressSubDecksMonth.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.progressSubDecks.toUpperCase()), findsOneWidget);
 
     await _openRow(tester, 'Grammar');
     expect(

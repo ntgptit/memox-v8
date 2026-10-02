@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';
@@ -57,7 +58,23 @@ void main() {
     expect(find.text(_en.progressToday.toUpperCase()), findsNothing);
     final whole = find.widgetWithText(MxListRow, _en.progressWholeDeck);
     expect(
-      find.descendant(of: whole, matching: find.text('3')),
+      find.descendant(
+        of: whole,
+        matching: find.text(_en.progressRowCardsDays(3, 1)),
+      ),
+      findsOneWidget,
+    );
+    // A child opens its level; the total does not (critique 2026-09-30 part
+    // 3d-1, D3; Review Focus 4).
+    expect(
+      find.descendant(of: whole, matching: find.byIcon(AppIcons.chevronRight)),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.widgetWithText(MxListRow, 'Grammar'),
+        matching: find.byIcon(AppIcons.chevronRight),
+      ),
       findsOneWidget,
     );
     await tester.tap(find.widgetWithText(MxListRow, 'Grammar'));

@@ -109,9 +109,7 @@ class _FieldHeader extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 // The input carries the name, so TalkBack reads it once.
-                ExcludeSemantics(
-                  child: Text(label.toUpperCase(), style: styles.overline),
-                ),
+                ExcludeSemantics(child: Text(label, style: styles.fieldLabel)),
                 if (isRequired)
                   Text(l10n.cardRequiredLegend, style: styles.requiredMarker)
                 else

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
@@ -62,7 +63,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final label = find.text(_en.cardFieldExample.toUpperCase());
+    final label = find.text(_en.cardFieldExample);
+    // A read-only field label: sentence case (critique 2026-09-30 part 2).
+    expect(
+      tester.widget<Text>(label).style,
+      tester.element(label).textStyles.fieldLabel,
+    );
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [
       find.descendant(of: field, matching: find.byType(Icon)),
@@ -93,8 +99,8 @@ void main() {
       expect(find.text('bap'), findsOneWidget);
       expect(find.text('rice'), findsOneWidget);
       expect(find.text('Bap meogeosseoyo?'), findsOneWidget);
-      expect(find.text(_en.cardFieldExample.toUpperCase()), findsOneWidget);
-      expect(find.text(_en.cardFieldHint.toUpperCase()), findsNothing);
+      expect(find.text(_en.cardFieldExample), findsOneWidget);
+      expect(find.text(_en.cardFieldHint), findsNothing);
       expect(find.text('food'), findsOneWidget);
       expect(find.bySemanticsLabel(_en.cardFlaggedLabel), findsOneWidget);
       expect(find.text(_en.cardStatusNew), findsOneWidget);
@@ -122,6 +128,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardScheduleBox(3, 8).toUpperCase()), findsOneWidget);
+    // An eyebrow (critique 2026-09-30 part 2, P2).
+    expect(
+      tester
+          .widget<Text>(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+          .style,
+      tester
+          .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+          .textStyles
+          .eyebrow,
+    );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);
     expect(
       find.text(DateFormat.yMMMd('en').format(DateTime(2026, 9, 28))),
@@ -209,5 +225,40 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('Algorithm takes a row of its own, the card\'s full width '
+      '(critique 2026-09-30 part 3d-2, E9)', (tester, env) async {
+    final deckId = await _words(env);
+    await insertCard(
+      env.db,
+      id: 'c',
+      deckId: deckId,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 28),
+      box: 3,
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host('c', (detail) => [CardScheduleWidget(detail: detail)]),
+    );
+    await tester.pumpAndSettle();
+
+    final label = find.text(_en.cardFactScheduler);
+    final due = find.text(_en.cardFactDue);
+    // Below the paired facts, and starting where the left column starts.
+    expect(tester.getTopLeft(label).dy, greaterThan(tester.getTopLeft(due).dy));
+    expect(tester.getTopLeft(label).dx, tester.getTopLeft(due).dx);
+    // Its row holds it alone: one column, the card's full width.
+    final row = find.ancestor(of: label, matching: find.byType(Row)).first;
+    expect(
+      find.descendant(of: row, matching: find.text(_en.cardFactLearned)),
+      findsNothing,
+    );
+    expect(
+      tester.getSize(row).width,
+      greaterThan(tester.getSize(find.byType(CardScheduleWidget)).width / 2),
+    );
   });
 }

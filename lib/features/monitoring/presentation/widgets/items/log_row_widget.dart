@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/entities/log_summary_entity.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -19,12 +20,18 @@ class LogRowWidget extends StatelessWidget {
     required this.now,
     required this.onTap,
     this.hasDivider = true,
+    this.statusShownByFilter,
   });
 
   final LogSummaryEntity log;
   final DateTime now;
   final VoidCallback onTap;
   final bool hasDivider;
+
+  /// The one status the Status filter holds, if it holds one: a row with it
+  /// leaves it to the chip and the header (critique 2026-09-30 part 3b).
+  /// TalkBack still hears the status.
+  final LogStatus? statusShownByFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +62,9 @@ class LogRowWidget extends StatelessWidget {
           spacing: AppSpacing.micro,
           children: [
             Text(time, style: context.textStyles.counter),
-            if (status != null && statusLabel != null)
+            if (status != statusShownByFilter &&
+                status != null &&
+                statusLabel != null)
               MxBadge(label: statusLabel, tone: monitoringStatusTone(status))
             else
               // Holds the pill's height, so every row's time sits at one

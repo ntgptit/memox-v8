@@ -32,7 +32,7 @@ their goldens, its rulings and its copy. The visual system is in
 | 14 | Study entry | 9 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |
 | 15 | Study options | 7 | FE-A3 | built | [15-study-options.md](15-study-options.md) |
 | 16 | Study · Browse | 1 | FE-A6 | built | [16-study-browse.md](16-study-browse.md) |
-| 16a | Study · Self-check (`self_assess`) | — | FE-A6 | built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
+| 16a | Study · Self-assess (`self_assess`) | — | FE-A6 | built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
 | 17 | Study · Match | 1 | FE-A6 | built | [17-study-match.md](17-study-match.md) |
 | 18 | Study · Guess | 1 | FE-A6 | built | [18-study-guess.md](18-study-guess.md) |
 | 19 | Study · Recall | 3 | FE-A6 | built | [19-study-recall.md](19-study-recall.md) |

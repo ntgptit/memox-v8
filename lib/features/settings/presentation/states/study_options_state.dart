@@ -32,7 +32,9 @@ final class StudyOptionsState {
 
   bool get isSaving => save == StudyOptionsSave.saving;
 
-  /// The draft after an edit: a new edit ends a failed save's caption.
+  /// The draft after an edit. A failed save stays in view until a save
+  /// lands: the banner states the deck's stored values, still true while
+  /// the person edits (critique 2026-09-30 part 3d-2, E13).
   StudyOptionsState edited({
     bool? isUsingAppDefaults,
     int? cardLimit,
@@ -43,6 +45,9 @@ final class StudyOptionsState {
     cardLimit: cardLimit ?? this.cardLimit,
     isCardLimitInvalid: isCardLimitInvalid ?? this.isCardLimitInvalid,
     newCardOrder: newCardOrder ?? this.newCardOrder,
+    save: save == StudyOptionsSave.failed
+        ? StudyOptionsSave.failed
+        : StudyOptionsSave.idle,
     timesSaved: timesSaved,
   );
 

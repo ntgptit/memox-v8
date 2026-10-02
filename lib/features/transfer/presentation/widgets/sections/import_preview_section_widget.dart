@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -35,13 +34,9 @@ class ImportPreviewSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        MxListSectionHeader(
-          label: l10n.importSectionPreview,
-          trailing: Text(
-            l10n.importPreviewReady(preview.ready, preview.total),
-            style: context.textStyles.counter,
-          ),
-        ),
+        // The chips below carry the breakdown: no total beside the title
+        // (critique 2026-09-30 part 3b).
+        MxListSectionHeader(label: l10n.importSectionPreview),
         Wrap(
           spacing: AppSpacing.micro,
           runSpacing: AppSpacing.micro,
@@ -49,7 +44,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
             if (preview.ready > 0)
               MxBadge(
                 label: l10n.importBadgeReady(preview.ready),
-                tone: MxBadgeTone.mastery,
+                tone: MxBadgeTone.success,
                 icon: AppIcons.check,
               ),
             if (preview.invalid > 0)
@@ -73,12 +68,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.grouped),
-        MxSection(
-          note: preview.total > shown.length
-              ? l10n.importShowingFirst(shown.length, preview.total)
-              : null,
-          children: [for (final row in shown) ImportPreviewRowWidget(row: row)],
-        ),
+        // Before the rows it governs (critique 2026-09-30 part 3d-2, E10).
         if (preview.duplicates > 0)
           MxSection(
             children: [
@@ -94,6 +84,12 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               ),
             ],
           ),
+        MxSection(
+          note: preview.total > shown.length
+              ? l10n.importShowingFirst(shown.length, preview.total)
+              : null,
+          children: [for (final row in shown) ImportPreviewRowWidget(row: row)],
+        ),
       ],
     );
   }

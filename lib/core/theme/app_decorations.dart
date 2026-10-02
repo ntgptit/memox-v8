@@ -94,15 +94,21 @@ abstract final class AppDecorations {
   /// The toned surface of a guess option and a match tile (screens 17 and
   /// 18): idle on the raised fill with the ghost edge, selected in primary,
   /// right in the success tint and wrong in the danger tint (FE-A6 P3; a
-  /// right outcome is success, never mastery — spec D14).
+  /// right outcome is success, never mastery — spec D14). [isRecessed] gives
+  /// an idle tile the answer face's recessed ground (Match's meanings,
+  /// critique 2026-09-30 part 3c-2, R3); the other tones keep their surfaces.
   static BoxDecoration studyChoice(
     ColorScheme scheme,
     MxDerivedColors derived,
-    StudyChoiceTone tone,
-  ) {
+    StudyChoiceTone tone, {
+    bool isRecessed = false,
+  }) {
     final raised = scheme.surfaceContainerLowest;
     final (Color fill, Color edge) = switch (tone) {
-      StudyChoiceTone.idle => (raised, derived.ghostBorder),
+      StudyChoiceTone.idle => (
+        isRecessed ? scheme.surfaceContainerLow : raised,
+        derived.ghostBorder,
+      ),
       StudyChoiceTone.selected => (scheme.primary, scheme.primary),
       StudyChoiceTone.right => (
         Color.alphaBlend(derived.successSoft, raised),

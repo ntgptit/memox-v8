@@ -95,4 +95,26 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets(
+    'shouldDimWhenDisabled false blocks taps without painting opacity',
+    (tester) async {
+      var taps = 0;
+      await pumpMx(
+        tester,
+        MxRowInk(
+          onTap: () => taps++,
+          isEnabled: false,
+          shouldDimWhenDisabled: false,
+          child: const SizedBox(height: 48, child: Text('Row')),
+        ),
+      );
+      await tester.tap(find.text('Row'), warnIfMissed: false);
+      expect(taps, 0);
+      expect(
+        find.ancestor(of: find.text('Row'), matching: find.byType(Opacity)),
+        findsNothing,
+      );
+    },
+  );
 }

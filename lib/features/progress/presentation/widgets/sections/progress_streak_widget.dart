@@ -39,7 +39,7 @@ class ProgressStreakWidget extends StatelessWidget {
           Text(
             l10n.progressStreak.toUpperCase(),
             semanticsLabel: l10n.progressStreak,
-            style: context.textStyles.overline,
+            style: context.textStyles.eyebrow,
           ),
           const SizedBox(height: AppSpacing.grouped),
           if (streak.state == StreakState.never)
@@ -140,7 +140,7 @@ class _StreakTile extends StatelessWidget {
                   Text(
                     label.toUpperCase(),
                     semanticsLabel: label,
-                    style: styles.compactOverline,
+                    style: styles.eyebrow,
                   ),
                   const SizedBox(height: AppSpacing.micro),
                   Text(value, style: styles.summaryBodyStrong),

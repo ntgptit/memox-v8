@@ -17,11 +17,11 @@ import 'package:memox/features/study/presentation/widgets/support/study_whole_wo
 import 'package:memox/l10n/l10n_context.dart';
 
 /// Screen 17, Match: the board's terms on the left and its meanings on the
-/// right, in their stored order (BR-STUDY-049). Tap a term, then a meaning;
-/// the pair is answered on that term (BR-STUDY-062). A right pair shows as
-/// matched from the stream; a wrong one flashes in the wrong tone for 600 ms
-/// once its write commits, with the hint saying it comes back, then both go
-/// back to idle (BR-STUDY-063, BR-STUDY-070; FE-A6 P3 M1, M2, C7). Each
+/// right, in their stored order (BR-STUDY-049). Tap a term and a meaning, in
+/// either order; the pair is answered on that term (BR-STUDY-062). A right
+/// pair shows as matched from the stream; a wrong one flashes in the wrong
+/// tone for 600 ms once its write commits, with the hint saying it comes
+/// back, then both go back to idle (BR-STUDY-063, BR-STUDY-070; FE-A6 P3 M1, M2, C7). Each
 /// outcome is announced, and TalkBack reads the terms before the meanings
 /// (C3, C8).
 class StudyMatchWidget extends StatefulWidget {
@@ -59,6 +59,7 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
   static const double _columnOrder = 100;
 
   String? _selectedTerm;
+  String? _selectedMeaning;
   Timer? _timer;
 
   bool get _isWrongPair => widget.result?.isCorrect == false;
@@ -97,16 +98,34 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
     _timer = Timer(_flash, widget.onSettled);
   }
 
+  /// Either side may come first; the pair is answered on the term's card
+  /// whichever did (BR-STUDY-062; critique 2026-09-30 part 3c-2, R3).
   void _tapTerm(MatchTile term) {
     if (!_canTap || term.isMatched) return;
-    setState(() => _selectedTerm = term.cardId);
+    final meaning = _selectedMeaning;
+    if (meaning == null) {
+      setState(() => _selectedTerm = term.cardId);
+      return;
+    }
+    _pairUp(term.cardId, meaning);
   }
 
   void _tapMeaning(MatchTile meaning) {
+    if (!_canTap || meaning.isMatched) return;
     final term = _selectedTerm;
-    if (!_canTap || meaning.isMatched || term == null) return;
-    setState(() => _selectedTerm = null);
-    widget.onPair(term, meaning.cardId);
+    if (term == null) {
+      setState(() => _selectedMeaning = meaning.cardId);
+      return;
+    }
+    _pairUp(term, meaning.cardId);
+  }
+
+  void _pairUp(String termCardId, String meaningCardId) {
+    setState(() {
+      _selectedTerm = null;
+      _selectedMeaning = null;
+    });
+    widget.onPair(termCardId, meaningCardId);
   }
 
   @override
@@ -183,7 +202,7 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
       label: context.l10n.studyMatchMeaning(meaning.text),
       tone: _toneOf(
         meaning,
-        isSelected: false,
+        isSelected: meaning.cardId == _selectedMeaning,
         isInHeldPair: widget.heldPair?.$2 == meaning.cardId,
       ),
       order: _columnOrder + row,
@@ -232,6 +251,7 @@ class _Tile extends StatelessWidget {
     return StudyChoiceWidget(
       tone: tone,
       isSelected: tone == StudyChoiceTone.selected,
+      isRecessed: !isTerm,
       semanticsLabel: switch (tone) {
         StudyChoiceTone.right => l10n.studyMatchTileMatched(label),
         StudyChoiceTone.selected => l10n.studyMatchTileSelected(label),

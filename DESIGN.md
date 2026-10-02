@@ -35,6 +35,7 @@ colors:
   success: "#2BA88B"
   warning: "#F59E0B"
   on-warning: "#3A2A00"
+  warning-ink: "#895806"
   error-fill: "#DC2D4E"
   on-error-fill: "#FFFFFF"
   status-new: "#8C95B8"
@@ -237,19 +238,19 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Muted Fill** (`surface-container-low`): text-field fill at rest, the mastery track, navigation rail ground, recessed study face. Dark: #1B2249.
 - **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets. Dark: #2C356E.
 - **On Surface** (`on-surface`) and **Variant Ink** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
-- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark).
+- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The outline button's edge is the derived **Outline Edge** (`outlineEdge`): `outline-variant` in light; in dark `outline` pulled 25% toward `on-surface` (≈ #7D8AC1), 3.41:1 on the sheet, 5.69 on the page and 4.27 on the warning ground, since `outline-variant` nearly vanished on the dark sheet (critique 2026-09-30 part 1, R7).
 - **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `inverse-primary` (#A0ACFF, 5.21:1) for its action.
 
 ### Semantic
 - **Mastery Green** (`mastery`, #1F8A5B; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery.
 - **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
-- **Warning Amber** (`warning`, `on-warning`): a refusal or a limit where nothing was lost.
-- **Error** (`error`, #C02447) is the text/icon/edge role; **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
+- **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
+- **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
 - **Streak Orange** (`streak`): the Progress flame only.
 - **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.
 
 ### Named Rules
-**The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral.
+**The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
 
 **The Green Means Progress Rule.** Green is `mastery` or `success` and nothing else. Violet is never a status; green is never decoration.
 
@@ -272,7 +273,9 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Body** (400, 14px, 1.5): default running text.
 - **Caption** (600, 12px, 1.4): metadata, counts, chips. 12px is a hard floor; nothing renders smaller than 12 except the 9px donut centre label.
 - **Button Label** (600, 14px, 1.5, 0.1px): component override of Body; compact and chip buttons use the small label.
-- **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group (see Do's and Don'ts).
+- **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group, and nothing else.
+- **Eyebrow** (600, 12px, 0.8px, tabular, `on-surface-variant`): the context line above a big title or number; the app's own words upper-cased, user data as typed (critique 2026-09-30 part 2).
+- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in primary ink.
 
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
@@ -323,7 +326,7 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outlineEdge`.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
@@ -333,21 +336,22 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 
 ### Inputs
 - **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
-- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
+- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
-- **MxAppBar** (56, content or screen density; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress; the session context line under it names deck, kind, stage and round, never the mode again), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
+- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
-- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger), **MxEmptyState** (tones primary, neutral, success, warning, danger), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, warning, danger, neutral), **MxStatusBadge** (new, learning, reviewing, mastered).
+- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; the glyph reads in warning ink or error and the bold title in warning ink or danger ink, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6), **MxEmptyState** (tones primary, neutral, success, warning, danger; success tints with success and draws its glyph in success ink, critique 2026-09-30 tone pass; warning draws its glyph in warning ink, part 3d-2), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in its success ink; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
 
 ### Study-specific
 - **MxMasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
-- **MxOutcomeTile** (what a reset keeps or loses), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face.
-- **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone.
+- **MxOutcomeTile** (what a reset keeps, in success, or loses, in warning; critique 2026-09-30 tone pass), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face, whose ground Match's idle meaning tiles share while its terms stay raised (part 3c-2).
+- **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone. An action swapped in place under the finger (Show answer to the grades, Show meaning to Forgot · Remembered, Check to Continue) settles for 400 ms, easing in from `AppOpacity.muted`, before it takes a tap (critique 2026-09-30 part 3c-2).
+- **SessionFooterHint**: the glyph sits inline before the first line and wraps with the text; every hint is one line at normal size in English and Vietnamese, so the CTA above it stands in one place in every mode with no empty line under it (critique 2026-09-30 part 3c-2).
 
 ### Data Display
-- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted), **MxStackedDayBars**, **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
+- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars**, **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
 
 ## Do's and Don'ts
 
@@ -357,7 +361,13 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
-- **Do** state a number once per screen: a hero figure is not repeated in a list, a legend or a second tile.
+- **Do** state a number once per screen (critique 2026-09-30 part 3b). A number lives in the element that explains it: a hero, a tile, a filter chip or the app bar title. A hero figure is not repeated in a list, a legend or a second tile.
+  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 1 card", "Review 12 due cards", a bulk action's "({n})".
+  - A caption under a button never repeats the button's number.
+  - A list header counts only when no hero, title or chip above states the same number.
+  - While selecting, the selected count lives in the app bar title only.
+  - A row states a status once: a coloured label, not a dot beside it.
+  - Kept because a rule asks for them: the card list's filter chip counts (IT-ORG-005), Study entry's NEW and DUE tiles and each mode's count (UC-STUDY-001, BR-STUDY-044), the selected count (UC-CARD-001), Import's preview counts (UC-TRANSFER-001), Progress's two ranges (BR-PROGRESS-003).
 - **Do** make a hero card that leads somewhere tappable, with a trailing chevron (the Library's due strip opens Study).
 - **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.
@@ -370,4 +380,4 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Don't** add hover states (Android only) or a global text style for one component.
 - **Don't** put text below 12px (the 9px donut label is the sole exception, inside a fixed ring) or a fixed height around text.
 - **Don't** put failure copy in a component, or word a load failure as though data was lost.
-- **Don't** introduce an all-caps overline above headings as decoration; the section label exists to introduce a list or settings group and nowhere else.
+- **Don't** introduce an all-caps overline above headings as decoration; the section label introduces a list or settings group, the eyebrow is the one context line above a title or number, and user data is never upper-cased.

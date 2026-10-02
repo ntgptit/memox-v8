@@ -16,11 +16,16 @@ class MxRowInk extends StatefulWidget {
     required this.onTap,
     required this.child,
     this.isEnabled = true,
+    this.shouldDimWhenDisabled = true,
   });
 
   final VoidCallback? onTap;
   final Widget child;
   final bool isEnabled;
+
+  /// False leaves the dim to the child, which dims only what is unavailable
+  /// (MxSettingsRow keeps its reason readable); taps stay blocked.
+  final bool shouldDimWhenDisabled;
 
   @override
   State<MxRowInk> createState() => _MxRowInkState();
@@ -40,17 +45,16 @@ class _MxRowInkState extends State<MxRowInk> {
   Widget build(BuildContext context) {
     final onTap = widget.onTap;
     if (!widget.isEnabled) {
-      return Opacity(
-        opacity: AppOpacity.disabled,
-        child: onTap == null
-            ? widget.child
-            : Semantics(
-                container: true,
-                button: true,
-                enabled: false,
-                child: widget.child,
-              ),
-      );
+      final disabled = onTap == null
+          ? widget.child
+          : Semantics(
+              container: true,
+              button: true,
+              enabled: false,
+              child: widget.child,
+            );
+      if (!widget.shouldDimWhenDisabled) return disabled;
+      return Opacity(opacity: AppOpacity.disabled, child: disabled);
     }
     if (onTap == null) return widget.child;
     return Semantics(

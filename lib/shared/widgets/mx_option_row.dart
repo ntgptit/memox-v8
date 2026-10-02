@@ -26,10 +26,12 @@ class MxOptionRow extends StatelessWidget {
   /// Null disables the row.
   final VoidCallback? onSelected;
 
-  /// Whether the row draws at the disabled opacity; null dims exactly the
-  /// rows that cannot be selected. False keeps a row that cannot be picked
-  /// yet at full contrast, such as a study mode not built yet (FE-A6 spec
-  /// §3): the kit dims only a choice that is blocked.
+  /// Whether the radio and the title draw at the disabled opacity; null dims
+  /// exactly the rows that cannot be selected and are not selected. False
+  /// keeps a row that cannot be picked yet at full contrast, such as a study
+  /// mode not built yet (FE-A6 spec §3): the kit dims only a choice that is
+  /// blocked. The description is never dimmed, so a blocked row's reason and
+  /// a locked current choice stay readable (critique 2026-09-30).
   final bool? isDimmed;
 
   /// Wraps to as many lines as it needs; the row grows.
@@ -47,7 +49,8 @@ class MxOptionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final row = MergeSemantics(
+    final isDim = isDimmed ?? (onSelected == null && !isSelected);
+    return MergeSemantics(
       child: Semantics(
         checked: isSelected,
         inMutuallyExclusiveGroup: true,
@@ -74,26 +77,29 @@ class MxOptionRow extends StatelessWidget {
                 child: Row(
                   spacing: AppSpacing.grouped,
                   children: [
-                    SizedBox(
-                      width: _radioColumn,
-                      child: Center(
-                        heightFactor: 1,
-                        child: DecoratedBox(
-                          key: const ValueKey('mx-option-radio'),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              // A stroke glyph, so primaryInk (spec
-                              // 2026-09-27): it reads 3:1 on a sheet.
-                              color: isSelected
-                                  ? context.derivedColors.primaryInk
-                                  : colors.outline,
-                              width: isSelected
-                                  ? AppStroke.selectedRing
-                                  : AppStroke.control,
+                    _dim(
+                      isDim,
+                      SizedBox(
+                        width: _radioColumn,
+                        child: Center(
+                          heightFactor: 1,
+                          child: DecoratedBox(
+                            key: const ValueKey('mx-option-radio'),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                // A stroke glyph, so primaryInk (spec
+                                // 2026-09-27): it reads 3:1 on a sheet.
+                                color: isSelected
+                                    ? context.derivedColors.primaryInk
+                                    : colors.outline,
+                                width: isSelected
+                                    ? AppStroke.selectedRing
+                                    : AppStroke.control,
+                              ),
                             ),
+                            child: const SizedBox.square(dimension: _radioSize),
                           ),
-                          child: const SizedBox.square(dimension: _radioSize),
                         ),
                       ),
                     ),
@@ -102,7 +108,7 @@ class MxOptionRow extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(title, style: styles.rowTitle),
+                          _dim(isDim, Text(title, style: styles.rowTitle)),
                           if (description case final text?) ...[
                             const SizedBox(height: _descriptionGap),
                             Text(text, style: styles.rowDescription),
@@ -119,7 +125,8 @@ class MxOptionRow extends StatelessWidget {
         ),
       ),
     );
-    if (!(isDimmed ?? onSelected == null)) return row;
-    return Opacity(opacity: AppOpacity.disabled, child: row);
   }
+
+  static Widget _dim(bool isDim, Widget child) =>
+      isDim ? Opacity(opacity: AppOpacity.disabled, child: child) : child;
 }

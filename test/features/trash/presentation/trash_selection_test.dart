@@ -53,11 +53,16 @@ void main() {
 
     await _tap(tester, find.text('meokda · eat'));
     expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
-    expect(
-      find.text(_en.trashSelectedOfCards(1, 2).toUpperCase()),
-      findsOneWidget,
-    );
+    expect(find.text(_en.trashCardsHeader(2).toUpperCase()), findsOneWidget);
+    // The title states the selection; the header the total (critique
+    // 2026-09-30 part 3b).
+    expect(find.textContaining(' OF '), findsNothing);
     expect(find.text(_en.trashKindLock), findsOneWidget);
+    // Above the list, not after it (critique 2026-09-30 part 3d-1, D4).
+    expect(
+      tester.getTopLeft(find.text(_en.trashKindLock)).dy,
+      lessThan(tester.getTopLeft(find.text('meokda · eat')).dy),
+    );
 
     // A deck cannot join a selection of cards.
     await _tap(tester, find.text('Basics'));
@@ -159,6 +164,12 @@ void main() {
       find.text(_en.trashPurgeBlocked('Food', 'bap · rice')),
       findsOneWidget,
     );
+    expect(
+      tester
+          .getTopLeft(find.text(_en.trashPurgeBlocked('Food', 'bap · rice')))
+          .dy,
+      lessThan(tester.getTopLeft(find.text('Food')).dy),
+    );
   });
 
   libraryTest('a picked entry that leaves the Trash leaves every count', (
@@ -180,10 +191,8 @@ void main() {
 
     expect(find.text('homework · bai tap'), findsNothing);
     expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
-    expect(
-      find.text(_en.trashSelectedOfCards(1, 1).toUpperCase()),
-      findsOneWidget,
-    );
+    expect(find.text(_en.trashCardsHeader(1).toUpperCase()), findsOneWidget);
+    expect(find.textContaining(' OF '), findsNothing);
     expect(_button(_en.trashRestoreSelected(1)), findsOneWidget);
   });
 

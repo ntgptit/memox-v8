@@ -13,10 +13,10 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 
 | Region | Widget | Design |
 |---|---|---|
-| Top bar | `MxStudyTopBar` | Primary accent (default); see the shared section. |
+| Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8); see the shared section. |
 | Context line | `SessionContextLine` | "{deck} · {Learning/Review} · round {n}". |
 | Board | grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; not `MxCard` — a small grid tile, not a padded card) | Term tile (front) and meaning tile (back) per pair; states `idle` / `selected` / `matched`, plus a wrong-pair state (see Rulings). A board with an odd remainder may hold one pair (BR-STUDY-049). |
-| Footer hint | `SessionFooterHint` | "Tap a term, then its meaning to match". |
+| Footer hint | `SessionFooterHint` | "Tap a term and its meaning, in either order". |
 
 ## States
 
@@ -31,7 +31,7 @@ states.
 
 **Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the board's
 terms on the left and its meanings on the right, in their stored order, as
-`StudyChoiceWidget` tiles. Tap a term, then a meaning; the pair is answered on that term
+`StudyChoiceWidget` tiles. Tap a term and a meaning, in either order; the pair is answered on that term
 through the session controller, on any pending pair of the board (BR-STUDY-049). Goldens:
 `test/features/study/presentation/goldens/study_match_{board,wrong}_*`.
 
@@ -41,6 +41,8 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 - **P3 ruling C7:** during a wrong pair's flash the footer hint reads "Not a match — this pair comes back next round".
 - **BR-STUDY-063, BR-STUDY-070:** a wrong pair flashes the error tone on both tiles after the write commits, then both settle back to `idle` and stay pending on the board.
 - **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this board and is guaranteed one slot in the next round, even if matched correctly later in this round.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the session context line is an eyebrow; the deck name keeps its case.
+- **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** a meaning may be tapped first, as BR-STUDY-062 requires; idle meanings sit on the recessed ground, terms stay raised; hint "Tap a term and its meaning, in either order" (R3).
 
 ## Accessibility
 
@@ -53,5 +55,5 @@ through the session controller, on any pending pair of the board (BR-STUDY-049).
 ## Copy
 
 - Context line: "{deck} · {Learning/Review} · round {n}".
-- Footer hint: "Tap a term, then its meaning to match" · "Not a match — this pair comes back next round" (during a wrong pair's flash).
+- Footer hint: "Tap a term and its meaning, in either order" · "Not a match — this pair comes back next round" (during a wrong pair's flash).
 - TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, matched" · "{tile}, not a match" · "Matched".

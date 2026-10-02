@@ -3,8 +3,10 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-/// The tone a count carries. There is no streak tone (ruling S1).
-enum MxBadgeTone { primary, mastery, warning, danger, neutral }
+/// The tone a count carries. There is no streak tone (ruling S1). Mastery is
+/// learning progress; success is a right answer or a finished, fine state
+/// (critique 2026-09-30 tone pass, T6).
+enum MxBadgeTone { primary, mastery, success, warning, danger, neutral }
 
 /// A count pill. The unit belongs inside the label ("23 due"), so the digits
 /// stay tabular and the space is part of the text. Omitting a zero count is
@@ -41,6 +43,7 @@ class MxBadge extends StatelessWidget {
     final toneColor = switch (tone) {
       MxBadgeTone.primary => colors.primary,
       MxBadgeTone.mastery => context.semanticColors.mastery,
+      MxBadgeTone.success => context.semanticColors.success,
       MxBadgeTone.warning => context.semanticColors.warning,
       MxBadgeTone.danger => colors.error,
       // Ruling S2: the contract names no neutral colour.
@@ -54,6 +57,7 @@ class MxBadge extends StatelessWidget {
       (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
       (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
       (false, MxBadgeTone.mastery) => context.derivedColors.statusMasteredInk,
+      (false, MxBadgeTone.success) => context.derivedColors.successInk,
       (false, _) => toneColor,
     };
     return DecoratedBox(
