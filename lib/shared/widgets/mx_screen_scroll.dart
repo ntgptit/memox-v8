@@ -8,7 +8,8 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 enum MxScrollClearance { base, fab, fabAboveNav }
 
 /// The single scrollable region of a screen: the shared 16 gutter and a tail
-/// clearance derived from the pinned chrome, plus the gesture inset.
+/// clearance derived from the pinned chrome, plus the gesture inset. A drag
+/// dismisses the keyboard.
 class MxScreenScroll extends StatelessWidget {
   const MxScreenScroll({
     super.key,
@@ -29,6 +30,7 @@ class MxScreenScroll extends StatelessWidget {
         AppSpacing.micro + AppSize.fab + AppSpacing.section,
     };
     return ListView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsetsDirectional.only(
         start: AppSpacing.gutter,
         end: AppSpacing.gutter,
