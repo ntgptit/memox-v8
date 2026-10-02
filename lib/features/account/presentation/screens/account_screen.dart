@@ -65,6 +65,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       label: label,
       subtitle: hint,
       icon: icon,
+      // Each opens a dialog: no chevron (critique 2026-10-02).
+      isAction: true,
       isEnabled: canManage,
       onTap: canManage ? () => unawaited(_once(() => run(context, ref))) : null,
     );
@@ -164,6 +166,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
           : l10n.accountSignOutBody,
       confirmLabel: l10n.accountSignOut,
       isDestructive: isLosing,
+      isWarning: !isLosing,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.signOut(discardUnsent: isLosing);

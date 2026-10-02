@@ -48,6 +48,7 @@ Continue (spec D5). Goldens:
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** Forgot · Remembered and the timed-out Continue settle for 400 ms (R1); the bar is Indigo (R8).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the footer hint's glyph is info, and repeat on "This card comes back in a later round" after a timeout (F7).
 
 ## Accessibility
 

@@ -55,23 +55,21 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       }
 
       final taken = await _dao.foldedPairs(deckId);
-      var written = 0;
-      for (final draft in drafts) {
+      final skipped = <int>[];
+      for (final (index, draft) in drafts.indexed) {
         final pair = (front: foldText(draft.front), back: foldText(draft.back));
-        if (!includeDuplicates && taken.contains(pair)) continue;
+        if (!includeDuplicates && taken.contains(pair)) {
+          skipped.add(index);
+          continue;
+        }
         taken.add(pair);
         await _cards.insertCard(deckId, draft, at);
-        written++;
       }
+      final written = drafts.length - skipped.length;
       if (written > 0 && contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
-      return Ok(
-        CardImportResult(
-          written: written,
-          skippedDuplicates: drafts.length - written,
-        ),
-      );
+      return Ok(CardImportResult(written: written, skippedIndexes: skipped));
     });
   }
 
