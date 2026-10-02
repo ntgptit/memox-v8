@@ -137,11 +137,11 @@ rules are what SP3–SP5 apply. Owner calls deferred to a later sub-project are 
 ### 5.3 Theme, tokens, haptics and DESIGN.md rules
 
 15. **Component slots** (audit Theming).
-    - `progressIndicatorTheme` uses `primaryInk` for the admin screens'
-      `RefreshIndicator`.
+    - The admin screens' `RefreshIndicator`s take `primaryInk` as their `color`
+      (`progressIndicatorTheme` does not reach them).
     - `textSelectionTheme` sets cursor and handles to `primaryInk` and the selection to
-      primary at a new `AppOpacity.selection` rung of 0.24 (the Material default
-      for selected text).
+      primary at a new `AppOpacity.selection` rung of 0.24 (lighter than Material's
+      0.40).
     - `deck_reorder_list_widget.dart:90` gets a flat `proxyDecorator`: a ghost edge, no
       lift.
 16. **Tint rungs in `AppOpacity`** (audit Theming). The ~20 per-widget tint constants
@@ -167,7 +167,7 @@ rules are what SP3–SP5 apply. Owner calls deferred to a later sub-project are 
     the named rules:
     - **Dynamic Color:** not used. The authored Tokyo palette is the identity.
     - **Offline is neutral:** no connection is an `MxNote` (neutral). Warning amber means
-      a refusal, a limit or a loss; danger means a loss. This covers the Sync tile on
+      a refusal or a limit where nothing was lost; danger means a loss. This covers the Sync tile on
       23, Users offline on 33, the transition layer on 30, and the off-may-show banner
       on 24.
     - **A note says something new:** a note or banner states what the screen does not
