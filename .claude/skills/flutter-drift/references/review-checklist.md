@@ -15,7 +15,9 @@ production and not in the diff.
 - A repository returning a Drift-generated row, a `Companion`, or a `Selectable`.
 - A domain entity carrying a Drift annotation, or a domain file importing
   `core/database`.
-- SQL strings scattered through Dart instead of `.drift` files.
+- A query outside `.drift`: a SQL string, or a `select`/`update`/`into`/
+  `delete`/`join`/`batch` builder chain in a DAO (ADR-020; the guard's
+  `queries_in_drift` catches most, review catches the rest).
 - A transaction started from presentation, or a transaction object passed upward.
 - Any file other than `connection.dart` opening a database in `lib/`.
 - A second `AppDatabase` instance, or a database provider made `family` or
@@ -25,7 +27,7 @@ production and not in the diff.
 
 - A list query with no `ORDER BY`, or `LIMIT` without one.
 - `ORDER BY` with no unique tie-breaker under a `LIMIT`.
-- `customSelect` without `readsFrom`, or a raw write that does not declare the
+- Inside ADR-020's exceptions only: `customSelect` without `readsFrom`, or a raw write that does not declare the
   tables it changes — the stream goes quiet and the UI shows stale data.
 - An enum persisted as an ordinal.
 - A local `DateTime.now()` used as a stored instant, or a non-UTC value stored.

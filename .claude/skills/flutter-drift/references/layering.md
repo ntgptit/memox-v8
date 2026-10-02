@@ -29,11 +29,16 @@ and it arrives one convenient method at a time.
 
 ## DAO
 
-**May:** call generated queries, compose query builders, run `transaction` and
-`batch`, return Drift rows / `Selectable` / typed result classes.
+A DAO is a `@DriftAccessor(include: {...queries/<topic>_queries.drift})`
+extending `DatabaseAccessor<AppDatabase>`, built as `XDao(db)` (ADR-020).
 
-**Must not:** know domain entities, apply domain rules, build SQL strings, return
-a UI model.
+**May:** call the queries Drift generates from its included files, build an
+`Expression` / `OrderingTerm` for a `$predicate` / `$order` placeholder, use
+`tableChanges(...)`, return Drift rows / `Selectable` / typed result classes.
+
+**Must not:** know domain entities, apply domain rules, build SQL strings,
+compose a builder chain (`select`, `update`, `into`, `delete`, `join`,
+`batch`), call another DAO, return a UI model.
 
 One DAO per bounded context — not one per table, and not one `CommonDao`. A DAO
 per table forces a coordinator above it for every join; a single shared DAO

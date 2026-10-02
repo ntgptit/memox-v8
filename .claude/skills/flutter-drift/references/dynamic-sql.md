@@ -29,9 +29,11 @@ set you control, not from a string that arrives from the UI.
 | Level | Use | When |
 |---|---|---|
 | 1 | Static named query in `.drift` | The shape is fixed. Always prefer this |
-| 2 | Dart template in `.drift` — `$predicate`, `$order`, `$limit` | The `WHERE`/`ORDER BY`/`LIMIT` varies but the `SELECT`, the joins and the result type do not |
-| 3 | Dart query builder in the DAO | The structure varies too much for one statement to express honestly |
-| 4 | `customSelect` / `customUpdate` | Drift cannot express the SQL at all |
+| 2 | `.drift` query with Dart components — `$predicate`, `$order`, `:row_limit` | The `WHERE`/`ORDER BY`/`LIMIT` varies; the DAO builds the `Expression` |
+
+There is no level 3 or 4 in app code (ADR-020). A builder chain or a
+`customSelect` is allowed only in migrations, a `PRAGMA` and
+`local_data_reset.dart`, and the guard rejects it anywhere else.
 
 **Level 2 keeps the statement in SQL**, where `drift_dev` still type-checks the
 projection and the joins, while letting Dart decide the filter:
@@ -50,14 +52,16 @@ Drift inlines `$predicate` as real SQL, so `all` emits `c.deck_id = ?` and
 `flagged` emits `c.deck_id = ? AND c.is_flagged = 1` — the same text separate
 statements would have emitted, and the same query plan.
 
-The card list is level 3: `CardListDao` builds its window, its filter counts
-and Select all from one `_predicate`, so they never disagree about which cards
-a query lets through (BR-CARD-012). A template can also
-declare a default (`$predicate = TRUE`) for callers that pass nothing.
+The card list moves to level 2 in P2 (spec 2026-10-01-drift-queries-only):
+its window, filter counts and Select all become `.drift` queries that take
+the one `CardListDao._predicate` as `$predicate`, so they still never
+disagree about which cards a query lets through (BR-CARD-012). A template
+can also declare a default (`$predicate = TRUE`) for callers that pass
+nothing.
 
-Level 4 is a last resort, and it costs you the two things Drift was doing for
-free: you must declare `readsFrom` on a read and `updates` on a write, or the
-streams that should react go silent. See `riverpod-drift.md`.
+Inside the exceptions, a `customSelect` must declare `readsFrom` and a
+`customUpdate` `updates`, or the streams that should react go silent (see
+`riverpod-drift.md`). A generated query declares both itself.
 
 ## Compose predicates; never build a catch-all
 
