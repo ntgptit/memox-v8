@@ -56,8 +56,9 @@ says how to resume it on every pull request.
 
 - `gate` rebuilds the generated code from scratch (`check_generated.py`),
   then runs the same gate, `dod_check.sh`, in full;
-- `goldens` runs `TZ=UTC flutter test --tags golden` against the committed
-  pictures and fails if fewer than 60 ran (`count_golden_tests.py`);
+- `goldens` runs `run_goldens.sh`, which compares the golden files, bundled,
+  against the committed pictures, and fails if fewer than 60 ran
+  (`count_golden_tests.py`);
 - `CI gate` is green only when every other job succeeded. Once CI runs on
   pull requests again, it is the one check to require: a pull request is
   merged only once it is green.

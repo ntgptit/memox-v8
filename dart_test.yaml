@@ -3,4 +3,5 @@ tags:
     description: >-
       Pixel comparisons with committed PNGs, generated in the Linux container
       of .claude/skills/flutter-testing/scripts/golden.Dockerfile (spec §8.2).
-      Regenerate there with: TZ=UTC flutter test --tags golden --update-goldens
+      Compare there with .claude/skills/flutter-workflow/scripts/run_goldens.sh
+      and regenerate with the same script and --update.

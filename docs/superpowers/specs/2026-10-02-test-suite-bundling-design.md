@@ -193,3 +193,46 @@ pass or fail.
   the testing pyramid audit stay as they are.
 - A fail-on-budget rule for test time. Report-only for now (R2); a budget can follow if the
   report shows drift.
+
+## 7. Addendum 2026-10-02: the golden run
+
+Owner ruling R4, 2026-10-02: bundle the golden run too, through one script that both CI and the
+container use.
+
+**What was measured** (cloud container, 4 cores, 489 golden tests in 40 files):
+
+| Run | Wall clock | Result |
+|---|---|---|
+| `TZ=UTC flutter test --tags golden` | 7 m 17 s | 489 passed, but 529 suites were loaded |
+| The 40 golden files named explicitly | 1 m 37 s | 489 passed |
+| The 40 golden files in 4 bundles | 1 m 05 s | 489 passed |
+
+`--tags golden` compiles and starts every test file in `test/` only to skip the tests that lack
+the tag. That is the same per-file cost as §1.1, paid 529 times for 40 files.
+
+**Design.**
+- `bundle_tests.py --goldens` selects the golden-only files instead of leaving them out. In each
+  file's group, `setUpAll` points `goldenFileComparator` back at the original file
+  (`LocalFileComparator(Directory.current.uri.resolve('<path>'))`). `matchesGoldenFile`
+  therefore resolves pictures, and writes `failures/`, beside the test file as before.
+  - A golden file's `@Tags(['golden'])` is expected and dropped, because every file in a golden
+    bundle is golden. A second library annotation is still refused.
+  - A golden-tagged *test* inside a non-golden file is refused. The host run excludes it and the
+    golden run bundles golden files only, so it would otherwise run nowhere.
+  - `--list` prints the selection and writes nothing.
+- `run_goldens.sh [--update] [--report <path>]` is the one golden command:
+  - it compares bundled, with `-j` set to the bundle count;
+  - `--update`, and `MEMOX_TEST_BUNDLES=0`, hand `flutter test --tags golden` the golden files
+    themselves, so rewriting pictures takes no shortcut;
+  - the exit code is `flutter test`'s, `test_report.py` prints a `--tags golden` re-run line, and
+    a failed run keeps its bundles.
+- CI's `goldens` job runs `run_goldens.sh --report golden-report.jsonl`, and
+  `count_golden_tests.py` reads that report unchanged. The `setUpAll` entries are hidden events
+  and are not counted: the bundled run counts 489, the same as before.
+
+**Verified.**
+- The real script compared 489 goldens in 1 m 20 s.
+- A swapped picture failed the run, and the report named the file.
+- `--update` rewrote no picture: the render was identical and every write went to the right
+  place.
+

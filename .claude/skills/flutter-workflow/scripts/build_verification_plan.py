@@ -475,7 +475,7 @@ def discover_worktree_dart_files(root: Path) -> set[str]:
 # mark, whitespace, and comments. `bundle_tests.py` reads annotations through
 # the same prefix, so "golden-only" and "refused" agree on where a file starts.
 LEADING_TRIVIA = r"(?:\ufeff|\s|//[^\n]*\n|/\*[\s\S]*?\*/)*"
-_GOLDEN_TAGS = re.compile(
+GOLDEN_TAGS = re.compile(
     r"\A" + LEADING_TRIVIA + r"@Tags\s*\([^)]*?['\"]golden['\"][^)]*\)"
 )
 
@@ -485,7 +485,7 @@ def is_golden_only_test(path: Path) -> bool:
     if not path.is_file():
         return False
     text = path.read_text(encoding="utf-8")
-    return bool(path.name.endswith("_golden_test.dart") or _GOLDEN_TAGS.match(text))
+    return bool(path.name.endswith("_golden_test.dart") or GOLDEN_TAGS.match(text))
 
 
 def discover_tests(root: Path) -> set[str]:

@@ -23,6 +23,9 @@ from pathlib import Path
 
 
 TOP_DEFAULT = 10
+# What re-runs one failing file the way its run selected it: host runs exclude
+# goldens, the golden run (run_goldens.sh) passes `--tags golden`.
+RERUN_FLAGS_DEFAULT = "--exclude-tags golden"
 BUNDLE_MARKER = "memox_test_bundles/"
 
 
@@ -131,7 +134,7 @@ def _origin(test: dict, suite: str, groups: dict[int, str]) -> tuple[str, str]:
     return suite, name
 
 
-def render(summary: RunSummary, top: int) -> str:
+def render(summary: RunSummary, top: int, rerun_flags: str = RERUN_FLAGS_DEFAULT) -> str:
     counted = [result for result in summary.results if not result.skipped]
     lines = [
         f"test report: {len(counted)} tests in "
@@ -152,7 +155,7 @@ def render(summary: RunSummary, top: int) -> str:
         for file in sorted(by_file):
             lines.append(f"  {file}")
             lines.extend(f"    - {result.name}" for result in by_file[file])
-            lines.append(f"    re-run alone: TZ=UTC flutter test --exclude-tags golden {file}")
+            lines.append(f"    re-run alone: TZ=UTC flutter test {rerun_flags} {file}")
             suite = by_file[file][0].suite
             if BUNDLE_MARKER in suite:
                 # The bundle imports its files in run order, so it also lists
@@ -179,6 +182,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("report", type=Path)
     parser.add_argument("--root", default=str(Path.cwd()))
     parser.add_argument("--top", type=int, default=TOP_DEFAULT)
+    parser.add_argument("--rerun-flags", default=RERUN_FLAGS_DEFAULT)
     args = parser.parse_args(argv)
     try:
         lines = args.report.read_text(encoding="utf-8").splitlines()
@@ -186,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError, KeyError) as error:
         print(f"test report unavailable: {error}")
         return 0
-    print(render(summary, args.top))
+    print(render(summary, args.top, args.rerun_flags))
     return 0
 
 

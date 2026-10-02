@@ -30,13 +30,13 @@
 #   docker run --rm -v /tmp/mainref:/src memox-golden:3.47.5 bash -lc '
 #     cp -a /src /w2 && cd /w2 && flutter pub get &&
 #     dart run build_runner build --delete-conflicting-outputs &&
-#     TZ=UTC flutter test --tags golden'
+#     bash .claude/skills/flutter-workflow/scripts/run_goldens.sh'
 #
 #   # 2. regenerate — writes back into the mounted checkout
 #   docker run --rm -v "$PWD":/w memox-golden:3.47.5 bash -lc '
 #     flutter pub get &&
 #     dart run build_runner build --delete-conflicting-outputs &&
-#     TZ=UTC flutter test --tags golden --update-goldens'
+#     bash .claude/skills/flutter-workflow/scripts/run_goldens.sh --update'
 #
 # `TZ=UTC` is not optional: `card_detail` renders review timestamps through
 # `toLocal()`, so without it the PNGs carry the machine's timezone. The image

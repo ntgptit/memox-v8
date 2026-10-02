@@ -1,6 +1,6 @@
 ---
 name: golden-compare
-description: Use when a change adds, updates or deletes any golden PNG under test/**/goldens/ (after `flutter test --tags golden --update-goldens`, a UI fix, a theme or token change), before asking the owner to review, approve or merge it, or when the owner asks to see what a golden change looks like.
+description: Use when a change adds, updates or deletes any golden PNG under test/**/goldens/ (after `run_goldens.sh --update`, a UI fix, a theme or token change), before asking the owner to review, approve or merge it, or when the owner asks to see what a golden change looks like.
 ---
 
 # Golden compare
