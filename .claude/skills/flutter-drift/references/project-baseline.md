@@ -50,11 +50,12 @@ both trees, and `delete_batches` owns rows of `deck` and `card`. Splitting the
 folder won an argument, while the DAO — the part that genuinely belongs to one
 feature — is already feature-owned.
 
-Since ADR-020 a query file is included by the DAOs that use it, not by
-`AppDatabase`: `@DriftDatabase` keeps `tables/*.drift` (and, until the
-migration's P8, the query files DAOs not yet migrated still call through it).
-Migrations, `PRAGMA` and `local_data_reset.dart` are the only Dart that may
-hold SQL.
+Since ADR-020 a query file is included by the accessors that use it, never by
+`AppDatabase`: `@DriftDatabase` holds `tables/*.drift` only. A query file shared
+by several accessors (`deck_queries.drift`) generates its result classes once
+per accessor, so each feature reads its own DAO's copy. The log database keeps
+its table and queries in `core/database/log/log.drift`. Migrations, `PRAGMA`
+and `local_data_reset.dart` are the only Dart that may hold SQL.
 
 ## Connection and PRAGMA
 

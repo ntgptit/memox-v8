@@ -196,38 +196,7 @@ SCOPES_PATH = (
     / "scopes.yaml"
 )
 
-# ADR-020: files that have moved to `.drift` and must never return to the
-# scope's temporary exclude. Each phase adds the files it migrates.
-MIGRATED_TO_DRIFT: tuple[str, ...] = (
-    "lib/features/account/data/datasources/account_device_dao.dart",
-    "lib/features/trash/data/datasources/trash_dao.dart",
-    "lib/features/starter_decks/data/datasources/starter_dao.dart",
-    "lib/core/notes/dismissed_note_store.dart",
-    "lib/features/settings/data/datasources/settings_dao.dart",
-    "lib/features/tags/data/datasources/tag_dao.dart",
-    "lib/features/card/data/datasources/card_dao.dart",
-    "lib/features/card/data/datasources/card_list_dao.dart",
-    "lib/features/deck/data/datasources/deck_dao.dart",
-    "lib/features/srs/data/datasources/srs_dao.dart",
-    "lib/features/study/data/datasources/study_session_dao.dart",
-    "lib/features/study/data/datasources/study_queue_dao.dart",
-    "lib/features/study/data/datasources/study_round_dao.dart",
-    "lib/features/study/data/datasources/study_view_dao.dart",
-    "lib/features/progress/data/datasources/progress_dao.dart",
-    "lib/features/search/data/datasources/search_dao.dart",
-    "lib/core/auth/account_store.dart",
-    "lib/core/sync/delete_batch_sync_adapter.dart",
-    "lib/core/sync/deck_sync_adapter.dart",
-    "lib/core/sync/review_log_sync_adapter.dart",
-    "lib/core/sync/account_settings_sync_adapter.dart",
-    "lib/core/sync/card_sync_adapter.dart",
-    "lib/core/sync/tag_sync_adapter.dart",
-    "lib/core/sync/card_schedule_sync_adapter.dart",
-    "lib/core/sync/sync_store.dart",
-    "lib/core/database/log/log_database.dart",
-)
-
-# The exceptions ADR-020 grants for good, which no phase removes.
+# The exceptions ADR-020 grants for good (D7): the scope's only excludes.
 PERMANENT_EXCLUDES = (
     "**/*.g.dart",
     "lib/core/database/schema_versions.dart",
@@ -287,12 +256,12 @@ def _scope(name: str) -> dict:
     return yaml.safe_load(SCOPES_PATH.read_text(encoding="utf-8"))["scopes"][name]
 
 
-def test_drift_query_sites_keeps_adr_020_exceptions_and_never_readmits_a_migrated_file() -> None:
+def test_drift_query_sites_excludes_only_adr_020_exceptions() -> None:
+    # P8 deleted the temporary exclude: no file of lib/ outside D7 may write a
+    # query in Dart, and none may be added back.
     scope = _scope("drift_query_sites")
-    excluded = set(scope["exclude"])
 
-    assert set(PERMANENT_EXCLUDES) <= excluded
-    assert excluded.isdisjoint(MIGRATED_TO_DRIFT)
+    assert set(scope["exclude"]) == set(PERMANENT_EXCLUDES)
 
 
 def test_drift_query_sites_covers_all_of_lib() -> None:
