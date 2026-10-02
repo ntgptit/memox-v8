@@ -38,7 +38,8 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
    đích, số card sẽ ghi, số trùng bị bỏ/ghi, số invalid bị loại.
 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study state mới
    cho từng card, tag, và `content_type` nếu deck đang `unset` (BR-TRANSFER-005).
-8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại — với
+8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và
+   từng dòng bị bỏ qua với số dòng và lý do (critique 2026-10-02) — với
    hai lối ra: View cards về card list (danh sách tự cập nhật qua stream),
    hoặc Import another file giữ deck đích và làm lại từ bước Source.
 

@@ -3819,7 +3819,20 @@
   "@importCountInvalid": {
     "description": "Import result count row."
   },
-  "importSkipNote": "Fix the invalid rows in your source and import again; duplicates are skipped by the case-insensitive term + meaning.",
+  "importSkippedHeader": "Skipped rows",
+  "@importSkippedHeader": {
+    "description": "Import result (critique 2026-10-02, F4): the header over the rows the import skipped, each with its number and why."
+  },
+  "importSkippedShowAll": "Show all {count}",
+  "@importSkippedShowAll": {
+    "description": "Import result (critique 2026-10-02, F4): shows every skipped row past the first five.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importSkipNote": "Duplicates are skipped by the case-insensitive term + meaning.",
   "@importSkipNote": {
     "description": "Import result: how skips work."
   },
