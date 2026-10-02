@@ -3,8 +3,8 @@ import '../tables/deck.drift';
 import '../tables/card.drift';
 import '../tables/study.drift';
 
--- ADR-020: the delete-batch writes `card_dao` and `deck_dao` share. Included
--- on AppDatabase until P2 and P3 make those DAOs accessors that include it.
+-- ADR-020: the delete-batch writes CardDao and DeckDao share; both include
+-- this file.
 
 -- BR-TRASH-001: the batch of one deletion, with its item root and the one
 -- time the retention counts from (BR-TRASH-009).

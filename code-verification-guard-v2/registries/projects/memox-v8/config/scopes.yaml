@@ -344,7 +344,6 @@ scopes:
       - lib/core/sync/review_log_sync_adapter.dart
       - lib/core/sync/sync_store.dart
       - lib/core/sync/tag_sync_adapter.dart
-      - lib/features/deck/data/datasources/deck_dao.dart
       - lib/features/progress/data/datasources/progress_dao.dart
       - lib/features/search/data/datasources/search_dao.dart
       - lib/features/srs/data/datasources/srs_dao.dart

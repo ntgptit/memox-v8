@@ -136,10 +136,10 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D18 | Mọi truy vấn trong `.drift` — P0: ADR-020, guard `queries_in_drift`, skill cập nhật, pilot `TrashDao` và `AccountDeviceDao` thành `@DriftAccessor` | xong | — | M | [spec](superpowers/specs/2026-10-01-drift-queries-only-design.md) và [plan](superpowers/plans/2026-10-02-drift-queries-only-p0.md); `dod_check.sh` xanh (3268 test); guard bắt vi phạm cài thử; `check_drift` 59 → 40 lỗi | FE-D19 |
 | FE-D19 | `.drift` P1: `tag_dao`, `settings_dao`, `starter_dao`, `dismissed_note_store` | xong | FE-D18 | M | [plan](superpowers/plans/2026-10-02-drift-queries-only-p1.md); `dod_check.sh` xanh | FE-D20 |
 | FE-D20 | `.drift` P2: `card_dao`, `card_list_dao` (`$predicate`/`$order`), `card_detail_dao` | xong | FE-D19 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p2.md); `dod_check.sh` xanh | FE-D21 |
-| FE-D21 | `.drift` P3: `deck_dao`, `reminder_workload_dao` | chưa làm | FE-D18 | M | — | — |
+| FE-D21 | `.drift` P3: `deck_dao` (`reminder_workload_dao` đi cùng `deck_queries.drift`, chờ quyết định về class kết quả dùng chung) | xong | FE-D20 | M | [plan](superpowers/plans/2026-10-02-drift-queries-only-p3.md); `dod_check.sh` xanh | FE-D22 |
 | FE-D22 | `.drift` P4: `srs_dao` | chưa làm | FE-D18 | M | — | — |
 | FE-D23 | `.drift` P5: `study_queue_dao`, `study_session_dao`, `study_round_dao`, `study_view_dao` | chưa làm | FE-D18 | L | — | — |
-| FE-D24 | `.drift` P6: `progress_dao`, `search_dao` | chưa làm | FE-D18 | L | — | — |
+| FE-D24 | `.drift` P6: `progress_dao`, `search_dao`; `deck_queries.drift` rời `AppDatabase` và `reminder_workload_dao`, `deck_dao`, `study_view_dao` tự include | chưa làm | FE-D18 | L | — | — |
 | FE-D25 | `.drift` P7: `core/sync`, `core/auth/account_store` (upsert thay `batch`, đo pull 1.000 dòng) | chưa làm | FE-D18 | L | — | — |
 | FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | chưa làm | FE-D19…FE-D25 | S | — | — |
 

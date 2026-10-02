@@ -75,9 +75,3 @@ deckHoldsLiveCards(:deck_id AS TEXT):
 SELECT EXISTS (
   SELECT 1 FROM card WHERE deck_id = :deck_id AND delete_batch_id IS NULL
 );
-
--- A deck in the Trash keeps its row as it is.
-setLiveDeckContentType(:deck_id AS TEXT, :content_type AS TEXT,
-  :now AS DATETIME):
-UPDATE deck SET content_type = :content_type, updated_at = :now
-WHERE id = :deck_id AND delete_batch_id IS NULL;

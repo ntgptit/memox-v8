@@ -19,7 +19,6 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/ui_state.drift',
     'package:memox/core/database/tables/account.drift',
     'package:memox/core/database/queries/deck_queries.drift',
-    'package:memox/core/database/queries/delete_batch_queries.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
