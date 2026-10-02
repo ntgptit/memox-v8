@@ -205,6 +205,22 @@ void main() {
     handle.dispose();
   });
 
+  libraryTest('a dragged row is decorated by a proxy, flat with a ghost edge '
+      '(audit 2026-10-03 Theming)', (tester, env) async {
+    for (final name in ['A', 'B']) {
+      await env.decks.root(name);
+    }
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await _startReorder(tester);
+
+    expect(
+      tester
+          .widget<ReorderableListView>(find.byType(ReorderableListView))
+          .proxyDecorator,
+      isNotNull,
+    );
+  });
+
   libraryTest('Done ends the mode and brings back the FAB', (
     tester,
     env,

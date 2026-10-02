@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -43,6 +44,17 @@ void main() {
         expect(
           style.fontVariations,
           contains(FontVariation.weight(weight.value.toDouble())),
+        );
+      });
+
+      test('$name: refresh and selection use primary ink (audit Theming)', () {
+        final ink = MxDerivedColors.primaryInkOf(scheme);
+        expect(theme.progressIndicatorTheme.color, ink);
+        expect(theme.textSelectionTheme.cursorColor, ink);
+        expect(theme.textSelectionTheme.selectionHandleColor, ink);
+        expect(
+          theme.textSelectionTheme.selectionColor,
+          scheme.primary.withValues(alpha: AppOpacity.selection),
         );
       });
 

@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_reorder_row_widget.dart';
@@ -89,6 +92,18 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   @override
   Widget build(BuildContext context) => ReorderableListView.builder(
     buildDefaultDragHandles: false,
+    // A dragged row stays flat, with the ghost edge, as the theme has no
+    // elevation (audit 2026-10-03 Theming).
+    proxyDecorator: (child, _, _) => DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: context.derivedColors.ghostBorder,
+          width: AppStroke.hairline,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: child,
+    ),
     padding: EdgeInsets.fromLTRB(
       AppSpacing.gutter,
       AppSpacing.gutter,
