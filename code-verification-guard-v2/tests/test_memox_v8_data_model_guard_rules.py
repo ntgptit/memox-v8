@@ -215,6 +215,15 @@ MIGRATED_TO_DRIFT: tuple[str, ...] = (
     "lib/features/study/data/datasources/study_view_dao.dart",
     "lib/features/progress/data/datasources/progress_dao.dart",
     "lib/features/search/data/datasources/search_dao.dart",
+    "lib/core/auth/account_store.dart",
+    "lib/core/sync/delete_batch_sync_adapter.dart",
+    "lib/core/sync/deck_sync_adapter.dart",
+    "lib/core/sync/review_log_sync_adapter.dart",
+    "lib/core/sync/account_settings_sync_adapter.dart",
+    "lib/core/sync/card_sync_adapter.dart",
+    "lib/core/sync/tag_sync_adapter.dart",
+    "lib/core/sync/card_schedule_sync_adapter.dart",
+    "lib/core/sync/sync_store.dart",
 )
 
 # The exceptions ADR-020 grants for good, which no phase removes.

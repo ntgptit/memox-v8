@@ -55,6 +55,7 @@
   },
   "database_query_features": {
     "account_device_queries": ["account"],
+    "account_state_queries": [],
     "card_list_queries": ["card"],
     "card_queries": ["card"],
     "card_row_queries": ["card", "transfer", "trash"],
@@ -73,6 +74,13 @@
     "study_round_queries": ["study"],
     "study_session_queries": ["study"],
     "study_view_queries": ["study"],
+    "sync_card_queries": [],
+    "sync_card_schedule_queries": [],
+    "sync_deck_queries": [],
+    "sync_delete_batch_queries": [],
+    "sync_outbox_queries": [],
+    "sync_review_log_queries": [],
+    "sync_tag_queries": [],
     "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
   },

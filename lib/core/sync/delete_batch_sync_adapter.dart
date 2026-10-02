@@ -2,22 +2,27 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
+part 'delete_batch_sync_adapter.g.dart';
+
 /// Syncs `delete_batches`, the trash batches that trashed decks reference.
-class DeleteBatchSyncAdapter implements EntitySyncAdapter {
-  DeleteBatchSyncAdapter(this._db);
+@DriftAccessor(
+  include: {
+    'package:memox/core/database/queries/sync_delete_batch_queries.drift',
+  },
+)
+class DeleteBatchSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$DeleteBatchSyncAdapterMixin
+    implements EntitySyncAdapter {
+  DeleteBatchSyncAdapter(super.attachedDatabase);
 
   static const type = 'delete_batch';
-
-  final AppDatabase _db;
 
   @override
   String get entityType => type;
 
   @override
   Future<Map<String, Object?>?> readRow(String id) async {
-    final batch = await (_db.select(
-      _db.deleteBatches,
-    )..where((b) => b.id.equals(id))).getSingleOrNull();
+    final batch = await syncDeleteBatchRow(id).getSingleOrNull();
     if (batch == null) {
       return null;
     }
@@ -32,25 +37,20 @@ class DeleteBatchSyncAdapter implements EntitySyncAdapter {
 
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
-      _db
-          .into(_db.deleteBatches)
-          .insertOnConflictUpdate(
-            DeleteBatchesCompanion.insert(
-              id: row['id'] as String,
-              itemType: row['itemType'] as String,
-              rootItemId: row['rootItemId'] as String,
-              deletedAt: fromWireTime(row['deletedAt'])!,
-              serverVersion: Value(serverVersion),
-            ),
-          );
+      upsertSyncedDeleteBatch(
+        DeleteBatchesCompanion.insert(
+          id: row['id'] as String,
+          itemType: row['itemType'] as String,
+          rootItemId: row['rootItemId'] as String,
+          deletedAt: fromWireTime(row['deletedAt'])!,
+          serverVersion: Value(serverVersion),
+        ),
+      );
 
   @override
-  Future<void> deleteFromServer(String id) =>
-      (_db.delete(_db.deleteBatches)..where((b) => b.id.equals(id))).go();
+  Future<void> deleteFromServer(String id) => deleteSyncedDeleteBatch(id);
 
   @override
   Future<void> markAcknowledged(String id, int serverVersion) =>
-      (_db.update(_db.deleteBatches)..where((b) => b.id.equals(id))).write(
-        DeleteBatchesCompanion(serverVersion: Value(serverVersion)),
-      );
+      acknowledgeDeleteBatch(serverVersion, id);
 }

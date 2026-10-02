@@ -1,0 +1,32 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/srs.drift';
+
+-- Sync of card_schedule (library and study sync spec §3.4, SB-S4).
+
+syncCardScheduleRow(:card_id AS TEXT):
+SELECT * FROM card_schedule WHERE card_id = :card_id;
+
+-- A pulled schedule that wins the order of spec §3.4: every column.
+upsertSyncedCardSchedule: INSERT INTO card_schedule $row
+ON CONFLICT (card_id) DO UPDATE SET
+  scheduler_type = excluded.scheduler_type,
+  scheduler_version = excluded.scheduler_version,
+  generation = excluded.generation,
+  learned_at = excluded.learned_at,
+  due_at = excluded.due_at,
+  last_answered_at = excluded.last_answered_at,
+  answer_count = excluded.answer_count,
+  lapse_count = excluded.lapse_count,
+  current_box = excluded.current_box,
+  ease_factor = excluded.ease_factor,
+  interval_days = excluded.interval_days,
+  repetitions = excluded.repetitions;
+
+-- The scheduler of :card_id's root, the card and its decks in any state:
+-- the order of spec §3.4 compares against it.
+syncRootSchedulerOf(:card_id AS TEXT):
+SELECT r.scheduler_type FROM card c
+JOIN deck d ON d.id = c.deck_id
+JOIN deck r ON r.id = d.root_id
+WHERE c.id = :card_id;

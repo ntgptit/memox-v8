@@ -334,16 +334,7 @@ scopes:
       - lib/core/database/app_database.dart
       - lib/core/database/local_data_reset.dart
       # ---- not yet migrated (temporary) ----
-      - lib/core/auth/account_store.dart
       - lib/core/database/log/log_database.dart
-      - lib/core/sync/account_settings_sync_adapter.dart
-      - lib/core/sync/card_schedule_sync_adapter.dart
-      - lib/core/sync/card_sync_adapter.dart
-      - lib/core/sync/deck_sync_adapter.dart
-      - lib/core/sync/delete_batch_sync_adapter.dart
-      - lib/core/sync/review_log_sync_adapter.dart
-      - lib/core/sync/sync_store.dart
-      - lib/core/sync/tag_sync_adapter.dart
 
   test_files:
     include:

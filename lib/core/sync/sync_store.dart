@@ -1,19 +1,24 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/database/tables/sync_keys.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:uuid/uuid.dart';
 
-/// The outbox and sync state in Drift (app deck-sync spec §3, §5).
-class SyncStore {
-  SyncStore(this._db);
+part 'sync_store.g.dart';
 
-  final AppDatabase _db;
+/// The outbox and sync state in Drift (app deck-sync spec §3, §5;
+/// `sync_outbox_queries.drift`).
+@DriftAccessor(
+  include: {'package:memox/core/database/queries/sync_outbox_queries.drift'},
+)
+class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
+  SyncStore(super.attachedDatabase);
 
   static const _uuid = Uuid();
 
-  Future<String> deviceId() => _db.transaction(() async {
+  Future<String> deviceId() => transaction(() async {
     final existing = await _value(syncDeviceIdKey);
     if (existing != null) {
       return existing;
@@ -40,77 +45,58 @@ class SyncStore {
   Future<List<SyncOutboxEntry>> pendingBatch(
     List<String> entityTypes,
     int limit,
-  ) {
-    // Entity types are adapter constants, never user input.
-    final rank = CustomExpression<int>(
-      'CASE entity_type '
-      '${[for (var i = 0; i < entityTypes.length; i++) "WHEN '${entityTypes[i]}' THEN $i"].join(' ')} '
-      'END',
-    );
-    return (_db.select(_db.syncOutbox)
-          ..where((o) => o.entityType.isIn(entityTypes))
-          ..orderBy([
-            (o) => OrderingTerm(expression: rank),
-            (o) => OrderingTerm(expression: o.createdAt),
-            (o) =>
-                OrderingTerm(expression: const CustomExpression<int>('rowid')),
-          ])
-          ..limit(limit))
-        .get();
+  ) async {
+    // caseMatch needs at least one case, and no type has no entry.
+    if (entityTypes.isEmpty) return const [];
+    return pendingOutbox(
+      entityTypes,
+      (o) => OrderingTerm(
+        expression: o.entityType.caseMatch<int>(
+          when: {
+            for (var i = 0; i < entityTypes.length; i++)
+              Constant(entityTypes[i]): Constant(i),
+          },
+        ),
+      ),
+      limit,
+    ).get();
   }
 
-  Future<bool> isPendingEntity(String entityType, String entityId) async =>
-      await (_db.select(_db.syncOutbox)..where(
-            (o) =>
-                o.entityType.equals(entityType) & o.entityId.equals(entityId),
-          ))
-          .getSingleOrNull() !=
-      null;
+  Future<bool> isPendingEntity(String entityType, String entityId) =>
+      isEntityPending(entityType, entityId).getSingle();
 
-  Future<bool> isPending(String opId) async =>
-      await (_db.select(
-        _db.syncOutbox,
-      )..where((o) => o.opId.equals(opId))).getSingleOrNull() !=
-      null;
+  Future<bool> isPending(String opId) => isOpPending(opId).getSingle();
 
   /// Removes the entry only if no later write replaced its op id.
-  Future<void> removeIfUnchanged(String opId) =>
-      (_db.delete(_db.syncOutbox)..where((o) => o.opId.equals(opId))).go();
+  Future<void> removeIfUnchanged(String opId) => deleteOutboxOp(opId);
 
   Future<void> recordFailedAttempt(Iterable<String> opIds) =>
-      _db.customStatement(
-        'UPDATE sync_outbox SET attempts = attempts + 1 '
-        'WHERE op_id IN (${List.filled(opIds.length, '?').join(', ')})',
-        opIds.toList(),
-      );
+      countFailedAttempt(opIds.toList());
 
   /// Runs [body] in one transaction whose writes the capture triggers skip.
   Future<T> applyingRemote<T>(
     Future<T> Function() body, {
     bool deferForeignKeys = false,
-  }) => _db.transaction(() async {
+  }) => transaction(() async {
     if (deferForeignKeys) {
       // A child may arrive before its parent; keys are checked at commit.
-      await _db.customStatement('PRAGMA defer_foreign_keys = ON');
+      await customStatement('PRAGMA defer_foreign_keys = ON');
     }
     await _put(syncApplyingRemoteKey, '1');
     try {
       return await body();
     } finally {
-      await (_db.delete(
-        _db.syncState,
-      )..where((s) => s.name.equals(syncApplyingRemoteKey))).go();
+      await deleteSyncState(syncApplyingRemoteKey);
     }
   });
 
-  Future<T> inTransaction<T>(Future<T> Function() body) =>
-      _db.transaction(body);
+  Future<T> inTransaction<T>(Future<T> Function() body) => transaction(body);
 
   Future<void> recordSuccess(DateTime now) =>
       _put(syncLastSuccessAtKey, _millis(now));
 
   Future<void> recordFailure(SyncFailureKind kind, DateTime now) =>
-      _db.transaction(() async {
+      transaction(() async {
         await _put(syncLastFailureAtKey, _millis(now));
         await _put(syncLastFailureKindKey, kind.name);
       });
@@ -121,33 +107,22 @@ class SyncStore {
     String entityId,
     String code,
     DateTime now,
-  ) => _db
-      .into(_db.syncRejection)
-      .insertOnConflictUpdate(
-        SyncRejectionCompanion.insert(
-          entityType: entityType,
-          entityId: entityId,
-          code: code,
-          rejectedAt: now.toUtc(),
-        ),
-      );
+  ) => upsertSyncRejection(
+    SyncRejectionCompanion.insert(
+      entityType: entityType,
+      entityId: entityId,
+      code: code,
+      rejectedAt: now.toUtc(),
+    ),
+  );
 
   Future<void> clearRejection(String entityType, String entityId) =>
-      (_db.delete(_db.syncRejection)..where(
-            (r) =>
-                r.entityType.equals(entityType) & r.entityId.equals(entityId),
-          ))
-          .go();
+      deleteSyncRejection(entityType, entityId);
 
-  Future<List<SyncRejectionEntry>> rejections() =>
-      (_db.select(_db.syncRejection)..orderBy([
-            (r) => OrderingTerm(expression: r.entityType),
-            (r) => OrderingTerm(expression: r.entityId),
-          ]))
-          .get();
+  Future<List<SyncRejectionEntry>> rejections() => allSyncRejections().get();
 
   /// Keep on this device (R7): the records go, the rows stay local.
-  Future<void> forgetRejected() => _db.delete(_db.syncRejection).go();
+  Future<void> forgetRejected() => deleteAllSyncRejections();
 
   /// Queues [entityId] as the capture triggers would: a new op id, and the
   /// first unsent time kept when it was already pending.
@@ -156,44 +131,19 @@ class SyncStore {
     String entityId,
     String op,
     DateTime now,
-  ) => _db.customStatement(
-    'INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) '
-    'VALUES (?, ?, ?, ?, ?) '
-    'ON CONFLICT (entity_type, entity_id) DO UPDATE SET '
-    'op_id = excluded.op_id, op = excluded.op',
-    [
-      _uuid.v4(),
-      entityType,
-      entityId,
-      op,
-      now.toUtc().millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond,
-    ],
-  );
+  ) => enqueueOutbox(_uuid.v4(), entityType, entityId, op, now);
 
   /// One row read from the three tables, re-read whenever any changes.
-  Stream<SyncStatus> watchStatus() => _db
-      .customSelect(
-        'SELECT '
-        "(SELECT value FROM sync_state WHERE name = '$syncLastSuccessAtKey') "
-        'AS last_success_at, '
-        "(SELECT value FROM sync_state WHERE name = '$syncLastFailureAtKey') "
-        'AS last_failure_at, '
-        "(SELECT value FROM sync_state WHERE name = '$syncLastFailureKindKey') "
-        'AS last_failure_kind, '
-        '(SELECT COUNT(*) FROM sync_outbox) AS pending_count, '
-        '(SELECT MIN(created_at) FROM sync_outbox) AS oldest_pending_at, '
-        '(SELECT COUNT(*) FROM sync_rejection) AS rejected_count',
-        readsFrom: {_db.syncState, _db.syncOutbox, _db.syncRejection},
-      )
-      .watchSingle()
-      .map(_statusOf);
+  Stream<SyncStatus> watchStatus() => syncStatusRow(
+    syncLastSuccessAtKey,
+    syncLastFailureAtKey,
+    syncLastFailureKindKey,
+  ).watchSingle().map(_statusOf);
 
-  static SyncStatus _statusOf(QueryRow row) {
-    final success = _fromMillis(row.readNullable<String>('last_success_at'));
-    final failureAt = _fromMillis(row.readNullable<String>('last_failure_at'));
-    final kind = SyncFailureKind.parse(
-      row.readNullable<String>('last_failure_kind'),
-    );
+  static SyncStatus _statusOf(SyncStatusRow row) {
+    final success = _fromMillis(row.lastSuccessAt);
+    final failureAt = _fromMillis(row.lastFailureAt);
+    final kind = SyncFailureKind.parse(row.lastFailureKind);
     // Inline, so failureAt and kind are promoted to non-null.
     final lastFailure =
         failureAt != null &&
@@ -201,18 +151,12 @@ class SyncStore {
             (success == null || failureAt.isAfter(success))
         ? LastSyncFailure(kind, failureAt)
         : null;
-    final oldest = row.readNullable<int>('oldest_pending_at');
     return SyncStatus(
       lastSuccessAt: success,
       lastFailure: lastFailure,
-      pendingCount: row.read<int>('pending_count'),
-      oldestPendingAt: oldest == null
-          ? null
-          : DateTime.fromMillisecondsSinceEpoch(
-              oldest * Duration.millisecondsPerSecond,
-              isUtc: true,
-            ),
-      rejectedCount: row.read<int>('rejected_count'),
+      pendingCount: row.pendingCount,
+      oldestPendingAt: row.oldestPendingAt?.toUtc(),
+      rejectedCount: row.rejectedCount,
     );
   }
 
@@ -225,58 +169,31 @@ class SyncStore {
         : DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true);
   }
 
+  /// Fires once when listened to, then after every write to the outbox.
   Stream<void> outboxChanges() =>
-      _db.select(_db.syncOutbox).watch().map((_) {});
+      tableChanges(attachedDatabase, [attachedDatabase.syncOutbox]);
 
-  Future<String?> _value(String key) async => (await (_db.select(
-    _db.syncState,
-  )..where((s) => s.name.equals(key))).getSingleOrNull())?.value;
+  Future<String?> _value(String key) => syncStateValue(key).getSingleOrNull();
 
-  Future<void> _put(String key, String value) => _db
-      .into(_db.syncState)
-      .insertOnConflictUpdate(
-        SyncStateCompanion.insert(name: key, value: value),
-      );
+  Future<void> _put(String key, String value) =>
+      putSyncState(SyncStateCompanion.insert(name: key, value: value));
 
   /// How many changes wait in the outbox (auth spec §5).
-  Future<int> pendingCount() async =>
-      (await _db
-              .customSelect(
-                'SELECT COUNT(*) AS n FROM sync_outbox',
-                readsFrom: {_db.syncOutbox},
-              )
-              .getSingle())
-          .read<int>('n');
+  Future<int> pendingCount() => outboxCount().getSingle();
 
   /// Every local row queued for upload in the migrations' parents-first
   /// order, the settings row included, and the pull cursor back to 0: a new
   /// anonymous user gets the whole library (auth spec #12). A row already
   /// queued keeps its operation, so a rerun queues nothing twice (plan
-  /// ruling 12).
-  Future<void> markAllPending() => _db.transaction(() async {
-    for (final (entityType, table, order) in _everyRow) {
-      await _db.customStatement(
-        '${seedOutboxSql(entityType, table, order)} '
-        'ON CONFLICT (entity_type, entity_id) DO NOTHING',
-      );
-    }
+  /// ruling 12). The order is the coordinator's adapter order.
+  Future<void> markAllPending() => transaction(() async {
+    await seedDeleteBatchOutbox();
+    await seedDeckOutbox();
+    await seedTagOutbox();
+    await seedCardOutbox();
+    await seedCardScheduleOutbox();
+    await seedReviewLogOutbox();
+    await seedAccountSettingsOutbox(accountSettingsEntityId, appSettingsRowId);
     await setSince(0);
   });
 }
-
-/// Each synced type in the coordinator's adapter order, with the rows it
-/// uploads and their order (the migrations' seeds, app_database.dart).
-const _everyRow = [
-  ('delete_batch', 'delete_batches', 'id'),
-  ('deck', 'deck', 'depth, id'),
-  ('tag', 'tags', 'created_at, id'),
-  ('card', 'card', 'created_at, id'),
-  ('card_schedule', '(SELECT card_id AS id FROM card_schedule)', 'id'),
-  ('review_log', '(SELECT id, answered_at FROM review_log)', 'answered_at, id'),
-  (
-    'account_settings',
-    "(SELECT '$accountSettingsEntityId' AS id FROM app_settings "
-        'WHERE id = $appSettingsRowId)',
-    'id',
-  ),
-];

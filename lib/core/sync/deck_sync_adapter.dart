@@ -2,23 +2,26 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
+part 'deck_sync_adapter.g.dart';
+
 /// Syncs `deck`. The server derives rootId and depth; the pulled values are
 /// written as they come.
-class DeckSyncAdapter implements EntitySyncAdapter {
-  DeckSyncAdapter(this._db);
+@DriftAccessor(
+  include: {'package:memox/core/database/queries/sync_deck_queries.drift'},
+)
+class DeckSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$DeckSyncAdapterMixin
+    implements EntitySyncAdapter {
+  DeckSyncAdapter(super.attachedDatabase);
 
   static const type = 'deck';
-
-  final AppDatabase _db;
 
   @override
   String get entityType => type;
 
   @override
   Future<Map<String, Object?>?> readRow(String id) async {
-    final deck = await (_db.select(
-      _db.deck,
-    )..where((d) => d.id.equals(id))).getSingleOrNull();
+    final deck = await syncDeckRow(id).getSingleOrNull();
     if (deck == null) {
       return null;
     }
@@ -46,43 +49,36 @@ class DeckSyncAdapter implements EntitySyncAdapter {
 
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
-      _db
-          .into(_db.deck)
-          .insertOnConflictUpdate(
-            DeckCompanion.insert(
-              id: row['id'] as String,
-              name: row['name'] as String,
-              parentId: Value(row['parentId'] as String?),
-              rootId: row['rootId'] as String,
-              depth: row['depth'] as int,
-              contentType: Value(row['contentType'] as String),
-              schedulerType: Value(row['schedulerType'] as String?),
-              schedulerVersion: Value(row['schedulerVersion'] as int?),
-              schedulerConfig: Value(row['schedulerConfig'] as String?),
-              studyConfig: Value(row['studyConfig'] as String?),
-              generation: Value(row['generation'] as int?),
-              firstAnsweredAt: Value(fromWireTime(row['firstAnsweredAt'])),
-              sourceTemplateId: Value(row['sourceTemplateId'] as String?),
-              sourceTemplateVersion: Value(
-                row['sourceTemplateVersion'] as int?,
-              ),
-              deleteBatchId: Value(row['deleteBatchId'] as String?),
-              siblingPosition: row['siblingPosition'] as int,
-              createdAt: fromWireTime(row['createdAt'])!,
-              updatedAt: fromWireTime(row['updatedAt'])!,
-              serverVersion: Value(serverVersion),
-            ),
-          );
+      upsertSyncedDeck(
+        DeckCompanion.insert(
+          id: row['id'] as String,
+          name: row['name'] as String,
+          parentId: Value(row['parentId'] as String?),
+          rootId: row['rootId'] as String,
+          depth: row['depth'] as int,
+          contentType: Value(row['contentType'] as String),
+          schedulerType: Value(row['schedulerType'] as String?),
+          schedulerVersion: Value(row['schedulerVersion'] as int?),
+          schedulerConfig: Value(row['schedulerConfig'] as String?),
+          studyConfig: Value(row['studyConfig'] as String?),
+          generation: Value(row['generation'] as int?),
+          firstAnsweredAt: Value(fromWireTime(row['firstAnsweredAt'])),
+          sourceTemplateId: Value(row['sourceTemplateId'] as String?),
+          sourceTemplateVersion: Value(row['sourceTemplateVersion'] as int?),
+          deleteBatchId: Value(row['deleteBatchId'] as String?),
+          siblingPosition: row['siblingPosition'] as int,
+          createdAt: fromWireTime(row['createdAt'])!,
+          updatedAt: fromWireTime(row['updatedAt'])!,
+          serverVersion: Value(serverVersion),
+        ),
+      );
 
   @override
-  Future<void> deleteFromServer(String id) =>
-      (_db.delete(_db.deck)..where((d) => d.id.equals(id))).go();
+  Future<void> deleteFromServer(String id) => deleteSyncedDeck(id);
 
   @override
   Future<void> markAcknowledged(String id, int serverVersion) =>
-      (_db.update(_db.deck)..where((d) => d.id.equals(id))).write(
-        DeckCompanion(serverVersion: Value(serverVersion)),
-      );
+      acknowledgeDeck(serverVersion, id);
 
   /// Drift stores whole seconds; the wire drops the fractional part so a
   /// round-trip is exact.

@@ -201,8 +201,9 @@ const appSettingsRowId = 1;
 /// The id of the one account_state row and of the one account_transition row.
 const accountRowId = 1;
 
-/// Queues every existing row of [table] for upload, in [order] (migrations and
-/// SyncStore.markAllPending).
+/// Queues every existing row of [table] for upload, in [order] (migrations;
+/// `SyncStore.markAllPending` runs the same statements from
+/// `sync_outbox_queries.drift`).
 String seedOutboxSql(String entityType, String table, String order) =>
     'INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) '
     "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "

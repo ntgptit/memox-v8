@@ -21,6 +21,12 @@ void main() {
   });
   tearDown(() => db.close());
 
+  test('no entity type has no pending entry', () async {
+    await store.enqueue('deck', 'D', 'upsert', DateTime.utc(2026, 9, 1));
+
+    expect(await store.pendingBatch(const [], 10), isEmpty);
+  });
+
   test('the device id is created once and kept', () async {
     final first = await store.deviceId();
     expect(await store.deviceId(), first);
