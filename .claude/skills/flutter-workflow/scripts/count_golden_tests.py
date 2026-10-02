@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Count the golden tests that actually ran, and fail below a floor.
 
-`flutter test --tags golden` fails a run that selects no test at all (exit 79,
-"No tests ran"), but it passes a partial collapse: a golden file that lost its
+The golden run (`run_goldens.sh`) fails a run that selects no test at all,
+but it passes a partial collapse: a golden file that lost its
 tag, a renamed `test/` path or a deleted suite leaves the job green with fewer
 pictures compared. The console reporters' output cannot be counted reliably, so
 this reads the machine-readable JSON report instead and counts test-completion

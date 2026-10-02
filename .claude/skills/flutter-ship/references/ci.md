@@ -15,7 +15,7 @@ block says how to resume it.
 | Job | What it runs | Limit |
 |---|---|---|
 | `gate` | Python 3.13 with the guard's `requirements-dev.txt`; Flutter from `.fvmrc`; `flutter pub get`, `flutter gen-l10n` and `build_runner`; `check_generated.py` without `--skip-rebuild`, the from-scratch rebuild the local gate leaves to CI; then `dod_check.sh` in full | 30 min |
-| `goldens` | Flutter from `.fvmrc`; the generated code; `prepare_test_fonts.sh`; `TZ=UTC flutter test --tags golden --file-reporter json:golden-report.jsonl`; `count_golden_tests.py golden-report.jsonl 60`; on failure, the `test/**/failures/**` images as the `golden-failures` artifact | 20 min |
+| `goldens` | Flutter from `.fvmrc`; the generated code; `prepare_test_fonts.sh`; `run_goldens.sh --report golden-report.jsonl`; `count_golden_tests.py golden-report.jsonl 60`; on failure, the `test/**/failures/**` images as the `golden-failures` artifact | 20 min |
 | `CI gate` | `if: always()` and `needs` every other job; prints each job's result, and is green only when every one succeeded | 5 min |
 
 Choices that are easy to get wrong:
@@ -39,9 +39,9 @@ Choices that are easy to get wrong:
   picture: one that changes on purpose is regenerated in the container and
   committed. When a golden fails, the job's log names it and the
   `golden-failures` artifact holds the diff.
-- **The count is a tripwire.** `flutter test --tags golden` fails a run of no
-  test, but it passes a partial collapse, such as a golden file that lost its
-  tag. The floor (60, against 87 goldens today) catches that; raise it
+- **The count is a tripwire.** The golden run fails a run of no test, but it
+  passes a partial collapse, such as a golden file that lost its tag or its
+  `_golden_test.dart` name. The floor (60, against 87 goldens today) catches that; raise it
   deliberately.
 - **One guard profile.** The guard's `local` and `ci` profiles are identical
   (`code-verification-guard-v2/registries/projects/memox-v8/config/profiles.yaml`),

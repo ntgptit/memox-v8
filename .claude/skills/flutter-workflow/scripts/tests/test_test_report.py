@@ -69,6 +69,12 @@ class TestReportTest(unittest.TestCase):
             "re-run alone: TZ=UTC flutter test --exclude-tags golden test/a_test.dart", text
         )
 
+    def test_a_golden_run_re_runs_with_the_golden_tag(self) -> None:
+        text = test_report.render(
+            test_report.summarise(_RECORDED, _ROOT), top=10, rerun_flags="--tags golden"
+        )
+        self.assertIn("re-run alone: TZ=UTC flutter test --tags golden test/a_test.dart", text)
+
     def test_a_bundled_failure_names_the_bundle_it_ran_in(self) -> None:
         text = test_report.render(test_report.summarise(_RECORDED, _ROOT), top=10)
         self.assertIn("ran in .dart_tool/memox_test_bundles/bundle_0_test.dart", text)

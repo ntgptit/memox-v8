@@ -149,6 +149,8 @@ AI agent MUST hiểu cột bên trái là ngôn ngữ rà soát; cột bên ph�
   `main` MUST đồng bộ. Một test chỉ fail khi chạy chung: chạy riêng file đó bằng
   lệnh mà báo cáo của gate in ra, hoặc chạy cả gate với `MEMOX_TEST_BUNDLES=0`
   ([spec](../../superpowers/specs/2026-10-02-test-suite-bundling-design.md)).
+  Golden chạy riêng bằng `run_goldens.sh`, cũng theo bundle; `--update` ghi lại
+  ảnh qua đúng từng file golden.
 
 ### 4.2. Dữ liệu tạo qua UI
 

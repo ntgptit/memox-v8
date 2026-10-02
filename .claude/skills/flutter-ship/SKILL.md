@@ -124,8 +124,9 @@ one, nobody notices until reviews arrive.
    — **a check of its own**: the project's main guard owns what
    `flutter analyze` cannot express, including the Riverpod rules that
    `riverpod_lint` used to cover.
-3. Beside the gate, the goldens: `TZ=UTC flutter test --tags golden` against
-   the committed Linux renders, then `count_golden_tests.py` with a floor of 60.
+3. Beside the gate, the goldens: `run_goldens.sh` compares the golden files,
+   bundled, against the committed Linux renders, then `count_golden_tests.py`
+   with a floor of 60.
 4. `CI gate`: green only when every other job succeeded.
 
 The guard's `local` and `ci` profiles are identical, and nothing picks a

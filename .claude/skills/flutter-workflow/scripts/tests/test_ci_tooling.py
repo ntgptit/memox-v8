@@ -975,9 +975,9 @@ class WorkflowContractTest(unittest.TestCase):
     def test_the_goldens_job_compares_the_pictures_and_counts_them(self) -> None:
         workflow, jobs = self._workflow()
         goldens = jobs["goldens"]
-        self.assertIn("flutter test --tags golden", goldens)
-        self.assertNotIn("--update-goldens", workflow)
-        written = re.search(r"--file-reporter json:(\S+)", goldens)
+        self.assertIn("bash .claude/skills/flutter-workflow/scripts/run_goldens.sh", goldens)
+        self.assertNotIn("--update", workflow)
+        written = re.search(r"run_goldens\.sh --report (\S+)", goldens)
         counted = re.search(r"count_golden_tests\.py (\S+) (\d+)", goldens)
         self.assertIsNotNone(written, "the golden run writes no JSON report")
         self.assertIsNotNone(counted, "nothing counts the golden tests that ran")

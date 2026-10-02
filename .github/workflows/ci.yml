@@ -83,10 +83,11 @@ jobs:
       - name: test fonts
         run: bash .claude/skills/flutter-workflow/scripts/prepare_test_fonts.sh
 
-      # Compares against the committed pictures and never rewrites them. The
-      # console names a failed golden; the JSON report feeds the count below.
+      # Compares against the committed pictures and never rewrites them, the
+      # golden files bundled (run_goldens.sh). The console names a failed
+      # golden; the JSON report feeds the count below.
       - name: golden tests
-        run: TZ=UTC flutter test --tags golden --file-reporter json:golden-report.jsonl
+        run: bash .claude/skills/flutter-workflow/scripts/run_goldens.sh --report golden-report.jsonl
 
       # A run that passes can still have compared too few pictures.
       - name: golden count

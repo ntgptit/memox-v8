@@ -7,6 +7,8 @@ they hold whatever tests the app grows.
 from __future__ import annotations
 
 import contextlib
+import os
+import shutil
 import importlib.util
 import io
 import subprocess
@@ -49,7 +51,9 @@ def _repo(root: Path, files: dict[str, str]) -> Path:
     return root
 
 
-class BundleTestsTest(unittest.TestCase):
+class _FixtureRepoCase(unittest.TestCase):
+    """A fresh fixture repository per test, and the bundler run against it."""
+
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self._tmp.cleanup)
@@ -74,6 +78,8 @@ class BundleTestsTest(unittest.TestCase):
             ]
         return found
 
+
+class BundleTestsTest(_FixtureRepoCase):
     def test_every_runnable_file_is_bundled_once_and_goldens_are_left_out(self) -> None:
         files = {f"test/a/f{index}_test.dart": _PLAIN for index in range(5)}
         files["test/a/w_golden_test.dart"] = _GOLDEN
@@ -251,6 +257,128 @@ class GateBundledRunTest(unittest.TestCase):
 
     def test_a_carriage_return_is_stripped_from_each_bundle_path(self) -> None:
         self.assertIn("bundles=(\"${bundles[@]%$'\\r'}\")", self._gate())
+
+
+
+class GoldenBundleTest(_FixtureRepoCase):
+    """`--goldens`: the golden files alone, each compared beside itself."""
+
+    def test_golden_mode_bundles_only_the_golden_files(self) -> None:
+        files = {"test/a_test.dart": _PLAIN, "test/w_golden_test.dart": _GOLDEN}
+        code, bundles, err = self._bundle(files, "--goldens", "test")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self._imported(bundles), ["test/w_golden_test.dart"])
+
+    def test_each_golden_group_compares_beside_its_own_file(self) -> None:
+        files = {"test/w_golden_test.dart": _GOLDEN}
+        _, bundles, _ = self._bundle(files, "--goldens", "test", count="1")
+        text = (self.root / bundles[0]).read_text(encoding="utf-8")
+        self.assertIn("import 'dart:io';", text)
+        self.assertIn(
+            "goldenFileComparator = LocalFileComparator("
+            "Directory.current.uri.resolve('test/w_golden_test.dart'))",
+            text,
+        )
+
+    def test_a_second_library_annotation_on_a_golden_file_is_refused(self) -> None:
+        files = {"test/w_golden_test.dart": "@Tags(['golden'])\n@Timeout(Duration(minutes: 1))\nlibrary;\n" + _PLAIN}
+        code, _, err = self._bundle(files, "--goldens", "test")
+        self.assertEqual(code, 1)
+        self.assertIn("test/w_golden_test.dart: library-level @Timeout", err)
+
+    def test_a_test_level_golden_tag_outside_a_golden_file_is_refused(self) -> None:
+        files = {
+            "test/w_golden_test.dart": _GOLDEN,
+            "test/mixed_test.dart": "void main() { test('x', () {}, tags: ['golden']); }\n",
+        }
+        code, _, err = self._bundle(files, "--goldens", "test")
+        self.assertEqual(code, 1)
+        self.assertIn("test/mixed_test.dart: a golden-tagged test outside a golden file", err)
+
+    def test_list_prints_the_files_and_writes_no_bundle(self) -> None:
+        files = {"test/a_test.dart": _PLAIN, "test/w_golden_test.dart": _GOLDEN}
+        code, listed, _ = self._bundle(files, "--goldens", "--list", "test")
+        self.assertEqual(code, 0)
+        self.assertEqual(listed, ["test/w_golden_test.dart"])
+        self.assertFalse((self.root / bundle_tests.BUNDLE_DIR).exists())
+
+
+_FAKE_FLUTTER = """#!/usr/bin/env bash
+printf '%s\\n' "$@" > "$FAKE_FLUTTER_ARGS"
+for arg in "$@"; do
+  case "$arg" in --file-reporter) ;; json:*) : > "${arg#json:}" ;; esac
+done
+exit "${FAKE_FLUTTER_EXIT:-0}"
+"""
+
+
+@unittest.skipIf(os.name == "nt" or shutil.which("bash") is None, "needs a POSIX bash")
+@unittest.skipUnless((SCRIPTS.parents[3] / "pubspec.yaml").is_file(), "needs the app tree")
+class RunGoldensTest(unittest.TestCase):
+    """`run_goldens.sh` against the real tree, with a `flutter` that only
+    records what it was asked to run."""
+
+    def _run(self, *args: str, exit_code: int = 0) -> tuple[int, list[str]]:
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        fake = tmp / "flutter"
+        fake.write_text(_FAKE_FLUTTER, encoding="utf-8")
+        fake.chmod(0o755)
+        recorded = tmp / "args.txt"
+        env = dict(os.environ)
+        env.update(
+            PATH=f"{tmp}{os.pathsep}{env['PATH']}",
+            FAKE_FLUTTER_ARGS=str(recorded),
+            FAKE_FLUTTER_EXIT=str(exit_code),
+        )
+        env.pop("MEMOX_TEST_BUNDLES", None)
+        # A failed run keeps its bundles on purpose; the test removes the ones
+        # it caused, and only those.
+        bundles = SCRIPTS.parents[3] / bundle_tests.BUNDLE_DIR
+        before = set(bundles.glob("golden-*"))
+        self.addCleanup(
+            lambda: [shutil.rmtree(d, True) for d in set(bundles.glob("golden-*")) - before]
+        )
+        completed = subprocess.run(
+            ["bash", str(SCRIPTS / "run_goldens.sh"), *args],
+            cwd=SCRIPTS.parents[3], env=env, capture_output=True, text=True,
+        )
+        argv = recorded.read_text(encoding="utf-8").split("\n") if recorded.exists() else []
+        self.output = completed.stdout
+        return completed.returncode, [arg for arg in argv if arg]
+
+    def test_a_comparison_runs_the_golden_bundles(self) -> None:
+        code, argv = self._run()
+        self.assertEqual(code, 0)
+        self.assertEqual(argv[0], "test")
+        self.assertIn("-j", argv)
+        bundles = [arg for arg in argv if "/memox_test_bundles/golden-" in arg]
+        self.assertTrue(bundles, argv)
+        self.assertNotIn("--update-goldens", argv)
+        self.assertNotIn("--tags", argv)
+
+    def test_update_rewrites_through_the_golden_files_themselves(self) -> None:
+        code, argv = self._run("--update")
+        self.assertEqual(code, 0)
+        self.assertIn("--update-goldens", argv)
+        self.assertIn("--tags", argv)
+        files = [arg for arg in argv if arg.endswith("_test.dart")]
+        self.assertTrue(files)
+        self.assertTrue(all(arg.startswith("test/") and arg.endswith("_golden_test.dart") for arg in files))
+
+    def test_the_report_goes_where_the_caller_counts_it(self) -> None:
+        report = Path(tempfile.mkdtemp()) / "golden-report.jsonl"
+        self.addCleanup(shutil.rmtree, report.parent, True)
+        _, argv = self._run("--report", str(report))
+        self.assertIn(f"json:{report}", argv)
+
+    def test_the_report_tells_a_golden_re_run_to_keep_the_golden_tag(self) -> None:
+        source = (SCRIPTS / "run_goldens.sh").read_text(encoding="utf-8")
+        self.assertIn('--rerun-flags "--tags golden"', source)
+
+    def test_a_failed_comparison_fails_the_script(self) -> None:
+        code, _ = self._run(exit_code=1)
+        self.assertEqual(code, 1)
 
 
 if __name__ == "__main__":
