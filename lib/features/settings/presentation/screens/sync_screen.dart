@@ -155,7 +155,8 @@ class _SyncingRow extends StatelessWidget {
       label: label,
       excludeSemantics: true,
       child: SizedBox(
-        height: AppSize.touchTarget,
+        // The button it stands in for (critique 2026-09-30 part 3d-2).
+        height: AppSize.buttonRegular,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: AppSpacing.control,

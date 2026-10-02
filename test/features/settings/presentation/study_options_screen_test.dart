@@ -283,5 +283,18 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_en.studyOptionsLocalOnly), findsOneWidget);
+
+    // An edit keeps it; a save that lands clears it (critique 2026-09-30
+    // part 3d-2, E13; Review Focus 4).
+    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.pump();
+    expect(banner, findsOneWidget);
+    expect(find.text(_en.cardRetrySave), findsOneWidget);
+
+    store.isFailing = false;
+    await tester.tap(find.text(_en.cardRetrySave));
+    await tester.pumpAndSettle();
+    expect(banner, findsNothing);
+    expect(find.text(_en.cardRetrySave), findsNothing);
   });
 }

@@ -101,6 +101,10 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   /// (critique 2026-09-30 part 3d-1); null when nothing failed.
   (Set<String>, bool)? _failedFlag;
 
+  /// A flag write is running: Retry spins and the bulk bar holds still
+  /// (critique 2026-09-30 part 3d-2).
+  var _isFlagging = false;
+
   bool get _hasBulkFailed => _failedFlag != null;
 
   @override
@@ -141,15 +145,18 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
 
   /// Ruling P3-L4: set or clear, as chosen. The selection goes only once the
   /// write landed (IT-ORG-014); a failure keeps it and says so (E-L6), and
-  /// Retry repeats it (critique 2026-09-30 part 3d-1).
+  /// Retry repeats it (critique 2026-09-30 part 3d-1), the banner staying
+  /// while it runs (part 3d-2).
   Future<void> _writeFlag(Set<String> cardIds, bool isFlagged) async {
-    setState(() => _failedFlag = null);
+    if (_isFlagging) return;
+    setState(() => _isFlagging = true);
     try {
       final outcome = await ref
           .read(cardActionsControllerProvider.notifier)
           .setFlagged(cardIds: cardIds, isFlagged: isFlagged);
       if (!mounted) return;
       final l10n = context.l10n;
+      setState(() => _failedFlag = null);
       switch (outcome) {
         case Ok():
           _selection().clear();
@@ -165,6 +172,8 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     } on Failure {
       if (!mounted) return;
       setState(() => _failedFlag = (cardIds, isFlagged));
+    } finally {
+      if (mounted) setState(() => _isFlagging = false);
     }
   }
 
@@ -348,12 +357,19 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
                     MxButton(
                       label: l10n.commonRetry,
                       size: MxButtonSize.compact,
-                      onPressed: () => unawaited(_writeFlag(ids, isFlagged)),
+                      isLoading: _isFlagging,
+                      onPressed: _isFlagging
+                          ? null
+                          : () => unawaited(_writeFlag(ids, isFlagged)),
                     ),
                 ],
               ),
             ),
-          if (isSelecting) CardBulkBarWidget(actions: _bulkActions(selected)),
+          if (isSelecting)
+            IgnorePointer(
+              ignoring: _isFlagging,
+              child: CardBulkBarWidget(actions: _bulkActions(selected)),
+            ),
         ],
       ),
     );
