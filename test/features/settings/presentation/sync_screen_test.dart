@@ -182,7 +182,7 @@ void main() {
         SyncStatus(
           pendingCount: 2,
           lastFailure: LastSyncFailure(
-            SyncFailureKind.network,
+            SyncFailureKind.server,
             env.clock.now(),
           ),
         ),

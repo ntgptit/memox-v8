@@ -28,6 +28,9 @@ class SyncKeepDialogWidget extends StatelessWidget {
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
         confirmLabel: l10n.syncKeepOnDevice,
+        // The changes then never sync: warned, not destroyed (critique
+        // 2026-10-02, F8).
+        isWarning: true,
         onConfirm: () => Navigator.of(context).pop(true),
       ),
     );
