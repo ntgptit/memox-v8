@@ -3,17 +3,27 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
+part 'tag_sync_adapter.g.dart';
+
 /// Syncs `tags` (library and study sync spec §3.2). A pulled tag whose name
 /// a different local tag holds absorbs that tag: its links move over and it
 /// is deleted, and since pulls skip the triggers, the moved cards and the
 /// deleted tag are queued here.
-class TagSyncAdapter implements EntitySyncAdapter {
-  TagSyncAdapter(this._db, this._store, {this._now = DateTime.now});
+@DriftAccessor(
+  include: {'package:memox/core/database/queries/sync_tag_queries.drift'},
+)
+class TagSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$TagSyncAdapterMixin
+    implements EntitySyncAdapter {
+  TagSyncAdapter(
+    super.attachedDatabase,
+    this._store, {
+    this._now = DateTime.now,
+  });
 
   static const type = 'tag';
   static const _card = 'card';
 
-  final AppDatabase _db;
   final SyncStore _store;
   final DateTime Function() _now;
 
@@ -22,9 +32,7 @@ class TagSyncAdapter implements EntitySyncAdapter {
 
   @override
   Future<Map<String, Object?>?> readRow(String id) async {
-    final tag = await (_db.select(
-      _db.tags,
-    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    final tag = await syncTagRow(id).getSingleOrNull();
     if (tag == null) {
       return null;
     }
@@ -44,41 +52,27 @@ class TagSyncAdapter implements EntitySyncAdapter {
   ) async {
     final id = row['id'] as String;
     final nameFolded = row['nameFolded'] as String;
-    final clash =
-        await (_db.select(_db.tags)..where(
-              (t) =>
-                  t.ownerId.isNull() &
-                  t.nameFolded.equals(nameFolded) &
-                  t.id.equals(id).not(),
-            ))
-            .getSingleOrNull();
+    final clash = await syncTagClashOf(nameFolded, id).getSingleOrNull();
     final moved = clash == null ? const <String>[] : await _cardsOf(clash.id);
     if (clash != null) {
       // Deleted first: the unique name must be free before the pulled tag lands.
       await deleteFromServer(clash.id);
     }
-    await _db
-        .into(_db.tags)
-        .insertOnConflictUpdate(
-          TagsCompanion.insert(
-            id: id,
-            name: row['name'] as String,
-            nameFolded: nameFolded,
-            createdAt: fromWireTime(row['createdAt'])!,
-            serverVersion: Value(serverVersion),
-          ),
-        );
+    await upsertSyncedTag(
+      TagsCompanion.insert(
+        id: id,
+        name: row['name'] as String,
+        nameFolded: nameFolded,
+        createdAt: fromWireTime(row['createdAt'])!,
+        serverVersion: Value(serverVersion),
+      ),
+    );
     if (clash == null) {
       return;
     }
     final now = _now();
     for (final cardId in moved) {
-      await _db
-          .into(_db.cardTags)
-          .insert(
-            CardTagsCompanion.insert(cardId: cardId, tagId: id),
-            mode: InsertMode.insertOrIgnore,
-          );
+      await linkSyncedTagCard(cardId, id);
       await _store.enqueue(_card, cardId, 'upsert', now);
     }
     await _store.enqueue(type, clash.id, 'delete', now);
@@ -86,19 +80,11 @@ class TagSyncAdapter implements EntitySyncAdapter {
   }
 
   @override
-  Future<void> deleteFromServer(String id) =>
-      (_db.delete(_db.tags)..where((t) => t.id.equals(id))).go();
+  Future<void> deleteFromServer(String id) => deleteSyncedTag(id);
 
   @override
   Future<void> markAcknowledged(String id, int serverVersion) =>
-      (_db.update(_db.tags)..where((t) => t.id.equals(id))).write(
-        TagsCompanion(serverVersion: Value(serverVersion)),
-      );
+      acknowledgeTag(serverVersion, id);
 
-  Future<List<String>> _cardsOf(String tagId) async => [
-    for (final link in await (_db.select(
-      _db.cardTags,
-    )..where((l) => l.tagId.equals(tagId))).get())
-      link.cardId,
-  ];
+  Future<List<String>> _cardsOf(String tagId) => syncCardsOfTag(tagId).get();
 }

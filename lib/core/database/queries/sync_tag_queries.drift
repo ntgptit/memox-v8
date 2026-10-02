@@ -1,0 +1,36 @@
+import '../tables/card.drift';
+import '../tables/tags.drift';
+
+-- Sync of tags (library and study sync spec §3.2).
+
+syncTagRow(:id AS TEXT):
+SELECT * FROM tags WHERE id = :id;
+
+-- The local profile's other tag that holds :name_folded, if any: the tag a
+-- pulled tag of that name absorbs.
+syncTagClashOf(:name_folded AS TEXT, :id AS TEXT):
+SELECT * FROM tags
+WHERE owner_id IS NULL AND name_folded = :name_folded AND id <> :id;
+
+-- A pulled tag: the columns the server sends, and its version. owner_id is
+-- left as it is.
+upsertSyncedTag: INSERT INTO tags $row
+ON CONFLICT (id) DO UPDATE SET
+  name = excluded.name,
+  name_folded = excluded.name_folded,
+  created_at = excluded.created_at,
+  server_version = excluded.server_version;
+
+syncCardsOfTag(:tag_id AS TEXT):
+SELECT card_id FROM card_tags WHERE tag_id = :tag_id;
+
+linkSyncedTagCard(:card_id AS TEXT, :tag_id AS TEXT):
+INSERT OR IGNORE INTO card_tags (card_id, tag_id) VALUES (:card_id, :tag_id);
+
+-- A tag the server tombstoned, or one a pulled tag absorbed; its links
+-- cascade.
+deleteSyncedTag(:id AS TEXT):
+DELETE FROM tags WHERE id = :id;
+
+acknowledgeTag(:id AS TEXT, :server_version AS INTEGER):
+UPDATE tags SET server_version = :server_version WHERE id = :id;
