@@ -127,7 +127,7 @@ void main() {
         ),
       );
 
-      expect((result.written, result.skippedDuplicates), (2, 0));
+      expect((result.written, result.skippedIndexes.length), (2, 0));
       expect(await _count(db, 'card'), 2);
       expect(await _count(db, 'card_schedule'), 2);
       expect(await _count(db, 'card_tags'), 2);
@@ -155,7 +155,7 @@ void main() {
         ),
       );
 
-      expect((result.written, result.skippedDuplicates), (0, 1));
+      expect((result.written, result.skippedIndexes.length), (0, 1));
     });
 
     test('duplicates of the deck as it is now, and within the batch, are skipped by default', () async {
@@ -179,7 +179,10 @@ void main() {
         ),
       );
 
-      expect((result.written, result.skippedDuplicates), (1, 2));
+      expect((result.written, result.skippedIndexes.length), (1, 2));
+      // The drafts the commit dropped, by their place in the batch
+      // (critique 2026-10-02, F4).
+      expect(result.skippedIndexes, [0, 2]);
       expect(await _count(db, 'card'), 2);
     });
 

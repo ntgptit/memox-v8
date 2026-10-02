@@ -223,8 +223,10 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
           phase: (isTimedOut, isRevealed),
           child: StudyCtaRowWidget(children: _actions(isTimedOut, isRevealed)),
         ),
+        // What to do is info; a card that comes back is repeat (critique
+        // 2026-10-02, F7).
         SessionFooterHintWidget(
-          icon: AppIcons.check,
+          icon: isTimedOut ? AppIcons.repeat : AppIcons.info,
           text: isTimedOut
               ? l10n.studyRecallHintTimedOut
               : isRevealed

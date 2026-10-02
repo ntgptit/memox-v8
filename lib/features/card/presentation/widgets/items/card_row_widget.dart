@@ -145,8 +145,9 @@ class _Content extends StatelessWidget {
   }
 }
 
-/// The flag, in warning for want of a streak token (ruling E-L2), over the
-/// due chip.
+/// The flag in plain ink, the filled glyph carrying the state as in the
+/// editor and the detail (critique 2026-10-02, F6; supersedes E-L2), over
+/// the due chip.
 class _Trailing extends StatelessWidget {
   const _Trailing({required this.item});
 
@@ -160,7 +161,7 @@ class _Trailing extends StatelessWidget {
       if (item.isFlagged)
         IconTheme.merge(
           data: IconThemeData(
-            color: context.semanticColors.warning,
+            color: context.colors.onSurface,
             size: AppIconSize.inline,
           ),
           child: Icon(

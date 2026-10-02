@@ -181,10 +181,7 @@ void main() {
       overrides: syncOverrides(
         SyncStatus(
           pendingCount: 2,
-          lastFailure: LastSyncFailure(
-            SyncFailureKind.network,
-            env.clock.now(),
-          ),
+          lastFailure: LastSyncFailure(SyncFailureKind.server, env.clock.now()),
         ),
       ),
     );
