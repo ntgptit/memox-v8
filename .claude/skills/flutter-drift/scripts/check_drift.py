@@ -74,10 +74,16 @@ def rel(path: Path) -> str:
 # all of them drift's chosen shape for a named query. Left in, the guard exits 1
 # on every clone that has run build_runner, which is every clone that compiles.
 GENERATED_SUFFIXES = (".g.dart", ".freezed.dart", ".drift.dart")
+# `drift_dev schema steps` writes this file and it is committed, but it is as
+# generated as a `.g.dart`: 19 interpolation ERRORs in it were noise.
+GENERATED_FILES = ("lib/core/database/schema_versions.dart",)
 
 
 def is_generated(path: Path) -> bool:
-    return path.name.endswith(GENERATED_SUFFIXES)
+    return (
+        path.name.endswith(GENERATED_SUFFIXES)
+        or path.relative_to(REPO).as_posix() in GENERATED_FILES
+    )
 
 
 def dart_files(*globs: str) -> list[Path]:

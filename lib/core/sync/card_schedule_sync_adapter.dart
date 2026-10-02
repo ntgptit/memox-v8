@@ -4,19 +4,31 @@ import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/schedule_progress.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
+part 'card_schedule_sync_adapter.g.dart';
+
 /// Syncs `card_schedule` as a row keyed by its card (library and study sync
 /// spec §3.4, ADR-017). A pulled schedule replaces the local one unless the
 /// local one has progressed further; then the local row stays and is queued
 /// again, so every device converges on the most advanced schedule. The server
 /// never tombstones a schedule and the row keeps no server version, so
 /// acknowledgements and deletes do nothing (plan R15).
-class CardScheduleSyncAdapter implements EntitySyncAdapter {
-  CardScheduleSyncAdapter(this._db, this._store, {this._now = DateTime.now});
+@DriftAccessor(
+  include: {
+    'package:memox/core/database/queries/sync_card_schedule_queries.drift',
+  },
+)
+class CardScheduleSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$CardScheduleSyncAdapterMixin
+    implements EntitySyncAdapter {
+  CardScheduleSyncAdapter(
+    super.attachedDatabase,
+    this._store, {
+    this._now = DateTime.now,
+  });
 
   static const type = 'card_schedule';
   static const _upsert = 'upsert';
 
-  final AppDatabase _db;
   final SyncStore _store;
   final DateTime Function() _now;
 
@@ -64,7 +76,7 @@ class CardScheduleSyncAdapter implements EntitySyncAdapter {
       await _store.enqueue(type, cardId, _upsert, _now());
       return;
     }
-    await _db.into(_db.cardSchedule).insertOnConflictUpdate(pulled);
+    await upsertSyncedCardSchedule(pulled);
   }
 
   @override
@@ -73,22 +85,13 @@ class CardScheduleSyncAdapter implements EntitySyncAdapter {
   @override
   Future<void> markAcknowledged(String id, int serverVersion) async {}
 
-  Future<CardSchedule?> _row(String cardId) => (_db.select(
-    _db.cardSchedule,
-  )..where((s) => s.cardId.equals(cardId))).getSingleOrNull();
+  Future<CardSchedule?> _row(String cardId) =>
+      syncCardScheduleRow(cardId).getSingleOrNull();
 
   /// The scheduler of the card's root, the card and its decks in any state:
   /// the order of spec §3.4 compares against it. Null when not local.
-  Future<String?> _rootSchedulerType(String cardId) async {
-    final row = await _db
-        .customSelect(
-          'SELECT r.scheduler_type AS t FROM card c JOIN deck d ON d.id = c.deck_id '
-          'JOIN deck r ON r.id = d.root_id WHERE c.id = ?',
-          variables: [Variable<String>(cardId)],
-        )
-        .getSingleOrNull();
-    return row?.read<String?>('t');
-  }
+  Future<String?> _rootSchedulerType(String cardId) =>
+      syncRootSchedulerOf(cardId).getSingleOrNull();
 
   static CardScheduleCompanion _companionOf(
     String cardId,

@@ -1,0 +1,74 @@
+-- The device's log buffer (ADR-018 §3): rows wait here until LogShipper
+-- pushes them to public.app_log. A table of its own database, so a log write
+-- never goes through the app database's tracer or its sync triggers. The
+-- table is the one schema version 1 created from a Dart Table;
+-- log_schema_test.dart pins it, since there is no migration.
+CREATE TABLE log_entry (
+  id TEXT NOT NULL PRIMARY KEY,
+  -- Epoch milliseconds, UTC.
+  occurred_at INTEGER NOT NULL,
+  level TEXT NOT NULL,
+  category TEXT NOT NULL,
+  event TEXT NOT NULL,
+  message TEXT,
+  error_type TEXT,
+  error_message TEXT,
+  stack_trace TEXT,
+  -- A JSON object.
+  context TEXT NOT NULL DEFAULT '{}',
+  device_id TEXT,
+  app_version TEXT,
+  build_number TEXT,
+  platform TEXT,
+  os_version TEXT
+) AS "LogRow/LogEntries";
+
+CREATE INDEX log_entry_occurred_at ON log_entry (occurred_at);
+
+-- Keeps a row; an id already here is left as it is.
+insertLogEntry: INSERT OR IGNORE INTO log_entry $row;
+
+-- The oldest :limit rows, for a push.
+oldestLogRows(:limit AS INTEGER):
+SELECT * FROM log_entry ORDER BY occurred_at, id LIMIT :limit;
+
+-- Monitoring's Not sent tab: the newest :limit rows of :levels (every level
+-- when :level_count is 0), each without its stack trace and context, the
+-- message and the error's message cut to :message_length characters.
+-- Declared in the generated order (first use in the statement), since the
+-- two counts are both ints.
+pendingLogLines(:message_length AS INTEGER, :level_count AS INTEGER,
+  :limit AS INTEGER) AS PendingLogLine:
+SELECT id, occurred_at, level, event,
+  substr(message, 1, :message_length) AS message,
+  substr(error_message, 1, :message_length) AS error_message,
+  error_type
+FROM log_entry
+WHERE :level_count = 0 OR level IN :levels
+ORDER BY occurred_at DESC, id DESC
+LIMIT :limit;
+
+logRowById(:id AS TEXT):
+SELECT * FROM log_entry WHERE id = :id;
+
+deleteLogRows:
+DELETE FROM log_entry WHERE id IN :ids;
+
+logEntryCount:
+SELECT COUNT(*) FROM log_entry;
+
+-- ADR-018 §5: what the server would drop. debug and info live 7 days
+-- (before :short_cutoff), warning and error 180 days (before :long_cutoff).
+pruneExpiredLogs(:short_cutoff AS INTEGER, :long_cutoff AS INTEGER):
+DELETE FROM log_entry
+WHERE (level IN ('debug', 'info') AND occurred_at < :short_cutoff)
+  OR (level NOT IN ('debug', 'info') AND occurred_at < :long_cutoff);
+
+-- The :excess rows past the cap: debug first, then info, then warning and
+-- error, oldest first within each.
+pruneLogExcess(:excess AS INTEGER):
+DELETE FROM log_entry WHERE id IN (
+  SELECT id FROM log_entry
+  ORDER BY CASE level WHEN 'debug' THEN 0 WHEN 'info' THEN 1 ELSE 2 END,
+    occurred_at, id
+  LIMIT :excess);

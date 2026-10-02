@@ -1,0 +1,162 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/tags.drift';
+import '../tables/srs.drift';
+import '../tables/settings.drift';
+import '../tables/trash.drift';
+import '../tables/sync.drift';
+
+-- The outbox and sync state (app deck-sync spec §3, §5).
+
+-- A sync_state value by its name (sync_keys.dart).
+syncStateValue(:name AS TEXT):
+SELECT value FROM sync_state WHERE name = :name;
+
+putSyncState: INSERT INTO sync_state $row
+ON CONFLICT (name) DO UPDATE SET value = excluded.value;
+
+deleteSyncState(:name AS TEXT):
+DELETE FROM sync_state WHERE name = :name;
+
+-- Pending operations of :types, parents before children: by $rank, the
+-- position of the entity type in the coordinator's adapter order, then by
+-- first queued. A card queued before the deck it moved into still follows
+-- that deck.
+pendingOutbox(:limit AS INTEGER):
+SELECT * FROM sync_outbox WHERE entity_type IN :types
+ORDER BY $rank, created_at, rowid LIMIT :limit;
+
+isEntityPending(:entity_type AS TEXT, :entity_id AS TEXT):
+SELECT EXISTS (SELECT 1 FROM sync_outbox
+  WHERE entity_type = :entity_type AND entity_id = :entity_id);
+
+isOpPending(:op_id AS TEXT):
+SELECT EXISTS (SELECT 1 FROM sync_outbox WHERE op_id = :op_id);
+
+-- Removes the entry only if no later write replaced its op id.
+deleteOutboxOp(:op_id AS TEXT):
+DELETE FROM sync_outbox WHERE op_id = :op_id;
+
+countFailedAttempt:
+UPDATE sync_outbox SET attempts = attempts + 1 WHERE op_id IN :op_ids;
+
+-- Queues :entity_id as the capture triggers would: a new op id, and the
+-- first unsent time kept when it was already pending.
+enqueueOutbox(:op_id AS TEXT, :entity_type AS TEXT, :entity_id AS TEXT,
+  :op AS TEXT, :created_at AS DATETIME):
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+VALUES (:op_id, :entity_type, :entity_id, :op, :created_at)
+ON CONFLICT (entity_type, entity_id) DO UPDATE SET
+  op_id = excluded.op_id, op = excluded.op;
+
+outboxCount:
+SELECT COUNT(*) FROM sync_outbox;
+
+-- A refusal without a server copy (spec §4); replaces an earlier one.
+upsertSyncRejection: INSERT INTO sync_rejection $row
+ON CONFLICT (entity_type, entity_id) DO UPDATE SET
+  code = excluded.code, rejected_at = excluded.rejected_at;
+
+deleteSyncRejection(:entity_type AS TEXT, :entity_id AS TEXT):
+DELETE FROM sync_rejection
+WHERE entity_type = :entity_type AND entity_id = :entity_id;
+
+allSyncRejections:
+SELECT * FROM sync_rejection ORDER BY entity_type, entity_id;
+
+-- Keep on this device (R7): the records go, the rows stay local.
+deleteAllSyncRejections:
+DELETE FROM sync_rejection;
+
+-- One row read from the three tables, re-read whenever any changes; the
+-- three state names come from sync_keys.dart.
+syncStatusRow(:success_at_key AS TEXT, :failure_at_key AS TEXT,
+  :failure_kind_key AS TEXT) AS SyncStatusRow:
+SELECT
+  (SELECT value FROM sync_state WHERE name = :success_at_key)
+    AS last_success_at,
+  (SELECT value FROM sync_state WHERE name = :failure_at_key)
+    AS last_failure_at,
+  (SELECT value FROM sync_state WHERE name = :failure_kind_key)
+    AS last_failure_kind,
+  (SELECT COUNT(*) FROM sync_outbox) AS pending_count,
+  (SELECT MIN(created_at) FROM sync_outbox) AS oldest_pending_at,
+  (SELECT COUNT(*) FROM sync_rejection) AS rejected_count;
+
+-- Auth spec #12: every local row queued for upload, in the migrations'
+-- parents-first order and the coordinator's adapter order, one statement
+-- per type. A row already queued keeps its operation (plan ruling 12). Each
+-- op id is a random v4 UUID, as seedOutboxSql makes it for the migrations.
+-- Rows in the Trash are queued too: they carry their delete_batch_id up.
+seedDeleteBatchOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'delete_batch', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM delete_batches ORDER BY id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+seedDeckOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'deck', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM deck ORDER BY depth, id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+seedTagOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'tag', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM tags ORDER BY created_at, id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+seedCardOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'card', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM card ORDER BY created_at, id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+seedCardScheduleOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'card_schedule', card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM card_schedule ORDER BY card_id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+seedReviewLogOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'review_log', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM review_log ORDER BY answered_at, id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+-- The one settings row, under the fixed id the server knows it by
+-- (accountSettingsEntityId).
+seedAccountSettingsOutbox(:entity_id AS TEXT, :row_id AS INTEGER):
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'account_settings', :entity_id, 'upsert',
+  CAST(strftime('%s', 'now') AS INTEGER)
+FROM app_settings WHERE id = :row_id ORDER BY id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;

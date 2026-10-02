@@ -320,6 +320,20 @@ scopes:
       - lib/**/*.drift
     exclude: []
 
+  # ADR-020: where a query may not be written outside `.drift`. The excludes are
+  # the ADR's exceptions (D7) and nothing else: every other file of lib/ moved
+  # its queries to `.drift` (spec 2026-10-01-drift-queries-only-design.md §4,
+  # P0–P8). Never add a file here.
+  drift_query_sites:
+    include:
+      - lib/**/*.dart
+    exclude:
+      - '**/*.g.dart'
+      - lib/core/database/schema_versions.dart
+      - lib/core/database/migrations/**
+      - lib/core/database/app_database.dart
+      - lib/core/database/local_data_reset.dart
+
   test_files:
     include:
       - test/**/*.dart

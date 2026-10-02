@@ -2,25 +2,30 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
+part 'review_log_sync_adapter.g.dart';
+
 /// Syncs `review_log`, the append-only study history (library and study sync
 /// spec §3.3). A pulled review is inserted if absent; the table forbids
 /// updates and the server never tombstones a review, so acknowledgements and
 /// deletes do nothing (plan R15).
-class ReviewLogSyncAdapter implements EntitySyncAdapter {
-  ReviewLogSyncAdapter(this._db);
+@DriftAccessor(
+  include: {
+    'package:memox/core/database/queries/sync_review_log_queries.drift',
+  },
+)
+class ReviewLogSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$ReviewLogSyncAdapterMixin
+    implements EntitySyncAdapter {
+  ReviewLogSyncAdapter(super.attachedDatabase);
 
   static const type = 'review_log';
-
-  final AppDatabase _db;
 
   @override
   String get entityType => type;
 
   @override
   Future<Map<String, Object?>?> readRow(String id) async {
-    final r = await (_db.select(
-      _db.reviewLog,
-    )..where((l) => l.id.equals(id))).getSingleOrNull();
+    final r = await syncReviewLogRow(id).getSingleOrNull();
     if (r == null) {
       return null;
     }
@@ -50,37 +55,32 @@ class ReviewLogSyncAdapter implements EntitySyncAdapter {
 
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
-      _db
-          .into(_db.reviewLog)
-          .insert(
-            ReviewLogCompanion.insert(
-              id: row['id'] as String,
-              cardId: row['cardId'] as String,
-              sessionId: row['sessionId'] as String,
-              schedulerType: row['schedulerType'] as String,
-              generation: row['generation'] as int,
-              kind: row['kind'] as String,
-              mode: row['mode'] as String,
-              outcomeReason: Value(row['outcomeReason'] as String?),
-              comparisonVersion: Value(row['comparisonVersion'] as int?),
-              usedHint: Value(row['usedHint'] as int?),
-              direction: Value(row['direction'] as String?),
-              action: row['action'] as String,
-              answeredAt: fromWireTime(row['answeredAt'])!,
-              nextDueAt: Value(fromWireTime(row['nextDueAt'])),
-              previousBox: Value(row['previousBox'] as int?),
-              nextBox: Value(row['nextBox'] as int?),
-              previousEaseFactor: Value(
-                (row['previousEaseFactor'] as num?)?.toDouble(),
-              ),
-              nextEaseFactor: Value(
-                (row['nextEaseFactor'] as num?)?.toDouble(),
-              ),
-              previousIntervalDays: Value(row['previousIntervalDays'] as int?),
-              nextIntervalDays: Value(row['nextIntervalDays'] as int?),
-            ),
-            mode: InsertMode.insertOrIgnore,
-          );
+      insertSyncedReviewLog(
+        ReviewLogCompanion.insert(
+          id: row['id'] as String,
+          cardId: row['cardId'] as String,
+          sessionId: row['sessionId'] as String,
+          schedulerType: row['schedulerType'] as String,
+          generation: row['generation'] as int,
+          kind: row['kind'] as String,
+          mode: row['mode'] as String,
+          outcomeReason: Value(row['outcomeReason'] as String?),
+          comparisonVersion: Value(row['comparisonVersion'] as int?),
+          usedHint: Value(row['usedHint'] as int?),
+          direction: Value(row['direction'] as String?),
+          action: row['action'] as String,
+          answeredAt: fromWireTime(row['answeredAt'])!,
+          nextDueAt: Value(fromWireTime(row['nextDueAt'])),
+          previousBox: Value(row['previousBox'] as int?),
+          nextBox: Value(row['nextBox'] as int?),
+          previousEaseFactor: Value(
+            (row['previousEaseFactor'] as num?)?.toDouble(),
+          ),
+          nextEaseFactor: Value((row['nextEaseFactor'] as num?)?.toDouble()),
+          previousIntervalDays: Value(row['previousIntervalDays'] as int?),
+          nextIntervalDays: Value(row['nextIntervalDays'] as int?),
+        ),
+      );
 
   @override
   Future<void> deleteFromServer(String id) async {}

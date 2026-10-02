@@ -2,23 +2,6 @@ import '../tables/deck.drift';
 import '../tables/card.drift';
 import '../tables/srs.drift';
 
--- BR-DECK-023: the active decks below :deck_id and the active cards of its
--- subtree. No row when :deck_id is not an active deck.
-deckDeletionSummary:
-WITH RECURSIVE subtree(id) AS (
-  SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
-  UNION
-  SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id
-  WHERE d.delete_batch_id IS NULL
-)
-SELECT
-  (SELECT COUNT(*) - 1 FROM subtree) AS sub_deck_count,
-  (SELECT COUNT(*) FROM card c
-   WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL)
-    AS card_count
-FROM deck
-WHERE id = :deck_id AND delete_batch_id IS NULL;
-
 -- UC-DECK-003: every root deck with the counts of its whole tree, grouped by
 -- root_id in one statement. The sets are those of BR-STUDY-047 and
 -- BR-STUDY-051: New is an unlearned card; Due is a learned card whose due_at
@@ -116,41 +99,3 @@ WITH RECURSIVE up(id, parent_id) AS (
   WHERE d.delete_batch_id IS NULL
 )
 SELECT * FROM deck WHERE id IN (SELECT id FROM up) ORDER BY depth;
-
--- UC-DECK-005: the decks a move of :deck_id may pick, and the decks on their
--- paths. The rules are DeckEntity.checkMove's, read the same way: active
--- decks of every tree whose root runs the same scheduler at the same
--- generation as the deck's root (BR-DECK-024), outside the deck's subtree
--- (BR-DECK-017), holding decks or nothing (BR-DECK-009) and shallow enough
--- for the subtree's height (BR-DECK-001). The current parent comes back with
--- is_candidate false: it is only a step of the other paths. No row for a
--- root, a missing deck or a deck in the Trash.
--- With :restoring, :deck_id is the item root of a batch in the Trash and its
--- current parent is a candidate like any other (BR-TRASH-006); its own root
--- may be in the Trash too, and the subtree's height counts its tombstones.
-deckMoveTargets(:deck_id AS TEXT, :max_depth AS INTEGER,
-  :restoring AS BOOLEAN) AS DeckForestRow:
-WITH RECURSIVE
-  moving AS (
-    SELECT d.id, d.parent_id, r.scheduler_type, r.generation
-    FROM deck d JOIN deck r ON r.id = d.root_id
-    WHERE d.id = :deck_id AND d.parent_id IS NOT NULL
-      AND (d.delete_batch_id IS NOT NULL) = :restoring
-  ),
-  subtree(id, height) AS (
-    SELECT id, 1 FROM moving
-    UNION ALL
-    SELECT d.id, subtree.height + 1 FROM deck d
-    JOIN subtree ON d.parent_id = subtree.id
-    WHERE subtree.height < :max_depth
-  )
-SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
-  (:restoring OR d.id <> m.parent_id) AS is_candidate
-FROM deck d
-JOIN deck r ON r.id = d.root_id AND r.delete_batch_id IS NULL
-JOIN moving m
-  ON r.scheduler_type = m.scheduler_type AND r.generation = m.generation
-WHERE d.delete_batch_id IS NULL
-  AND d.content_type IN ('deck', 'unset')
-  AND d.id NOT IN (SELECT id FROM subtree)
-  AND d.depth + (SELECT MAX(height) FROM subtree) <= :max_depth;

@@ -58,6 +58,13 @@ void main() {
     },
   );
 
+  test('deleteIds with no id deletes nothing', () async {
+    await db.insertAll([_entry('a', LogLevel.info, now)]);
+    await db.deleteIds(const <String>{});
+
+    expect((await db.oldest(10)).map((e) => e.id), ['a']);
+  });
+
   test('prune: debug and info older than 7 days, warning and error older '
       'than 180 days', () async {
     await db.insertAll([

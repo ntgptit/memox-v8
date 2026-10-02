@@ -1,0 +1,19 @@
+import '../tables/deck.drift';
+
+-- Spec §6: the (template id, version) of every copy outside the Trash.
+starterCopies AS StarterCopyRow:
+SELECT source_template_id AS template_id,
+  source_template_version AS template_version
+FROM deck
+WHERE source_template_id IS NOT NULL AND source_template_version IS NOT NULL
+  AND delete_batch_id IS NULL;
+
+-- Starter decks spec D7: whether a deck outside the Trash copies
+-- :template_id at :version.
+starterCopyExists(:template_id AS TEXT, :version AS INTEGER):
+SELECT EXISTS (
+  SELECT 1 FROM deck
+  WHERE source_template_id = :template_id
+    AND source_template_version = :version
+    AND delete_batch_id IS NULL
+);

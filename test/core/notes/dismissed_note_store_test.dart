@@ -38,6 +38,21 @@ void main() {
     expect(await other.watchDismissed().first, {NoteKeys.importHelper});
   });
 
+  test('a screen watching the set sees a note go as it is dismissed', () async {
+    final seen = <Set<String>>[];
+    final subscription = store.watchDismissed().listen(seen.add);
+    await pumpEventQueue();
+
+    await store.dismiss(NoteKeys.trashRetention);
+    await pumpEventQueue();
+    await subscription.cancel();
+
+    expect(seen, [
+      <String>{},
+      {NoteKeys.trashRetention},
+    ]);
+  });
+
   test('the table never syncs: dismissing queues nothing', () async {
     await store.dismiss(NoteKeys.starterFixtures);
 

@@ -1,0 +1,44 @@
+import '../tables/deck.drift';
+import '../tables/card.drift';
+import '../tables/srs.drift';
+import '../tables/study.drift';
+
+-- Graded modes spec §8.2: the built rows of a round in position order, with
+-- each card's back_folded and the options its question has stored.
+builtRoundRows(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER)
+  AS BuiltRoundRow:
+SELECT q.card_id, q.position, q.status, q.meaning_slot, c.back_folded,
+  (SELECT COUNT(*) FROM study_guess_options o
+   WHERE o.session_id = q.session_id AND o.mode = q.mode
+     AND o.round = q.round AND o.card_id = q.card_id) AS option_count
+FROM study_queue_items q
+JOIN card c ON c.id = q.card_id AND c.delete_batch_id IS NULL
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.round = :round
+  AND q.position >= 0
+ORDER BY q.position;
+
+-- BR-STUDY-038, package 2a spec D5: the cards a guess question can draw on,
+-- those of the session's queue and the learned, active cards of :root_id's
+-- tree, each with its back_folded; sorted, so a seeded draw repeats.
+meaningSourceOf(:root_id AS TEXT, :session_id AS TEXT) AS MeaningSourceRow:
+SELECT c.id, c.back_folded AS meaning_folded FROM card c
+JOIN deck d ON d.id = c.deck_id
+JOIN card_schedule cs ON cs.card_id = c.id
+WHERE d.root_id = :root_id AND c.delete_batch_id IS NULL
+  AND d.delete_batch_id IS NULL
+  AND (cs.learned_at IS NOT NULL OR c.id IN
+    (SELECT card_id FROM study_queue_items WHERE session_id = :session_id))
+ORDER BY c.back_folded, c.id;
+
+setRoundMeaningSlot(:slot AS INTEGER, :session_id AS TEXT, :mode AS TEXT,
+  :round AS INTEGER, :card_id AS TEXT):
+UPDATE study_queue_items SET meaning_slot = :slot
+WHERE session_id = :session_id AND mode = :mode AND round = :round
+  AND card_id = :card_id;
+
+deleteGuessOptionsOf(:session_id AS TEXT, :round AS INTEGER,
+  :card_id AS TEXT):
+DELETE FROM study_guess_options
+WHERE session_id = :session_id AND round = :round AND card_id = :card_id;
+
+createGuessOption: INSERT INTO study_guess_options $row;

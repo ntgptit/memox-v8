@@ -441,7 +441,7 @@ final class CardRepositoryImpl implements CardRepository {
   }
 }
 
-List<CardMoveTarget> _moveTargetsOf(List<DeckForestRow> rows) =>
+List<CardMoveTarget> _moveTargetsOf(List<CardMoveTargetRow> rows) =>
     candidatesInTreeOrder(
       [for (final row in rows) deckTreeNodeOf(row)],
       (node, path) => CardMoveTarget(id: node.id, name: node.name, path: path),

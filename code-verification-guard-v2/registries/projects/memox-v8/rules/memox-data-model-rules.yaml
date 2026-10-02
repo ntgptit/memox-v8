@@ -25,7 +25,7 @@ rules:
       - drift_sql_files
     # SQL in any case, in a `.drift` file or a Dart string, and Drift's
     # `coalesce([deck.parentId, …])`. A comment line that quotes the form is
-    # prose: `srs_dao.dart` says why it joins on `root_id` in these words.
+    # prose: `srs_queries.drift` says why it joins on `root_id` in these words.
     patterns:
       - '^(?!\s*(?://|\*|--)).*\b(?i:coalesce)\s*\(\s*\[?\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?(?:parent_id|parentId)\b'
     tags:
@@ -156,3 +156,43 @@ rules:
       - memox
       - data-model
       - correctness
+
+  # ADR-020: every query lives in a `.drift` file and the DAO, a
+  # @DriftAccessor, calls what Drift generates from it. A SQL string and a
+  # builder chain are both off the convention. The builder stays only to build
+  # an Expression for a `$predicate` / `$order` placeholder, which no pattern
+  # here matches. The scope carries the exceptions; a PRAGMA is allowed
+  # anywhere. Patterns are line-anchored with this file's comment exemption.
+  # A builder call is caught three ways because a chain splits across lines:
+  # on a database receiver, bare inside an accessor (a lowercase table
+  # argument, bare or on `attachedDatabase.` / `this.` / `db.`, which keeps a
+  # `delete(String key)` declaration legal), or as a `.into(` / `.select(`
+  # link whose argument is a database table. A `batch(` that ends its line is
+  # the shape `dart format` gives a multi-line batch.
+  - id: memox.data_model.queries_in_drift
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      ADR-020 — write the query in a `.drift` file under
+      lib/core/database/queries/ and call the method Drift generates on the
+      DAO (a @DriftAccessor). No SQL in a Dart string, no
+      select/selectOnly/update/delete/into/join/batch builder chain; the
+      builder only builds an Expression for `$predicate` / `$order`.
+    scopes:
+      - drift_query_sites
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bcustom(?:Select|Update|Insert|Statement|WriteReturning)\s*\((?!\s*''PRAGMA)'
+      - '^(?!\s*(?://|\*)).*\b(?:_db|db|attachedDatabase)\s*\.\s*(?:select|selectOnly|update|delete|into)\s*\('
+      - '^(?!\s*(?://|\*)).*(?<![\w$.])(?:select|selectOnly|update|delete|into)\s*\(\s*(?:(?:(?:attachedDatabase|this|_?db)\.)?[a-z_]\w*\s*[,)]|$)'
+      - '^(?!\s*(?://|\*)).*\.(?:select|selectOnly|update|delete|into)\s*\(\s*(?:_db|db|attachedDatabase)\.'
+      - '^(?!\s*(?://|\*)).*\.join\s*\(\s*\['
+      - '^(?!\s*(?://|\*)).*\bbatch\s*\(\s*(?:\(|$)'
+    tags:
+      - memox
+      - data-model
+      - convention
+    fix:
+      hint: >-
+        Add a named query to the topic's `.drift` file, include that file in
+        the DAO's @DriftAccessor, and call the generated method (ADR-020).

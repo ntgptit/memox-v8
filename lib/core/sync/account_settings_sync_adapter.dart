@@ -2,25 +2,28 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
+part 'account_settings_sync_adapter.g.dart';
+
 /// Syncs the study and display settings of `app_settings` row 1 as the one
 /// account row the server keeps per user (library and study sync spec §3.5).
 /// Reminders never leave the device. The row has no server version and is
 /// never deleted, so acknowledgements and deletes do nothing.
-class AccountSettingsSyncAdapter implements EntitySyncAdapter {
-  AccountSettingsSyncAdapter(this._db);
+@DriftAccessor(
+  include: {'package:memox/core/database/queries/settings_queries.drift'},
+)
+class AccountSettingsSyncAdapter extends DatabaseAccessor<AppDatabase>
+    with _$AccountSettingsSyncAdapterMixin
+    implements EntitySyncAdapter {
+  AccountSettingsSyncAdapter(super.attachedDatabase);
 
   static const type = 'account_settings';
-
-  final AppDatabase _db;
 
   @override
   String get entityType => type;
 
   @override
   Future<Map<String, Object?>?> readRow(String id) async {
-    final row = await (_db.select(
-      _db.appSettings,
-    )..where((s) => s.id.equals(appSettingsRowId))).getSingleOrNull();
+    final row = await appSettingsRow(appSettingsRowId).getSingleOrNull();
     if (row == null) {
       return null;
     }
@@ -36,9 +39,7 @@ class AccountSettingsSyncAdapter implements EntitySyncAdapter {
 
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
-      (_db.update(
-        _db.appSettings,
-      )..where((s) => s.id.equals(appSettingsRowId))).write(
+      updateAppSettings(
         AppSettingsCompanion(
           cardLimit: Value(row['cardLimit'] as int),
           newCardOrder: Value(row['newCardOrder'] as String),
@@ -46,6 +47,7 @@ class AccountSettingsSyncAdapter implements EntitySyncAdapter {
           language: Value(row['language'] as String),
           updatedAt: Value(fromWireTime(row['updatedAt'])!),
         ),
+        appSettingsRowId,
       );
 
   @override

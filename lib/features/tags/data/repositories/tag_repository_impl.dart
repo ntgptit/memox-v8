@@ -122,11 +122,7 @@ final class TagRepositoryImpl implements TagRepository {
         .map(
           (rows) => [
             for (final row in rows)
-              TagCount(
-                id: row.read<String>('id'),
-                name: row.read<String>('name'),
-                cardCount: row.read<int>('card_count'),
-              ),
+              TagCount(id: row.id, name: row.name, cardCount: row.cardCount),
           ],
         )
         .mapDatabaseErrors();

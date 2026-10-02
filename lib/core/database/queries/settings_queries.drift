@@ -1,0 +1,27 @@
+import '../tables/settings.drift';
+import '../tables/deck.drift';
+
+-- BR-SETTINGS-001: the one settings row.
+appSettingsRow(:row_id AS INTEGER):
+SELECT * FROM app_settings WHERE id = :row_id;
+
+-- BR-SETTINGS-007: each save writes only its own columns.
+updateAppSettings(:row_id AS INTEGER):
+UPDATE app_settings SET $values WHERE id = :row_id;
+
+-- The root of :deck_id and the settings row; nothing when the deck or its
+-- root is missing or in the Trash. The root is reached through root_id
+-- (BR-DECK-003).
+rootAndSettingsOf(:deck_id AS TEXT, :row_id AS INTEGER) AS RootAndSettingsRow:
+SELECT root.**, settings.**
+FROM deck d
+INNER JOIN deck root ON root.id = d.root_id AND root.delete_batch_id IS NULL
+INNER JOIN app_settings settings ON settings.id = :row_id
+WHERE d.id = :deck_id AND d.delete_batch_id IS NULL;
+
+-- The study override of a root; NULL removes it. Only a root outside the
+-- Trash takes one (BR-TRASH-002); the caller has just read it as such.
+setDeckStudyConfig(:deck_id AS TEXT, :study_config AS TEXT OR NULL,
+  :now AS DATETIME):
+UPDATE deck SET study_config = :study_config, updated_at = :now
+WHERE id = :deck_id AND delete_batch_id IS NULL;

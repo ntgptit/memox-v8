@@ -1,4 +1,4 @@
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/features/trash/data/datasources/trash_dao.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 

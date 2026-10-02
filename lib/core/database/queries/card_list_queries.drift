@@ -1,0 +1,54 @@
+import '../tables/card.drift';
+import '../tables/srs.drift';
+import '../tables/tags.drift';
+
+-- UC-CARD-001. CardListDao._predicate is the one place that says which
+-- cards a query lets through (BR-CARD-012). The tag clause is the one part
+-- written here, the same in the three queries that filter (BR-TAG-004): an
+-- EXISTS on card_tags, one boolean per card, never a join that repeats a
+-- card; :tag_count 0 means no tag is selected. The Trash filter is written
+-- here too, where the tombstone rule can read it (BR-TRASH-002).
+
+-- Up to :row_limit cards with their schedule rows, in $order.
+cardListWindow AS CardListEntryRow:
+SELECT c.**, s.**
+FROM card c INNER JOIN card_schedule s ON s.card_id = c.id
+WHERE c.delete_batch_id IS NULL AND $predicate AND (:tag_count = 0 OR EXISTS (
+  SELECT 1 FROM card_tags ct
+  WHERE ct.card_id = c.id AND ct.tag_id IN :tag_ids))
+ORDER BY $order
+LIMIT :row_limit;
+
+-- IT-ORG-005: All, Due, New and Flagged under the search and the tags,
+-- whatever the filter, in one statement.
+cardListCounts AS CardListCountsRow:
+SELECT COUNT(*) AS all_count,
+  COUNT(*) FILTER (WHERE $isDue) AS due_count,
+  COUNT(*) FILTER (WHERE $isNew) AS new_count,
+  COUNT(*) FILTER (WHERE $isFlagged) AS flagged_count
+FROM card c INNER JOIN card_schedule s ON s.card_id = c.id
+WHERE c.delete_batch_id IS NULL AND $inDeck AND (:tag_count = 0 OR EXISTS (
+  SELECT 1 FROM card_tags ct
+  WHERE ct.card_id = c.id AND ct.tag_id IN :tag_ids));
+
+-- BR-CARD-012: every card the query lets through, not only a window.
+cardListIds:
+SELECT c.id
+FROM card c INNER JOIN card_schedule s ON s.card_id = c.id
+WHERE c.delete_batch_id IS NULL AND $predicate AND (:tag_count = 0 OR EXISTS (
+  SELECT 1 FROM card_tags ct
+  WHERE ct.card_id = c.id AND ct.tag_id IN :tag_ids));
+
+-- BR-CARD-008: the schedule rows of every active card of :deck_id, outside
+-- any search or filter.
+activeSchedulesOfDeck(:deck_id AS TEXT):
+SELECT s.* FROM card_schedule s INNER JOIN card c ON c.id = s.card_id
+WHERE c.deck_id = :deck_id AND c.delete_batch_id IS NULL;
+
+-- BR-TAG-001, BE-C2: the tags of :card_ids, each card's by folded name then
+-- id, one chunk of cards at a time.
+cardTagsIn AS CardTagRow:
+SELECT ct.card_id AS card_id, t.**
+FROM card_tags ct INNER JOIN tags t ON t.id = ct.tag_id
+WHERE ct.card_id IN :card_ids
+ORDER BY t.name_folded, t.id;

@@ -1,0 +1,39 @@
+import '../tables/account.drift';
+
+-- Auth spec §4: the last account me() confirmed and the transition in
+-- progress, one row each (id = 1). Device-only, never synced, and written
+-- past the mutation gate.
+
+accountStateRow:
+SELECT * FROM account_state;
+
+-- Writes the columns the caller supplies; the row's id is the only key.
+upsertAccountState: INSERT INTO account_state $row
+ON CONFLICT (id) DO UPDATE SET
+  user_id = excluded.user_id,
+  email = excluded.email,
+  is_anonymous = excluded.is_anonymous,
+  role = excluded.role,
+  validated_at = excluded.validated_at;
+
+clearAccountState:
+DELETE FROM account_state;
+
+accountTransitionRow:
+SELECT * FROM account_transition;
+
+upsertAccountTransition: INSERT INTO account_transition $row
+ON CONFLICT (id) DO UPDATE SET
+  op_id = excluded.op_id,
+  kind = excluded.kind,
+  choice = excluded.choice,
+  source_user_id = excluded.source_user_id,
+  source_is_anonymous = excluded.source_is_anonymous,
+  target_user_id = excluded.target_user_id,
+  target_hint = excluded.target_hint,
+  stage = excluded.stage,
+  created_at = excluded.created_at,
+  updated_at = excluded.updated_at;
+
+clearAccountTransition:
+DELETE FROM account_transition;

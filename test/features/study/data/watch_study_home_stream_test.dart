@@ -38,7 +38,7 @@ final class _SessionReadSignal extends QueryInterceptor {
     String statement,
     List<Object?> args,
   ) {
-    if (!started.isCompleted && statement.contains('FROM study_session s')) {
+    if (!started.isCompleted && statement.contains('FROM study_session AS s')) {
       started.complete();
     }
     return super.runSelect(executor, statement, args);

@@ -1,0 +1,95 @@
+import '../tables/card.drift';
+import '../tables/study.drift';
+
+-- BR-STUDY-007: a queue row is 'pending' until it is served for good, then
+-- 'completed'. A row at position -1 is enrolled in a round not built yet
+-- (spec D7).
+
+createQueueItem: INSERT INTO study_queue_items $row;
+
+-- schema.md "cursor + available_at", BR-STUDY-005: the row :session_id
+-- serves next in :mode at :cursor: in the lowest round with a pending row,
+-- the first by position among the rows due at the cursor, else the one due
+-- soonest. Nothing when the mode has no pending row or that round is not
+-- built yet.
+queueHeadRow(:session_id AS TEXT, :mode AS TEXT, :cursor AS INTEGER):
+SELECT q.* FROM study_queue_items q
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.status = 'pending'
+  AND q.position >= 0
+  AND q.round = (SELECT MIN(p.round) FROM study_queue_items p
+                 WHERE p.session_id = q.session_id AND p.mode = q.mode
+                   AND p.status = 'pending')
+ORDER BY q.available_at > :cursor,
+  CASE WHEN q.available_at > :cursor THEN q.available_at ELSE 0 END,
+  q.position
+LIMIT 1;
+
+-- match: :card_id's pending row in the lowest pending round of :mode, once
+-- that round is built.
+queueBoardRow(:session_id AS TEXT, :mode AS TEXT, :card_id AS TEXT):
+SELECT q.* FROM study_queue_items q
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.status = 'pending'
+  AND q.card_id = :card_id AND q.position >= 0
+  AND q.round = (SELECT MIN(p.round) FROM study_queue_items p
+                 WHERE p.session_id = q.session_id AND p.mode = q.mode
+                   AND p.status = 'pending');
+
+queueItemOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :card_id AS TEXT):
+SELECT * FROM study_queue_items
+WHERE session_id = :session_id AND mode = :mode AND round = :round
+  AND card_id = :card_id;
+
+updateQueueItem(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :card_id AS TEXT):
+UPDATE study_queue_items SET $values
+WHERE session_id = :session_id AND mode = :mode AND round = :round
+  AND card_id = :card_id;
+
+-- BR-STUDY-041: the options stored for a guess question, in the order shown.
+guessOptionIdsOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :card_id AS TEXT):
+SELECT option_card_id FROM study_guess_options
+WHERE session_id = :session_id AND mode = :mode AND round = :round
+  AND card_id = :card_id
+ORDER BY slot;
+
+-- Graded modes spec §7.6: the pending pairs of a round between two
+-- positions, with each card's back_folded.
+pendingMeaningsOf(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :from_position AS INTEGER, :to_position AS INTEGER) AS PendingMeaningRow:
+SELECT q.card_id, c.back_folded FROM study_queue_items q
+JOIN card c ON c.id = q.card_id AND c.delete_batch_id IS NULL
+WHERE q.session_id = :session_id AND q.mode = :mode AND q.round = :round
+  AND q.status = 'pending'
+  AND q.position BETWEEN :from_position AND :to_position;
+
+-- BR-STUDY-060, BR-STUDY-062: :card_id enrolls in :round of :mode once; a
+-- second enrollment changes nothing.
+enrollQueueItem(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER,
+  :card_id AS TEXT):
+INSERT OR IGNORE INTO study_queue_items
+  (session_id, mode, round, card_id, position, status)
+VALUES (:session_id, :mode, :round, :card_id, -1, 'pending');
+
+queueHasPendingRowsOf(:session_id AS TEXT, :card_id AS TEXT):
+SELECT EXISTS (SELECT 1 FROM study_queue_items
+  WHERE session_id = :session_id AND card_id = :card_id
+    AND status = 'pending');
+
+lowestPendingRoundOf(:session_id AS TEXT, :mode AS TEXT):
+SELECT MIN(round) FROM study_queue_items
+WHERE session_id = :session_id AND mode = :mode AND status = 'pending';
+
+-- Spec D7: whether :round of :mode still waits to be built.
+roundIsUnbuilt(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER):
+SELECT EXISTS (SELECT 1 FROM study_queue_items
+  WHERE session_id = :session_id AND mode = :mode AND round = :round
+    AND position < 0);
+
+-- The cards of a round in serving order; a round not built yet lists them
+-- by id, so a seeded shuffle of it repeats.
+roundCardIds(:session_id AS TEXT, :mode AS TEXT, :round AS INTEGER):
+SELECT card_id FROM study_queue_items
+WHERE session_id = :session_id AND mode = :mode AND round = :round
+ORDER BY position, card_id;
