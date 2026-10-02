@@ -6496,24 +6496,6 @@
   "@monitoringUserInvalid": {
     "description": "Screen 28: the user field error when the text is not a uuid."
   },
-  "monitoringCountOpen": "{count} open",
-  "@monitoringCountOpen": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 28: the list header for the default filter; {count} is what has loaded."
-  },
-  "monitoringCountOpenMore": "{count}+ open",
-  "@monitoringCountOpenMore": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 28: the list header for the default filter while more pages exist."
-  },
   "monitoringCountLogs": "{count, plural, =1{1 log} other{{count} logs}}",
   "@monitoringCountLogs": {
     "placeholders": {

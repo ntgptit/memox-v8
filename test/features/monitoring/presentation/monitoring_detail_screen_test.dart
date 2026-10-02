@@ -91,14 +91,14 @@ void main() {
 
     await _pump(tester, env, repository);
 
-    final trace = tester.widget<SelectableText>(
-      find.widgetWithText(
-        SelectableText,
-        '#0      SyncCoordinator.runOnce (sync_coordinator.dart:42)',
-      ),
+    // The trace lays out a frame per row inside a SelectionArea (critique
+    // 2026-09-30 part 3d-2, E11); the other three cards stay SelectableText.
+    final frame = tester.widget<Text>(
+      find.text('SyncCoordinator.runOnce (sync_coordinator.dart:42)'),
     );
-    expect(trace.style!.fontFamily, 'monospace');
-    expect(find.byType(SelectableText), findsNWidgets(4));
+    expect(frame.style!.fontFamily, 'monospace');
+    expect(find.byType(SelectionArea), findsOneWidget);
+    expect(find.byType(SelectableText), findsNWidgets(3));
   });
 
   // Impeccable 2026-09-29 F1: what triage reads comes first.
@@ -138,10 +138,8 @@ void main() {
   });
 
   // Impeccable 2026-09-29 F6: a new frame reads apart from a wrapped line.
-  libraryTest('a stack trace marks where each frame starts', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a stack trace marks each frame and hangs its wrapped lines '
+      '(critique 2026-09-30 part 3d-2, E11)', (tester, env) async {
     final repository = FakeMonitoringRepository()
       ..servers['a'] = record(
         'a',
@@ -151,23 +149,22 @@ void main() {
 
     await _pump(tester, env, repository);
 
-    final trace = tester.widget<SelectableText>(
-      find.widgetWithText(
-        SelectableText,
-        '#0      a (a.dart:1)\n<asynchronous suspension>\n#1      b',
-      ),
+    final zero = find.text('#0');
+    final first = find.text('a (a.dart:1)');
+    final suspension = find.text('<asynchronous suspension>');
+    final base = tester.widget<Text>(first).style?.color;
+    expect(tester.widget<Text>(zero).style?.color, isNot(base));
+    expect(
+      tester.widget<Text>(find.text('#1')).style?.color,
+      tester.widget<Text>(zero).style?.color,
     );
-    final spans = <TextSpan>[];
-    trace.textSpan!.visitChildren((span) {
-      if (span is TextSpan && span.text != null) spans.add(span);
-      return true;
-    });
-    final base = trace.style!.color;
-    Color? colorOf(String text) =>
-        spans.firstWhere((span) => span.text == text).style?.color ?? base;
-    expect(colorOf('#0'), isNot(base));
-    expect(colorOf('#1'), colorOf('#0'));
-    expect(colorOf('      a (a.dart:1)'), base);
+    // The frame's text and any line under it start past the #n cell.
+    expect(
+      tester.getTopLeft(first).dx,
+      greaterThan(tester.getTopLeft(zero).dx),
+    );
+    expect(tester.getTopLeft(suspension).dx, tester.getTopLeft(first).dx);
+    expect(find.byType(SelectionArea), findsWidgets);
   });
 
   // Impeccable 2026-09-29 F2: an id is copied alone, for the filter.

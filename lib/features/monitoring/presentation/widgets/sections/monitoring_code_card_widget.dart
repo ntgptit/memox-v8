@@ -36,8 +36,10 @@ class MonitoringCodeCardWidget extends StatelessWidget {
     required this.text,
   }) : _kind = _CardKind.error;
 
-  /// A stack trace in code, each frame's `#n` in the primary ink, so a new
-  /// frame reads apart from a line that wrapped (Impeccable 2026-09-29 F6).
+  /// A stack trace in code, each frame's `#n` in the primary ink and in a
+  /// cell its wrapped lines hang under, so a new frame reads apart from a
+  /// line that wrapped (Impeccable 2026-09-29 F6; critique 2026-09-30 part
+  /// 3d-2, E11).
   const MonitoringCodeCardWidget.stackTrace({
     super.key,
     required this.title,
@@ -49,8 +51,6 @@ class MonitoringCodeCardWidget extends StatelessWidget {
   final String text;
   final String type;
   final _CardKind _kind;
-
-  static final RegExp _frame = RegExp(r'^#\d+');
 
   @override
   Widget build(BuildContext context) {
@@ -78,25 +78,72 @@ class MonitoringCodeCardWidget extends StatelessWidget {
         ),
         style: styles.dialogBody,
       ),
-      _CardKind.stackTrace => SelectableText.rich(
-        _trace(styles.code.copyWith(color: context.derivedColors.primaryInk)),
-        style: styles.code,
+      // One frame per row: the #n in a fixed cell, so a wrapped line hangs
+      // under the frame's text (critique 2026-09-30 part 3d-2, E11). Still
+      // selectable, across frames.
+      _CardKind.stackTrace => SelectionArea(
+        child: _StackTrace(
+          text: text,
+          style: styles.code,
+          frameStyle: styles.code.copyWith(
+            color: context.derivedColors.primaryInk,
+          ),
+        ),
       ),
     };
   }
+}
 
-  TextSpan _trace(TextStyle frameStyle) {
-    final lines = text.split('\n');
-    return TextSpan(
+class _StackTrace extends StatelessWidget {
+  const _StackTrace({
+    required this.text,
+    required this.style,
+    required this.frameStyle,
+  });
+
+  final String text;
+  final TextStyle style;
+  final TextStyle frameStyle;
+
+  static final RegExp _frame = RegExp(r'^#\d+');
+
+  /// The cell holds "#99" and a space, in the code face at the text scale.
+  static const String _cellSample = '#99 ';
+
+  @override
+  Widget build(BuildContext context) {
+    final painter = TextPainter(
+      text: TextSpan(text: _cellSample, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final cell = painter.width;
+    painter.dispose();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final (index, line) in lines.indexed) ...[
-          if (index > 0) const TextSpan(text: '\n'),
-          if (_frame.matchAsPrefix(line) case final match?) ...[
-            TextSpan(text: match[0], style: frameStyle),
-            TextSpan(text: line.substring(match.end)),
-          ] else
-            TextSpan(text: line),
-        ],
+        for (final line in text.split('\n'))
+          if (_frame.matchAsPrefix(line) case final match?)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: cell,
+                  child: Text(match[0]!, style: frameStyle),
+                ),
+                Expanded(
+                  child: Text(
+                    line.substring(match.end).trimLeft(),
+                    style: style,
+                  ),
+                ),
+              ],
+            )
+          else
+            Padding(
+              padding: EdgeInsetsDirectional.only(start: cell),
+              child: Text(line.trimLeft(), style: style),
+            ),
       ],
     );
   }

@@ -84,7 +84,6 @@ class MonitoringServerListWidget extends ConsumerWidget {
       ),
       final MonitoringListLoaded loaded => _Rows(
         loaded: loaded,
-        isDefaultFilter: state.filter.isDefault,
         // One status chosen: the chip and the header say it (critique
         // 2026-09-30 part 3b).
         statusShownByFilter: state.filter.statuses.length == 1
@@ -144,13 +143,11 @@ class MonitoringServerListWidget extends ConsumerWidget {
 class _Rows extends ConsumerWidget {
   const _Rows({
     required this.loaded,
-    required this.isDefaultFilter,
     required this.statusShownByFilter,
     required this.onOpenLog,
   });
 
   final MonitoringListLoaded loaded;
-  final bool isDefaultFilter;
   final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
@@ -163,12 +160,10 @@ class _Rows extends ConsumerWidget {
     final now = ref.watch(dayClockProvider).now();
     final count = loaded.items.length;
     final hasMore = loaded.next != null;
-    final header = switch ((isDefaultFilter, hasMore)) {
-      (true, false) => l10n.monitoringCountOpen(count),
-      (true, true) => l10n.monitoringCountOpenMore(count),
-      (false, false) => l10n.monitoringCountLogs(count),
-      (false, true) => l10n.monitoringCountLogsMore(count),
-    };
+    // The chip names the filter (critique 2026-09-30 part 3d-2, E11).
+    final header = hasMore
+        ? l10n.monitoringCountLogsMore(count)
+        : l10n.monitoringCountLogs(count);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (loaded.more == MonitoringMore.idle &&

@@ -44,7 +44,9 @@ void main() {
 
     await pumpMonitoring(tester, env, repository);
 
-    expect(find.text('2 OPEN'), findsOneWidget);
+    // The chip names the filter; the header counts logs (critique
+    // 2026-09-30 part 3d-2, E11).
+    expect(find.text('2 LOGS'), findsOneWidget);
     expect(find.text('sync.push_failed'), findsOneWidget);
     expect(find.text('db.slow_query'), findsOneWidget);
     expect(find.text('message of a'), findsOneWidget);
@@ -236,7 +238,7 @@ void main() {
     await pumpMonitoring(tester, env, repository);
     repository.lastQuery.answer(pageOf(LogPage.size));
     await settleMonitoring(tester);
-    expect(find.text('100+ OPEN'), findsOneWidget);
+    expect(find.text('100+ LOGS'), findsOneWidget);
 
     await tester.fling(find.byType(ListView), const Offset(0, -20000), 8000);
     await tester.pump();
@@ -251,7 +253,7 @@ void main() {
     expect(repository.queries, hasLength(2));
     await tester.fling(find.byType(ListView), const Offset(0, 20000), 8000);
     await tester.pumpAndSettle();
-    expect(find.text('103 OPEN'), findsOneWidget);
+    expect(find.text('103 LOGS'), findsOneWidget);
   });
 
   libraryTest('a failed page keeps the rows and offers Retry, not a loop', (

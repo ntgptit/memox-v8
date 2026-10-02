@@ -1241,8 +1241,6 @@
   "monitoringUserLabel": "Mã người dùng",
   "monitoringDeviceUserNote": "Dán mã lấy từ chi tiết của một nhật ký.",
   "monitoringUserInvalid": "Mã người dùng này không hợp lệ.",
-  "monitoringCountOpen": "{count} đang mở",
-  "monitoringCountOpenMore": "{count}+ đang mở",
   "monitoringCountLogs": "{count, plural, other{{count} nhật ký}}",
   "monitoringCountLogsMore": "{count}+ nhật ký",
   "monitoringNoMore": "Hết nhật ký",

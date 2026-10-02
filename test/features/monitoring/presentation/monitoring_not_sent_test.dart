@@ -113,7 +113,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.queries, hasLength(1));
-    expect(find.text('3 OPEN'), findsOneWidget);
+    expect(find.text('3 LOGS'), findsOneWidget);
   });
 
   // Review focus: large text scale on a row with a long event name.
