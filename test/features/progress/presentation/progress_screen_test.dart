@@ -10,6 +10,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_streak_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_today_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -17,6 +18,7 @@ import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
@@ -338,6 +340,17 @@ void main() {
     );
 
     expect(find.bySemanticsLabel(_en.progressLoading), findsOneWidget);
+    // Shaped like the screen: Today, Streak, then the deck list (critique
+    // 2026-09-30 part 3d-2, E12).
+    expect(find.byType(ProgressSkeletonWidget), findsOneWidget);
+    expect(find.byType(MxSkeletonList), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(ProgressSkeletonWidget),
+        matching: find.byType(MxCard),
+      ),
+      findsNWidgets(3),
+    );
     handle.dispose();
   });
 

@@ -11,6 +11,7 @@ import 'package:memox/features/settings/presentation/providers/app_settings_prov
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/settings_reset_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_app_section_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_sync_section_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_study_defaults_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -21,7 +22,6 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Screen 23, the Settings tab (UC-SETTINGS-001): the app-wide study
@@ -63,8 +63,6 @@ class SettingsScreen extends ConsumerWidget {
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
-
-  static const int _skeletonRows = 5;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -136,12 +134,7 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         _ => MxScreenScroll(
-          children: [
-            MxSkeletonList(
-              semanticLabel: l10n.commonLoading,
-              rows: _skeletonRows,
-            ),
-          ],
+          children: [SettingsSkeletonWidget(semanticLabel: l10n.commonLoading)],
         ),
       },
     );

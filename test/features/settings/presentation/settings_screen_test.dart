@@ -15,7 +15,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
@@ -183,7 +184,15 @@ void main() {
       overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
     );
 
-    expect(find.byType(MxSkeletonList), findsOneWidget);
+    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12).
+    expect(find.byType(SettingsSkeletonWidget), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(SettingsSkeletonWidget),
+        matching: find.byType(MxCard),
+      ),
+      findsNWidgets(3),
+    );
     expect(find.byKey(_valueKey), findsNothing);
   });
 
