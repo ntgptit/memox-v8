@@ -51,6 +51,16 @@
             "statusMessage": "Pinning subagent to Sonnet…"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/check_test_command.py\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUse": [

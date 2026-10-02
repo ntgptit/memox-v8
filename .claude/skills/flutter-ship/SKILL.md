@@ -119,7 +119,7 @@ one, nobody notices until reviews arrive.
    runs side by side `dart format`, `flutter analyze --no-fatal-infos`,
    generated-code freshness, the architecture boundaries, the docs check, the
    Flutter version against `.fvmrc`, the CI tooling tests, the guard's
-   self-tests, `TZ=UTC flutter test --exclude-tags golden`, and
+   self-tests, the host suite bundled (`run_tests.sh`), and
    `python code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8`
    — **a check of its own**: the project's main guard owns what
    `flutter analyze` cannot express, including the Riverpod rules that
