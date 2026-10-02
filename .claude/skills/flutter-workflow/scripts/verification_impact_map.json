@@ -64,6 +64,7 @@
     "delete_batch_queries": ["card", "deck", "trash"],
     "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
     "live_row_queries": ["card", "deck", "settings", "srs", "study"],
+    "progress_queries": ["progress"],
     "settings_queries": ["settings", "reminders", "study"],
     "srs_queries": ["srs", "study", "deck"],
     "starter_queries": ["starter_decks"],
