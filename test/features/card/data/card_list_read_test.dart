@@ -210,6 +210,14 @@ void main() {
 
     expect(view.counts.all, 4);
     expect(ids(view), isNot(contains('trashed')));
+    expect(
+      await cards.cardIdsMatching(
+        deckId: mixed.id,
+        query: const CardListQuery(),
+        now: _now,
+      ),
+      isNot(contains('trashed')),
+    );
   });
 
   test('an emission is four statements, whatever the window holds, and a change emits once', () async {

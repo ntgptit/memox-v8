@@ -36,3 +36,8 @@ WHERE status = 'in_progress' AND (
   OR id IN (SELECT o.session_id FROM study_guess_options o
     JOIN card c ON c.id = o.option_card_id WHERE c.delete_batch_id = :batch_id)
 );
+
+-- BR-TRASH-007: a restored item's batch goes, which the key would
+-- otherwise cascade.
+dropDeleteBatch(:batch_id AS TEXT):
+DELETE FROM delete_batches WHERE id = :batch_id;

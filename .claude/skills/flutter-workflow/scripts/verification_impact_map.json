@@ -55,10 +55,13 @@
   },
   "database_query_features": {
     "account_device_queries": ["account"],
+    "card_list_queries": ["card"],
     "card_queries": ["card"],
+    "card_row_queries": ["card", "transfer", "trash"],
     "deck_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],
     "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
+    "live_row_queries": ["card", "settings"],
     "settings_queries": ["settings", "reminders", "study"],
     "starter_queries": ["starter_decks"],
     "tag_queries": ["tags", "search", "transfer"],

@@ -7,86 +7,55 @@ import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 import 'package:memox/core/text/stored_text.dart';
 
+part 'card_dao.g.dart';
+
 /// Row access for `card`, plus the reads and writes of the owning `deck` row
-/// that card writes need. It returns Drift rows, never domain entities, and
-/// runs inside the caller's transaction. A card or deck in the Trash is out
-/// of reach of every write (spec §8).
-final class CardDao {
-  CardDao(this._db);
+/// that card writes need (`card_row_queries.drift`). It returns Drift rows,
+/// never domain entities, and runs inside the caller's transaction. A card
+/// or deck in the Trash is out of reach of every write (spec §8).
+@DriftAccessor(
+  include: {
+    'package:memox/core/database/queries/card_row_queries.drift',
+    'package:memox/core/database/queries/live_row_queries.drift',
+    'package:memox/core/database/queries/delete_batch_queries.drift',
+  },
+)
+final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
+  CardDao(super.attachedDatabase);
 
-  final AppDatabase _db;
-
-  Future<CardRow?> findRow(String id) =>
-      (_db.select(_db.card)
-            ..where((card) => card.id.equals(id) & card.deleteBatchId.isNull()))
-          .getSingleOrNull();
+  Future<CardRow?> findRow(String id) => liveCardRow(id).getSingleOrNull();
 
   /// The active cards among [ids], read in chunks (BE-C2).
   Future<List<CardRow>> liveRows(Set<String> ids) async => [
-    for (final chunk in idChunks(ids))
-      ...await (_db.select(
-            _db.card,
-          )..where((card) => card.id.isIn(chunk) & card.deleteBatchId.isNull()))
-          .get(),
+    for (final chunk in idChunks(ids)) ...await liveCardsIn(chunk).get(),
   ];
 
-  Future<Deck?> deckRow(String id) =>
-      (_db.select(_db.deck)
-            ..where((deck) => deck.id.equals(id) & deck.deleteBatchId.isNull()))
-          .getSingleOrNull();
+  Future<Deck?> deckRow(String id) => liveDeckRow(id).getSingleOrNull();
 
   /// The active decks among [ids], read in chunks (BE-C2).
   Future<List<Deck>> deckRows(Set<String> ids) async => [
-    for (final chunk in idChunks(ids))
-      ...await (_db.select(
-            _db.deck,
-          )..where((deck) => deck.id.isIn(chunk) & deck.deleteBatchId.isNull()))
-          .get(),
+    for (final chunk in idChunks(ids)) ...await liveDecksIn(chunk).get(),
   ];
 
   /// The folded faces of the live cards of [deckId] (BR-TRANSFER-003).
-  Future<Set<CardFoldedPair>> foldedPairs(String deckId) async {
-    final rows =
-        await (_db.select(_db.card)..where(
-              (card) =>
-                  card.deckId.equals(deckId) & card.deleteBatchId.isNull(),
-            ))
-            .get();
-    return {
-      for (final row in rows) (front: row.frontFolded, back: row.backFolded),
-    };
-  }
+  Future<Set<CardFoldedPair>> foldedPairs(String deckId) async => {
+    for (final row in await liveCardFacesOfDeck(deckId).get())
+      (front: row.frontFolded, back: row.backFolded),
+  };
 
   /// How many live cards [deckId] holds.
-  Future<int> liveCount(String deckId) {
-    final count = _db.card.id.count();
-    final query = _db.selectOnly(_db.card)
-      ..addColumns([count])
-      ..where(_db.card.deckId.equals(deckId) & _db.card.deleteBatchId.isNull());
-    return query.map((row) => row.read(count)!).getSingle();
-  }
+  Future<int> liveCount(String deckId) =>
+      liveCardCountOfDeck(deckId).getSingle();
 
   /// The live cards of [deckId], or those among [ids], by `created_at`, then
   /// `id` (BR-TRANSFER-010). [ids] are read in chunks, and the whole set is
   /// ordered once they are all in (BE-C2).
   Future<List<CardRow>> exportRows(String deckId, Set<String>? ids) async {
-    Future<List<CardRow>> read(List<String>? chunk) =>
-        (_db.select(_db.card)
-              ..where(
-                (card) =>
-                    card.deckId.equals(deckId) &
-                    card.deleteBatchId.isNull() &
-                    (chunk == null
-                        ? const Constant(true)
-                        : card.id.isIn(chunk)),
-              )
-              ..orderBy([
-                (card) => OrderingTerm.asc(card.createdAt),
-                (card) => OrderingTerm.asc(card.id),
-              ]))
-            .get();
-    if (ids == null) return read(null);
-    final rows = [for (final chunk in idChunks(ids)) ...await read(chunk)];
+    if (ids == null) return exportCardsOfDeck(deckId).get();
+    final rows = [
+      for (final chunk in idChunks(ids))
+        ...await exportCardsIn(deckId, chunk).get(),
+    ];
     // Each chunk is ordered on its own; the export's order is the whole
     // set's.
     return rows..sort((a, b) {
@@ -100,68 +69,53 @@ final class CardDao {
     required String deckId,
     required CardDraft draft,
     required DateTime now,
-  }) => _db
-      .into(_db.card)
-      .insert(
-        _contentOf(draft).copyWith(
-          id: Value(id),
-          deckId: Value(deckId),
-          createdAt: Value(now),
-          updatedAt: Value(now),
-        ),
-      );
+  }) => createCard(
+    _contentOf(draft).copyWith(
+      id: Value(id),
+      deckId: Value(deckId),
+      createdAt: Value(now),
+      updatedAt: Value(now),
+    ),
+  );
 
   Future<void> updateContent(String id, CardDraft draft, DateTime now) =>
-      (_db.update(_db.card)..where((card) => card.id.equals(id))).write(
-        _contentOf(draft).copyWith(updatedAt: Value(now)),
-      );
+      updateLiveCard(_contentOf(draft).copyWith(updatedAt: Value(now)), id);
 
   /// [id] goes to the Trash as the item root of the batch [batchId]
   /// (BR-TRASH-001). The row stays as it is otherwise; only a purge deletes
   /// it, and its schedule, logs and tag links with it.
   Future<void> moveToTrash(String id, String batchId, DateTime now) async {
-    await _db.insertDeleteBatch(batchId, 'card', id, now);
-    await (_db.update(_db.card)..where((card) => card.id.equals(id))).write(
-      CardCompanion(deleteBatchId: Value(batchId)),
-    );
+    await insertDeleteBatch(batchId, 'card', id, now);
+    await markCardDeleted(batchId, id);
   }
 
   /// The card of [batchId] when the batch holds one: the card the person
   /// deleted, still marked with that batch (BR-TRASH-001). Null when the
   /// batch is gone or holds a deck.
-  Future<CardRow?> itemOf(String batchId) async {
-    final row = await _db
-        .customSelect(
-          'SELECT c.* FROM delete_batches b JOIN card c ON c.id = b.root_item_id'
-          " AND c.delete_batch_id = b.id WHERE b.id = ? AND b.item_type = 'card'",
-          variables: [Variable<String>(batchId)],
-          readsFrom: {_db.deleteBatches, _db.card},
-        )
-        .getSingleOrNull();
-    return row == null ? null : _db.card.map(row.data);
-  }
+  Future<CardRow?> itemOf(String batchId) =>
+      cardOfBatch(batchId).getSingleOrNull();
 
   /// The roots of [deckIds], active or in the Trash: a restore checks a card
   /// against the root of its deck, which may be in the Trash (BR-TRASH-006).
   /// Read in chunks (BE-C2).
   Future<Set<String>> rootIdsOf(Set<String> deckIds) async => {
     for (final chunk in idChunks(deckIds))
-      for (final deck in await (_db.select(
-        _db.deck,
-      )..where((deck) => deck.id.isIn(chunk))).get())
-        deck.rootId,
+      ...await deckRootsInAnyState(chunk).get(),
   };
 
   /// Fires once, then after every write to the decks, the cards or the
   /// batches: where the cards of a Trash selection may go follows all three
   /// (E2).
-  Stream<void> restoreTargetChanges() =>
-      tableChanges(_db, [_db.deck, _db.card, _db.deleteBatches]);
+  Stream<void> restoreTargetChanges() => tableChanges(attachedDatabase, [
+    attachedDatabase.deck,
+    attachedDatabase.card,
+    attachedDatabase.deleteBatches,
+  ]);
 
   /// Whether [deckId] is a deck in the Trash, which a restore refuses as its
-  /// target (BR-TRASH-006; `trash_queries.drift`).
+  /// target (BR-TRASH-006).
   Future<bool> isDeckInTrash(String deckId) =>
-      _db.deckIsInTrash(deckId).getSingle();
+      deckIsInTrash(deckId).getSingle();
 
   /// [cardId] comes back from the batch [batchId] into [deckId], then the
   /// batch row goes, which the key would otherwise cascade (BR-TRASH-007).
@@ -173,29 +127,26 @@ final class CardDao {
     required String deckId,
     DateTime? updatedAt,
   }) async {
-    await (_db.update(_db.card)..where((card) => card.id.equals(cardId))).write(
+    await restoreCard(
       CardCompanion(
         deleteBatchId: const Value(null),
         deckId: Value(deckId),
         updatedAt: updatedAt == null ? const Value.absent() : Value(updatedAt),
       ),
+      cardId,
+      batchId,
     );
-    await (_db.delete(
-      _db.deleteBatches,
-    )..where((batch) => batch.id.equals(batchId))).go();
+    await dropDeleteBatch(batchId);
   }
 
-  /// The open sessions [batchId] touches end (BR-TRASH-004;
-  /// `trash_queries.drift`).
+  /// The open sessions [batchId] touches end (BR-TRASH-004).
   Future<void> closeSessionsTouching(String batchId, DateTime now) =>
-      _db.closeSessionsTouchingBatch(now, batchId);
+      closeSessionsTouchingBatch(now, batchId);
 
   /// Moves [ids] into [deckId], in chunks (BE-C2).
   Future<void> moveCards(Set<String> ids, String deckId, DateTime now) async {
     for (final chunk in idChunks(ids)) {
-      await (_db.update(_db.card)..where((card) => card.id.isIn(chunk))).write(
-        CardCompanion(deckId: Value(deckId), updatedAt: Value(now)),
-      );
+      await moveLiveCardsIn(deckId, now, chunk);
     }
   }
 
@@ -204,42 +155,21 @@ final class CardDao {
   Future<void> setFlagged(Set<String> ids, bool isFlagged, DateTime now) async {
     final flag = isFlagged ? 1 : 0;
     for (final chunk in idChunks(ids)) {
-      await (_db.update(_db.card)..where(
-            (card) => card.id.isIn(chunk) & card.isFlagged.equals(flag).not(),
-          ))
-          .write(CardCompanion(isFlagged: Value(flag), updatedAt: Value(now)));
+      await flagLiveCardsIn(flag, now, chunk);
     }
   }
 
   /// Whether [deckId] still holds a live card; tombstones do not count, as in
   /// invariant 29.
-  Future<bool> holdsCards(String deckId) async {
-    final row = await _db
-        .customSelect(
-          'SELECT EXISTS (SELECT 1 FROM card WHERE deck_id = ?'
-          ' AND delete_batch_id IS NULL) AS holds',
-          variables: [Variable<String>(deckId)],
-          readsFrom: {_db.card},
-        )
-        .getSingle();
-    return row.read<bool>('holds');
-  }
+  Future<bool> holdsCards(String deckId) =>
+      deckHoldsLiveCards(deckId).getSingle();
 
   /// A deck in the Trash keeps its row as it is.
   Future<void> setDeckContentType(
     String deckId,
     String contentType,
     DateTime now,
-  ) =>
-      (_db.update(_db.deck)..where(
-            (deck) => deck.id.equals(deckId) & deck.deleteBatchId.isNull(),
-          ))
-          .write(
-            DeckCompanion(
-              contentType: Value(contentType),
-              updatedAt: Value(now),
-            ),
-          );
+  ) => setLiveDeckContentType(contentType, now, deckId);
 }
 
 /// The columns a draft sets: sides in their stored form (trimmed, NFC) with

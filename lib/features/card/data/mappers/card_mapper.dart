@@ -1,4 +1,5 @@
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
@@ -150,7 +151,7 @@ ReviewHistoryEntry historyEntryOf(ReviewLog row) {
   );
 }
 
-DeckTreeNode deckTreeNodeOf(DeckForestRow row) => DeckTreeNode(
+DeckTreeNode deckTreeNodeOf(CardMoveTargetRow row) => DeckTreeNode(
   id: row.id,
   name: row.name,
   parentId: row.parentId,
