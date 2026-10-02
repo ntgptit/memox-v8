@@ -63,10 +63,11 @@
     "deck_tree_queries": ["deck"],
     "delete_batch_queries": ["card", "deck", "trash"],
     "dismissed_note_queries": ["starter_decks", "trash", "transfer"],
-    "live_row_queries": ["card", "deck", "settings", "srs"],
+    "live_row_queries": ["card", "deck", "settings", "srs", "study"],
     "settings_queries": ["settings", "reminders", "study"],
     "srs_queries": ["srs", "study", "deck"],
     "starter_queries": ["starter_decks"],
+    "study_session_queries": ["study"],
     "tag_queries": ["tags", "search", "transfer"],
     "trash_queries": ["trash"]
   },
