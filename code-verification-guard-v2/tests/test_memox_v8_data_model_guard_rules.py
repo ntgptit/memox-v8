@@ -223,6 +223,7 @@ MIGRATED_TO_DRIFT: tuple[str, ...] = (
     "lib/core/sync/card_sync_adapter.dart",
     "lib/core/sync/tag_sync_adapter.dart",
     "lib/core/sync/card_schedule_sync_adapter.dart",
+    "lib/core/sync/sync_store.dart",
 )
 
 # The exceptions ADR-020 grants for good, which no phase removes.

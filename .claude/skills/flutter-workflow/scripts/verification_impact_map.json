@@ -78,6 +78,7 @@
     "sync_card_schedule_queries": [],
     "sync_deck_queries": [],
     "sync_delete_batch_queries": [],
+    "sync_outbox_queries": [],
     "sync_review_log_queries": [],
     "sync_tag_queries": [],
     "tag_queries": ["tags", "search", "transfer"],

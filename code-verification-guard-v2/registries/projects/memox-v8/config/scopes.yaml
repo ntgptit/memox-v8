@@ -335,7 +335,6 @@ scopes:
       - lib/core/database/local_data_reset.dart
       # ---- not yet migrated (temporary) ----
       - lib/core/database/log/log_database.dart
-      - lib/core/sync/sync_store.dart
 
   test_files:
     include:
