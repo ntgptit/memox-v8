@@ -71,6 +71,9 @@ A new script, `.claude/skills/flutter-workflow/scripts/bundle_tests.py`, sits be
   file. Those annotations are read from the file that `flutter test` is given, so a bundle
   would drop them silently. The fix is to move the annotation onto the `group` or `test`.
   No file has one today.
+- **Async `main`.** `group` refuses an async body, so a file whose `main` is `async` is
+  refused the same way, with the fix in the message: make `main` synchronous and move the
+  awaits into `setUpAll`. No file has one today.
 - **Partition.** The script sorts the files by repo-relative POSIX path and deals them out in
   turn: file *i* goes to bundle *i mod n*. The result is deterministic and measured balanced
   (60–87 s per bundle). Bundles that would be empty are not written, so *n* larger than the
@@ -108,8 +111,9 @@ bundle_tests.py <files> → TZ=UTC flutter test -j <n> --exclude-tags golden \
 ```
 
 - `-j` equals the bundle count.
-- `MEMOX_TEST_BUNDLES=0` restores today's per-file command unchanged. It is the rollback,
-  and the way to check whether a failure only happens bundled.
+- `MEMOX_TEST_BUNDLES=0` runs the same targets file by file, as before; the only addition
+  is the JSON report that feeds §3.3. It is the rollback, and the way to check whether a
+  failure only happens bundled.
 - Nothing else moves: the pass stamp, the static steps, their parallel schedule, the labels,
   and the rule that goldens never run on the host. `ci.yml` calls `dod_check.sh`, so CI gets
   the change with no edit, and its golden job is untouched.
@@ -161,7 +165,7 @@ pass or fail.
 |---|---|
 | A file leaks global state into the next one in its bundle | The probe found none in 3411 tests. `flutter_test` already fails a `testWidgets` that leaves a `debug*` variable set. `test_report.py` prints the standalone re-run, and `MEMOX_TEST_BUNDLES=0` gives the old isolation back. |
 | A library-level annotation is dropped silently | `bundle_tests.py` refuses it (§3.1). |
-| A bundle fails to compile because of one file, and the other files in that bundle report nothing | The compile error names the file. The per-file fallback isolates it. `flutter analyze`, which runs in the same gate, catches the same error. |
+| One file fails to compile: its bundle, and possibly the next bundle the frontend server compiles, report nothing | The compile error names the file, and `test_report.py` names each bundle that failed to load. The per-file fallback isolates the file. `flutter analyze`, which runs in the same gate, catches the same error. |
 | A machine with a different core count | `os.cpu_count()` adapts, and `MEMOX_TEST_BUNDLES` overrides. |
 
 **Rollback.** Set `MEMOX_TEST_BUNDLES=0`, or revert the one commit that touches
