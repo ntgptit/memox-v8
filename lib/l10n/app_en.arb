@@ -4923,17 +4923,9 @@
   "@summaryFactLearned": {
     "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
   },
-  "summaryFactLearnedSub": "Now scheduled, due tomorrow",
-  "@summaryFactLearnedSub": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
-  },
   "summaryFactReviewed": "Cards reviewed",
   "@summaryFactReviewed": {
     "description": "Screen handoff 21 (FE-A6 P1c): a fact row."
-  },
-  "summaryFactReviewedSub": "Schedules updated",
-  "@summaryFactReviewedSub": {
-    "description": "Screen handoff 21 (FE-A6 P1c): a fact row's sub-line."
   },
   "summaryFactAnswered": "Cards answered",
   "@summaryFactAnswered": {
@@ -4952,14 +4944,9 @@
     },
     "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line."
   },
-  "summaryFactWrongCameBack": "of {total} turns · wrong cards came back in later rounds",
-  "@summaryFactWrongCameBack": {
-    "placeholders": {
-      "total": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 21 (FE-A6 P1c): the wrong-turns sub-line when any was wrong."
+  "summaryFactKeptSub": "Kept in the history",
+  "@summaryFactKeptSub": {
+    "description": "Screen handoff 21 (critique 2026-10-02, F1): the finished-cards fact's sub-line after an ended or failed session; its answers are kept, nothing is scheduled by it."
   },
   "summaryNoteHistory": "Nothing was lost — the answers are in the history.",
   "@summaryNoteHistory": {
