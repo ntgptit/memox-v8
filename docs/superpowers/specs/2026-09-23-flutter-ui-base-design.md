@@ -563,6 +563,9 @@ item names where it comes from.
 | 158 | 24: the denied banner says "turn the reminder on again" beside a "Try again" button | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 159 | 27: the status values (last synced, waiting) sit in the small subtitle line | critique 2026-09-30, deferred by part 3d-2 (E1) |
 | 160 | 05: the merge dialog is dense; the tag actions sheet's header differs from other sheets | critique 2026-09-30, deferred by part 3d-2 (E1) |
+| 161 | 07: changing the selection while a bulk flag write runs can bring back a stale Retry for the earlier cards | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
+| 162 | 15: a draft edited back to the stored values leaves "Not saved" beside a disabled "Retry save" | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
+| 163 | 24: the reminder dialog passes the literal `minDigits: 2` beside its `_digits` constant | critique 2026-09-30 part 3d-2 final review, deferred (owner 2026-10-02) |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
