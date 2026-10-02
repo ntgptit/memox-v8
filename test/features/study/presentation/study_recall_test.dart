@@ -2,6 +2,8 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -73,6 +75,11 @@ Future<void> _lifecycle(
   await _settle(tester);
 }
 
+/// The footer hint's glyph (critique 2026-10-02, F7).
+IconData _hintIcon(WidgetTester tester) => tester
+    .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
+    .icon;
+
 void main() {
   libraryTest('the term shows, the meaning is hidden, and the clock counts '
       'down from 20 (19 countingDown)', (tester, env) async {
@@ -123,6 +130,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(id));
     await tester.tap(find.text(_en.studyRecallShowMeaning));
     await _settle(tester);
+    expect(_hintIcon(tester), AppIcons.info);
 
     await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.text(_en.studyRecallForgot));
@@ -137,6 +145,7 @@ void main() {
     final handle = tester.ensureSemantics();
     final id = await _recall(env);
     await pumpLibraryScreen(tester, env, _screen(id));
+    expect(_hintIcon(tester), AppIcons.info);
 
     await tester.pump(const Duration(seconds: 20));
     // The clock ends on the first frame past its 20 s.
@@ -146,6 +155,7 @@ void main() {
     expect(find.text(_en.studyRecallTagTimedOut.toUpperCase()), findsOneWidget);
     expect(find.text('apple'), findsOneWidget);
     expect(find.textContaining(_en.studyRecallHintTimedOut), findsOneWidget);
+    expect(_hintIcon(tester), AppIcons.repeat);
     expect(await _logOf(env.db), ('forgotten', 'timeout'));
     expect(
       tester.takeAnnouncements().map((a) => a.message),

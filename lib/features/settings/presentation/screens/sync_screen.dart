@@ -11,6 +11,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/presentation/controllers/sync_controller.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_notice_widget.dart';
+import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/sync_status_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -32,11 +33,14 @@ class SyncScreen extends ConsumerWidget {
 
   static const int _skeletonRows = 2;
 
-  /// Sync now leads only when something waits or the last run failed and no
-  /// row was refused; with refused rows the banner's Try again is the one
-  /// primary (DESIGN.md One Indigo; critique 2026-09-30 part 1).
+  /// Sync now leads only when something waits or the last run failed, no
+  /// row was refused, and the network is not what failed: with refused rows
+  /// the banner's Try again is the one primary (DESIGN.md One Indigo;
+  /// critique 2026-09-30 part 1), and offline a manual run cannot help
+  /// (critique 2026-10-02, F8).
   static bool _leadsSyncNow(SyncStatus status) =>
       status.rejectedCount == 0 &&
+      status.lastFailure?.kind != SyncFailureKind.network &&
       (status.pendingCount > 0 || status.lastFailure != null);
 
   @override

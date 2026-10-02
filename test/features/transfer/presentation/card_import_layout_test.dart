@@ -69,7 +69,7 @@ void main() {
       deck.id,
       file: _file('front,back\nmul,water\nbul,fire\n'),
     );
-    await _tap(tester, _en.importPickAction);
+    await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
     await _tap(tester, _en.importPreviewAction);
 

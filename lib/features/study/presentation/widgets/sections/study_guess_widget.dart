@@ -182,7 +182,8 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
             ),
           ),
         SessionFooterHintWidget(
-          icon: AppIcons.check,
+          // Instructions take the info glyph (critique 2026-10-02, F7).
+          icon: AppIcons.info,
           text: _isAnswered
               ? l10n.studyGuessHintAnswered
               : l10n.studyGuessHintIdle,
