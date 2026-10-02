@@ -5,38 +5,6 @@ import 'package:memox/core/logging/log_entry.dart';
 
 part 'log_database.g.dart';
 
-/// The device's log buffer: rows wait here until `LogShipper` pushes them to
-/// `public.app_log` (ADR-018 §3). A table of its own database, so a log write
-/// never goes through the app database's tracer or its sync triggers.
-@DataClassName('LogRow')
-class LogEntries extends Table {
-  @override
-  String get tableName => 'log_entry';
-
-  TextColumn get id => text()();
-
-  /// Epoch milliseconds, UTC.
-  IntColumn get occurredAt => integer()();
-  TextColumn get level => text()();
-  TextColumn get category => text()();
-  TextColumn get event => text()();
-  TextColumn get message => text().nullable()();
-  TextColumn get errorType => text().nullable()();
-  TextColumn get errorMessage => text().nullable()();
-  TextColumn get stackTrace => text().nullable()();
-
-  /// JSON object.
-  TextColumn get context => text().withDefault(const Constant('{}'))();
-  TextColumn get deviceId => text().nullable()();
-  TextColumn get appVersion => text().nullable()();
-  TextColumn get buildNumber => text().nullable()();
-  TextColumn get platform => text().nullable()();
-  TextColumn get osVersion => text().nullable()();
-
-  @override
-  Set<Column<Object>> get primaryKey => {id};
-}
-
 /// How many buffered rows Monitoring lists at most, and how much of a
 /// message: the list shows one line.
 const int pendingLimit = 200;
@@ -74,47 +42,29 @@ final class PendingLogRows {
   final int total;
 }
 
-@DriftDatabase(tables: [LogEntries])
+/// The device's log buffer (ADR-018 §3): its table, index and queries are
+/// `log.drift`'s (ADR-020 D8).
+@DriftDatabase(include: {'log.drift'})
 class LogDatabase extends _$LogDatabase {
   LogDatabase(super.executor);
 
   @override
   int get schemaVersion => 1;
 
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) async {
-      await m.createAll();
-      await m.createIndex(
-        Index(
-          'log_entry_occurred_at',
-          'CREATE INDEX log_entry_occurred_at ON log_entry (occurred_at)',
-        ),
-      );
-    },
-  );
-
-  static const _shortLived = {'debug', 'info'};
   static const _shortLife = Duration(days: 7);
   static const _longLife = Duration(days: 180);
 
-  /// Keeps [entries]; an id already here is left as it is.
-  Future<void> insertAll(List<LogEntry> entries) => batch(
-    (batch) => batch.insertAll(logEntries, [
-      for (final entry in entries) _companionOf(entry),
-    ], mode: InsertMode.insertOrIgnore),
-  );
+  /// Keeps [entries] in one transaction; an id already here is left as it
+  /// is.
+  Future<void> insertAll(List<LogEntry> entries) => transaction(() async {
+    for (final entry in entries) {
+      await insertLogEntry(_companionOf(entry));
+    }
+  });
 
   /// The oldest [limit] rows, for a push.
   Future<List<LogEntry>> oldest(int limit) async {
-    final rows =
-        await (select(logEntries)
-              ..orderBy([
-                (t) => OrderingTerm.asc(t.occurredAt),
-                (t) => OrderingTerm.asc(t.id),
-              ])
-              ..limit(limit))
-            .get();
+    final rows = await oldestLogRows(limit).get();
     return [for (final row in rows) _entryOf(row)];
   }
 
@@ -125,96 +75,52 @@ class LogDatabase extends _$LogDatabase {
   Stream<PendingLogRows> watchPending({
     required Set<LogLevel> levels,
     int limit = pendingLimit,
-  }) {
-    final message = logEntries.message.substr(1, pendingMessageLength);
-    final errorMessage = logEntries.errorMessage.substr(
-      1,
-      pendingMessageLength,
-    );
-    final query = selectOnly(logEntries)
-      ..addColumns([
-        logEntries.id,
-        logEntries.occurredAt,
-        logEntries.level,
-        logEntries.event,
-        message,
-        errorMessage,
-        logEntries.errorType,
-      ])
-      ..orderBy([
-        OrderingTerm.desc(logEntries.occurredAt),
-        OrderingTerm.desc(logEntries.id),
-      ])
-      ..limit(limit);
-    if (levels.isNotEmpty) {
-      query.where(logEntries.level.isIn([for (final l in levels) l.name]));
-    }
-    return query.watch().asyncMap(
-      (rows) async => PendingLogRows(
-        items: [
-          for (final row in rows)
-            PendingLog(
-              id: row.read(logEntries.id)!,
-              occurredAt: DateTime.fromMillisecondsSinceEpoch(
-                row.read(logEntries.occurredAt)!,
-                isUtc: true,
+  }) =>
+      pendingLogLines(pendingMessageLength, levels.length, [
+        for (final level in levels) level.name,
+      ], limit).watch().asyncMap(
+        (rows) async => PendingLogRows(
+          items: [
+            for (final row in rows)
+              PendingLog(
+                id: row.id,
+                occurredAt: DateTime.fromMillisecondsSinceEpoch(
+                  row.occurredAt,
+                  isUtc: true,
+                ),
+                level: LogLevel.values.byName(row.level),
+                event: row.event,
+                message: row.message,
+                errorMessage: row.errorMessage,
+                errorType: row.errorType,
               ),
-              level: LogLevel.values.byName(row.read(logEntries.level)!),
-              event: row.read(logEntries.event)!,
-              message: row.read(message),
-              errorMessage: row.read(errorMessage),
-              errorType: row.read(logEntries.errorType),
-            ),
-        ],
-        total: await count(),
-      ),
-    );
-  }
+          ],
+          total: await count(),
+        ),
+      );
 
   /// One buffered row whole, or null once it is pushed or pruned.
   Future<LogEntry?> byId(String id) async {
-    final row = await (select(
-      logEntries,
-    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    final row = await logRowById(id).getSingleOrNull();
     return row == null ? null : _entryOf(row);
   }
 
-  Future<void> deleteIds(Iterable<String> ids) =>
-      (delete(logEntries)..where((t) => t.id.isIn(ids))).go();
+  Future<void> deleteIds(Iterable<String> ids) => deleteLogRows(ids.toList());
 
-  Future<int> count() async {
-    final total = logEntries.id.count();
-    return (await (selectOnly(
-      logEntries,
-    )..addColumns([total])).getSingle()).read(total)!;
-  }
+  Future<int> count() => logEntryCount().getSingle();
 
   /// Drops what the server would drop (ADR-018 §5), then keeps at most [cap]
   /// rows: `debug` goes first, then `info`, `warning` and `error` last,
   /// oldest first within each.
   Future<void> prune({required DateTime now, int cap = 50000}) =>
       transaction(() async {
-        final shortCutoff = now.subtract(_shortLife).millisecondsSinceEpoch;
-        final longCutoff = now.subtract(_longLife).millisecondsSinceEpoch;
-        await (delete(logEntries)..where(
-              (t) =>
-                  (t.level.isIn(_shortLived) &
-                      t.occurredAt.isSmallerThanValue(shortCutoff)) |
-                  (t.level.isNotIn(_shortLived) &
-                      t.occurredAt.isSmallerThanValue(longCutoff)),
-            ))
-            .go();
+        await pruneExpiredLogs(
+          now.subtract(_shortLife).millisecondsSinceEpoch,
+          now.subtract(_longLife).millisecondsSinceEpoch,
+        );
         final excess = await count() - cap;
         if (excess <= 0) return;
-        await customUpdate(
-          'DELETE FROM log_entry WHERE id IN ('
-          'SELECT id FROM log_entry ORDER BY '
-          "CASE level WHEN 'debug' THEN 0 WHEN 'info' THEN 1 ELSE 2 END, "
-          'occurred_at, id LIMIT ?)',
-          variables: [Variable.withInt(excess)],
-          updates: {logEntries},
-          updateKind: UpdateKind.delete,
-        );
+        await pruneLogExcess(excess);
       });
 
   static LogEntriesCompanion _companionOf(LogEntry entry) =>

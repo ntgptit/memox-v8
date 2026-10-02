@@ -31,9 +31,9 @@ Một DAO có thể đọc qua ba cách khác nhau, SQL của một màn không 
   `app_database.dart`, `core/database/migrations/**`), `customStatement('PRAGMA …')`,
   và `core/database/local_data_reset.dart`.
 - Log database chuyển sang `core/database/log/log.drift`.
-- Guard rule `memox.data_model.queries_in_drift` giữ quy tắc này; danh sách file
-  chưa chuyển nằm trong exclude tạm của scope `drift_query_sites` và co lại theo
-  từng phase.
+- Guard rule `memox.data_model.queries_in_drift` giữ quy tắc này trên scope
+  `drift_query_sites` (toàn bộ `lib/`). Scope chỉ exclude các ngoại lệ trên;
+  exclude tạm của các file chưa chuyển đã bị xoá ở P8.
 
 Thiết kế và các phase: [spec](../../superpowers/specs/2026-10-01-drift-queries-only-design.md).
 

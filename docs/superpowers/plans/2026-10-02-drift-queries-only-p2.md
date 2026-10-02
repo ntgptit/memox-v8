@@ -707,4 +707,4 @@ Expression<bool> _holds(Expression<String> folded, String term) =>
 
 - [ ] Run `bash .claude/skills/flutter-workflow/scripts/dod_check.sh`. Expected: `✓ mechanical gates passed`.
 - [ ] Run `git diff --stat <P2 base>...HEAD -- 'test/**/goldens/*.png' 'lib/features/*/presentation/**'`. Expected: empty.
-- [ ] Set FE-D19 in `docs/wbs_FE.md` to `xong`, with the plan link and "`dod_check.sh` xanh" as evidence. Run `python3 tools/docs/generate.py && python3 tools/docs/check.py` and expect PASS. Commit `docs(wbs): FE-D19 done`.
+- [ ] Set FE-D20 in `docs/wbs_FE.md` to `xong`, with the plan link and "`dod_check.sh` xanh" as evidence. Run `python3 tools/docs/generate.py && python3 tools/docs/check.py` and expect PASS. Commit `docs(wbs): FE-D20 done`.

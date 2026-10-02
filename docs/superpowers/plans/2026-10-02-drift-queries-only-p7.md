@@ -121,6 +121,6 @@ These are the same as P2–P6:
 ### Task 5: measure, WBS, gate
 
 - [ ] **Measure.** Run `sync_bulk_test.dart` 3 times and compare with the baseline. The numbers go in the PR.
-- [ ] **WBS.** Mark FE-D24 done and run `tools/docs/generate.py`.
+- [ ] **WBS.** Mark FE-D25 done and run `tools/docs/generate.py`.
 - [ ] **Gate.** Run `dod_check.sh`.
 - [ ] **Review.** Run the final review, then open the PR stacked on P6 (#186).
