@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/library_harness.dart';
@@ -52,7 +53,14 @@ void main() {
       _en.accountDelete,
     ]) {
       expect(_row(tester, label).isEnabled, isTrue);
+      // Each opens a dialog: no chevron (critique 2026-10-02).
+      expect(_row(tester, label).isAction, isTrue);
     }
+    expect(
+      _en.accountSignOutHint,
+      "Removes this phone's data · sign in again to get it back",
+    );
+    expect(find.text(_en.accountSignOutHint), findsOneWidget);
   });
 
   accountTest('checked again offline: the commands wait and say why '
@@ -134,6 +142,32 @@ void main() {
 
     expect(find.text(_en.accountSignOutLossTitle), findsOneWidget);
     expect(find.text(_en.accountSignOutLossBody(2)), findsOneWidget);
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).isDestructive,
+      isTrue,
+    );
+  });
+
+  accountTest('Sign out online confirms in warning: nothing is lost, but '
+      'the phone is cleared (critique 2026-10-02, F3)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await linkEmail(world);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.tap(find.text(_en.accountSignOut));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.accountSignOutTitle), findsOneWidget);
+    final actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
+    expect((actions.isWarning, actions.isDestructive), (true, false));
   });
 
   accountTest('a second tap while a command asks opens no second dialog '

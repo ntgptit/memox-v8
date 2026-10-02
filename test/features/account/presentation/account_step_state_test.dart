@@ -69,6 +69,28 @@ void main() {
     );
   });
 
+  test('a sign-out can be cancelled only before it signs out (critique '
+      '2026-10-02, F2)', () {
+    expect(
+      canCancelSignOut(
+        transitionOf(TransitionKind.signOut, TransitionStage.started),
+      ),
+      isTrue,
+    );
+    expect(
+      canCancelSignOut(
+        transitionOf(TransitionKind.signOut, TransitionStage.signedOut),
+      ),
+      isFalse,
+    );
+    expect(
+      canCancelSignOut(
+        transitionOf(TransitionKind.delete, TransitionStage.started),
+      ),
+      isFalse,
+    );
+  });
+
   test('only a transition that blocks writes shows the layer', () {
     final signOut = transitionOf(
       TransitionKind.signOut,

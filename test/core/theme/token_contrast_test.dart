@@ -47,6 +47,9 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       ('learningInk on $where', derived.statusLearningInk, ground, _text),
       ('masteredInk on $where', derived.statusMasteredInk, ground, _text),
     ],
+    // The Progress day bars on their card, the container-lowest ground
+    // (critique 2026-10-02, F5); learning's ink is held at 4.5 above.
+    ('reviewing bars on the card', scheme.primary, row, _nonText),
     ('snackbar action', scheme.inversePrimary, scheme.inverseSurface, _text),
     (
       'danger badge on its 12% tint',

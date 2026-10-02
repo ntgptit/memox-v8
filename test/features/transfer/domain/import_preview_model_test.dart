@@ -67,8 +67,8 @@ void main() {
     expect(preview.willWrite(includeDuplicates: true), 2);
     expect(
       preview
-          .draftsToWrite(includeDuplicates: true)
-          .map((draft) => draft.front),
+          .rowsToWrite(includeDuplicates: true)
+          .map((row) => row.draft!.front),
       ['a', 'A'],
     );
   });
