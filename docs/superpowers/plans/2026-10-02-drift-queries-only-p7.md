@@ -107,7 +107,7 @@ These are the same as P2–P6:
   - **State:** `syncStateValue`, `putSyncState`, `deleteSyncState`.
   - **Outbox:** `pendingOutbox(:types, $rank, :limit)`, `outboxEntryOf`, `outboxOp`, `deleteOutboxOp`, `countFailedAttempt(:op_ids)`, `enqueueOutbox`.
   - **Rejections:** `upsertRejection`, `deleteRejection`, `allRejections`, `deleteAllRejections`.
-  - **Status:** `syncStatusRow`, with the keys written as literals that a test pins to `sync_keys.dart`. `outboxCount`.
+  - **Status:** `syncStatusRow`, with the three state names as parameters, so `sync_keys.dart` stays their one source (execution ruling). `outboxCount`.
   - **Seeds:** the seven `seed…Outbox` statements.
 - [ ] **Accessor.**
   - `pendingBatch` builds `$rank` with `caseMatch`.

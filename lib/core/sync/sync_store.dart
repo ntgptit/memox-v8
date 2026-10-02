@@ -45,18 +45,22 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
   Future<List<SyncOutboxEntry>> pendingBatch(
     List<String> entityTypes,
     int limit,
-  ) => pendingOutbox(
-    entityTypes,
-    (o) => OrderingTerm(
-      expression: o.entityType.caseMatch<int>(
-        when: {
-          for (var i = 0; i < entityTypes.length; i++)
-            Constant(entityTypes[i]): Constant(i),
-        },
+  ) async {
+    // caseMatch needs at least one case, and no type has no entry.
+    if (entityTypes.isEmpty) return const [];
+    return pendingOutbox(
+      entityTypes,
+      (o) => OrderingTerm(
+        expression: o.entityType.caseMatch<int>(
+          when: {
+            for (var i = 0; i < entityTypes.length; i++)
+              Constant(entityTypes[i]): Constant(i),
+          },
+        ),
       ),
-    ),
-    limit,
-  ).get();
+      limit,
+    ).get();
+  }
 
   Future<bool> isPendingEntity(String entityType, String entityId) =>
       isEntityPending(entityType, entityId).getSingle();
