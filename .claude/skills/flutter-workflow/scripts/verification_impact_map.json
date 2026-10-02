@@ -54,9 +54,11 @@
     "trash": []
   },
   "database_query_features": {
+    "account_device_queries": ["account"],
     "card_queries": ["card"],
     "deck_queries": ["deck"],
-    "trash_queries": ["card", "deck", "trash"]
+    "delete_batch_queries": ["card", "deck", "trash"],
+    "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [
     ".github/",
