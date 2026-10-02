@@ -4,18 +4,21 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
 
-/// A ghost chip that opens a menu (sort, filters). No fill and no border,
-/// which sets it apart from MxFilterChip; it never reads as selected. The
-/// menu is the caller's.
+/// A chip that opens a menu (sort, filters). A ghost hairline marks it as a
+/// control; while it holds a choice other than the default ([isActive]) it
+/// fills with the primary container, so a filtered list says so
+/// (critique 2026-10-02 screen 28, SP1 §5.3). The menu is the caller's.
 class MxChipTrigger extends StatelessWidget {
   const MxChipTrigger({
     super.key,
     required this.label,
     required this.onPressed,
     this.icon = AppIcons.chevronDown,
+    this.isActive = false,
   });
 
   final String label;
@@ -24,15 +27,23 @@ class MxChipTrigger extends StatelessWidget {
   /// The trailing glyph at 16: chevron-down by default.
   final IconData icon;
 
+  /// The chip holds a non-default choice.
+  final bool isActive;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return TextButton(
       onPressed: onPressed,
       style: appButtonStyle(
-        fill: null,
-        ink: colors.onSurfaceVariant,
-        edge: BorderSide.none,
+        fill: isActive ? colors.primaryContainer : null,
+        ink: isActive ? colors.onPrimaryContainer : colors.onSurfaceVariant,
+        edge: isActive
+            ? BorderSide.none
+            : BorderSide(
+                color: context.derivedColors.ghostBorder,
+                width: AppStroke.hairline,
+              ),
         focusColor: context.derivedColors.primaryInk,
         height: AppSize.chip,
         radius: AppRadius.full,
