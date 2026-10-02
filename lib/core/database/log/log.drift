@@ -35,7 +35,9 @@ SELECT * FROM log_entry ORDER BY occurred_at, id LIMIT :limit;
 -- Monitoring's Not sent tab: the newest :limit rows of :levels (every level
 -- when :level_count is 0), each without its stack trace and context, the
 -- message and the error's message cut to :message_length characters.
-pendingLogLines(:level_count AS INTEGER, :message_length AS INTEGER,
+-- Declared in the generated order (first use in the statement), since the
+-- two counts are both ints.
+pendingLogLines(:message_length AS INTEGER, :level_count AS INTEGER,
   :limit AS INTEGER) AS PendingLogLine:
 SELECT id, occurred_at, level, event,
   substr(message, 1, :message_length) AS message,

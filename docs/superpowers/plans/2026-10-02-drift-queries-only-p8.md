@@ -16,7 +16,7 @@
 - **The exclude ends.**
   - `drift_query_sites` keeps only its permanent excludes: migrations, `schema_versions.dart`, `app_database.dart` and `local_data_reset.dart`.
   - The guard test that lists the temporary exclude now asserts it is empty.
-  - The spec's P8 row and the ADR need no change.
+  - The spec's P8 row needs no change. ADR-020's guard line and the `flutter-drift` baseline say the exclude is gone (execution ruling).
 
 **Spec:** `docs/superpowers/specs/2026-10-01-drift-queries-only-design.md` (§4 P8; D7, D8, D10). ADR-020.
 
