@@ -106,7 +106,8 @@ class FakeAuthGateway implements AuthGateway {
   /// The next code request fails with this, as GoTrue's rate limit does.
   Failure? failNextRequest;
 
-  /// While set, code requests wait on it, as a slow network does.
+  /// While set, code requests and Google picks wait on it, as a slow network
+  /// does.
   Completer<void>? holdRequests;
 
   /// While set, code checks wait on it, as a slow network does.
@@ -220,6 +221,7 @@ class FakeAuthGateway implements AuthGateway {
   @override
   Future<GoogleCredential> pickGoogle() async {
     kill?.step();
+    await _waitIfHeld();
     if (googleCancels) throw const GoogleCancelledFailure();
     return google;
   }

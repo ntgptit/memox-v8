@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/account/presentation/controllers/code_controller.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
@@ -33,28 +34,35 @@ class CodeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     void back() => unawaited(Navigator.of(context).maybePop());
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.accountCodeTitle,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: back,
-        ),
-      ),
-      body: MxScreenScroll(
-        children: [
-          CodeFormWidget(
-            email: email,
-            purpose: purpose,
-            onUseAnotherEmail: back,
-            onSignedIn: () {
-              saySignedIn(context, stateAfterCommand(ref));
-              onSignedIn();
-            },
+    // A check or a resend holds Back (2.46).
+    final isBusy = ref.watch(
+      codeControllerProvider(email, purpose).select((state) => state.isBusy),
+    );
+    return PopScope(
+      canPop: !isBusy,
+      child: MxAppShell(
+        appBar: MxAppBar(
+          title: l10n.accountCodeTitle,
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: back,
           ),
-        ],
+        ),
+        body: MxScreenScroll(
+          children: [
+            CodeFormWidget(
+              email: email,
+              purpose: purpose,
+              onUseAnotherEmail: back,
+              onSignedIn: () {
+                saySignedIn(context, stateAfterCommand(ref));
+                onSignedIn();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
