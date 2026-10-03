@@ -947,7 +947,7 @@
   "@cardDeckRejectsTitle": {
     "description": "Warning banner when the deck now holds sub-decks."
   },
-  "cardDeckRejectsBody": "It now holds sub-decks.",
+  "cardDeckRejectsBody": "It now holds sub-decks. Your text is kept on this phone.",
   "@cardDeckRejectsBody": {
     "description": "Warning banner body when the deck refuses cards."
   },

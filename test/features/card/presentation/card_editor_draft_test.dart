@@ -1,12 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/data/repositories/card_draft_repository_impl.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
+import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -44,6 +53,27 @@ CardDraftRepositoryImpl _drafts(LibraryEnv env) =>
 Future<String> _words(LibraryEnv env) async {
   final korean = await env.decks.root('Korean');
   return (await env.decks.sub(korean.id, 'Words')).id;
+}
+
+/// An edit that waits until the test lets it through.
+final class _HeldEdits implements CardRepository {
+  _HeldEdits(this._cards);
+
+  final CardRepository _cards;
+  final release = Completer<void>();
+
+  @override
+  Future<Outcome<void, CardRejection>> editCard({
+    required String cardId,
+    required CardDraft draft,
+    DateTime? now,
+  }) async {
+    await release.future;
+    return _cards.editCard(cardId: cardId, draft: draft, now: now);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
@@ -264,5 +294,81 @@ void main() {
 
     expect(find.text(_en.cardDraftTitle), findsNothing);
     expect((await _drafts(env).read(CardDraftKey.create(deckA)))?.front, 'bap');
+  });
+
+  libraryTest('a deck that rejects the card keeps the draft, says so, and '
+      'offers the text back next time (2.15)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await env.decks.sub(deckId, 'Verbs');
+    await tester.enterText(_field(0), 'bap');
+    await tester.enterText(_field(1), 'rice');
+    // Save before the pause ends: the refusal itself writes the draft.
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardDeckRejectsTitle), findsOneWidget);
+    expect(find.text(_en.cardDeckRejectsBody), findsOneWidget);
+    final kept = await _drafts(env).read(CardDraftKey.create(deckId));
+    expect((kept!.front, kept.back), ('bap', 'rice'));
+
+    // Leaving asks nothing: the text is already safe.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardDiscardNewTitle), findsNothing);
+
+    // A fresh editor, not the same state again.
+    await tester.pumpWidget(const SizedBox());
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardDraftTitle), findsOneWidget);
+  });
+
+  libraryTest('Cancel, close and Back are held while a save is in flight '
+      '(2.16)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    final held = _HeldEdits(env.cards);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _edit(card.id),
+      overrides: [
+        editCardUseCaseProvider.overrideWithValue(EditCardUseCase(held)),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'cooked rice');
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+          .onPressed,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.back),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.binding.handlePopRoute();
+    // The save spinner never settles: a frame is all Back needs.
+    await tester.pump();
+    expect(find.text(_en.cardDiscardTitle), findsNothing);
+
+    held.release.complete();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text(_en.cardDiscardTitle), findsNothing);
   });
 }

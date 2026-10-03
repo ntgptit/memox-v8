@@ -310,6 +310,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         unawaited(_drafts.clear());
         _leave();
       case Rejected(reason: CardRejection.notACardContainer):
+        _keepNow();
         setState(() {
           _isSaving = false;
           _deckRejects = true;
@@ -352,7 +353,16 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     });
   }
 
+  /// What is on screen is what a refusal would strand: it goes to the draft
+  /// at once, ahead of any earlier draft on offer (SP2a 2.15).
+  void _keepNow() {
+    _offer = null;
+    _drafts.schedule(_draft(), saved: _saved);
+    unawaited(_drafts.flush());
+  }
+
   Future<void> _confirmLeave() async {
+    if (_isSaving) return;
     final discard = await showCardDiscardDialog(
       context,
       isNew: _isCreating,
@@ -363,7 +373,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     _leave();
   }
 
-  void _close() => unawaited(Navigator.of(context).maybePop());
+  void _close() {
+    if (_isSaving) return;
+    unawaited(Navigator.of(context).maybePop());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,9 +384,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     final errors = _errors(l10n);
     final isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
     return PopScope(
-      canPop: _isLeaving || _isGone || !_isDirty,
+      // A refused deck leaves without asking: its text is already in the
+      // draft. A save in flight holds Back (SP2a 2.15, 2.16).
+      canPop:
+          !_isSaving && (_isLeaving || _isGone || _deckRejects || !_isDirty),
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_confirmLeave());
+        if (didPop || _isSaving) return;
+        unawaited(_confirmLeave());
       },
       child: MxAppShell(
         appBar: _appBar(l10n),
@@ -386,7 +403,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                     : l10n.cardSaveChanges,
                 hasFailed: _hasFailed,
                 isSaving: _isSaving,
-                onCancel: _close,
+                onCancel: _isSaving ? null : _close,
                 onSave: _onSave,
               ),
         body: _isGone
@@ -423,7 +440,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     leading: MxIconButton(
       icon: _isCreating ? AppIcons.close : AppIcons.back,
       semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,
-      onPressed: _close,
+      onPressed: _isSaving ? null : _close,
     ),
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
