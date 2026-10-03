@@ -56,9 +56,7 @@ final class TagRepositoryImpl implements TagRepository {
         await _dao.link(cardId, tagId);
       }
       return Ok(
-        TagAttached(
-          BulkOutcome(done: live, skipped: cardIds.difference(live)),
-        ),
+        TagAttached(BulkOutcome(done: live, skipped: cardIds.difference(live))),
       );
     });
   }

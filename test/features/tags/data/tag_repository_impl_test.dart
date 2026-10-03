@@ -170,30 +170,53 @@ void main() {
       expect(_reasonOf(result), isNull);
     });
 
-    test('a card already gone is skipped; the others are tagged (SP2a 2.19)', () async {
-      await _cards(db, ['c1']);
+    test(
+      'a card already gone is skipped; the others are tagged (SP2a 2.19)',
+      () async {
+        await _cards(db, ['c1']);
+
+        final result = await tags.attachByName(
+          cardIds: {'c1', 'gone'},
+          name: 'Noun',
+        );
+
+        final attached =
+            ((result as Ok<TagAttach, TagRejection>).value as TagAttached)
+                .outcome;
+        expect(attached.done, {'c1'});
+        expect(attached.skipped, {'gone'});
+        expect(await _tagNamesOf(db, 'c1'), ['Noun']);
+      },
+    );
+
+    test('a gone card does not hide a full one: the limit still refuses and '
+        'names only the full card', () async {
+      await _cards(db, ['full', 'free']);
+      await _tagged(db, 'full', 10);
+      final before = await totalChanges(db);
 
       final result = await tags.attachByName(
-        cardIds: {'c1', 'gone'},
+        cardIds: {'full', 'free', 'gone'},
         name: 'Noun',
       );
 
-      final attached =
-          ((result as Ok<TagAttach, TagRejection>).value as TagAttached)
-              .outcome;
-      expect(attached.done, {'c1'});
-      expect(attached.skipped, {'gone'});
-      expect(await _tagNamesOf(db, 'c1'), ['Noun']);
-    });
-
-    test('when every card is gone the batch is notFound, writing nothing', () async {
-      final before = await totalChanges(db);
-
-      final result = await tags.attachByName(cardIds: {'gone'}, name: 'Noun');
-
-      expect(_reasonOf(result), TagRejection.notFound);
+      final limit =
+          (result as Ok<TagAttach, TagRejection>).value as TagLimitReached;
+      expect(limit.fullCardIds, {'full'});
       expect(await totalChanges(db), before);
     });
+
+    test(
+      'when every card is gone the batch is notFound, writing nothing',
+      () async {
+        final before = await totalChanges(db);
+
+        final result = await tags.attachByName(cardIds: {'gone'}, name: 'Noun');
+
+        expect(_reasonOf(result), TagRejection.notFound);
+        expect(await totalChanges(db), before);
+      },
+    );
   });
 
   group('detach', () {
