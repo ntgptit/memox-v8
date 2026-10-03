@@ -74,7 +74,7 @@ The images are the goldens.
 | list, loading | — | — | `MxSkeletonList`, six rows. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
 | list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
-| list, refresh failed | `monitoring_list_refresh_failed_light.png` | `monitoring_list_refresh_failed_dark.png` | A pull to refresh failed with the rows on screen: they stay under a warning banner with Retry (SP2b 2.38). |
+| list, refresh failed | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_list_refresh_failed_light.png) | ![](../../../../test/features/monitoring/presentation/goldens/monitoring_list_refresh_failed_dark.png) | A pull to refresh failed with the rows on screen: they stay under a warning banner with Retry (SP2b 2.38). |
 | list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). |
 | detail, not an admin | — | — | Mark fixed or Reopen answered `FORBIDDEN`: the page becomes "Only an admin can see this", with no triage footer and no Retry toast (SP2b 2.39). |
 | detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; "This log is gone" / "It may have been cleaned up." |

@@ -44,7 +44,7 @@ The images are the goldens.
 | rejected | ![](../../../../test/features/settings/presentation/goldens/sync_rejected_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_rejected_dark.png) | Golden `sync_rejected_*`. |
 | keepDialog | ![](../../../../test/features/settings/presentation/goldens/sync_keep_dialog_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_keep_dialog_dark.png) | Golden `sync_keep_dialog_*` (critique 2026-09-30 part 1). |
 | syncing | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_syncing_dark.png) | Golden `sync_syncing_*`. |
-| failedSignIn | `sync_failed_sign_in_light.png` | `sync_failed_sign_in_dark.png` | The session was refused and the person can sign in again: the warning banner reads "Your sign-in expired, so sync is paused…" with a compact primary "Sign in", and Sync now is outline. Sign in opens screen 30 `reauth` and returns here (SP2b 2.37). |
+| failedSignIn | ![](../../../../test/features/settings/presentation/goldens/sync_failed_sign_in_light.png) | ![](../../../../test/features/settings/presentation/goldens/sync_failed_sign_in_dark.png) | The session was refused and the person can sign in again: the warning banner reads "Your sign-in expired, so sync is paused…" with a compact primary "Sign in", and Sync now is outline. Sign in opens screen 30 `reauth` and returns here (SP2b 2.37). |
 | loading | — | — | `MxSkeletonList`, two rows. |
 | read error | — | — | `MxErrorState` "Couldn't open Sync" with the local-first body and Retry (spec §6). |
 
