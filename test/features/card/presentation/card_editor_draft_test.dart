@@ -57,9 +57,12 @@ Future<String> _words(LibraryEnv env) async {
 
 /// An edit that waits until the test lets it through.
 final class _HeldEdits implements CardRepository {
-  _HeldEdits(this._cards);
+  _HeldEdits(this._cards, {this.then});
 
   final CardRepository _cards;
+
+  /// What the edit ends with; null lets it through to the real repository.
+  final Future<Outcome<void, CardRejection>> Function()? then;
   final release = Completer<void>();
 
   @override
@@ -69,6 +72,7 @@ final class _HeldEdits implements CardRepository {
     DateTime? now,
   }) async {
     await release.future;
+    if (then != null) return then!();
     return _cards.editCard(cardId: cardId, draft: draft, now: now);
   }
 
@@ -318,6 +322,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.cardDiscardNewTitle), findsNothing);
 
+    // A refusal releases the hold: the controls work again.
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.close),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+          .onPressed,
+      isNotNull,
+    );
+
     // A fresh editor, not the same state again.
     await tester.pumpWidget(const SizedBox());
     await pumpLibraryScreen(tester, env, _create(deckId));
@@ -370,5 +390,83 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text(_en.cardDiscardTitle), findsNothing);
+  });
+
+  /// Opens the editor on a card whose edit ends with [then], saves, and lets
+  /// it end.
+  Future<void> saveEndingWith(
+    WidgetTester tester,
+    LibraryEnv env,
+    Future<Outcome<void, CardRejection>> Function() then,
+  ) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    final held = _HeldEdits(env.cards, then: then);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _edit(card.id),
+      overrides: [
+        editCardUseCaseProvider.overrideWithValue(EditCardUseCase(held)),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'cooked rice');
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pump();
+    held.release.complete();
+    await tester.pump();
+    await tester.pump();
+  }
+
+  libraryTest('a card deleted while saving releases the hold: Back and the '
+      'leading button work on the gone state (2.16)', (tester, env) async {
+    await saveEndingWith(
+      tester,
+      env,
+      () async => const Rejected(CardRejection.notFound),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardGoneTitle), findsOneWidget);
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.back),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    // Not held, not asked: an edited form would otherwise raise the dialog.
+    expect(find.text(_en.cardDiscardTitle), findsNothing);
+  });
+
+  libraryTest('a save that throws something unexpected releases the hold '
+      '(2.16)', (tester, env) async {
+    await saveEndingWith(tester, env, () async => throw StateError('boom'));
+    // The error is not swallowed: the framework sees it.
+    expect(tester.takeException(), isA<StateError>());
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.back),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+          .onPressed,
+      isNotNull,
+    );
   });
 }

@@ -296,6 +296,18 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         _isSaving = false;
         _hasFailed = true;
       });
+    } catch (error, stack) {
+      // Any other error must not leave the hold on: Back, close and Cancel
+      // work again (SP2a 2.16). _save runs unawaited, so the error is
+      // reported here rather than thrown into the zone.
+      if (mounted && _isSaving) setState(() => _isSaving = false);
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'card editor',
+        ),
+      );
     }
   }
 
@@ -316,7 +328,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           _deckRejects = true;
         });
       case Rejected(reason: CardRejection.notFound):
-        setState(() => _isGone = true);
+        setState(() {
+          _isSaving = false;
+          _isGone = true;
+        });
       case Rejected(:final reason):
         setState(() => _isSaving = false);
         showMxSnackbar(context, message: l10n.cardRejection(reason));
