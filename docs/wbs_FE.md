@@ -144,6 +144,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | xong | FE-D19…FE-D25 | S | [plan](superpowers/plans/2026-10-02-drift-queries-only-p8.md); `dod_check.sh` xanh | — |
 | FE-D27 | UI hardening SP1 Foundations: MxDialog (bàn phím, hinge, `isHeld`), MxStepper commit, footer caption, heading, nav semantics, system bars, launch window, page transition, tint rungs, MxChipTrigger, haptics, luật DESIGN.md | xong | — | L | [spec](superpowers/specs/2026-10-03-ui-hardening-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp1-foundations.md); `dod_check.sh` xanh, goldens Linux xanh, APK debug build được | SP2 |
 | FE-D28 | UI hardening SP2a: study và thẻ — draft thẻ (schema 13), hỏi khi kết thúc phiên deck khác, giữ màn khi deck mất, Recall dừng dưới dialog, Fill tắt gợi ý, thao tác hàng loạt bỏ qua thẻ đã mất + Undo, import giới hạn/Undo | xong | FE-D27 | L | [spec](superpowers/specs/2026-10-03-ui-hardening-sp2a-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp2a.md); `dod_check.sh` xanh, goldens Linux xanh (505), review cuối + một impeccable audit đã sửa | SP2b |
+| FE-D29 | UI hardening SP2b: dialog giữ khi đang ghi và báo lỗi trong dialog, Trash tự dọn theo giờ server (R10), nhắc học/sync/monitoring không báo sai, tài khoản không kẹt ("Close MemoX", R11) | đang làm | FE-D28 | L | [spec](superpowers/specs/2026-10-03-ui-hardening-sp2b-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp2b.md) | SP3 |
 
 ## Đã xong và đã kiểm chứng
 

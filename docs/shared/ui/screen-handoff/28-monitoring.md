@@ -34,7 +34,7 @@ FE-B8; ADR-018 §6 to §8; spec
 | Filters (Server) | `MxChipTrigger` × 5 in a row that scrolls | Level (default warning + error) · Status (default open) · Category · Time · Device / user. A chip that holds a choice shows it, naming one or two and counting from three: "Level · Warning, Error", "Status · Open", "Time · Last 24 hours", "Level · 3"; Device / user counts a pair, since its choices are ids (critique 2026-09-30 part 3b). |
 | Count | `MxListSectionHeader` | "{n} logs" with any filter (the chip names the filter); "{n}+ logs" while more pages exist. |
 | Rows | `MxListRow` | Leading `MxIconTile` with a glyph per level (debug bug, info circle, warning triangle, error circle) on the tint of its level; title `event`; subtitle the first line of the message, or else of the error message, or else the error type; trailing `HH:mm` today or "Sep 26", and under it an `MxBadge` "Open" / "Fixed" for warnings and errors, except a row whose status is the one the Status filter holds: the chip and the header say it (critique 2026-09-30 part 3b). TalkBack: "{level}, {event}, {time}, {status}". |
-| End | `MxSpinner` / `MxInlineBanner` / caption | The next 100 rows load when the last 10 come into view; a spinner while they do; "Couldn't load more logs." with Retry; "No more logs". A pull to refresh that fails keeps the rows under a `warning` `MxInlineBanner` above the count, "Nothing was lost. Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded." with Retry, which refreshes again (SP2b 2.38). A lost admin role, a new filter or search, and an empty list show the full failure page instead. |
+| End | `MxSpinner` / `MxInlineBanner` / caption | The next 100 rows load when the last 10 come into view; a spinner while they do; "Couldn't load more logs." with Retry; "No more logs". A pull to refresh that fails keeps the rows under a `warning` `MxInlineBanner` above the count, "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded." with Retry, which refreshes again (SP2b 2.38). A lost admin role, a new filter or search, and an empty list show the full failure page instead. |
 | Not sent | `MxNote` + one `MxChipTrigger` (Level, default warning + error) + rows | "These logs wait on this device. They are sent when MemoX is online." (the tab states how many), then the header "{n} at these levels" over the rows shown (critique 2026-09-30 part 3b). The rows are the device buffer, watched, without a status. |
 | Filter sheets | `MxBottomSheet` | Level, Status and Category: a toggle per value (`MxSettingsRow` + `MxToggle`). Time: an `MxOptionRow` per window (last hour, 24 hours, 7 days, 30 days, all time). Device / user: two `MxTextField`s and an `MxNote`. Each has Reset (outline) and Apply. |
 
@@ -74,7 +74,9 @@ The images are the goldens.
 | list, loading | — | — | `MxSkeletonList`, six rows. |
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
 | list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
+| list, refresh failed | `monitoring_list_refresh_failed_light.png` | `monitoring_list_refresh_failed_dark.png` | A pull to refresh failed with the rows on screen: they stay under a warning banner with Retry (SP2b 2.38). |
 | list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). |
+| detail, not an admin | — | — | Mark fixed or Reopen answered `FORBIDDEN`: the page becomes "Only an admin can see this", with no triage footer and no Retry toast (SP2b 2.39). |
 | detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; "This log is gone" / "It may have been cleaned up." |
 
 Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,list_all_levels,list_empty,list_offline,not_sent,level_sheet}_{light,dark}.png` and `monitoring_detail_{open,open_trace,fixed,local}_{light,dark}.png`.
@@ -93,14 +95,15 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; the detail shows the full date and `HH:mm:ss`, 24-hour in every language.
 - **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists' success state tints with success.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the list header counts logs with any filter ("{n} logs" / "{n}+ logs"; the filter chip, e.g. "Status · Open", names the filter); a stack trace lays out one frame per row with the `#n` in a fixed-width cell, so wrapped lines hang under the frame's text, and it stays selectable with the `#n` in the primary ink.
-- **SP2b 2.38:** a failed refresh keeps the rows; only `notAdmin`, a new filter or search, and an empty list replace them.
+- **SP2b 2.38 (spec `2026-10-03-ui-hardening-sp2b-design.md`):** a failed refresh keeps the rows; only `notAdmin`, a new filter or search, and an empty list replace them. Its sentence says first that nothing was lost (DESIGN.md, the local-first voice).
+- **SP2b 2.39:** a lost admin role on Mark fixed or Reopen ends the page as "Only an admin can see this" instead of offering a Retry that cannot succeed.
 
 ## Copy
 
 - App bar and tabs: "Monitoring" · "Server" · "Not sent ({n})".
 - Search and chips: "Search event or message" · "Clear search" · "Level" · "Status" · "Category" · "Time" · "Device / user" · "{label} · {value}"; levels "Debug" · "Info" · "Warning" · "Error"; statuses "Open" · "Fixed"; windows "Last hour" · "Last 24 hours" · "Last 7 days" · "Last 30 days" · "All time"; sheets "Reset" · "Apply" · "Device ID" · "User ID" · "Paste an ID from a log's details." · "That isn't a valid user ID."
 - List: "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs." · "Retry".
-- Refresh: "Couldn't refresh the list. The rows below are from the last time it loaded." · "Retry".
+- Refresh: "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded." · "Retry".
 - States: "No open problems" · "Warnings and errors will show here." · "Nothing matches" · "Clear filters" · "Can't reach the server" · "Monitoring reads the logs online. The ones this device hasn't sent are under Not sent." · "Not sent" · "Couldn't load logs" · "Nothing was lost. Try again in a moment." · "Only an admin can see this".
 - Not sent: "These logs wait on this device. They are sent when MemoX is online." · "{n} at these levels" · "Nothing waiting" · "Every log on this device has been sent." · "No logs at these levels" · "Try another level."
 - Detail: "Log" · "Copy log" · "Copied" · "Copy device ID" · "Copy user ID" · "Details" · "Fixed by" · "Fixed at" · "Note" · "Category" · "Source" · "Device" · "App" · "Platform" · "User" · "Message" · "Error" · "Stack trace" · "Context".

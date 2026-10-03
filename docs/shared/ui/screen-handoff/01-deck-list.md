@@ -65,9 +65,10 @@ One `MxBottomSheet`, "Sort & filter":
 | rootSortFilter | `library_sort_light.png` | `library_sort_dark.png` | Progress orders least mastered first, decks with no card last (BR-DECK-027). |
 | rootDueEmpty | no golden | no golden | "Nothing due right now" with "Show all decks". |
 | rootOverflow | `library_deck_actions_light.png` | `library_deck_actions_dark.png` | Rows as in "Action sheet"; Reorder added. |
-| rootCreate | no golden | no golden | The create dialog; no algorithm chosen up front (BR-SRS-001). |
-| rootRename | no golden | no golden | The rename dialog. |
-| rootDelete | `library_deck_delete_light.png` | `library_deck_delete_dark.png` | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15). |
+| rootCreate | no golden | no golden | The create dialog; no algorithm chosen up front (BR-SRS-001). While it writes it is held: Back, the scrim and Cancel wait, and they never open "Discard this deck?" over the write. A database failure shows in a warning banner at the top of the dialog; Create is the retry (SP2b 2.26, 2.27). |
+| rootRename | no golden | no golden | The rename dialog. It is held while it saves, and a database failure shows in a warning banner inside it; Rename is the retry. The same dialog names a new sub-deck (SP2b 2.26, 2.27). |
+| rootDelete | `library_deck_delete_light.png` | `library_deck_delete_dark.png` | Moves to the Trash (UC-TRASH-001). The dialog has no glyph and names the deck in quotes, not bold. The confirm spins while the deck moves (FE-B1 D15), and Back, the scrim and Cancel wait until it is done (SP2b 2.26). |
+| rootDeleteFailed | `library_deck_delete_failed_light.png` | `library_deck_delete_failed_dark.png` | The move to Trash failed: the dialog stays, held no longer, with a warning banner ("Nothing was lost. The data is busy, so try again.") above the body. "Move to Trash" is the retry; Cancel works again. No toast, which would sit under the scrim (SP2b 2.27). |
 | rootTrashed | `library_deck_trashed_light.png` | `library_deck_trashed_dark.png` | Undo for 8 seconds, and until acted on under TalkBack (FE-B1 D3, D14). A refused Undo says why: "Can't undo. {reason} Restore it from Trash and choose a deck." |
 | deckLoaded | `library_deck_open_light.png` | `library_deck_open_dark.png` | The level's donut beside "MASTERED · {algorithm}"; the breakdown line wraps between whole terms, never "…" (the Wrap Rule; critique 2026-09-30 part 3b). |
 | deckEmpty | `library_deck_unset_light.png` | `library_deck_unset_dark.png` | `unset` deck: both create choices and "Import cards from a file" (screen 11); no FAB (R9, critique 2026-09-30 part 1). |
@@ -76,7 +77,7 @@ One `MxBottomSheet`, "Sort & filter":
 | deckError | no golden | no golden | Error state with Retry. |
 | deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
 | deckOverflow | no golden | no golden | The sub-deck action sheet. |
-| deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
+| deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). While the move runs the sheet is held (`MxDeckPickerSheet.isHeld`: Back, the scrim, a drag and the dismiss button wait); a failure shows as the picker's `banner` under the rule, and choosing a deck again retries (SP2b 2.26, 2.27). |
 | deckDelete | no golden | no golden | As rootDelete. |
 | deckTrashed | no golden | no golden | As rootTrashed. Moving the open deck steps back to its parent first (C-L5); the toast survives the step back. |
 Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder mode).
@@ -98,6 +99,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow (12/600 muted); the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the recent sort is labelled "Date added" (vi "Ngày tạo") with the hint "Newest first"; the search field is hidden while decks are reordered, as the summary, the due strip and the sort pill are, and returns with Done.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due strip's breakdown is overdue · today, the two halves of its total; New stays on each deck row (BR-STUDY-068).
+- **SP2b 2.26, 2.27 (spec `2026-10-03-ui-hardening-sp2b-design.md`):** the deck delete, rename and create dialogs and the move sheet are held while they write (`isHeld`; Cancel is off), so the result they report is never lost to Back or a scrim tap, and the create dialog's discard prompt cannot open over a write. A database `Failure` stays inside the dialog as a warning `MxInlineBanner` and the confirm retries (DESIGN.md, "a failure inside a dialog"). A throw that is not a `Failure` is reported once (`failureOfThrown`) and told as unknown ("Nothing was lost, but something went wrong. Try again.").
 
 ## Pending
 
@@ -120,3 +122,4 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck to Trash?" · "“{name}” goes to Trash with its {n} sub-decks and {n} cards." · "Recoverable from Trash for 30 days. Any open study session on these cards ends." · "Cancel" · "Move to Trash" · "“{name}” moved to Trash · {n} sub-decks, {n} cards" · "Undo".
 - Move: "Move “{name}” to…" · "Its {n} sub-decks and {n} cards come along, schedules included. Only decks in the same review algorithm can receive it." · "Move here".
 - Sort & filter: as in "Sort & filter sheet".
+- Failure inside a dialog or sheet: the failure's own sentence (`l10n.failure`), e.g. "Nothing was lost. The data is busy, so try again." · "Nothing was lost, but something went wrong. Try again."
