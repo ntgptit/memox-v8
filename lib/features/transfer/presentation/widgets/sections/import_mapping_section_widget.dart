@@ -52,6 +52,17 @@ class ImportMappingSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // The deck could not be read for the preview: nothing was lost, so a
+        // warning, and Preview rows is live again (SP2a 2.22, audit M2). It
+        // leads the step, under the file, so it is seen without scrolling.
+        if (draft.problem == TransferRejection.previewFailed) ...[
+          MxInlineBanner(
+            tone: MxBannerTone.warning,
+            title: l10n.importProblem(TransferRejection.previewFailed).title,
+            message: l10n.importProblem(TransferRejection.previewFailed).body,
+          ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
         MxSection(
           title: l10n.importSectionColumns,
           children: [
@@ -77,16 +88,6 @@ class ImportMappingSectionWidget extends StatelessWidget {
               ),
           ],
         ),
-        // The deck could not be read for the preview: nothing was lost, so a
-        // warning, and Preview rows is live again (SP2a 2.22, audit M2).
-        if (draft.problem == TransferRejection.previewFailed) ...[
-          MxInlineBanner(
-            tone: MxBannerTone.warning,
-            title: l10n.importProblem(TransferRejection.previewFailed).title,
-            message: l10n.importProblem(TransferRejection.previewFailed).body,
-          ),
-          const SizedBox(height: AppSpacing.grouped),
-        ],
         if (!draft.mapping.isComplete) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
