@@ -177,6 +177,7 @@ void main() {
           brightness,
         );
         await tester.pumpAndSettle();
+        expect(find.text(_en.cardDraftTitle), findsOneWidget);
         await expectBoundaryGolden(
           tester,
           'goldens/card_editor_draft_$theme.png',
@@ -204,6 +205,7 @@ void main() {
         await tester.enterText(find.byType(EditableText).at(1), 'thank you!');
         await env.cards.deleteCards(cardIds: {card.id});
         await tester.pumpAndSettle();
+        expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
         await expectBoundaryGolden(
           tester,
           'goldens/card_editor_gone_$theme.png',
@@ -238,6 +240,7 @@ void main() {
         await tester.pump();
         await tester.tap(find.text(_en.cardSaveChanges));
         await tester.pumpAndSettle();
+        expect(find.text(_en.cardChangedTitle), findsOneWidget);
         await expectBoundaryGolden(
           tester,
           'goldens/card_editor_changed_dialog_$theme.png',
