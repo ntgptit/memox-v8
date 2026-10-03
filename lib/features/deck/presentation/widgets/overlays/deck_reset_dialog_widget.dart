@@ -136,25 +136,39 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (failure != null)
-            MxInlineBanner(
-              tone: MxBannerTone.warning,
-              message: l10n.failure(failure),
-            ),
-          if (summaryFailure != null)
-            MxInlineBanner(
-              tone: MxBannerTone.warning,
-              message: summaryFailure,
-              actions: [
-                MxButton(
-                  label: l10n.commonRetry,
-                  size: MxButtonSize.compact,
-                  isLoading: value.isLoading,
-                  onPressed: () => ref.invalidate(
-                    resetLearningSummaryProvider(view.deck.id),
-                  ),
-                ),
-              ],
+          // The dialog owns the gap below the banners, not the banner.
+          if (failure != null || summaryFailure != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: AppSpacing.grouped,
+                children: [
+                  if (failure != null)
+                    MxInlineBanner(
+                      tone: MxBannerTone.warning,
+                      hasMargin: false,
+                      message: l10n.failure(failure),
+                    ),
+                  if (summaryFailure != null)
+                    MxInlineBanner(
+                      tone: MxBannerTone.warning,
+                      hasMargin: false,
+                      message: summaryFailure,
+                      actions: [
+                        MxButton(
+                          label: l10n.commonRetry,
+                          size: MxButtonSize.compact,
+                          isLoading: value.isLoading,
+                          onPressed: () => ref.invalidate(
+                            resetLearningSummaryProvider(view.deck.id),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           if (value.isLoading && !value.hasError)
             MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 1),

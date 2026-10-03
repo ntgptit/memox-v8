@@ -5,8 +5,6 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/domain/models/purge_report_model.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
-import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
-import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -120,20 +118,11 @@ class _TrashPurgeDialogWidgetState
       _ when _isCards => l10n.trashPurgedCards(purged),
       _ => l10n.trashPurgedDecks(purged),
     };
-    // One kept deck is named with what it holds, or counted when its entries
-    // are no longer listed; several are counted, and the notes above the
-    // list name each.
-    final kept = switch (report.blocked.length) {
-      0 => null,
-      1 =>
-        trashBlockedNotes(
-              l10n,
-              report.blocked,
-              ref.read(trashEntriesProvider).value ?? const <TrashEntry>[],
-            ).firstOrNull ??
-            l10n.trashPurgeKeptMany(1),
-      final many => l10n.trashPurgeKeptMany(many),
-    };
+    // The kept decks are only counted: the banner above the list names what
+    // each one still holds (a note says a thing once).
+    final kept = report.blocked.isEmpty
+        ? null
+        : l10n.trashPurgeKeptMany(report.blocked.length);
     return switch ((went, kept)) {
       (final a?, final b?) => l10n.trashPurgedWithKept(a, b),
       (final one?, null) || (null, final one?) => one,

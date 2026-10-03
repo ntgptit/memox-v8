@@ -3,6 +3,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -156,6 +158,36 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/trash_purge_blocked_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('trash awaiting sync, $theme', (tester, env) async {
+      // One card past its 30 days while the purge clock has not reached it: the row
+      // says when it goes on its own line, and the name keeps its width.
+      final korean = await env.decks.root('Korean');
+      final words = await env.decks.sub(korean.id, 'Words');
+      await insertCard(
+        env.db,
+        id: 'meokda',
+        deckId: words.id,
+        front: 'meokda',
+        back: 'eat',
+      );
+      await env.cards.deleteCards(
+        cardIds: {'meokda'},
+        now: libraryToday.subtract(trashRetention + const Duration(days: 1)),
+      );
+      // The last server time is before the expiry: the purge clock waits.
+      await SyncStore(env.db)
+          .recordServerTime(libraryToday.subtract(const Duration(days: 2)));
+      env.serverTime = SyncStore(env.db).serverTime;
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
+        expect(find.text(_en.trashAwaitingSync), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/trash_awaiting_sync_$theme.png',
         );
       });
     });

@@ -67,11 +67,11 @@ form inside it. Its content is centred in the page.
 | Condition | Design |
 |---|---|
 | Running | `MxSpinner` (large), the step in `screenTitle` ("Sending your changes…", "Getting your decks ready…", "Merging…", "Downloading your decks…", "Signing out…", "Deleting your account…") as a live region, "Nothing is lost if you close the app." |
-| Network error | `MxInlineBanner` (warning) "No connection. Your data is safe on this phone." + Retry (primary). |
+| Network error | `MxInlineBanner` (neutral: offline is never a warning) "No connection. Your data is safe on this phone." + Retry (primary). |
 | Other error | "Something went wrong. Your data is safe on this phone." + Retry. |
-| Sign-out stopped offline | "No connection. Nothing has been removed yet." + Retry + "Sign out now and lose {n} changes" (`dangerSoft`) + Cancel (critique 2026-10-02). |
+| Sign-out stopped offline | A neutral banner, "No connection. Nothing has been removed yet." + Retry + "Sign out now and lose {n} changes" (`dangerSoft`) + Cancel (critique 2026-10-02). |
 | Target sign-in | The form above in target mode, the address pre-filled; the code step on the layer's own navigator. |
-| Stuck | "This move can't finish on this phone. Your decks are kept. Close MemoX and report the problem — the log has the details." + "Close MemoX" (outline, closes the app, changes no data) beside Retry, in an `MxActionPair` with Close leading (SP2b R11). |
+| Stuck | `warning`: "Your decks are kept. This move can't finish on this phone. Close MemoX and report the problem; the log has the details." + "Close MemoX" (outline, closes the app, changes no data) beside Retry, in an `MxActionPair` with Close leading (SP2b R11). |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
 
 Notices at the app root: toasts "Couldn't merge. Your decks are still on this phone." and
@@ -117,5 +117,5 @@ The images are the goldens.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Continue without an account"; the dialogs as in the table above.
 - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" while it is still being checked; none while the account moves, such as a switch that stopped on the way, which the layer speaks for (P3b minor M2).
-- Stuck layer: "This move can't finish on this phone. Your decks are kept. Close MemoX and report the problem — the log has the details." · "Close MemoX".
+- Stuck layer: "Your decks are kept. This move can't finish on this phone. Close MemoX and report the problem; the log has the details." · "Close MemoX".
 - Merge sheet and layer: as in the tables above.

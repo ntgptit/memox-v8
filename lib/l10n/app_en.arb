@@ -6622,9 +6622,9 @@
   "@reminderOpenSystemSettings": {
     "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
   },
-  "reminderRevokedHint": "On · notifications are blocked for MemoX",
+  "reminderRevokedHint": "On",
   "@reminderRevokedHint": {
-    "description": "Screen handoff 24 (SP2b 2.34): the toggle row's line while the reminder is on but Android blocks MemoX's notifications."
+    "description": "Screen handoff 24 (SP2b 2.34, audit m3): the toggle row's line while the reminder is on but Android blocks MemoX's notifications; short, because the banner under it says it is blocked."
   },
   "reminderRevokedBody": "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications.",
   "@reminderRevokedBody": {
@@ -6808,6 +6808,10 @@
   "monitoringRefreshFailed": "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded.",
   "@monitoringRefreshFailed": {
     "description": "Screen 28 (SP2b 2.38): the warning banner above the rows when a pull to refresh failed and the rows were kept; its action is Retry."
+  },
+  "monitoringRefreshOffline": "No connection. The rows below are from the last time the list loaded.",
+  "@monitoringRefreshOffline": {
+    "description": "Screen 28 (SP2b audit M1): the neutral banner above the rows when a pull to refresh failed because the device is offline and the rows were kept; its action is Retry."
   },
   "monitoringEmptyTitle": "No open problems",
   "@monitoringEmptyTitle": {
@@ -7263,7 +7267,7 @@
   "@accountLayerFailed": {
     "description": "Transition layer: any other error."
   },
-  "accountLayerStuck": "This move can't finish on this phone. Your decks are kept. Close MemoX and report the problem — the log has the details.",
+  "accountLayerStuck": "Your decks are kept. This move can't finish on this phone. Close MemoX and report the problem; the log has the details.",
   "@accountLayerStuck": {
     "description": "Transition layer: a state the machine says cannot happen; says the move cannot finish on this phone, the decks are kept, and the way out is to close the app and report the problem (SP2b R11, owner ruling: no promise to resume)."
   },

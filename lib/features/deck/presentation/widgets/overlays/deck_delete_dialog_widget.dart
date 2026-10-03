@@ -139,11 +139,13 @@ class _DeckDeleteDialogWidgetState
                 if (failure != null)
                   MxInlineBanner(
                     tone: MxBannerTone.warning,
+                    hasMargin: false,
                     message: l10n.failure(failure),
                   ),
                 if (summaryFailure != null)
                   MxInlineBanner(
                     tone: MxBannerTone.warning,
+                    hasMargin: false,
                     message: summaryFailure,
                     actions: [
                       MxButton(

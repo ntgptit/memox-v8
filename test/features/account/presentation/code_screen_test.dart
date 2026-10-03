@@ -9,6 +9,7 @@ import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
@@ -269,6 +270,11 @@ void main() {
     expect(
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       '123456',
+    );
+    // Offline is neutral: nothing was refused (audit M1).
+    expect(
+      tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
+      MxBannerTone.neutral,
     );
     expect(signIns, 0);
 

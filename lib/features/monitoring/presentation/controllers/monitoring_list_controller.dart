@@ -90,10 +90,10 @@ class MonitoringListController extends _$MonitoringListController {
     _debounce?.cancel();
     _pendingSearch = null;
     if (filter != state.filter) state = MonitoringListState(filter: filter);
-    // The last refresh's warning goes at once, as a retry's failure does; it
-    // comes back if this one fails too (SP2b 2.38).
+    // The last refresh's warning stays while this one runs, marked busy so
+    // its Retry shows progress; a landed page replaces it (SP2b 2.38).
     if (_loaded case final shown? when shown.refreshFailure != null) {
-      _show(shown.withRefreshFailure(null));
+      _show(shown.withRefreshing());
     }
     return _loadFirst();
   }

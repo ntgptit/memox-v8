@@ -4,6 +4,7 @@ import 'package:memox/core/sync/sync_store.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
@@ -51,6 +52,37 @@ void main() {
 
     expect(find.text('Places'), findsOneWidget);
     expect(find.text(_en.trashAwaitingSync), findsWidgets);
+  });
+
+  libraryTest('the awaiting-sync label has its own line under the origin, so '
+      'the name keeps the row (audit M2)', (tester, env) async {
+    await seedTrash(env);
+    env.serverTime = SyncStore(env.db).serverTime;
+    env.clock.current = env.clock.current.add(_ahead);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+
+    final card = find.ancestor(
+      of: find.text('Places'),
+      matching: find.byType(MxCard),
+    );
+    final label = find.descendant(
+      of: card,
+      matching: find.text(_en.trashAwaitingSync),
+    );
+    final origin = find.descendant(
+      of: card,
+      matching: find.text(_en.trashWasIn('Korean')),
+    );
+    expect(label, findsOneWidget);
+    expect(
+      tester.getTopLeft(label).dy,
+      greaterThan(tester.getBottomLeft(origin).dy - 1),
+    );
+    expect(tester.getTopLeft(label).dx, tester.getTopLeft(origin).dx);
+    expect(
+      tester.getTopLeft(label).dx,
+      tester.getTopLeft(find.text('Places')).dx,
+    );
   });
 
   libraryTest('rows not past the device expiry keep their time left', (

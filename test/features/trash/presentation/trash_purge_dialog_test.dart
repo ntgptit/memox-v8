@@ -104,8 +104,8 @@ void main() {
   );
 
   libraryTest(
-    'a purge the store skips says so in a toast that names what the deck '
-    'still holds (SP2b 2.31)',
+    'a purge the store skips says so in a short toast; the banner names what '
+    'the deck still holds (SP2b 2.31, audit m4)',
     (tester, env) async {
       await _seedFood(env);
       await pumpLibraryScreen(tester, env, const TrashScreen());
@@ -115,8 +115,12 @@ void main() {
       await _tap(tester, _inDialog(_en.trashPurgeConfirm(1)));
 
       expect(find.byType(MxDialog), findsNothing);
+      expect(_toast(_en.trashPurgeKeptMany(1)), findsOneWidget);
       expect(
-        _toast(_en.trashPurgeBlocked('Food', 'bap · rice')),
+        find.descendant(
+          of: find.byType(MxInlineBanner),
+          matching: find.text(_en.trashPurgeBlocked('Food', 'bap · rice')),
+        ),
         findsOneWidget,
       );
       expect(find.text(_en.trashPurgedDecks(1)), findsNothing);

@@ -204,12 +204,12 @@ class _Progress extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (isStopped) ...[
-                  Semantics(
-                    liveRegion: true,
-                    child: MxInlineBanner(
-                      tone: MxBannerTone.warning,
-                      message: _stoppedMessage(l10n, error),
-                    ),
+                  MxInlineBanner(
+                    // Offline is neutral; a refusal or a stuck state warns.
+                    tone: error is OfflineFailure && !view.isStuck
+                        ? MxBannerTone.neutral
+                        : MxBannerTone.warning,
+                    message: _stoppedMessage(l10n, error),
                   ),
                   const SizedBox(height: AppSpacing.gutter),
                   if (view.isStuck)

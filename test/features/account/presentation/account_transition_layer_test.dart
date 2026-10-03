@@ -13,6 +13,7 @@ import 'package:memox/features/account/presentation/widgets/sections/sign_in_for
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
@@ -63,6 +64,9 @@ Future<void> _backSwipe(WidgetTester tester) async {
   await send('commitBackGesture');
   await _settle(tester);
 }
+
+MxBannerTone _bannerTone(WidgetTester tester) =>
+    tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone;
 
 void main() {
   accountTest('a switch covers the app, keeps Back inside, and Cancel puts '
@@ -285,6 +289,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountSignOutStoppedOffline), findsOneWidget);
+    expect(_bannerTone(tester), MxBannerTone.neutral, reason: 'offline');
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
@@ -336,8 +341,21 @@ void main() {
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
     expect(
       _en.accountLayerStuck,
-      "This move can't finish on this phone. Your decks are kept. Close "
-      'MemoX and report the problem \u2014 the log has the details.',
+      "Your decks are kept. This move can't finish on this phone. Close "
+      'MemoX and report the problem; the log has the details.',
+    );
+    // Stuck is a refusal to go on, not a lost connection: warning, and one
+    // live region, the banner's own (audit M1, m8).
+    expect(_bannerTone(tester), MxBannerTone.warning);
+    expect(
+      find.ancestor(
+        of: find.byType(MxInlineBanner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics && widget.properties.liveRegion == true,
+        ),
+      ),
+      findsNothing,
     );
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
@@ -369,6 +387,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountLayerOffline), findsOneWidget);
+    expect(_bannerTone(tester), MxBannerTone.neutral, reason: 'offline');
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.accountCloseApp), findsNothing);
   });

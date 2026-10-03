@@ -143,6 +143,7 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
           if (failure != null)
             MxInlineBanner(
               tone: MxBannerTone.warning,
+              hasMargin: false,
               message: l10n.failure(failure),
             ),
           MxTextField(
@@ -162,7 +163,8 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
         cancelLabel: l10n.commonCancel,
         onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(false),
         confirmLabel: l10n.cardTagConfirm,
-        onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
+        onConfirm: _submit,
       ),
     );
   }

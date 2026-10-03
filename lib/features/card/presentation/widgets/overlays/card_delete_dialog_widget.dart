@@ -138,6 +138,7 @@ class _CardDeleteDialogWidgetState
           if (failure != null)
             MxInlineBanner(
               tone: MxBannerTone.warning,
+              hasMargin: false,
               message: l10n.failure(failure),
             ),
           if (widget.preview case final preview?) _Preview(preview: preview),

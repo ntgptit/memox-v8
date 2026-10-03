@@ -161,7 +161,8 @@ void main() {
 
     expect(find.text('Food'), findsOneWidget);
     expect(find.text(_en.trashPurgedDecks(1)), findsNothing);
-    // The screen's banner above the rows, and the dialog's toast (SP2b 2.31).
+    // The screen's banner above the rows names it; the toast only counts it
+    // (SP2b 2.31, audit m4).
     final note = _en.trashPurgeBlocked('Food', 'bap · rice');
     final banner = find.descendant(
       of: find.byType(MxInlineBanner),
@@ -169,7 +170,10 @@ void main() {
     );
     expect(banner, findsOneWidget);
     expect(
-      find.descendant(of: find.byType(SnackBar), matching: find.text(note)),
+      find.descendant(
+        of: find.byType(SnackBar),
+        matching: find.text(_en.trashPurgeKeptMany(1)),
+      ),
       findsOneWidget,
     );
     expect(

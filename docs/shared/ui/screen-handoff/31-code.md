@@ -35,7 +35,7 @@ The images are the goldens.
 |---|---|---|---|
 | waiting | ![](../../../../test/features/account/presentation/goldens/code_waiting_light.png) | ![](../../../../test/features/account/presentation/goldens/code_waiting_dark.png) | Golden `code_waiting_*`. |
 | wrong | ![](../../../../test/features/account/presentation/goldens/code_wrong_light.png) | ![](../../../../test/features/account/presentation/goldens/code_wrong_dark.png) | Golden `code_wrong_*`. |
-| kept, offline | ![](../../../../test/features/account/presentation/goldens/code_offline_kept_light.png) | ![](../../../../test/features/account/presentation/goldens/code_offline_kept_dark.png) | The six digits stay when the check could not run: the offline line and "Retry" under them (SP2b 2.44). |
+| kept, offline | ![](../../../../test/features/account/presentation/goldens/code_offline_kept_light.png) | ![](../../../../test/features/account/presentation/goldens/code_offline_kept_dark.png) | The six digits stay when the check could not run: the offline line in a neutral banner and "Retry" under them (SP2b 2.44, audit M1). |
 | verifying | — | — | The field stays enabled, `MxSpinner` under it (2.45). |
 
 ## Rulings

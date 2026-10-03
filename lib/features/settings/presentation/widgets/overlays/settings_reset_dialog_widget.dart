@@ -76,6 +76,7 @@ class _SettingsResetDialogWidgetState
           if (_hasFailed)
             MxInlineBanner(
               tone: MxBannerTone.warning,
+              hasMargin: false,
               message: l10n.settingsResetFailed,
             ),
           MxNote(icon: AppIcons.safe, text: l10n.settingsResetSafe),
@@ -84,7 +85,7 @@ class _SettingsResetDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
-        confirmLabel: _hasFailed ? l10n.commonRetry : l10n.settingsResetConfirm,
+        confirmLabel: l10n.settingsResetConfirm,
         onConfirm: () => unawaited(_reset()),
         isConfirmLoading: _isResetting,
       ),

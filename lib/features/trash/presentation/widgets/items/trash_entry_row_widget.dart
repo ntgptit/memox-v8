@@ -74,6 +74,7 @@ class TrashEntryRowWidget extends StatelessWidget {
           child: _Lines(
             name: name,
             timeLeft: timeLeft,
+            isAwaitingSync: isAwaitingSync,
             isExpiringSoon: !isAwaitingSync && isTrashExpiringSoon(entry, now),
             meta: meta,
             origin: origin,
@@ -157,6 +158,7 @@ class _Lines extends StatelessWidget {
   const _Lines({
     required this.name,
     required this.timeLeft,
+    required this.isAwaitingSync,
     required this.isExpiringSoon,
     required this.meta,
     required this.origin,
@@ -164,6 +166,10 @@ class _Lines extends StatelessWidget {
 
   final String name;
   final String timeLeft;
+
+  /// The purge is waiting for a sync: its label is a sentence, so it takes
+  /// its own line and leaves the name its width.
+  final bool isAwaitingSync;
   final bool isExpiringSoon;
   final String meta;
   final String origin;
@@ -199,7 +205,7 @@ class _Lines extends StatelessWidget {
                 style: styles.rowTitle,
               ),
             ),
-            timeLeftLabel,
+            if (!isAwaitingSync) timeLeftLabel,
           ],
         ),
         Text(
@@ -214,6 +220,13 @@ class _Lines extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: styles.rowDescription,
         ),
+        if (isAwaitingSync)
+          Text(
+            timeLeft,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: styles.rowDescription,
+          ),
       ],
     );
   }

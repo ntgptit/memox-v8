@@ -107,7 +107,7 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
 
     store.isFailing = false;
-    await tester.tap(find.text(_en.commonRetry));
+    await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(resets, 1);
     expect(find.text(_en.settingsResetBody), findsNothing, reason: 'closed');

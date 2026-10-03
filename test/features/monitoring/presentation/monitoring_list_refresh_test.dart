@@ -62,20 +62,33 @@ void main() {
     },
   );
 
-  test('a refresh asked again clears the warning at once, and a page that '
-      'lands replaces the rows', () async {
+  test('a refresh asked again keeps the warning, marked refreshing, and a '
+      'page that lands replaces the rows', () async {
     await open(pageOf(2));
     await refreshFailing(const OfflineFailure(cause: 'x'));
+    expect(loaded().isRefreshing, isFalse);
 
     final again = controller().refresh();
     await pumpEventQueue();
-    expect(loaded().refreshFailure, isNull);
+    expect(loaded().refreshFailure, MonitoringLoadFailure.offline);
+    expect(loaded().isRefreshing, isTrue);
     expect(ids(), ['r0', 'r1']);
     repository.lastQuery.answer(pageOf(1, prefix: 'n'));
     await again;
 
     expect(ids(), ['n0']);
     expect(loaded().refreshFailure, isNull);
+    expect(loaded().isRefreshing, isFalse);
+  });
+
+  test('a retry that fails again is no longer refreshing', () async {
+    await open(pageOf(2));
+    await refreshFailing(const OfflineFailure(cause: 'x'));
+
+    await refreshFailing(const ServerFailure(cause: 'x'));
+
+    expect(loaded().refreshFailure, MonitoringLoadFailure.other);
+    expect(loaded().isRefreshing, isFalse);
   });
 
   test('a lost admin role still replaces the rows', () async {

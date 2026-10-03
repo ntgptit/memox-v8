@@ -125,6 +125,7 @@ class _CreateRootDeckDialogWidgetState
           if (failure != null)
             MxInlineBanner(
               tone: MxBannerTone.warning,
+              hasMargin: false,
               message: l10n.failure(failure),
             ),
           MxTextField(
@@ -161,7 +162,8 @@ class _CreateRootDeckDialogWidgetState
         cancelLabel: l10n.commonCancel,
         onCancel: _isSubmitting ? null : () => unawaited(_leave()),
         confirmLabel: l10n.deckCreateConfirm,
-        onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
+        onConfirm: _submit,
       ),
     );
     return PopScope(

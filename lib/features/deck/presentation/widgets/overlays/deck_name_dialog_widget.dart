@@ -143,6 +143,7 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
           if (failure != null)
             MxInlineBanner(
               tone: MxBannerTone.warning,
+              hasMargin: false,
               message: l10n.failure(failure),
             ),
           MxTextField(
@@ -162,7 +163,8 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
         cancelLabel: l10n.commonCancel,
         onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(),
         confirmLabel: widget.confirmLabel,
-        onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
+        onConfirm: _submit,
       ),
     );
   }

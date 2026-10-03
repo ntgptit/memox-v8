@@ -163,7 +163,9 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.grouped),
             child: MxInlineBanner(
-              tone: MxBannerTone.warning,
+              tone: problem == SignInProblem.offline
+                  ? MxBannerTone.neutral
+                  : MxBannerTone.warning,
               message: signInProblemText(l10n, problem),
               actions: [
                 MxButton(

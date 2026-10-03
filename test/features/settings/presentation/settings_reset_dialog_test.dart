@@ -38,7 +38,10 @@ Future<void> _open(WidgetTester tester) async {
 
 void main() {
   libraryTest('a failed reset keeps the dialog with the banner; the confirm '
-      'reads Retry and runs it again (SP2b 2.33)', (tester, env) async {
+      'keeps its name and runs again (SP2b 2.33, audit m6)', (
+    tester,
+    env,
+  ) async {
     final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
       ..isFailing = true;
     await pumpLibraryScreen(
@@ -59,11 +62,12 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text(_en.settingsResetConfirm), findsNothing);
+    expect(find.text(_en.settingsResetConfirm), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsNothing);
     expect(find.byType(SnackBar), findsNothing);
 
     store.isFailing = false;
-    await tester.tap(find.text(_en.commonRetry));
+    await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsNothing);
     expect(store.writes, 2);
@@ -91,7 +95,7 @@ void main() {
     expect(find.text(_en.settingsResetFailed), findsOneWidget);
     expect(reported.single.exception, isA<StateError>());
 
-    await tester.tap(find.text(_en.commonRetry));
+    await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsNothing);
     expect(store.writes, 2);

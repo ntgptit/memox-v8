@@ -9,6 +9,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -97,6 +98,13 @@ void main() {
     await tester.enterText(find.byType(EditableText).last, 'greetings');
     await tester.tap(inDialog(enL10n.cardTagConfirm));
     await tester.pump();
+    // The confirm says it is busy (audit m1).
+    expect(
+      tester
+          .widget<MxSheetActions>(find.byType(MxSheetActions))
+          .isConfirmLoading,
+      isTrue,
+    );
 
     await _backAndScrim(tester);
     expect(find.byType(MxDialog), findsOneWidget);

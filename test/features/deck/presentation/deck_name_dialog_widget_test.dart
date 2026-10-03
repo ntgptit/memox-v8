@@ -108,6 +108,13 @@ void main() {
     final hold = await openHeld(tester, env, korean);
     await tester.tap(find.text(_en.deckRenameConfirm));
     await tester.pump();
+    // The confirm says it is busy (audit m1).
+    expect(
+      tester
+          .widget<MxSheetActions>(find.byType(MxSheetActions))
+          .isConfirmLoading,
+      isTrue,
+    );
 
     await tester.binding.handlePopRoute();
     await tester.pump(const Duration(milliseconds: 500));

@@ -196,7 +196,8 @@ void main() {
       );
     });
 
-    // SP2b 2.38: a pull to refresh failed; the rows stay under a warning.
+    // SP2b 2.38: a pull to refresh failed offline; the rows stay under a
+    // neutral banner (audit M1).
     libraryTest('monitoring, list refresh failed, $theme', (tester, env) async {
       final repository = FakeMonitoringRepository();
       await golden(
@@ -215,10 +216,7 @@ void main() {
           await tester.pump();
           repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
           await _settle(tester);
-          expect(
-            find.textContaining("Couldn't refresh the list"),
-            findsOneWidget,
-          );
+          expect(find.textContaining('No connection.'), findsOneWidget);
         },
       );
     });

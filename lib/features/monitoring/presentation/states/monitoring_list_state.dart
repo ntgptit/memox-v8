@@ -25,6 +25,7 @@ final class MonitoringListLoaded extends MonitoringListContent {
     required this.next,
     this.more = MonitoringMore.idle,
     this.refreshFailure,
+    this.isRefreshing = false,
   });
 
   final List<LogSummaryEntity> items;
@@ -35,11 +36,16 @@ final class MonitoringListLoaded extends MonitoringListContent {
   /// it (SP2b 2.38); null when the rows are current.
   final MonitoringLoadFailure? refreshFailure;
 
+  /// A refresh is in flight while its last failure still shows, so the Retry
+  /// can say it is working.
+  final bool isRefreshing;
+
   MonitoringListLoaded withMore(MonitoringMore value) => MonitoringListLoaded(
     items: items,
     next: next,
     more: value,
     refreshFailure: refreshFailure,
+    isRefreshing: isRefreshing,
   );
 
   MonitoringListLoaded withItems(List<LogSummaryEntity> value) =>
@@ -48,6 +54,7 @@ final class MonitoringListLoaded extends MonitoringListContent {
         next: next,
         more: more,
         refreshFailure: refreshFailure,
+        isRefreshing: isRefreshing,
       );
 
   MonitoringListLoaded withRefreshFailure(MonitoringLoadFailure? value) =>
@@ -57,6 +64,14 @@ final class MonitoringListLoaded extends MonitoringListContent {
         more: more,
         refreshFailure: value,
       );
+
+  MonitoringListLoaded withRefreshing() => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: more,
+    refreshFailure: refreshFailure,
+    isRefreshing: true,
+  );
 }
 
 /// The first page failed, or a refresh found the admin role gone; no stale

@@ -9,6 +9,7 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
@@ -18,6 +19,9 @@ import '../../../support/monitoring_fakes.dart';
 import '../../../support/monitoring_screen_harness.dart';
 
 // Monitoring spec §3.2, §3.4, §5: the Server tab.
+MxInlineBanner _banner(WidgetTester tester) =>
+    tester.widget<MxInlineBanner>(find.byType(MxInlineBanner).first);
+
 /// The status pills a row shows; a row without one keeps an invisible pill
 /// for the time column's height (F5).
 List<Element> _shownBadges() => find
@@ -305,8 +309,9 @@ void main() {
     expect(repository.lastQuery.after, isNull);
   });
 
-  libraryTest('a pull to refresh that fails keeps the rows under a warning '
-      'with Retry, which asks again (SP2b 2.38)', (tester, env) async {
+  libraryTest('a pull to refresh that fails offline keeps the rows under a '
+      'neutral banner with Retry; Retry is busy until the answer lands '
+      '(SP2b 2.38, audit M1, m7)', (tester, env) async {
     final repository = FakeMonitoringRepository();
     await pumpMonitoring(tester, env, repository);
     repository.lastQuery.answer(pageOf(2));
@@ -320,8 +325,10 @@ void main() {
     await tester.pumpAndSettle();
 
     const warning =
-        "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded.";
+        'No connection. The rows below are from the last time the list '
+        'loaded.';
     expect(find.text(warning), findsOneWidget);
+    expect(_banner(tester).tone, MxBannerTone.neutral);
     expect(find.text('2 LOGS'), findsOneWidget);
     expect(find.text('message of r0'), findsOneWidget);
     expect(find.byType(MxErrorState), findsNothing);
@@ -329,11 +336,39 @@ void main() {
     await tester.tap(find.text('Retry'));
     await tester.pump();
     expect(repository.queries, hasLength(3));
-    expect(find.text(warning), findsNothing);
+    expect(find.text(warning), findsOneWidget, reason: 'stays while it runs');
+    expect(
+      tester
+          .widget<MxButton>(
+            find.descendant(
+              of: find.byType(MxInlineBanner),
+              matching: find.byType(MxButton),
+            ),
+          )
+          .isLoading,
+      isTrue,
+    );
     repository.lastQuery.answer(pageOf(1, prefix: 'n'));
     await tester.pumpAndSettle();
     expect(find.text('message of n0'), findsOneWidget);
     expect(find.text(warning), findsNothing);
+  });
+
+  libraryTest('a refresh that fails for another reason keeps the warning tone '
+      'and its copy (audit M1)', (tester, env) async {
+    final repository = FakeMonitoringRepository();
+    await pumpMonitoring(tester, env, repository);
+    repository.lastQuery.answer(pageOf(2));
+    await settleMonitoring(tester);
+
+    await tester.fling(find.byType(ListView), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    repository.lastQuery.fail(const ServerFailure(cause: 'x'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining("Couldn't refresh the list"), findsOneWidget);
+    expect(_banner(tester).tone, MxBannerTone.warning);
   });
 
   libraryTest('a lost admin role on refresh replaces the rows (SP2b 2.38)', (

@@ -35,7 +35,7 @@ UC-REMINDER-001; spec
 | changingTime | `reminder_changing_time_light.png` | `reminder_changing_time_dark.png` | The time button is outlined while the dialog is open; the dialog is `MxDialog` with Hour and Minute steppers (see Rulings). |
 | timeInvalid | `reminder_time_invalid_light.png` | `reminder_time_invalid_dark.png` | A typed hour or minute out of range marks its stepper and a line under it names the range; Save stays off until a valid value is typed or a step clears it (SP2b 2.35). |
 | permDenied | `reminder_perm_denied_light.png` | `reminder_perm_denied_dark.png` | Try again (outlined), then "Open system settings" (primary, last as every banner's primary; R5 amends FE-B6), which opens the app's notification settings. While Try again runs the banner steps aside and returns in the same order. |
-| permRevoked | `reminder_perm_revoked_light.png` | `reminder_perm_revoked_dark.png` | The reminder is on but Android blocks its notifications: the toggle row reads "On · notifications are blocked for MemoX" and a `warning` banner offers "Open system settings". Nothing stored changes; both go when the permission is back on the next resume (SP2b 2.34, 2.36). |
+| permRevoked | `reminder_perm_revoked_light.png` | `reminder_perm_revoked_dark.png` | The reminder is on but Android blocks its notifications: the toggle row reads just "On" and a `warning` banner offers "Open system settings". Nothing stored changes; both go when the permission is back on the next resume (SP2b 2.34, 2.36). |
 | couldNotSchedule | `reminder_could_not_schedule_light.png` | `reminder_could_not_schedule_dark.png` | On Enable the reminder stays off. A refused schedule on Change time has its own copy (see Rulings). |
 | offMayShow | `reminder_off_may_show_light.png` | `reminder_off_may_show_dark.png` | A `warning` banner with Try again (see Rulings). |
 | unavailable | `reminder_unavailable_light.png` | `reminder_unavailable_dark.png` | One row, no toggle, no time, no preview (BR-REMINDER-012). Golden `reminder_unavailable_*`. |
@@ -96,7 +96,7 @@ turns the reminder on.
 - Note: "Fires once a day, only when cards are due. Never for new cards, never twice."
 - E1: "Notifications are blocked for MemoX" · "Allow them in Android Settings › Apps ›
   MemoX › Notifications, then turn the reminder on again." · "Try again".
-- Revoked: "On · notifications are blocked for MemoX" · title "Notifications are blocked for MemoX" · "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications." · "Open system settings".
+- Revoked: "On" · title "Notifications are blocked for MemoX" · "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications." · "Open system settings".
 - E3: "Couldn’t schedule the reminder." · "It stays off. Try turning it on again." ·
   "Retry"; on Change time "Couldn’t change the time." · "The reminder stays at {HH:mm}."
 - E6: "Turned off. A reminder already scheduled for today may still appear once." · "Try
