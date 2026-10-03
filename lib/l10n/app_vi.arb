@@ -355,6 +355,8 @@
   "trashPurgedCards": "{count, plural, other{Đã xoá vĩnh viễn {count} thẻ}}",
   "trashPurgedDecks": "{count, plural, other{Đã xoá vĩnh viễn {count} bộ thẻ}}",
   "trashPurgeBlocked": "“{deck}” vẫn chứa một mục đã xoá trước đó (“{entries}”). Có thể xoá hẳn khi mục đó không còn.",
+  "trashPurgeKeptMany": "{count} bộ thẻ được giữ lại vì còn chứa mục đã xoá trước đó. Các ghi chú phía trên danh sách nói rõ từng bộ.",
+  "trashPurgedWithKept": "{purged}. {kept}",
   "libraryDueTitle": "{count} thẻ đến hạn",
   "libraryDecksCount": "{count} bộ thẻ",
   "libraryDueDecksHeader": "Bộ thẻ có thẻ đến hạn",

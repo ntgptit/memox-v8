@@ -3,8 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
+import 'package:memox/features/trash/domain/models/purge_report_model.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
+import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
+import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -66,14 +71,13 @@ class _TrashPurgeDialogWidgetState
         for (final entry in widget.entries) entry.batchId,
       });
       if (!mounted) return;
-      final purged = report.purged.length;
-      if (purged > 0) {
-        final l10n = context.l10n;
+      final message = _toast(context.l10n, report);
+      if (message != null) {
         showMxSnackbar(
           context,
-          message: _isCards
-              ? l10n.trashPurgedCards(purged)
-              : l10n.trashPurgedDecks(purged),
+          message: message,
+          // What was kept is news the person reads past a first sentence.
+          duration: bulkToastDuration(hasNews: report.blocked.isNotEmpty),
         );
       }
       Navigator.of(context).pop(true);
@@ -85,6 +89,34 @@ class _TrashPurgeDialogWidgetState
         _failure = failure;
       });
     }
+  }
+
+  /// What the purge did, in one toast: what went and what was kept (SP2b
+  /// 2.31). Null when nothing went and nothing was kept: every chosen batch
+  /// was already gone, and its row with it.
+  String? _toast(AppLocalizations l10n, PurgeReport report) {
+    final purged = report.purged.length;
+    final went = switch (purged) {
+      0 => null,
+      _ when _isCards => l10n.trashPurgedCards(purged),
+      _ => l10n.trashPurgedDecks(purged),
+    };
+    // One kept deck is named with what it holds; several are counted, and
+    // the notes above the list name each.
+    final kept = switch (report.blocked.length) {
+      0 => null,
+      1 => trashBlockedNotes(
+        l10n,
+        report.blocked,
+        ref.read(trashEntriesProvider).value ?? const <TrashEntry>[],
+      ).firstOrNull,
+      final many => l10n.trashPurgeKeptMany(many),
+    };
+    return switch ((went, kept)) {
+      (final a?, final b?) => l10n.trashPurgedWithKept(a, b),
+      (final one?, null) || (null, final one?) => one,
+      (null, null) => null,
+    };
   }
 
   @override

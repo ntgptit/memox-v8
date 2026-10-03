@@ -132,6 +132,8 @@ void main() {
         await _settle(tester);
         await tester.tap(find.text(_en.trashPurgeConfirm(1)));
         await tester.pumpAndSettle();
+        // The toast names what the deck still holds, over the list.
+        expect(find.byType(SnackBar), findsOneWidget);
         await expectBoundaryGolden(
           tester,
           'goldens/trash_purge_blocked_$theme.png',

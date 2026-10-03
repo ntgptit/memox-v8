@@ -1850,6 +1850,27 @@
     },
     "description": "Screen 06: a purge the store skipped (spec D6; the kit's youngerInside says 'later', invariant 36 allows only 'earlier')."
   },
+  "trashPurgeKeptMany": "{count} decks were kept: they still hold entries deleted earlier. The notes above the list say which.",
+  "@trashPurgeKeptMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 toast (SP2b 2.31): a purge kept several decks because they still hold entries deleted earlier; the notes above the list name each."
+  },
+  "trashPurgedWithKept": "{purged}. {kept}",
+  "@trashPurgedWithKept": {
+    "placeholders": {
+      "purged": {
+        "type": "String"
+      },
+      "kept": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 toast (SP2b 2.31): what a purge deleted for good, then what it kept; both sentences are built by the caller."
+  },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
     "placeholders": {

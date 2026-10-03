@@ -206,7 +206,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     final kind = state.kindIn(entries);
     final notices = [
       if (kind != null) MxNote(text: l10n.trashKindLock),
-      for (final note in _blockedNotes(l10n, state, entries))
+      for (final note in trashBlockedNotes(l10n, state.blocked, entries))
         MxInlineBanner(tone: MxBannerTone.warning, message: note),
     ];
     return [
@@ -273,28 +273,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
       TrashKind.deck => l10n.trashDecksHeader(total(TrashKind.deck)),
       null => l10n.trashEntriesHeader(shown.length),
     };
-  }
-
-  /// One sentence per batch the last purge skipped and still in the Trash,
-  /// naming what it still holds (spec D6).
-  Iterable<String> _blockedNotes(
-    AppLocalizations l10n,
-    TrashState state,
-    List<TrashEntry> entries,
-  ) sync* {
-    final byBatch = {for (final entry in entries) entry.batchId: entry};
-    for (final MapEntry(key: batchId, value: inner) in state.blocked.entries) {
-      final blocked = byBatch[batchId];
-      final names = [
-        for (final id in inner)
-          if (byBatch[id] case final entry?) trashEntryName(entry),
-      ];
-      if (blocked == null || names.isEmpty) continue;
-      yield l10n.trashPurgeBlocked(
-        trashEntryName(blocked),
-        names.join(trashNamesSeparator),
-      );
-    }
   }
 }
 

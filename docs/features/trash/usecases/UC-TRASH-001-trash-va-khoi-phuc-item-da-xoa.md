@@ -75,7 +75,8 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
   nguyên trong Trash (BR-TRASH-008).
 - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc
   còn active. Batch đó bị bỏ qua, không purge một phần, và người dùng thấy lý do
-  có kiểu (BR-TRASH-010).
+  có kiểu trong một toast nêu tên deck bị giữ (nhiều deck thì nêu số lượng) cùng
+  banner của màn (BR-TRASH-010).
 - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại →
   transaction rollback toàn bộ, trạng thái cũ giữ nguyên, UI hiện error + Retry.
 - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác.
