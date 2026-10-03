@@ -14,6 +14,9 @@ nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn 
 
 ### Target users
 
+MemoX dành cho người dùng công khai, phát hành trên Google Play trước. Chủ dự án là
+người dùng và admin đầu tiên (chủ dự án chốt 2026-10-03, [PRODUCT.md](../PRODUCT.md)).
+
 | Group | Context | What they need | Not the target |
 |---|---|---|---|
 | Người tự học từ vựng | Học lẻ trên điện thoại, thời gian rời rạc, kết nối không ổn định | Ôn đúng thời điểm, dùng được mọi lúc kể cả offline | Lớp học có giáo viên quản lý |
@@ -22,11 +25,13 @@ nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn 
 **Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới
 dạng template để người dùng sao chép về. Nội dung starter hiện tại là
 fixture của dự án, chỉ phục vụ development và test — không phải nội dung
-production (BR-STARTER-010). Import/export vẫn ở nice-to-have.
+production (BR-STARTER-010). Import/export là N1, đã xong.
 
 ### Core value
 
-Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng.
+Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng, và cùng một thư
+viện trên mọi máy người học đăng nhập: có mạng thì đồng bộ qua Supabase
+([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). Dữ liệu nhạy cảm: [ADR-002](shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md).
 
@@ -62,19 +67,21 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 | # | Feature | Notes |
 |---|---|---|
 | N1 | Import/export | Trong V8.0 theo [spec card transfer](superpowers/specs/2026-09-26-card-transfer-design.md) (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-001…BR-TRANSFER-014): import CSV/TSV/XLSX hoặc văn bản dán (màn 11), export nội dung (sheet 12) — không phải backup. Backend BE-B3 và UI FE-B3 xong |
-| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
-| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
+| N2 | Nhắc nhở ôn tập hằng ngày | Đã xong ở FE-B5, FE-B6 (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
+| N3 | Tag/phân loại card | Đã xong ở FE-B2 (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
 
 #### Explicitly out of MVP
 
 | Feature | Why deferred | Revisit when |
 |---|---|---|
-| Đăng nhập / tài khoản | Không có backend; thêm auth lúc này là xây UI cho thứ chưa dùng được | Khi Spring Boot backend sẵn sàng |
-| Đồng bộ đa thiết bị | Cần backend và conflict resolution | Cùng lúc với auth |
-| iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
-| Phân quyền theo role | Chỉ có một loại user, kể cả sau khi có auth | Chưa có kế hoạch |
-| Chia sẻ deck giữa người dùng | Cần backend | Sau đồng bộ |
+| iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc. Khi làm, iOS dùng cùng thiết kế Material 3 | Sau khi Android ổn định về UX + migration + test |
+| Phân quyền theo role trên nội dung | Chỉ có role `user` và `admin` (admin xem Monitoring và cấp role); không có quyền theo deck | Chưa có kế hoạch |
+| Chia sẻ deck giữa người dùng | Đã có backend và đồng bộ, nhưng chia sẻ nằm ngoài phạm vi sản phẩm | Chưa có kế hoạch |
 | Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+
+Đăng nhập và đồng bộ đa thiết bị từng nằm ở bảng này. Nay chúng làm trên Supabase
+([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)), tiến độ ở
+[`wbs_supabase.md`](wbs_supabase.md).
 
 ## Bản đồ
 
