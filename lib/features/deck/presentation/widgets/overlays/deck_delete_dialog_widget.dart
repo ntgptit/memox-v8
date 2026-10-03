@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
@@ -12,6 +13,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_trashed_sn
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -55,11 +57,18 @@ class _DeckDeleteDialogWidgetState
     extends ConsumerState<DeckDeleteDialogWidget> {
   var _isDeleting = false;
 
+  /// The last move's failure, shown in the dialog until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   Future<void> _delete(DeckDeletionSummary summary) async {
     // A second tap in the same frame reaches here before the busy confirm
     // is drawn.
     if (_isDeleting) return;
-    setState(() => _isDeleting = true);
+    setState(() {
+      _isDeleting = true;
+      _failure = null;
+    });
     try {
       final outcome = await ref
           .read(deckActionsControllerProvider.notifier)
@@ -78,10 +87,13 @@ class _DeckDeleteDialogWidgetState
           showMxSnackbar(context, message: context.l10n.deckRejection(reason));
       }
       Navigator.of(context).pop(outcome is Ok);
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'deck delete');
       if (!mounted) return;
-      setState(() => _isDeleting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isDeleting = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -104,15 +116,32 @@ class _DeckDeleteDialogWidgetState
         error is Failure ? l10n.failure(error) : l10n.failureUnknown,
       _ => null,
     };
+    final failure = _failure;
     return MxDialog(
+      // The toast with Undo must reach the screen: Back and a scrim tap wait
+      // for the move (SP2b 2.26).
+      isHeld: _isDeleting,
       title: l10n.deckDeleteTitle,
       body: body,
-      content: counted == null
+      content: counted == null && failure == null
           ? null
-          : MxNote(icon: AppIcons.history, text: l10n.deckDeleteNote),
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.grouped,
+              children: [
+                if (failure != null)
+                  MxInlineBanner(
+                    tone: MxBannerTone.warning,
+                    message: l10n.failure(failure),
+                  ),
+                if (counted != null)
+                  MxNote(icon: AppIcons.history, text: l10n.deckDeleteNote),
+              ],
+            ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(),
         confirmLabel: l10n.deckDelete,
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
