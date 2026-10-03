@@ -160,7 +160,6 @@ class SettingsScreen extends ConsumerWidget {
         l10n.settingsCardLimitSaveFailed(stored.cardLimit),
       (SettingsSaveFailed(), SettingsSubmit.newCardOrder) =>
         l10n.settingsOrderSaveFailed,
-      (SettingsSaveFailed(), SettingsSubmit.reset) => l10n.settingsResetFailed,
       _ => null,
     };
     if (message == null) return;

@@ -5360,7 +5360,7 @@
   },
   "settingsResetFailed": "Couldn't reset the app options. Nothing changed.",
   "@settingsResetFailed": {
-    "description": "Toast when the reset failed (E2); offers Retry."
+    "description": "Banner inside the reset dialog when the reset failed (E2, SP2b 2.33); the confirm becomes Retry."
   },
   "settingsSaved": "Saved",
   "@settingsSaved": {
