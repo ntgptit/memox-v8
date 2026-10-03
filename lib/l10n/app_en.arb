@@ -7259,9 +7259,9 @@
   "@accountLayerFailed": {
     "description": "Transition layer: any other error."
   },
-  "accountLayerStuck": "Something went wrong while moving your account. Your data is safe on this phone. MemoX picks the move up again the next time it opens.",
+  "accountLayerStuck": "This move can't finish on this phone. Your decks are kept. Close MemoX and report the problem — the log has the details.",
   "@accountLayerStuck": {
-    "description": "Transition layer: a state the machine says cannot happen; says the data is safe and the move resumes on the next launch (SP2b R11)."
+    "description": "Transition layer: a state the machine says cannot happen; says the move cannot finish on this phone, the decks are kept, and the way out is to close the app and report the problem (SP2b R11, owner ruling: no promise to resume)."
   },
   "accountCloseApp": "Close MemoX",
   "@accountCloseApp": {

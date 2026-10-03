@@ -311,11 +311,8 @@ void main() {
     expect(find.text(_en.commonCancel), findsNothing);
   });
 
-  libraryTest('stuck says the data is safe and the move resumes on the next '
-      'launch; Close MemoX leaves the app, Retry stays (R11)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('stuck says the move cannot finish here and promises no resume; '
+      'Close MemoX leaves the app, Retry stays (R11)', (tester, env) async {
     final closes = watchAppCloses(tester);
     await pumpLibraryScreen(
       tester,
@@ -337,6 +334,11 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
+    expect(
+      _en.accountLayerStuck,
+      "This move can't finish on this phone. Your decks are kept. Close "
+      'MemoX and report the problem \u2014 the log has the details.',
+    );
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
     // Close leads, Retry trails: side by side, Close first.

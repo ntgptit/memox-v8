@@ -213,9 +213,9 @@ class _Progress extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.gutter),
                   if (view.isStuck)
-                    // R11: nothing here can be fixed by retrying alone, and
-                    // the move resumes on the next launch, so the way out of
-                    // the app sits beside Retry. It changes no data.
+                    // R11: nothing here can be fixed by retrying alone and no
+                    // resume is promised, so the way out of the app sits
+                    // beside Retry. It changes no data.
                     MxActionPair(
                       leading: MxButton(
                         label: l10n.accountCloseApp,
