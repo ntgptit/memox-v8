@@ -14,6 +14,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -71,11 +72,18 @@ class _CardDeleteDialogWidgetState
     extends ConsumerState<CardDeleteDialogWidget> {
   var _isDeleting = false;
 
+  /// The last move's failure, shown in the dialog until the next try
+  /// (SP2b final 2).
+  Failure? _failure;
+
   Future<void> _delete() async {
     // A second tap in the same frame reaches here before the busy confirm
     // is drawn.
     if (_isDeleting) return;
-    setState(() => _isDeleting = true);
+    setState(() {
+      _isDeleting = true;
+      _failure = null;
+    });
     try {
       final outcome = await ref
           .read(cardActionsControllerProvider.notifier)
@@ -104,10 +112,13 @@ class _CardDeleteDialogWidgetState
           );
       }
       Navigator.of(context).pop(outcome is Ok);
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'card delete');
       if (!mounted) return;
-      setState(() => _isDeleting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isDeleting = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -115,6 +126,7 @@ class _CardDeleteDialogWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final count = widget.cardIds.length;
+    final failure = _failure;
     return MxDialog(
       // The result must reach the screen: Back and a scrim tap wait for it.
       isHeld: _isDeleting,
@@ -123,13 +135,18 @@ class _CardDeleteDialogWidgetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.control,
         children: [
+          if (failure != null)
+            MxInlineBanner(
+              tone: MxBannerTone.warning,
+              message: l10n.failure(failure),
+            ),
           if (widget.preview case final preview?) _Preview(preview: preview),
           MxNote(icon: AppIcons.history, text: l10n.cardDeleteNote(count)),
         ],
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(false),
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(false),
         confirmLabel: l10n.cardMoveToTrashCount(count),
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,

@@ -80,7 +80,7 @@ final class HeldDecks implements DeckRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-/// The real cards, a move and a restore behind [hold].
+/// The real cards, a move, a delete and a restore behind [hold].
 final class HeldCards implements CardRepository {
   HeldCards(this._inner, this.hold);
 
@@ -99,6 +99,15 @@ final class HeldCards implements CardRepository {
       targetDeckId: targetDeckId,
       now: now,
     );
+  }
+
+  @override
+  Future<Outcome<BulkOutcome, CardRejection>> deleteCards({
+    required Set<String> cardIds,
+    DateTime? now,
+  }) async {
+    await hold.pass();
+    return _inner.deleteCards(cardIds: cardIds, now: now);
   }
 
   @override
