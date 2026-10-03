@@ -3960,6 +3960,32 @@
   "@importBackToDeck": {
     "description": "Import result: none, back to the deck."
   },
+  "importUndoAction": "Undo import",
+  "@importUndoAction": {
+    "description": "Import result: moves the cards this import wrote to the Trash (SP2a 2.25)."
+  },
+  "importUndoTitle": "{count, plural, =1{Move the imported card to Trash?} other{Move the {count} imported cards to Trash?}}",
+  "@importUndoTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Undo import confirm title."
+  },
+  "importUndoneToast": "{count, plural, =1{1 imported card moved to Trash} other{{count} imported cards moved to Trash}}",
+  "@importUndoneToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after Undo import."
+  },
+  "importUndoGone": "None of the imported cards is left to move.",
+  "@importUndoGone": {
+    "description": "Snackbar when every imported card was already gone."
+  },
   "importCloseAction": "Close",
   "@importCloseAction": {
     "description": "Import result: close the import."

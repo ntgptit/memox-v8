@@ -22,10 +22,13 @@ import 'package:memox/shared/widgets/mx_section.dart';
 /// then what was added and skipped, and each skipped row with why (critique
 /// 2026-10-02, F4).
 class ImportResultWidget extends StatelessWidget {
-  const ImportResultWidget({super.key, required this.state});
+  const ImportResultWidget({super.key, required this.state, this.onUndo});
 
   /// A [CardImportDone] or a [CardImportFailed].
   final CardImportState state;
+
+  /// Opens the Undo import confirm; null hides the button (SP2a 2.25).
+  final VoidCallback? onUndo;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +60,18 @@ class ImportResultWidget extends StatelessWidget {
           if (summary.kind != ImportSummaryKind.none) ...[
             const SizedBox(height: AppSpacing.gutter),
             _Counts(summary: summary),
+            if (summary.written > 0 && onUndo != null) ...[
+              const SizedBox(height: AppSpacing.grouped),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: MxButton(
+                  label: l10n.importUndoAction,
+                  tone: MxButtonTone.outline,
+                  size: MxButtonSize.small,
+                  onPressed: onUndo,
+                ),
+              ),
+            ],
           ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),
           // The rule explains the duplicate rows only (final review).

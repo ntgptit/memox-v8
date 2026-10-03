@@ -37,6 +37,34 @@ Widget _host(ImportSummary summary) => Scaffold(
 );
 
 void main() {
+  libraryTest('Undo import shows only when something was written (SP2a 2.25)', (
+    tester,
+    env,
+  ) async {
+    Widget host(ImportSummary summary) => Scaffold(
+      body: SingleChildScrollView(
+        child: ImportResultWidget(
+          state: CardImportDone(summary),
+          onUndo: () {},
+        ),
+      ),
+    );
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      host(const ImportSummary(written: 2, blank: 0, skipped: [])),
+    );
+    expect(find.text(_en.importUndoAction), findsOneWidget);
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      host(ImportSummary(written: 0, blank: 0, skipped: [_duplicate(2)])),
+    );
+    expect(find.text(_en.importUndoAction), findsNothing);
+  });
+
   libraryTest('a partial import lists its skipped rows with why, five at '
       'first, all after Show all', (tester, env) async {
     await pumpLibraryScreen(

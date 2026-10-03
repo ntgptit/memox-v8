@@ -20,7 +20,8 @@ abstract interface class CardTransferRepository {
   /// kept is written as `CardRepository.createCard` writes one (BR-TRANSFER-004). The deck
   /// becomes a deck of cards only when a card was written (BR-TRANSFER-005).
   /// A draft the card rules refuse refuses the batch, and nothing is
-  /// written.
+  /// written. The result names the ids written, which an Undo import moves to
+  /// the Trash (SP2a 2.25).
   Future<Outcome<CardImportResult, CardRejection>> importCards({
     required String deckId,
     required List<CardDraft> drafts,

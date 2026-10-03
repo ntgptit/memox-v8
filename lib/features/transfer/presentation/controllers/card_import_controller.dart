@@ -1,5 +1,6 @@
-import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -10,6 +11,7 @@ import 'package:memox/features/transfer/presentation/providers/commit_import_use
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/read_import_source_use_case_provider.dart';
+import 'package:memox/features/transfer/presentation/providers/undo_import_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -201,7 +203,10 @@ class CardImportController extends _$CardImportController {
         ),
         Rejected(:final reason) => draft.copyWith(problem: reason),
       };
-    } on Failure {
+    } on Object {
+      // A database `Failure` or anything else the write threw: the wizard
+      // leaves its busy state on the failed result, Try again commits the
+      // same preview, and nothing of the error shows (E5, SP2a 2.25).
       if (!ref.mounted) return;
       state = CardImportFailed(draft: draft, isTargetRejected: false);
     }
@@ -219,6 +224,17 @@ class CardImportController extends _$CardImportController {
   /// "Import another file" after a result: a fresh step 1 for the same deck
   /// (UC-TRANSFER-001 step 8).
   void startOver() => state = const CardImportDraft();
+
+  /// "Undo import" after a result (SP2a 2.25): the cards the commit wrote go
+  /// to the Trash, a batch each. The widget chooses the feedback; a database
+  /// `Failure` is thrown through.
+  Future<Outcome<BulkOutcome, CardRejection>> undoImport() {
+    final cardIds = switch (state) {
+      CardImportDone(:final summary) => summary.writtenIds.toSet(),
+      _ => const <String>{},
+    };
+    return ref.read(undoImportUseCaseProvider)(cardIds: cardIds);
+  }
 
   /// Android Back and the app bar's Back (IT-NAV-012 step 4): one step back,
   /// keeping what the step held. False at step 1 and on a result, where the

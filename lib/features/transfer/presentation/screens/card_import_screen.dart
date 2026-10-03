@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_import_controller.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/import_undo_dialog_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_commit_bar_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_mapping_section_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_preview_section_widget.dart';
@@ -152,6 +153,17 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
     );
   }
 
+  /// Undo import (SP2a 2.25): the dialog asks and writes; once the cards are
+  /// in the Trash there is nothing left to show, so the import closes.
+  Future<void> _undoImport(int count) async {
+    final undone = await showImportUndoDialog(
+      context,
+      deckId: widget.deckId,
+      count: count,
+    );
+    if (undone != null && mounted) widget.onClose();
+  }
+
   Widget _resultShell(BuildContext context, CardImportState state) {
     final l10n = context.l10n;
     final (secondary, primary) = switch (state) {
@@ -174,7 +186,18 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
     };
     return MxAppShell(
       appBar: _appBar(context, l10n.importResultsTitle),
-      body: MxScreenScroll(children: [ImportResultWidget(state: state)]),
+      body: MxScreenScroll(
+        children: [
+          ImportResultWidget(
+            state: state,
+            onUndo: switch (state) {
+              CardImportDone(:final summary) when summary.written > 0 =>
+                () => unawaited(_undoImport(summary.writtenIds.length)),
+              _ => null,
+            },
+          ),
+        ],
+      ),
       footer: MxFooterBar(
         child: MxActionPair(
           leading: switch (secondary) {

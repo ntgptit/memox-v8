@@ -60,6 +60,12 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   gồm cả các hàng trùng, và commit ghi chúng như card mới (BR-TRANSFER-003).
 - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không
   phải lỗi và không xoá lựa chọn trước đó.
+- **A6 — Undo import:** từ màn kết quả có ghi card, người dùng bấm Undo import
+  và xác nhận ("Move the {n} imported cards to Trash?"); các card vừa ghi mà
+  còn active vào Trash, mỗi card một batch (BR-TRASH-001), khôi phục được 30
+  ngày; card đã không còn bị bỏ qua và được báo số lượng (BR-CARD-011); màn
+  import đóng. Hủy ở bước xem trước vẫn dùng được; khi transaction commit đã
+  chạy, Hủy bị khoá.
 
 **Error flows:**
 - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc
@@ -105,3 +111,4 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ thống từ chối bằng lý do encoding kèm hướng dẫn và không ghi gì (BR-TRANSFER-006).
 - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **then** transaction từ chối bằng lý do có kiểu và không ghi gì (BR-TRANSFER-001, E4).
 - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, study state, tag hay `content_type` nào đổi (BR-TRANSFER-004, E5).
+- [ ] **Given** một import đã ghi card, **when** người dùng bấm Undo import và xác nhận, **then** các card đó vào Trash, mỗi card một batch, và màn import đóng (BR-TRASH-001, A6).

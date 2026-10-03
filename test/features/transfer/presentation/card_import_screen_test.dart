@@ -5,13 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
+import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/sections/import_commit_bar_widget.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
@@ -37,6 +42,14 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 ImportPickedFile _file(String text) =>
     (name: 'vocab.csv', bytes: Uint8List.fromList(utf8.encode(text)));
+
+Future<int> _active(LibraryEnv env) async =>
+    (await env.db
+            .customSelect(
+              'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+            )
+            .getSingle())
+        .read<int>('n');
 
 Widget _context(String deckId, String label) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
@@ -479,5 +492,90 @@ void main() {
     expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
     expect(find.text('mul · water'), findsOneWidget);
     expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
+  });
+
+  libraryTest('Undo import asks, then moves the imported cards to the Trash '
+      'and closes (SP2a 2.25)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    var closed = 0;
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: _file('front,back\nmul,water\nbul,fire\n'),
+      onClose: () => closed++,
+    );
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+    await _tap(tester, _en.importPreviewAction);
+    await _tap(tester, _en.importCommitAction(2));
+    expect(await _active(env), 2);
+
+    await _tap(tester, _en.importUndoAction);
+    expect(find.text(_en.importUndoTitle(2)), findsOneWidget);
+    expect(find.text(_en.cardDeleteNote(2)), findsOneWidget);
+    await _tap(tester, _en.commonCancel);
+    expect(await _active(env), 2);
+    expect(closed, 0);
+
+    await _tap(tester, _en.importUndoAction);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.text(_en.cardMoveToTrash),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(await _active(env), 0);
+    expect(closed, 1);
+    expect(find.text(_en.importUndoneToast(2)), findsOneWidget);
+  });
+
+  libraryTest('Cancel stays live before the write and holds once it runs '
+      '(SP2a 2.25, a pin of current behaviour)', (tester, env) async {
+    final preview = const ImportPreview([
+      ImportRow(
+        rowNumber: 2,
+        kind: ImportRowKind.ready,
+        draft: CardDraft(front: 'a', back: 'b'),
+      ),
+    ]);
+    Widget bar(CardImportDraft draft) => Scaffold(
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: ImportCommitBarWidget(
+          draft: draft,
+          onCancel: () {},
+          onRead: () {},
+          onPreview: () {},
+          onCommit: () {},
+        ),
+      ),
+    );
+    VoidCallback? cancel() => tester
+        .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+        .onPressed;
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      bar(CardImportDraft(step: CardImportStep.preview, preview: preview)),
+    );
+    expect(cancel(), isNotNull);
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      bar(
+        CardImportDraft(
+          step: CardImportStep.importing,
+          preview: preview,
+          isBusy: true,
+        ),
+      ),
+    );
+    expect(cancel(), isNull);
   });
 }

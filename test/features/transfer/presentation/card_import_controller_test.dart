@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
@@ -39,6 +40,7 @@ import 'package:memox/features/transfer/presentation/states/card_import_state.da
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/test_database.dart';
+import '../../../support/trash_fixtures.dart';
 
 // The import wizard's steps over the real repositories and a fake picker
 // (UC-TRANSFER-001, IT-NAV-012 step 4).
@@ -99,6 +101,20 @@ final class _ExplodingFiles implements TransferFileRepository {
     TransferSource source, {
     int? sheetIndex,
   }) async => throw StateError('codec exploded');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Throws a bug the card feature never types, on the commit.
+final class _ThrowingImport implements CardTransferRepository {
+  @override
+  Future<Outcome<CardImportResult, CardRejection>> importCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required bool includeDuplicates,
+    DateTime? now,
+  }) async => throw StateError('writer exploded');
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -482,6 +498,81 @@ void main() {
     },
   );
 
+  test('a commit that throws something that is not a Failure frees the '
+      'wizard on the failed result (SP2a 2.25)', () async {
+    final c = container(wrap: (_) => _ThrowingImport());
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+    await wizard.readSource();
+    await wizard.previewRows();
+
+    await wizard.commit();
+
+    final failed =
+        c.read(cardImportControllerProvider(leaf.id)) as CardImportFailed;
+    expect(failed.isTargetRejected, isFalse);
+    expect(failed.draft.isBusy, isFalse);
+    expect(failed.draft.step, CardImportStep.preview);
+    expect(await _count(db), 0);
+  });
+
+  Future<List<String>> importTwo(
+    ProviderContainer c,
+    CardImportController wizard,
+  ) async {
+    picked = _file('vocab.csv', 'front,back\nmenu,thực đơn\nbill,hóa đơn\n');
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+    await wizard.readSource();
+    await wizard.previewRows();
+    await wizard.commit();
+    final done =
+        c.read(cardImportControllerProvider(leaf.id)) as CardImportDone;
+    expect(done.summary.writtenIds, hasLength(2));
+    return done.summary.writtenIds;
+  }
+
+  test('Undo import moves the imported cards to the Trash, a batch each, '
+      'skipping one already gone (SP2a 2.25)', () async {
+    final c = container();
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    final [first, second] = await importTwo(c, wizard);
+    await trashCardRow(db, first);
+
+    final outcome = await wizard.undoImport() as Ok<BulkOutcome, CardRejection>;
+
+    expect(outcome.value.done, {second});
+    expect(outcome.value.skipped, {first});
+    expect(outcome.value.batchIds, hasLength(1));
+    expect(await _active(db), 0);
+  });
+
+  test('Undo import after an imported card changed still moves every one to '
+      'the Trash, and each stays restorable (SP2a 2.25)', () async {
+    final c = container();
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    final ids = await importTwo(c, wizard);
+    await db.customStatement("UPDATE card SET front = 'edited' WHERE id = ?", [
+      ids.first,
+    ]);
+
+    final outcome = await wizard.undoImport() as Ok<BulkOutcome, CardRejection>;
+
+    expect(outcome.value.done, ids.toSet());
+    expect(outcome.value.skipped, isEmpty);
+    expect(await _active(db), 0);
+
+    final restored = await CardRepositoryImpl(
+      db,
+      ScheduleRepositoryImpl(db, now: _now),
+      TagRepositoryImpl(db, now: _now),
+      now: _now,
+    ).restoreCards(batchIds: {outcome.value.batchIds.first}, deckId: leaf.id);
+    expect(restored, isA<Ok<void, CardRejection>>());
+    expect(await _active(db), 1);
+  });
+
   test('Import another file starts a fresh step 1', () async {
     await insertCard(
       db,
@@ -508,4 +599,12 @@ void main() {
 
 Future<int> _count(AppDatabase db) async =>
     (await db.customSelect('SELECT COUNT(*) AS n FROM card').getSingle())
+        .read<int>('n');
+
+Future<int> _active(AppDatabase db) async =>
+    (await db
+            .customSelect(
+              'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
+            )
+            .getSingle())
         .read<int>('n');

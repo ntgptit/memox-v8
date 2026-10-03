@@ -107,6 +107,37 @@ void main() {
   });
 
   group('importCards (BR-TRANSFER-001…BR-TRANSFER-005)', () {
+    test('the ids of the cards written come back, and not those a duplicate '
+        'dropped (SP2a 2.25)', () async {
+      await insertCard(
+        db,
+        id: 'a',
+        deckId: leaf.id,
+        front: 'menu',
+        back: 'thực đơn',
+      );
+
+      final result = _ok(
+        await cards.importCards(
+          deckId: leaf.id,
+          drafts: const [
+            CardDraft(front: 'menu', back: 'thực đơn'),
+            CardDraft(front: 'bill', back: 'hóa đơn'),
+            CardDraft(front: 'tip', back: 'tiền boa'),
+          ],
+          includeDuplicates: false,
+        ),
+      );
+
+      expect(result.writtenIds, hasLength(2));
+      final rows = await db
+          .customSelect("SELECT id FROM card WHERE front IN ('bill', 'tip')")
+          .get();
+      expect(result.writtenIds.toSet(), {
+        for (final row in rows) row.read<String>('id'),
+      });
+    });
+
     test('every draft becomes a new card with one schedule row and its tags; unset becomes card', () async {
       final result = _ok(
         await cards.importCards(

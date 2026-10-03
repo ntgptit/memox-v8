@@ -56,6 +56,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
 
       final taken = await _dao.foldedPairs(deckId);
       final skipped = <int>[];
+      final writtenIds = <String>[];
       for (final (index, draft) in drafts.indexed) {
         final pair = (front: foldText(draft.front), back: foldText(draft.back));
         if (!includeDuplicates && taken.contains(pair)) {
@@ -63,13 +64,19 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
           continue;
         }
         taken.add(pair);
-        await _cards.insertCard(deckId, draft, at);
+        writtenIds.add(await _cards.insertCard(deckId, draft, at));
       }
-      final written = drafts.length - skipped.length;
+      final written = writtenIds.length;
       if (written > 0 && contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
-      return Ok(CardImportResult(written: written, skippedIndexes: skipped));
+      return Ok(
+        CardImportResult(
+          written: written,
+          skippedIndexes: skipped,
+          writtenIds: writtenIds,
+        ),
+      );
     });
   }
 
