@@ -252,4 +252,28 @@ void main() {
       darkDerived.warningInk,
     );
   });
+
+  testWidgets('neutral: the note ground and ghost edge, the info glyph, an '
+      'onSurface title (SP2a R9)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.neutral,
+          title: 'Unsaved text from earlier',
+          message: _message,
+        ),
+      ),
+    );
+    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.info));
+
+    expect(_ground(tester).color, scheme.surfaceContainerLow);
+    expect(_ground(tester).border, Border.all(color: derived.ghostBorder));
+    expect((glyph.size, glyph.color), (16, scheme.onSurfaceVariant));
+    expect(
+      tester.widget<Text>(find.text('Unsaved text from earlier')).style!.color,
+      scheme.onSurface,
+    );
+    expect(find.byIcon(AppIcons.alert), findsNothing);
+  });
 }
