@@ -4466,9 +4466,13 @@
   "@studyHomeResume": {
     "description": "Screen handoff 13 (FE-A8): takes the session up (UC-STUDY-002)."
   },
-  "studyHomeResumeRefused": "This session can't be continued any more",
+  "studyHomeResumeRefused": "This session can't be continued. Your answers are kept.",
   "@studyHomeResumeRefused": {
     "description": "Screen handoff 13 (FE-A8): toast when Resume is refused (H3)."
+  },
+  "studyHomeResumeFailed": "Couldn't open the session. Nothing was lost; try Resume again.",
+  "@studyHomeResumeFailed": {
+    "description": "Screen handoff 13 (SP2a 2.49): toast when the Resume write failed; local-first."
   },
   "studyHomeWaiting": "Waiting for you",
   "@studyHomeWaiting": {

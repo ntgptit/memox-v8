@@ -151,7 +151,7 @@ class StudyHomeScreen extends ConsumerWidget {
       case ResumeRefused():
         showMxSnackbar(context, message: l10n.studyHomeResumeRefused);
       case ResumeFailed():
-        showMxSnackbar(context, message: l10n.studyEntryStartFailedTitle);
+        showMxSnackbar(context, message: l10n.studyHomeResumeFailed);
       case null:
         break;
     }

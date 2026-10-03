@@ -379,6 +379,9 @@ final class LockableSessions implements StudySessionRepository {
   /// While set, [revealRecallAnswer] fails as a broken write does (SP2a 2.12).
   var isRevealFailing = false;
 
+  /// While set, [resumeSession] fails as a broken write does (SP2a 2.49).
+  var isResumeFailing = false;
+
   /// With [isRevealFailing], the failure lands before any frame (a gate shut
   /// at the start of the write) instead of after the screen saw it busy.
   var isRevealFailingAtOnce = false;
@@ -463,7 +466,10 @@ final class LockableSessions implements StudySessionRepository {
   Future<Outcome<void, StudyRejection>> resumeSession({
     required String sessionId,
     DateTime? now,
-  }) => _inner.resumeSession(sessionId: sessionId, now: now);
+  }) async {
+    if (isResumeFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.resumeSession(sessionId: sessionId, now: now);
+  }
 
   @override
   Future<void> abandonStaleSessions({DateTime? now}) =>

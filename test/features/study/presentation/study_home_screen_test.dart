@@ -346,6 +346,7 @@ void main() {
 
     expect(taps.sessions, isEmpty);
     expect(find.text(_en.studyHomeResumeRefused), findsOneWidget);
+    expect(_en.studyHomeResumeRefused, contains('answers are kept'));
   });
 
   libraryTest('nothing overflows, each row is at '
@@ -443,5 +444,22 @@ void main() {
       IconTheme.of(tester.element(glyph)).color,
       tester.element(glyph).colors.onSurfaceVariant,
     );
+  });
+
+  libraryTest('a Resume whose write fails says nothing was lost and to try '
+      'again, and opens nothing (H3, 2.49)', (tester, env) async {
+    final taps = _Taps();
+    await openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.recall);
+    await pumpLibraryScreen(tester, env, _screen(taps));
+    await _settle(tester);
+    env.sessions.isResumeFailing = true;
+
+    await tester.tap(find.text(_en.studyHomeResume));
+    await _settle(tester);
+
+    expect(taps.sessions, isEmpty);
+    expect(find.text(_en.studyHomeResumeFailed), findsOneWidget);
+    expect(find.text(_en.studyEntryStartFailedTitle), findsNothing);
+    expect(_en.studyHomeResumeFailed, contains('Nothing was lost'));
   });
 }
