@@ -69,8 +69,9 @@ với lối chọn nhiều thì tập chọn không rỗng (BR-TRANSFER-007)
   bằng lý do có kiểu (BR-TRANSFER-007). Entry point không hiện khi deck rỗng, nên đây là
   chặn tầng dưới cho deep link và cho cây đổi sau khi sheet đã mở.
 - **E6 — Id đã chọn không còn hợp lệ:** một id trong tập chọn đã bị xoá hoặc đã
-  chuyển sang deck khác → **cả request** thất bại có kiểu, không sinh file một
-  phần (BR-TRANSFER-007); thông báo mời người dùng chọn lại.
+  chuyển sang deck khác → id đó bị bỏ qua, file gồm các card còn lại và thông báo
+  nêu số card đã bỏ qua (BR-TRANSFER-007); không còn card nào thì thất bại có
+  kiểu, không sinh file; thông báo mời người dùng chọn lại.
 
 ## UI
 
@@ -96,6 +97,6 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 
 - [ ] **Given** một deck loại card, **when** export CSV, TSV hoặc XLSX, **then** file có sáu header canonical, card theo `created_at` rồi `id`, tag theo tên đã fold, và import lại file vào một deck trống cho đúng nội dung đó (BR-TRANSFER-008, BR-TRANSFER-010, BR-TRANSFER-012).
 - [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export XLSX, **then** ô được ghi là text, không thành formula hay số (BR-TRANSFER-012).
-- [ ] **Given** một tập chọn có một id đã bị xoá hoặc đã chuyển deck, **when** export, **then** cả request thất bại có kiểu và không có file (BR-TRANSFER-007, E6).
+- [ ] **Given** một tập chọn có một id đã bị xoá hoặc đã chuyển deck, **when** export, **then** file gồm các card còn lại, thông báo nêu số card đã bỏ qua và selection được dọn id đó; mọi id đều không còn thì không có file (BR-TRANSFER-007, E6).
 - [ ] **Given** bất kỳ export nào, **when** export xong hoặc thất bại, **then** database không đổi (BR-TRANSFER-011).
 - [ ] **Given** người dùng đóng share sheet, **when** share trả về, **then** đó là cancel, không phải lỗi, và app không nói file đã được lưu (BR-TRANSFER-014, A3).

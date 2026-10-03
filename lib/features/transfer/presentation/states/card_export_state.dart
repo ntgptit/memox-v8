@@ -78,6 +78,7 @@ final class CardExportState {
     this.isPreparing = false,
     this.problem,
     this.isHandedOver = false,
+    this.skipped = const {},
   });
 
   /// CSV by default (UC-TRANSFER-002 step 2).
@@ -89,6 +90,9 @@ final class CardExportState {
 
   /// The share sheet took the file (step 7); the sheet closes.
   final bool isHandedOver;
+
+  /// With [isHandedOver]: the selected cards the file left out (SP2a 2.19).
+  final Set<String> skipped;
 
   bool get canExport =>
       !isPreparing && !isHandedOver && !(problem?.isFinal ?? false);

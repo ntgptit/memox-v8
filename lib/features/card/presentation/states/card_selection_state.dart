@@ -15,8 +15,12 @@ class CardSelection extends _$CardSelection {
 
   void selectAll(Set<String> cardIds) => state = {...cardIds};
 
-  /// Drops cards that are gone, so the bulk bar stops offering them.
-  void prune(Set<String> cardIds) => state = state.difference(cardIds);
+  /// Drops ids a bulk action found already gone, so they do not stay
+  /// selected (SP2a 2.19).
+  void prune(Set<String> gone) {
+    if (gone.isEmpty) return;
+    state = state.difference(gone);
+  }
 
   void clear() => state = const {};
 }

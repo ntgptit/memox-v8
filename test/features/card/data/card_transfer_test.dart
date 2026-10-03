@@ -409,19 +409,17 @@ void main() {
       },
     );
 
-    test('an id that is gone, in the Trash or in another deck fails the whole request (E6)', () async {
+    test('an id that is gone, in the Trash or in another deck is skipped; the '
+        'rest are read (SP2a 2.19, BR-TRANSFER-007)', () async {
       final other = await decks.sub(root.id, 'o');
       await insertCard(db, id: 'x', deckId: other.id);
 
-      for (final ids in [
-        {'a', 'missing'},
-        {'a', 'z'},
-        {'a', 'x'},
-      ]) {
-        expect(
-          _reason(await cards.exportSnapshot(deckId: leaf.id, cardIds: ids)),
-          CardRejection.notFound,
+      for (final id in ['missing', 'z', 'x']) {
+        final snapshot = _ok(
+          await cards.exportSnapshot(deckId: leaf.id, cardIds: {'a', id}),
         );
+        expect(snapshot.rows.map((row) => row.front), ['first'], reason: id);
+        expect(snapshot.skipped, {id}, reason: id);
       }
       expect(
         _reason(await cards.exportSnapshot(deckId: 'missing')),

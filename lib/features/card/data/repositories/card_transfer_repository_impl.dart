@@ -86,13 +86,14 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       final deck = await _dao.deckRow(deckId);
       if (deck == null) return const Rejected(CardRejection.notFound);
       final rows = await _dao.exportRows(deckId, cardIds);
-      if (cardIds != null && rows.length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
+      final skipped = cardIds == null
+          ? const <String>{}
+          : cardIds.difference({for (final row in rows) row.id});
       final tags = await _listDao.tagsOf([for (final row in rows) row.id]);
       return Ok(
         CardExportSnapshot(
           deckName: deck.name,
+          skipped: skipped,
           rows: [
             for (final row in rows)
               CardExportRow(

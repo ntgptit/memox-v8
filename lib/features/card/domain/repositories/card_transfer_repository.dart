@@ -35,9 +35,10 @@ abstract interface class CardTransferRepository {
 
   /// UC-TRANSFER-002 step 4: the deck's name and its live cards, or those of
   /// [cardIds], in one read that writes nothing (BR-TRANSFER-010,
-  /// BR-TRANSFER-011). A missing deck, or an id that is gone or in another
-  /// deck, is `notFound` for the whole request (BR-TRANSFER-007). An empty
-  /// scope is an empty snapshot; the caller refuses it.
+  /// BR-TRANSFER-011). An id that is gone, in the Trash or in another deck is
+  /// skipped and named in `skipped` (SP2a 2.19, BR-TRANSFER-007); a missing
+  /// deck is `notFound`. An empty scope is an empty snapshot; the caller
+  /// refuses it.
   Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
     required String deckId,
     Set<String>? cardIds,

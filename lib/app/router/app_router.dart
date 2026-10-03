@@ -21,6 +21,7 @@ import 'package:memox/features/reminders/presentation/screens/reminder_screen.da
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
@@ -390,12 +391,8 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
       onOpenCard: (cardId) => unawaited(context.push(AppRoutes.card(cardId))),
       onStudy: () => study(view.deck.id),
       onOpenTrash: openTrash,
-      onExport: (ids) => unawaited(
-        showCardExportSheet(
-          context,
-          CardExportScope.selection(deckId: view.deck.id, ids: ids),
-        ),
-      ),
+      onExport: (ids) =>
+          unawaited(_exportSelection(context, view.deck.id, ids)),
     ),
     cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () => addCard(id)),
   );
@@ -404,6 +401,21 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
 /// Opens the Trash on the root navigator (FE-B1 D2).
 VoidCallback _openTrash(BuildContext context) =>
     _opener(context, AppRoutes.trash);
+
+/// Exports the selected cards, then drops the ones the file left out from the
+/// selection (SP2a 2.19).
+Future<void> _exportSelection(
+  BuildContext context,
+  String deckId,
+  Set<String> ids,
+) async {
+  final container = ProviderScope.containerOf(context, listen: false);
+  final skipped = await showCardExportSheet(
+    context,
+    CardExportScope.selection(deckId: deckId, ids: ids),
+  );
+  container.read(cardSelectionProvider(deckId).notifier).prune(skipped);
+}
 
 /// Pushes [location]. The router pushes it, not the page's context: a
 /// toast's action can outlive its page.

@@ -9,6 +9,7 @@ import 'package:memox/features/transfer/presentation/controllers/card_export_con
 import 'package:memox/features/transfer/presentation/providers/count_export_cards_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/export_labels_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -23,22 +24,29 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Opens the export sheet over [scope] (kit 12, UC-TRANSFER-002) and, once
 /// the share sheet took the file, says so without naming where it went
-/// (BR-TRANSFER-014, ruling E2).
-Future<void> showCardExportSheet(
+/// (BR-TRANSFER-014, ruling E2). Completes with the ids the file left out
+/// (empty when none), or an empty set when nothing was handed over; the toast
+/// says how many were skipped (SP2a 2.19).
+Future<Set<String>> showCardExportSheet(
   BuildContext context,
   CardExportScope scope,
 ) async {
-  final isHandedOver =
-      await showMxBottomSheet<bool>(
-        context,
-        builder: (_) => CardExportSheetWidget(scope: scope),
-      ) ??
-      false;
-  if (!isHandedOver || !context.mounted) return;
-  showMxSnackbar(
+  final skipped = await showMxBottomSheet<Set<String>>(
     context,
-    message: context.l10n.exportHandedOver(scope.cardCount),
+    builder: (_) => CardExportSheetWidget(scope: scope),
   );
+  if (skipped == null) return const {};
+  if (context.mounted) {
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: l10n.bulkToast(
+        l10n.exportHandedOver(scope.cardCount - skipped.length),
+        skipped.length,
+      ),
+    );
+  }
+  return skipped;
 }
 
 /// The whole-deck entry (the deck's ⋮): counts the deck's cards first, so
@@ -85,7 +93,7 @@ class CardExportSheetWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = cardExportControllerProvider(scope);
     ref.listen(provider, (_, next) {
-      if (next.isHandedOver) Navigator.of(context).pop(true);
+      if (next.isHandedOver) Navigator.of(context).pop(next.skipped);
     });
     final state = ref.watch(provider);
     final problem = state.problem;
@@ -257,7 +265,7 @@ class _Actions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void close() => Navigator.of(context).pop(false);
+    void close() => Navigator.of(context).pop();
     final problem = state.problem;
     if (problem != null && problem.isFinal) {
       return MxSheetActions.custom(

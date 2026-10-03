@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Export MUST hỗ trợ đúng hai scope và MUST NOT có scope thứ ba ở v1. `all`: toàn bộ card **trực tiếp** của deck đang mở, độc lập với filter, search term, sort và pagination đang bật, MUST NOT gồm card của deck descendant. `selected`: đúng tập id đã materialize từ chế độ chọn (BR-CARD-012), id trùng MUST được normalize về một lần và MUST NOT nhân bản hàng trong file. Một id không còn tồn tại, hoặc không còn thuộc chính deck đó tại thời điểm đọc snapshot, MUST làm **cả request** thất bại bằng lý do có kiểu — MUST NOT export một phần im lặng. Scope rỗng (deck không còn card, hoặc tập chọn rỗng) MUST bị từ chối ở tầng nghiệp vụ kể cả khi UI đã ẩn action.
+Export MUST hỗ trợ đúng hai scope và MUST NOT có scope thứ ba ở v1. `all`: toàn bộ card **trực tiếp** của deck đang mở, độc lập với filter, search term, sort và pagination đang bật, MUST NOT gồm card của deck descendant. `selected`: đúng tập id đã materialize từ chế độ chọn (BR-CARD-012), id trùng MUST được normalize về một lần và MUST NOT nhân bản hàng trong file. Một id không còn tồn tại, hoặc không còn thuộc chính deck đó tại thời điểm đọc snapshot, MUST bị bỏ qua trong cùng lần đọc: file chỉ gồm các card còn lại, và kết quả MUST nêu các id đã bỏ qua để UI báo số lượng và dọn selection — MUST NOT bỏ qua im lặng. Khi mọi id đều không còn, request thất bại bằng lý do có kiểu. Scope rỗng (deck không còn card, hoặc tập chọn rỗng) MUST bị từ chối ở tầng nghiệp vụ kể cả khi UI đã ẩn action.
 
 **Enforced by:** rule + store
 **Liên quan:** BR-CARD-012
@@ -28,4 +28,4 @@ Không áp dụng
 |---|---|
 | Export scope `all` khi danh sách đang bật filter/search | File vẫn chứa toàn bộ card trực tiếp của deck, không phải tập đã lọc (BR-TRANSFER-007) |
 | Export scope `selected` có id lặp lại | Normalize còn một hàng; số card trong file khớp số id phân biệt (BR-TRANSFER-007) |
-| Một card trong tập chọn bị xoá hoặc chuyển deck trước lúc đọc | Cả request thất bại có kiểu; không sinh file một phần (BR-TRANSFER-007) |
+| Một card trong tập chọn bị xoá hoặc chuyển deck trước lúc đọc | Card đó bị bỏ qua và được nêu tên; file gồm các card còn lại; mọi card đều không còn thì thất bại có kiểu (BR-TRANSFER-007) |

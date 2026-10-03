@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -102,5 +104,16 @@ void main() {
 
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  test('prune drops the ids a bulk action found already gone (SP2a 2.19)', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final selection = container.read(cardSelectionProvider('deck').notifier)
+      ..selectAll({'a', 'b', 'c'});
+
+    selection.prune({'b', 'unknown'});
+
+    expect(container.read(cardSelectionProvider('deck')), {'a', 'c'});
   });
 }

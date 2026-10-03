@@ -195,7 +195,20 @@ void main() {
     },
   );
 
-  test('a selection with a card gone meanwhile exports nothing (E6)', () async {
+  test('a selection whose cards are all gone exports nothing (E6)', () async {
+    final (:sheet, :state) = open(
+      container(),
+      CardExportScope.selection(deckId: leaf.id, ids: {'gone'}),
+    );
+
+    await sheet.export();
+
+    expect(state().problem, CardExportProblem.staleSelection);
+    expect(share.shared, isEmpty);
+  });
+
+  test('a card gone meanwhile is skipped; the file holds the rest and the '
+      'state names it (SP2a 2.19)', () async {
     final (:sheet, :state) = open(
       container(),
       CardExportScope.selection(deckId: leaf.id, ids: {'a', 'gone'}),
@@ -203,8 +216,9 @@ void main() {
 
     await sheet.export();
 
-    expect(state().problem, CardExportProblem.staleSelection);
-    expect(share.shared, isEmpty);
+    expect(state().isHandedOver, isTrue);
+    expect(state().skipped, {'gone'});
+    expect(share.shared, hasLength(1));
   });
 
   test(

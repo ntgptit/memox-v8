@@ -9,11 +9,15 @@ final class ExportArtifact {
     required this.bytes,
     required this.fileName,
     required this.format,
+    this.skipped = const {},
   });
 
   final Uint8List bytes;
   final String fileName;
   final TransferFormat format;
+
+  /// The selected ids the file leaves out because they were gone (SP2a 2.19).
+  final Set<String> skipped;
 }
 
 /// How a share ended. Dismissing the share sheet is a cancel, never an

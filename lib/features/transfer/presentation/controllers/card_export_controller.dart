@@ -53,6 +53,7 @@ class CardExportController extends _$CardExportController {
       Ok(value: ExportShareResult.shared) => CardExportState(
         format: format,
         isHandedOver: true,
+        skipped: artifact.skipped,
       ),
       // A3: a cancel, not an error; the sheet is as it was.
       Ok(value: ExportShareResult.dismissed) => CardExportState(format: format),
