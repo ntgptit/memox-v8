@@ -18,7 +18,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(
           pendingCount: 2,
@@ -53,7 +53,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(
           lastFailure: LastSyncFailure(SyncFailureKind.server, env.clock.now()),
@@ -74,7 +74,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         const SyncStatus(rejectedCount: 3),
         FakeSyncCommands(),

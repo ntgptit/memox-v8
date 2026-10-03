@@ -3,12 +3,17 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/deck/presentation/providers/reset_learning_summary_provider.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
+import '../../../support/held_writes.dart';
 import '../../../support/library_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -74,6 +79,35 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/library_algorithm_reset_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('reset dialog, summary failed, $theme', (tester, env) async {
+      final korean = await env.decks.root('Korean', SchedulerType.sm2);
+      await lockScheduler(env.db, korean.id);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          deckAlgorithmScreen(deckId: korean.id),
+          brightness,
+          overrides: [
+            resetLearningSummaryProvider(korean.id).overrideWith(
+              (ref) =>
+                  Future<Outcome<ResetLearningSummary, SrsRejection>>.error(
+                    WriteHold.failure,
+                  ),
+            ),
+          ],
+        );
+        await tester.tap(find.text(_en.algorithmResetAction));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
+        expect(find.text(_en.commonRetry), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_algorithm_reset_failed_$theme.png',
         );
       });
     });

@@ -13,13 +13,17 @@ import 'package:memox/features/reminders/presentation/providers/reminder_status_
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../../support/fake_reminder_platform.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/reminder_screen_harness.dart';
 import '../../../support/settings_fakes.dart';
 import '../../../support/study_entry_fixtures.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
@@ -115,6 +119,26 @@ void main() {
       );
     });
 
+    // SP2b 2.35: a typed minute out of range, with its line.
+    libraryTest('reminder, time invalid, $theme', (tester, env) async {
+      await shoot(
+        tester,
+        env,
+        'time_invalid',
+        act: (_) async {
+          await toggle(tester);
+          await tester.tap(find.text('20:00'));
+          await _settle(tester);
+          await tester.tap(find.text('00'));
+          await tester.pump();
+          await tester.enterText(find.byType(EditableText), '75');
+          await tester.testTextInput.receiveAction(TextInputAction.done);
+          await tester.pump();
+          expect(find.text(_en.reminderMinuteRange), findsOneWidget);
+        },
+      );
+    });
+
     libraryTest('reminder, permission denied, $theme', (tester, env) async {
       await shoot(
         tester,
@@ -122,6 +146,26 @@ void main() {
         'perm_denied',
         platform: FakeReminderPlatform(permission: ReminderPermission.denied),
         act: (_) => toggle(tester),
+      );
+    });
+
+    // SP2b 2.34: the reminder is on and Android blocks its notifications.
+    libraryTest('reminder, permission revoked, $theme', (tester, env) async {
+      final platform = FakeReminderPlatform();
+      await shoot(
+        tester,
+        env,
+        'perm_revoked',
+        platform: platform,
+        act: (_) async {
+          await toggle(tester);
+          platform.permission = ReminderPermission.denied;
+          await resumeReminderApp(tester);
+          expect(
+            find.text('Notifications are blocked for MemoX'),
+            findsOneWidget,
+          );
+        },
       );
     });
 

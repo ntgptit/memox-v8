@@ -15,6 +15,8 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
@@ -202,7 +204,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MxDialog), findsOneWidget);
-    expect(find.text(_en.failureUnknown), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MxInlineBanner),
+        matching: find.text(_en.failureUnknown),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(SnackBar), findsNothing);
+    expect(find.text('Korean'), findsOneWidget);
     expect(find.textContaining('sqlite'), findsNothing);
   });
 
@@ -262,5 +272,44 @@ void main() {
     await open(tester);
 
     await expectAccessibleTargets(tester);
+  });
+
+  libraryTest('Back, a scrim tap and Cancel do nothing while the deck is '
+      'created, so the discard dialog never opens over a write (SP2b 2.26)', (
+    tester,
+    env,
+  ) async {
+    final slow = _SlowDecks(env.decks);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(),
+      overrides: [
+        createRootDeckUseCaseProvider.overrideWithValue(
+          CreateRootDeckUseCase(slow),
+        ),
+      ],
+    );
+    await open(tester);
+    await tester.enterText(find.byType(EditableText), 'Korean');
+    await chooseEightBox(tester);
+    await tester.tap(find.text(_en.deckCreateConfirm));
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tapAt(const Offset(2, 2));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text(_en.deckDiscardTitle), findsNothing);
+    expect(find.byType(MxDialog), findsOneWidget);
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).onCancel,
+      isNull,
+    );
+
+    slow.release();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxDialog), findsNothing);
+    expect(await _decks(env), [('Korean', 'eight_box')]);
   });
 }

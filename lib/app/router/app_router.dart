@@ -287,7 +287,15 @@ GoRouter buildAppRouter({
                   GoRoute(
                     path: AppRoutes.settingsSyncChild,
                     parentNavigatorKey: rootNavigator,
-                    builder: (context, state) => const SyncScreen(),
+                    builder: (context, state) => SyncScreen(
+                      onSignIn: () => unawaited(
+                        context.push(
+                          AppRoutes.settingsSignInReauth(
+                            from: AppRoutes.settingsSync,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),

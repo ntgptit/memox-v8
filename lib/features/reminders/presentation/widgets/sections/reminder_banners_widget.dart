@@ -15,6 +15,7 @@ class ReminderBannersWidget extends StatelessWidget {
     required this.isBusy,
     required this.onRetry,
     required this.onOpenSettings,
+    required this.isPermissionRevoked,
   });
 
   final ReminderProblem? problem;
@@ -22,6 +23,10 @@ class ReminderBannersWidget extends StatelessWidget {
   final bool isBusy;
   final VoidCallback onRetry;
   final VoidCallback onOpenSettings;
+
+  /// The reminder is on but the system blocks its notifications (SP2b 2.34):
+  /// shown only when no operation left a problem of its own.
+  final bool isPermissionRevoked;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,20 @@ class ReminderBannersWidget extends StatelessWidget {
           size: MxButtonSize.compact,
           onPressed: isBusy ? null : onRetry,
         );
+    if (problem == null && isPermissionRevoked) {
+      return MxInlineBanner(
+        tone: MxBannerTone.warning,
+        title: l10n.reminderDeniedTitle,
+        message: l10n.reminderRevokedBody,
+        actions: [
+          MxButton(
+            label: l10n.reminderOpenSystemSettings,
+            size: MxButtonSize.compact,
+            onPressed: onOpenSettings,
+          ),
+        ],
+      );
+    }
     return switch (problem) {
       null => const SizedBox.shrink(),
       ReminderProblem.permissionDenied => MxInlineBanner(

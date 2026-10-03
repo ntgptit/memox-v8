@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -113,5 +114,25 @@ void main() {
     expect(await first, isA<StarterAdded>());
     expect(library.adds, 1);
     expect(container.read(starterAddControllerProvider).isAdding, isFalse);
+  });
+
+  test('a non-Failure from the add ends in hasFailed, not isAdding, and is '
+      'reported; the next add works (SP2b 2.29)', () async {
+    final reported = <FlutterErrorDetails>[];
+    final previous = FlutterError.onError;
+    FlutterError.onError = reported.add;
+    addTearDown(() => FlutterError.onError = previous);
+    library.addError = StateError('bad row');
+
+    expect(await add(), isNull);
+
+    final state = container.read(starterAddControllerProvider);
+    expect((state.hasFailed, state.isAdding), (true, false));
+    expect(reported.single.exception, isA<StateError>());
+    expect(reported.single.library, 'starter add');
+
+    library.addError = null;
+    expect(await add(), isA<StarterAdded>());
+    expect(container.read(starterAddControllerProvider).hasFailed, isFalse);
   });
 }

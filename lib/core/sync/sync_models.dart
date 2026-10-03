@@ -106,6 +106,7 @@ class ChangesResponseModel {
     required this.changes,
     required this.nextSince,
     required this.hasMore,
+    this.serverTime,
   });
 
   factory ChangesResponseModel.fromJson(Map<String, Object?> json) =>
@@ -114,6 +115,10 @@ class ChangesResponseModel {
   final List<SyncChangeModel> changes;
   final int nextSince;
   final bool hasMore;
+
+  /// The server's clock when it answered, UTC epoch milliseconds. Null from a
+  /// server that does not send it yet (SP2b 2.30, R10).
+  final int? serverTime;
 
   Map<String, Object?> toJson() => _$ChangesResponseModelToJson(this);
 }

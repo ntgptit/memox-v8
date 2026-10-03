@@ -54,6 +54,18 @@ class ReminderController extends _$ReminderController {
     if (again != null) await again();
   }
 
+  /// The permission came back (allowed in system settings): the "blocked"
+  /// guidance no longer holds. Nothing is asked or stored and the toggle stays
+  /// off, since turning it on is the person's tap (BR-REMINDER-011, SP2b
+  /// 2.36). Every other problem, and any operation in flight, is left alone.
+  void clearPermissionProblem() {
+    if (state.isBusy || state.problem != ReminderProblem.permissionDenied) {
+      return;
+    }
+    _again = null;
+    state = const ReminderActionState();
+  }
+
   Future<void> _run(
     ReminderOperation operation,
     Future<Outcome<Object?, ReminderRejection>> Function() call, {

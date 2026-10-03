@@ -40,14 +40,14 @@ their goldens, its rulings and its copy. The visual system is in
 | 21 | Session summary | 11 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 9 | FE-A9 | built | [22-progress.md](22-progress.md) |
 | 23 | Settings | 12 | FE-A3, SB-U1, FE-B8, FE-B9 | built | [23-settings.md](23-settings.md) |
-| 24 | Daily reminder | 9 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
+| 24 | Daily reminder | 11 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 3 | FE-A3 | built | [25-theme.md](25-theme.md) |
 | 26 | Language | 3 | FE-A3 | built | [26-language.md](26-language.md) |
-| 27 | Sync | 7 | SB-U1 | built | [27-sync.md](27-sync.md) (shape brief in the spec) |
-| 28 | Monitoring (admin only) | 15 | FE-B8 | built | [28-monitoring.md](28-monitoring.md) (shape brief in the spec) |
+| 27 | Sync | 8 | SB-U1 | built | [27-sync.md](27-sync.md) (shape brief in the spec) |
+| 28 | Monitoring (admin only) | 16 | FE-B8 | built | [28-monitoring.md](28-monitoring.md) (shape brief in the spec) |
 | 29 | Welcome (first launch) | 2 | FE-B9 | built | [29-welcome.md](29-welcome.md) (shape in the account UI spec) |
 | 30 | Sign-in, merge sheet, transition layer | 13 | FE-B9, FE-B10 | built | [30-sign-in.md](30-sign-in.md) (shape in the account UI spec) |
-| 31 | Code | 2 | FE-B9 | built | [31-code.md](31-code.md) |
+| 31 | Code | 4 | FE-B9 | built | [31-code.md](31-code.md) |
 | 32 | Account | 9 | FE-B10 | built | [32-account.md](32-account.md) (shape in the account UI spec §9.1) |
 | 33 | Users (admin) | 5 | FE-B11 | built | [33-users.md](33-users.md) (shape in the users spec §6) |
 

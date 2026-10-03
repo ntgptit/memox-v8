@@ -26,6 +26,12 @@ class MonitoringListController extends _$MonitoringListController {
   /// it was asked under.
   var _generation = 0;
 
+  /// Bumped by every next-page ask and by every first page that answers, so
+  /// a next page belongs to the list it was asked of: one asked while a
+  /// refresh ran is dropped once that refresh answers, whichever way, and
+  /// can never append over the rows it did not extend (SP2b final 7).
+  var _moreTicket = 0;
+
   @override
   MonitoringListState build() {
     ref.onDispose(() => _debounce?.cancel());
@@ -84,6 +90,11 @@ class MonitoringListController extends _$MonitoringListController {
     _debounce?.cancel();
     _pendingSearch = null;
     if (filter != state.filter) state = MonitoringListState(filter: filter);
+    // The last refresh's warning stays while this one runs, marked busy so
+    // its Retry shows progress; a landed page replaces it (SP2b 2.38).
+    if (_loaded case final shown? when shown.refreshFailure != null) {
+      _show(shown.withRefreshing());
+    }
     return _loadFirst();
   }
 
@@ -95,6 +106,7 @@ class MonitoringListController extends _$MonitoringListController {
     final after = current.next;
     if (after == null || current.more == MonitoringMore.loading) return;
     final generation = _generation;
+    final ticket = ++_moreTicket;
     final filter = state.filter;
     _show(current.withMore(MonitoringMore.loading));
     try {
@@ -102,7 +114,7 @@ class MonitoringListController extends _$MonitoringListController {
         filter,
         after: after,
       );
-      if (!_isCurrent(generation)) return;
+      if (!_isMoreCurrent(generation, ticket)) return;
       final latest = _loaded;
       if (latest == null) return;
       state = MonitoringListState(
@@ -110,10 +122,11 @@ class MonitoringListController extends _$MonitoringListController {
         content: MonitoringListLoaded(
           items: [...latest.items, ...page.items],
           next: page.next,
+          refreshFailure: latest.refreshFailure,
         ),
       );
     } on Object {
-      if (!_isCurrent(generation)) return;
+      if (!_isMoreCurrent(generation, ticket)) return;
       final latest = _loaded;
       if (latest == null) return;
       _show(latest.withMore(MonitoringMore.failed));
@@ -145,6 +158,9 @@ class MonitoringListController extends _$MonitoringListController {
 
   bool _isCurrent(int generation) => ref.mounted && generation == _generation;
 
+  bool _isMoreCurrent(int generation, int ticket) =>
+      _isCurrent(generation) && ticket == _moreTicket;
+
   Future<void> _loadFirst() async {
     if (!ref.mounted) return;
     final generation = ++_generation;
@@ -152,13 +168,27 @@ class MonitoringListController extends _$MonitoringListController {
     try {
       final page = await ref.read(queryServerLogsUseCaseProvider)(filter);
       if (!_isCurrent(generation)) return;
+      _moreTicket++;
       state = MonitoringListState(
         filter: filter,
         content: MonitoringListLoaded(items: page.items, next: page.next),
       );
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
-      _show(MonitoringListFailed(MonitoringLoadFailure.of(error)));
+      _moreTicket++;
+      final failure = MonitoringLoadFailure.of(error);
+      final shown = _loaded;
+      // A pull to refresh that fails keeps the rows (SP2b 2.38). A new filter
+      // cleared them first, an empty list has none to keep, and a lost admin
+      // role must not leave logs on screen.
+      if (shown != null &&
+          shown.items.isNotEmpty &&
+          failure != MonitoringLoadFailure.notAdmin) {
+        // A page that was loading is dropped by the generation guard.
+        _show(shown.withMore(MonitoringMore.idle).withRefreshFailure(failure));
+        return;
+      }
+      _show(MonitoringListFailed(failure));
     }
   }
 }

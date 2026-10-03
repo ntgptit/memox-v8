@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
@@ -206,8 +207,19 @@ class SettingsController extends _$SettingsController {
     var hasWritten = false;
     try {
       hasWritten = await write() is Ok;
-    } on Failure {
-      hasWritten = false;
+    } on Object catch (error, stack) {
+      // A database `Failure` reads as a failed save; anything else the write
+      // threw is reported as the starter add's catch-all does. Both release
+      // the busy flag below, so Retry can run (SP2b 2.33).
+      if (error is! Failure) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            library: 'settings save',
+          ),
+        );
+      }
     }
     if (!ref.mounted) return hasWritten;
     state = state.withBusy(kind, isBusy: false);

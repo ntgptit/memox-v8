@@ -168,6 +168,29 @@ void main() {
         );
       });
     });
+
+    libraryTest('settings, reset failed, $theme', (tester, env) async {
+      final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+        ..isFailing = true;
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          _screen,
+          brightness,
+          overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+        );
+        await tester.tap(find.text(_en.settingsResetRow));
+        await _settle(tester);
+        await tester.tap(find.text(_en.settingsResetConfirm));
+        await _settle(tester);
+        expect(find.text(_en.settingsResetFailed), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/settings_reset_failed_$theme.png',
+        );
+      });
+    });
     for (final (state, status) in <(String, SyncStatus Function(LibraryEnv))>[
       (
         'synced',

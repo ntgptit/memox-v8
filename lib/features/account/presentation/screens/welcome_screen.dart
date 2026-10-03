@@ -26,7 +26,7 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// account. The name, the promise and three benefits sit on top; the three
 /// ways on sit in the thumb zone, Google the one fill. Every exit answers
 /// Welcome for good. There is no back: Back leaves the app, as on any
-/// root.
+/// root, except while Google signs in (SP2b 2.46).
 class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key, required this.onDone, required this.onEmail});
 
@@ -78,76 +78,84 @@ class WelcomeScreen extends ConsumerWidget {
     final canLink = ref.watch(canLinkProvider);
     final isRunning = ref.watch(signInControllerProvider(_link)).isRunning;
     final canSignIn = canLink && !isRunning;
-    return MxAppShell(
-      body: SafeArea(
-        bottom: false,
-        child: MxScreenScroll(
-          children: [
-            const SizedBox(height: AppSpacing.major),
-            // Plan U5: a tile until MemoX has its own icon (UI-base debt).
-            const Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: MxIconTile(
-                icon: AppIcons.library,
-                size: MxIconTileSize.large,
+    return PopScope(
+      // Back leaves the app, except while Google is signing in: its result
+      // needs this screen to land on (2.46).
+      canPop: !isRunning,
+      child: MxAppShell(
+        body: SafeArea(
+          bottom: false,
+          child: MxScreenScroll(
+            children: [
+              const SizedBox(height: AppSpacing.major),
+              // Plan U5: a tile until MemoX has its own icon (UI-base debt).
+              const Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: MxIconTile(
+                  icon: AppIcons.library,
+                  size: MxIconTileSize.large,
+                ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.gutter),
-            Semantics(
-              header: true,
-              child: Text(l10n.appTitle, style: context.textStyles.screenTitle),
-            ),
-            const SizedBox(height: AppSpacing.control),
-            Text(l10n.welcomeLead, style: context.textStyles.emptyBody),
-            const SizedBox(height: AppSpacing.section),
-            MxSection(
-              children: [
-                MxSettingsRow(
-                  label: l10n.welcomeBenefitReinstall,
-                  icon: AppIcons.safe,
+              const SizedBox(height: AppSpacing.gutter),
+              Semantics(
+                header: true,
+                child: Text(
+                  l10n.appTitle,
+                  style: context.textStyles.screenTitle,
                 ),
-                MxSettingsRow(
-                  label: l10n.welcomeBenefitPhones,
-                  icon: AppIcons.devices,
-                ),
-                MxSettingsRow(
-                  label: l10n.welcomeBenefitOffline,
-                  icon: AppIcons.offline,
-                ),
-              ],
-            ),
-            if (!canLink) MxNote(text: l10n.accountOfflineNote),
-          ],
+              ),
+              const SizedBox(height: AppSpacing.control),
+              Text(l10n.welcomeLead, style: context.textStyles.emptyBody),
+              const SizedBox(height: AppSpacing.section),
+              MxSection(
+                children: [
+                  MxSettingsRow(
+                    label: l10n.welcomeBenefitReinstall,
+                    icon: AppIcons.safe,
+                  ),
+                  MxSettingsRow(
+                    label: l10n.welcomeBenefitPhones,
+                    icon: AppIcons.devices,
+                  ),
+                  MxSettingsRow(
+                    label: l10n.welcomeBenefitOffline,
+                    icon: AppIcons.offline,
+                  ),
+                ],
+              ),
+              if (!canLink) MxNote(text: l10n.accountOfflineNote),
+            ],
+          ),
         ),
-      ),
-      footer: MxFooterBar(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.grouped,
-          children: [
-            MxButton(
-              label: l10n.accountContinueGoogle,
-              mark: googleMark,
-              isBlock: true,
-              isLoading: isRunning,
-              onPressed: canSignIn
-                  ? () => unawaited(_google(context, ref))
-                  : null,
-            ),
-            MxButton(
-              label: l10n.accountContinueEmail,
-              tone: MxButtonTone.outline,
-              isBlock: true,
-              onPressed: canSignIn ? () => _leave(ref, onEmail) : null,
-            ),
-            MxButton(
-              label: l10n.accountContinueWithout,
-              tone: MxButtonTone.text,
-              isBlock: true,
-              onPressed: isRunning ? null : () => _leave(ref, onDone),
-            ),
-          ],
+        footer: MxFooterBar(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.grouped,
+            children: [
+              MxButton(
+                label: l10n.accountContinueGoogle,
+                mark: googleMark,
+                isBlock: true,
+                isLoading: isRunning,
+                onPressed: canSignIn
+                    ? () => unawaited(_google(context, ref))
+                    : null,
+              ),
+              MxButton(
+                label: l10n.accountContinueEmail,
+                tone: MxButtonTone.outline,
+                isBlock: true,
+                onPressed: canSignIn ? () => _leave(ref, onEmail) : null,
+              ),
+              MxButton(
+                label: l10n.accountContinueWithout,
+                tone: MxButtonTone.text,
+                isBlock: true,
+                onPressed: isRunning ? null : () => _leave(ref, onDone),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -16,6 +16,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Picks the deck the cards of [cardIds] move to (UC-CARD-001 A5).
@@ -62,9 +63,16 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
   /// One move at a time: a second tap before the first lands does nothing.
   var _isMoving = false;
 
+  /// The last move's failure, shown in the sheet until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   Future<void> _move(CardMoveTarget target) async {
     if (_isMoving) return;
-    setState(() => _isMoving = true);
+    setState(() {
+      _isMoving = true;
+      _failure = null;
+    });
     try {
       final outcome = await ref
           .read(cardActionsControllerProvider.notifier)
@@ -98,10 +106,13 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
         ),
       );
       Navigator.of(context).pop(hasMoved);
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'card move');
       if (!mounted) return;
-      setState(() => _isMoving = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isMoving = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -128,6 +139,14 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
         onDismiss: () => Navigator.of(context).pop(false),
         emptyTitle: l10n.cardMoveEmptyTitle,
         emptyBody: l10n.cardMoveEmptyBody,
+        isHeld: _isMoving,
+        banner: switch (_failure) {
+          final failure? => MxInlineBanner(
+            tone: MxBannerTone.warning,
+            message: l10n.failure(failure),
+          ),
+          null => null,
+        },
       ),
       AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(

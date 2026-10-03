@@ -96,14 +96,154 @@ void main() {
     final again = ((await decks.deleteDeck(
       deckId: words.id,
     )) as Ok<String, DeckRejection>).value;
-    expect((await PurgeTrashUseCase(trash, clock)(batchIds: {again})).purged, {
-      again,
-    });
+    expect(
+      (await PurgeTrashUseCase(trash, clock, () async => clock.now())(
+        batchIds: {again},
+      )).purged,
+      {again},
+    );
 
     final last = ((await decks.deleteDeck(
       deckId: other.id,
     )) as Ok<String, DeckRejection>).value;
     clock.current = clock.current.add(trashRetention);
-    expect((await PurgeExpiredTrashUseCase(trash, clock)()).purged, {last});
+    expect(
+      (await PurgeExpiredTrashUseCase(
+        trash,
+        clock,
+        () async => clock.now(),
+      )()).purged,
+      {last},
+    );
+  });
+
+  // R10 (BR-TRASH-009): the auto-purge runs on the earlier of the device clock
+  // and the server time seen at the last sync, and not at all without one.
+  Future<DateTime> deleteWordsDeck() async {
+    final korean = await decks.root('Korean');
+    final words = await decks.sub(korean.id, 'Words');
+    await decks.deleteDeck(deckId: words.id);
+    return clock.now();
+  }
+
+  for (final (label, deviceAfter, serverAfter, isPurged)
+      in <(String, Duration, Duration?, bool)>[
+        ('never synced', trashRetention, null, false),
+        (
+          'a device clock on the server time',
+          trashRetention,
+          trashRetention,
+          true,
+        ),
+        (
+          'a device clock 60 days ahead of a server that says 10 days',
+          const Duration(days: 70),
+          const Duration(days: 10),
+          false,
+        ),
+        (
+          'a device clock 60 days ahead of a server that says 30 days',
+          const Duration(days: 90),
+          trashRetention,
+          true,
+        ),
+        (
+          'a server ahead of a device that says 29 days',
+          const Duration(days: 29),
+          const Duration(days: 60),
+          false,
+        ),
+        (
+          'a server ahead of a device that says 30 days',
+          trashRetention,
+          const Duration(days: 60),
+          true,
+        ),
+      ]) {
+    test('the auto-purge with $label (R10)', () async {
+      final deletedAt = await deleteWordsDeck();
+      clock.current = deletedAt.add(deviceAfter);
+      final seen = serverAfter == null ? null : deletedAt.add(serverAfter);
+
+      final report = await PurgeExpiredTrashUseCase(
+        trash,
+        clock,
+        () async => seen,
+      )();
+
+      expect(report.purged, isPurged ? hasLength(1) : isEmpty);
+      expect(
+        await WatchTrashUseCase(trash)().first,
+        hasLength(isPurged ? 0 : 1),
+      );
+    });
+  }
+
+  // R10: a manual purge takes the chosen batches, and sweeps the expired ones
+  // only by the purge clock (earlier of device and server time, none = none).
+  Future<(String expired, String chosen)> expiredAndChosen(
+    DateTime deviceNow,
+  ) async {
+    final deletedAt = await deleteWordsDeck();
+    final other = await decks.root('Other');
+    final chosen = ((await decks.deleteDeck(
+      deckId: other.id,
+      now: deviceNow,
+    )) as Ok<String, DeckRejection>).value;
+    clock.current = deviceNow;
+    final [expired] = (await WatchTrashUseCase(trash)().first)
+        .where((e) => e.deletedAt == deletedAt)
+        .map((e) => e.batchId)
+        .toList();
+    return (expired, chosen);
+  }
+
+  test('a manual purge with no server time takes only the chosen batch, '
+      'not the expired one (R10)', () async {
+    final far = clock.now().add(const Duration(days: 90));
+    final (expired, chosen) = await expiredAndChosen(far);
+
+    final report = await PurgeTrashUseCase(trash, clock, () async => null)(
+      batchIds: {chosen},
+    );
+
+    expect(report.purged, {chosen});
+    expect(report.purged, isNot(contains(expired)));
+    expect(await WatchTrashUseCase(trash)().first, hasLength(1));
+  });
+
+  test('a manual purge with a device clock 60 days ahead of the server '
+      'sweeps nothing the server time does not call expired (R10)', () async {
+    final start = clock.now();
+    final (expired, chosen) = await expiredAndChosen(
+      start.add(const Duration(days: 60)),
+    );
+
+    final report = await PurgeTrashUseCase(
+      trash,
+      clock,
+      () async => start.add(const Duration(days: 10)),
+    )(batchIds: {chosen});
+
+    expect(report.purged, {chosen});
+    expect(report.purged, isNot(contains(expired)));
+    expect(await WatchTrashUseCase(trash)().first, hasLength(1));
+  });
+
+  test('a manual purge with a server time that calls the batch expired '
+      'sweeps it with the chosen one (R10)', () async {
+    final start = clock.now();
+    final (expired, chosen) = await expiredAndChosen(
+      start.add(const Duration(days: 60)),
+    );
+
+    final report = await PurgeTrashUseCase(
+      trash,
+      clock,
+      () async => start.add(trashRetention),
+    )(batchIds: {chosen});
+
+    expect(report.purged, {expired, chosen});
+    expect(await WatchTrashUseCase(trash)().first, isEmpty);
   });
 }

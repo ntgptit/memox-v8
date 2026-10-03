@@ -16,8 +16,10 @@ import 'package:memox/features/srs/domain/models/reset_learning_summary_model.da
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
@@ -51,11 +53,18 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
   late SchedulerType _choice = widget.view.schedulerType;
   var _isResetting = false;
 
+  /// The last reset's failure, shown in the dialog until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   /// The cycle the reset opens.
   static int _nextCycle(DeckView view) => view.deck.generation! + 1;
 
   Future<void> _reset(DeckView view, ResetLearningSummary summary) async {
-    setState(() => _isResetting = true);
+    setState(() {
+      _isResetting = true;
+      _failure = null;
+    });
     final cycle = _nextCycle(view);
     try {
       final outcome = await ref
@@ -74,11 +83,14 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         },
       );
       Navigator.of(context).pop();
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'deck reset');
       if (!mounted) return;
       // E1: rolled back; the dialog stays for another try.
-      setState(() => _isResetting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isResetting = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -106,18 +118,59 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
         value.cardCount,
       ),
       AsyncData(value: Rejected(:final reason)) => l10n.srsRejection(reason),
+      _ => null,
+    };
+    // A failed summary read: Retry reads it again; Cancel stays live, so the
+    // dialog is never a dead end (SP2b 2.28).
+    final summaryFailure = switch (value) {
       AsyncError(:final error) =>
         error is Failure ? l10n.failure(error) : l10n.failureUnknown,
       _ => null,
     };
+    final failure = _failure;
     return MxDialog(
+      isHeld: _isResetting,
       title: l10n.resetDialogTitle,
       body: body,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (value.isLoading)
+          // The dialog owns the gap below the banners, not the banner.
+          if (failure != null || summaryFailure != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: AppSpacing.grouped,
+                children: [
+                  if (failure != null)
+                    MxInlineBanner(
+                      tone: MxBannerTone.warning,
+                      hasMargin: false,
+                      message: l10n.failure(failure),
+                    ),
+                  if (summaryFailure != null)
+                    MxInlineBanner(
+                      tone: MxBannerTone.warning,
+                      hasMargin: false,
+                      message: summaryFailure,
+                      actions: [
+                        MxButton(
+                          label: l10n.commonRetry,
+                          size: MxButtonSize.compact,
+                          isLoading: value.isLoading,
+                          onPressed: () => ref.invalidate(
+                            resetLearningSummaryProvider(view.deck.id),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          if (value.isLoading && !value.hasError)
             MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 1),
           if (summary != null && summary.hasProgressToLose) ...[
             _Consequences(summary: summary, cycle: view.deck.generation!),

@@ -13,7 +13,7 @@ void main() {
       pump: (brightness, scale) => pumpLibraryScreen(
         tester,
         env,
-        const SyncScreen(),
+        SyncScreen(onSignIn: () {}),
         brightness: brightness,
         textScale: scale,
         overrides: syncOverrides(

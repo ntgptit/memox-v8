@@ -19,6 +19,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Asks where [entries], all of one kind, go back to, then restores them
@@ -55,6 +56,10 @@ class _TrashRestoreSheetWidgetState
   /// nothing.
   var _isRestoring = false;
 
+  /// The last restore's failure, shown in the sheet until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   late final _batchIds = TrashBatchIds({
     for (final entry in widget.entries) entry.batchId,
   });
@@ -63,7 +68,10 @@ class _TrashRestoreSheetWidgetState
 
   Future<void> _restore(_Target target) async {
     if (_isRestoring) return;
-    setState(() => _isRestoring = true);
+    setState(() {
+      _isRestoring = true;
+      _failure = null;
+    });
     final trash = ref.read(trashControllerProvider.notifier);
     try {
       final String? refusal;
@@ -105,10 +113,13 @@ class _TrashRestoreSheetWidgetState
             },
       );
       Navigator.of(context).pop(refusal == null);
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'trash restore');
       if (!mounted) return;
-      setState(() => _isRestoring = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isRestoring = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -158,6 +169,14 @@ class _TrashRestoreSheetWidgetState
         onDismiss: () => Navigator.of(context).pop(false),
         emptyTitle: l10n.trashRestoreEmptyTitle,
         emptyBody: _emptyBody(l10n),
+        isHeld: _isRestoring,
+        banner: switch (_failure) {
+          final failure? => MxInlineBanner(
+            tone: MxBannerTone.warning,
+            message: l10n.failure(failure),
+          ),
+          null => null,
+        },
       ),
       AsyncError(:final isLoading) => MxBottomSheet(
         child: MxErrorState(

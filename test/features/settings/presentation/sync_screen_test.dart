@@ -29,7 +29,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(), commands),
     );
     await tester.tap(find.text('Sync now'));
@@ -43,7 +43,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(), commands),
     );
     await tester.tap(find.text('Sync now'));
@@ -59,7 +59,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
     expect(find.text("3 changes weren't accepted"), findsOneWidget);
@@ -72,7 +72,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(
           lastFailure: LastSyncFailure(
@@ -95,7 +95,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: [
         syncCommandsProvider.overrideWithValue(FakeSyncCommands()),
         syncStatusProvider.overrideWith((ref) {
@@ -123,7 +123,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 1), commands),
     );
     await tester.tap(find.text('Sync now'));
@@ -142,7 +142,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(), FakeSyncCommands()),
     );
     await _settle(tester);
@@ -159,7 +159,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         const SyncStatus(pendingCount: 3),
         FakeSyncCommands(),
@@ -177,7 +177,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(
           pendingCount: 2,
@@ -210,7 +210,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         const SyncStatus(rejectedCount: 2),
         FakeSyncCommands(),
@@ -234,7 +234,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
     await tester.tap(find.text('Keep on this device'));
@@ -255,7 +255,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
     await tester.tap(find.text('Keep on this device'));
@@ -275,7 +275,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(
           rejectedCount: 1,
@@ -298,7 +298,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         const SyncStatus(rejectedCount: 1),
         FakeSyncCommands(),
@@ -317,7 +317,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(SyncStatus(lastSuccessAt: env.clock.now())),
     );
     expect(syncCheck(), findsOneWidget);
@@ -334,7 +334,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(
         SyncStatus(lastSuccessAt: env.clock.now(), pendingCount: 2),
       ),
@@ -349,7 +349,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(), commands),
     );
     await tester.tap(find.text('Sync now'));
@@ -370,7 +370,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      const SyncScreen(),
+      SyncScreen(onSignIn: () {}),
       overrides: syncOverrides(const SyncStatus(), commands),
     );
     await tester.tap(find.text('Sync now'));

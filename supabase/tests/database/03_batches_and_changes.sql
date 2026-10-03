@@ -62,7 +62,7 @@ select is(public.t_change(public.t_uuid(1))->'row'->>'createdAt', '2026-09-28T00
 select is(public.sync_changes(0, 1)->'changes'->0->>'entityId', public.t_uuid(2)::text, 'the first page holds the lowest version');
 select is(public.sync_changes(0, 1)->>'hasMore', 'true', 'a full page says there is more');
 select is(public.sync_changes(2, 1)->'changes'->0->>'entityId', public.t_uuid(1)::text, 'the next page continues after nextSince');
-select is(public.sync_changes(3, 500), '{"changes": [], "nextSince": 3, "hasMore": false}'::jsonb, 'an empty page keeps since');
+select is(public.sync_changes(3, 500) - 'serverTime', '{"changes": [], "nextSince": 3, "hasMore": false}'::jsonb, 'an empty page keeps since');
 select is(jsonb_array_length(public.sync_changes(0, 0)->'changes'), 1, 'max_rows is clamped to at least 1');
 
 -- Batch tombstone.

@@ -10,6 +10,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -79,6 +80,10 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
   late final _name = TextEditingController(text: widget.initialName);
   DeckRejection? _rejection;
 
+  /// The last save's failure, shown above the field until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   /// One submit at a time: a second tap while the first runs does nothing.
   var _isSubmitting = false;
 
@@ -92,6 +97,7 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
     setState(() {
       _isSubmitting = true;
       _rejection = null;
+      _failure = null;
     });
     try {
       final outcome = await widget.submit(
@@ -111,23 +117,35 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
           showMxSnackbar(context, message: context.l10n.deckRejection(reason));
           Navigator.of(context).pop();
       }
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'deck name');
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isSubmitting = false;
+        _failure = failure;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = _failure;
     return MxDialog(
+      // Back and a scrim tap wait for the write (SP2b 2.26).
+      isHeld: _isSubmitting,
       title: widget.title,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.grouped,
         children: [
+          if (failure != null)
+            MxInlineBanner(
+              tone: MxBannerTone.warning,
+              hasMargin: false,
+              message: l10n.failure(failure),
+            ),
           MxTextField(
             controller: _name,
             label: l10n.deckNameHint,
@@ -143,9 +161,10 @@ class _DeckNameDialogWidgetState extends ConsumerState<DeckNameDialogWidget> {
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(),
         confirmLabel: widget.confirmLabel,
-        onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
+        onConfirm: _submit,
       ),
     );
   }

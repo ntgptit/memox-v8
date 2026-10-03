@@ -21,6 +21,11 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// moves without asking. [email] is the address typed, null for Google.
 /// Returns whether the switch started; the transition layer takes over
 /// from there.
+///
+/// A switch that does not start (the sheet declined, or the account refused)
+/// forgets the Google account picked for it, so the next press shows the
+/// picker again (SP2b 2.40); a started switch keeps it for the target
+/// sign-in.
 Future<bool> startLinkSwitch(
   BuildContext context,
   WidgetRef ref, {
@@ -42,17 +47,22 @@ Future<bool> startLinkSwitch(
           builder: (_) =>
               MergeChoiceSheetWidget(email: email, library: library),
         );
-  if (choice == null || !context.mounted) return false;
+  if (choice == null || !context.mounted) {
+    accounts.forgetPickedGoogle();
+    return false;
+  }
   try {
     await accounts.beginSwitch(choice: choice, targetHint: email);
     return true;
   } on Failure catch (error) {
+    accounts.forgetPickedGoogle();
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failure(error));
     }
     return false;
   } on StateError {
     // The account moved on meanwhile: it takes a switch only in Ready.
+    accounts.forgetPickedGoogle();
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failureAccount);
     }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/controllers/account_manage_controller.dart';
+import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
 import 'package:memox/features/account/presentation/providers/can_sign_in_again_provider.dart';
 import 'package:memox/features/account/presentation/providers/device_account_provider.dart';
@@ -54,47 +55,54 @@ class SignInScreen extends ConsumerWidget {
         : ref.watch(canLinkProvider);
     // Watched, so the command's controller lives while it runs.
     final isLeaving = ref.watch(accountManageControllerProvider);
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.accountSignIn,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
-        ),
-      ),
-      body: MxScreenScroll(
-        children: [
-          if (!isReauth && !canAct) ...[
-            MxNote(text: l10n.accountOfflineNote),
-            const SizedBox(height: AppSpacing.gutter),
-          ],
-          SignInFormWidget(
-            purpose: purpose,
-            isEnabled: canAct,
-            initialEmail: isReauth
-                ? ref.watch(deviceAccountProvider)?.email
-                : null,
-            onCodeSent: onCodeSent,
-            onSignedIn: () {
-              saySignedIn(context, stateAfterCommand(ref));
-              onSignedIn();
-            },
+    // A send or the Google pick holds Back: the spinner says what runs (2.46).
+    final isRunning = ref.watch(
+      signInControllerProvider(purpose).select((state) => state.isRunning),
+    );
+    return PopScope(
+      canPop: !isRunning,
+      child: MxAppShell(
+        appBar: MxAppBar(
+          title: l10n.accountSignIn,
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: () => unawaited(Navigator.of(context).maybePop()),
           ),
-          // P3b plan ruling 10: the way out sits under the form.
-          if (isReauth) ...[
-            const SizedBox(height: AppSpacing.section),
-            MxButton(
-              label: l10n.accountContinueWithout,
-              tone: MxButtonTone.text,
-              isBlock: true,
-              onPressed: canAct && !isLeaving
-                  ? () => unawaited(_leave(context, ref))
+        ),
+        body: MxScreenScroll(
+          children: [
+            if (!isReauth && !canAct) ...[
+              MxNote(text: l10n.accountOfflineNote),
+              const SizedBox(height: AppSpacing.gutter),
+            ],
+            SignInFormWidget(
+              purpose: purpose,
+              isEnabled: canAct,
+              initialEmail: isReauth
+                  ? ref.watch(deviceAccountProvider)?.email
                   : null,
+              onCodeSent: onCodeSent,
+              onSignedIn: () {
+                saySignedIn(context, stateAfterCommand(ref));
+                onSignedIn();
+              },
             ),
+            // P3b plan ruling 10: the way out sits under the form.
+            if (isReauth) ...[
+              const SizedBox(height: AppSpacing.section),
+              MxButton(
+                label: l10n.accountContinueWithout,
+                tone: MxButtonTone.text,
+                isBlock: true,
+                onPressed: canAct && !isLeaving
+                    ? () => unawaited(_leave(context, ref))
+                    : null,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

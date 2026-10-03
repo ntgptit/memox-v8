@@ -24,6 +24,7 @@ class MxInlineBanner extends StatelessWidget {
     this.title,
     this.actions = const [],
     this.isInCommitBar = false,
+    this.hasMargin = true,
   });
 
   final MxBannerTone tone;
@@ -37,6 +38,10 @@ class MxInlineBanner extends StatelessWidget {
 
   /// The commit-bar variant: 8 12 padding and no margin below.
   final bool isInCommitBar;
+
+  /// False when the parent's own spacing owns the gap below (a dialog's
+  /// Column), so the banner adds no 16 of its own.
+  final bool hasMargin;
 
   static const double _titleGap = 2;
 
@@ -88,7 +93,7 @@ class MxInlineBanner extends StatelessWidget {
             vertical: AppSpacing.grouped + AppStroke.hairline,
           );
     return Padding(
-      padding: isInCommitBar
+      padding: isInCommitBar || !hasMargin
           ? EdgeInsets.zero
           : const EdgeInsets.only(bottom: AppSpacing.gutter),
       child: Semantics(

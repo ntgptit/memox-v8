@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/domain/failures/monitoring_failure.dart';
@@ -58,6 +59,13 @@ class MonitoringDetailController extends _$MonitoringDetailController {
         case Rejected(reason: MonitoringRejection.notFound):
           state = const MonitoringDetailState(content: MonitoringDetailGone());
       }
+    } on NotAdminFailure {
+      // The role is gone: a Retry could never succeed, so the page ends as
+      // the load does for a user who is not an admin (SP2b 2.39).
+      if (!ref.mounted) return;
+      state = const MonitoringDetailState(
+        content: MonitoringDetailFailed(MonitoringLoadFailure.notAdmin),
+      );
     } on Object {
       if (!ref.mounted) return;
       state = MonitoringDetailState(

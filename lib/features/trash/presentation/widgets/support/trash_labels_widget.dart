@@ -21,6 +21,29 @@ String trashEntryName(TrashEntry entry) => switch (entry) {
     '$front$trashSidesSeparator$back',
 };
 
+/// One sentence per batch a purge skipped that is still in [entries], naming
+/// what it still holds (spec D6). [blocked] is `PurgeReport.blocked`, or the
+/// controller's `TrashState.blocked`.
+Iterable<String> trashBlockedNotes(
+  AppLocalizations l10n,
+  Map<String, Set<String>> blocked,
+  List<TrashEntry> entries,
+) sync* {
+  final byBatch = {for (final entry in entries) entry.batchId: entry};
+  for (final MapEntry(key: batchId, value: inner) in blocked.entries) {
+    final skipped = byBatch[batchId];
+    final names = [
+      for (final id in inner)
+        if (byBatch[id] case final entry?) trashEntryName(entry),
+    ];
+    if (skipped == null || names.isEmpty) continue;
+    yield l10n.trashPurgeBlocked(
+      trashEntryName(skipped),
+      names.join(trashNamesSeparator),
+    );
+  }
+}
+
 /// The decks the item was in, root first; a root was at the top level.
 String trashOrigin(AppLocalizations l10n, TrashEntry entry) =>
     entry.origin.isEmpty
@@ -58,6 +81,13 @@ const Duration _hour = Duration(hours: 1);
 
 bool isTrashExpiringSoon(TrashEntry entry, DateTime now) =>
     entry.expiresAt.difference(now) < trashExpiringSoon;
+
+/// The device clock [now] is past the entry's expiry but the purge clock
+/// [purgeNow] (BR-TRASH-009, R10; null when the device never synced) is not:
+/// the entry goes after the next sync, whatever the device clock says.
+bool isTrashAwaitingSync(TrashEntry entry, DateTime now, DateTime? purgeNow) =>
+    !entry.expiresAt.isAfter(now) &&
+    (purgeNow == null || entry.expiresAt.isAfter(purgeNow));
 
 int _roundedUp(Duration value, Duration unit) =>
     (value.inMicroseconds + unit.inMicroseconds - 1) ~/ unit.inMicroseconds;

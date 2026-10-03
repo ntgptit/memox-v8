@@ -73,6 +73,25 @@ void main() {
     expect(find.text(_en.usersNoMore), findsOneWidget);
   });
 
+  libraryTest('a first page shorter than the screen asks for the next ones '
+      'after layout, without a scroll (2.48)', (tester, env) async {
+    roles.pageSize = 1;
+
+    await pump(tester, env);
+    for (var page = 0; page < 3; page++) {
+      await _settle(tester);
+    }
+
+    expect(find.text('bob@example.com'), findsOneWidget);
+    expect(find.text('me@example.com'), findsOneWidget);
+    expect(find.text(_en.usersNoMore), findsOneWidget);
+    expect(roles.lists.map((ask) => ask.$2).toList(), [
+      null,
+      'ann@example.com',
+      'bob@example.com',
+    ]);
+  });
+
   libraryTest('the admin\'s own row says You and opens nothing '
       '(Review Focus 2)', (tester, env) async {
     await pump(tester, env);

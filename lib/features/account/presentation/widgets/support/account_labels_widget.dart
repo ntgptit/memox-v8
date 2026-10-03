@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/controllers/account_manage_controller.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
@@ -22,6 +25,19 @@ String signInProblemText(AppLocalizations l10n, SignInProblem problem) =>
       SignInProblem.rateLimited => l10n.accountRateLimited,
       SignInProblem.offline => l10n.accountOffline,
       SignInProblem.failed => l10n.accountFailed,
+    };
+
+/// The toast for a one-off [notice] (plan ruling 8). A deletion refused for
+/// want of a session, or one that timed out after it was sent, cannot say
+/// "nothing changed": the server may have taken it (SP2b 2.47, final fix 8).
+String accountNoticeText(AppLocalizations l10n, AccountNotice notice) =>
+    switch (notice) {
+      MergeNotDone() => l10n.accountMergeNotDone,
+      DeleteRefused(failure: SessionInvalidFailure()) ||
+      DeleteRefused(
+        failure: OfflineFailure(cause: TimeoutException()),
+      ) => l10n.accountDeleteUnknown,
+      DeleteRefused() => l10n.accountDeleteRefused,
     };
 
 /// The toast after a sign-in (spec §5.2), from [state] right after it: its

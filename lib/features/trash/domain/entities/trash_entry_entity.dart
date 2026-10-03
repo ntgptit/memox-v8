@@ -7,6 +7,16 @@ const trashRetention = Duration(hours: 720);
 /// [now]: a batch deleted at the cutoff has expired (BR-TRASH-009).
 DateTime trashCutoff(DateTime now) => now.subtract(trashRetention);
 
+/// BR-TRASH-009 (R10): the instant a purge treats as now, the earlier of the
+/// device clock [now] and [serverTime], the server's clock at the last sync.
+/// A device clock set ahead then never calls a batch expired before the
+/// server's time does. Null when this device never synced: nothing may be
+/// swept as expired.
+DateTime? trashPurgeClock(DateTime now, DateTime? serverTime) {
+  if (serverTime == null) return null;
+  return serverTime.isBefore(now) ? serverTime : now;
+}
+
 /// One row of the Trash: a batch, by the item the person deleted
 /// (UC-TRASH-001 steps 3-4).
 sealed class TrashEntry {

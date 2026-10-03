@@ -24,20 +24,58 @@ final class MonitoringListLoaded extends MonitoringListContent {
     required this.items,
     required this.next,
     this.more = MonitoringMore.idle,
+    this.refreshFailure,
+    this.isRefreshing = false,
   });
 
   final List<LogSummaryEntity> items;
   final LogCursor? next;
   final MonitoringMore more;
 
-  MonitoringListLoaded withMore(MonitoringMore value) =>
-      MonitoringListLoaded(items: items, next: next, more: value);
+  /// The last pull to refresh failed and [items] are from the load before
+  /// it (SP2b 2.38); null when the rows are current.
+  final MonitoringLoadFailure? refreshFailure;
+
+  /// A refresh is in flight while its last failure still shows, so the Retry
+  /// can say it is working.
+  final bool isRefreshing;
+
+  MonitoringListLoaded withMore(MonitoringMore value) => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: value,
+    refreshFailure: refreshFailure,
+    isRefreshing: isRefreshing,
+  );
 
   MonitoringListLoaded withItems(List<LogSummaryEntity> value) =>
-      MonitoringListLoaded(items: value, next: next, more: more);
+      MonitoringListLoaded(
+        items: value,
+        next: next,
+        more: more,
+        refreshFailure: refreshFailure,
+        isRefreshing: isRefreshing,
+      );
+
+  MonitoringListLoaded withRefreshFailure(MonitoringLoadFailure? value) =>
+      MonitoringListLoaded(
+        items: items,
+        next: next,
+        more: more,
+        refreshFailure: value,
+      );
+
+  MonitoringListLoaded withRefreshing() => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: more,
+    refreshFailure: refreshFailure,
+    isRefreshing: true,
+  );
 }
 
-/// The first page failed; no stale row is shown.
+/// The first page failed, or a refresh found the admin role gone; no stale
+/// row is shown.
 final class MonitoringListFailed extends MonitoringListContent {
   const MonitoringListFailed(this.failure);
 

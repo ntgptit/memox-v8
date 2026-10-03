@@ -122,11 +122,21 @@ class _Rows extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(usersControllerProvider.notifier);
     final count = loaded.users.length;
-    return NotificationListener<ScrollNotification>(
+    // A scroll asks for the next page near the end. A change of the metrics
+    // does too (it comes out of layout, in a microtask), so a first page
+    // shorter than the screen is not stranded: nothing would ever scroll
+    // (SP2b 2.48).
+    return NotificationListener<Notification>(
       onNotification: (notification) {
-        if (loaded.more == UsersMore.idle &&
+        final metrics = switch (notification) {
+          ScrollNotification(:final metrics) => metrics,
+          ScrollMetricsNotification(:final metrics) => metrics,
+          _ => null,
+        };
+        if (metrics != null &&
+            loaded.more == UsersMore.idle &&
             loaded.next != null &&
-            notification.metrics.extentAfter < _prefetchExtent) {
+            metrics.extentAfter < _prefetchExtent) {
           unawaited(controller.loadMore());
         }
         return false;

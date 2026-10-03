@@ -35,6 +35,9 @@ final class _FakePlugins implements ReminderPluginsDataSource {
   Future<bool?> requestNotificationPermission() async => true;
 
   @override
+  Future<bool?> notificationsEnabled() async => true;
+
+  @override
   Future<bool> scheduleAlarm(DateTime at) async => true;
 
   @override

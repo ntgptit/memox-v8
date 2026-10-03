@@ -102,13 +102,11 @@ void main() {
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(resets, 0);
+    // The dialog owns the failure (SP2b 2.33): it stays, with no toast.
+    expect(find.text(_en.settingsResetFailed), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
 
     store.isFailing = false;
-    // The failure's toast sits over the bottom row: bring the row above it.
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.settingsResetRow));
-    await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
     expect(resets, 1);

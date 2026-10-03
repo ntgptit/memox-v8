@@ -62,6 +62,12 @@ final class PluginReminderPluginsDataSource
   }
 
   @override
+  Future<bool?> notificationsEnabled() async {
+    await initialize();
+    return _android?.areNotificationsEnabled();
+  }
+
+  @override
   Future<bool> scheduleAlarm(DateTime at) async {
     await initialize();
     // The same id replaces the pending alarm, and only once the new one is

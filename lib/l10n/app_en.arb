@@ -1546,6 +1546,10 @@
     },
     "description": "Screen 06: time until the auto-purge (BR-TRASH-009)."
   },
+  "trashAwaitingSync": "Removed after the next sync",
+  "@trashAwaitingSync": {
+    "description": "Screen 06: the time left of a row whose device-clock expiry has passed while the purge clock (the earlier of the device and the last server time) has not. Neutral ink; it goes after the next sync (BR-TRASH-009, R10)."
+  },
   "trashHoursLeft": "{count}h left",
   "@trashHoursLeft": {
     "placeholders": {
@@ -1807,6 +1811,36 @@
     },
     "description": "Screen 06 purge dialog body (BR-TRASH-011: history is lost)."
   },
+  "trashPurgeDeckBody": "“{deck}”, with {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} and {cardCount, plural, =1{1 card} other{{cardCount} cards}}, disappears for good, together with its study history. This cannot be undone.",
+  "@trashPurgeDeckBody": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body for one deck (SP2b 2.32, BR-TRASH-011): names the deck, what goes with it, and that its history goes too."
+  },
+  "trashPurgeDecksTotalBody": "{count} decks, with {subDecks, plural, =1{1 sub-deck} other{{subDecks} sub-decks}} and {cards, plural, =1{1 card} other{{cards} cards}}, disappear for good, together with their study history. This cannot be undone.",
+  "@trashPurgeDecksTotalBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "subDecks": {
+        "type": "int"
+      },
+      "cards": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body for several decks (SP2b 2.32): the count and the totals of their sub-decks and cards."
+  },
   "trashPurgeKeep": "Keep in Trash",
   "@trashPurgeKeep": {
     "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
@@ -1849,6 +1883,27 @@
       }
     },
     "description": "Screen 06: a purge the store skipped (spec D6; the kit's youngerInside says 'later', invariant 36 allows only 'earlier')."
+  },
+  "trashPurgeKeptMany": "{count, plural, =1{1 deck was kept: it still holds entries deleted earlier.} other{{count} decks were kept: they still hold entries deleted earlier. The notes above the list say which.}}",
+  "@trashPurgeKeptMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 toast (SP2b 2.31): a purge kept decks because they still hold entries deleted earlier; several are counted and the notes above the list name each; one whose note cannot be named falls back to the count of 1."
+  },
+  "trashPurgedWithKept": "{purged}. {kept}",
+  "@trashPurgedWithKept": {
+    "placeholders": {
+      "purged": {
+        "type": "String"
+      },
+      "kept": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 06 toast (SP2b 2.31): what a purge deleted for good, then what it kept; both sentences are built by the caller."
   },
   "libraryDueTitle": "{count, plural, =1{1 card due} other{{count} cards due}}",
   "@libraryDueTitle": {
@@ -5360,7 +5415,7 @@
   },
   "settingsResetFailed": "Couldn't reset the app options. Nothing changed.",
   "@settingsResetFailed": {
-    "description": "Toast when the reset failed (E2); offers Retry."
+    "description": "Banner inside the reset dialog when the reset failed (E2, SP2b 2.33); the confirm becomes Retry."
   },
   "settingsSaved": "Saved",
   "@settingsSaved": {
@@ -6265,6 +6320,14 @@
   "@reminderLaterMinute": {
     "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the minute stepper's +."
   },
+  "reminderHourRange": "Enter an hour from 0 to 23.",
+  "@reminderHourRange": {
+    "description": "Screen handoff 24 (SP2b 2.35): the time dialog's line under the hour stepper after a typed hour out of range."
+  },
+  "reminderMinuteRange": "Enter a minute from 0 to 59.",
+  "@reminderMinuteRange": {
+    "description": "Screen handoff 24 (SP2b 2.35): the time dialog's line under the minute stepper after a typed minute out of range."
+  },
   "reminderTimeSave": "Save",
   "@reminderTimeSave": {
     "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the confirm."
@@ -6506,6 +6569,10 @@
   "@syncFailedUnknown": {
     "description": "Screen 27 (SB-U1): the failure banner, unknown."
   },
+  "syncSignInAgain": "Your sign-in expired, so sync is paused. Your changes are safe on this device. Sign in again to resume.",
+  "@syncSignInAgain": {
+    "description": "Screen 27 (SP2b 2.37): the warning banner when the session was refused and the person can sign in again; its action is accountSignIn."
+  },
   "syncDone": "Synced",
   "@syncDone": {
     "description": "Screen 27 (SB-U1): toast after Sync now or Try again succeeded."
@@ -6554,6 +6621,14 @@
   "reminderOpenSystemSettings": "Open system settings",
   "@reminderOpenSystemSettings": {
     "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
+  },
+  "reminderRevokedHint": "On",
+  "@reminderRevokedHint": {
+    "description": "Screen handoff 24 (SP2b 2.34, audit m3): the toggle row's line while the reminder is on but Android blocks MemoX's notifications; short, because the banner under it says it is blocked."
+  },
+  "reminderRevokedBody": "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications.",
+  "@reminderRevokedBody": {
+    "description": "Screen handoff 24 (SP2b 2.34): the warning banner's message while the reminder is on and the permission was revoked; its title is reminderDeniedTitle."
   },
   "failureNotAdmin": "Only an admin can see this.",
   "@failureNotAdmin": {
@@ -6729,6 +6804,10 @@
   "monitoringLoadMoreFailed": "Couldn't load more logs.",
   "@monitoringLoadMoreFailed": {
     "description": "Screen 28: the end of the list when the next page failed."
+  },
+  "monitoringRefreshFailed": "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded.",
+  "@monitoringRefreshFailed": {
+    "description": "Screen 28 (SP2b 2.38): the warning banner above the rows when a pull to refresh failed and the rows were kept; its action is Retry."
   },
   "monitoringEmptyTitle": "No open problems",
   "@monitoringEmptyTitle": {
@@ -7184,9 +7263,13 @@
   "@accountLayerFailed": {
     "description": "Transition layer: any other error."
   },
-  "accountLayerStuck": "Something went wrong while moving your account. Your data is safe on this phone.",
+  "accountLayerStuck": "Your decks are kept. This move can't finish on this phone. Close MemoX and report the problem; the log has the details.",
   "@accountLayerStuck": {
-    "description": "Transition layer: a state the machine says cannot happen."
+    "description": "Transition layer: a state the machine says cannot happen; says the move cannot finish on this phone, the decks are kept, and the way out is to close the app and report the problem (SP2b R11, owner ruling: no promise to resume)."
+  },
+  "accountCloseApp": "Close MemoX",
+  "@accountCloseApp": {
+    "description": "Transition layer, stuck: closes the app, beside Retry. It changes no data (SP2b R11)."
   },
   "accountSignOutLosing": "Sign out now and lose {count, plural, =1{1 change} other{{count} changes}}",
   "@accountSignOutLosing": {
@@ -7208,6 +7291,10 @@
   "accountDeleteRefused": "Couldn't delete the account. Nothing changed.",
   "@accountDeleteRefused": {
     "description": "Toast: the deletion did not happen."
+  },
+  "accountDeleteUnknown": "Couldn't confirm the deletion. Sign in again to check.",
+  "@accountDeleteUnknown": {
+    "description": "Toast: a deletion refused for want of a session, or one that timed out after it was sent; the server may have taken it, so it must not say nothing changed (SP2b 2.47, final fix 8)."
   },
   "accountTitle": "Account",
   "@accountTitle": {

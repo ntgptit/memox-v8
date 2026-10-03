@@ -12,6 +12,10 @@ final class UserRoleRemoteDataSource {
 
   static const _notFound = 'NOT_FOUND';
 
+  /// As long as the Dio receive timeout: a call that outlives it is offline,
+  /// and `role_set` is idempotent, so the retry is safe (SP2b 2.48).
+  static const Duration roleCallTimeout = Duration(seconds: 20);
+
   /// One page: `{items: [...], next}`.
   Future<Map<String, Object?>> list(String query, String? after) async =>
       (await _call('role_list', {'p_query': query, 'p_after': after}))!
@@ -32,7 +36,7 @@ final class UserRoleRemoteDataSource {
 
   Future<Object?> _call(String function, Map<String, Object?> params) async {
     if (!_hasSession()) throw const UserRoleSessionMissing();
-    return _rpc(function, params);
+    return _rpc(function, params).timeout(roleCallTimeout);
   }
 }
 

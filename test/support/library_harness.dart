@@ -23,6 +23,12 @@ import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
+import 'package:memox/features/trash/di/trash_repository_provider.dart';
+import 'package:memox/features/trash/domain/usecases/purge_expired_trash_use_case.dart';
+import 'package:memox/features/trash/domain/usecases/purge_trash_use_case.dart';
+import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
+import 'package:memox/features/trash/presentation/providers/purge_trash_use_case_provider.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -66,6 +72,10 @@ final class LibraryEnv {
   /// The app's entry store, on the fake day; a test fails its openings
   /// (screen 14 startFailed).
   final FailingEntries entries;
+
+  /// The server time the purges see (R10): the fake day unless a test
+  /// stores another.
+  late ServerTimeReader serverTime = () async => clock.now();
 }
 
 /// A widget test over [LibraryEnv]. The widget tree is torn down before the
@@ -94,6 +104,24 @@ List<Override> _backend(LibraryEnv env) => [
   studySessionRepositoryProvider.overrideWithValue(env.sessions),
   // Openings run on the fake day, as the session store does.
   studyEntryRepositoryProvider.overrideWithValue(env.entries),
+  // R10: the library tests' server agrees with their fake day, so the
+  // auto-purge runs as it did; the real wiring has its own test
+  // (purge_expired_wiring_test.dart).
+  purgeExpiredTrashUseCaseProvider.overrideWithValue(
+    PurgeExpiredTrashUseCase(
+      TrashRepositoryImpl(env.db),
+      env.clock,
+      () => env.serverTime(),
+    ),
+  ),
+  // Built over the repository provider, so a test can hold its writes.
+  purgeTrashUseCaseProvider.overrideWith(
+    (ref) => PurgeTrashUseCase(
+      ref.watch(trashRepositoryProvider),
+      env.clock,
+      () => env.serverTime(),
+    ),
+  ),
   _inlineTransferFiles,
 ];
 

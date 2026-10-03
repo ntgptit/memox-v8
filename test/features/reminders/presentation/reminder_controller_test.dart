@@ -191,4 +191,49 @@ void main() {
       ReminderProblem.permissionDenied,
     );
   });
+
+  libraryTest('clearPermissionProblem: the refused-permission problem goes, '
+      'and Retry has nothing left to repeat (SP2b 2.36)', (tester, env) async {
+    final s = _setUp(
+      env,
+      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+    );
+    await s.container.read(reminderStatusProvider.future);
+    await _controller(s.container).turnOn();
+    expect(
+      s.container.read(reminderControllerProvider).problem,
+      ReminderProblem.permissionDenied,
+    );
+    final writes = s.store.writes;
+
+    _controller(s.container).clearPermissionProblem();
+    expect(s.container.read(reminderControllerProvider).problem, isNull);
+    await _controller(s.container).retry();
+
+    expect(
+      s.platform.calls.where((c) => c == PlatformCall.requestPermission),
+      hasLength(1),
+      reason: 'BR-REMINDER-011: nothing asks again by itself',
+    );
+    expect(s.store.writes, writes);
+  });
+
+  libraryTest('clearPermissionProblem leaves every other problem alone', (
+    tester,
+    env,
+  ) async {
+    final s = _setUp(
+      env,
+      platform: FakeReminderPlatform()..refusing.add(PlatformCall.schedule),
+    );
+    await s.container.read(reminderStatusProvider.future);
+    await _controller(s.container).turnOn();
+
+    _controller(s.container).clearPermissionProblem();
+
+    expect(
+      s.container.read(reminderControllerProvider).problem,
+      ReminderProblem.couldNotTurnOn,
+    );
+  });
 }

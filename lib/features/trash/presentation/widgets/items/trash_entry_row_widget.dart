@@ -23,6 +23,7 @@ class TrashEntryRowWidget extends StatelessWidget {
     super.key,
     required this.entry,
     required this.now,
+    required this.purgeNow,
     required this.onTap,
     this.onLongPress,
     this.onActions,
@@ -32,6 +33,10 @@ class TrashEntryRowWidget extends StatelessWidget {
 
   final TrashEntry entry;
   final DateTime now;
+
+  /// The purge clock: the earlier of [now] and the last server time; null
+  /// when this device never synced (BR-TRASH-009, R10).
+  final DateTime? purgeNow;
 
   /// Null while selecting for an entry of the other kind.
   final VoidCallback? onTap;
@@ -47,7 +52,10 @@ class TrashEntryRowWidget extends StatelessWidget {
     final l10n = context.l10n;
     final name = trashEntryName(entry);
     final meta = _meta(context);
-    final timeLeft = trashTimeLeft(l10n, entry, now);
+    final isAwaitingSync = isTrashAwaitingSync(entry, now, purgeNow);
+    final timeLeft = isAwaitingSync
+        ? l10n.trashAwaitingSync
+        : trashTimeLeft(l10n, entry, now);
     final origin = l10n.trashWasIn(trashOrigin(l10n, entry));
     // The tile or the checkbox centres on the lines (spec 2026-09-26 D4,
     // extended by the owner 2026-09-26).
@@ -66,7 +74,8 @@ class TrashEntryRowWidget extends StatelessWidget {
           child: _Lines(
             name: name,
             timeLeft: timeLeft,
-            isExpiringSoon: isTrashExpiringSoon(entry, now),
+            isAwaitingSync: isAwaitingSync,
+            isExpiringSoon: !isAwaitingSync && isTrashExpiringSoon(entry, now),
             meta: meta,
             origin: origin,
           ),
@@ -149,6 +158,7 @@ class _Lines extends StatelessWidget {
   const _Lines({
     required this.name,
     required this.timeLeft,
+    required this.isAwaitingSync,
     required this.isExpiringSoon,
     required this.meta,
     required this.origin,
@@ -156,6 +166,10 @@ class _Lines extends StatelessWidget {
 
   final String name;
   final String timeLeft;
+
+  /// The purge is waiting for a sync: its label is a sentence, so it takes
+  /// its own line in warning ink and leaves the name its width.
+  final bool isAwaitingSync;
   final bool isExpiringSoon;
   final String meta;
   final String origin;
@@ -191,7 +205,7 @@ class _Lines extends StatelessWidget {
                 style: styles.rowTitle,
               ),
             ),
-            timeLeftLabel,
+            if (!isAwaitingSync) timeLeftLabel,
           ],
         ),
         Text(
@@ -206,6 +220,17 @@ class _Lines extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: styles.rowDescription,
         ),
+        if (isAwaitingSync)
+          Text(
+            timeLeft,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            // It warns of a permanent deletion, so it keeps the countdown's
+            // warning ink (owner 2026-10-03).
+            style: styles.rowDescription.copyWith(
+              color: context.derivedColors.warningInk,
+            ),
+          ),
       ],
     );
   }

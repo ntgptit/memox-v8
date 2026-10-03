@@ -37,7 +37,7 @@ person's language too; any other source shows as written.
 | added | `starter_added_light.png` | `starter_added_dark.png` | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
 | alreadyPresent | `starter_already_present_light.png` | `starter_already_present_dark.png` | A copy made meanwhile copies nothing more. |
 | secondCopy | `starter_second_copy_light.png` | `starter_second_copy_dark.png` | "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
-| addFailed | `starter_add_failed_light.png` | `starter_add_failed_dark.png` | The sheet stays with the choice; the danger banner's lead "Couldn't add the deck." sits above "Nothing was copied — try again."; the button reads "Try again". `templateNotFound` reads the same (spec §6). |
+| addFailed | `starter_add_failed_light.png` | `starter_add_failed_dark.png` | The sheet stays with the choice; the danger banner's lead "Couldn't add the deck." sits above "Nothing was copied — try again."; the button reads "Try again". `templateNotFound` reads the same (spec §6). A throw that is not a `Failure` is reported once (library "starter add") and reads the same, so the sheet never stays held on a spinner (SP2b 2.29). |
 | loading | `starter_loading_light.png` | `starter_loading_dark.png` | The note, then skeleton rows (UI-base row 125). |
 | none | `starter_none_light.png` | `starter_none_dark.png` | "Create a deck" returns to the Library and opens its create dialog. |
 | loadFailed | `starter_load_failed_light.png` | `starter_load_failed_dark.png` | Titled "Couldn't load starter decks", with Retry. |
@@ -53,6 +53,7 @@ Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose,
 - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for a template already in the library, is secondary.
 - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the algorithm sheet labels its choice "Review algorithm" as a field label with a Required caption, not one all-caps line.
+- **SP2b 2.29 (spec `2026-10-03-ui-hardening-sp2b-design.md`):** `add()` catches any throw, not only a `Failure`: both clear the busy state and set the failed state ("Try again"), and Back is released.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the algorithm sheet's body is the lock line (`deckSchedulerNote`: "The scheduler locks after the first review. Changing it later resets learning progress."), replacing the counts sentence; the card's facts line keeps the counts.
 
 ## Copy

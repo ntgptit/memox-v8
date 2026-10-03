@@ -9,6 +9,8 @@ import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
@@ -198,6 +200,113 @@ void main() {
     await _settle(tester);
 
     expect(find.text(_en.accountCodeWrong), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  });
+
+  accountTest('the field takes the keyboard when the step opens (2.45)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  });
+
+  accountTest('the field stays enabled while the code is checked (2.45)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    final held = world.gateway.holdVerifies = Completer<void>();
+
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pump();
+
+    expect(find.byType(MxSpinner), findsOneWidget);
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isTrue);
+
+    held.complete();
+    world.gateway.holdVerifies = null;
+    await _settle(tester);
+    expect(signIns, 1);
+  });
+
+  accountTest('offline keeps the six digits and says so; Retry checks them '
+      'again (2.45)', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    world.network.goOffline();
+
+    await tester.enterText(find.byType(TextField), '123456');
+    await _settle(tester);
+
+    expect(find.text(_en.accountOffline), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      '123456',
+    );
+    // Offline warns too: a failure that asks the person to retry (owner).
+    expect(
+      tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
+      MxBannerTone.warning,
+    );
+    expect(signIns, 0);
+
+    world.network.goOnline();
+    await tester.pump();
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+
+    expect(signIns, 1);
+    expect(find.text(_en.accountOffline), findsNothing);
+  });
+
+  accountTest('Retry with a digit missing focuses the field instead of '
+      'checking (2.45)', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    world.network.goOffline();
+    await tester.enterText(find.byType(TextField), '123456');
+    await _settle(tester);
+
+    await tester.enterText(find.byType(TextField), '12345');
+    world.network.goOnline();
+    await tester.pump();
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+
+    expect(signIns, 0, reason: 'five digits are not a code');
     expect(
       tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
       isTrue,

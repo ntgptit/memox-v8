@@ -95,6 +95,9 @@ final class StarterLibraryFake implements StarterLibraryRepository {
   /// Holds every add until completed (`adding`).
   Completer<void>? hold;
 
+  /// When set, every add throws it, a non-`Failure` included (SP2b 2.29).
+  Object? addError;
+
   /// Adds that reached the store.
   int adds = 0;
 
@@ -113,6 +116,7 @@ final class StarterLibraryFake implements StarterLibraryRepository {
   }) async {
     adds++;
     await hold?.future;
+    if (addError case final error?) throw error;
     if (failsAdds) {
       throw UnknownDatabaseFailure(cause: StateError('disk full'));
     }

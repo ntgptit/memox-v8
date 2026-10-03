@@ -21,6 +21,9 @@ final class FlakySettingsRepository implements SettingsRepository {
   var isFailing = false;
   var writes = 0;
 
+  /// The next write throws it once, then writes as usual.
+  Object? errorOnce;
+
   /// While set, every write waits for it: a write still running.
   Completer<void>? hold;
 
@@ -32,6 +35,10 @@ final class FlakySettingsRepository implements SettingsRepository {
   ) async {
     writes++;
     if (hold case final gate?) await gate.future;
+    if (errorOnce case final error?) {
+      errorOnce = null;
+      throw error;
+    }
     if (isFailing) throw failure;
     return run();
   }

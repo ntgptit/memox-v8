@@ -27,7 +27,7 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
    gian có hạn (BR-TRASH-001). Mọi bề mặt active cập nhật ngay — item biến mất khỏi
    danh sách, khỏi đếm, khỏi search và khỏi study (BR-TRASH-002).
 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước
-   khi vẽ, rồi hiển thị các batch còn lại, tách theo loại: Cards và Decks
+   khi vẽ — theo giờ purge của BR-TRASH-009 — rồi hiển thị các batch còn lại, tách theo loại: Cards và Decks
    (BR-TRASH-009, BR-TRASH-011).
 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số
    ngày còn lại trước khi bị xoá vĩnh viễn, và — với deck — số deck/card đi kèm
@@ -52,11 +52,13 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
   hiện `Restore` và `Delete permanently` cho tập đang chọn. Chọn một card làm
   mọi hàng deck không chọn được và ngược lại; UI nói rõ vì sao (BR-TRASH-011).
 - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu
-  đúng số item, nói lịch sử học không khôi phục được, đặt focus mặc định ở hành
+  đúng số item — với một deck thì nêu tên deck cùng số deck con và số card, với
+  nhiều deck thì nêu tổng của chúng — nói lịch sử học không khôi phục được, đặt
+  focus mặc định ở hành
   động an toàn, và chỉ hành động phá huỷ mang vai trò màu destructive (BR-TRASH-011).
   Xác nhận chạy một transaction xoá cứng batch và cascade (BR-TRASH-010).
 - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được
-  focus lại và bỏ các hàng đã hết hạn; danh sách cập nhật tại chỗ, không nhảy vị
+  focus lại, theo giờ purge của BR-TRASH-009, và bỏ các hàng đã hết hạn; danh sách cập nhật tại chỗ, không nhảy vị
   trí cuộn (BR-TRASH-009).
 - **A5 — Deck có descendant đã ở Trash từ trước:** restore batch của deck cha
   chỉ hồi sinh hàng của batch đó; descendant kia vẫn nằm trong Trash như một
@@ -75,7 +77,8 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
   nguyên trong Trash (BR-TRASH-008).
 - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc
   còn active. Batch đó bị bỏ qua, không purge một phần, và người dùng thấy lý do
-  có kiểu (BR-TRASH-010).
+  có kiểu trong một toast nêu tên deck bị giữ (nhiều deck thì nêu số lượng) cùng
+  banner của màn (BR-TRASH-010).
 - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại →
   transaction rollback toàn bộ, trạng thái cũ giữ nguyên, UI hiện error + Retry.
 - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác.

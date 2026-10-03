@@ -15,10 +15,10 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
-import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 /// Opens the new-deck dialog (UC-DECK-001). It completes with the created
@@ -47,6 +47,10 @@ class _CreateRootDeckDialogWidgetState
   SchedulerType? _scheduler;
   DeckRejection? _rejection;
 
+  /// The last create's failure, shown above the field until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   /// Create was pressed with no scheduler chosen (E3).
   var _isSchedulerMissing = false;
 
@@ -64,6 +68,8 @@ class _CreateRootDeckDialogWidgetState
 
   /// Cancel, Back or a tap outside: asks first once the form is started.
   Future<void> _leave() async {
+    // Never over a write: its result must reach the screen (SP2b 2.26).
+    if (_isSubmitting) return;
     if (_isStarted && !await showDeckDiscardDialog(context)) return;
     if (mounted) Navigator.of(context).pop();
   }
@@ -77,6 +83,7 @@ class _CreateRootDeckDialogWidgetState
     setState(() {
       _isSubmitting = true;
       _rejection = null;
+      _failure = null;
     });
     try {
       final outcome = await ref
@@ -93,23 +100,34 @@ class _CreateRootDeckDialogWidgetState
             _isSubmitting = false;
           });
       }
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'deck create');
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isSubmitting = false;
+        _failure = failure;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = _failure;
     final dialog = MxDialog(
+      isHeld: _isSubmitting,
       title: l10n.deckCreateRootTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.grouped,
         children: [
+          if (failure != null)
+            MxInlineBanner(
+              tone: MxBannerTone.warning,
+              hasMargin: false,
+              message: l10n.failure(failure),
+            ),
           MxTextField(
             controller: _name,
             label: l10n.deckNameHint,
@@ -142,9 +160,10 @@ class _CreateRootDeckDialogWidgetState
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => unawaited(_leave()),
+        onCancel: _isSubmitting ? null : () => unawaited(_leave()),
         confirmLabel: l10n.deckCreateConfirm,
-        onConfirm: _isSubmitting ? null : _submit,
+        isConfirmLoading: _isSubmitting,
+        onConfirm: _submit,
       ),
     );
     return PopScope(

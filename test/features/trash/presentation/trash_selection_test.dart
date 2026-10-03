@@ -7,6 +7,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
@@ -160,14 +161,23 @@ void main() {
 
     expect(find.text('Food'), findsOneWidget);
     expect(find.text(_en.trashPurgedDecks(1)), findsNothing);
+    // The screen's banner above the rows names it; the toast only counts it
+    // (SP2b 2.31, audit m4).
+    final note = _en.trashPurgeBlocked('Food', 'bap · rice');
+    final banner = find.descendant(
+      of: find.byType(MxInlineBanner),
+      matching: find.text(note),
+    );
+    expect(banner, findsOneWidget);
     expect(
-      find.text(_en.trashPurgeBlocked('Food', 'bap · rice')),
+      find.descendant(
+        of: find.byType(SnackBar),
+        matching: find.text(_en.trashPurgeKeptMany(1)),
+      ),
       findsOneWidget,
     );
     expect(
-      tester
-          .getTopLeft(find.text(_en.trashPurgeBlocked('Food', 'bap · rice')))
-          .dy,
+      tester.getTopLeft(banner).dy,
       lessThan(tester.getTopLeft(find.text('Food')).dy),
     );
   });

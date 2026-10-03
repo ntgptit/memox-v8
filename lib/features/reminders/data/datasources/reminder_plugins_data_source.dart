@@ -22,6 +22,10 @@ abstract interface class ReminderPluginsDataSource {
   /// where the platform has no such permission (Android before 13).
   Future<bool?> requestNotificationPermission();
 
+  /// Whether the app's notifications are allowed right now, without asking:
+  /// `true` allowed, `false` blocked, `null` where the platform cannot say.
+  Future<bool?> notificationsEnabled();
+
   /// One inexact alarm at [at] under [reminderAlarmId], replacing any pending
   /// one; a refusal leaves the pending one as it was. `false` when the
   /// platform refused it.

@@ -42,6 +42,8 @@ the transition layer shows what follows.
 A command refused before anything changed toasts "No connection. Nothing changed; try again
 when you're online." or "Couldn't finish that. Nothing changed; try again."
 
+A deletion refused because the session was already gone toasts "Couldn't confirm the deletion. Sign in again to check.": the server may have taken it, so it never says nothing changed (SP2b 2.47). Every other refusal keeps "Couldn't delete the account. Nothing changed."
+
 ## States
 
 The images are the goldens.
@@ -75,3 +77,4 @@ The images are the goldens.
 - "Switch account" · "Move this phone to another account" · "Sign out" · "Your changes are
   sent first" · "Delete account" · "Your account and its data, for good".
 - The dialogs' copy is in the table above.
+- "Couldn't confirm the deletion. Sign in again to check."

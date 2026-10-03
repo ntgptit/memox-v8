@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -40,7 +41,20 @@ class StarterAddController extends _$StarterAddController {
       };
       if (ref.mounted) state = StarterAddState(hasFailed: result == null);
       return result;
-    } on Failure {
+    } on Object catch (error, stack) {
+      // A database `Failure` reads as a failed add; anything else the add
+      // threw is reported as the import undo's catch-all does. Both end in
+      // hasFailed, so the sheet reads "Try again" and Back is released
+      // (SP2b 2.29).
+      if (error is! Failure) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            library: 'starter add',
+          ),
+        );
+      }
       if (ref.mounted) state = const StarterAddState(hasFailed: true);
       return null;
     }

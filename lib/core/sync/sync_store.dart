@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/database/tables/sync_keys.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:uuid/uuid.dart';
@@ -36,6 +37,23 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
 
   Future<void> setPullEntityTypes(String types) =>
       _put(syncPullEntityTypesKey, types);
+
+  /// The server clock of the last pull (SP2b 2.30, R10); null before the
+  /// first sync, or against a server that sends none.
+  /// A read error, or a stored value past the instants DateTime holds,
+  /// leaves as a Failure; a value that is not a number reads as none.
+  Future<DateTime?> serverTime() =>
+      guardDatabase(() async => _fromMillis(await _value(syncServerTimeKey)));
+
+  /// Keeps the later of [at] and what is stored: the server's clock the
+  /// purge is bounded by never moves back, whatever a stale reply says. A
+  /// stored value that is not a time is replaced.
+  Future<void> recordServerTime(DateTime at) => transaction(() async {
+    final stored = int.tryParse(await _value(syncServerTimeKey) ?? '');
+    final isTime = stored != null && stored.abs() <= _maxEpochMillis;
+    if (isTime && at.toUtc().millisecondsSinceEpoch <= stored) return;
+    await _put(syncServerTimeKey, _millis(at));
+  });
 
   /// Pending operations of [entityTypes], oldest first (parents before
   /// children).
@@ -159,6 +177,9 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
       rejectedCount: row.rejectedCount,
     );
   }
+
+  /// The last instant a DateTime holds, in epoch milliseconds.
+  static const _maxEpochMillis = 8640000000000000;
 
   static String _millis(DateTime at) => '${at.toUtc().millisecondsSinceEpoch}';
 

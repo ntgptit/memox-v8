@@ -13,6 +13,7 @@ import 'package:memox/features/account/presentation/widgets/sections/sign_in_for
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
@@ -63,6 +64,9 @@ Future<void> _backSwipe(WidgetTester tester) async {
   await send('commitBackGesture');
   await _settle(tester);
 }
+
+MxBannerTone _bannerTone(WidgetTester tester) =>
+    tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone;
 
 void main() {
   accountTest('a switch covers the app, keeps Back inside, and Cancel puts '
@@ -285,6 +289,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountSignOutStoppedOffline), findsOneWidget);
+    expect(_bannerTone(tester), MxBannerTone.warning, reason: 'offline warns');
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
@@ -311,10 +316,9 @@ void main() {
     expect(find.text(_en.commonCancel), findsNothing);
   });
 
-  libraryTest('stuck says the data is safe and offers only Retry', (
-    tester,
-    env,
-  ) async {
+  libraryTest('stuck says the move cannot finish here and promises no resume; '
+      'Close MemoX leaves the app, Retry stays (R11)', (tester, env) async {
+    final closes = watchAppCloses(tester);
     await pumpLibraryScreen(
       tester,
       env,
@@ -335,8 +339,56 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
+    expect(
+      _en.accountLayerStuck,
+      "Your decks are kept. This move can't finish on this phone. Close "
+      'MemoX and report the problem; the log has the details.',
+    );
+    // Stuck warns, with one live region: the banner's own (audit m8).
+    expect(_bannerTone(tester), MxBannerTone.warning);
+    expect(
+      find.ancestor(
+        of: find.byType(MxInlineBanner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics && widget.properties.liveRegion == true,
+        ),
+      ),
+      findsNothing,
+    );
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
+    // Close leads, Retry trails: side by side, Close first.
+    expect(
+      tester.getCenter(find.text(_en.accountCloseApp)).dx,
+      lessThan(tester.getCenter(find.text(_en.commonRetry)).dx),
+    );
+
+    await tester.tap(find.text(_en.accountCloseApp));
+    await tester.pump();
+    expect(closes, hasLength(1));
+  });
+
+  libraryTest('a non-stuck stop keeps Retry alone', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(TransitionKind.switchAccount, TransitionStage.claimed),
+            error: const OfflineFailure(cause: 'test'),
+          ),
+        ),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.text(_en.accountLayerOffline), findsOneWidget);
+    expect(_bannerTone(tester), MxBannerTone.warning, reason: 'offline warns');
+    expect(find.text(_en.commonRetry), findsOneWidget);
+    expect(find.text(_en.accountCloseApp), findsNothing);
   });
 
   libraryTest('running, it names the step and says closing loses nothing', (

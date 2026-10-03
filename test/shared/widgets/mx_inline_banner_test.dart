@@ -160,6 +160,43 @@ void main() {
     },
   );
 
+  testWidgets('hasMargin: the 16 margin below by default, none when false', (
+    tester,
+  ) async {
+    double margin() =>
+        tester.getSize(find.byType(MxInlineBanner)).height -
+        tester
+            .getSize(
+              find
+                  .descendant(
+                    of: find.byType(MxInlineBanner),
+                    matching: find.byType(DecoratedBox),
+                  )
+                  .first,
+            )
+            .height;
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
+      ),
+    );
+    expect(margin(), 16);
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          message: _message,
+          hasMargin: false,
+        ),
+      ),
+    );
+    expect(margin(), 0);
+  });
+
   testWidgets('actions sit 8 under the message, 8 apart; a live region', (
     tester,
   ) async {

@@ -3,11 +3,14 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/deck/domain/usecases/delete_deck_use_case.dart';
+import 'package:memox/features/deck/presentation/providers/delete_deck_use_case_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
+import '../../../support/held_writes.dart';
 import '../../../support/library_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -145,6 +148,37 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/library_deck_delete_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('delete dialog, failed, $theme', (tester, env) async {
+      final ids = await _seed(env);
+      final hold = WriteHold()
+        ..open()
+        ..failNext();
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          deckScreen(deckId: ids.words),
+          brightness,
+          overrides: [
+            deleteDeckUseCaseProvider.overrideWithValue(
+              DeleteDeckUseCase(HeldDecks(env.decks, hold)),
+            ),
+          ],
+        );
+        await tester.tap(find.byTooltip(_en.deckActions));
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckDelete));
+        await _settleOverlay(tester);
+        await tester.tap(find.text(_en.deckDelete));
+        await _settleOverlay(tester);
+        expect(find.text(_en.failureBusy), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/library_deck_delete_failed_$theme.png',
         );
       });
     });

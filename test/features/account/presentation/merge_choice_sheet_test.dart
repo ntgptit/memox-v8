@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
+import 'package:memox/core/auth/auth_gateway.dart' show GoogleCredential;
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/domain/models/local_library_model.dart';
@@ -151,6 +153,44 @@ void main() {
     await _settle(tester);
 
     expect(world.state, isA<Ready>());
+  });
+
+  accountTest('Cancel forgets the Google account picked for the sheet, so '
+      'the next press shows the picker again (2.40)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await env.decks.root('Korean');
+    world.server.addUser(email: 'g@example.com');
+    // The link meets an existing account: the pick is kept for the switch.
+    await expectLater(
+      world.coordinator.continueWithGoogle(),
+      throwsA(isA<IdentityTakenFailure>()),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(email: null),
+      overrides: accountOverrides(world),
+    );
+    await tester.tap(find.text('go'));
+    await _settle(tester);
+
+    await tester.tap(find.text(_en.commonCancel));
+    await _settle(tester);
+
+    // The picker answers with another account now. A kept pick would be used
+    // instead, and would be refused again as taken.
+    world.gateway.google = const GoogleCredential(
+      idToken: 'second-pick',
+      email: 'h@example.com',
+    );
+    await world.coordinator.continueWithGoogle();
+    expect(
+      world.state,
+      isA<Ready>().having((s) => s.user.email, 'email', 'h@example.com'),
+    );
   });
 
   accountTest('Google\'s title, and a failed count still asks, without '

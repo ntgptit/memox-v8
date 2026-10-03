@@ -135,7 +135,11 @@ first version is returned.
 ### 4.2 `sync_changes(since bigint, max_rows int) → jsonb`
 
 - `max_rows` is clamped to 1..500. Returns `ChangesResponseModel`:
-  `{"changes": [...], "nextSince", "hasMore"}`.
+  `{"changes": [...], "nextSince", "hasMore", "serverTime"}`.
+- `serverTime` is the server's `now()` as UTC epoch milliseconds (SP2b 2.30,
+  R10). The app stores it at each pull; the Trash purge clock is the earlier
+  of the device clock and that time, and without one nothing is swept as
+  expired (BR-TRASH-009).
 - `UNION ALL` of the user's `deck` and `delete_batch` rows with
   `server_version > since`, ordered by `server_version`, `LIMIT max_rows + 1`
   to compute `hasMore`. `nextSince` is the last returned version, or

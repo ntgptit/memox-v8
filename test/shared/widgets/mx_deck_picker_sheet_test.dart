@@ -4,6 +4,7 @@ import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
@@ -12,6 +13,8 @@ import '../../support/widget_harness.dart';
 MxDeckPickerSheet _picker(
   List<MxPickerCandidate> candidates, {
   VoidCallback? onDismiss,
+  bool isHeld = false,
+  Widget? banner,
 }) => MxDeckPickerSheet(
   title: 'Move to deck',
   rule: 'Cards keep their progress.',
@@ -19,6 +22,8 @@ MxDeckPickerSheet _picker(
   dismissLabel: 'Cancel',
   onDismiss: onDismiss ?? () {},
   emptyTitle: 'Nowhere to move',
+  isHeld: isHeld,
+  banner: banner,
 );
 
 void main() {
@@ -128,6 +133,48 @@ void main() {
     expect(
       tester.getTopLeft(find.text('Move to deck')) - sheet,
       const Offset(20, 20),
+    );
+  });
+
+  testWidgets('a banner sits in the head, under the rule and above the rows '
+      '(SP2b 2.27)', (tester) async {
+    await pumpMx(
+      tester,
+      _picker(
+        [MxPickerCandidate(label: 'Kana', onTap: () {})],
+        banner: const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          message: 'Busy. Try again.',
+        ),
+      ),
+    );
+
+    final banner = tester.getRect(find.byType(MxInlineBanner));
+    expect(
+      banner.top,
+      greaterThan(
+        tester.getBottomLeft(find.text('Cards keep their progress.')).dy,
+      ),
+    );
+    expect(banner.bottom, lessThan(tester.getTopLeft(find.text('Kana')).dy));
+  });
+
+  testWidgets('held: the sheet is held and the dismiss button is off '
+      '(SP2b 2.26)', (tester) async {
+    await pumpMx(
+      tester,
+      _picker([MxPickerCandidate(label: 'Kana', onTap: () {})], isHeld: true),
+    );
+
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).isHeld,
+      isTrue,
+    );
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, 'Cancel'))
+          .onPressed,
+      isNull,
     );
   });
 }
