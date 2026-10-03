@@ -91,6 +91,25 @@ class _TrashPurgeDialogWidgetState
     }
   }
 
+  /// What goes: a deck is named with its sub-decks and cards, several decks
+  /// by their totals, cards by the count (SP2b 2.32, BR-TRASH-011).
+  String _body(AppLocalizations l10n) {
+    final entries = widget.entries;
+    int sum(int Function(TrashDeckEntry deck) of) => entries
+        .whereType<TrashDeckEntry>()
+        .fold(0, (total, deck) => total + of(deck));
+    return switch (entries) {
+      [TrashDeckEntry(:final name, :final subDeckCount, :final cardCount)] =>
+        l10n.trashPurgeDeckBody(name, subDeckCount, cardCount),
+      _ when !_isCards => l10n.trashPurgeDecksTotalBody(
+        entries.length,
+        sum((deck) => deck.subDeckCount),
+        sum((deck) => deck.cardCount),
+      ),
+      _ => l10n.trashPurgeBody(entries.length),
+    };
+  }
+
   /// What the purge did, in one toast: what went and what was kept (SP2b
   /// 2.31). Null when nothing went and nothing was kept: every chosen batch
   /// was already gone, and its row with it.
@@ -132,7 +151,7 @@ class _TrashPurgeDialogWidgetState
         title: _isCards
             ? l10n.trashPurgeCardsTitle(count)
             : l10n.trashPurgeDecksTitle(count),
-        body: l10n.trashPurgeBody(count),
+        body: _body(l10n),
         content: failure == null
             ? null
             : MxInlineBanner(

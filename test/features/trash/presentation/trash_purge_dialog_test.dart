@@ -162,4 +162,46 @@ void main() {
       );
     },
   );
+
+  libraryTest(
+    'a deck confirm names the deck, its sub-decks and its cards (SP2b 2.32)',
+    (tester, env) async {
+      await seedTrash(env);
+      await pumpLibraryScreen(tester, env, const TrashScreen());
+
+      await _tap(tester, find.byTooltip(_en.trashEntryActions('Basics')));
+      await _tap(tester, find.text(_en.trashDeletePermanently));
+
+      expect(find.text(_en.trashPurgeDeckBody('Basics', 1, 2)), findsOneWidget);
+      expect(find.text(_en.trashPurgeBody(1)), findsNothing);
+    },
+  );
+
+  libraryTest(
+    'several decks name the totals of their sub-decks and cards (SP2b 2.32)',
+    (tester, env) async {
+      await seedTrash(env);
+      await pumpLibraryScreen(tester, env, const TrashScreen());
+
+      // Basics (1 sub-deck, 2 cards) and Places (no sub-decks, 3 cards).
+      await _tap(tester, _button(_en.trashSelect));
+      await _tap(tester, find.text('Basics'));
+      await _tap(tester, find.text('Places'));
+      await _tap(tester, _button(_en.trashPurgeSelected(2)));
+
+      expect(find.text(_en.trashPurgeDecksTotalBody(2, 1, 5)), findsOneWidget);
+    },
+  );
+
+  libraryTest('cards keep the count-only confirm (SP2b 2.32)', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _selectCards(tester);
+    await _tap(tester, _button(_en.trashPurgeSelected(2)));
+
+    expect(find.text(_en.trashPurgeBody(2)), findsOneWidget);
+  });
 }

@@ -350,6 +350,8 @@
   "trashPurgeCardsTitle": "{count, plural, other{Xoá vĩnh viễn {count} thẻ?}}",
   "trashPurgeDecksTitle": "{count, plural, other{Xoá vĩnh viễn {count} bộ thẻ?}}",
   "trashPurgeBody": "{count, plural, other{Chúng biến mất hẳn, cùng lịch sử học. Không thể hoàn tác.}}",
+  "trashPurgeDeckBody": "“{deck}”, cùng {subDeckCount} bộ thẻ con và {cardCount} thẻ, biến mất hẳn, cùng lịch sử học. Không thể hoàn tác.",
+  "trashPurgeDecksTotalBody": "{count} bộ thẻ, cùng {subDecks} bộ thẻ con và {cards} thẻ, biến mất hẳn, cùng lịch sử học. Không thể hoàn tác.",
   "trashPurgeKeep": "Giữ trong Thùng rác",
   "trashPurgeConfirm": "Xoá {count}",
   "trashPurgedCards": "{count, plural, other{Đã xoá vĩnh viễn {count} thẻ}}",

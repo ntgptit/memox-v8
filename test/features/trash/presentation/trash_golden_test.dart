@@ -110,6 +110,25 @@ void main() {
       });
     });
 
+    libraryTest('trash purge confirm deck, $theme', (tester, env) async {
+      await seedTrash(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, const TrashScreen(), brightness);
+        await tester.tap(find.byTooltip(_en.trashEntryActions('Basics')));
+        await _settle(tester);
+        await tester.tap(find.text(_en.trashDeletePermanently));
+        await _settle(tester);
+        expect(
+          find.text(_en.trashPurgeDeckBody('Basics', 1, 2)),
+          findsOneWidget,
+        );
+        await expectBoundaryGolden(
+          tester,
+          'goldens/trash_purge_confirm_deck_$theme.png',
+        );
+      });
+    });
+
     libraryTest('trash purge blocked, $theme', (tester, env) async {
       // Korean › Food: its card goes first, then the deck, which so holds
       // an older entry (invariant 36).

@@ -52,7 +52,9 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
   hiện `Restore` và `Delete permanently` cho tập đang chọn. Chọn một card làm
   mọi hàng deck không chọn được và ngược lại; UI nói rõ vì sao (BR-TRASH-011).
 - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu
-  đúng số item, nói lịch sử học không khôi phục được, đặt focus mặc định ở hành
+  đúng số item — với một deck thì nêu tên deck cùng số deck con và số card, với
+  nhiều deck thì nêu tổng của chúng — nói lịch sử học không khôi phục được, đặt
+  focus mặc định ở hành
   động an toàn, và chỉ hành động phá huỷ mang vai trò màu destructive (BR-TRASH-011).
   Xác nhận chạy một transaction xoá cứng batch và cascade (BR-TRASH-010).
 - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được

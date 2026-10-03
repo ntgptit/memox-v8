@@ -1807,6 +1807,36 @@
     },
     "description": "Screen 06 purge dialog body (BR-TRASH-011: history is lost)."
   },
+  "trashPurgeDeckBody": "“{deck}”, with {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} and {cardCount, plural, =1{1 card} other{{cardCount} cards}}, disappears for good, together with its study history. This cannot be undone.",
+  "@trashPurgeDeckBody": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      },
+      "subDeckCount": {
+        "type": "int"
+      },
+      "cardCount": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body for one deck (SP2b 2.32, BR-TRASH-011): names the deck, what goes with it, and that its history goes too."
+  },
+  "trashPurgeDecksTotalBody": "{count} decks, with {subDecks, plural, =1{1 sub-deck} other{{subDecks} sub-decks}} and {cards, plural, =1{1 card} other{{cards} cards}}, disappear for good, together with their study history. This cannot be undone.",
+  "@trashPurgeDecksTotalBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "subDecks": {
+        "type": "int"
+      },
+      "cards": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 06 purge dialog body for several decks (SP2b 2.32): the count and the totals of their sub-decks and cards."
+  },
   "trashPurgeKeep": "Keep in Trash",
   "@trashPurgeKeep": {
     "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
