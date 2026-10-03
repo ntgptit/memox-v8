@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
-import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -45,14 +44,11 @@ class _SettingsResetDialogWidgetState
       _isResetting = true;
       _hasFailed = false;
     });
-    var hasReset = false;
-    try {
-      hasReset = await ref.read(settingsControllerProvider.notifier).reset();
-    } on Object catch (error, stack) {
-      // `reset()` answers false for a database Failure; anything else it
-      // threw is reported, and the dialog is released all the same.
-      failureOfThrown(error, stack, library: 'settings reset');
-    }
+    // `reset()` answers false for any failed write and reports a non-Failure
+    // itself (the controller is the one place that does), so it never throws.
+    final hasReset = await ref
+        .read(settingsControllerProvider.notifier)
+        .reset();
     if (!mounted) return;
     if (hasReset) {
       Navigator.of(context).pop();

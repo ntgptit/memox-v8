@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -12,9 +14,11 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/held_writes.dart';
@@ -31,6 +35,9 @@ final class _FlakySchedules implements ScheduleRepository {
   final ScheduleRepository _real;
   final WriteHold hold;
   int summaryFailures = 0;
+
+  /// When set, a summary read that does not fail waits for it.
+  Completer<void>? summaryGate;
   SrsRejection? summaryRejection;
 
   @override
@@ -41,6 +48,7 @@ final class _FlakySchedules implements ScheduleRepository {
       summaryFailures--;
       throw WriteHold.failure;
     }
+    await summaryGate?.future;
     if (summaryRejection case final reason?) return Rejected(reason);
     return _real.resetSummary(rootDeckId: rootDeckId);
   }
@@ -145,6 +153,48 @@ void main() {
     expect(find.text(_en.resetNothingToLose), findsOneWidget);
     actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
     expect(actions.onConfirm, isNotNull);
+  });
+
+  libraryTest('the frame after Retry is never blank: the banner stays, its '
+      'Retry spinning, until the read answers (final fix 6)', (
+    tester,
+    env,
+  ) async {
+    final gate = Completer<void>();
+    await _pumpOpen(
+      tester,
+      env,
+      (real) => _FlakySchedules(real, WriteHold()..open())
+        ..summaryFailures = 1
+        ..summaryGate = gate,
+    );
+
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+
+    expect(
+      find.byType(MxInlineBanner).evaluate().length +
+          find.byType(MxSkeletonList).evaluate().length,
+      greaterThan(0),
+    );
+    expect(_banner(_en.failure(WriteHold.failure)), findsOneWidget);
+    // Riverpod 3.4 reports the retry as an AsyncError that is loading, not an
+    // AsyncLoading: the dialog's AsyncError match still holds, so no change.
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonRetry))
+          .isLoading,
+      isTrue,
+    );
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).onCancel,
+      isNotNull,
+    );
+
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxInlineBanner), findsNothing);
+    expect(find.text(_en.resetNothingToLose), findsOneWidget);
   });
 
   libraryTest('a deck gone meanwhile keeps its message, has no Retry and '

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/usecases/delete_deck_use_case.dart';
+import 'package:memox/features/deck/presentation/providers/deck_deletion_summary_provider.dart';
 import 'package:memox/features/deck/presentation/providers/delete_deck_use_case_provider.dart';
+import 'package:memox/features/deck/presentation/providers/get_deck_deletion_summary_use_case_provider.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/deck_delete_dialog_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -33,8 +36,9 @@ Widget _host(DeckEntity deck) => Scaffold(
 Future<WriteHold> _open(
   WidgetTester tester,
   LibraryEnv env,
-  DeckEntity deck,
-) async {
+  DeckEntity deck, {
+  List<Override> overrides = const [],
+}) async {
   final hold = WriteHold();
   await pumpLibraryScreen(
     tester,
@@ -44,6 +48,7 @@ Future<WriteHold> _open(
       deleteDeckUseCaseProvider.overrideWithValue(
         DeleteDeckUseCase(HeldDecks(env.decks, hold)),
       ),
+      ...overrides,
     ],
   );
   await tester.tap(find.text('Open'));
@@ -57,6 +62,41 @@ Finder _banner(String message) => find.descendant(
 );
 
 void main() {
+  libraryTest('a failed summary read says so in a warning banner with Retry; '
+      'Cancel stays live and the confirm waits for the count (final fix 6)', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    var reads = 0;
+    await _open(
+      tester,
+      env,
+      korean,
+      overrides: [
+        deckDeletionSummaryProvider(korean.id).overrideWith((ref) async {
+          if (++reads == 1) throw WriteHold.failure;
+          return ref.watch(getDeckDeletionSummaryUseCaseProvider)(
+            deckId: korean.id,
+          );
+        }),
+      ],
+    );
+
+    expect(_banner(_en.failure(WriteHold.failure)), findsOneWidget);
+    var actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
+    expect(actions.onConfirm, isNull);
+    expect(actions.onCancel, isNotNull);
+
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxInlineBanner), findsNothing);
+    expect(find.text(_en.deckDeleteNote), findsOneWidget);
+    actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
+    expect(actions.onConfirm, isNotNull);
+    expect(reads, 2);
+  });
+
   libraryTest('Back, a scrim tap and Cancel wait for the move; its toast with '
       'Undo then arrives (SP2b 2.26)', (tester, env) async {
     final korean = await env.decks.root('Korean');

@@ -120,15 +120,18 @@ class _TrashPurgeDialogWidgetState
       _ when _isCards => l10n.trashPurgedCards(purged),
       _ => l10n.trashPurgedDecks(purged),
     };
-    // One kept deck is named with what it holds; several are counted, and
-    // the notes above the list name each.
+    // One kept deck is named with what it holds, or counted when its entries
+    // are no longer listed; several are counted, and the notes above the
+    // list name each.
     final kept = switch (report.blocked.length) {
       0 => null,
-      1 => trashBlockedNotes(
-        l10n,
-        report.blocked,
-        ref.read(trashEntriesProvider).value ?? const <TrashEntry>[],
-      ).firstOrNull,
+      1 =>
+        trashBlockedNotes(
+              l10n,
+              report.blocked,
+              ref.read(trashEntriesProvider).value ?? const <TrashEntry>[],
+            ).firstOrNull ??
+            l10n.trashPurgeKeptMany(1),
       final many => l10n.trashPurgeKeptMany(many),
     };
     return switch ((went, kept)) {

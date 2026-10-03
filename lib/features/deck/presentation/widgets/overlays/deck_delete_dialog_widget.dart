@@ -12,6 +12,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_
 import 'package:memox/features/deck/presentation/widgets/support/deck_trashed_snackbar_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -112,6 +113,11 @@ class _DeckDeleteDialogWidgetState
         value.cardCount,
       ),
       AsyncData(value: Rejected(:final reason)) => l10n.deckRejection(reason),
+      _ => null,
+    };
+    // A failed count read: Retry reads it again; Cancel stays live, so the
+    // dialog is never a dead end (as the reset dialog, SP2b 2.28).
+    final summaryFailure = switch (summary) {
       AsyncError(:final error) =>
         error is Failure ? l10n.failure(error) : l10n.failureUnknown,
       _ => null,
@@ -123,7 +129,7 @@ class _DeckDeleteDialogWidgetState
       isHeld: _isDeleting,
       title: l10n.deckDeleteTitle,
       body: body,
-      content: counted == null && failure == null
+      content: counted == null && failure == null && summaryFailure == null
           ? null
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -134,6 +140,21 @@ class _DeckDeleteDialogWidgetState
                   MxInlineBanner(
                     tone: MxBannerTone.warning,
                     message: l10n.failure(failure),
+                  ),
+                if (summaryFailure != null)
+                  MxInlineBanner(
+                    tone: MxBannerTone.warning,
+                    message: summaryFailure,
+                    actions: [
+                      MxButton(
+                        label: l10n.commonRetry,
+                        size: MxButtonSize.compact,
+                        isLoading: summary.isLoading,
+                        onPressed: () => ref.invalidate(
+                          deckDeletionSummaryProvider(widget.deck.id),
+                        ),
+                      ),
+                    ],
                   ),
                 if (counted != null)
                   MxNote(icon: AppIcons.history, text: l10n.deckDeleteNote),

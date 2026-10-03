@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
 import 'package:memox/features/trash/di/trash_repository_provider.dart';
+import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
+import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
+import 'package:memox/features/trash/presentation/providers/watch_trash_use_case_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -117,6 +120,35 @@ void main() {
         findsOneWidget,
       );
       expect(find.text(_en.trashPurgedDecks(1)), findsNothing);
+    },
+  );
+
+  libraryTest(
+    'one kept deck whose notes cannot be named still says it was kept '
+    '(final fix 6)',
+    (tester, env) async {
+      await _seedFood(env);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        const TrashScreen(),
+        overrides: [
+          // The list the toast reads has lost the inner entry the deck holds.
+          trashEntriesProvider.overrideWith(
+            (ref) => ref
+                .watch(watchTrashUseCaseProvider)()
+                .map((entries) => entries.whereType<TrashDeckEntry>().toList()),
+          ),
+        ],
+      );
+
+      await _tap(tester, find.byTooltip(_en.trashEntryActions('Food')));
+      await _tap(tester, find.text(_en.trashDeletePermanently));
+      await _tap(tester, _inDialog(_en.trashPurgeConfirm(1)));
+
+      expect(find.byType(MxDialog), findsNothing);
+      expect(_toast(_en.trashPurgeKeptMany(1)), findsOneWidget);
+      expect(_en.trashPurgeKeptMany(1), isNot(contains('1 decks')));
     },
   );
 
