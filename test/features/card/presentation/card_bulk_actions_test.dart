@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -7,7 +8,10 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
+import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -128,6 +132,48 @@ void main() {
       expect(checked, findsNWidgets(2));
     },
   );
+
+  libraryTest('Export of cards that are all gone prunes them, so the selection '
+      'ends (SP2a 2.19)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: Builder(
+          // As the router wires it (_exportSelection).
+          builder: (context) => CardListSectionWidget(
+            deckId: ids.words,
+            algorithm: 'Eight boxes',
+            onAddCard: () {},
+            onOpenCard: (_) {},
+            onExport: (selected) async {
+              final skipped = await showCardExportSheet(
+                context,
+                CardExportScope.selection(deckId: ids.words, ids: selected),
+              );
+              ProviderScope.containerOf(
+                context,
+                listen: false,
+              ).read(cardSelectionProvider(ids.words).notifier).prune(skipped);
+            },
+          ),
+        ),
+      ),
+    );
+    await _select(tester, ['annyeong', 'mul']);
+    await env.db.customStatement(
+      "DELETE FROM card WHERE id IN ('new1', 'flag1')",
+    );
+
+    await _bulk(tester, _en.cardExport);
+    await _bulk(tester, _en.exportAction(2));
+    expect(find.text(_en.exportStaleTitle), findsOneWidget);
+    await _bulk(tester, _en.exportClose);
+
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+    expect(find.text(_en.cardExport), findsNothing);
+  });
 
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);

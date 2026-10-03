@@ -36,7 +36,10 @@ Future<Set<String>> showCardExportSheet(
     builder: (_) => CardExportSheetWidget(scope: scope),
   );
   if (skipped == null) return const {};
-  if (context.mounted) {
+  // Every selected card was gone: nothing was exported, only the selection is
+  // pruned (SP2a 2.19).
+  final isAllGone = skipped.isNotEmpty && skipped.length == scope.cardCount;
+  if (context.mounted && !isAllGone) {
     final l10n = context.l10n;
     showMxSnackbar(
       context,
@@ -268,13 +271,18 @@ class _Actions extends StatelessWidget {
     void close() => Navigator.of(context).pop();
     final problem = state.problem;
     if (problem != null && problem.isFinal) {
+      // A stale selection hands its ids back so the caller drops them (SP2a
+      // 2.19); the other final problems leave the selection alone.
+      void closeFinal() => Navigator.of(
+        context,
+      ).pop(problem == CardExportProblem.staleSelection ? scope.cardIds : null);
       return MxSheetActions.custom(
         isInSheet: true,
         children: [
           Expanded(
             child: MxButton(
               label: l10n.exportClose,
-              onPressed: close,
+              onPressed: closeFinal,
               isBlock: true,
             ),
           ),

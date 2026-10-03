@@ -20,8 +20,8 @@ import 'package:memox/features/reminders/presentation/providers/reconcile_remind
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
-import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
+import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
