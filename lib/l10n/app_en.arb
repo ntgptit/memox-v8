@@ -6606,6 +6606,14 @@
   "@reminderOpenSystemSettings": {
     "description": "Screen handoff 24 (FE-B6): the E1 banner's first action; opens the app's notification settings."
   },
+  "reminderRevokedHint": "On · notifications are blocked for MemoX",
+  "@reminderRevokedHint": {
+    "description": "Screen handoff 24 (SP2b 2.34): the toggle row's line while the reminder is on but Android blocks MemoX's notifications."
+  },
+  "reminderRevokedBody": "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications.",
+  "@reminderRevokedBody": {
+    "description": "Screen handoff 24 (SP2b 2.34): the warning banner's message while the reminder is on and the permission was revoked; its title is reminderDeniedTitle."
+  },
   "failureNotAdmin": "Only an admin can see this.",
   "@failureNotAdmin": {
     "description": "A failure sentence (ADR-016 D3): the server refused a Monitoring call because the account is not an admin (FORBIDDEN), or has no session."

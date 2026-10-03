@@ -1252,6 +1252,8 @@
   "routeNotFoundTitle": "Không tìm thấy trang",
   "routeNotFoundBody": "Liên kết này không dẫn tới đâu trong MemoX.",
   "reminderOpenSystemSettings": "Mở cài đặt hệ thống",
+  "reminderRevokedHint": "Đang bật · thông báo của MemoX đang bị chặn",
+  "reminderRevokedBody": "Nhắc nhở đang bật nhưng Android sẽ không hiển thị. Hãy cho phép thông báo trong Cài đặt Android › Ứng dụng › MemoX › Thông báo.",
   "failureNotAdmin": "Chỉ quản trị viên mới xem được mục này.",
   "failureOffline": "Không kết nối được máy chủ. Không mất gì cả.",
   "failureServer": "Máy chủ chưa trả lời được. Không mất gì cả, thử lại sau một lát.",

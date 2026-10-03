@@ -20,7 +20,7 @@ UC-REMINDER-001; spec
 |---|---|---|
 | App bar | `MxAppBar` (content density) + back `MxIconButton` | "Daily reminder". |
 | Reminder section | `MxSection` with note, two `MxSettingsRow`s | Row bell "Daily reminder" with `MxToggle` (an `MxSpinner` while turning on or off); row clock "Time" with a compact `MxButton` "{HH:mm}", disabled while off. The note: "Fires once a day, only when cards are due. Never for new cards, never twice." |
-| Banner | `MxInlineBanner` | Only after an operation left a problem: E1 `warning`, E3 `danger`, E6 `warning`. |
+| Banner | `MxInlineBanner` | Only after an operation left a problem: E1 `warning`, E3 `danger`, E6 `warning`; or, with the reminder on, when Android blocks MemoX's notifications (read on open and on resume, never asked): `warning`, titled "Notifications are blocked for MemoX", with "Open system settings" (SP2b 2.34). |
 | What it says | `MxSection` "What it says", one `MxSettingsRow` | The notification's own sentence, from the strings the notification uses, over the live workload read when the screen opens (`ReadReminderPreviewUseCase` behind `reminderPreviewDigestProvider`); "Nothing is due right now, so today's reminder would stay silent." when nothing is due or the read fails (critique 2026-09-30 part 1); while the read runs the row keeps its place with its hint and shows no error; the line that it never carries a card, a tag or history. |
 | Time dialog | `MxDialog` + two `MxStepper`s + `MxSheetActions` | "Reminder time": Hour 0–23, Minute 0–59 shown in two digits ("07" : "05"; hold repeats, tap to type), the chosen "HH:mm", Cancel / Save. |
 
@@ -34,6 +34,7 @@ UC-REMINDER-001; spec
 | previewDue | `reminder_preview_due_light.png` | `reminder_preview_due_dark.png` | Three cards due in Korean: the live sentence (critique 2026-09-30 part 1). |
 | changingTime | `reminder_changing_time_light.png` | `reminder_changing_time_dark.png` | The time button is outlined while the dialog is open; the dialog is `MxDialog` with Hour and Minute steppers (see Rulings). |
 | permDenied | `reminder_perm_denied_light.png` | `reminder_perm_denied_dark.png` | Try again (outlined), then "Open system settings" (primary, last as every banner's primary; R5 amends FE-B6), which opens the app's notification settings. While Try again runs the banner steps aside and returns in the same order. |
+| permRevoked | `reminder_perm_revoked_light.png` | `reminder_perm_revoked_dark.png` | The reminder is on but Android blocks its notifications: the toggle row reads "On · notifications are blocked for MemoX" and a `warning` banner offers "Open system settings". Nothing stored changes; both go when the permission is back on the next resume (SP2b 2.34, 2.36). |
 | couldNotSchedule | `reminder_could_not_schedule_light.png` | `reminder_could_not_schedule_dark.png` | On Enable the reminder stays off. A refused schedule on Change time has its own copy (see Rulings). |
 | offMayShow | `reminder_off_may_show_light.png` | `reminder_off_may_show_dark.png` | A `warning` banner with Try again (see Rulings). |
 | unavailable | `reminder_unavailable_light.png` | `reminder_unavailable_dark.png` | One row, no toggle, no time, no preview (BR-REMINDER-012). Golden `reminder_unavailable_*`. |
@@ -65,6 +66,7 @@ turns the reminder on.
 
 - **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample counts), and the Time row's hint stays at full ink while the row is disabled (`MxSettingsRow`).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hour and minute steppers read in two digits ("07" : "05", `MxStepper` `minDigits: 2`), matching the "07:05" preview.
+- **SP2b 2.34 (spec `2026-10-03-ui-hardening-sp2b-design.md`):** the screen reads the permission without asking (`ReminderPlatformRepository.notificationPermission`, `reminderPermissionProvider`) on open and on resume. Unknown or unreadable counts as allowed, so a warning is never false.
 - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` with Try again, which cancels again and writes nothing; `MxInlineBanner` has no info tone.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.
 - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` with Hour and Minute `MxStepper`s.
@@ -91,6 +93,7 @@ turns the reminder on.
 - Note: "Fires once a day, only when cards are due. Never for new cards, never twice."
 - E1: "Notifications are blocked for MemoX" · "Allow them in Android Settings › Apps ›
   MemoX › Notifications, then turn the reminder on again." · "Try again".
+- Revoked: "On · notifications are blocked for MemoX" · title "Notifications are blocked for MemoX" · "The reminder is on, but Android won't show it. Allow notifications in Android Settings › Apps › MemoX › Notifications." · "Open system settings".
 - E3: "Couldn’t schedule the reminder." · "It stays off. Try turning it on again." ·
   "Retry"; on Change time "Couldn’t change the time." · "The reminder stays at {HH:mm}."
 - E6: "Turned off. A reminder already scheduled for today may still appear once." · "Try

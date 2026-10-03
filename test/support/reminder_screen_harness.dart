@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
@@ -47,5 +48,22 @@ pumpReminderScreen(
 /// Taps the reminder toggle and settles.
 Future<void> tapReminderToggle(WidgetTester tester) async {
   await tester.tap(find.byType(MxToggle));
+  await settleReminderScreen(tester);
+}
+
+/// The app going to the background and coming back: the person visited
+/// system settings (BR-REMINDER-011, SP2b 2.34). The screen reads the
+/// notification permission again.
+Future<void> resumeReminderApp(WidgetTester tester) async {
+  for (final state in [
+    AppLifecycleState.inactive,
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+    AppLifecycleState.hidden,
+    AppLifecycleState.inactive,
+    AppLifecycleState.resumed,
+  ]) {
+    tester.binding.handleAppLifecycleStateChanged(state);
+  }
   await settleReminderScreen(tester);
 }

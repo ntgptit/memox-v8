@@ -8,6 +8,7 @@ import 'package:memox/features/reminders/domain/models/reminder_platform_model.d
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/controllers/reminder_controller.dart';
 import 'package:memox/features/reminders/presentation/providers/open_notification_settings_provider.dart';
+import 'package:memox/features/reminders/presentation/providers/reminder_permission_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
 import 'package:memox/features/reminders/presentation/widgets/overlays/reminder_time_dialog_widget.dart';
@@ -44,6 +45,24 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
 
   ReminderController get _controller =>
       ref.read(reminderControllerProvider.notifier);
+
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    // The person may allow or block notifications in system settings and come
+    // back: read the permission again (BR-REMINDER-011, SP2b 2.34).
+    _lifecycle = AppLifecycleListener(
+      onResume: () => ref.invalidate(reminderPermissionProvider),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +137,12 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
         ],
       );
     }
+    // A read in flight is not an answer: the screen warns on a settled one.
+    final permission = ref.watch(reminderPermissionProvider);
+    final isPermissionRevoked =
+        status.reminder.isEnabled &&
+        !permission.isLoading &&
+        permission.value == ReminderPermission.denied;
     return MxScreenScroll(
       children: [
         const SizedBox(height: AppSpacing.control),
@@ -128,6 +153,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           onToggle: (isOn) =>
               unawaited(isOn ? _controller.turnOn() : _controller.turnOff()),
           onPickTime: () => unawaited(_pickTime(status.reminder.minuteOfDay)),
+          isPermissionRevoked: isPermissionRevoked,
         ),
         ReminderBannersWidget(
           problem: action.problem,
@@ -136,6 +162,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           onRetry: () => unawaited(_controller.retry()),
           onOpenSettings: () =>
               unawaited(ref.read(openNotificationSettingsProvider)()),
+          isPermissionRevoked: isPermissionRevoked,
         ),
         const SizedBox(height: AppSpacing.gutter),
         const ReminderPreviewSectionWidget(),

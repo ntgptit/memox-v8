@@ -18,6 +18,7 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 import '../../../support/fake_reminder_platform.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/reminder_screen_harness.dart';
 import '../../../support/settings_fakes.dart';
 import '../../../support/study_entry_fixtures.dart';
 
@@ -122,6 +123,26 @@ void main() {
         'perm_denied',
         platform: FakeReminderPlatform(permission: ReminderPermission.denied),
         act: (_) => toggle(tester),
+      );
+    });
+
+    // SP2b 2.34: the reminder is on and Android blocks its notifications.
+    libraryTest('reminder, permission revoked, $theme', (tester, env) async {
+      final platform = FakeReminderPlatform();
+      await shoot(
+        tester,
+        env,
+        'perm_revoked',
+        platform: platform,
+        act: (_) async {
+          await toggle(tester);
+          platform.permission = ReminderPermission.denied;
+          await resumeReminderApp(tester);
+          expect(
+            find.text('Notifications are blocked for MemoX'),
+            findsOneWidget,
+          );
+        },
       );
     });
 

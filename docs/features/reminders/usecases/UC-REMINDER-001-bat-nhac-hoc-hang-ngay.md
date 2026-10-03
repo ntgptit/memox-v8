@@ -23,7 +23,10 @@ nào (BR-REMINDER-001); màn hình mở được cả khi thư viện rỗng
 1. Người dùng mở màn nhắc học từ Settings. Hệ thống hiển thị toggle **tắt**, giờ
    gợi ý 20:00 hiển thị ở trạng thái không hoạt động, và hai dòng nói rõ: nhắc
    chỉ hiện khi còn thẻ đến hạn, và notification có thể nêu tên deck cùng số thẻ
-   trên màn khoá (BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-005).
+   trên màn khoá (BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-005). Màn chỉ đọc
+   (không xin) trạng thái quyền notification khi mở và khi resume; nhắc đang bật
+   mà quyền bị tắt thì màn nói rõ và chỉ đường mở cài đặt, settings không đổi
+   (BR-REMINDER-011).
 2. Người dùng bật toggle. Hệ thống chuyển sang trạng thái `enabling` và **chỉ
    lúc này** mới xin quyền notification của hệ điều hành (BR-REMINDER-011).
 3. Người dùng cấp quyền. Hệ thống lưu `enabled = true` cùng giờ đang chọn, đặt
@@ -56,7 +59,9 @@ nào (BR-REMINDER-001); màn hình mở được cả khi thư viện rỗng
 **Error flows:**
 - **E1 — Từ chối quyền (Android 13+):** settings giữ nguyên **tắt**, không đặt
   lịch, màn hiện lý do có kiểu cùng hướng dẫn bật lại ở cài đặt hệ thống và một
-  hành động thử lại. Hệ thống không tự xin lại quyền (BR-REMINDER-011).
+  hành động thử lại. Hệ thống không tự xin lại quyền (BR-REMINDER-011). Khi người
+  dùng bật lại quyền ở cài đặt hệ thống và quay về app, lý do tự mất; toggle vẫn
+  **tắt**.
 - **E2 — Nền tảng không hỗ trợ:** toggle bị vô hiệu và màn nói rõ nhắc học chưa
   có trên nền tảng này; không có trạng thái bật giả (BR-REMINDER-012).
 - **E3 — Đặt lịch thất bại:** lỗi của nền tảng map thành lý do có kiểu; settings

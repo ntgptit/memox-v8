@@ -20,6 +20,7 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
     required this.isPickingTime,
     required this.onToggle,
     required this.onPickTime,
+    required this.isPermissionRevoked,
   });
 
   final ReminderSettings reminder;
@@ -29,6 +30,9 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
   final bool isPickingTime;
   final ValueChanged<bool> onToggle;
   final VoidCallback onPickTime;
+
+  /// The reminder is on but the system blocks its notifications (SP2b 2.34).
+  final bool isPermissionRevoked;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,10 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
           label: l10n.reminderTitle,
           icon: AppIcons.reminder,
           subtitle: switch ((isOn, action.problem)) {
-            (true, _) => l10n.reminderOnHint,
+            (true, _) =>
+              isPermissionRevoked
+                  ? l10n.reminderRevokedHint
+                  : l10n.reminderOnHint,
             (false, ReminderProblem.permissionDenied) =>
               l10n.reminderDeniedHint,
             (false, _) => l10n.reminderOffHint,

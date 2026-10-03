@@ -40,7 +40,7 @@ their goldens, its rulings and its copy. The visual system is in
 | 21 | Session summary | 11 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 9 | FE-A9 | built | [22-progress.md](22-progress.md) |
 | 23 | Settings | 12 | FE-A3, SB-U1, FE-B8, FE-B9 | built | [23-settings.md](23-settings.md) |
-| 24 | Daily reminder | 9 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
+| 24 | Daily reminder | 10 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 3 | FE-A3 | built | [25-theme.md](25-theme.md) |
 | 26 | Language | 3 | FE-A3 | built | [26-language.md](26-language.md) |
 | 27 | Sync | 7 | SB-U1 | built | [27-sync.md](27-sync.md) (shape brief in the spec) |
