@@ -1,11 +1,17 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/trash/domain/usecases/restore_cards_from_trash_use_case.dart';
+import 'package:memox/features/trash/presentation/providers/restore_cards_from_trash_use_case_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
+import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
+import '../../../support/held_writes.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/trash_screen_fixtures.dart';
 
@@ -126,5 +132,118 @@ void main() {
     await tester.pumpAndSettle();
     expect(_inSheet('Korean › Words'), findsNothing);
     expect(find.text(_en.trashRestoreEmptyTitle), findsOneWidget);
+  });
+
+  libraryTest('Back, a scrim tap and Cancel wait for the restore; its toast '
+      'then arrives (SP2b 2.26)', (tester, env) async {
+    await seedTrash(env);
+    final hold = WriteHold();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const TrashScreen(),
+      overrides: [
+        restoreCardsFromTrashUseCaseProvider.overrideWithValue(
+          RestoreCardsFromTrashUseCase(HeldCards(env.cards, hold)),
+        ),
+      ],
+    );
+    await _openRestore(tester, 'meokda · eat');
+    await tester.tap(_inSheet('Korean › Words'));
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tapAt(const Offset(2, 2));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(MxDeckPickerSheet), findsOneWidget);
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, _en.commonCancel))
+          .onPressed,
+      isNull,
+    );
+
+    hold.open();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxDeckPickerSheet), findsNothing);
+    expect(
+      find.text(_en.trashRestoredOne('meokda · eat', 'Words')),
+      findsOneWidget,
+    );
+    expect(await _isActive(env, 'card', 'meokda'), isTrue);
+  });
+
+  libraryTest('a failed restore keeps the sheet with a banner; choosing again '
+      'retries (SP2b 2.27)', (tester, env) async {
+    await seedTrash(env);
+    final hold = WriteHold()
+      ..open()
+      ..failNext();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const TrashScreen(),
+      overrides: [
+        restoreCardsFromTrashUseCaseProvider.overrideWithValue(
+          RestoreCardsFromTrashUseCase(HeldCards(env.cards, hold)),
+        ),
+      ],
+    );
+    await _openRestore(tester, 'meokda · eat');
+    await tester.tap(_inSheet('Korean › Words'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxDeckPickerSheet), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MxInlineBanner),
+        matching: find.text(_en.failure(WriteHold.failure)),
+      ),
+      findsOneWidget,
+    );
+    expect(await _isActive(env, 'card', 'meokda'), isFalse);
+
+    await tester.tap(_inSheet('Korean › Words'));
+    await tester.pumpAndSettle();
+    expect(await _isActive(env, 'card', 'meokda'), isTrue);
+    expect(
+      find.text(_en.trashRestoredOne('meokda · eat', 'Words')),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a second tap while the restore runs does nothing (SP2b 2.26)', (
+    tester,
+    env,
+  ) async {
+    await seedTrash(env);
+    final hold = WriteHold();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const TrashScreen(),
+      overrides: [
+        restoreCardsFromTrashUseCaseProvider.overrideWithValue(
+          RestoreCardsFromTrashUseCase(HeldCards(env.cards, hold)),
+        ),
+      ],
+    );
+    await _openRestore(tester, 'meokda · eat');
+    await tester.tap(_inSheet('Korean › Words'));
+    await tester.pump();
+    expect(
+      tester
+          .widget<MxListRow>(find.widgetWithText(MxListRow, 'Korean › Words'))
+          .isEnabled,
+      isFalse,
+    );
+    await tester.tap(_inSheet('Korean › Words'), warnIfMissed: false);
+    await tester.pump();
+
+    hold.open();
+    await tester.pumpAndSettle();
+    expect(hold.calls, 1);
+    expect(await _isActive(env, 'card', 'meokda'), isTrue);
   });
 }
