@@ -74,6 +74,9 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// The exit dialog is open: ✕ and Back do nothing meanwhile (2.08).
   var _isConfirming = false;
 
+  /// Set while the exit dialog is up; Recall's clock follows it (2.11).
+  final ValueNotifier<bool> _overlayOpen = ValueNotifier(false);
+
   /// The last view of the open session that served a card: a held turn is
   /// drawn in it even after its answer ended the session or stalled the
   /// round (spec D5).
@@ -91,6 +94,12 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _overlayOpen.dispose();
+    super.dispose();
+  }
+
   /// The ✕ and system Back ask first (spec D8, owner ruling 2026-09-27);
   /// Stop abandons, Keep studying changes nothing. One dialog at a time
   /// (2.08).
@@ -99,11 +108,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   Future<void> _confirmAbandon() async {
     if (_isConfirming) return;
     _isConfirming = true;
+    _overlayOpen.value = true;
     final bool shouldStop;
     try {
       shouldStop = await showStudyExitDialog(context);
     } finally {
       _isConfirming = false;
+      _overlayOpen.value = false;
     }
     if (!mounted) return;
     // The deck went, or the session was reset, while the dialog was up: the
@@ -407,6 +418,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       item: item,
       result: turn.held?.result,
       isBusy: turn.isBusy,
+      overlayOpen: _overlayOpen,
       onReveal: (ms) => unawaited(_controller.revealRecall(item, ms)),
       onSaveTime: (ms) => unawaited(_controller.saveRecallTime(item, ms)),
       onAnswer: (outcome) =>

@@ -369,4 +369,49 @@ void main() {
     await _settle(tester);
     expect(haptics, ['HapticFeedbackType.lightImpact']);
   });
+
+  libraryTest('the clock stops under the exit dialog and runs on when it '
+      'closes: the turn never times out unseen (2.11)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('15s / 20s'), findsOneWidget);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.text('15s / 20s'), findsOneWidget);
+    // The time left was kept when the clock stopped.
+    expect(await _rowOf(env.db, id), (15000, false));
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('14s / 20s'), findsOneWidget);
+  });
+
+  libraryTest('a resume from the background does not restart the clock '
+      'while the exit dialog is open (2.11)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await _lifecycle(tester, const [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]);
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(find.text('15s / 20s'), findsOneWidget);
+  });
 }
