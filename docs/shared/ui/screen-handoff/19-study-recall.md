@@ -29,12 +29,13 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | countingDown | `study_recall_counting_light.png` | `study_recall_counting_dark.png` | — |
 | revealed | `study_recall_revealed_light.png` | `study_recall_revealed_dark.png` | Clock is stopped, not zeroed (BR-STUDY-036). |
 | timedOut | `study_recall_timed_out_light.png` | `study_recall_timed_out_dark.png` | The outcome is already committed (wrong) before this paints (BR-STUDY-063). |
+| revealFailed | no golden | no golden | The reveal was refused or failed: the session's danger banner "Couldn't show the meaning" / "Nothing was lost. Tap Show the meaning to try again." above the turn, no action of its own, since Show the meaning is its retry; the clock runs again (SP2a 2.12). |
 
 **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, over
 `RecallCountdownBarWidget` and `StudyCtaRowWidget`. The clock is the widget's own
 (spec D12): it stops whenever the app leaves the foreground, saves the time left on
 pause and when the turn's screen goes (never per tick), and a resumed turn starts from
-the saved time, or opens revealed with its clock stopped (BR-STUDY-036). Show the
+the saved time, or opens revealed with its clock stopped (BR-STUDY-036). It stops under the exit dialog and runs on when the dialog closes (SP2a 2.11). Show the
 meaning stops the clock at once and writes the reveal; Forgot and Remembered answer
 and the next card follows; at zero the turn answers timed out and is held until
 Continue (spec D5). Goldens:
@@ -48,6 +49,7 @@ Continue (spec D5). Goldens:
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** Forgot · Remembered and the timed-out Continue settle for 400 ms (R1); the bar is Indigo (R8).
+- **SP2a 2.11–2.12 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1):** the session screen tells Recall when the exit dialog is up, and the turn clock stops under it and keeps its time left, so the dialog cannot cost the turn (2.11). A reveal that is refused or fails shows the write banner and returns the turn to counting down, whether or not a busy frame was seen (2.12).
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the footer hint's glyph is info, and repeat on "This card comes back in a later round" after a timeout (F7).
 
 ## Accessibility
@@ -64,4 +66,5 @@ Continue (spec D5). Goldens:
 - Clock caption: "Time to recall" (`countingDown`) · "Revealed with time left" (`revealed`) · "Time is up" (`timedOut`).
 - Meaning tag: "Counted as forgot" (`timedOut`).
 - CTAs: "Show the meaning" · "Forgot" · "Remembered" · "Continue".
+- Reveal failed: "Couldn't show the meaning" · "Nothing was lost. Tap Show the meaning to try again."
 - Footer hint: "Recall the meaning before the time runs out" (`countingDown`) · "Be honest — the next card follows automatically" (`revealed`) · "This card comes back in a later round" (`timedOut`).

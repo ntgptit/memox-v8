@@ -27,7 +27,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 The system keyboard opens for `input`/`hint` and the CTA row sits above it;
 `wrong` shows no field and the keyboard closes. Grading folds the typed text
 (trim + Unicode-aware lower-case) against `front_folded` but never strips
-accents — "cong" must not match "công" (BR-STUDY-026). The typed text itself
+accents — "cong" must not match "công" (BR-STUDY-026). The field turns autocorrect and suggestions off, so the keyboard cannot rewrite the term before it is graded (SP2a 2.13). The typed text itself
 is never persisted, only the outcome, the match-policy version and whether a
 hint was used (BR-STUDY-027, BR-STUDY-030). An empty answer after trim
 submits nothing (BR-STUDY-029).
@@ -58,6 +58,7 @@ until Continue, the typed text struck through in the error ink beside the right 
 - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read "Wrong · comes back next round": a wrong `fill` row leaves the current round and is enrolled exactly once in the next one.
 - **P4:** the prompt uses the study passage role at 16, and both faces carry their "Meaning" and "Term" labels in flow.
 - No card can be edited mid-session, so the prompt face has no edit button.
+- **SP2a 2.13 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1):** `MxTextFieldVariant.study` sets `autocorrect: false` and `enableSuggestions: false`; the other variants keep both.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.
 - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-design.md`):** Continue after a wrong answer settles for 400 ms (R1); the card's hint is the study detail role with its line reserved (R4); the bar is Indigo (R8).
 

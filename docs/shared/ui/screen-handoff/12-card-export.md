@@ -24,7 +24,7 @@ sheet as a CSV, TSV or XLSX file. UC-TRANSFER-002; spec
 | Formats | `MxListSectionHeader` + `MxOptionRow` × 3 | CSV (default, "Recommended" badge), TSV, XLSX, each with what it is for. Locked while a file is prepared. |
 | Content note | `MxNote` (file icon) | The six columns; no schedule, no history. |
 | Footer | `MxSheetActions` (sheet form) | Cancel · "Export {n} cards" with the share icon; "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
-| Toast | `MxSnackbar` | "Handed {n} cards to the system." once the share sheet took the file. |
+| Toast | `MxSnackbar` | "Handed {n} cards to the system." once the share sheet took the file, with "{k} were already gone." when selected cards were left out (SP2a 2.19). |
 
 The overline, the banner and the note line up with the title (20 dp).
 
@@ -39,7 +39,8 @@ The overline, the banner and the note line up with the title (20 dp).
 | shareClosed | no golden | no golden | the export sheet stays open, as it was. |
 | failed | `export_failed_light.png` | `export_failed_dark.png` | For a read or encode failure. A share failure has its own copy, also with Try again. |
 | noShareTarget | no golden | no golden | The banner shows the warning glyph. |
-| staleSelection | `export_stale_light.png` | `export_stale_dark.png` | The selection changed since the sheet opened (FE-B1 D12 closes X11); the body says what happened, that nothing was exported, and to close the sheet, check the selection and export again. The format rows are locked, as in every final problem (critique 2026-09-30 part 1). |
+| staleSelection | `export_stale_light.png` | `export_stale_dark.png` | Every selected card is gone since the sheet opened (FE-B1 D12 closes X11; one missing card no longer refuses the batch, SP2a 2.19); the body says what happened, that nothing was exported, and to close the sheet, check the selection and export again. The format rows are locked, as in every final problem (critique 2026-09-30 part 1). |
+| someGone | no golden | no golden | Some selected cards are gone: the file holds the rest, and the toast says how many were already gone. Whatever way the sheet closes, the selection drops the gone ids (SP2a 2.19). |
 | nothingToExport | no golden | no golden | Reached only by a deck emptied between the count and the export, or by a count of 0. |
 
 Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}_{light,dark}.png`.
@@ -48,6 +49,7 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 
 - **Critique 2026-09-30 part 1, R8:** a final problem (stale, empty, no share target) locks the format rows; its lone Close stays primary (ruling C1 of the M3 review).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the stale-selection body (`exportStaleBody`) reads "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again."; the lone Close stays.
+- **SP2a 2.19 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.3):** an export of a selection leaves out the selected cards that are gone and says how many; only when every selected card is gone does it refuse, with the stale-selection problem, and the card list prunes the selection of those ids however the sheet was dismissed.
 - **UC-TRANSFER-002 A3 (E1):** closing the share sheet keeps the export sheet open with its scope and format.
 - **Spec §7, BR-TRANSFER-014 (E2):** the result reads "Handed {n} cards to the system." without the file name.
 - **UC-TRANSFER-002 step 2 (E3):** CSV carries a "Recommended" badge.
@@ -64,4 +66,4 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 - Note: "Six columns: front, back, example, hint, pronunciation, tags. No schedule, no history — this is content, not a backup."
 - Actions: "Cancel" · "Export {n} cards" · "Preparing…" · "Try again" · "Close".
 - Problems: "Couldn’t prepare the file" · "Couldn’t hand the file over" · "No app on this device can receive a file" · "A selected card is no longer in this deck" · "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again." · "There is nothing to export".
-- Toast: "Handed {n} cards to the system."
+- Toast: "Handed {n} cards to the system." · "{k} were already gone." ("1 was already gone.").

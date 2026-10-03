@@ -143,6 +143,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D25 | `.drift` P7: `core/sync`, `core/auth/account_store` (upsert thay `batch`, đo pull 1.000 dòng) | xong | FE-D24 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p7.md); `dod_check.sh` xanh | FE-D26 |
 | FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | xong | FE-D19…FE-D25 | S | [plan](superpowers/plans/2026-10-02-drift-queries-only-p8.md); `dod_check.sh` xanh | — |
 | FE-D27 | UI hardening SP1 Foundations: MxDialog (bàn phím, hinge, `isHeld`), MxStepper commit, footer caption, heading, nav semantics, system bars, launch window, page transition, tint rungs, MxChipTrigger, haptics, luật DESIGN.md | xong | — | L | [spec](superpowers/specs/2026-10-03-ui-hardening-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp1-foundations.md); `dod_check.sh` xanh, goldens Linux xanh, APK debug build được | SP2 |
+| FE-D28 | UI hardening SP2a: study và thẻ — draft thẻ (schema 13), hỏi khi kết thúc phiên deck khác, giữ màn khi deck mất, Recall dừng dưới dialog, Fill tắt gợi ý, thao tác hàng loạt bỏ qua thẻ đã mất + Undo, import giới hạn/Undo | đang làm | FE-D27 | L | [spec](superpowers/specs/2026-10-03-ui-hardening-sp2a-design.md), [plan](superpowers/plans/2026-10-03-ui-hardening-sp2a.md) | SP2b |
 
 ## Đã xong và đã kiểm chứng
 

@@ -39,7 +39,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | moveTargets | no golden | no golden | — |
 | noMoveTarget | no golden | no golden | — |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
-| delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
+| delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview, and the confirm names the count, "Move {n} cards to Trash" (SP2a 2.20). The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
 | trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash", also Undo for 8 seconds, all back or none (BR-TRASH-008, SP2a 2.20); Open Trash appears only on a refused Undo (UC-TRASH-001 E3). |
 Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open, no match); `card_list_search_results_light.png` / `card_list_search_results_dark.png` (two matches with a 300 dp keyboard up: the summary card steps aside, critique 2026-09-30 part 3a).
@@ -92,13 +92,15 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** while a failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as before.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink (`onSurface`), the filled glyph carrying the state as in the editor and the detail; E-L2 is superseded (F6).
+- **SP2a 2.19–2.21 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.3):** a bulk Trash, Move, Tag or Flag works on the selected cards that still exist and skips the rest inside the same transaction. Its toast gains "{n} were already gone." and the selection drops the gone ids; when every selected card is gone it says so, changes nothing and drops them (2.19). The Trash confirm of several cards names the count, and its toast carries Undo for the whole batch, the restore the Trash screen uses (2.20). A bulk Tag refused at the limit names how many cards already hold 10 tags (2.21).
 
 ## Copy
 
 - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "New" · "Beginning" · "Reviewing" · "Mastered" · "Study this deck · {n} due".
 - Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Cards" · "Showing {n} of {total}" · "Newest" · "Due first".
 - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · "Export" · "Trash".
-- Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
+- Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash" (one card) / "Move {n} cards to Trash" (several) · "“{front}” moved to Trash" · "Undo" · "{n} cards moved to Trash".
+- Bulk results: "{message}. {n} were already gone." ("1 was already gone."; the suffix of every bulk toast) · "The selected card is already gone. Nothing changed." / "The {n} selected cards are already gone. Nothing changed." · Tag at the limit: "{n} cards already have 10 tags; nothing was tagged." ("1 card already has 10 tags; nothing was tagged.").
 - Empty: "No cards in this deck yet" · "Write your first card, or bring many at once from a spreadsheet or pasted text." · "Import cards (CSV, TSV, XLSX, text)" · "Studying this deck becomes available once it holds at least one card."
 - Search empty: "No cards match “{term}”" · "Try a different term, or clear the search to see all {n} cards."
 - Tag filter: "Tags" · "Filter by tags" · "Show cards with any of the chosen tags" · "{k} chosen · cards with any of them" · "Search tags" · "Clear" · "Apply" · "No tags yet. Add tags while creating or editing cards." · "Close" · "Couldn't load tags" · "No cards with these tags" · "Clear tag filter".

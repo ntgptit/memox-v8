@@ -17,6 +17,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 | Learn row | full-bleed `MxCard` of one `MxListRow` | "Learn new cards", subtitle "{stage description} · {n} of {n} new · in creation order" (BR-STUDY-056, BR-STUDY-057); trailing compact `MxButton` "Learn" starts a `learning` session directly (BR-STUDY-051) while a review leads the footer; with only new cards the footer offers Learn and the row has no button (critique 2026-09-30 part 3d-1, D2). |
 | Review options | `MxListSectionHeader` (overline) + full-bleed `MxCard` of `MxOptionRow`s + `MxNote` | Eight boxes: Match · Guess · Recall · Fill, each with its own `MxBadge` "{n} cards" or "Not available" plus the unavailable reason as the row's subtitle (BR-STUDY-044, BR-STUDY-045, BR-MODE-009); a single available mode skips this list and opens directly (BR-STUDY-055). SM-2 has one mode, so this list never appears for it — see the Direction sheet. |
 | Inline banners | `MxInlineBanner` | `refused` (warning): counts changed since the screen opened. `startFailed` (danger): the write failed; nothing was saved (BR-STUDY-018). |
+| Other-session dialog | `StudyEndOtherSessionDialogWidget` (`MxDialog`, `MxSheetActions` warning) | Before a Learn or a Review the entry asks for another deck's open session; when there is one, "End your session in {deck}?" / "Its answers are kept; the rest of that round is dropped."; Keep it (outline) and End it and start (warning). Only the confirm starts. Continue and Try again never ask, and a failed read starts without asking, since the start meets the same store (SP2a 2.01, R3). |
 | Footer | `MxFooterBar` | A caption line plus one block `MxButton` (primary; outline while the resume banner shows, "Try again" included, since Continue is then the one primary, critique 2026-09-30 part 1): "Learn {n} new cards" / "Review {n} due cards" / "Continue" / "Start a new review instead" / "Try again"; `MxSpinner` + "Starting…" while a session opens, and the button plus every option lock (BR-STUDY-004). |
 
 ## Direction sheet (SM-2 only)
@@ -38,9 +39,11 @@ choosing "Start review" writes nothing (BR-STUDY-020).
 | onlyNew | `study_entry_only_new_light.png` | `study_entry_only_new_dark.png` | Due = 0, only the Learn row and its footer CTA show. |
 | nothing | `study_entry_nothing_light.png` | `study_entry_nothing_dark.png` | Positive empty state, no footer (BR-STUDY-008, BR-STUDY-054). |
 | resume | `study_entry_resume_light.png` | `study_entry_resume_dark.png` | The Continue banner with a primary, static dot and its progress track (see Rulings); the footer's start is outline (critique 2026-09-30 part 1). |
-| starting | `study_entry_starting_light.png` | `study_entry_starting_dark.png` | Footer shows the spinner, every option locks (BR-STUDY-004). |
+| starting | `study_entry_starting_light.png` | `study_entry_starting_dark.png` | Footer shows the spinner, every option locks (BR-STUDY-004); Back and Study options hold too (SP2a 2.04). |
 | refused | `study_entry_refused_light.png` | `study_entry_refused_dark.png` | Inline warning banner; the footer stays usable (plan R5). |
-| startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again". |
+| startFailed | `study_entry_start_failed_light.png` | `study_entry_start_failed_dark.png` | Inline danger banner, footer offers "Try again"; picking another mode drops the banner and Try again (SP2a 2.02). |
+| endOtherSession | `study_entry_end_other_session_light.png` | `study_entry_end_other_session_dark.png` | The dialog over the entry (SP2a 2.01). |
+| deckGone | no golden | no golden | `MxErrorState`, the not-found form with Back, when the deck is lost while the entry sits under another route; the one-shot toast stays the fast path while the route is current (SP2a 2.03). |
 | loading | `study_entry_loading_light.png` | `study_entry_loading_dark.png` | Skeletons in the hero and option-list shapes. |
 Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_sheet_dark.png` (the Direction sheet).
 
@@ -59,7 +62,7 @@ first available one picked at first, and the footer reviews the picked mode with
 caption "{mode} · oldest first" (the button states the count; critique 2026-09-30 part 3b, R5). Every mode has its screen since P4, so
 Learn is offered whenever new cards exist and nothing says "Coming soon". A deck deleted while its entry is open leaves with
 the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
-`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet}_*`.
+`test/features/study/presentation/goldens/study_entry_{eight_box,sm2,only_new,nothing,loading,resume,starting,refused,start_failed,direction_sheet,end_other_session}_*`.
 
 ## Accessibility
 
@@ -77,6 +80,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - **Plan R7:** "Start review" answers the choice and closes the sheet; the entry footer shows `starting`, and Try again repeats the review with the same direction.
 - **Plan R8:** the SM-2 caption reads "{shown} of {due} due · oldest first".
 - **Plan R9:** each refusal has its own title: nothing due, no new cards, a mode that no longer runs, a session that can no longer be continued.
+- **SP2a 2.01–2.04 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1, R3):** a Learn or a Review that would end another deck's open session asks first (2.01); a new pick drops a refusal or failure the last start left, so Try again replays the picked mode (2.02); a lost deck shows the not-found form (2.03); while a session opens, Back is held with the footer (2.04).
 - **Critique 2026-09-30 part 1:** while an open session shows, "Continue" is the one primary and the footer's start (Review instead or Learn) is outline, since it ends that session (DESIGN.md One Indigo).
 - **FE-A6 P3 ruling C5:** `eightBox` picks the first available mode at first; the pick is not kept.
 - The Learn button is the secondary tone with the sparkles glyph.
@@ -94,4 +98,5 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - Review options, Eight boxes: "Review · choose how cards are asked" · "Match" "Pair terms with meanings, up to 5 at a time" · "Guess" "Pick the meaning out of five" · "Recall" "Recall the meaning within 20 seconds" · "Fill" "Type the term for the meaning" · "{n} cards" · "Not available" · "A mode that is not available lacks suitable cards for this review — it comes back when the cards qualify."
 - Direction sheet, SM-2: "Review · question direction" · "Term first" "See the term, recall the meaning" · "Meaning first" "See the meaning, recall the term" · "Mixed" "Half each way, evenly split" · "The direction can't change once the session starts. SM-2 has one review mode: reveal, then grade yourself again · hard · good · easy." · "Start review".
 - Banners: "Nothing is due any more." "The due cards were reviewed from another session or deleted since this screen was opened. Counts are up to date now." · "No new cards left to learn." "They were learned in another session or deleted since this screen was opened. Counts are up to date now." · "This mode can't run on the due cards any more." "The due cards changed since this screen was opened. Counts are up to date now." · "That session can't be continued." "It ended since this screen was opened, and its answers are kept. Start a new one below." · "Couldn't start the session." "Nothing was written. Try again."
+- Other session: "End your session in {deck}?" · "Its answers are kept; the rest of that round is dropped." · "Keep it" · "End it and start".
 - Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try again" · "Start a new review instead" · captions "Nothing is due — review is available once cards come due." · "{mode} · oldest first" (Eight boxes) · "{shown} of {due} due · oldest first" (SM-2).
