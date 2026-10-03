@@ -13,7 +13,8 @@ import 'generated/schema.dart';
 // records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2); v8
 // syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5); v10 syncs reviews
 // and schedules (SB-S4); v11 keeps dismissed notes on the device (critique 2026-09-30); v12 adds
-// the account state, the account transition and the welcome flag (auth spec §4); v13 keeps the card being written on the device (SP2a R9).
+// the account state, the account transition and the welcome flag (auth spec §4);
+// v13 keeps the card being written on the device (SP2a R9).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
