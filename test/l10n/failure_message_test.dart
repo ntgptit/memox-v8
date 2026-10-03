@@ -15,6 +15,7 @@ void main() {
         const SessionInvalidFailure(cause: 'refresh_token_not_found'),
         const IdentityTakenFailure(method: IdentityMethod.google),
         const InvalidCodeFailure(cause: 'otp_expired'),
+        const InvalidEmailFailure(cause: 'email_address_invalid'),
         const LastAdminFailure(cause: 'LAST_ADMIN'),
         const UnsentChangesFailure(count: 3),
         const MutationBlockedFailure(),

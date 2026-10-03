@@ -59,6 +59,31 @@ void main() {
     expect(of('unexpected_failure'), isA<ServerFailure>());
   });
 
+  test(
+    'an address GoTrue refuses is the address, not a server error (2.42)',
+    () {
+      Failure of(String message, String code) => classifyAuthError(
+        AuthApiException(message, statusCode: '422', code: code),
+      );
+
+      expect(
+        of('Email address "x@" is invalid', 'email_address_invalid'),
+        isA<InvalidEmailFailure>(),
+      );
+      expect(
+        of(
+          'Unable to validate email address: invalid format',
+          'validation_failed',
+        ),
+        isA<InvalidEmailFailure>(),
+      );
+      expect(
+        of('Password should be at least 6 characters', 'validation_failed'),
+        isA<ServerFailure>(),
+      );
+    },
+  );
+
   test("the RPCs' codes", () {
     Failure of(String code) =>
         classifyAuthError(PostgrestException(message: code, code: 'P0001'));

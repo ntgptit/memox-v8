@@ -60,6 +60,7 @@ final class SignInState {
 /// code read alike; a rate limit carries no wait).
 SignInProblem signInProblemOf(Object error) => switch (error) {
   InvalidCodeFailure() => SignInProblem.wrongCode,
+  InvalidEmailFailure() => SignInProblem.invalidEmail,
   RateLimitedFailure() => SignInProblem.rateLimited,
   OfflineFailure() => SignInProblem.offline,
   _ => SignInProblem.failed,

@@ -71,6 +71,16 @@ void main() {
     },
   );
 
+  test('an address the server refuses reads as the address problem, not '
+      '"try again" (2.42)', () async {
+    world.gateway.failNextRequest = const InvalidEmailFailure();
+
+    expect(await controller().sendCode('a@example.com'), SignInOutcome.failed);
+
+    expect(state().problem, SignInProblem.invalidEmail);
+    expect(state().problemTask, SignInTask.email);
+  });
+
   test('offline says offline', () async {
     world.network.goOffline();
 

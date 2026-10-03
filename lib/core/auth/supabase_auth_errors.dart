@@ -42,10 +42,18 @@ Failure _fromAuth(AuthException error, IdentityMethod method) {
     'otp_expired' => InvalidCodeFailure(cause: error),
     'over_email_send_rate_limit' ||
     'over_request_rate_limit' => RateLimitedFailure(cause: error),
+    'email_address_invalid' => InvalidEmailFailure(cause: error),
+    // GoTrue words a malformed address as a validation failure too.
+    'validation_failed' when _namesEmail(error) => InvalidEmailFailure(
+      cause: error,
+    ),
     _ when error.statusCode == '429' => RateLimitedFailure(cause: error),
     _ => ServerFailure(cause: error),
   };
 }
+
+bool _namesEmail(AuthException error) =>
+    error.message.toLowerCase().contains('email');
 
 /// PostgREST refused the access token as expired or invalid. The SDK
 /// refreshes on a timer; a call that lands in between refreshes once.

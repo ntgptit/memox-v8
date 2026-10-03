@@ -99,6 +99,14 @@ final class RateLimitedFailure extends AuthFailure {
     : super(message: 'Too many attempts. Wait, then try again.');
 }
 
+/// An address the server refused as not a valid one (GoTrue
+/// `email_address_invalid`, or a `validation_failed` about the email). The
+/// field says "check the address", not "try again" (SP2b 2.42).
+final class InvalidEmailFailure extends AuthFailure {
+  const InvalidEmailFailure({super.cause})
+    : super(message: 'That email address is not valid.');
+}
+
 /// The claim token was used, expired or never existed (`CLAIM_INVALID`).
 final class ClaimInvalidFailure extends AuthFailure {
   const ClaimInvalidFailure({super.cause})
