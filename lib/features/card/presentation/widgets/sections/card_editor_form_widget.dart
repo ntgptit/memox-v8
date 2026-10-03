@@ -87,6 +87,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   /// A draft kept from an earlier session, on offer above the fields (R9).
   CardDraft? _offer;
 
+  /// The version a restored draft was written against, when that is not the
+  /// card's current one: Save goes out against it, so another device's save
+  /// since then asks first (SP2a 2.18).
+  DateTime? _restoredBase;
+
+  /// The version the text on screen is based on: what Save expects and what
+  /// a draft records.
+  DateTime? get _baseUpdatedAt => _restoredBase ?? _card?.updatedAt;
+
   bool get _isCreating => widget.detail == null;
 
   /// A new card's deck went away on Save: nothing is left to write to, so the
@@ -158,6 +167,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     pronunciation: _optional(_pronunciation),
     isFlagged: _isFlagged,
     tagNames: _tags,
+    baseUpdatedAt: _baseUpdatedAt,
   );
 
   bool get _isDirty => _hasPendingTag || !_draft().sameContentAs(_saved);
@@ -222,6 +232,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           draft.pronunciation != null;
       _offer = null;
     });
+    final base = draft.baseUpdatedAt;
+    final isOlder =
+        base != null && _card?.updatedAt.isAtSameMomentAs(base) == false;
+    if (isOlder) _restoredBase = base;
   }
 
   void _discardOffer() {
@@ -247,7 +261,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           : await actions.editCard(
               cardId: _card!.id,
               draft: draft,
-              expectedUpdatedAt: overwrites ? null : _card!.updatedAt,
+              expectedUpdatedAt: overwrites ? null : _baseUpdatedAt,
             );
       if (!mounted) return;
       if (outcome case Rejected(reason: CardRejection.changedElsewhere)) {
@@ -299,6 +313,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     if (theirs == null) return;
     final card = theirs.card;
     _card = card;
+    _restoredBase = null;
     _front.text = card.front;
     _back.text = card.back;
     _example.text = card.example ?? '';

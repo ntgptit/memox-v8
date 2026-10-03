@@ -51,6 +51,21 @@ void main() {
     expect(kept.tagNames, ['món ăn', 'topik 1']);
   });
 
+  test('the version an edit draft was based on reads back; a draft without '
+      'one reads back without', () async {
+    final base = DateTime.utc(2026, 10, 2, 8, 30, 15);
+    final editKey = CardDraftKey.edit('card-1');
+
+    await drafts.save(
+      editKey,
+      CardDraft(front: 'a', back: 'b', baseUpdatedAt: base),
+    );
+    await drafts.save(deckKey, hangul);
+
+    expect((await drafts.read(editKey))!.baseUpdatedAt, base);
+    expect((await drafts.read(deckKey))!.baseUpdatedAt, isNull);
+  });
+
   test('saving again replaces the draft of that key', () async {
     await drafts.save(deckKey, hangul);
     await drafts.save(deckKey, const CardDraft(front: 'a', back: 'b'));

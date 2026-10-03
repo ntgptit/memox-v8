@@ -127,6 +127,62 @@ void main() {
     expect(await _backOf(env, card.id), 'mine');
   });
 
+  libraryTest('Restore of a draft written on an older version, then Save, '
+      'asks before it overwrites what another device saved (2.18)', (
+    tester,
+    env,
+  ) async {
+    final deckId = await seedWordsDeck(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    // A draft written while the card was at its first version...
+    await draftsOf(env).save(
+      CardDraftKey.edit(card.id),
+      CardDraft(front: 'bap', back: 'mine', baseUpdatedAt: card.updatedAt),
+    );
+    // ...and the other device saved since.
+    await _otherDeviceSaves(env, card.id);
+    await pumpLibraryScreen(tester, env, editScreen(card.id));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(MxButton, enL10n.cardDraftRestore));
+    await tester.pumpAndSettle();
+    await tester.tap(footerSave(enL10n.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    expect(find.text(enL10n.cardChangedTitle), findsOneWidget);
+    expect(await _backOf(env, card.id), 'theirs');
+
+    await tester.tap(find.text(enL10n.cardKeepMine));
+    await tester.pumpAndSettle();
+    expect(await _backOf(env, card.id), 'mine');
+  });
+
+  libraryTest('Restore of a draft written on the current version saves '
+      'without the dialog (2.18)', (tester, env) async {
+    final deckId = await seedWordsDeck(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await draftsOf(env).save(
+      CardDraftKey.edit(card.id),
+      CardDraft(front: 'bap', back: 'mine', baseUpdatedAt: card.updatedAt),
+    );
+    await pumpLibraryScreen(tester, env, editScreen(card.id));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(MxButton, enL10n.cardDraftRestore));
+    await tester.pumpAndSettle();
+    await tester.tap(footerSave(enL10n.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    expect(find.text(enL10n.cardChangedTitle), findsNothing);
+    expect(await _backOf(env, card.id), 'mine');
+  });
+
   libraryTest('Use theirs reloads the card, drops the edits and the draft '
       '(2.18)', (tester, env) async {
     final deckId = await seedWordsDeck(env);

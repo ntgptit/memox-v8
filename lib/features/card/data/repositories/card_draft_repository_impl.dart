@@ -24,6 +24,7 @@ final class CardDraftRepositoryImpl implements CardDraftRepository {
   static const _hint = 'hint';
   static const _pronunciation = 'pronunciation';
   static const _isFlagged = 'isFlagged';
+  static const _base = 'baseUpdatedAt';
 
   final CardDraftDao _dao;
   final DateTime Function() _now;
@@ -46,6 +47,7 @@ final class CardDraftRepositoryImpl implements CardDraftRepository {
         _hint: draft.hint,
         _pronunciation: draft.pronunciation,
         _isFlagged: draft.isFlagged,
+        _base: draft.baseUpdatedAt?.toUtc().toIso8601String(),
       }),
       tags: jsonEncode(draft.tagNames),
       at: at,
@@ -73,6 +75,7 @@ final class CardDraftRepositoryImpl implements CardDraftRepository {
         pronunciation: extras[_pronunciation] as String?,
         isFlagged: extras[_isFlagged] as bool? ?? false,
         tagNames: [for (final tag in tags) tag as String],
+        baseUpdatedAt: DateTime.tryParse(extras[_base] as String? ?? ''),
       );
     } on FormatException {
       // A row nothing in this app wrote offers no draft; it never breaks the

@@ -16,6 +16,7 @@ final class CardDraft {
     this.pronunciation,
     this.isFlagged = false,
     this.tagNames = const [],
+    this.baseUpdatedAt,
   });
 
   final String front;
@@ -25,6 +26,12 @@ final class CardDraft {
   final String? pronunciation;
   final bool isFlagged;
   final List<String> tagNames;
+
+  /// The card's `updatedAt` this edit was written against; null for a new
+  /// card. Kept with an edit draft so that restoring it later still knows
+  /// which version it replaces (SP2a 2.18). Not content: [sameContentAs]
+  /// ignores it.
+  final DateTime? baseUpdatedAt;
 
   /// BR-CARD-002 and BR-CARD-003, in characters as a person sees them.
   static const maxFrontLength = 60;
