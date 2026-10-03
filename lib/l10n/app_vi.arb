@@ -1196,6 +1196,8 @@
   "reminderLaterHour": "Giờ muộn hơn",
   "reminderEarlierMinute": "Phút sớm hơn",
   "reminderLaterMinute": "Phút muộn hơn",
+  "reminderHourRange": "Nhập giờ từ 0 đến 23.",
+  "reminderMinuteRange": "Nhập phút từ 0 đến 59.",
   "reminderTimeSave": "Lưu",
   "settingsReminder": "Nhắc học hằng ngày",
   "settingsReminderOff": "Tắt",

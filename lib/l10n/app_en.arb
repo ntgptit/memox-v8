@@ -6316,6 +6316,14 @@
   "@reminderLaterMinute": {
     "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the minute stepper's +."
   },
+  "reminderHourRange": "Enter an hour from 0 to 23.",
+  "@reminderHourRange": {
+    "description": "Screen handoff 24 (SP2b 2.35): the time dialog's line under the hour stepper after a typed hour out of range."
+  },
+  "reminderMinuteRange": "Enter a minute from 0 to 59.",
+  "@reminderMinuteRange": {
+    "description": "Screen handoff 24 (SP2b 2.35): the time dialog's line under the minute stepper after a typed minute out of range."
+  },
   "reminderTimeSave": "Save",
   "@reminderTimeSave": {
     "description": "Screen handoff 24 (FE-B5): the time dialog (A1, spec D2): the confirm."

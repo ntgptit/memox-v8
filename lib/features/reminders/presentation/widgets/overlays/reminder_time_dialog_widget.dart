@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
@@ -19,8 +20,9 @@ Future<int?> showReminderTimeDialog(
 );
 
 /// An hour stepper 0–23 and a minute stepper 0–59, each repeating on hold
-/// and typeable; a typed value out of range marks its stepper and keeps
-/// Save off.
+/// and typeable; a typed value out of range marks its stepper, says the range
+/// under it and keeps Save off until a valid value is typed or a step clears
+/// it.
 class ReminderTimeDialogWidget extends StatefulWidget {
   const ReminderTimeDialogWidget({super.key, required this.minuteOfDay});
 
@@ -52,6 +54,18 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
     return (value, false);
   }
 
+  /// A step starts again from the number the stepper shows, so it also clears
+  /// a typed value that was out of range (SP2b 2.35).
+  void _stepHour(int by) => setState(() {
+    _hour += by;
+    _isHourInvalid = false;
+  });
+
+  void _stepMinute(int by) => setState(() {
+    _minute += by;
+    _isMinuteInvalid = false;
+  });
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -74,10 +88,8 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
               minDigits: 2,
               isInvalid: _isHourInvalid,
-              onDecrement: _hour > 0 ? () => setState(() => _hour--) : null,
-              onIncrement: _hour < _lastHour
-                  ? () => setState(() => _hour++)
-                  : null,
+              onDecrement: _hour > 0 ? () => _stepHour(-1) : null,
+              onIncrement: _hour < _lastHour ? () => _stepHour(1) : null,
               onValueSubmitted: (text) {
                 final (hour, isInvalid) = _typed(text, _hour, _lastHour);
                 setState(() {
@@ -86,6 +98,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
                 });
               },
             ),
+            problem: _isHourInvalid ? l10n.reminderHourRange : null,
           ),
           _labelled(
             context,
@@ -100,10 +113,8 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
               // A clock reads 07 : 05 (critique 2026-09-30 part 3d-2).
               minDigits: 2,
               isInvalid: _isMinuteInvalid,
-              onDecrement: _minute > 0 ? () => setState(() => _minute--) : null,
-              onIncrement: _minute < _lastMinute
-                  ? () => setState(() => _minute++)
-                  : null,
+              onDecrement: _minute > 0 ? () => _stepMinute(-1) : null,
+              onIncrement: _minute < _lastMinute ? () => _stepMinute(1) : null,
               onValueSubmitted: (text) {
                 final (minute, isInvalid) = _typed(text, _minute, _lastMinute);
                 setState(() {
@@ -112,6 +123,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
                 });
               },
             ),
+            problem: _isMinuteInvalid ? l10n.reminderMinuteRange : null,
           ),
           Text(
             reminderTimeLabel(context, _chosen),
@@ -128,10 +140,21 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
     );
   }
 
-  Widget _labelled(BuildContext context, String label, Widget stepper) => Row(
+  Widget _labelled(
+    BuildContext context,
+    String label,
+    Widget stepper, {
+    String? problem,
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Expanded(child: Text(label, style: context.textStyles.settingsLabel)),
-      stepper,
+      Row(
+        children: [
+          Expanded(child: Text(label, style: context.textStyles.settingsLabel)),
+          stepper,
+        ],
+      ),
+      if (problem != null) MxFieldMessage(message: problem),
     ],
   );
 }
