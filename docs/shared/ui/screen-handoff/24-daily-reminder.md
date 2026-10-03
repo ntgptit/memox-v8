@@ -67,6 +67,7 @@ turns the reminder on.
 - **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample counts), and the Time row's hint stays at full ink while the row is disabled (`MxSettingsRow`).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hour and minute steppers read in two digits ("07" : "05", `MxStepper` `minDigits: 2`), matching the "07:05" preview.
 - **SP2b 2.34 (spec `2026-10-03-ui-hardening-sp2b-design.md`):** the screen reads the permission without asking (`ReminderPlatformRepository.notificationPermission`, `reminderPermissionProvider`) on open and on resume. Unknown or unreadable counts as allowed, so a warning is never false.
+- **SP2b 2.36:** the "refused" guidance and the "Off · notification permission was refused" hint go on the next resume once the permission is allowed. The toggle stays off; turning it on is the person's tap (BR-REMINDER-011).
 - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` with Try again, which cancels again and writes nothing; `MxInlineBanner` has no info tone.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.
 - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` with Hour and Minute `MxStepper`s.

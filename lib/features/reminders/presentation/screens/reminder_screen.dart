@@ -79,6 +79,11 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
         onAction: () => unawaited(_controller.retry()),
       );
     });
+    ref.listen(reminderPermissionProvider, (_, next) {
+      // A read in flight is not an answer, and its previous value is not new.
+      if (next.isLoading || next.value != ReminderPermission.granted) return;
+      _controller.clearPermissionProblem();
+    });
     final action = ref.watch(reminderControllerProvider);
     return MxAppShell(
       appBar: MxAppBar(

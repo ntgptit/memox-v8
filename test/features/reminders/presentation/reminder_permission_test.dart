@@ -105,4 +105,50 @@ void main() {
     expect(s.store.writes, writes);
     expect(find.text(_en.reminderRevokedBody), findsOneWidget);
   });
+
+  libraryTest('refused, then allowed in system settings: the guidance and the '
+      '"refused" hint go on resume, the toggle stays off (2.36)', (
+    tester,
+    env,
+  ) async {
+    final s = await pumpReminderScreen(
+      tester,
+      env,
+      platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+    );
+    await tapReminderToggle(tester);
+    expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
+    expect(find.text(_en.reminderDeniedHint), findsOneWidget);
+    final writes = s.store.writes;
+
+    s.platform.permission = ReminderPermission.granted;
+    await resumeReminderApp(tester);
+
+    expect(find.text(_en.reminderDeniedTitle), findsNothing);
+    expect(find.text(_en.reminderDeniedHint), findsNothing);
+    expect(find.text(_en.reminderOffHint), findsOneWidget);
+    expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
+    expect(s.store.writes, writes);
+    expect(
+      s.platform.calls.where((c) => c == PlatformCall.requestPermission),
+      hasLength(1),
+      reason: "BR-REMINDER-011: turning it on is the person's tap",
+    );
+  });
+
+  libraryTest(
+    'refused and still blocked on resume: the guidance stays (2.36)',
+    (tester, env) async {
+      await pumpReminderScreen(
+        tester,
+        env,
+        platform: FakeReminderPlatform(permission: ReminderPermission.denied),
+      );
+      await tapReminderToggle(tester);
+
+      await resumeReminderApp(tester);
+
+      expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
+    },
+  );
 }
