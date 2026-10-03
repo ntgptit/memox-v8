@@ -8,6 +8,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
@@ -46,13 +47,20 @@ class _TrashPurgeDialogWidgetState
 
   var _isPurging = false;
 
+  /// The last purge's failure, shown in the dialog until the next try; Delete
+  /// is the retry (SP2b 2.27).
+  Failure? _failure;
+
   bool get _isCards => widget.entries.first is TrashCardEntry;
 
   Future<void> _purge() async {
     // A second tap in the same frame reaches here before the busy confirm
     // is drawn.
     if (_isPurging) return;
-    setState(() => _isPurging = true);
+    setState(() {
+      _isPurging = true;
+      _failure = null;
+    });
     try {
       final report = await ref.read(trashControllerProvider.notifier).purge({
         for (final entry in widget.entries) entry.batchId,
@@ -69,10 +77,13 @@ class _TrashPurgeDialogWidgetState
         );
       }
       Navigator.of(context).pop(true);
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'trash purge');
       if (!mounted) return;
-      setState(() => _isPurging = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isPurging = false;
+        _failure = failure;
+      });
     }
   }
 
@@ -80,6 +91,7 @@ class _TrashPurgeDialogWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final count = widget.entries.length;
+    final failure = _failure;
     // Once Delete runs, nothing may look like a cancel: the batches go
     // whatever the dialog does (BR-TRASH-011).
     return PopScope(
@@ -89,6 +101,12 @@ class _TrashPurgeDialogWidgetState
             ? l10n.trashPurgeCardsTitle(count)
             : l10n.trashPurgeDecksTitle(count),
         body: l10n.trashPurgeBody(count),
+        content: failure == null
+            ? null
+            : MxInlineBanner(
+                tone: MxBannerTone.warning,
+                message: l10n.failure(failure),
+              ),
         actions: MxSheetActions.custom(
           children: [
             Expanded(

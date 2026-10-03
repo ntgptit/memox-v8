@@ -10,6 +10,7 @@ import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
 import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
+import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/domain/models/purge_report_model.dart';
 import 'package:memox/features/trash/domain/repositories/trash_repository.dart';
 
@@ -135,12 +136,15 @@ final class HeldTags implements TagRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-/// The real Trash, a purge behind [hold].
+/// The real Trash, a purge behind [hold]; the screen's list reads through.
 final class HeldTrash implements TrashRepository {
   HeldTrash(this._inner, this.hold);
 
   final TrashRepository _inner;
   final WriteHold hold;
+
+  @override
+  Stream<List<TrashEntry>> watchEntries() => _inner.watchEntries();
 
   @override
   Future<PurgeReport> purge({

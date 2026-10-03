@@ -24,6 +24,7 @@ import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
+import 'package:memox/features/trash/di/trash_repository_provider.dart';
 import 'package:memox/features/trash/domain/usecases/purge_expired_trash_use_case.dart';
 import 'package:memox/features/trash/domain/usecases/purge_trash_use_case.dart';
 import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
@@ -109,9 +110,10 @@ List<Override> _backend(LibraryEnv env) => [
       () async => env.clock.now(),
     ),
   ),
-  purgeTrashUseCaseProvider.overrideWithValue(
-    PurgeTrashUseCase(
-      TrashRepositoryImpl(env.db),
+  // Built over the repository provider, so a test can hold its writes.
+  purgeTrashUseCaseProvider.overrideWith(
+    (ref) => PurgeTrashUseCase(
+      ref.watch(trashRepositoryProvider),
       env.clock,
       () async => env.clock.now(),
     ),
