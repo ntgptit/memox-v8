@@ -9,6 +9,7 @@ import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -81,6 +82,7 @@ void main() {
     expect(find.byType(MxListRow), findsNothing);
     expect(find.text(_en.summaryFactsHeader.toUpperCase()), findsNothing);
 
+    await tester.pump(StudySettleGuardWidget.settle);
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeck));
     expect((done, again), (1, 1));
@@ -380,5 +382,36 @@ void main() {
       text.semanticsLabel,
       _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),
     );
+  });
+
+  libraryTest("the last answer's double tap cannot reach Done: the footer "
+      'takes no tap for 400 ms after the summary appears (2.09)', (
+    tester,
+    env,
+  ) async {
+    var done = 0;
+    var again = 0;
+    await _pump(
+      tester,
+      env,
+      summaryView(),
+      SummaryOutcome.reviewFinished,
+      onDone: () => done++,
+      onStudyDeck: () => again++,
+    );
+
+    await tester.tap(
+      find.widgetWithText(MxButton, _en.summaryDone),
+      warnIfMissed: false,
+    );
+    await tester.tap(
+      find.widgetWithText(MxButton, _en.studyThisDeck),
+      warnIfMissed: false,
+    );
+    expect((done, again), (0, 0));
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
+    expect(done, 1);
   });
 }

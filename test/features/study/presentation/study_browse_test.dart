@@ -7,6 +7,7 @@ import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -186,4 +187,71 @@ void main() {
     expect(_front(tester), isNot(first));
     expect((await watchSessionOnce(env.db, id)).progress!.completed, 1);
   });
+
+  libraryTest('a double tap on Next cannot skip the card that just swapped '
+      'in: Next takes no tap for 400 ms after a new card (2.10)', (
+    tester,
+    env,
+  ) async {
+    var advances = 0;
+    final host = GlobalKey<_SwapHostState>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _SwapHost(key: host, onAdvance: () => advances++),
+    );
+    final next = find.widgetWithText(MxButton, _en.studyBrowseNext);
+
+    await tester.tap(next);
+    expect(advances, 1);
+
+    host.currentState!.next();
+    await tester.pump();
+    await tester.tap(next, warnIfMissed: false);
+    expect(advances, 1);
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(next);
+    expect(advances, 2);
+  });
+}
+
+StudyItem _item(String id) => StudyItem(
+  cardId: id,
+  front: 'front $id',
+  back: 'back $id',
+  example: null,
+  hint: null,
+  pronunciation: null,
+  round: 1,
+  answersInSession: 0,
+  direction: null,
+  remainingMs: null,
+  isRevealed: false,
+);
+
+/// Browse over a card that a test swaps, counting the advances it asks for.
+class _SwapHost extends StatefulWidget {
+  const _SwapHost({super.key, required this.onAdvance});
+
+  final VoidCallback onAdvance;
+
+  @override
+  State<_SwapHost> createState() => _SwapHostState();
+}
+
+class _SwapHostState extends State<_SwapHost> {
+  var _card = 'a';
+
+  void next() => setState(() => _card = 'b');
+
+  @override
+  Widget build(BuildContext context) => Material(
+    child: StudyBrowseWidget(
+      view: summaryView(),
+      item: _item(_card),
+      isBusy: false,
+      onAdvance: widget.onAdvance,
+    ),
+  );
 }

@@ -6,6 +6,7 @@ import 'package:memox/features/study/presentation/states/session_ending_state.da
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_facts_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -70,26 +71,31 @@ class SessionSummaryWidget extends StatelessWidget {
       ),
       footer: MxFooterBar(
         caption: l10n.summaryDoneCaption,
-        child: MxActionPair(
-          leading: outcome.canStudyAgain
-              ? MxButton(
-                  label: l10n.studyThisDeck,
-                  tone: MxButtonTone.outline,
-                  icon: AppIcons.play,
-                  isBlock: true,
-                  isSingleLine: true,
-                  onPressed: onStudyDeck,
-                )
-              : null,
-          trailing: MxButton(
-            label: l10n.summaryDone,
-            icon: AppIcons.check,
-            isBlock: true,
-            isSingleLine: true,
-            onPressed: onDone,
+        // The last answer's double tap must not reach Done (2.09).
+        child: StudySettleGuardWidget(
+          phase: view.sessionId,
+          isGuardedAtStart: true,
+          child: MxActionPair(
+            leading: outcome.canStudyAgain
+                ? MxButton(
+                    label: l10n.studyThisDeck,
+                    tone: MxButtonTone.outline,
+                    icon: AppIcons.play,
+                    isBlock: true,
+                    isSingleLine: true,
+                    onPressed: onStudyDeck,
+                  )
+                : null,
+            trailing: MxButton(
+              label: l10n.summaryDone,
+              icon: AppIcons.check,
+              isBlock: true,
+              isSingleLine: true,
+              onPressed: onDone,
+            ),
+            leadingFlex: _studyFlex,
+            trailingFlex: _doneFlex,
           ),
-          leadingFlex: _studyFlex,
-          trailingFlex: _doneFlex,
         ),
       ),
     );

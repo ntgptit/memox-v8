@@ -29,6 +29,7 @@ void main() {
     await tapText(tester, l10n.studyExitStop);
     await waitFor(tester, find.text(l10n.summaryLeftEarly));
 
+    await tester.pump(const Duration(milliseconds: 400));
     await tapText(tester, l10n.summaryDone);
     await openStudyEntry(tester, studyRoot);
     await waitFor(

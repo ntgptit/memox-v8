@@ -1,4 +1,5 @@
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 
 import '../support/study_entry_fixtures.dart';
 
@@ -190,6 +191,8 @@ void main() {
     await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
+    // The summary's footer takes no tap while it settles (2.09).
+    await tester.pump(StudySettleGuardWidget.settle);
     await _tap(tester, find.text(_en.summaryDone));
     await _tap(tester, navTab(_en.navStudy));
     await _tap(tester, find.widgetWithText(MxButton, _en.studyHomeLibrary));
