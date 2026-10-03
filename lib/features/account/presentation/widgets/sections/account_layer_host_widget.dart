@@ -8,6 +8,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
+import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -83,14 +84,7 @@ class _AccountLayerHostWidgetState
       if (dialogContext != null) unawaited(showLastAdminDialog(dialogContext));
       return;
     }
-    final l10n = context.l10n;
-    showMxSnackbar(
-      context,
-      message: switch (notice) {
-        MergeNotDone() => l10n.accountMergeNotDone,
-        DeleteRefused() => l10n.accountDeleteRefused,
-      },
-    );
+    showMxSnackbar(context, message: accountNoticeText(context.l10n, notice));
   }
 
   @override

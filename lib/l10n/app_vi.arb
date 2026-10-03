@@ -1401,6 +1401,7 @@
   "accountMergeNotDone": "Không gộp được. Bộ thẻ vẫn còn trên điện thoại này.",
   "accountLastAdmin": "Hãy cấp quyền admin cho người khác trước, rồi xoá tài khoản.",
   "accountDeleteRefused": "Không xoá được tài khoản. Chưa có gì thay đổi.",
+  "accountDeleteUnknown": "Chưa xác nhận được việc xoá. Đăng nhập lại để kiểm tra.",
   "accountTitle": "Tài khoản",
   "accountMethodGoogle": "Đăng nhập bằng Google",
   "accountMethodEmail": "Đăng nhập bằng email",

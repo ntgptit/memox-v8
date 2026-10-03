@@ -7288,6 +7288,10 @@
   "@accountDeleteRefused": {
     "description": "Toast: the deletion did not happen."
   },
+  "accountDeleteUnknown": "Couldn't confirm the deletion. Sign in again to check.",
+  "@accountDeleteUnknown": {
+    "description": "Toast: a deletion refused for want of a session; the server may have taken it, so it must not say nothing changed (SP2b 2.47)."
+  },
   "accountTitle": "Account",
   "@accountTitle": {
     "description": "Screen 32's title (Account UI spec §5.6)."
