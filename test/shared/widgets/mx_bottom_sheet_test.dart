@@ -263,4 +263,24 @@ void main() {
       lessThanOrEqualTo(screen.height - 300),
     );
   });
+
+  testWidgets('a builder sheet builds only the rows in view (SP2a 2.23)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxBottomSheet.builder(
+        itemCount: 5000,
+        itemBuilder: (_, index) => SizedBox(
+          key: ValueKey('row-$index'),
+          height: 48,
+          width: double.infinity,
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('row-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('row-4999')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 }

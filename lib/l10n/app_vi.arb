@@ -737,6 +737,8 @@
   "importProblemUnreadableBody": "Hãy chọn tệp CSV, TSV hoặc XLSX không đặt mật khẩu. Chưa đọc gì cả.",
   "importProblemEmptyTitle": "Không có dòng nào để nhập",
   "importProblemEmptyBody": "Tệp, sheet hoặc văn bản không có dòng nào có dữ liệu.",
+  "importProblemTooLargeTitle": "Tệp này quá lớn để nhập",
+  "importProblemTooLargeBody": "Hãy chia thành các tệp tối đa {rows} dòng hoặc {megabytes} MB. Chưa đọc gì.",
   "importProblemPreviewTitle": "Không kiểm tra được bộ thẻ này",
   "importProblemPreviewBody": "Chưa nhập gì và cách ghép cột vẫn được giữ. Hãy chọn Xem trước các dòng để thử lại.",
   "importChooseAnother": "Chọn tệp khác",

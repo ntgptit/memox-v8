@@ -8,6 +8,7 @@ import 'package:memox/features/transfer/data/repositories/transfer_file_reposito
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 
 const _files = TransferFileRepositoryImpl();
@@ -416,6 +417,59 @@ void main() {
         (await _table(FileSource(bytes: bytes, format: TransferFormat.xlsx)))
             .rows,
         rows,
+      );
+    });
+  });
+
+  group('size caps (SP2a 2.23)', () {
+    test('a file over 5 MB is refused before it is decoded', () async {
+      // Not UTF-8: decoding would answer badEncoding, so the cap came first.
+      final bytes = Uint8List(TransferLimits.maxBytes + 1)
+        ..fillRange(0, 4, 0xFF);
+
+      expect(
+        await _refusal(FileSource(bytes: bytes, format: TransferFormat.csv)),
+        TransferRejection.tooLarge,
+      );
+      expect(
+        await _refusal(FileSource(bytes: bytes, format: TransferFormat.xlsx)),
+        TransferRejection.tooLarge,
+      );
+    });
+
+    test('exactly 5 MB is read; one byte more is refused', () async {
+      // One row whose size is the cap, so only the byte gate is in play.
+      Uint8List sized(int length) =>
+          Uint8List.fromList(utf8.encode('a,${'x' * (length - 2)}'));
+
+      final table = await _table(
+        FileSource(
+          bytes: sized(TransferLimits.maxBytes),
+          format: TransferFormat.csv,
+        ),
+      );
+      expect(table.rows, hasLength(1));
+      expect(
+        await _refusal(
+          FileSource(
+            bytes: sized(TransferLimits.maxBytes + 1),
+            format: TransferFormat.csv,
+          ),
+        ),
+        TransferRejection.tooLarge,
+      );
+    });
+
+    test('a table over 20,000 rows is refused; 20,000 rows are read', () async {
+      String rows(int count) => List.filled(count, 'a,b').join('\n');
+
+      expect(
+        await _refusal(PastedSource(rows(TransferLimits.maxRows + 1))),
+        TransferRejection.tooLarge,
+      );
+      expect(
+        (await _table(PastedSource(rows(TransferLimits.maxRows)))).rows,
+        hasLength(TransferLimits.maxRows),
       );
     });
   });

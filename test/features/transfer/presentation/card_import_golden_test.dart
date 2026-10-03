@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -119,6 +120,37 @@ void main() {
         await _tap(tester, _en.importReadAction);
         await _tap(tester, _en.importPreviewAction);
         await expectBoundaryGolden(tester, 'goldens/import_preview_$theme.png');
+      });
+    });
+
+    libraryTest('import too large, $theme', (tester, env) async {
+      final deckId = await _seed(env);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardImportScreen(
+            deckId: deckId,
+            deckContext: _context,
+            onClose: () {},
+            onViewCards: () {},
+          ),
+          brightness,
+          overrides: [
+            importFilePickerProvider.overrideWithValue(
+              () async => (
+                name: 'words.csv',
+                bytes: Uint8List(TransferLimits.maxBytes + 1),
+              ),
+            ),
+          ],
+        );
+        await _tap(tester, _en.importSourceFile);
+        await _tap(tester, _en.importReadAction);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_too_large_$theme.png',
+        );
       });
     });
 

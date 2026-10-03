@@ -11,6 +11,7 @@ import 'package:memox/features/card/domain/repositories/card_transfer_repository
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
@@ -223,6 +224,34 @@ void main() {
     expect(find.text(_en.importMappingNote), findsNothing);
     await _tap(tester, _en.importPreviewAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
+  });
+
+  libraryTest('a file over the cap says how to split it (SP2a 2.23)', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(
+      tester,
+      env,
+      deck.id,
+      file: (name: 'big.csv', bytes: Uint8List(TransferLimits.maxBytes + 1)),
+    );
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+
+    expect(find.text(_en.importProblemTooLargeTitle), findsOneWidget);
+    expect(
+      find.text(
+        _en.importProblemTooLargeBody(
+          TransferLimits.maxRows,
+          TransferLimits.maxMegabytes,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(_en.importChooseAnother), findsOneWidget);
   });
 
   libraryTest('a Latin-1 file is refused at step 1 with guidance (E1)', (

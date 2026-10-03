@@ -6,6 +6,7 @@ import 'package:memox/features/transfer/domain/models/import_preview_model.dart'
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/import_skipped_sheet_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_result_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -64,9 +65,37 @@ void main() {
     await tester.tap(showAll);
     await tester.pumpAndSettle();
 
-    expect(find.byType(ImportPreviewRowWidget), findsNWidgets(7));
-    expect(find.text(_en.importRowDuplicateInDeck), findsNWidgets(3));
-    expect(showAll, findsNothing);
+    // The inline list keeps its five; the sheet holds all seven.
+    expect(find.byType(ImportSkippedSheetWidget), findsOneWidget);
+    expect(find.byType(ImportPreviewRowWidget), findsNWidgets(12));
+    expect(find.text('dup 7'), findsOneWidget);
+  });
+
+  libraryTest('Show all builds the sheet lazily, not every skipped row '
+      '(SP2a 2.23)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        ImportSummary(
+          written: 1,
+          blank: 0,
+          skipped: [for (var row = 2; row <= 3001; row++) _invalid(row)],
+        ),
+      ),
+    );
+
+    final showAll = find.text(_en.importSkippedShowAll(3000));
+    await tester.ensureVisible(showAll);
+    await tester.tap(showAll);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ImportSkippedSheetWidget), findsOneWidget);
+    expect(
+      tester.widgetList(find.byType(ImportPreviewRowWidget)).length,
+      lessThan(40),
+    );
+    expect(find.text('term 3001'), findsNothing);
   });
 
   libraryTest('five or fewer skipped rows need no Show all', (

@@ -39,7 +39,7 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study state mới
    cho từng card, tag, và `content_type` nếu deck đang `unset` (BR-TRANSFER-005).
 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và
-   từng dòng bị bỏ qua với số dòng và lý do (critique 2026-10-02) — với
+   từng dòng bị bỏ qua với số dòng và lý do (critique 2026-10-02; năm dòng đầu hiện tại chỗ, "Show all" mở danh sách đầy đủ trong một sheet dựng lười) — với
    hai lối ra: View cards về card list (danh sách tự cập nhật qua stream),
    hoặc Import another file giữ deck đích và làm lại từ bước Source.
 
@@ -77,6 +77,7 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   các card trùng với mọi hàng sẽ ghi; kiểm tra trùng chạy lại trong transaction
   (BR-TRANSFER-003) nên không ghi card nào → màn kết quả "Nothing added", deck
   không đổi kể cả `content_type` (BR-TRANSFER-005); một lối về deck.
+- **E7 — Nguồn quá lớn:** file hoặc văn bản dán vượt 5 MB, hoặc bảng sau parse vượt 20.000 hàng (tính cả hàng header) → bị từ chối trước khi giải mã bằng lý do có kiểu, kèm hướng dẫn chia nhỏ; nguồn đã chọn trước đó giữ nguyên và không đọc gì.
 
 ## UI
 

@@ -3845,6 +3845,23 @@
   "@importProblemEmptyBody": {
     "description": "Import problem: an empty source."
   },
+  "importProblemTooLargeTitle": "This file is too large to import",
+  "@importProblemTooLargeTitle": {
+    "description": "Import problem: the source is over the size or row cap (SP2a 2.23)."
+  },
+  "importProblemTooLargeBody": "Split it into files of up to {rows} rows or {megabytes} MB. Nothing was read.",
+  "@importProblemTooLargeBody": {
+    "placeholders": {
+      "rows": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "megabytes": {
+        "type": "int"
+      }
+    },
+    "description": "Import problem: how to fit under the cap; rows is the row cap, megabytes the size cap."
+  },
   "importProblemPreviewTitle": "Couldn't check this deck",
   "@importProblemPreviewTitle": {
     "description": "Import step 2: the deck's cards could not be read for the preview (SP2a 2.22)."

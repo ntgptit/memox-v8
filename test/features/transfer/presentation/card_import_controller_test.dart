@@ -23,6 +23,7 @@ import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 import 'package:memox/features/transfer/domain/usecases/commit_import_use_case.dart';
@@ -445,6 +446,21 @@ void main() {
       expect(draftOf(c).isBusy, isFalse);
     },
   );
+
+  test('a source over the cap is refused at step 1 with its own reason '
+      '(SP2a 2.23)', () async {
+    picked = (name: 'big.csv', bytes: Uint8List(TransferLimits.maxBytes + 1));
+    final c = container();
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+
+    await wizard.readSource();
+
+    expect(draftOf(c).step, CardImportStep.source);
+    expect(draftOf(c).problem, TransferRejection.tooLarge);
+    expect(draftOf(c).isBusy, isFalse);
+  });
 
   test('Import another file starts a fresh step 1', () async {
     await insertCard(

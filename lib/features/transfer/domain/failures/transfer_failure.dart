@@ -12,6 +12,10 @@ enum TransferRejection {
   /// UC-TRANSFER-001 E2: no row holds anything.
   emptySource,
 
+  /// SP2a 2.23: the source is over the size or the row cap
+  /// (`TransferLimits`); nothing was read.
+  tooLarge,
+
   /// BR-TRANSFER-002: `front` or `back` is not mapped, or two columns map to
   /// one field.
   mappingIncomplete,
