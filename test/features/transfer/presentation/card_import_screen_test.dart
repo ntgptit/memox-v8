@@ -23,6 +23,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -465,5 +466,18 @@ void main() {
 
     await _tap(tester, _en.importHeaderToggle);
     expect(find.text(_en.importFileRead('CSV', 3, 2)), findsOneWidget);
+  });
+
+  libraryTest('a headerless file keeps its first row as data and the toggle '
+      'still names that row (SP2a 2.24)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('mul,water\nbul,fire\n'));
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+
+    expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
+    expect(find.text('mul · water'), findsOneWidget);
+    expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
   });
 }

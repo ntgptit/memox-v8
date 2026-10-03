@@ -27,7 +27,7 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
    hàng không trống đầu tiên; khi cả hai dấu hoặc không dấu nào như vậy, file phân cách
    bằng `;` nếu hàng không trống đầu tiên có `;` mà không có `,`, còn lại bằng `,` (spec
    card transfer D9).
-4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên
+4. Hệ thống coi hàng đầu là header khi nó gọi tên ít nhất một cột, và tự map các cột trùng tên
    (front, back, example, hint, pronunciation, tags — không phân biệt hoa
    thường); người dùng chỉnh mapping nếu cần. `front` và `back` bắt buộc phải
    được map; một cột nguồn không map vào hai đích (BR-TRANSFER-002).
@@ -52,7 +52,8 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   đọc như một file CSV, kể cả phân cách `;` của bước 3.
 - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên
   và cho người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
-- **A3 — Không có header:** người dùng tắt "First row contains headers"; các
+- **A3 — Không có header:** hệ thống tự tắt "First row is a header" khi hàng đầu không gọi tên cột nào
+  (người dùng cũng có thể tự bật/tắt); công tắc luôn nêu các ô của hàng 1; các
   cột hiển thị tên vị trí ổn định (Column A, Column B, …) và hàng đầu được
   validate như dữ liệu.
 - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng

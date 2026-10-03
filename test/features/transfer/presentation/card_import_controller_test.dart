@@ -462,6 +462,26 @@ void main() {
     expect(draftOf(c).isBusy, isFalse);
   });
 
+  test(
+    'the header toggle follows what the first row names (SP2a 2.24)',
+    () async {
+      final c = container();
+      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+
+      picked = _file('vocab.csv', 'front,back\nmenu,thực đơn\n');
+      await wizard.chooseFile();
+      await wizard.readSource();
+      expect(draftOf(c).hasHeaderRow, isTrue);
+
+      picked = _file('vocab.csv', 'menu,thực đơn\nbill,hóa đơn\n');
+      await wizard.chooseFile();
+      await wizard.readSource();
+      expect(draftOf(c).hasHeaderRow, isFalse);
+      expect(draftOf(c).table!.rows.first, ['menu', 'thực đơn']);
+    },
+  );
+
   test('Import another file starts a fresh step 1', () async {
     await insertCard(
       db,

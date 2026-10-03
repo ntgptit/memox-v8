@@ -31,9 +31,10 @@ class ImportMappingSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final table = draft.table!;
-    final header = draft.hasHeaderRow && table.rows.isNotEmpty
-        ? table.rows.first
-        : null;
+    // Row 1's cells, header or not: the toggle's subtitle shows what it
+    // governs (SP2a 2.24).
+    final firstRow = table.rows.isEmpty ? null : table.rows.first;
+    final header = draft.hasHeaderRow ? firstRow : null;
     String? headerOf(int column) =>
         header != null && column < header.length ? header[column] : null;
     // The first data row, so a column is recognised by what it holds
@@ -57,7 +58,7 @@ class ImportMappingSectionWidget extends StatelessWidget {
             MxSettingsRow(
               label: l10n.importHeaderToggle,
               onTap: () => onHeaderRow(!draft.hasHeaderRow),
-              subtitle: header
+              subtitle: firstRow
                   ?.where((cell) => cell.trim().isNotEmpty)
                   .join(' · '),
               trailing: MxToggle(

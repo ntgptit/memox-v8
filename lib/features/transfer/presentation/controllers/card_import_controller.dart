@@ -112,16 +112,7 @@ class CardImportController extends _$CardImportController {
     }
     if (!ref.mounted) return;
     state = switch (result) {
-      Ok(:final value) => CardImportDraft(
-        step: CardImportStep.columns,
-        sourceKind: draft.sourceKind,
-        fileName: draft.fileName,
-        source: source,
-        table: value,
-        mapping: ColumnMapping.fromHeader(
-          value.rows.isEmpty ? const [] : value.rows.first,
-        ),
-      ),
+      Ok(:final value) => _read(draft, source, value),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
     };
   }
@@ -259,5 +250,26 @@ class CardImportController extends _$CardImportController {
         );
         return true;
     }
+  }
+
+  /// The step-2 draft for a table just read: the first row is a header only
+  /// when it named a column (SP2a 2.24); the person can still flip it.
+  CardImportDraft _read(
+    CardImportDraft draft,
+    TransferSource source,
+    SourceTable table,
+  ) {
+    final mapping = ColumnMapping.fromHeader(
+      table.rows.isEmpty ? const [] : table.rows.first,
+    );
+    return CardImportDraft(
+      step: CardImportStep.columns,
+      sourceKind: draft.sourceKind,
+      fileName: draft.fileName,
+      source: source,
+      table: table,
+      mapping: mapping,
+      hasHeaderRow: mapping.fieldByColumn.isNotEmpty,
+    );
   }
 }
