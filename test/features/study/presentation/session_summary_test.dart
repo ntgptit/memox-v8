@@ -414,4 +414,22 @@ void main() {
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     expect(done, 1);
   });
+
+  libraryTest('canStudyDeck false drops Study this deck and keeps Done '
+      '(2.51)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SessionSummaryWidget(
+        view: summaryView(),
+        outcome: SummaryOutcome.reviewFinished,
+        canStudyDeck: false,
+        onDone: () {},
+        onStudyDeck: () {},
+      ),
+    );
+
+    expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.summaryDone), findsOneWidget);
+  });
 }

@@ -25,6 +25,7 @@ class SessionSummaryWidget extends StatelessWidget {
     required this.outcome,
     required this.onDone,
     required this.onStudyDeck,
+    this.canStudyDeck = true,
   });
 
   final StudySessionView view;
@@ -35,6 +36,10 @@ class SessionSummaryWidget extends StatelessWidget {
 
   /// The deck's Study Entry (handoff 21 ruling).
   final VoidCallback onStudyDeck;
+
+  /// False once the deck is gone: Study this deck has nowhere to go and is
+  /// not drawn (2.51).
+  final bool canStudyDeck;
 
   static const int _studyFlex = 5;
   static const int _doneFlex = 6;
@@ -76,7 +81,7 @@ class SessionSummaryWidget extends StatelessWidget {
           phase: view.sessionId,
           isGuardedAtStart: true,
           child: MxActionPair(
-            leading: outcome.canStudyAgain
+            leading: outcome.canStudyAgain && canStudyDeck
                 ? MxButton(
                     label: l10n.studyThisDeck,
                     tone: MxButtonTone.outline,

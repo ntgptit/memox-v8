@@ -82,6 +82,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// round (spec D5).
   StudySessionView? _lastOpenView;
 
+  /// The summary last drawn. When its deck is lost the stream turns
+  /// `Rejected`; the summary stays, without Study this deck, and Done leaves
+  /// for the Library (2.51).
+  ({StudySessionView view, SummaryOutcome outcome})? _shownSummary;
+
   /// Read once: a mode body's dispose (Recall's time save) calls it while
   /// the tree is being torn down, when no ancestor can be looked up.
   late final StudySessionController _controller;
@@ -213,7 +218,9 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   ) {
     final l10n = context.l10n;
     switch (next) {
-      case AsyncData(value: Rejected()):
+      // A summary on screen stays (2.51); an open session whose deck is gone
+      // leaves with a word (A5).
+      case AsyncData(value: Rejected()) when _shownSummary == null:
         _leave(l10n.studyEntryDeckGone, null);
       case AsyncData(value: Ok(:final value))
           when sessionEndingOf(value) is LeaveStale:
@@ -261,6 +268,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       widget.onDone(value.deckId);
       return;
     }
+    // A summary kept over a lost deck: Back is Done (2.51).
+    if (_shownSummary != null) {
+      widget.onLeave(null);
+      return;
+    }
     _abandon();
   }
 
@@ -272,8 +284,16 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     final turn = ref.watch(studySessionControllerProvider(widget.sessionId));
     final page = switch (ref.watch(studySessionProvider(widget.sessionId))) {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
-      // The deck is gone: the listener leaves.
-      AsyncData() => const MxAppShell(body: SizedBox.shrink()),
+      // The deck is gone: the listener leaves, unless a summary is on
+      // screen, which stays (2.51).
+      AsyncData() => switch (_shownSummary) {
+        final shown? => _summaryPage(
+          shown.view,
+          shown.outcome,
+          isDeckLost: true,
+        ),
+        null => const MxAppShell(body: SizedBox.shrink()),
+      },
       AsyncError(:final isLoading) => StudySessionErrorWidget(
         onClose: () => widget.onLeave(null),
         onRetry: _reload,
@@ -304,15 +324,31 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       return _sessionPage(context, frame ?? view, turn);
     }
     return switch (ending) {
-      ShowSummary(:final outcome) => SessionSummaryWidget(
-        view: view,
-        outcome: outcome,
-        onDone: () => widget.onDone(view.deckId),
-        onStudyDeck: () => widget.onStudyDeck(view.deckId),
+      ShowSummary(:final outcome) => _summaryPage(
+        view,
+        outcome,
+        isDeckLost: false,
       ),
       LeaveStale() => const MxAppShell(body: SizedBox.shrink()),
       null => _sessionPage(context, view, turn),
     };
+  }
+
+  Widget _summaryPage(
+    StudySessionView view,
+    SummaryOutcome outcome, {
+    required bool isDeckLost,
+  }) {
+    _shownSummary = (view: view, outcome: outcome);
+    return SessionSummaryWidget(
+      view: view,
+      outcome: outcome,
+      canStudyDeck: !isDeckLost,
+      // The deck's route is gone with it: Done leaves for the Library.
+      onDone: () =>
+          isDeckLost ? widget.onLeave(null) : widget.onDone(view.deckId),
+      onStudyDeck: () => widget.onStudyDeck(view.deckId),
+    );
   }
 
   Widget _sessionPage(

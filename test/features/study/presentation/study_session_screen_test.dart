@@ -14,6 +14,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_browse_
 import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -111,6 +112,29 @@ Future<void> _expectLeftForGood(LibraryEnv env, String id) async {
     env.clock.now,
   ).watchEntry(deckId: deckId, now: env.clock.now()).first;
   expect(entry!.resumable, isNull);
+}
+
+/// A session stopped to its summary, then its deck sent to the Trash: the
+/// summary is on screen when the deck is lost (2.51).
+Future<void> _summaryOverLostDeck(
+  WidgetTester tester,
+  LibraryEnv env,
+  String id, {
+  required ValueChanged<String> onDone,
+  required ValueChanged<String?> onLeave,
+}) async {
+  await _pumpScreen(tester, env, id, onDone: onDone, onLeave: onLeave);
+  await _swipeLeft(tester);
+  await tester.tap(find.byTooltip(_en.studySessionClose));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(_en.studyExitStop));
+  await tester.pumpAndSettle();
+  expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+  expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
+
+  final session = await sessionOf(env.db, id);
+  await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -440,6 +464,52 @@ void main() {
     await tester.pumpAndSettle();
     // A second dialog would still be there under the first.
     expect(find.text(_en.studyExitTitle), findsNothing);
+  });
+
+  libraryTest('a summary on screen stays when its deck is lost: Study this '
+      'deck goes, Done still leaves for the Library (2.51)', (
+    tester,
+    env,
+  ) async {
+    final id = await _session(env, ['a', 'b']);
+    final left = <String?>[];
+    final done = <String>[];
+    await _summaryOverLostDeck(
+      tester,
+      env,
+      id,
+      onDone: done.add,
+      onLeave: left.add,
+    );
+
+    expect(find.text(_en.summaryLeftEarly), findsOneWidget);
+    expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsNothing);
+    expect(find.text(_en.studyEntryDeckGone), findsNothing);
+    expect(left, isEmpty);
+
+    await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
+    await tester.pumpAndSettle();
+    expect(left, [null]);
+    expect(done, isEmpty);
+  });
+
+  libraryTest('system Back on a summary kept over a lost deck is Done '
+      '(2.51)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    final left = <String?>[];
+    await _summaryOverLostDeck(
+      tester,
+      env,
+      id,
+      onDone: (_) {},
+      onLeave: left.add,
+    );
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyExitTitle), findsNothing);
+    expect(left, [null]);
   });
 }
 
