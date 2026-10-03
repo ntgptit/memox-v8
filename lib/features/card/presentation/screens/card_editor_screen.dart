@@ -42,7 +42,10 @@ class CardEditorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (deckId case final deckId?) {
+      // A fresh form (and draft key) for each deck, as the edit form has for
+      // each card.
       return CardEditorFormWidget(
+        key: ValueKey(deckId),
         deckId: deckId,
         deckContext: deckContext,
         onOpenTrash: onOpenTrash,

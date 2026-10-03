@@ -13,6 +13,9 @@ import 'package:memox/features/card/presentation/controllers/card_draft_controll
 final class _FakeDrafts implements CardDraftRepository {
   final stored = <String, CardDraft>{};
   final calls = <String>[];
+
+  /// Start and end of each save, to see whether two writes overlapped.
+  final events = <String>[];
   Duration saveTime = Duration.zero;
   Failure? failure;
   Object? crash;
@@ -20,6 +23,7 @@ final class _FakeDrafts implements CardDraftRepository {
   @override
   Future<CardDraft?> read(String key) async {
     calls.add('read $key');
+    if (crash case final crash?) throw crash;
     if (failure case final failure?) throw failure;
     return stored[key];
   }
@@ -28,9 +32,11 @@ final class _FakeDrafts implements CardDraftRepository {
   Future<void> save(String key, CardDraft draft) async {
     calls.add('save $key ${draft.front}');
     if (crash case final crash?) throw crash;
+    events.add('start ${draft.front}');
     if (saveTime > Duration.zero) await Future<void>.delayed(saveTime);
     if (failure case final failure?) throw failure;
     stored[key] = draft;
+    events.add('end ${draft.front}');
   }
 
   @override
@@ -209,7 +215,9 @@ void main() {
   test('save then save with the first in flight: the latest text wins', () {
     fakeAsync((async) {
       final controller = build();
-      drafts.saveTime = const Duration(milliseconds: 100);
+      // Longer than the pause, so the second timer fires while the first
+      // save is still running.
+      drafts.saveTime = const Duration(milliseconds: 700);
       controller.schedule(
         const CardDraft(front: 'a', back: ''),
         saved: _empty,
@@ -220,10 +228,11 @@ void main() {
         saved: _empty,
       );
       async.elapse(CardDraftController.pause);
+      expect(drafts.events, ['start a']);
 
-      async.elapse(const Duration(seconds: 1));
+      async.elapse(const Duration(seconds: 2));
       async.flushMicrotasks();
-      expect(drafts.calls, ['save $_key a', 'save $_key ab']);
+      expect(drafts.events, ['start a', 'end a', 'start ab', 'end ab']);
       expect(drafts.stored[_key]!.front, 'ab');
     });
   });
@@ -236,6 +245,10 @@ void main() {
       expect((await controller.read())!.front, 'kept');
 
       drafts.failure = const UnknownDatabaseFailure(cause: 'disk full');
+      expect(await controller.read(), isNull);
+
+      drafts.failure = null;
+      drafts.crash = StateError('not a Failure');
       expect(await controller.read(), isNull);
     },
   );

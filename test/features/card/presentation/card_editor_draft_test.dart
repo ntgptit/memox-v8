@@ -230,4 +230,39 @@ void main() {
     final kept = await _drafts(env).read(CardDraftKey.create(deckId));
     expect(kept?.front, 'bap');
   });
+
+  libraryTest('while a kept draft is on offer, new typing is not autosaved '
+      'until the banner is answered (D8)', (tester, env) async {
+    final deckId = await _words(env);
+    const seeded = CardDraft(front: 'bap', back: 'rice');
+    await _drafts(env).save(CardDraftKey.create(deckId), seeded);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardDraftTitle), findsOneWidget);
+
+    await tester.enterText(_field(0), 'mul');
+    await tester.pump(_pause);
+
+    final kept = await _drafts(env).read(CardDraftKey.create(deckId));
+    expect(kept!.sameContentAs(seeded), isTrue);
+  });
+
+  libraryTest('a draft kept for one deck is not offered when creating in '
+      'another (2.14)', (tester, env) async {
+    final deckA = await _words(env);
+    final deckB = (await env.decks.sub(
+      (await env.decks.root('Japanese')).id,
+      'Words',
+    )).id;
+    await _drafts(env).save(
+      CardDraftKey.create(deckA),
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+
+    await pumpLibraryScreen(tester, env, _create(deckB));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardDraftTitle), findsNothing);
+    expect((await _drafts(env).read(CardDraftKey.create(deckA)))?.front, 'bap');
+  });
 }

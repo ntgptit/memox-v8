@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_draft_repository.dart';
 
@@ -31,8 +30,9 @@ final class CardDraftController {
   Future<CardDraft?> read() async {
     try {
       return await _repository.read(key);
-    } on Failure {
-      // An unreadable draft offers nothing; it must not stop the editor.
+    } catch (_) {
+      // An unreadable draft offers nothing; it must not stop the editor, and
+      // the form calls this unawaited, so no error may escape.
       return null;
     }
   }
@@ -46,8 +46,8 @@ final class CardDraftController {
   }
 
   /// Writes what waits, now; completes when every queued write is done. The
-  /// owner calls it, unawaited, from its dispose, so a kill inside [pause]
-  /// loses at most that window.
+  /// owner must call it, unawaited, from dispose; only a process kill inside
+  /// [pause] loses that window.
   Future<void> flush() {
     _timer?.cancel();
     _write();
