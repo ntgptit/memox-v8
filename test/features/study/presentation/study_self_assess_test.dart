@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -34,6 +35,27 @@ Future<void> _reveal(WidgetTester tester) async {
 IconData _hintIcon(WidgetTester tester) => tester
     .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
     .icon;
+
+/// Records the haptic kinds the platform channel receives (audit Platform).
+List<String> _recordHaptics(WidgetTester tester) {
+  final calls = <String>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'HapticFeedback.vibrate') {
+        calls.add(call.arguments as String);
+      }
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return calls;
+}
 
 void main() {
   libraryTest('the prompt shows first, the answer waits for Show answer, and '
@@ -216,5 +238,18 @@ void main() {
     await tester.tap(find.text(_en.cardActionGood));
     await tester.pumpAndSettle();
     expect(await turnKindsOf(env.db, 'R1'), ['scheduled']);
+  });
+
+  libraryTest('a grade gives a light tick (audit Platform)', (
+    tester,
+    env,
+  ) async {
+    final haptics = _recordHaptics(tester);
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await _reveal(tester);
+    await tester.tap(find.text(_en.cardActionGood));
+    await tester.pumpAndSettle();
+    expect(haptics, ['HapticFeedbackType.lightImpact']);
   });
 }

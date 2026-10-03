@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -258,7 +259,10 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
           isBlock: true,
           onPressed: isBusy
               ? null
-              : () => widget.onAnswer(RecallOutcome.forgot),
+              : () {
+                  HapticFeedback.lightImpact();
+                  widget.onAnswer(RecallOutcome.forgot);
+                },
         ),
         MxButton(
           label: l10n.studyRecallRemembered,
@@ -267,7 +271,10 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
           isBlock: true,
           onPressed: isBusy
               ? null
-              : () => widget.onAnswer(RecallOutcome.remembered),
+              : () {
+                  HapticFeedback.lightImpact();
+                  widget.onAnswer(RecallOutcome.remembered);
+                },
         ),
       ];
     }

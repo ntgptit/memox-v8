@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -46,18 +47,15 @@ class MxIconTile extends StatelessWidget {
   /// The medium step's side, for a caller that indents past it.
   static const double mediumBox = 36;
   static const double _largeBox = 44;
-  static const double _primaryTintLight = 0.10;
-  static const double _primaryTintDark = 0.16;
-  static const double _seedTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final tinted = seed ?? colors.primary;
     final tint = switch ((seed, colors.brightness)) {
-      (_?, _) => _seedTint,
-      (null, Brightness.light) => _primaryTintLight,
-      (null, Brightness.dark) => _primaryTintDark,
+      (_?, _) => AppOpacity.tintMedium,
+      (null, Brightness.light) => AppOpacity.tintSoft,
+      (null, Brightness.dark) => AppOpacity.tintSoftDark,
     };
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),

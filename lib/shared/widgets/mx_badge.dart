@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -35,7 +36,6 @@ class MxBadge extends StatelessWidget {
   /// A minimum: text scaling grows the pill (ruling S11).
   static const double _height = 22;
   static const double _glyphSize = 12;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,9 @@ class MxBadge extends StatelessWidget {
     };
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: isSolid ? toneColor : toneColor.withValues(alpha: _tint),
+        color: isSolid
+            ? toneColor
+            : toneColor.withValues(alpha: AppOpacity.tintMedium),
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(

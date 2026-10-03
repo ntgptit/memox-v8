@@ -36,7 +36,8 @@ Future<T?> showMxDialog<T>(
   },
 );
 
-/// The centred modal for confirmations and short forms. The text sits 20 in
+/// The centred modal for confirmations and short forms. It rises above the
+/// keyboard and never straddles a hinge. The text sits 20 in
 /// (ruling O5) and scrolls if it outgrows the screen; [actions], usually
 /// MxSheetActions, stay below it.
 class MxDialog extends StatelessWidget {
@@ -47,6 +48,7 @@ class MxDialog extends StatelessWidget {
     this.content,
     this.actions,
     this.width = MxDialogWidth.large,
+    this.isHeld = false,
   });
 
   final String? title;
@@ -56,6 +58,10 @@ class MxDialog extends StatelessWidget {
   final Widget? content;
   final Widget? actions;
   final MxDialogWidth width;
+
+  /// While true, Back and a scrim tap do nothing: the dialog is writing and
+  /// its result must reach the screen (critique 2026-10-02 harden, SP1 §5.1).
+  final bool isHeld;
 
   static const double _largeWidth = 340;
   static const double _mediumWidth = 320;
@@ -69,64 +75,80 @@ class MxDialog extends StatelessWidget {
     final dialogs = DialogTheme.of(context);
     final shape = context.dialogShape;
     final hasText = title != null || body != null || content != null;
-    return Semantics(
-      scopesRoute: true,
-      namesRoute: true,
-      explicitChildNodes: true,
-      label: title,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.card,
-            vertical: AppSpacing.section,
-          ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: switch (width) {
-                MxDialogWidth.large => _largeWidth,
-                MxDialogWidth.medium => _mediumWidth,
-                MxDialogWidth.small => _smallWidth,
-              },
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: shape.borderRadius,
-                boxShadow: AppShadows.overlay(colors),
-              ),
-              child: Material(
-                color: dialogs.backgroundColor,
-                shape: shape,
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (hasText)
-                      Flexible(
-                        child: SingleChildScrollView(
-                          padding: actions == null
-                              ? const EdgeInsets.all(AppSpacing.card)
-                              : const EdgeInsetsDirectional.only(
-                                  start: AppSpacing.card,
-                                  end: AppSpacing.card,
-                                  top: AppSpacing.card,
+    // The keyboard's inset: showGeneralDialog adds none, so a field dialog
+    // would sit under it on a short phone (harden 01/05, SP1 §5.1).
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    return PopScope(
+      canPop: !isHeld,
+      child: Semantics(
+        scopesRoute: true,
+        namesRoute: true,
+        explicitChildNodes: true,
+        label: title,
+        // Never across a hinge (showDialog does this; showGeneralDialog not).
+        child: DisplayFeatureSubScreen(
+          child: AnimatedPadding(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : AppDurations.standard,
+            curve: Easing.standard,
+            padding: EdgeInsets.only(bottom: keyboard),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.card,
+                  vertical: AppSpacing.section,
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: switch (width) {
+                      MxDialogWidth.large => _largeWidth,
+                      MxDialogWidth.medium => _mediumWidth,
+                      MxDialogWidth.small => _smallWidth,
+                    },
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: shape.borderRadius,
+                      boxShadow: AppShadows.overlay(colors),
+                    ),
+                    child: Material(
+                      color: dialogs.backgroundColor,
+                      shape: shape,
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (hasText)
+                            Flexible(
+                              child: SingleChildScrollView(
+                                padding: actions == null
+                                    ? const EdgeInsets.all(AppSpacing.card)
+                                    : const EdgeInsetsDirectional.only(
+                                        start: AppSpacing.card,
+                                        end: AppSpacing.card,
+                                        top: AppSpacing.card,
+                                      ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: AppSpacing.control,
+                                  children: [
+                                    if (title case final text?)
+                                      Text(text, style: styles.compactTitle),
+                                    if (body case final text?)
+                                      Text(text, style: styles.dialogBody),
+                                    ?content,
+                                  ],
                                 ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: AppSpacing.control,
-                            children: [
-                              if (title case final text?)
-                                Text(text, style: styles.compactTitle),
-                              if (body case final text?)
-                                Text(text, style: styles.dialogBody),
-                              ?content,
-                            ],
-                          ),
-                        ),
+                              ),
+                            ),
+                          ?actions,
+                        ],
                       ),
-                    ?actions,
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ),

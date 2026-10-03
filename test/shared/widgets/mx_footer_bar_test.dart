@@ -63,37 +63,35 @@ void main() {
     );
   });
 
-  testWidgets('the caption sits under the action, centred at 0.7', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxFooterBar(
-        caption: '12 cards selected',
-        child: MxButton(label: 'Move', isBlock: true, onPressed: () {}),
-      ),
-    );
+  testWidgets(
+    'the caption sits under the action, centred, full strength (R2)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxFooterBar(
+          caption: '12 cards selected',
+          child: MxButton(label: 'Move', isBlock: true, onPressed: () {}),
+        ),
+      );
 
-    expect(
-      tester.getTopLeft(find.text('12 cards selected')).dy,
-      greaterThan(tester.getBottomLeft(find.byType(MxButton)).dy),
-    );
-    expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.text('12 cards selected'),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.7,
-    );
-    expect(
-      tester.widget<Text>(find.text('12 cards selected')).textAlign,
-      TextAlign.center,
-    );
-  });
+      expect(
+        tester.getTopLeft(find.text('12 cards selected')).dy,
+        greaterThan(tester.getBottomLeft(find.byType(MxButton)).dy),
+      );
+      // Full variant ink, no Opacity: 7.2:1, where 0.7 was 3.50:1 (R2).
+      expect(
+        find.ancestor(
+          of: find.text('12 cards selected'),
+          matching: find.byType(Opacity),
+        ),
+        findsNothing,
+      );
+      expect(
+        tester.widget<Text>(find.text('12 cards selected')).textAlign,
+        TextAlign.center,
+      );
+    },
+  );
   testWidgets('the caption steps aside while the keyboard is up', (
     tester,
   ) async {

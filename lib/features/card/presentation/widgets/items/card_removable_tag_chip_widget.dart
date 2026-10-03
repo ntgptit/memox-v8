@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -20,8 +21,6 @@ class CardRemovableTagChipWidget extends StatelessWidget {
   final String name;
   final VoidCallback onRemove;
 
-  static const double _tint = 0.10;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -40,7 +39,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
             widthFactor: 1,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: _tint),
+                color: colors.primary.withValues(alpha: AppOpacity.tintSoft),
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: ConstrainedBox(

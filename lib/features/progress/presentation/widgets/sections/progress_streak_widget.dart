@@ -61,7 +61,7 @@ class ProgressStreakWidget extends StatelessWidget {
     final current = _StreakTile(
       icon: AppIcons.streak,
       tint: streak.days > 0
-          ? context.semanticColors.streak
+          ? context.derivedColors.streakInk
           : context.colors.onSurfaceVariant,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),

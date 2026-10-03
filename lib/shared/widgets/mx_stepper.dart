@@ -186,6 +186,9 @@ class _MxStepperState extends State<MxStepper> {
               child: TextField(
                 controller: _field,
                 focusNode: _focus,
+                // Android keeps focus on a tap elsewhere; the stepper does
+                // not, so Save reads the typed value (harden 15, SP1 §5.1).
+                onTapOutside: (_) => _focus.unfocus(),
                 style: style,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,

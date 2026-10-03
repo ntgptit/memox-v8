@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -79,6 +80,27 @@ Future<void> _lifecycle(
 IconData _hintIcon(WidgetTester tester) => tester
     .widget<SessionFooterHintWidget>(find.byType(SessionFooterHintWidget))
     .icon;
+
+/// Records the haptic kinds the platform channel receives (audit Platform).
+List<String> _recordHaptics(WidgetTester tester) {
+  final calls = <String>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'HapticFeedback.vibrate') {
+        calls.add(call.arguments as String);
+      }
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return calls;
+}
 
 void main() {
   libraryTest('the term shows, the meaning is hidden, and the clock counts '
@@ -330,5 +352,21 @@ void main() {
 
     expect(find.text(_en.studyRecallCaptionTimedOut), findsOneWidget);
     expect(find.text('term 1'), findsOneWidget);
+  });
+
+  libraryTest('a grade gives a light tick (audit Platform)', (
+    tester,
+    env,
+  ) async {
+    final haptics = _recordHaptics(tester);
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+    // The settle guard takes no tap until the row has settled.
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.text(_en.studyRecallRemembered));
+    await _settle(tester);
+    expect(haptics, ['HapticFeedbackType.lightImpact']);
   });
 }

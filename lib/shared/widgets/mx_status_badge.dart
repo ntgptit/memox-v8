@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -30,7 +31,6 @@ class MxStatusBadge extends StatelessWidget {
 
   /// The dot sits closer to the start edge than the label to the end edge.
   static const double _startPadding = 6;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class MxStatusBadge extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: _tint),
+        color: color.withValues(alpha: AppOpacity.tintMedium),
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(

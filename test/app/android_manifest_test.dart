@@ -41,4 +41,23 @@ void main() {
     expect(filter, contains('android:scheme="memox"'));
     expect(filter, contains('android:host="app"'));
   });
+
+  test('the launch window paints each theme surface (SP1 §5.2)', () {
+    String read(String path) =>
+        File('android/app/src/main/res/$path').readAsStringSync();
+    expect(read('values/colors.xml'), contains('#F7F9FE'));
+    expect(read('values-night/colors.xml'), contains('#0A0E27'));
+    for (final path in [
+      'drawable/launch_background.xml',
+      'drawable-v21/launch_background.xml',
+    ]) {
+      expect(read(path), contains('@color/launch_surface'));
+    }
+    for (final path in [
+      'values-v31/styles.xml',
+      'values-night-v31/styles.xml',
+    ]) {
+      expect(read(path), contains('windowSplashScreenBackground'));
+    }
+  });
 }

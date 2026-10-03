@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/app/app_system_bars.dart';
 import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/account_redirect.dart';
 import 'package:memox/app/router/app_router.dart';
@@ -198,10 +199,12 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
       routerConfig: _router,
       // Account UI spec U4: the transition layer sits above the router,
       // with the router's Back dispatcher to take priority over.
-      builder: (context, child) => AccountLayerHostWidget(
-        backButtons: _router.backButtonDispatcher,
-        dialogNavigator: _router.routerDelegate.navigatorKey,
-        child: child!,
+      builder: (context, child) => AppSystemBars(
+        child: AccountLayerHostWidget(
+          backButtons: _router.backButtonDispatcher,
+          dialogNavigator: _router.routerDelegate.navigatorKey,
+          child: child!,
+        ),
       ),
     );
   }

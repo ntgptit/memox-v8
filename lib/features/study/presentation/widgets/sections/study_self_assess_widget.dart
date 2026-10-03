@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -98,7 +99,10 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
                 StudyGradeRowWidget(
                   intervals: widget.intervals,
                   isBusy: widget.isBusy,
-                  onGrade: widget.onGrade,
+                  onGrade: (grade) {
+                    HapticFeedback.lightImpact();
+                    widget.onGrade(grade);
+                  },
                 )
               else
                 MxButton(

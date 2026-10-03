@@ -1,5 +1,8 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -26,16 +29,13 @@ class MxNavRail extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final pillTint = colors.primary.withValues(
       alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
+          ? AppOpacity.navPillDark
+          : AppOpacity.navPillLight,
     );
     // SafeArea's sides are physical: the rail takes only the one it sits on.
     final isLtr = Directionality.of(context) == TextDirection.ltr;
@@ -50,17 +50,25 @@ class MxNavRail extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
             child: Material(
               type: MaterialType.transparency,
-              child: Column(
-                spacing: AppSpacing.micro,
-                children: [
-                  for (final (index, destination) in destinations.indexed)
-                    _RailItem(
-                      destination: destination,
-                      isSelected: index == selectedIndex,
-                      pillTint: pillTint,
-                      onTap: () => onSelected(index),
-                    ),
-                ],
+              // The roles Material's NavigationBar gives its row and items.
+              child: Semantics(
+                role: SemanticsRole.tabBar,
+                explicitChildNodes: true,
+                container: true,
+                child: Column(
+                  spacing: AppSpacing.micro,
+                  children: [
+                    for (final (index, destination) in destinations.indexed)
+                      _RailItem(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        pillTint: pillTint,
+                        tabIndex: index + 1,
+                        tabCount: destinations.length,
+                        onTap: () => onSelected(index),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -75,12 +83,16 @@ class _RailItem extends StatelessWidget {
     required this.destination,
     required this.isSelected,
     required this.pillTint,
+    required this.tabIndex,
+    required this.tabCount,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
   final Color pillTint;
+  final int tabIndex;
+  final int tabCount;
   final VoidCallback onTap;
 
   static const double _minHeight = 56;
@@ -89,6 +101,7 @@ class _RailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Semantics(
+      role: SemanticsRole.tab,
       container: true,
       selected: isSelected,
       button: true,
@@ -129,6 +142,9 @@ class _RailItem extends StatelessWidget {
                 ),
                 child: Text(
                   destination.label,
+                  // The position, as Material's NavigationBar reads it (R4).
+                  semanticsLabel:
+                      '${destination.label}\n${MaterialLocalizations.of(context).tabLabel(tabIndex: tabIndex, tabCount: tabCount)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textStyles.navLabel(isSelected: isSelected),

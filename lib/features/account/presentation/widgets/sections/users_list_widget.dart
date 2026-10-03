@@ -201,6 +201,8 @@ class _Refreshable extends StatelessWidget {
   Widget build(BuildContext context) {
     final behavior = ScrollConfiguration.of(context);
     return RefreshIndicator(
+      // RefreshIndicator ignores progressIndicatorTheme: ink it here.
+      color: context.derivedColors.primaryInk,
       onRefresh: onRefresh,
       child: ScrollConfiguration(
         behavior: behavior.copyWith(

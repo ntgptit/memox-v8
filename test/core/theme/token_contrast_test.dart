@@ -46,6 +46,9 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       ('newInk on $where', derived.statusNewInk, ground, _text),
       ('learningInk on $where', derived.statusLearningInk, ground, _text),
       ('masteredInk on $where', derived.statusMasteredInk, ground, _text),
+      ('reviewingInk on $where', derived.statusReviewingInk, ground, _text),
+      ('successInk on $where', derived.successInk, ground, _text),
+      ('dangerInk on $where', derived.dangerInk, ground, _text),
     ],
     // The Progress day bars on their card, the container-lowest ground
     // (critique 2026-10-02, F5); learning's ink is held at 4.5 above.
@@ -84,6 +87,27 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
     ),
     ('progress fill on its track', scheme.primary, track, _nonText),
     ('sheet grabber', scheme.onSurfaceVariant, sheet, _nonText),
+    // SP1 §5.2: the ON thumb on its primary track; the streak flame on the
+    // card, the recessed card and its own 12% tint on that card.
+    (
+      'toggle on thumb on its track',
+      scheme.onPrimary,
+      scheme.primary,
+      _nonText,
+    ),
+    ('streak glyph on the card', derived.streakInk, row, _nonText),
+    (
+      'streak glyph on the recessed card',
+      derived.streakInk,
+      scheme.surfaceContainerLow,
+      _nonText,
+    ),
+    (
+      'streak glyph on its 12% tint',
+      derived.streakInk,
+      _tint(derived.streakInk, 0.12, scheme.surfaceContainerLow),
+      _nonText,
+    ),
     // Critique 2026-09-30: a Guess option out of play fades as a whole (ink and
     // surface) to AppOpacity.muted over the page, and must stay readable.
     (

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_page_transitions.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// Tokyo Pure Light.
@@ -31,5 +34,15 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     dialogTheme: AppComponentThemes.dialogs(scheme, texts),
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
     snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
+    // Text selection reads in primary ink, not Material's raw primary
+    // (audit 2026-10-03 Theming).
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: MxDerivedColors.primaryInkOf(scheme),
+      selectionHandleColor: MxDerivedColors.primaryInkOf(scheme),
+      selectionColor: scheme.primary.withValues(alpha: AppOpacity.selection),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {TargetPlatform.android: AppPageTransitionsBuilder()},
+    ),
   );
 }

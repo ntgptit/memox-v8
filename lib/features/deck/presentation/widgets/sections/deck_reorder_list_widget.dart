@@ -89,6 +89,10 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   @override
   Widget build(BuildContext context) => ReorderableListView.builder(
     buildDefaultDragHandles: false,
+    // MxCard is its own Material and already draws its ghost edge, so the
+    // proxy returns the row as is; this drops Material's elevated lift
+    // (audit 2026-10-03 Theming, SP1 §5.3).
+    proxyDecorator: (child, _, _) => child,
     padding: EdgeInsets.fromLTRB(
       AppSpacing.gutter,
       AppSpacing.gutter,

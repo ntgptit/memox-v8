@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -39,6 +40,27 @@ CardListItem _item({
 );
 
 Widget _host(List<Widget> rows) => Scaffold(body: ListView(children: rows));
+
+/// Records the haptic kinds the platform channel receives (audit Platform).
+List<String> _recordHaptics(WidgetTester tester) {
+  final calls = <String>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'HapticFeedback.vibrate') {
+        calls.add(call.arguments as String);
+      }
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return calls;
+}
 
 void main() {
   libraryTest('a row shows front, back, status, two tags and +N, the flag '
@@ -281,5 +303,51 @@ void main() {
     );
     expect(find.byType(MxStatusBadge), findsNothing);
     expect(find.text(_en.cardStatusMastered.toUpperCase()), findsOneWidget);
+  });
+
+  libraryTest('a long-press that starts a selection clicks (audit Platform)', (
+    tester,
+    env,
+  ) async {
+    final haptics = _recordHaptics(tester);
+    var started = false;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(),
+          isSelecting: false,
+          isSelected: false,
+          onLongPress: () => started = true,
+        ),
+      ]),
+    );
+    await tester.longPress(find.byType(CardRowWidget));
+    expect(started, isTrue);
+    expect(haptics, ['HapticFeedbackType.selectionClick']);
+  });
+
+  libraryTest('a long-press while already selecting does not click', (
+    tester,
+    env,
+  ) async {
+    final haptics = _recordHaptics(tester);
+    var pressed = false;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host([
+        CardRowWidget(
+          item: _item(),
+          isSelecting: true,
+          isSelected: false,
+          onLongPress: () => pressed = true,
+        ),
+      ]),
+    );
+    await tester.longPress(find.byType(CardRowWidget));
+    expect(pressed, isTrue);
+    expect(haptics, isEmpty);
   });
 }

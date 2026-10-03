@@ -157,4 +157,79 @@ void main() {
       1,
     );
   });
+
+  const actionsKey = ValueKey('dialog-actions');
+  Widget withKeyboard(Widget child, {bool still = true}) => Builder(
+    builder: (context) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        viewInsets: const EdgeInsets.only(bottom: 300),
+        disableAnimations: still,
+      ),
+      child: child,
+    ),
+  );
+  const tall = MxDialog(
+    title: 'Rename deck',
+    content: SizedBox(height: 260),
+    actions: SizedBox(key: actionsKey, height: 48),
+  );
+
+  testWidgets('the dialog sits above the keyboard (harden 01, audit P1)', (
+    tester,
+  ) async {
+    await pumpMxPage(tester, withKeyboard(tall));
+    await tester.pump();
+    expect(
+      tester.getBottomLeft(find.byKey(actionsKey)).dy,
+      lessThanOrEqualTo(800 - 300),
+    );
+  });
+
+  testWidgets('with remove animations the keyboard inset applies at once', (
+    tester,
+  ) async {
+    await pumpMxPage(tester, withKeyboard(tall));
+    // No pump of a duration: a zero-length AnimatedPadding is already there.
+    expect(
+      tester.widget<AnimatedPadding>(find.byType(AnimatedPadding)).duration,
+      Duration.zero,
+    );
+  });
+
+  testWidgets('a held dialog ignores Back and the scrim; released, it closes', (
+    tester,
+  ) async {
+    final held = ValueNotifier(true);
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => showMxDialog<void>(
+            context,
+            builder: (_) => ValueListenableBuilder(
+              valueListenable: held,
+              builder: (_, isHeld, _) =>
+                  MxDialog(title: 'Deleting…', isHeld: isHeld),
+            ),
+          ),
+          child: const Text('open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    await tester.tapAt(const Offset(4, 4));
+    await tester.pumpAndSettle();
+    expect(find.text('Deleting…'), findsOneWidget);
+    await tester.state<NavigatorState>(find.byType(Navigator)).maybePop();
+    await tester.pumpAndSettle();
+    expect(find.text('Deleting…'), findsOneWidget);
+
+    held.value = false;
+    await tester.pump();
+    await tester.tapAt(const Offset(4, 4));
+    await tester.pumpAndSettle();
+    expect(find.text('Deleting…'), findsNothing);
+  });
 }

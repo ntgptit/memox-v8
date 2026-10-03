@@ -205,6 +205,24 @@ void main() {
     handle.dispose();
   });
 
+  libraryTest('a dragged row is returned as is, without the elevated lift '
+      '(audit 2026-10-03 Theming)', (tester, env) async {
+    for (final name in ['A', 'B']) {
+      await env.decks.root(name);
+    }
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await _startReorder(tester);
+
+    final decorator = tester
+        .widget<ReorderableListView>(find.byType(ReorderableListView))
+        .proxyDecorator!;
+    const probe = SizedBox(key: ValueKey('probe'));
+    expect(
+      identical(decorator(probe, 0, const AlwaysStoppedAnimation(1)), probe),
+      isTrue,
+    );
+  });
+
   libraryTest('Done ends the mode and brings back the FAB', (
     tester,
     env,

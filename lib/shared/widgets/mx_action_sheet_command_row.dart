@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -38,7 +39,6 @@ class MxActionSheetCommandRow extends StatelessWidget {
 
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
-  static const double _tileTint = 0.08;
 
   /// Ruling S7: UNSPECIFIED; the ListRow gap.
   static const double _subtitleGap = 2;
@@ -72,7 +72,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isDestructive
                             ? context.derivedColors.dangerSoft
-                            : colors.primary.withValues(alpha: _tileTint),
+                            : colors.primary.withValues(
+                                alpha: AppOpacity.tintFaint,
+                              ),
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       // Ruling S7: the glyph size is UNSPECIFIED; the small

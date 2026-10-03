@@ -1,8 +1,8 @@
-import 'dart:ui';
+import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -23,9 +23,12 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a translucent glass bar, with a tinted pill
-/// behind the current glyph. It is in-flow, never over the scroll, and adds
-/// the gesture inset below itself.
+/// The top-level destinations on a translucent bar (surface at 84%) with a
+/// tinted pill behind the current glyph. It is in-flow, never over the scroll,
+/// so it carries no blur (SP1 §5.2). Custom by owner ruling R4: Material's
+/// NavigationBar would change the bar's look; this one reads its tab positions
+/// the same way, and carries its tab roles. It adds the insets below and on
+/// both sides itself (a landscape cutout).
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -41,50 +44,45 @@ class MxBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final derived = context.derivedColors;
-    final inset = MediaQuery.paddingOf(context).bottom;
+    final insets = MediaQuery.paddingOf(context);
     final pillTint = colors.primary.withValues(
       alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
+          ? AppOpacity.navPillDark
+          : AppOpacity.navPillLight,
     );
     final radius = BorderRadius.circular(AppRadius.lg);
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        AppSpacing.control,
+        AppSpacing.control + insets.left,
         AppSpacing.micro,
-        AppSpacing.control,
-        AppSpacing.grouped + inset,
+        AppSpacing.control + insets.right,
+        AppSpacing.grouped + insets.bottom,
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: AppEffects.glassBlur,
-            sigmaY: AppEffects.glassBlur,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: derived.chromeGlass,
-              borderRadius: radius,
-              border: Border.all(
-                color: derived.ghostBorder,
-                width: AppStroke.hairline,
-              ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: derived.chromeGlass,
+            borderRadius: radius,
+            border: Border.all(
+              color: derived.ghostBorder,
+              width: AppStroke.hairline,
             ),
-            // Ruling R3: 64 at minimum, grows with text scaling.
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: AppSize.bottomNavBar,
-              ),
-              child: Material(
-                type: MaterialType.transparency,
+          ),
+          // Ruling R3: 64 at minimum, grows with text scaling.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
+            child: Material(
+              type: MaterialType.transparency,
+              // The roles Material's NavigationBar gives its row and items.
+              child: Semantics(
+                role: SemanticsRole.tabBar,
+                explicitChildNodes: true,
+                container: true,
                 child: Row(
                   children: [
                     for (final (index, destination) in destinations.indexed)
@@ -93,6 +91,8 @@ class MxBottomNav extends StatelessWidget {
                           destination: destination,
                           isSelected: index == selectedIndex,
                           pillTint: pillTint,
+                          tabIndex: index + 1,
+                          tabCount: destinations.length,
                           onTap: () => onSelected(index),
                         ),
                       ),
@@ -112,18 +112,23 @@ class _Item extends StatelessWidget {
     required this.destination,
     required this.isSelected,
     required this.pillTint,
+    required this.tabIndex,
+    required this.tabCount,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
   final Color pillTint;
+  final int tabIndex;
+  final int tabCount;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Semantics(
+      role: SemanticsRole.tab,
       container: true,
       selected: isSelected,
       button: true,
@@ -155,6 +160,9 @@ class _Item extends StatelessWidget {
             ),
             Text(
               destination.label,
+              // The position, as Material's NavigationBar reads it (R4).
+              semanticsLabel:
+                  '${destination.label}\n${MaterialLocalizations.of(context).tabLabel(tabIndex: tabIndex, tabCount: tabCount)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textStyles.navLabel(isSelected: isSelected),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 import '../../support/widget_harness.dart';
@@ -32,5 +35,44 @@ void main() {
 
     expect(taps, 1);
     await expectAccessibleTargets(tester);
+  });
+
+  ButtonStyle style(WidgetTester tester) =>
+      tester.widget<TextButton>(find.byType(TextButton)).style!;
+
+  testWidgets('a hairline ghost edge at rest (critique 28)', (tester) async {
+    await pumpMx(tester, MxChipTrigger(label: 'Level', onPressed: () {}));
+    final side = style(tester).side!.resolve(const {})!;
+    expect(side.width, AppStroke.hairline);
+    expect(
+      side.color,
+      MxDerivedColors.resolve(
+        AppColorSchemes.light,
+        MxSemanticColors.light,
+      ).ghostBorder,
+    );
+  });
+
+  testWidgets('active: primaryContainer ground, onPrimaryContainer ink, '
+      'a primaryInk edge', (tester) async {
+    await pumpMx(
+      tester,
+      MxChipTrigger(label: 'Level · Error', isActive: true, onPressed: () {}),
+    );
+    final scheme = AppColorSchemes.light;
+    expect(
+      style(tester).backgroundColor!.resolve(const {}),
+      scheme.primaryContainer,
+    );
+    expect(
+      style(tester).foregroundColor!.resolve(const {}),
+      scheme.onPrimaryContainer,
+    );
+    final side = style(tester).side!.resolve(const {})!;
+    expect(side.width, AppStroke.hairline);
+    expect(
+      side.color,
+      MxDerivedColors.resolve(scheme, MxSemanticColors.light).primaryInk,
+    );
   });
 }

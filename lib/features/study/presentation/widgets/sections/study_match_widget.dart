@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -125,6 +126,7 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
       _selectedTerm = null;
       _selectedMeaning = null;
     });
+    HapticFeedback.lightImpact();
     widget.onPair(termCardId, meaningCardId);
   }
 

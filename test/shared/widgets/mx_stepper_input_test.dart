@@ -167,4 +167,73 @@ void main() {
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     handle.dispose();
   });
+
+  testWidgets('a tap outside the field submits what was typed (harden 15)', (
+    tester,
+  ) async {
+    final submitted = <String>[];
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Bounded(onSubmitted: submitted.add),
+          GestureDetector(
+            key: const ValueKey('outside'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () {},
+            child: const SizedBox(width: 200, height: 48),
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), '42');
+    await tester.tap(find.byKey(const ValueKey('outside')));
+    await tester.pump();
+    expect(submitted, ['42']);
+  });
+
+  testWidgets(
+    'the focus path submits once when the route is left, and a caller that '
+    'updates state in its callback does not throw',
+    (tester) async {
+      final submitted = <String>[];
+      final received = ValueNotifier<String>('');
+      addTearDown(received.dispose);
+      await pumpMx(
+        tester,
+        ValueListenableBuilder<String>(
+          valueListenable: received,
+          builder: (context, last, _) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => Scaffold(
+                  body: Center(
+                    child: _Bounded(
+                      onSubmitted: (text) {
+                        submitted.add(text);
+                        received.value = text;
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            child: Text('open $last'),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open '));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(_valueKey));
+      await tester.pump();
+      await tester.enterText(find.byType(TextField), '7');
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await tester.pumpAndSettle();
+      expect(submitted, ['7']);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

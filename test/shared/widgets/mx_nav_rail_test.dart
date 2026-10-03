@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
@@ -106,6 +108,20 @@ void main() {
     );
   });
 
+  testWidgets('the column is a tab bar and each destination a tab', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail());
+
+    expect(tester.getSemantics(_item('Library')).role, SemanticsRole.tab);
+    expect(
+      tester.getSemantics(find.byType(Column).first).role,
+      SemanticsRole.tabBar,
+    );
+    handle.dispose();
+  });
+
   testWidgets('a tap reports its index, a re-tap of the current one too', (
     tester,
   ) async {
@@ -126,7 +142,7 @@ void main() {
     expect(
       tester.getSemantics(_item('Library')),
       isSemantics(
-        label: 'Library',
+        label: 'Library\nTab 1 of 4',
         isButton: true,
         isSelected: true,
         hasSelectedState: true,
@@ -135,6 +151,15 @@ void main() {
     );
     handle.dispose();
     await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('each destination reads its tab position (R4)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail());
+
+    expect(find.bySemanticsLabel('Library\nTab 1 of 4'), findsOneWidget);
+    expect(find.bySemanticsLabel('Settings\nTab 4 of 4'), findsOneWidget);
+    handle.dispose();
   });
 
   testWidgets('it takes the start inset only: left in LTR, right in RTL', (

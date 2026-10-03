@@ -569,6 +569,8 @@ item names where it comes from.
 | 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 167 | Landscape with a side cutout: `MxAppShell`'s notice layer and FAB anchor to the column, not the safe area | SP1 2026-10-03, deferred |
+| 168 | The launch window follows the OS night mode, not the in-app theme choice (needs native code) | SP1 2026-10-03, deferred |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

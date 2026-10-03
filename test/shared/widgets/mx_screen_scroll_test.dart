@@ -53,4 +53,17 @@ void main() {
 
     expect(_padding(tester).bottom, 4 + 52 + 24 + 20);
   });
+
+  testWidgets('dragging the scroll dismisses the keyboard (audit Platform)', (
+    tester,
+  ) async {
+    await pumpMxPage(
+      tester,
+      const Scaffold(body: MxScreenScroll(children: [SizedBox(height: 10)])),
+    );
+    expect(
+      tester.widget<ListView>(find.byType(ListView)).keyboardDismissBehavior,
+      ScrollViewKeyboardDismissBehavior.onDrag,
+    );
+  });
 }
