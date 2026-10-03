@@ -81,6 +81,15 @@ void main() {
         of('Password should be at least 6 characters', 'validation_failed'),
         isA<ServerFailure>(),
       );
+      // The verify call's own validation error names an email address too,
+      // but says nothing about the address being malformed (final fix 8).
+      expect(
+        of(
+          'Only an email address or phone number should be provided on verify',
+          'validation_failed',
+        ),
+        isA<ServerFailure>(),
+      );
     },
   );
 

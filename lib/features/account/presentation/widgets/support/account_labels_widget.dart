@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
@@ -26,13 +28,15 @@ String signInProblemText(AppLocalizations l10n, SignInProblem problem) =>
     };
 
 /// The toast for a one-off [notice] (plan ruling 8). A deletion refused for
-/// want of a session cannot say "nothing changed": the server may have taken
-/// it (SP2b 2.47).
+/// want of a session, or one that timed out after it was sent, cannot say
+/// "nothing changed": the server may have taken it (SP2b 2.47, final fix 8).
 String accountNoticeText(AppLocalizations l10n, AccountNotice notice) =>
     switch (notice) {
       MergeNotDone() => l10n.accountMergeNotDone,
-      DeleteRefused(failure: SessionInvalidFailure()) =>
-        l10n.accountDeleteUnknown,
+      DeleteRefused(failure: SessionInvalidFailure()) ||
+      DeleteRefused(
+        failure: OfflineFailure(cause: TimeoutException()),
+      ) => l10n.accountDeleteUnknown,
       DeleteRefused() => l10n.accountDeleteRefused,
     };
 

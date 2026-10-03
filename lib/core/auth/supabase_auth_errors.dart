@@ -44,7 +44,7 @@ Failure _fromAuth(AuthException error, IdentityMethod method) {
     'over_request_rate_limit' => RateLimitedFailure(cause: error),
     'email_address_invalid' => InvalidEmailFailure(cause: error),
     // GoTrue words a malformed address as a validation failure too.
-    'validation_failed' when _namesEmail(error) => InvalidEmailFailure(
+    'validation_failed' when _refusesAddress(error) => InvalidEmailFailure(
       cause: error,
     ),
     _ when error.statusCode == '429' => RateLimitedFailure(cause: error),
@@ -52,8 +52,12 @@ Failure _fromAuth(AuthException error, IdentityMethod method) {
   };
 }
 
-bool _namesEmail(AuthException error) =>
-    error.message.toLowerCase().contains('email');
+/// "Unable to validate email address: invalid format": the send-code
+/// answer. Other validation failures that merely mention an email, such as
+/// the verify call's "Only an email address or phone number should be
+/// provided on verify", are not the address's fault.
+bool _refusesAddress(AuthException error) =>
+    error.message.toLowerCase().contains('validate email address');
 
 /// PostgREST refused the access token as expired or invalid. The SDK
 /// refreshes on a timer; a call that lands in between refreshes once.

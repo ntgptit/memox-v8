@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -14,6 +17,25 @@ void main() {
     expect(
       accountNoticeText(_en, const DeleteRefused(SessionInvalidFailure())),
       _en.accountDeleteUnknown,
+    );
+  });
+
+  test('a deletion that timed out may have reached the server: it is '
+      'unconfirmed too, while a connection that never opened is not '
+      '(final fix 8)', () {
+    expect(
+      accountNoticeText(
+        _en,
+        DeleteRefused(OfflineFailure(cause: TimeoutException('slow'))),
+      ),
+      _en.accountDeleteUnknown,
+    );
+    expect(
+      accountNoticeText(
+        _en,
+        const DeleteRefused(OfflineFailure(cause: SocketException('down'))),
+      ),
+      _en.accountDeleteRefused,
     );
   });
 

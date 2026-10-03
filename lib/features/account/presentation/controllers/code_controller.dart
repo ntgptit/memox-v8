@@ -53,9 +53,12 @@ class CodeController extends _$CodeController {
       isResending: state.isResending,
       resendIn: state.resendIn,
     );
+    // Captured before the await: the step may be left once the code signs in.
+    final sent = ref.read(lastCodeSentProvider.notifier);
     SignInProblem? problem;
     try {
       await accounts.verifyCode(email, code);
+      sent.clear();
     } on Failure catch (error) {
       problem = signInProblemOf(error);
     } on StateError {

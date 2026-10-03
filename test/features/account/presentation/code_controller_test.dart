@@ -76,6 +76,33 @@ void main() {
     );
   });
 
+  test('a code that signs in clears the last-sent record, so a send right '
+      'after signing out is not skipped (final fix 8)', () async {
+    final container = containerOf();
+    container
+        .read(lastCodeSentProvider.notifier)
+        .record(SignInPurpose.link, 'a@example.com', clock.current);
+
+    expect(
+      await container.read(provider.notifier).verify(FakeAuthGateway.code),
+      isTrue,
+    );
+
+    expect(container.read(lastCodeSentProvider), isNull);
+  });
+
+  test('a wrong code keeps the last-sent record: the code is still on its '
+      'way', () async {
+    final container = containerOf();
+    container
+        .read(lastCodeSentProvider.notifier)
+        .record(SignInPurpose.link, 'a@example.com', clock.current);
+
+    await container.read(provider.notifier).verify('000000');
+
+    expect(container.read(lastCodeSentProvider), isNotNull);
+  });
+
   test('a wrong code says so, and the wait goes on', () async {
     final container = containerOf();
 

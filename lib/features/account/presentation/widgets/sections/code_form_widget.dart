@@ -105,7 +105,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
   }
 
   Future<void> _resend({bool confirmedLoss = false}) async {
-    _hasKeptCode = false;
+    setState(() => _hasKeptCode = false);
     final outcome = await _controller.resend(confirmedLoss: confirmedLoss);
     if (!mounted) return;
     switch (outcome) {

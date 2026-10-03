@@ -20,6 +20,10 @@ class LastCodeSent extends _$LastCodeSent {
   void record(SignInPurpose purpose, String email, DateTime at) =>
       state = (purpose: purpose, email: _keyOf(email), sentAt: at);
 
+  /// The code was used: a send right after signing out is a new one, not the
+  /// code still on its way.
+  void clear() => state = null;
+
   /// What is left of [wait] since the last recorded send, in whole seconds
   /// (rounded up, never above [wait], so a clock set back adds nothing). Null
   /// when the last send was to another address or purpose, or none was
