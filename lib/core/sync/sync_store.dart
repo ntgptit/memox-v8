@@ -37,6 +37,14 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
   Future<void> setPullEntityTypes(String types) =>
       _put(syncPullEntityTypesKey, types);
 
+  /// The server clock of the last pull (SP2b 2.30, R10); null before the
+  /// first sync, or against a server that sends none.
+  Future<DateTime?> serverTime() async =>
+      _fromMillis(await _value(syncServerTimeKey));
+
+  Future<void> recordServerTime(DateTime at) =>
+      _put(syncServerTimeKey, _millis(at));
+
   /// Pending operations of [entityTypes], oldest first (parents before
   /// children).
   /// Parents before children: by the position of the entity type in

@@ -25,6 +25,10 @@ const syncLastFailureKindKey = 'last_failure_kind';
 /// §4.1).
 const syncPullEntityTypesKey = 'pull_entity_types';
 
+/// The server's clock as of the last pull: UTC epoch milliseconds (SP2b 2.30,
+/// R10). The Trash purge clock never runs ahead of it.
+const syncServerTimeKey = 'server_time';
+
 /// The wire id of the account settings: one row per user (library and study
 /// sync spec §3.5, D2).
 const accountSettingsEntityId = '00000000-0000-0000-0000-000000000000';

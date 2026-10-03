@@ -23,6 +23,10 @@ class FakeSyncServer implements SyncApi {
   /// cursor: simulates the network dropping in the middle of a pull.
   int? failChangesAfter;
 
+  /// The server clock a page reports, UTC epoch milliseconds; null plays an
+  /// old server that sends none (SP2b 2.30).
+  int? serverTimeMillis;
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
@@ -82,6 +86,7 @@ class FakeSyncServer implements SyncApi {
       changes: page,
       nextSince: page.isEmpty ? since : page.last.serverVersion,
       hasMore: sorted.length > limit,
+      serverTime: serverTimeMillis,
     );
   }
 

@@ -176,14 +176,20 @@ class SyncCoordinator {
         ? await _store.since()
         : 0;
     final changes = <SyncChangeModel>[];
+    int? serverTime;
     while (true) {
       final page = await _api.changes(since, _pullLimit);
       changes.addAll(page.changes);
       since = page.nextSince;
+      // The last page that carries it is the freshest reading (R10).
+      serverTime = page.serverTime ?? serverTime;
       if (!page.hasMore) {
         break;
       }
     }
+    final seenAt = serverTime == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(serverTime, isUtc: true);
     await _store.applyingRemote(deferForeignKeys: true, () async {
       for (final change in changes) {
         final adapter = _adapters[change.entityType];
@@ -198,6 +204,7 @@ class SyncCoordinator {
       await _afterPull?.call();
       await _store.setSince(since);
       await _store.setPullEntityTypes(types);
+      if (seenAt != null) await _store.recordServerTime(seenAt);
     });
     return changes.length;
   }

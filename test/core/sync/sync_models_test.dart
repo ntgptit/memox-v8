@@ -79,4 +79,15 @@ void main() {
     expect(page.changes.single.isDeleted, isTrue);
     expect(page.nextSince, 7);
   });
+
+  test('a changes page carries the server time when the server sends it', () {
+    final base = {'changes': <Object?>[], 'nextSince': 0, 'hasMore': false};
+
+    expect(
+      ChangesResponseModel.fromJson({...base, 'serverTime': 1790000000000})
+          .serverTime,
+      1790000000000,
+    );
+    expect(ChangesResponseModel.fromJson(base).serverTime, isNull);
+  });
 }
