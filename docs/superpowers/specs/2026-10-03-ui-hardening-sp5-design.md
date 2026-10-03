@@ -192,3 +192,11 @@ owner before the merge.
 - **BR-SETTINGS-007:** unchanged — a second tap while the first write runs is still
   dropped; UC-SETTINGS-001 A4 stays. The row that proposed queueing is ruled out by the
   owner; keep only its non-BR parts (if any) and say so in the plan.
+
+## Owner override on tone (2026-10-03, after SP2b)
+
+A failure or refusal notice that asks the person to retry or wait, including "no connection", is
+warning (DESIGN.md as amended). 5.01 is ruled out (the Sync tile keeps amber); 5.07 keeps its
+warning tone; 5.16 and 5.25 draw offline with the warning tone. Three pre-existing neutral failure
+notes move to warning in SP5: the screen 27 network-failure note, the offline note in the delete
+account confirm (32) and the offline note on Welcome (29).
