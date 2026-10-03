@@ -7,13 +7,12 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/features/card/di/card_draft_repository_provider.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
-import 'package:memox/features/card/presentation/controllers/card_draft_controller.dart';
+import 'package:memox/features/card/presentation/providers/card_draft_controller_factory_provider.dart';
 import 'package:memox/features/card/presentation/states/card_editor_source_state.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_changed_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
@@ -93,9 +92,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   var _isLeaving = false;
   var _hasPendingTag = false;
   final _tagEditor = GlobalKey<CardTagEditorWidgetState>();
-  late final _drafts = CardDraftController(
-    repository: ref.read(cardDraftRepositoryProvider),
-    key: _isCreating
+  late final _drafts = ref.read(cardDraftControllerFactoryProvider)(
+    _isCreating
         ? CardDraftKey.create(widget.deckId)
         : CardDraftKey.edit(_card!.id),
   );
