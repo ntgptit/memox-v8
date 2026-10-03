@@ -242,4 +242,32 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(enL10n.cardDiscardTitle), findsNothing);
   });
+
+  libraryTest('a draft on offer survives the card going gone: the form is '
+      'untouched, so nothing replaces it (2.15)', (tester, env) async {
+    final deckId = await seedWordsDeck(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await draftsOf(env).save(
+      CardDraftKey.edit(card.id),
+      const CardDraft(front: 'bap', back: 'earlier text'),
+    );
+    await pumpLibraryScreen(tester, env, editScreen(card.id));
+    await tester.pumpAndSettle();
+    expect(find.text(enL10n.cardDraftTitle), findsOneWidget);
+
+    await env.cards.deleteCards(cardIds: {card.id});
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(draftPause);
+
+    expect(find.text(enL10n.cardEditorGoneTitle), findsOneWidget);
+    expect(find.text(enL10n.cardDraftTitle), findsOneWidget);
+    expect(
+      (await draftsOf(env).read(CardDraftKey.edit(card.id)))?.back,
+      'earlier text',
+    );
+  });
 }

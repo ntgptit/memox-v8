@@ -376,8 +376,11 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   }
 
   /// What is on screen is what a refusal would strand: it goes to the draft
-  /// at once, ahead of any earlier draft on offer (SP2a 2.15).
+  /// at once, ahead of any earlier draft on offer (SP2a 2.15). A form nobody
+  /// touched has nothing to write, and an unchanged write would drop the
+  /// draft on offer, so that draft stays offered.
   void _keepNow() {
+    if (_offer != null && _draft().sameContentAs(_saved)) return;
     _offer = null;
     _drafts.schedule(_draft(), saved: _saved);
     unawaited(_drafts.flush());
