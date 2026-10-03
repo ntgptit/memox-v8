@@ -71,9 +71,19 @@ class _ImportUndoDialogWidgetState
           showMxSnackbar(context, message: l10n.importUndoGone);
           Navigator.of(context).pop(const BulkOutcome(done: {}));
       }
-    } on Object catch (error) {
+    } on Object catch (error, stack) {
       // A database `Failure` is told as it is; anything else the move threw
-      // is told the same way, and the dialog stays for another try.
+      // is told the same way and reported too, as the card editor's catch-all
+      // does, and the dialog stays for another try.
+      if (error is! Failure) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            library: 'import undo',
+          ),
+        );
+      }
       if (!mounted) return;
       setState(() => _isUndoing = false);
       final failure = error is Failure
@@ -95,7 +105,7 @@ class _ImportUndoDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
-        confirmLabel: l10n.cardMoveToTrash,
+        confirmLabel: l10n.cardMoveToTrashCount(widget.count),
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isUndoing,
         onConfirm: _isUndoing ? null : _undo,

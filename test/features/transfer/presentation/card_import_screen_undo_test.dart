@@ -74,7 +74,7 @@ void main() {
     await tester.tap(
       find.descendant(
         of: find.byType(MxDialog),
-        matching: find.text(enL10n.cardMoveToTrash),
+        matching: find.text(enL10n.cardMoveToTrashCount(2)),
       ),
     );
     await tester.pumpAndSettle();
@@ -159,12 +159,15 @@ void main() {
       await tapLabel(tester, enL10n.importUndoAction);
       final confirm = find.descendant(
         of: find.byType(MxDialog),
-        matching: find.widgetWithText(MxButton, enL10n.cardMoveToTrash),
+        matching: find.widgetWithText(MxButton, enL10n.cardMoveToTrashCount(2)),
       );
 
       await tester.tap(confirm);
       await tester.pumpAndSettle();
 
+      // An error that is not a Failure is reported too, as the editor's
+      // catch-all does, and not only told.
+      if (error is! Failure) expect(tester.takeException(), same(error));
       expect(find.text(enL10n.failureUnknown), findsOneWidget);
       expect(find.byType(MxDialog), findsOneWidget);
       expect(tester.widget<MxButton>(confirm).onPressed, isNotNull);

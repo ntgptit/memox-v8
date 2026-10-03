@@ -87,9 +87,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   /// A draft kept from an earlier session, on offer above the fields (R9).
   CardDraft? _offer;
 
-  /// The version a restored draft was written against, when that is not the
-  /// card's current one: Save goes out against it, so another device's save
-  /// since then asks first (SP2a 2.18).
+  /// The version a restored draft was written against: Save goes out against
+  /// it, so another device's save since then asks first (SP2a 2.18).
   DateTime? _restoredBase;
 
   /// The version the text on screen is based on: what Save expects and what
@@ -208,7 +207,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   /// Every change goes to the draft once typing pauses. While an earlier
   /// draft is on offer it stays as it is until the person answers it.
   void _keepDraft() {
-    if (_offer != null) return;
+    if (_isLeaving || _offer != null) return;
     _drafts.schedule(_draft(), saved: _saved);
   }
 
@@ -225,17 +224,17 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     setState(() {
       _tags = [...draft.tagNames];
       _isFlagged = draft.isFlagged;
-      _isDetailsOpen =
-          _isDetailsOpen ||
-          draft.example != null ||
-          draft.hint != null ||
-          draft.pronunciation != null;
+      _isDetailsOpen = _isDetailsOpen || draft.hasOptionalText;
+      _restoredBase = draft.baseUpdatedAt;
       _offer = null;
     });
-    final base = draft.baseUpdatedAt;
-    final isOlder =
-        base != null && _card?.updatedAt.isAtSameMomentAs(base) == false;
-    if (isOlder) _restoredBase = base;
+  }
+
+  /// The card went to the Trash from here: its edits go with it, and the
+  /// gone card that follows writes nothing.
+  void _dropEdits() {
+    _isLeaving = true;
+    unawaited(_drafts.clear());
   }
 
   void _discardOffer() {
@@ -395,6 +394,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   /// touched has nothing to write, and an unchanged write would drop the
   /// draft on offer, so that draft stays offered.
   void _keepNow() {
+    if (_isLeaving) return;
     if (_offer != null && _draft().sameContentAs(_saved)) return;
     _offer = null;
     _drafts.schedule(_draft(), saved: _saved);
@@ -512,5 +512,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         setState(() => _hasPendingTag = isPending),
     onOpenDetails: _close,
     onOpenTrash: widget.onOpenTrash,
+    onTrashed: _dropEdits,
   );
 }

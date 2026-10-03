@@ -13,23 +13,28 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 
 /// Kit 09 "More": moves the card being edited to the Trash after the same
 /// dialog as the list's (FE-B1 D13), then closes the editor with true, so
-/// the page that opened it can close too.
+/// the page that opened it can close too. The edits go with the card: the
+/// form drops its draft through [onTrashed].
 class CardTrashSectionWidget extends StatelessWidget {
   const CardTrashSectionWidget({
     super.key,
     required this.card,
+    required this.onTrashed,
     this.onOpenTrash,
   });
 
   final CardEntity card;
+
+  /// The card moved to the Trash; its edits are thrown away with it.
+  final VoidCallback onTrashed;
 
   /// Rides on a refused Undo's toast (FE-B1).
   final VoidCallback? onOpenTrash;
 
   Future<void> _move(BuildContext context) async {
     // Taken before the dialog: once the card is gone the editor swaps the
-    // form for its gone state, and [context] with it. The edits are left
-    // behind with the card, so the route closes without asking.
+    // form for its gone state, and [context] with it. The edits and their
+    // draft go with the card, so the route closes without asking.
     final navigator = Navigator.of(context);
     final isMoved = await showDeleteCardsDialog(
       context,
@@ -37,7 +42,9 @@ class CardTrashSectionWidget extends StatelessWidget {
       preview: (front: card.front, back: card.back),
       onOpenTrash: onOpenTrash,
     );
-    if (isMoved && navigator.mounted) navigator.pop(true);
+    if (!isMoved) return;
+    onTrashed();
+    if (navigator.mounted) navigator.pop(true);
   }
 
   @override

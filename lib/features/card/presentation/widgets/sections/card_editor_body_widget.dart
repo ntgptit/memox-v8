@@ -53,6 +53,7 @@ class CardEditorBodyWidget extends StatelessWidget {
     required this.onPendingTagChanged,
     required this.onOpenDetails,
     required this.onOpenTrash,
+    required this.onTrashed,
   });
 
   final String deckId;
@@ -97,6 +98,9 @@ class CardEditorBodyWidget extends StatelessWidget {
   /// Leaves the form for the card's details.
   final VoidCallback onOpenDetails;
   final VoidCallback? onOpenTrash;
+
+  /// The card went to the Trash from its Trash section.
+  final VoidCallback onTrashed;
 
   /// One optional field's input, message and touch.
   CardOptionalInput _input(
@@ -200,7 +204,11 @@ class CardEditorBodyWidget extends StatelessWidget {
         onPendingChanged: onPendingTagChanged,
       ),
       if (card case final card? when !isCardGone)
-        CardTrashSectionWidget(card: card, onOpenTrash: onOpenTrash),
+        CardTrashSectionWidget(
+          card: card,
+          onTrashed: onTrashed,
+          onOpenTrash: onOpenTrash,
+        ),
     ];
   }
 }

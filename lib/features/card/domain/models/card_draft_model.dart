@@ -87,6 +87,10 @@ final class CardDraft {
     return const Ok(null);
   }
 
+  /// Whether the example, the hint or the pronunciation holds text.
+  bool get hasOptionalText =>
+      example != null || hint != null || pronunciation != null;
+
   /// Whether [other] is the same card as typed: the same text, flag and tag
   /// names, in the same order. The draft kept on the device is dropped when
   /// it equals the form it would restore.

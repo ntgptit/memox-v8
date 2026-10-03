@@ -8,6 +8,7 @@ import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
 import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -269,5 +270,34 @@ void main() {
       (await draftsOf(env).read(CardDraftKey.edit(card.id)))?.back,
       'earlier text',
     );
+  });
+
+  libraryTest('trashing the card from its editor throws its edits away: no '
+      'draft is left (2.17)', (tester, env) async {
+    final deckId = await seedWordsDeck(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, editScreen(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(fieldAt(1), 'cooked rice');
+    await tester.pump(draftPause);
+    expect(await draftsOf(env).read(CardDraftKey.edit(card.id)), isNotNull);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -2000));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(MxButton, enL10n.cardMoveToTrash));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.text(enL10n.cardMoveToTrash),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.pump(draftPause);
+
+    expect(await draftsOf(env).read(CardDraftKey.edit(card.id)), isNull);
   });
 }

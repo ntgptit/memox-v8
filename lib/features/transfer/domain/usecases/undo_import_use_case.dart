@@ -12,6 +12,10 @@ final class UndoImportUseCase {
 
   final CardRepository _cards;
 
+  // ponytail: one transaction of a few statements per card (move, close
+  // the sessions touching it), awaited by the dialog, with one Trash entry per
+  // card (ruling C9). Upgrade path: a chunked or background delete if
+  // undoing a 20,000-card import proves slow.
   Future<Outcome<BulkOutcome, CardRejection>> call({
     required Set<String> cardIds,
   }) => _cards.deleteCards(cardIds: cardIds);
