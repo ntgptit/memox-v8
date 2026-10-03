@@ -165,6 +165,11 @@ when the screen is rebuilt; no timer.
   you're back online."
 - signIn: "Couldn't sign in to sync. Your changes are safe on this device. MemoX will
   try again."
+  When the session was refused (`ReauthRequired`) and no row was refused, the banner
+  reads "Your sign-in expired, so sync is paused. Your changes are safe on this
+  device. Sign in again to resume." with a compact "Sign in" that opens screen 30 in
+  re-auth mode and returns to screen 27; Sync now is outline (SP2b 2.37). A
+  sign-in failure with no refused session keeps the sentence above.
 - server: "The server couldn't take the changes. They're safe on this device. MemoX will
   try again."
 - unknown: "Sync stopped with an error. Your changes are safe on this device. MemoX will

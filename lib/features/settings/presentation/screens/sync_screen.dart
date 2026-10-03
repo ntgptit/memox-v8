@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -29,18 +31,23 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 /// waits, the last problem, and Sync now. Not in the kit (v3 predates the
 /// server); shaped with Impeccable 2026-09-28.
 class SyncScreen extends ConsumerWidget {
-  const SyncScreen({super.key});
+  const SyncScreen({super.key, required this.onSignIn});
+
+  /// Opens the sign-in flow that returns here (SP2b 2.37).
+  final VoidCallback onSignIn;
 
   static const int _skeletonRows = 2;
 
   /// Sync now leads only when something waits or the last run failed, no
-  /// row was refused, and the network is not what failed: with refused rows
-  /// the banner's Try again is the one primary (DESIGN.md One Indigo;
-  /// critique 2026-09-30 part 1), and offline a manual run cannot help
-  /// (critique 2026-10-02, F8).
-  static bool _leadsSyncNow(SyncStatus status) =>
+  /// row was refused, and neither the network nor a refused session is what
+  /// failed: with refused rows the banner's Try again is the one primary
+  /// (DESIGN.md One Indigo; critique 2026-09-30 part 1), offline a manual run
+  /// cannot help (critique 2026-10-02, F8), and with a refused session the
+  /// banner's Sign in leads (SP2b 2.37).
+  static bool _leadsSyncNow(SyncStatus status, {required bool canSignIn}) =>
       status.rejectedCount == 0 &&
       status.lastFailure?.kind != SyncFailureKind.network &&
+      !SyncNoticeWidget.asksSignIn(status, canSignIn: canSignIn) &&
       (status.pendingCount > 0 || status.lastFailure != null);
 
   @override
@@ -52,6 +59,9 @@ class SyncScreen extends ConsumerWidget {
     );
     final task = ref.watch(syncControllerProvider.select((s) => s.task));
     final status = ref.watch(syncStatusProvider);
+    // The same test as `canSignInAgainProvider`, read from core: a feature
+    // does not import another feature's presentation.
+    final canSignIn = ref.watch(authStateProvider).value is ReauthRequired;
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.syncTitle,
@@ -77,6 +87,8 @@ class SyncScreen extends ConsumerWidget {
                 status: value,
                 task: task,
                 onRun: (next) => _run(ref, next),
+                canSignIn: canSignIn,
+                onSignIn: onSignIn,
               ),
             const SizedBox(height: AppSpacing.gutter),
             if (task == SyncTask.syncNow)
@@ -87,7 +99,7 @@ class SyncScreen extends ConsumerWidget {
                 icon: AppIcons.sync,
                 // Sync is automatic; the manual run leads only when something
                 // waits or went wrong (critique 2026-09-30).
-                tone: _leadsSyncNow(value)
+                tone: _leadsSyncNow(value, canSignIn: canSignIn)
                     ? MxButtonTone.primary
                     : MxButtonTone.outline,
                 isBlock: true,

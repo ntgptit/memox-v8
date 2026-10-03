@@ -6565,6 +6565,10 @@
   "@syncFailedUnknown": {
     "description": "Screen 27 (SB-U1): the failure banner, unknown."
   },
+  "syncSignInAgain": "Your sign-in expired, so sync is paused. Your changes are safe on this device. Sign in again to resume.",
+  "@syncSignInAgain": {
+    "description": "Screen 27 (SP2b 2.37): the warning banner when the session was refused and the person can sign in again; its action is accountSignIn."
+  },
   "syncDone": "Synced",
   "@syncDone": {
     "description": "Screen 27 (SB-U1): toast after Sync now or Try again succeeded."

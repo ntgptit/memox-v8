@@ -18,25 +18,55 @@ import 'package:memox/shared/widgets/mx_note.dart';
 /// failed run. Shown only when [shows] is true. The refused banner says why
 /// and what Keep costs, and Keep asks first (critique 2026-09-30 part 1). A
 /// failed run for want of a network is a neutral note: there is nothing to
-/// fix, only to wait (critique 2026-10-02, F8).
+/// fix, only to wait (critique 2026-10-02, F8). A refused session with no
+/// refused row asks to sign in again (SP2b 2.37).
 class SyncNoticeWidget extends StatelessWidget {
   const SyncNoticeWidget({
     super.key,
     required this.status,
     required this.task,
     required this.onRun,
+    required this.canSignIn,
+    required this.onSignIn,
   });
 
   final SyncStatus status;
   final SyncTask? task;
   final ValueChanged<SyncTask> onRun;
 
+  /// The session was refused and the person can sign in again.
+  final bool canSignIn;
+
+  /// Opens the sign-in flow that returns to this screen (SP2b 2.37).
+  final VoidCallback onSignIn;
+
   static bool shows(SyncStatus status) =>
       status.rejectedCount > 0 || status.lastFailure != null;
+
+  /// A refused session with no refused row: the banner asks to sign in, and
+  /// Sync now cannot succeed (SP2b 2.37). A transient refusal, where nothing
+  /// can be signed in again, keeps the plain sentence.
+  static bool asksSignIn(SyncStatus status, {required bool canSignIn}) =>
+      canSignIn &&
+      status.rejectedCount == 0 &&
+      status.lastFailure?.kind == SyncFailureKind.signIn;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    if (asksSignIn(status, canSignIn: canSignIn)) {
+      return MxInlineBanner(
+        tone: MxBannerTone.warning,
+        message: l10n.syncSignInAgain,
+        actions: [
+          MxButton(
+            label: l10n.accountSignIn,
+            size: MxButtonSize.compact,
+            onPressed: onSignIn,
+          ),
+        ],
+      );
+    }
     final failure = status.lastFailure;
     if (status.rejectedCount == 0 && failure != null) {
       final sentence = syncFailureSentence(l10n, failure.kind);

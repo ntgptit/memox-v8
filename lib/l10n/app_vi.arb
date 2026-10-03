@@ -1243,6 +1243,7 @@
   "syncFailedSignIn": "Không đăng nhập được để đồng bộ. Thay đổi của bạn vẫn an toàn trên máy. MemoX sẽ thử lại.",
   "syncFailedServer": "Máy chủ chưa nhận được các thay đổi. Chúng vẫn an toàn trên máy. MemoX sẽ thử lại.",
   "syncFailedUnknown": "Đồng bộ dừng vì có lỗi. Thay đổi của bạn vẫn an toàn trên máy. MemoX sẽ thử lại.",
+  "syncSignInAgain": "Phiên đăng nhập đã hết hạn nên đồng bộ đang tạm dừng. Thay đổi vẫn an toàn trên điện thoại này. Đăng nhập lại để tiếp tục.",
   "syncDone": "Đã đồng bộ",
   "syncNotDone": "Chưa đồng bộ được. Không mất gì cả.",
   "syncKept": "Đã giữ trên máy này",

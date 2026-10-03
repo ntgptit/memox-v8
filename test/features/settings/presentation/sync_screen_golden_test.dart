@@ -4,11 +4,15 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/account_user.dart';
+import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 
+import '../../../support/account_harness.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
@@ -23,15 +27,16 @@ void main() {
       String state,
       SyncStatus status, {
       FakeSyncCommands? commands,
+      List<Override> overrides = const [],
       Future<void> Function()? act,
     }) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(
           tester,
           env,
-          const SyncScreen(),
+          SyncScreen(onSignIn: () {}),
           brightness,
-          overrides: syncOverrides(status, commands),
+          overrides: [...syncOverrides(status, commands), ...overrides],
         );
         await act?.call();
         await expectBoundaryGolden(tester, 'goldens/sync_${state}_$theme.png');
@@ -81,6 +86,40 @@ void main() {
             minutesAgo(env, 1),
           ),
         ),
+      );
+    });
+
+    // SP2b 2.37: the session was refused; Sign in leads.
+    libraryTest('sync, failed sign-in, $theme', (tester, env) async {
+      await golden(
+        tester,
+        env,
+        'failed_sign_in',
+        SyncStatus(
+          lastSuccessAt: minutesAgo(env, 90),
+          pendingCount: 3,
+          oldestPendingAt: minutesAgo(env, 30),
+          lastFailure: LastSyncFailure(
+            SyncFailureKind.signIn,
+            minutesAgo(env, 1),
+          ),
+        ),
+        overrides: [
+          authStateOf(
+            const ReauthRequired(
+              AccountUser(
+                id: 'x',
+                email: 'a@example.com',
+                isAnonymous: false,
+                role: AccountRole.user,
+              ),
+            ),
+          ),
+        ],
+        act: () async {
+          await tester.pump();
+          expect(find.text('Sign in'), findsOneWidget);
+        },
       );
     });
 
