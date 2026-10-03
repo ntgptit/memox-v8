@@ -141,8 +141,12 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         widget.source == CardEditorSource.gone) {
       _keepNow();
     }
-    // A restored card is saveable again.
-    if (!_isCreating && widget.source == CardEditorSource.present) {
+    // A restored card is saveable again. Only the gone-to-present change
+    // says so: any other update of a present card must not undo a notFound
+    // the Save just found.
+    if (!_isCreating &&
+        oldWidget.source == CardEditorSource.gone &&
+        widget.source == CardEditorSource.present) {
       _isGone = false;
     }
   }
