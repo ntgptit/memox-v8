@@ -41,7 +41,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |
 | delCard | `card_list_trash_dialog_light.png` | `card_list_trash_dialog_dark.png` | One selected card: the dialog without a glyph, with the card's preview. Several: "Move {n} cards to Trash?" without the preview. The confirm spins while they move (FE-B1 D15). |
 | delDeck | no golden | no golden | As screen 01 deckDelete. |
-| trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash" with Open Trash, no Undo (D4). |
+| trashed | `card_list_trashed_light.png` | `card_list_trashed_dark.png` | One card: Undo for 8 seconds (FE-B1 D3, D14). Several: "{n} cards moved to Trash", also Undo for 8 seconds, all back or none (BR-TRASH-008, SP2a 2.20); Open Trash appears only on a refused Undo (UC-TRASH-001 E3). |
 Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (search open, no match); `card_list_search_results_light.png` / `card_list_search_results_dark.png` (two matches with a 300 dp keyboard up: the summary card steps aside, critique 2026-09-30 part 3a).
 
 

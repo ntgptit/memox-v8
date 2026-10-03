@@ -543,6 +543,25 @@ void main() {
     expect(await _activeCount(env), 2);
   });
 
+  libraryTest('Undo after a Trash that skipped a gone card restores exactly '
+      'the cards it wrote (SP2a 2.20)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'due1'});
+    await tester.pumpAndSettle();
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrashCount(2)));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+
+    expect(await _activeCount(env), 3);
+    expect(find.text('annyeong'), findsOneWidget);
+    expect(find.text('gamsa'), findsNothing);
+  });
+
   /// Both selected cards go behind the screen's back; the action then
   /// refuses as a whole (SP2a 2.19), says how many, and prunes them.
   Future<void> selectThenLoseBoth(WidgetTester tester, LibraryEnv env) async {

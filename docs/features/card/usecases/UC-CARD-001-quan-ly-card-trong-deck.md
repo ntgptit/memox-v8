@@ -33,8 +33,9 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
   transaction, mỗi card là **một** batch của riêng nó, cùng một `deleted_at`
   (BR-TRASH-001). Nội dung, study state và history giữ nguyên tới khi purge
   (BR-TRASH-004); phiên `in_progress` có card trong hàng đợi hoặc dùng card làm
-  lựa chọn của câu `guess` kết thúc với `content_deleted`. Xoá một hay nhiều card đều có
-  Undo ngay tại chỗ, đảo ngược mọi batch vừa tạo (BR-TRASH-008); khôi phục về sau qua Trash (UC-TRASH-001).
+  lựa chọn của câu `guess` kết thúc với `content_deleted`. Xoá một hay nhiều
+  card đều có Undo ngay tại chỗ, đảo ngược mọi batch vừa tạo (BR-TRASH-008);
+  khôi phục về sau qua Trash (UC-TRASH-001).
   Nếu đó là card **cuối cùng** đang active,
   deck atomically trở về `content_type = unset` trong cùng transaction
   (BR-DECK-015, BR-TRASH-005); sau đó người dùng quay về màn hình deck và
