@@ -21,6 +21,15 @@ extension AccountSwitching on AccountCoordinator {
         }
       });
 
+  /// A re-auth's replace check without a send, for a code already on its way
+  /// to [email] (2.41): changes added since that send are confirmed before
+  /// the code is entered, as [requestCode] would (ruling 6).
+  Future<void> checkReplace(String email, {bool confirmedLoss = false}) =>
+      _serial(() async {
+        if (_state is! ReauthRequired) return;
+        await _checkReplace(email, confirmedLoss: confirmedLoss);
+      });
+
   Future<void> verifyCode(String email, String code) => _serial(() async {
     switch (await _signInContext()) {
       case _SignIn.link:

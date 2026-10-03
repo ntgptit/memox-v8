@@ -53,7 +53,17 @@ class SignInController extends _$SignInController {
       clock.now(),
       CodeController.resendWait,
     );
-    if (left != null && left > Duration.zero) return SignInOutcome.codeSent;
+    if (left != null && left > Duration.zero) {
+      if (purpose != SignInPurpose.reauth) return SignInOutcome.codeSent;
+      // A re-auth as another address replaces this device: changes added
+      // since the send are still confirmed before the code is entered.
+      return _run(
+        SignInTask.email,
+        (accounts) =>
+            accounts.checkReplace(address, confirmedLoss: confirmedLoss),
+        done: SignInOutcome.codeSent,
+      );
+    }
     final outcome = await _run(
       SignInTask.email,
       (accounts) => accounts.requestCode(address, confirmedLoss: confirmedLoss),

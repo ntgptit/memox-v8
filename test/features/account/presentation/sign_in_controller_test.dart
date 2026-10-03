@@ -217,6 +217,25 @@ void main() {
       );
     });
 
+    test('another address pressed again inside the resend wait still asks '
+        'about changes added since the first send (final fix 1)', () async {
+      world.device.pending = 0;
+      final notifier = container.read(reauth.notifier);
+      expect(await notifier.sendCode('b@example.com'), SignInOutcome.codeSent);
+
+      world.device.pending = 1;
+
+      expect(
+        await notifier.sendCode('b@example.com'),
+        SignInOutcome.unsentChanges,
+      );
+      expect(container.read(reauth).unsentCount, 1);
+      expect(
+        await notifier.sendCode('b@example.com', confirmedLoss: true),
+        SignInOutcome.codeSent,
+      );
+    });
+
     test('Google as another account asks first too', () async {
       world.gateway.google = const GoogleCredential(
         idToken: 't',
