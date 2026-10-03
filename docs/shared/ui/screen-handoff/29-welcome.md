@@ -12,7 +12,7 @@ spec [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-acc
 - The launch, once per device, on a build that can sign in: `main` reads
   `app_settings.welcome_seen` before the first frame and the router sends any location
   to `/welcome?from=<location>` until Welcome is answered (U1, P3a plan ruling 3).
-- No back arrow: Android Back leaves the app, as on any root.
+- No back arrow: Android Back leaves the app, as on any root, except while Google is signing in: Back waits until its result has landed (SP2b 2.46).
 
 ## Layout
 

@@ -30,8 +30,8 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 | Mode line | `emptyBody` | Link: "Your decks stay on this phone and join the account." Target: "Sign in to the account this phone moves to." |
 | Google | `MxButton` (outline, block, G mark) | "Continue with Google". Its failure is a toast; a cancelled pick says nothing. |
 | Divider | two hairlines + `footerCaption` | "or". |
-| Email | `MxTextField` (form) | "Email address". Checked on send; its problem shows under the field (`MxFieldMessage`). Text keyboard (UI-base row 150). |
-| Send code | `MxButton` (primary, block) | "Send code", the form's one fill; spins while sending and never greys out for a bad address. |
+| Email | `MxTextField` (form) | "Email address". Checked on send; its problem shows under the field (`MxFieldMessage`). An address the server calls invalid shows the same line, not "try again" (SP2b 2.42). The same address (case and spaces ignored) sent again inside the 60 s resend wait reopens the code step without sending (SP2b 2.41). Text keyboard (UI-base row 150). |
+| Send code | `MxButton` (primary, block) | "Send code", the form's one fill; spins while sending and never greys out for a bad address. While it, or Google, runs, Back (the arrow and the system) waits; the spinner shows what runs (SP2b 2.46). |
 | Offline note | `MxNote` | "Signing in needs a connection. You can do it later in Settings." while the account cannot link yet (`link` only). |
 
 ### Re-auth (`mode=reauth`, P3b)
@@ -55,6 +55,8 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 
 A phone with no live deck skips the sheet and moves at once (R6).
 
+Cancel on the sheet, or a switch that fails to start, forgets the Google account picked for it, so the next press shows the picker again; a started switch keeps it for the target sign-in (SP2b 2.40).
+
 ### Transition layer (app root, U4)
 
 Over the whole app while a switch, sign-out, deletion or clear runs. It is not a route:
@@ -69,7 +71,7 @@ form inside it. Its content is centred in the page.
 | Other error | "Something went wrong. Your data is safe on this phone." + Retry. |
 | Sign-out stopped offline | "No connection. Nothing has been removed yet." + Retry + "Sign out now and lose {n} changes" (`dangerSoft`) + Cancel (critique 2026-10-02). |
 | Target sign-in | The form above in target mode, the address pre-filled; the code step on the layer's own navigator. |
-| Stuck | "Something went wrong while moving your account. Your data is safe on this phone." + Retry only. |
+| Stuck | "Something went wrong while moving your account. Your data is safe on this phone. MemoX picks the move up again the next time it opens." + "Close MemoX" (outline, closes the app, changes no data) beside Retry, in an `MxActionPair` with Close leading (SP2b R11). |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
 
 Notices at the app root: toasts "Couldn't merge. Your decks are still on this phone." and
@@ -102,6 +104,7 @@ The images are the goldens.
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
 - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
 - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
+- **SP2b (spec `2026-10-03-ui-hardening-sp2b-design.md` §3.7):** R11 the stuck layer's copy and "Close MemoX"; 2.40 a declined sheet forgets the Google pick; 2.41 a code just sent is not sent again; 2.42 an invalid address is the field's problem; 2.46 Back waits while a send or the Google pick runs.
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6).
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a sign-out stopped offline says "No connection. Nothing has been removed yet." and offers Cancel (top bar) beside Retry and "Sign out now and lose {n} changes"; Cancel keeps the account and every deck (F2; auth spec #39a).
 
@@ -111,4 +114,5 @@ The images are the goldens.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Continue without an account"; the dialogs as in the table above.
 - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" while it is still being checked; none while the account moves, such as a switch that stopped on the way, which the layer speaks for (P3b minor M2).
+- Stuck layer: "Something went wrong while moving your account. Your data is safe on this phone. MemoX picks the move up again the next time it opens." · "Close MemoX".
 - Merge sheet and layer: as in the tables above.

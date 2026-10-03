@@ -148,13 +148,15 @@ allowed). `PopScope` swallows Back; the status line is a live region.
 | `error` is a network failure | "No connection. Your data is safe on this phone." + Retry (`retry()`) |
 | SignOut stopped on unsent changes offline | the above + "Sign out now and lose {n} changes" (`signOut(discardUnsent: true)`) |
 | `isAwaitingTargetSignIn` | the sign-in form (target line) then the code form, inside the layer's own `Navigator`; Google reuses the account already picked; Cancel → `cancelSwitch()` |
-| `Recovering.isStuck` | "Something went wrong while moving your account. Your data is safe on this phone." + Retry |
+| `Recovering.isStuck` | "Something went wrong while moving your account. Your data is safe on this phone. MemoX picks the move up again the next time it opens." + "Close MemoX" (outline; `SystemNavigator.pop()`, no data changes) leading and Retry trailing in an `MxActionPair` (SP2b R11) |
 
 Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root:
 `MergeNotDone` → snackbar "Couldn't merge. Your decks are still on this
 phone."; `DeleteRefused(LastAdmin)` → dialog "An admin must remain. Give
 another person the admin role first."; any other `DeleteRefused` → snackbar
-"Couldn't delete the account. Nothing changed."
+"Couldn't delete the account. Nothing changed."; `DeleteRefused(SessionInvalid)` →
+"Couldn't confirm the deletion. Sign in again to check." (the server may have taken
+it; SP2b 2.47)
 
 ### 5.5 Settings › Account (23, first section)
 
