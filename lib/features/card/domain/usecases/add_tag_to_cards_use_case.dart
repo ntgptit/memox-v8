@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
 /// UC-CARD-001 A6, A8: the tag named [tagName] on every card given, reused
@@ -9,7 +10,7 @@ final class AddTagToCardsUseCase {
 
   final TagRepository _tags;
 
-  Future<Outcome<void, TagRejection>> call({
+  Future<Outcome<TagAttach, TagRejection>> call({
     required Set<String> cardIds,
     required String tagName,
   }) => _tags.attachByName(cardIds: cardIds, name: tagName);

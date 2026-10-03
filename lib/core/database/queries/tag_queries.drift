@@ -15,6 +15,11 @@ createTag: INSERT INTO tags $row;
 liveCardCountIn:
 SELECT COUNT(*) FROM card WHERE id IN :card_ids AND delete_batch_id IS NULL;
 
+-- SP2a 2.19: the live cards among :card_ids, one chunk at a time.
+liveCardIdsIn:
+SELECT id FROM card WHERE id IN :card_ids AND delete_batch_id IS NULL
+ORDER BY id;
+
 tagIdsOfCard(:card_id AS TEXT):
 SELECT tag_id FROM card_tags WHERE card_id = :card_id ORDER BY tag_id;
 

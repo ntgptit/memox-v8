@@ -581,6 +581,15 @@
     },
     "description": "Snackbar after tagging."
   },
+  "cardTagLimitReached": "{count, plural, =1{1 card already has 10 tags; nothing was tagged.} other{{count} cards already have 10 tags; nothing was tagged.}}",
+  "@cardTagLimitReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar when a bulk tag is refused because cards already hold the 10-tag limit (BR-TAG-002); count is how many."
+  },
   "cardMoveTitle": "Move to deck",
   "@cardMoveTitle": {
     "description": "Title of the card move picker."

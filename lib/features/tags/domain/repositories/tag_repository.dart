@@ -1,5 +1,6 @@
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 
@@ -11,11 +12,13 @@ import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 /// one: the card data layer calls it inside the card's own transaction. An
 /// empty set of cards writes nothing and answers `Ok`.
 abstract interface class TagRepository {
-  /// Links the tag named [name] to every card of [cardIds]: the tag with the
-  /// same folded name is reused, or created (BR-TAG-001). A card that already
-  /// carries it is left as it is. When one card would pass 10 tags, the whole
-  /// batch is refused and nothing is written (BR-TAG-002, BR-CARD-011).
-  Future<Outcome<void, TagRejection>> attachByName({
+  /// Links the tag named [name] to every card of [cardIds] that still exists:
+  /// the tag with the same folded name is reused, or created (BR-TAG-001). A
+  /// card that already carries it is left as it is; a card already gone is
+  /// skipped (SP2a 2.19), and none left is `notFound`. When any card would
+  /// pass 10 tags, nothing is written and the answer is [TagLimitReached],
+  /// naming those cards (BR-TAG-002, BR-CARD-011).
+  Future<Outcome<TagAttach, TagRejection>> attachByName({
     required Set<String> cardIds,
     required String name,
     DateTime? now,

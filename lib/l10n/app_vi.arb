@@ -124,6 +124,7 @@
   "cardTagHint": "Tên nhãn",
   "cardTagConfirm": "Thêm",
   "cardTaggedToast": "Đã gắn nhãn “{tag}” cho {count} thẻ",
+  "cardTagLimitReached": "{count, plural, other{{count} thẻ đã có 10 nhãn; chưa gắn nhãn nào.}}",
   "cardMoveTitle": "Chuyển vào bộ thẻ",
   "cardMoveRule": "Thẻ giữ nguyên tiến độ học. Chỉ những bộ thẻ chứa thẻ trong cùng bộ thẻ cấp cao nhất mới hiện ra.",
   "cardMoveEmptyTitle": "Không có nơi để chuyển",

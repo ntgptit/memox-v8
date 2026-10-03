@@ -225,7 +225,7 @@ void main() {
       await tester.tap(_inDialog(_en.cardTagConfirm));
       await tester.pumpAndSettle();
 
-      expect(find.text(_en.tagRejectionTooManyTags), findsOneWidget);
+      expect(find.text(_en.cardTagLimitReached(1)), findsOneWidget);
       expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 10);
       expect(
         find.byWidgetPredicate(
@@ -235,6 +235,26 @@ void main() {
       );
     },
   );
+
+  libraryTest('Tag names how many cards are full, not only that one is '
+      '(SP2a 2.21)', (tester, env) async {
+    final ids = await _seed(env);
+    final tags = TagRepositoryImpl(env.db);
+    for (final card in ['new1', 'due1']) {
+      for (var i = 0; i < 10; i++) {
+        await tags.attachByName(cardIds: {card}, name: '$card tag $i');
+      }
+    }
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa', 'mul']);
+    await _bulk(tester, _en.cardTag);
+    await tester.enterText(find.byType(EditableText).last, 'extra');
+    await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardTagLimitReached(2)), findsOneWidget);
+    expect(await _count(env, 'SELECT COUNT(*) AS n FROM card_tags'), 20);
+  });
 
   libraryTest('Move sends the cards to another deck of the root', (
     tester,

@@ -6,6 +6,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/di/tag_repository_provider.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
@@ -118,7 +119,7 @@ final class TagRepositoryFake implements TagRepository {
   }
 
   @override
-  Future<Outcome<void, TagRejection>> attachByName({
+  Future<Outcome<TagAttach, TagRejection>> attachByName({
     required Set<String> cardIds,
     required String name,
     DateTime? now,

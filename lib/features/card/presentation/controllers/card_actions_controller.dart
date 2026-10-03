@@ -13,6 +13,7 @@ import 'package:memox/features/card/presentation/providers/select_all_card_ids_u
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/undo_card_deletion_use_case_provider.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_actions_controller.g.dart';
@@ -41,7 +42,7 @@ class CardActionsController extends _$CardActionsController {
     isFlagged: isFlagged,
   );
 
-  Future<Outcome<void, TagRejection>> addTag({
+  Future<Outcome<TagAttach, TagRejection>> addTag({
     required Set<String> cardIds,
     required String tagName,
   }) => ref.read(addTagToCardsUseCaseProvider)(

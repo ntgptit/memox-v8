@@ -79,6 +79,7 @@ void main() {
       expect(counts, hasLength(_many));
       expect(counts.values.where((n) => n == 2), hasLength(10));
       expect(await dao.liveCardCount(_ids), _many);
+      expect(await dao.liveCardIds({..._ids, 'gone'}), _ids);
       expect(
         await dao.cardsCarrying(_ids, (await dao.findByFoldedName('verb'))!.id),
         hasLength(10),

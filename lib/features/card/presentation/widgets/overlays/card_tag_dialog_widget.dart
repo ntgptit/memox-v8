@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/tag_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -66,21 +67,24 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       if (!mounted) return;
       final l10n = context.l10n;
       switch (outcome) {
-        case Ok():
+        case Ok(value: TagAttached(outcome: final bulk)):
           showMxSnackbar(
             context,
-            message: l10n.cardTaggedToast(
-              widget.cardIds.length,
-              _name.text.trim(),
-            ),
+            message: l10n.cardTaggedToast(bulk.done.length, _name.text.trim()),
           );
           Navigator.of(context).pop(true);
+        // IT-ORG-014, BR-TAG-002: nothing was written; the selection stays.
+        case Ok(value: TagLimitReached(:final fullCardIds)):
+          showMxSnackbar(
+            context,
+            message: l10n.cardTagLimitReached(fullCardIds.length),
+          );
+          Navigator.of(context).pop(false);
         case Rejected(:final reason) when _nameReasons.contains(reason):
           setState(() {
             _rejection = reason;
             _isSubmitting = false;
           });
-        // IT-ORG-014: nothing was written; the selection stays.
         case Rejected(:final reason):
           showMxSnackbar(context, message: l10n.tagRejection(reason));
           Navigator.of(context).pop(false);
