@@ -76,13 +76,20 @@ final class CardRepositoryImpl implements CardRepository {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
       if (draft.check() case Rejected(:final reason)) return Rejected(reason);
-      if (await _dao.findRow(cardId) == null) {
-        return const Rejected(CardRejection.notFound);
+      final row = await _dao.findRow(cardId);
+      if (row == null) return const Rejected(CardRejection.notFound);
+      // ponytail: `updated_at` is stored in seconds, so a change in the same
+      // second as the editor's version goes unseen; a version column would
+      // close it.
+      if (expectedUpdatedAt != null &&
+          !row.updatedAt.isAtSameMomentAs(expectedUpdatedAt)) {
+        return const Rejected(CardRejection.changedElsewhere);
       }
       await _dao.updateContent(cardId, draft, at);
       await _replaceTags(cardId, draft, at);

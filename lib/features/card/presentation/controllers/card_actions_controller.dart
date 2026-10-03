@@ -74,5 +74,10 @@ class CardActionsController extends _$CardActionsController {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
-  }) => ref.read(editCardUseCaseProvider)(cardId: cardId, draft: draft);
+    DateTime? expectedUpdatedAt,
+  }) => ref.read(editCardUseCaseProvider)(
+    cardId: cardId,
+    draft: draft,
+    expectedUpdatedAt: expectedUpdatedAt,
+  );
 }

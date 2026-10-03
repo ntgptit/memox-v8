@@ -22,6 +22,7 @@ extension TrashRejectionMessage on AppLocalizations {
     CardRejection.sameDeck => cardRejectionSameDeck,
     CardRejection.crossRootMove => cardRejectionCrossRootMove,
     CardRejection.targetInTrash => cardRejectionTargetInTrash,
+    CardRejection.changedElsewhere => cardRejectionChangedElsewhere,
   };
 
   String trashDeckRejection(DeckRejection reason) => switch (reason) {

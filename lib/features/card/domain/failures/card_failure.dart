@@ -42,4 +42,8 @@ enum CardRejection {
   /// BR-TRASH-006, BR-TRASH-008: the deck a restore or an Undo is aimed at
   /// is in the Trash itself.
   targetInTrash,
+
+  /// SP2a 2.18: the card carries another `updated_at` than the one the editor
+  /// opened with, so another device saved it since.
+  changedElsewhere,
 }

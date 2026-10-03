@@ -25,10 +25,13 @@ abstract interface class CardRepository {
   });
 
   /// UC-CARD-001 A1: new content, flag and tags; the schedule row and the
-  /// review log stay as they are (BR-CARD-005).
+  /// review log stay as they are (BR-CARD-005). When [expectedUpdatedAt] is
+  /// given and the card carries another `updated_at`, nothing is written and
+  /// the answer is `changedElsewhere` (SP2a 2.18); null skips the check.
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   });
 

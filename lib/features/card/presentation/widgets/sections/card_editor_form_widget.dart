@@ -15,6 +15,7 @@ import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/controllers/card_draft_controller.dart';
 import 'package:memox/features/card/presentation/states/card_editor_source_state.dart';
+import 'package:memox/features/card/presentation/widgets/overlays/card_changed_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_draft_banner_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
@@ -55,7 +56,8 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
   final String deckId;
   final Widget Function(String deckId, String currentLabel) deckContext;
 
-  /// The card to edit; null creates.
+  /// The card to edit, as it stands now; null creates. "Use theirs" loads it
+  /// (SP2a 2.18).
   final CardDetail? detail;
 
   /// Whether the card under edit is still there (SP2a 2.17).
@@ -70,7 +72,7 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
 }
 
 class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
-  late final _card = widget.detail?.card;
+  late var _card = widget.detail?.card;
   late final _front = TextEditingController(text: _card?.front);
   late final _back = TextEditingController(text: _card?.back);
   late final _example = TextEditingController(text: _card?.example);
@@ -138,6 +140,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     if (oldWidget.source != widget.source &&
         widget.source == CardEditorSource.gone) {
       _keepNow();
+    }
+    // A restored card is saveable again.
+    if (!_isCreating && widget.source == CardEditorSource.present) {
+      _isGone = false;
     }
   }
 
@@ -299,7 +305,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     unawaited(_drafts.clear());
   }
 
-  Future<void> _save() async {
+  /// [overwrites] saves over a version another device saved ("Keep mine").
+  Future<void> _save({bool overwrites = false}) async {
     if (_isSaving) return;
     // The tag still in its field is part of the card (critique 2026-09-30
     // part 3d-2, E8); a refused one stops the save, saying why.
@@ -313,8 +320,17 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     try {
       final Outcome<Object?, CardRejection> outcome = _isCreating
           ? await actions.createCard(deckId: widget.deckId, draft: draft)
-          : await actions.editCard(cardId: _card!.id, draft: draft);
+          : await actions.editCard(
+              cardId: _card!.id,
+              draft: draft,
+              expectedUpdatedAt: overwrites ? null : _card!.updatedAt,
+            );
       if (!mounted) return;
+      if (outcome case Rejected(reason: CardRejection.changedElsewhere)) {
+        setState(() => _isSaving = false);
+        await _resolveConflict();
+        return;
+      }
       _afterSave(outcome, draft);
     } on Failure {
       // Ruling P4a-L3: said in the form, with the typed content kept.
@@ -336,6 +352,45 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         ),
       );
     }
+  }
+
+  /// SP2a 2.18: another device saved this card since the editor opened.
+  Future<void> _resolveConflict() async {
+    final choice = await showCardChangedDialog(context);
+    if (!mounted) return;
+    switch (choice) {
+      case CardConflictChoice.keepMine:
+        unawaited(_save(overwrites: true));
+      case CardConflictChoice.useTheirs:
+        _adoptTheirs();
+      case null:
+        return;
+    }
+  }
+
+  /// "Use theirs": the card as the other device left it replaces the form's
+  /// text, and the draft goes with the edits it held.
+  void _adoptTheirs() {
+    final theirs = widget.detail;
+    if (theirs == null) return;
+    final card = theirs.card;
+    _card = card;
+    _front.text = card.front;
+    _back.text = card.back;
+    _example.text = card.example ?? '';
+    _hint.text = card.hint ?? '';
+    _pronunciation.text = card.pronunciation ?? '';
+    _tagEditor.currentState?.clearInput();
+    setState(() {
+      _tags = [for (final tag in theirs.tags) tag.name];
+      _isFlagged = card.isFlagged;
+      _touched.clear();
+      _hasFailed = false;
+      _offer = null;
+      _saved = _draft();
+    });
+    // The new text armed a write; clearing cancels it.
+    unawaited(_drafts.clear());
   }
 
   void _afterSave(Outcome<Object?, CardRejection> outcome, CardDraft draft) {

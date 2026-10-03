@@ -12,5 +12,10 @@ final class EditCardUseCase {
   Future<Outcome<void, CardRejection>> call({
     required String cardId,
     required CardDraft draft,
-  }) => _cards.editCard(cardId: cardId, draft: draft);
+    DateTime? expectedUpdatedAt,
+  }) => _cards.editCard(
+    cardId: cardId,
+    draft: draft,
+    expectedUpdatedAt: expectedUpdatedAt,
+  );
 }

@@ -85,7 +85,8 @@ class _EditLoader extends ConsumerStatefulWidget {
 class _EditLoaderState extends ConsumerState<_EditLoader> {
   static const int _skeletonRows = 4;
 
-  /// The card as the form opened with it.
+  /// The newest present detail: the form opened with it and "Use theirs"
+  /// (SP2a 2.18) loads it. It keeps the last one while the card is gone.
   CardDetail? _opened;
 
   @override
@@ -104,7 +105,7 @@ class _EditLoaderState extends ConsumerState<_EditLoader> {
     );
     final value = ref.watch(provider);
     if (value case AsyncData(value: Ok(value: final detail))) {
-      _opened ??= detail;
+      _opened = detail;
     }
     if (_opened case final opened?) {
       return CardEditorFormWidget(

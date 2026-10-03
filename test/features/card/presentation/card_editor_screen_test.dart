@@ -74,10 +74,16 @@ final class _CountingEdits implements CardRepository {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   }) {
     edits++;
-    return _cards.editCard(cardId: cardId, draft: draft, now: now);
+    return _cards.editCard(
+      cardId: cardId,
+      draft: draft,
+      expectedUpdatedAt: expectedUpdatedAt,
+      now: now,
+    );
   }
 
   @override

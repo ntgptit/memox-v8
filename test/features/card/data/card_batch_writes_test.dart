@@ -85,6 +85,64 @@ void main() {
   int seconds(DateTime at) => at.millisecondsSinceEpoch ~/ 1000;
 
   group('editCard (BR-CARD-005)', () {
+    test(
+      'an edit that expects the version it read goes through; one that '
+      'expects an older version is refused and writes nothing (2.18)',
+      () async {
+        final card = await cards.card(
+          nouns.id,
+          const CardDraft(front: 'f', back: 'b'),
+        );
+        // Another device saves first.
+        await cards.editCard(
+          cardId: card.id,
+          draft: const CardDraft(front: 'f', back: 'theirs'),
+          now: _later,
+        );
+
+        final stale = await cards.editCard(
+          cardId: card.id,
+          draft: const CardDraft(front: 'f', back: 'mine'),
+          expectedUpdatedAt: card.updatedAt,
+          now: DateTime(2026, 9, 25),
+        );
+
+        expect(_reason(stale), CardRejection.changedElsewhere);
+        expect((await cardRow(card.id))['back'], 'theirs');
+
+        final current = await cards.editCard(
+          cardId: card.id,
+          draft: const CardDraft(front: 'f', back: 'mine'),
+          expectedUpdatedAt: _later,
+          now: DateTime(2026, 9, 25),
+        );
+        expect(current, isA<Ok<void, CardRejection>>());
+        expect((await cardRow(card.id))['back'], 'mine');
+      },
+    );
+
+    test('without an expected version the edit overwrites the newer one '
+        '("Keep mine", 2.18)', () async {
+      final card = await cards.card(
+        nouns.id,
+        const CardDraft(front: 'f', back: 'b'),
+      );
+      await cards.editCard(
+        cardId: card.id,
+        draft: const CardDraft(front: 'f', back: 'theirs'),
+        now: _later,
+      );
+
+      final result = await cards.editCard(
+        cardId: card.id,
+        draft: const CardDraft(front: 'f', back: 'mine'),
+        now: DateTime(2026, 9, 25),
+      );
+
+      expect(result, isA<Ok<void, CardRejection>>());
+      expect((await cardRow(card.id))['back'], 'mine');
+    });
+
     test('replaces the content, the flag and the tags; keeps the schedule and the log', () async {
       final card = await cards.card(
         nouns.id,

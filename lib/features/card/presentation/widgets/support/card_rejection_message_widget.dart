@@ -18,5 +18,6 @@ extension CardRejectionMessage on AppLocalizations {
     CardRejection.sameDeck => cardRejectionSameDeck,
     CardRejection.crossRootMove => cardRejectionCrossRootMove,
     CardRejection.targetInTrash => cardRejectionTargetInTrash,
+    CardRejection.changedElsewhere => cardRejectionChangedElsewhere,
   };
 }

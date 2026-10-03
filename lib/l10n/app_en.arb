@@ -726,6 +726,10 @@
   "@cardRejectionTargetInTrash": {
     "description": "Card restore or Undo refusal: the deck it goes to is in the Trash."
   },
+  "cardRejectionChangedElsewhere": "This card changed on another device.",
+  "@cardRejectionChangedElsewhere": {
+    "description": "Card edit refusal: another device saved the card since the editor opened (SP2a 2.18). The editor asks Use theirs or Keep mine instead of showing this."
+  },
   "tagRejectionBlankName": "Enter a tag name.",
   "@tagRejectionBlankName": {
     "description": "Tag refusal: blank name."
@@ -1022,6 +1026,22 @@
   "cardKeepEditing": "Keep editing",
   "@cardKeepEditing": {
     "description": "Discard dialog: stay."
+  },
+  "cardChangedTitle": "This card changed on another device",
+  "@cardChangedTitle": {
+    "description": "Dialog title when Save finds the card saved elsewhere since the editor opened (SP2a 2.18)."
+  },
+  "cardChangedBody": "Use theirs to reload the newer version and drop your edits. Keep mine to save over it.",
+  "@cardChangedBody": {
+    "description": "Dialog body naming what each choice does to the text."
+  },
+  "cardUseTheirs": "Use theirs",
+  "@cardUseTheirs": {
+    "description": "Dialog action (outline): reload the card as the other device left it."
+  },
+  "cardKeepMine": "Keep mine",
+  "@cardKeepMine": {
+    "description": "Dialog action (primary): save the typed text over the newer version."
   },
   "cardDiscard": "Discard",
   "@cardDiscard": {

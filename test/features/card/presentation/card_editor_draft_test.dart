@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
@@ -73,11 +74,17 @@ final class _HeldEdits implements CardRepository {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   }) async {
     await release.future;
     if (then != null) return then!();
-    return _cards.editCard(cardId: cardId, draft: draft, now: now);
+    return _cards.editCard(
+      cardId: cardId,
+      draft: draft,
+      expectedUpdatedAt: expectedUpdatedAt,
+      now: now,
+    );
   }
 
   @override
@@ -96,6 +103,23 @@ final class _ScriptedDetail implements CardRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+Future<String> _backOf(LibraryEnv env, String cardId) async =>
+    (await env.db
+            .customSelect(
+              'SELECT back FROM card WHERE id = ?',
+              variables: [Variable<String>(cardId)],
+            )
+            .getSingle())
+        .read<String>('back');
+
+/// The other device's save, a day after the editor opened.
+Future<void> _otherDeviceSaves(LibraryEnv env, String cardId) =>
+    env.cards.editCard(
+      cardId: cardId,
+      draft: const CardDraft(front: 'bap', back: 'theirs'),
+      now: DateTime.now().add(const Duration(days: 1)),
+    );
 
 void main() {
   libraryTest('typing is kept in a draft once it pauses (2.14)', (
@@ -562,5 +586,149 @@ void main() {
       isNotNull,
     );
     expect(find.textContaining('sqlite'), findsNothing);
+  });
+
+  libraryTest('Save over a version another device saved asks first; Keep '
+      'mine saves over it (2.18)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'mine');
+    await _otherDeviceSaves(env, card.id);
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardChangedTitle), findsOneWidget);
+    expect(await _backOf(env, card.id), 'theirs');
+
+    await tester.tap(find.text(_en.cardKeepMine));
+    await tester.pumpAndSettle();
+    expect(await _backOf(env, card.id), 'mine');
+  });
+
+  libraryTest('Use theirs reloads the card, drops the edits and the draft '
+      '(2.18)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'mine');
+    await tester.pump(_pause);
+    await _otherDeviceSaves(env, card.id);
+    await tester.pump();
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(_en.cardUseTheirs));
+    await tester.pumpAndSettle();
+
+    expect(_text(tester, 1), 'theirs');
+    expect(await _backOf(env, card.id), 'theirs');
+    expect(await _drafts(env).read(CardDraftKey.edit(card.id)), isNull);
+    expect(
+      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges)).onPressed,
+      isNull,
+    );
+  });
+
+  libraryTest('dismissing the dialog without a choice writes nothing and '
+      'keeps the edits (2.18)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'mine');
+    await _otherDeviceSaves(env, card.id);
+    await tester.pump();
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    await tester.tapAt(const Offset(4, 4));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardChangedTitle), findsNothing);
+    expect(_text(tester, 1), 'mine');
+    expect(await _backOf(env, card.id), 'theirs');
+  });
+
+  libraryTest('a card that comes back is saveable again and the deleted '
+      'banner goes (2.17)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    late final StreamSubscription<CardDetail?> real;
+    late final StreamController<CardDetail?> source;
+    source = StreamController<CardDetail?>(
+      onListen: () => real = env.cards
+          .watchDetail(card.id)
+          .listen((detail) => source.add(detail)),
+      onCancel: () => real.cancel(),
+    );
+    addTearDown(source.close);
+    // Save finds the card missing (_isGone) before the stream says so.
+    final held = _HeldEdits(
+      env.cards,
+      then: () async => const Rejected(CardRejection.notFound),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _edit(card.id),
+      overrides: [
+        watchCardDetailUseCaseProvider.overrideWithValue(
+          WatchCardDetailUseCase(_ScriptedDetail(source.stream)),
+        ),
+        editCardUseCaseProvider.overrideWithValue(EditCardUseCase(held)),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'changed');
+    final present = (await tester.runAsync(
+      () => env.cards.watchDetail(card.id).first,
+    ))!;
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pump();
+    held.release.complete();
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
+
+    source.add(null);
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
+    expect(
+      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges)).onPressed,
+      isNull,
+    );
+
+    source.add(present);
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text(_en.cardEditorGoneTitle), findsNothing);
+    expect(_text(tester, 1), 'changed');
+    expect(
+      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges)).onPressed,
+      isNotNull,
+    );
   });
 }
