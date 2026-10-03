@@ -157,9 +157,11 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
   Future<String?> otherDeckSessionName({
     required String deckId,
     DateTime? now,
-  }) => _dao.otherDeckSessionName(
-    deckId,
-    startOfToday: startOfLocalDay(now ?? _now()),
+  }) => guardDatabase(
+    () => _dao.otherDeckSessionName(
+      deckId,
+      startOfToday: startOfLocalDay(now ?? _now()),
+    ),
   );
 
   /// The Study Entry of [deckId] as it stands (spec §8.1): the options come

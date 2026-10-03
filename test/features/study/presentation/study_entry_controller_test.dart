@@ -229,4 +229,39 @@ void main() {
 
     expect(id, isNotNull);
   });
+
+  test('a failed check of the other session does not hold the start back '
+      '(R3, 2.01)', () async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+    env.entries.isOtherSessionReadFailing = true;
+
+    final id = await controllerOf(
+      leaf,
+    ).start(const LearnStart(), confirmEnd: (_) async => fail('must not ask'));
+
+    expect(id, isNotNull);
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+  });
+
+  test("another deck's session left open on an earlier day is closed as "
+      'stale and never asks (R3, 2.01 review focus)', () async {
+    final other = await openOtherDeckSession(
+      env.db,
+      env.decks,
+      env.entries,
+      at: DateTime(2026, 9, 23, 9),
+    );
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+
+    final id = await controllerOf(
+      leaf,
+    ).start(const LearnStart(), confirmEnd: (_) async => fail('must not ask'));
+
+    expect(id, isNotNull);
+    final closed = await sessionOf(env.db, other);
+    expect(
+      (closed.read<String>('status'), closed.read<String>('end_reason')),
+      ('abandoned', 'interrupted'),
+    );
+  });
 }

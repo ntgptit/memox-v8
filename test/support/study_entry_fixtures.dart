@@ -87,6 +87,9 @@ final class FailingEntries implements StudyEntryRepository {
   /// The openings that reached the store.
   var opened = 0;
 
+  /// When set, the check of another deck's session fails, as a broken read.
+  var isOtherSessionReadFailing = false;
+
   /// When set, an opening waits for it: the screen's starting state.
   Future<void>? gate;
 
@@ -129,7 +132,12 @@ final class FailingEntries implements StudyEntryRepository {
   Future<String?> otherDeckSessionName({
     required String deckId,
     DateTime? now,
-  }) => _inner.otherDeckSessionName(deckId: deckId, now: now);
+  }) async {
+    if (isOtherSessionReadFailing) {
+      throw const UnknownDatabaseFailure(cause: 'test');
+    }
+    return _inner.otherDeckSessionName(deckId: deckId, now: now);
+  }
 }
 
 /// A review in [mode] of the five due cards of [insertFiveDue] (`ST-01`…
@@ -150,15 +158,16 @@ Future<String> openFiveDueReview(
 
 /// A learning session left open on another deck: a sm2 root `Spanish` with a
 /// leaf `Unit` holding one new card `x0`, opened through [entries]. Returns
-/// the session's id.
+/// the session's id, at [at] when given.
 Future<String> openOtherDeckSession(
   AppDatabase db,
   DeckRepository decks,
-  StudyEntryRepository entries,
-) async {
+  StudyEntryRepository entries, {
+  DateTime? at,
+}) async {
   final root = await decks.root('Spanish', SchedulerType.sm2);
   final unit = await decks.sub(root.id, 'Unit');
   await insertCard(db, id: 'x0', deckId: unit.id, back: 'new x');
-  final opened = await entries.openLearningSession(deckId: unit.id);
+  final opened = await entries.openLearningSession(deckId: unit.id, now: at);
   return (opened as Ok<String, StudyRejection>).value;
 }
