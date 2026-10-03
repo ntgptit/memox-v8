@@ -124,6 +124,12 @@ final class FailingEntries implements StudyEntryRepository {
     required String deckId,
     required DateTime now,
   }) => _inner.watchEntry(deckId: deckId, now: now);
+
+  @override
+  Future<String?> otherDeckSessionName({
+    required String deckId,
+    DateTime? now,
+  }) => _inner.otherDeckSessionName(deckId: deckId, now: now);
 }
 
 /// A review in [mode] of the five due cards of [insertFiveDue] (`ST-01`…
@@ -139,5 +145,20 @@ Future<String> openFiveDueReview(
     db,
     () => now,
   ).openReviewSession(deckId: leaf.id, mode: mode);
+  return (opened as Ok<String, StudyRejection>).value;
+}
+
+/// A learning session left open on another deck: a sm2 root `Spanish` with a
+/// leaf `Unit` holding one new card `x0`, opened through [entries]. Returns
+/// the session's id.
+Future<String> openOtherDeckSession(
+  AppDatabase db,
+  DeckRepository decks,
+  StudyEntryRepository entries,
+) async {
+  final root = await decks.root('Spanish', SchedulerType.sm2);
+  final unit = await decks.sub(root.id, 'Unit');
+  await insertCard(db, id: 'x0', deckId: unit.id, back: 'new x');
+  final opened = await entries.openLearningSession(deckId: unit.id);
   return (opened as Ok<String, StudyRejection>).value;
 }

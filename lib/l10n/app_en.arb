@@ -5804,6 +5804,27 @@
   "@studyExitStop": {
     "description": "The exit confirm dialog: stop the session."
   },
+  "studyEndOtherTitle": "End your session in {deck}?",
+  "@studyEndOtherTitle": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 14 (SP2a 2.01, R3): the confirm title when a start would end the open session of another deck."
+  },
+  "studyEndOtherBody": "Its answers are kept; the rest of that round is dropped.",
+  "@studyEndOtherBody": {
+    "description": "Screen 14 (SP2a 2.01): the confirm body; names what is kept and what is dropped."
+  },
+  "studyEndOtherKeep": "Keep it",
+  "@studyEndOtherKeep": {
+    "description": "Screen 14 (SP2a 2.01): leaves the other deck's session open and starts nothing."
+  },
+  "studyEndOtherConfirm": "End it and start",
+  "@studyEndOtherConfirm": {
+    "description": "Screen 14 (SP2a 2.01): ends the other deck's session and starts this one."
+  },
   "cardCaptionAddMissing": "Add the missing field to enable save.",
   "@cardCaptionAddMissing": {
     "description": "Card edit footer caption when a required field is empty (kit 09)."

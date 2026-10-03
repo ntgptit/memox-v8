@@ -12,6 +12,7 @@ import 'package:memox/features/study/presentation/providers/study_entry_provider
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
 import 'package:memox/features/study/presentation/widgets/overlays/study_direction_sheet_widget.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_end_other_session_dialog_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_body_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_footer_widget.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -98,7 +99,18 @@ class StudyEntryScreen extends ConsumerWidget {
   Future<void> _start(BuildContext context, WidgetRef ref, StudyStart start) =>
       _open(
         context,
-        ref.read(studyEntryControllerProvider(deckId).notifier).start(start),
+        ref
+            .read(studyEntryControllerProvider(deckId).notifier)
+            .start(
+              start,
+              // R3: a Learn or a Review ends another deck's open session.
+              confirmEnd: (deckName) async =>
+                  context.mounted &&
+                  await showStudyEndOtherSessionDialog(
+                    context,
+                    deckName: deckName,
+                  ),
+            ),
       );
 
   Future<void> _retry(BuildContext context, WidgetRef ref) => _open(

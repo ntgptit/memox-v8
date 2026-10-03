@@ -175,4 +175,58 @@ void main() {
     expect(stateOf(leaf).status, StudyStartStatus.refused);
     expect(stateOf(leaf).refusal, StudyRejection.sessionClosed);
   });
+
+  test("another deck's open session asks first; Keep it starts nothing and "
+      'writes nothing (R3, 2.01)', () async {
+    final other = await openOtherDeckSession(env.db, env.decks, env.entries);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+    final asked = <String>[];
+
+    final id = await controllerOf(leaf).start(
+      const LearnStart(),
+      confirmEnd: (deckName) async {
+        asked.add(deckName);
+        return false;
+      },
+    );
+
+    expect(id, isNull);
+    expect(asked, ['Unit']);
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+    expect(
+      (await sessionOf(env.db, other)).read<String>('status'),
+      'in_progress',
+    );
+    // Only the other deck's opening reached the store.
+    expect(env.entries.opened, 1);
+  });
+
+  test("End it and start closes the other deck's session and opens the new "
+      'one (R3, 2.01)', () async {
+    final other = await openOtherDeckSession(env.db, env.decks, env.entries);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+
+    final id = await controllerOf(leaf)
+        .start(const LearnStart(), confirmEnd: (_) async => true);
+
+    expect(id, isNotNull);
+    final ended = await sessionOf(env.db, other);
+    expect(
+      (ended.read<String>('status'), ended.read<String>('end_reason')),
+      ('abandoned', 'user_exit'),
+    );
+  });
+
+  test('a start on the deck that holds the open session asks nothing '
+      '(spec 3.1, 2.01)', () async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+
+    final id = await controllerOf(leaf).start(
+      const LearnStart(),
+      confirmEnd: (_) async => fail("asked about the deck's own session"),
+    );
+
+    expect(id, isNotNull);
+  });
 }

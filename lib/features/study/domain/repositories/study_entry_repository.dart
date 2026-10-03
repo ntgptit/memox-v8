@@ -43,4 +43,11 @@ abstract interface class StudyEntryRepository {
     required String deckId,
     required DateTime now,
   });
+
+  /// R3 (UI hardening SP2a 2.01): the name of the deck whose open session a
+  /// start on [deckId] would end: an open session of today, at its root's
+  /// generation, out of the Trash and with a queue row left, that is not
+  /// [deckId]'s own (BR-STUDY-072, BR-STUDY-075). Null when there is none.
+  /// It writes nothing.
+  Future<String?> otherDeckSessionName({required String deckId, DateTime? now});
 }
