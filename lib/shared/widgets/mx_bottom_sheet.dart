@@ -29,8 +29,8 @@ Future<T?> showMxBottomSheet<T>(
 
 /// The bottom-anchored modal for action lists and pickers. It stops at 85% of
 /// the screen:
-/// - only [child] (or the builder's list) scrolls, so [header] and [footer] stay in view (ruling
-///   O12);
+/// - only [child] (or the builder's list) scrolls, so [header] and [footer]
+///   stay in view (ruling O12);
 /// - the fill runs under the gesture bar, and the content stays above it.
 ///
 /// It is a Material, so the ripple of a row inside is visible.

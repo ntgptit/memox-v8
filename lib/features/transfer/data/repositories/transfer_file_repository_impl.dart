@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show compute;
@@ -68,12 +69,11 @@ Outcome<SourceTable, TransferRejection> _read((TransferSource, int?) request) {
   return table;
 }
 
-// ponytail: pasted text counts UTF-16 units, which is at most its UTF-8
-// bytes, so a non-ASCII paste may pass a little over 5 MB; encode it first
-// if that ever matters.
+/// A source's size in bytes: a paste is counted as the UTF-8 it would be
+/// written as, so the cap means the same for both.
 int _size(TransferSource source) => switch (source) {
   FileSource(:final bytes) => bytes.lengthInBytes,
-  PastedSource(:final text) => text.length,
+  PastedSource(:final text) => utf8.encode(text).length,
 };
 
 Outcome<SourceTable, TransferRejection> _pasted(String text) => Ok(

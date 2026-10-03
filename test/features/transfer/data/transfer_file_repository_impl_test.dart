@@ -460,6 +460,27 @@ void main() {
       );
     });
 
+    test('a paste is counted in UTF-8 bytes, as a file is: exactly 5 MB is '
+        'read; one byte more is refused', () async {
+      // Two bytes per "é": the paste is under the cap in UTF-16 units and
+      // over it in bytes.
+      final atCap = 'a,${'é' * ((TransferLimits.maxBytes - 2) ~/ 2)}';
+      expect(utf8.encode(atCap), hasLength(TransferLimits.maxBytes));
+
+      expect((await _table(PastedSource(atCap))).rows, hasLength(1));
+      expect(
+        await _refusal(PastedSource('${atCap}x')),
+        TransferRejection.tooLarge,
+      );
+      // Over in bytes while its length in UTF-16 units is at most the cap.
+      final multibyte = 'a,${'ế' * (TransferLimits.maxBytes ~/ 3 + 1)}';
+      expect(multibyte.length, lessThan(TransferLimits.maxBytes));
+      expect(
+        await _refusal(PastedSource(multibyte)),
+        TransferRejection.tooLarge,
+      );
+    });
+
     test('a table over 20,000 rows is refused; 20,000 rows are read', () async {
       String rows(int count) => List.filled(count, 'a,b').join('\n');
 
