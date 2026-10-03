@@ -25,7 +25,9 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/trash/data/repositories/trash_repository_impl.dart';
 import 'package:memox/features/trash/domain/usecases/purge_expired_trash_use_case.dart';
+import 'package:memox/features/trash/domain/usecases/purge_trash_use_case.dart';
 import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
+import 'package:memox/features/trash/presentation/providers/purge_trash_use_case_provider.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -102,6 +104,13 @@ List<Override> _backend(LibraryEnv env) => [
   // (purge_expired_wiring_test.dart).
   purgeExpiredTrashUseCaseProvider.overrideWithValue(
     PurgeExpiredTrashUseCase(
+      TrashRepositoryImpl(env.db),
+      env.clock,
+      () async => env.clock.now(),
+    ),
+  ),
+  purgeTrashUseCaseProvider.overrideWithValue(
+    PurgeTrashUseCase(
       TrashRepositoryImpl(env.db),
       env.clock,
       () async => env.clock.now(),

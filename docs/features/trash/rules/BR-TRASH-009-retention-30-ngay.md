@@ -9,7 +9,7 @@ superseded_by:
 
 Retention là **30 × 24 giờ** tính từ `deleted_at`. Một batch eligible để purge khi `now - deleted_at >= 30 ngày`; đúng biên 30 ngày MUST là eligible. Auto-purge MUST chạy khi app khởi động, khi resume và khi mở Trash, MUST idempotent, và MUST NOT phụ thuộc vào việc người dùng có mở Trash hay không. Thời điểm MUST đến từ clock được inject; mọi layer MUST NOT gọi `DateTime.now()`.
 
-Auto-purge MUST tính hết hạn theo **giờ purge** = sớm hơn của giờ máy và giờ server thấy ở lần đồng bộ gần nhất (`sync_changes` trả `serverTime`). Nếu chưa từng đồng bộ thì chưa có giờ purge: auto-purge MUST NOT xoá gì cho đến lần chạy sau đồng bộ. Nhờ đó giờ máy chỉnh tới trước không bao giờ xoá sớm; giờ server cũ chỉ làm việc xoá chậm lại.
+Auto-purge MUST tính hết hạn theo **giờ purge** = sớm hơn của giờ máy và giờ server thấy ở lần đồng bộ gần nhất (`sync_changes` trả `serverTime`). Nếu chưa từng đồng bộ thì chưa có giờ purge: auto-purge MUST NOT xoá gì cho đến lần chạy sau đồng bộ. Nhờ đó giờ máy chỉnh tới trước không bao giờ xoá sớm; giờ server cũ chỉ làm việc xoá chậm lại. Purge do người dùng chọn luôn xoá đúng các batch đã chọn; batch hết hạn đi kèm chỉ bị quét theo cùng giờ purge, nên không có giờ server thì chỉ các batch đã chọn bị xoá.
 
 **Enforced by:** store
 
