@@ -164,6 +164,28 @@ void main() {
       );
     });
 
+    accountTest('code, offline with the digits kept, $theme', (
+      tester,
+      env,
+      world,
+    ) async {
+      await world.coordinator.requestCode('a@example.com');
+      await capture(
+        tester,
+        env,
+        CodeScreen(email: 'a@example.com', onSignedIn: () {}),
+        'code_offline_kept',
+        overrides: accountOverrides(world),
+        before: () async {
+          world.network.goOffline();
+          await tester.enterText(find.byType(TextField), '123456');
+          await _settle(tester);
+          expect(find.text(_en.accountOffline), findsOneWidget);
+          expect(find.text(_en.commonRetry), findsOneWidget);
+        },
+      );
+    });
+
     for (final (name, isDiscarding) in [
       ('merge_sheet_merge', false),
       ('merge_sheet_discard', true),

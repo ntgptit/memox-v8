@@ -109,6 +109,9 @@ class FakeAuthGateway implements AuthGateway {
   /// While set, code requests wait on it, as a slow network does.
   Completer<void>? holdRequests;
 
+  /// While set, code checks wait on it, as a slow network does.
+  Completer<void>? holdVerifies;
+
   Future<void> _waitIfHeld() async => holdRequests?.future;
 
   void _failIfAsked() {
@@ -184,6 +187,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailLink(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await holdVerifies?.future;
     _checkCode(email, code);
     server.users[_userId]!
       ..email = email
@@ -205,6 +209,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailSignIn(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await holdVerifies?.future;
     _checkCode(email, code);
     final user = server.userByEmail(email) ?? server.addUser(email: email);
     user.methods.add(SignInMethod.email);
