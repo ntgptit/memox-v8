@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
@@ -16,27 +13,16 @@ import 'package:memox/features/card/presentation/providers/card_draft_controller
 import 'package:memox/features/card/presentation/states/card_editor_source_state.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_changed_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_draft_banner_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_editor_app_bar_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_editor_body_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_trash_section_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_editor_messages_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
-import 'package:memox/shared/widgets/mx_icon_button.dart';
-import 'package:memox/shared/widgets/mx_inline_banner.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
-import 'package:memox/shared/widgets/mx_text_field.dart';
-
-enum _Field { front, back, example, hint, pronunciation }
 
 /// The card editor's form (kit 08/09), in create mode for [deckId] or in
 /// edit mode for [detail]'s card. Validation is live; Save waits for a valid
@@ -84,7 +70,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   late var _isFlagged = _card?.isFlagged ?? false;
   late var _isDetailsOpen = !_isCreating;
   late CardDraft _saved;
-  final _touched = <_Field>{};
+  final _touched = <CardEditorField>{};
   var _isSaving = false;
   var _hasFailed = false;
   var _deckRejects = false;
@@ -176,77 +162,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   bool get _isDirty => _hasPendingTag || !_draft().sameContentAs(_saved);
 
-  /// What differs from the saved card, named for the discard dialog (kit 09),
-  /// by the same comparisons as [_isDirty].
-  List<String> _editedParts(AppLocalizations l10n) {
-    final draft = _draft();
-    return [
-      if (draft.front != _saved.front) l10n.cardEditedTerm,
-      if (draft.back != _saved.back) l10n.cardEditedMeaning,
-      if (draft.example != _saved.example) l10n.cardEditedExample,
-      if (draft.hint != _saved.hint) l10n.cardEditedHint,
-      if (draft.pronunciation != _saved.pronunciation)
-        l10n.cardEditedPronunciation,
-      if (draft.isFlagged != _saved.isFlagged) l10n.cardEditedFlag,
-      if (_hasPendingTag || !listEquals(draft.tagNames, _saved.tagNames))
-        l10n.cardEditedTags,
-    ];
-  }
-
-  /// Ruling P4a-L2: a blank side speaks once touched; a long one at once.
-  String? _sideError(
-    _Field field,
-    Outcome<void, CardRejection> rule,
-    String blank,
-    String tooLong,
-  ) => switch (rule) {
-    Ok() => null,
-    Rejected(reason: CardRejection.blankContent) =>
-      _touched.contains(field) ? blank : null,
-    Rejected() => tooLong,
+  Map<CardEditorField, String> get _texts => {
+    CardEditorField.front: _front.text,
+    CardEditorField.back: _back.text,
+    CardEditorField.example: _example.text,
+    CardEditorField.hint: _hint.text,
+    CardEditorField.pronunciation: _pronunciation.text,
   };
-
-  Map<_Field, String?> _errors(AppLocalizations l10n) {
-    String? optional(TextEditingController controller) =>
-        switch (CardDraft.checkOptional(controller.text)) {
-          Ok() => null,
-          Rejected() => l10n.cardOptionalTooLong,
-        };
-    return {
-      _Field.front: _sideError(
-        _Field.front,
-        CardDraft.checkFront(_front.text),
-        l10n.cardFrontBlank,
-        l10n.cardFrontTooLong,
-      ),
-      _Field.back: _sideError(
-        _Field.back,
-        CardDraft.checkBack(_back.text),
-        l10n.cardBackBlank,
-        l10n.cardBackTooLong,
-      ),
-      _Field.example: optional(_example),
-      _Field.hint: optional(_hint),
-      _Field.pronunciation: optional(_pronunciation),
-    };
-  }
-
-  String _caption(AppLocalizations l10n, Map<_Field, String?> errors) {
-    if (_isSaving) return l10n.cardCaptionSaving;
-    if (_isCardGone) return l10n.cardCaptionGone;
-    if (_deckRejects) return l10n.cardCaptionDeckRejects;
-    if (errors.values.any((error) => error != null)) {
-      // Kit 09: an edit that lost a required side asks for it by name.
-      final isMissing = _front.text.trim().isEmpty || _back.text.trim().isEmpty;
-      return !_isCreating && isMissing
-          ? l10n.cardCaptionAddMissing
-          : l10n.cardCaptionFix;
-    }
-    if (_front.text.trim().isEmpty || _back.text.trim().isEmpty) {
-      return l10n.cardCaptionRequired;
-    }
-    return _isCreating ? l10n.cardCaptionKeepAdding : l10n.cardCaptionEdit;
-  }
 
   /// In edit, Save waits for a change (critique 2026-09-30 part 3d-1);
   /// create saves whatever is valid.
@@ -259,7 +181,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       ? () => unawaited(_save())
       : null;
 
-  void _touch(_Field field) => setState(() => _touched.add(field));
+  void _touch(CardEditorField field) => setState(() => _touched.add(field));
 
   /// The draft kept for this form, offered back when it differs from what the
   /// form shows now; a draft equal to it is dropped (R9).
@@ -466,7 +388,13 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     final discard = await showCardDiscardDialog(
       context,
       isNew: _isCreating,
-      edited: _isCreating ? const [] : _editedParts(context.l10n),
+      edited: _isCreating
+          ? const []
+          : context.l10n.cardEditedParts(
+              draft: _draft(),
+              saved: _saved,
+              hasPendingTag: _hasPendingTag,
+            ),
     );
     if (!discard || !mounted) return;
     unawaited(_drafts.clear());
@@ -481,7 +409,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final errors = _errors(l10n);
+    final errors = l10n.cardEditorErrors(_texts, _touched);
     final isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
     return PopScope(
       // A refused deck leaves without asking: its text is already in the
@@ -494,11 +422,28 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         unawaited(_confirmLeave());
       },
       child: MxAppShell(
-        appBar: _appBar(l10n),
+        appBar: CardEditorAppBarWidget(
+          isCreating: _isCreating,
+          isCardGone: _isCardGone,
+          isFlagged: _isFlagged,
+          isSaving: _isSaving,
+          onClose: _close,
+          onToggleFlag: () {
+            setState(() => _isFlagged = !_isFlagged);
+            _keepDraft();
+          },
+        ),
         footer: _isDeckGone
             ? null
             : CardEditorFooterWidget(
-                caption: _caption(l10n, errors),
+                caption: l10n.cardEditorCaption(
+                  texts: _texts,
+                  errors: errors,
+                  isCreating: _isCreating,
+                  isSaving: _isSaving,
+                  isCardGone: _isCardGone,
+                  deckRejects: _deckRejects,
+                ),
                 saveLabel: _isCreating
                     ? l10n.cardSaveCard
                     : l10n.cardSaveChanges,
@@ -507,138 +452,47 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                 onCancel: _isSaving ? null : _close,
                 onSave: _onSave,
               ),
-        body: _isDeckGone
-            ? CardGoneWidget(
-                title: l10n.cardDeckGoneTitle,
-                body: l10n.cardDeckGoneBody,
-                onBack: _leave,
-                onOpenTrash: widget.onOpenTrash,
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // The path is context, not input: it waits while the
-                  // keyboard is up (audit P1; §9 row 81 kept at rest).
-                  if (!isTyping)
-                    widget.deckContext(
-                      widget.deckId,
-                      _isCreating ? l10n.cardAddTitle : l10n.cardEditCrumb,
-                    ),
-                  Expanded(
-                    child: MxScreenScroll(children: _fields(l10n, errors)),
-                  ),
-                ],
-              ),
+        body: _body(errors, isTyping: isTyping),
       ),
     );
   }
 
-  MxAppBar _appBar(AppLocalizations l10n) => MxAppBar(
-    title: _isCreating ? l10n.cardAddTitle : l10n.cardEditTitle,
-    density: MxAppBarDensity.content,
-    leading: MxIconButton(
-      icon: _isCreating ? AppIcons.close : AppIcons.back,
-      semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,
-      onPressed: _isSaving ? null : _close,
-    ),
-    actions: [
-      // Ruling P4a-L6: the flag toggles here, in edit only.
-      if (!_isCreating && !_isCardGone)
-        // One node: the button and its toggled state.
-        MergeSemantics(
-          child: Semantics(
-            toggled: _isFlagged,
-            child: MxIconButton(
-              icon: _isFlagged ? AppIcons.flagged : AppIcons.flag,
-              semanticLabel: _isFlagged
-                  ? l10n.cardFlagClear
-                  : l10n.cardFlagLabel,
-              onPressed: () {
-                setState(() => _isFlagged = !_isFlagged);
-                _keepDraft();
-              },
-            ),
-          ),
-        ),
-    ],
-  );
-
-  List<Widget> _fields(AppLocalizations l10n, Map<_Field, String?> errors) => [
-    const SizedBox(height: AppSpacing.control),
-    if (_offer != null)
-      CardDraftBannerWidget(onRestore: _restoreOffer, onDiscard: _discardOffer),
-    if (_deckRejects)
-      MxInlineBanner(
-        tone: MxBannerTone.warning,
-        title: l10n.cardDeckRejectsTitle,
-        message: l10n.cardDeckRejectsBody,
-      ),
-    if (_isCardGone)
-      MxInlineBanner(
-        tone: MxBannerTone.danger,
-        title: l10n.cardEditorGoneTitle,
-        message: l10n.cardEditorGoneBody,
-      )
-    else if (widget.source == CardEditorSource.unreadable)
-      MxInlineBanner(
-        tone: MxBannerTone.warning,
-        title: l10n.cardEditorStaleTitle,
-        message: l10n.cardEditorStaleBody,
-      ),
-    if (widget.detail case final detail?)
-      CardEditSummaryWidget(detail: detail, onOpenDetails: _close),
-    CardFieldWidget(
-      label: l10n.cardFieldFront,
-      hint: l10n.cardFrontHint,
-      limit: CardDraft.maxFrontLength,
-      controller: _front,
-      focusNode: _frontFocus,
-      isRequired: true,
-      variant: MxTextFieldVariant.term,
-      errorText: errors[_Field.front],
-      onChanged: (_) => _touch(_Field.front),
-    ),
-    CardFieldWidget(
-      label: l10n.cardFieldBack,
-      hint: l10n.cardBackHint,
-      limit: CardDraft.maxBackLength,
-      controller: _back,
-      isRequired: true,
-      variant: MxTextFieldVariant.meaning,
-      errorText: errors[_Field.back],
-      onChanged: (_) => _touch(_Field.back),
-    ),
-    // In create, behind "Add details"; in edit, under "Optional details".
-    CardOptionalFieldsWidget(
-      isOpen: _isDetailsOpen,
-      hasHeader: !_isCreating,
-      onOpen: () => setState(() => _isDetailsOpen = true),
-      example: _input(_Field.example, _example, errors),
-      hint: _input(_Field.hint, _hint, errors),
-      pronunciation: _input(_Field.pronunciation, _pronunciation, errors),
-    ),
-    CardTagEditorWidget(
-      key: _tagEditor,
-      tags: _tags,
-      onChanged: (tags) {
-        setState(() => _tags = tags);
-        _keepDraft();
-      },
-      onPendingChanged: (isPending) =>
-          setState(() => _hasPendingTag = isPending),
-    ),
-    if (_card case final card? when !_isCardGone)
-      CardTrashSectionWidget(card: card, onOpenTrash: widget.onOpenTrash),
-  ];
-
-  /// One optional field's input, message and touch.
-  CardOptionalInput _input(
-    _Field field,
-    TextEditingController controller,
-    Map<_Field, String?> errors,
-  ) => (
-    controller: controller,
-    errorText: errors[field],
-    onChanged: () => _touch(field),
+  Widget _body(
+    Map<CardEditorField, String?> errors, {
+    required bool isTyping,
+  }) => CardEditorBodyWidget(
+    deckId: widget.deckId,
+    deckContext: widget.deckContext,
+    isDeckGone: _isDeckGone,
+    isTyping: isTyping,
+    onLeave: _leave,
+    detail: widget.detail,
+    card: _card,
+    source: widget.source,
+    isCardGone: _isCardGone,
+    deckRejects: _deckRejects,
+    hasOffer: _offer != null,
+    onRestoreOffer: _restoreOffer,
+    onDiscardOffer: _discardOffer,
+    front: _front,
+    back: _back,
+    example: _example,
+    hint: _hint,
+    pronunciation: _pronunciation,
+    frontFocus: _frontFocus,
+    errors: errors,
+    onTouch: _touch,
+    isDetailsOpen: _isDetailsOpen,
+    onOpenDetailsSection: () => setState(() => _isDetailsOpen = true),
+    tagEditorKey: _tagEditor,
+    tags: _tags,
+    onTagsChanged: (tags) {
+      setState(() => _tags = tags);
+      _keepDraft();
+    },
+    onPendingTagChanged: (isPending) =>
+        setState(() => _hasPendingTag = isPending),
+    onOpenDetails: _close,
+    onOpenTrash: widget.onOpenTrash,
   );
 }
