@@ -342,4 +342,34 @@ void main() {
     );
     expect(card.isHero, isFalse);
   });
+
+  libraryTest('a deck lost while another route covers its entry shows the gone '
+      'state with Back once uncovered (2.03)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    await insertCard(env.db, id: 'n1', deckId: root.id);
+    await pumpLibraryScreenPushed(tester, env, _screen(root.id));
+    final entry = tester.element(find.byType(StudyEntryScreen));
+    unawaited(
+      Navigator.of(entry).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const Scaffold(body: Text('cover')),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await env.decks.deleteDeck(deckId: root.id);
+    await tester.pumpAndSettle();
+    // The one-shot listener holds back under a cover: no toast, no pop.
+    expect(find.text(_en.studyEntryDeckGone), findsNothing);
+
+    Navigator.of(entry).pop();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(StudyEntryScreen), findsOneWidget);
+    expect(find.text(_en.deckGoneTitle), findsOneWidget);
+    await tester.tap(find.text(_en.commonBack));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyEntryScreen), findsNothing);
+  });
 }

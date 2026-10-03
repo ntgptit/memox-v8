@@ -58,41 +58,51 @@ class StudyEntryScreen extends ConsumerWidget {
       (_, next) => _onEntry(context, next),
     );
     final l10n = context.l10n;
-    return MxAppShell(
-      appBar: MxAppBar(
-        titleWidget: title,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
+    final isStarting = ref
+        .watch(studyEntryControllerProvider(deckId))
+        .isStarting;
+    // A session is being written: Back or Study options would leave it
+    // orphaned (2.04).
+    return PopScope(
+      canPop: !isStarting,
+      child: MxAppShell(
+        appBar: MxAppBar(
+          titleWidget: title,
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: isStarting
+                ? null
+                : () => unawaited(Navigator.of(context).maybePop()),
+          ),
+          actions: [
+            if (onOpenStudyOptions case final open?)
+              MxIconButton(
+                icon: AppIcons.studyOptions,
+                semanticLabel: l10n.deckStudyOptions,
+                onPressed: isStarting ? null : open,
+              ),
+          ],
         ),
-        actions: [
-          if (onOpenStudyOptions case final open?)
-            MxIconButton(
-              icon: AppIcons.studyOptions,
-              semanticLabel: l10n.deckStudyOptions,
-              onPressed: open,
-            ),
-        ],
-      ),
-      body: StudyEntryBodyWidget(
-        deckId: deckId,
-        breadcrumb: breadcrumb,
-        onLearn: () => unawaited(_start(context, ref, const LearnStart())),
-        onContinue: (sessionId) =>
-            unawaited(_start(context, ref, ContinueStart(sessionId))),
-      ),
-      footer: switch (ref.watch(studyEntryProvider(deckId))) {
-        AsyncData(value: Ok(:final value)) => StudyEntryFooterWidget(
+        body: StudyEntryBodyWidget(
           deckId: deckId,
-          entry: value,
-          onReview: () => unawaited(_review(context, ref, value)),
+          breadcrumb: breadcrumb,
           onLearn: () => unawaited(_start(context, ref, const LearnStart())),
-          onRetry: () => unawaited(_retry(context, ref)),
+          onContinue: (sessionId) =>
+              unawaited(_start(context, ref, ContinueStart(sessionId))),
         ),
-        _ => null,
-      },
+        footer: switch (ref.watch(studyEntryProvider(deckId))) {
+          AsyncData(value: Ok(:final value)) => StudyEntryFooterWidget(
+            deckId: deckId,
+            entry: value,
+            onReview: () => unawaited(_review(context, ref, value)),
+            onLearn: () => unawaited(_start(context, ref, const LearnStart())),
+            onRetry: () => unawaited(_retry(context, ref)),
+          ),
+          _ => null,
+        },
+      ),
     );
   }
 

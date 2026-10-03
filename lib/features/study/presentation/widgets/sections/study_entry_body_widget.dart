@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -52,6 +54,20 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   void _pick(WidgetRef ref, StudyMode mode) =>
       ref.read(reviewModePickControllerProvider(deckId).notifier).pick(mode);
 
+  /// The deck went to the Trash or no longer exists (UC-STUDY-001 E1): the
+  /// not-found form with the way back.
+  Widget _gone(BuildContext context) {
+    final l10n = context.l10n;
+    return MxErrorState(
+      icon: AppIcons.searchOff,
+      title: l10n.deckGoneTitle,
+      body: l10n.deckGoneBody,
+      retryLabel: l10n.commonBack,
+      onRetry: () => unawaited(Navigator.of(context).maybePop()),
+      actionIcon: AppIcons.back,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -59,8 +75,9 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final picked = ref.watch(reviewModePickControllerProvider(deckId));
     final content = switch (ref.watch(studyEntryProvider(deckId))) {
       AsyncData(value: Ok(:final value)) => _loaded(ref, value, start, picked),
-      // The screen leaves on notFound (UC-STUDY-001 E1).
-      AsyncData() => const <Widget>[],
+      // The one-shot listener leaves with a toast while the route is
+      // current; under another route this is what stays (2.03).
+      AsyncData() => [_gone(context)],
       AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.studyEntryErrorTitle,

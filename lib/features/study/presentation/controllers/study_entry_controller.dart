@@ -98,6 +98,14 @@ class StudyEntryController extends _$StudyEntryController {
     return start(last);
   }
 
+  /// A new pick drops a refusal or a failure the last start left, so Try
+  /// again and the banner do not outlive the mode they were about (2.02). A
+  /// start that runs is left alone (BR-STUDY-004).
+  void dismissFailure() {
+    if (state.status == StudyStartStatus.idle || state.isStarting) return;
+    state = const StudyStartState();
+  }
+
   /// True when no other deck's session would end, or the person confirmed it.
   Future<bool> _isEndConfirmed(
     Future<bool> Function(String deckName) confirmEnd,

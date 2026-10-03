@@ -1,3 +1,5 @@
+import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import 'dart:async';
@@ -413,5 +415,79 @@ void main() {
 
     expect(find.text(_en.studyEndOtherTitle('Unit')), findsOneWidget);
     expect(opened, isNull);
+  });
+
+  libraryTest('picking another review mode after a failed start drops Try '
+      'again and the old mode (2.02)', (tester, env) async {
+    final leaf = await insertFiveDue(env.db, env.decks);
+    String? opened;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(leaf.id, onOpen: (id) => opened = id),
+    );
+    env.entries.isFailing = true;
+    await tester.tap(_button(_en.studyEntryReviewCta(5)));
+    await tester.pumpAndSettle();
+    expect(_button(_en.studyEntryTryAgain), findsOneWidget);
+
+    await tester.tap(find.text(_en.cardModeGuess));
+    await tester.pump();
+
+    expect(_button(_en.studyEntryTryAgain), findsNothing);
+    expect(find.text(_en.studyEntryStartFailedTitle), findsNothing);
+    env.entries.isFailing = false;
+    await tester.tap(_button(_en.studyEntryReviewCta(5)));
+    await tester.pumpAndSettle();
+    expect(
+      (await sessionOf(env.db, opened!)).read<String>('current_mode'),
+      'guess',
+    );
+  });
+
+  libraryTest('while a session opens Back and Study options do nothing '
+      '(2.04)', (tester, env) async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1, dueCards: 1);
+    final gate = Completer<void>();
+    env.entries.gate = gate.future;
+    var optionsOpened = 0;
+    await pumpLibraryScreenPushed(
+      tester,
+      env,
+      StudyEntryScreen(
+        deckId: leaf,
+        title: const Text('Deck'),
+        breadcrumb: const SizedBox.shrink(),
+        onOpenSession: (_) {},
+        onOpenStudyOptions: () => optionsOpened++,
+      ),
+    );
+
+    await tester.tap(_button(_en.studyEntryLearn));
+    await tester.pump();
+
+    await tester.tap(find.byTooltip(_en.commonBack), warnIfMissed: false);
+    await tester.pump();
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.deckStudyOptions), warnIfMissed: false);
+    await tester.pump();
+
+    expect(find.byType(StudyEntryScreen), findsOneWidget);
+    expect(optionsOpened, 0);
+    expect(
+      tester
+          .widget<MxIconButton>(
+            find.widgetWithIcon(MxIconButton, AppIcons.back),
+          )
+          .onPressed,
+      isNull,
+    );
+
+    gate.complete();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyEntryScreen), findsNothing);
   });
 }

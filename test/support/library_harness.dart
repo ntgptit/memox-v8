@@ -27,6 +27,7 @@ import 'package:memox/features/transfer/data/repositories/transfer_file_reposito
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
@@ -164,6 +165,36 @@ Future<void> pumpLibraryScreen(
   );
   await tester.pump();
   await tester.pump();
+}
+
+/// [screen] pushed over a host page, as the router pushes it: Back and a
+/// covering route act on a real stack. Pumps the host, taps its `open`
+/// button and settles.
+Future<void> pumpLibraryScreenPushed(
+  WidgetTester tester,
+  LibraryEnv env,
+  Widget screen, {
+  List<Override> overrides = const [],
+}) async {
+  await pumpLibraryScreen(
+    tester,
+    env,
+    MxAppShell(
+      body: Builder(
+        builder: (context) => Center(
+          child: TextButton(
+            onPressed: () =>
+                Navigator.of(context)
+                    .push(MaterialPageRoute<void>(builder: (_) => screen)),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    ),
+    overrides: overrides,
+  );
+  await tester.tap(find.text('open'));
+  await tester.pumpAndSettle();
 }
 
 /// [screen] over the real backend at 1080×2400 (3x), inside the golden

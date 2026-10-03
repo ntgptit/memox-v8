@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -264,4 +267,44 @@ void main() {
       ('abandoned', 'interrupted'),
     );
   });
+
+  test('picking a review mode drops a failed start, so Try again cannot '
+      'replay the mode picked before (2.02)', () async {
+    final leaf = (await insertFiveDue(env.db, env.decks)).id;
+    final controller = controllerOf(leaf);
+    container.listen(reviewModePickControllerProvider(leaf), (_, _) {});
+    env.entries.isFailing = true;
+
+    await controller.start(const ReviewStart(mode: StudyMode.match));
+    expect(stateOf(leaf).status, StudyStartStatus.failed);
+
+    container
+        .read(reviewModePickControllerProvider(leaf).notifier)
+        .pick(StudyMode.guess);
+
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+    expect(stateOf(leaf).lastStart, isNull);
+    expect(await controller.retry(), isNull);
+    expect(env.entries.opened, 1);
+  });
+
+  test(
+    'a pick does not drop a start that is running (2.02, BR-STUDY-004)',
+    () async {
+      final leaf = (await insertFiveDue(env.db, env.decks)).id;
+      final controller = controllerOf(leaf);
+      container.listen(reviewModePickControllerProvider(leaf), (_, _) {});
+      final gate = Completer<void>();
+      env.entries.gate = gate.future;
+
+      final running = controller.start(
+        const ReviewStart(mode: StudyMode.match),
+      );
+      controller.dismissFailure();
+      expect(stateOf(leaf).status, StudyStartStatus.starting);
+
+      gate.complete();
+      await running;
+    },
+  );
 }
