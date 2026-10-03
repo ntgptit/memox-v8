@@ -1546,6 +1546,10 @@
     },
     "description": "Screen 06: time until the auto-purge (BR-TRASH-009)."
   },
+  "trashAwaitingSync": "Removed after the next sync",
+  "@trashAwaitingSync": {
+    "description": "Screen 06: the time left of a row whose device-clock expiry has passed while the purge clock (the earlier of the device and the last server time) has not. Neutral ink; it goes after the next sync (BR-TRASH-009, R10)."
+  },
   "trashHoursLeft": "{count}h left",
   "@trashHoursLeft": {
     "placeholders": {

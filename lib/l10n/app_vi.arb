@@ -316,6 +316,7 @@
   "trashTopLevel": "Cấp cao nhất",
   "trashDaysLeft": "{count, plural, other{còn {count} ngày}}",
   "trashHoursLeft": "còn {count} giờ",
+  "trashAwaitingSync": "Sẽ xoá sau lần đồng bộ tới",
   "trashEntryActions": "Thao tác cho {name}",
   "trashEntrySemantics": "{name}, {meta}, {timeLeft}, {origin}",
   "trashCardActionsMeta": "Thẻ · đã xoá {ago} · từng ở {deck}",

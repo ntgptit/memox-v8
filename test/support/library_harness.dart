@@ -72,6 +72,10 @@ final class LibraryEnv {
   /// The app's entry store, on the fake day; a test fails its openings
   /// (screen 14 startFailed).
   final FailingEntries entries;
+
+  /// The server time the purges see (R10): the fake day unless a test
+  /// stores another.
+  late ServerTimeReader serverTime = () async => clock.now();
 }
 
 /// A widget test over [LibraryEnv]. The widget tree is torn down before the
@@ -107,7 +111,7 @@ List<Override> _backend(LibraryEnv env) => [
     PurgeExpiredTrashUseCase(
       TrashRepositoryImpl(env.db),
       env.clock,
-      () async => env.clock.now(),
+      () => env.serverTime(),
     ),
   ),
   // Built over the repository provider, so a test can hold its writes.
@@ -115,7 +119,7 @@ List<Override> _backend(LibraryEnv env) => [
     (ref) => PurgeTrashUseCase(
       ref.watch(trashRepositoryProvider),
       env.clock,
-      () async => env.clock.now(),
+      () => env.serverTime(),
     ),
   ),
   _inlineTransferFiles,

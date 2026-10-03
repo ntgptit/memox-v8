@@ -82,5 +82,12 @@ const Duration _hour = Duration(hours: 1);
 bool isTrashExpiringSoon(TrashEntry entry, DateTime now) =>
     entry.expiresAt.difference(now) < trashExpiringSoon;
 
+/// The device clock [now] is past the entry's expiry but the purge clock
+/// [purgeNow] (BR-TRASH-009, R10; null when the device never synced) is not:
+/// the entry goes after the next sync, whatever the device clock says.
+bool isTrashAwaitingSync(TrashEntry entry, DateTime now, DateTime? purgeNow) =>
+    !entry.expiresAt.isAfter(now) &&
+    (purgeNow == null || entry.expiresAt.isAfter(purgeNow));
+
 int _roundedUp(Duration value, Duration unit) =>
     (value.inMicroseconds + unit.inMicroseconds - 1) ~/ unit.inMicroseconds;

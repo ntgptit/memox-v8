@@ -23,6 +23,7 @@ class TrashEntryRowWidget extends StatelessWidget {
     super.key,
     required this.entry,
     required this.now,
+    required this.purgeNow,
     required this.onTap,
     this.onLongPress,
     this.onActions,
@@ -32,6 +33,10 @@ class TrashEntryRowWidget extends StatelessWidget {
 
   final TrashEntry entry;
   final DateTime now;
+
+  /// The purge clock: the earlier of [now] and the last server time; null
+  /// when this device never synced (BR-TRASH-009, R10).
+  final DateTime? purgeNow;
 
   /// Null while selecting for an entry of the other kind.
   final VoidCallback? onTap;
@@ -47,7 +52,10 @@ class TrashEntryRowWidget extends StatelessWidget {
     final l10n = context.l10n;
     final name = trashEntryName(entry);
     final meta = _meta(context);
-    final timeLeft = trashTimeLeft(l10n, entry, now);
+    final isAwaitingSync = isTrashAwaitingSync(entry, now, purgeNow);
+    final timeLeft = isAwaitingSync
+        ? l10n.trashAwaitingSync
+        : trashTimeLeft(l10n, entry, now);
     final origin = l10n.trashWasIn(trashOrigin(l10n, entry));
     // The tile or the checkbox centres on the lines (spec 2026-09-26 D4,
     // extended by the owner 2026-09-26).
@@ -66,7 +74,7 @@ class TrashEntryRowWidget extends StatelessWidget {
           child: _Lines(
             name: name,
             timeLeft: timeLeft,
-            isExpiringSoon: isTrashExpiringSoon(entry, now),
+            isExpiringSoon: !isAwaitingSync && isTrashExpiringSoon(entry, now),
             meta: meta,
             origin: origin,
           ),

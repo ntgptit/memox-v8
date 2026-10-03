@@ -11,6 +11,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
 import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
+import 'package:memox/features/trash/presentation/providers/trash_server_time_provider.dart';
 import 'package:memox/features/trash/presentation/states/trash_state.dart';
 import 'package:memox/features/trash/presentation/widgets/items/trash_entry_row_widget.dart';
 import 'package:memox/features/trash/presentation/widgets/overlays/trash_entry_actions_sheet_widget.dart';
@@ -202,6 +203,9 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
   List<Widget> _list(AppLocalizations l10n, List<TrashEntry> entries) {
     final state = ref.watch(trashControllerProvider);
     final now = ref.watch(dayClockProvider).now();
+    // Until the stored server time is read, the purge clock is the device's.
+    final server = ref.watch(trashServerTimeProvider);
+    final purgeNow = server.hasValue ? trashPurgeClock(now, server.value) : now;
     final shown = entries.where(state.filter.accepts).toList();
     final kind = state.kindIn(entries);
     final notices = [
@@ -243,6 +247,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           key: ValueKey(entry.batchId),
           entry: entry,
           now: now,
+          purgeNow: purgeNow,
           isSelecting: state.isSelecting,
           isSelected: state.selected.contains(entry.batchId),
           onTap: switch (state.isSelecting) {
