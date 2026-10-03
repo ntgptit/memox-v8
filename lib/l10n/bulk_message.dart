@@ -1,3 +1,4 @@
+import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 /// The one place a bulk action's toast gains "N were already gone" (SP2a
@@ -16,3 +17,10 @@ extension BulkMessage on AppLocalizations {
           skipped,
         );
 }
+
+/// How long a bulk toast stays. One that carries news past its first sentence
+/// (some cards were already gone, or nothing was written) stays as long as an
+/// Undo does; a plain confirmation keeps the platform's 4 seconds (WCAG 2.2.1,
+/// SP2a audit m7).
+Duration bulkToastDuration({required bool hasNews}) =>
+    hasNews ? AppDurations.undoWindow : AppDurations.toast;

@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/deck_fixtures.dart';
+import '../../../support/gated_card_trash.dart';
 import '../../../support/library_harness.dart';
 import 'card_import_screen_harness.dart';
 
@@ -43,6 +44,9 @@ final class _ThrowingTrash implements CardRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+// Longer than the dialog's exit, so a pop that was not held would be gone.
+const _exitTransition = Duration(milliseconds: 500);
 
 void main() {
   libraryTest('Undo import asks, then moves the imported cards to the Trash '
@@ -82,6 +86,48 @@ void main() {
     expect(await countActiveCards(env), 0);
     expect(closed, 1);
     expect(find.text(enL10n.importUndoneToast(2)), findsOneWidget);
+  });
+
+  libraryTest('Back and a scrim tap do nothing while the cards move, so the '
+      'result still reaches the screen (SP2a audit M1)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    var closed = 0;
+    final trash = GatedCardTrash(env.cards);
+    await pumpImport(
+      tester,
+      env,
+      deck.id,
+      file: csvFile('front,back\nmul,water\nbul,fire\n'),
+      onClose: () => closed++,
+      overrides: [
+        undoImportUseCaseProvider.overrideWithValue(UndoImportUseCase(trash)),
+      ],
+    );
+    await tapLabel(tester, enL10n.importSourceFile);
+    await tapLabel(tester, enL10n.importReadAction);
+    await tapLabel(tester, enL10n.importPreviewAction);
+    await tapLabel(tester, enL10n.importCommitAction(2));
+    await tapLabel(tester, enL10n.importUndoAction);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.text(enL10n.cardMoveToTrashCount(2)),
+      ),
+    );
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pump(_exitTransition);
+    await tester.tapAt(const Offset(2, 2));
+    await tester.pump(_exitTransition);
+    expect(find.byType(MxDialog), findsOneWidget);
+
+    trash.open();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxDialog), findsNothing);
+    expect(find.text(enL10n.importUndoneToast(2)), findsOneWidget);
+    expect(closed, 1);
   });
 
   libraryTest('Cancel stays live before the write and holds once it runs '

@@ -1,9 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/domain/usecases/delete_cards_use_case.dart';
+import 'package:memox/features/card/presentation/providers/delete_cards_use_case_provider.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
+import '../../../support/gated_card_trash.dart';
 import '../../../support/library_harness.dart';
 import 'card_bulk_actions_harness.dart';
+
+// Longer than the dialog's exit, so a pop that was not held would be gone.
+const _exitTransition = Duration(milliseconds: 500);
 
 void main() {
   libraryTest('Trash asks with the count on its button; Cancel keeps the '
@@ -131,5 +138,35 @@ void main() {
 
     expect(find.byType(MxSpinner), findsOneWidget);
     await tester.pumpAndSettle();
+  });
+
+  libraryTest('Back and a scrim tap do nothing while the cards move, so the '
+      'toast with Undo still shows (SP2a audit M1)', (tester, env) async {
+    final ids = await seedBulkCards(env);
+    final trash = GatedCardTrash(env.cards);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      bulkSection(ids.words),
+      overrides: [
+        deleteCardsUseCaseProvider.overrideWithValue(DeleteCardsUseCase(trash)),
+      ],
+    );
+    await selectCards(tester, ['annyeong', 'gamsa']);
+    await tapBulk(tester, enL10n.cardDelete);
+    await tester.tap(inDialog(enL10n.cardMoveToTrashCount(2)));
+    await tester.pump();
+
+    await tester.binding.handlePopRoute();
+    await tester.pump(_exitTransition);
+    await tester.tapAt(const Offset(2, 2));
+    await tester.pump(_exitTransition);
+    expect(find.byType(MxDialog), findsOneWidget);
+
+    trash.open();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxDialog), findsNothing);
+    expect(find.text(enL10n.cardsTrashedToast(2)), findsOneWidget);
+    expect(find.text(enL10n.commonUndo), findsOneWidget);
   });
 }

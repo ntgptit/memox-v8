@@ -9,6 +9,7 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_trashed_snackbar_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -97,6 +98,9 @@ class _CardDeleteDialogWidgetState
               reason,
               widget.cardIds.length,
             ),
+            duration: bulkToastDuration(
+              hasNews: isBulkAllGone(reason, widget.cardIds.length),
+            ),
           );
       }
       Navigator.of(context).pop(outcome is Ok);
@@ -112,6 +116,8 @@ class _CardDeleteDialogWidgetState
     final l10n = context.l10n;
     final count = widget.cardIds.length;
     return MxDialog(
+      // The result must reach the screen: Back and a scrim tap wait for it.
+      isHeld: _isDeleting,
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

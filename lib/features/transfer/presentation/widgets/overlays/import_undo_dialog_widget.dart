@@ -63,6 +63,7 @@ class _ImportUndoDialogWidgetState
               l10n.importUndoneToast(value.done.length),
               value.skipped.length,
             ),
+            duration: bulkToastDuration(hasNews: value.skipped.isNotEmpty),
           );
           Navigator.of(context).pop(value);
         // Every imported card is already gone: nothing is left to move, so
@@ -97,6 +98,8 @@ class _ImportUndoDialogWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxDialog(
+      // The result must reach the screen: Back and a scrim tap wait for it.
+      isHeld: _isUndoing,
       title: l10n.importUndoTitle(widget.count),
       content: MxNote(
         icon: AppIcons.history,

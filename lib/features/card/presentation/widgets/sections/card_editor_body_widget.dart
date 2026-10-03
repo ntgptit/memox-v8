@@ -142,11 +142,12 @@ class CardEditorBodyWidget extends StatelessWidget {
     final detail = this.detail;
     return [
       const SizedBox(height: AppSpacing.control),
-      if (hasOffer)
-        CardDraftBannerWidget(
-          onRestore: onRestoreOffer,
-          onDiscard: onDiscardOffer,
-        ),
+      CardDraftBannerWidget(
+        isOffered: hasOffer,
+        frontFocus: frontFocus,
+        onRestore: onRestoreOffer,
+        onDiscard: onDiscardOffer,
+      ),
       if (isDeckRejecting)
         MxInlineBanner(
           tone: MxBannerTone.warning,

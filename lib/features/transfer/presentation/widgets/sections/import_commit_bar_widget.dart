@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -39,6 +40,8 @@ class ImportCommitBarWidget extends StatelessWidget {
         canRead ? onRead : null,
         switch ((draft.source, draft.problem)) {
           (_, _?) when isPaste => l10n.importCaptionProblemPaste,
+          // The banner already says nothing was read (SP2a audit m4).
+          (_, TransferRejection.tooLarge) => l10n.importCaptionProblemTooLarge,
           (_, _?) => l10n.importCaptionProblemFile,
           (null, _) => l10n.importCaptionSource,
           _ when isPaste => l10n.importCaptionPrivatePaste,

@@ -77,11 +77,11 @@ class ImportMappingSectionWidget extends StatelessWidget {
               ),
           ],
         ),
-        // The deck could not be read for the preview: nothing was lost, and
-        // Preview rows is live again (SP2a 2.22).
+        // The deck could not be read for the preview: nothing was lost, so a
+        // warning, and Preview rows is live again (SP2a 2.22, audit M2).
         if (draft.problem == TransferRejection.previewFailed) ...[
           MxInlineBanner(
-            tone: MxBannerTone.danger,
+            tone: MxBannerTone.warning,
             title: l10n.importProblem(TransferRejection.previewFailed).title,
             message: l10n.importProblem(TransferRejection.previewFailed).body,
           ),
@@ -94,8 +94,10 @@ class ImportMappingSectionWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.grouped),
         ],
-        // It says columns were mapped: only once they are.
-        if (draft.mapping.isComplete) MxNote.hint(text: l10n.importMappingNote),
+        // It says known header names were mapped: only once they are, and
+        // only while row 1 is read as a header (SP2a audit m5).
+        if (draft.mapping.isComplete && draft.hasHeaderRow)
+          MxNote.hint(text: l10n.importMappingNote),
       ],
     );
   }

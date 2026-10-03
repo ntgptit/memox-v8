@@ -85,6 +85,83 @@ void main() {
     expect(await draftsOf(env).read(CardDraftKey.create(deckId)), isNull);
   });
 
+  for (final (label, button, message, text) in [
+    (
+      'Restore',
+      enL10n.cardDraftRestore,
+      enL10n.cardDraftRestoredAnnounce,
+      'bap',
+    ),
+    ('Discard', enL10n.cardDiscard, enL10n.cardDraftDiscardedAnnounce, ''),
+  ]) {
+    libraryTest('$label on the banner moves focus to the front field and '
+        'announces the result (SP2a audit m1)', (tester, env) async {
+      final deckId = await seedWordsDeck(env);
+      await draftsOf(env).save(
+        CardDraftKey.create(deckId),
+        const CardDraft(front: 'bap', back: 'rice'),
+      );
+      await pumpLibraryScreen(tester, env, createScreen(deckId));
+      await tester.pumpAndSettle();
+      // The banner is answered from wherever the focus was.
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+
+      await tester.tap(find.widgetWithText(MxButton, button));
+      await tester.pumpAndSettle();
+
+      expect(textAt(tester, 0), text);
+      expect(
+        tester.widget<EditableText>(fieldAt(0)).focusNode.hasFocus,
+        isTrue,
+      );
+      expect(
+        tester.takeAnnouncements().map((a) => a.message),
+        contains(message),
+      );
+    });
+  }
+
+  // The banner arrives after the form is on screen: the fields settle down
+  // to make room instead of jumping (SP2a audit m2).
+  for (final isStill in [false, true]) {
+    libraryTest(
+      'the draft banner ${isStill ? 'arrives at once with Remove '
+                'animations' : 'eases the fields down'} (SP2a audit m2)',
+      (tester, env) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: isStill);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        final deckId = await seedWordsDeck(env);
+        await draftsOf(env).save(
+          CardDraftKey.create(deckId),
+          const CardDraft(front: 'bap', back: 'rice'),
+        );
+        await pumpLibraryScreen(tester, env, createScreen(deckId));
+        for (var i = 0; i < 100; i++) {
+          if (find.text(enL10n.cardDraftTitle).evaluate().isNotEmpty) break;
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 5)),
+          );
+          await tester.pump(const Duration(milliseconds: 1));
+        }
+        expect(find.text(enL10n.cardDraftTitle), findsOneWidget);
+        final first = tester.getTopLeft(fieldAt(0)).dy;
+
+        await tester.pumpAndSettle();
+        final settled = tester.getTopLeft(fieldAt(0)).dy;
+
+        if (isStill) {
+          expect(first, settled);
+        } else {
+          expect(first, lessThan(settled));
+        }
+      },
+    );
+  }
+
   libraryTest('an edit draft is offered on its own card only; a draft equal '
       'to the card is dropped, not offered (2.14)', (tester, env) async {
     final deckId = await seedWordsDeck(env);

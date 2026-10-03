@@ -79,6 +79,7 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
               l10n.cardTaggedToast(bulk.done.length, _name.text.trim()),
               bulk.skipped.length,
             ),
+            duration: bulkToastDuration(hasNews: bulk.skipped.isNotEmpty),
           );
           Navigator.of(context).pop(true);
         // IT-ORG-014, BR-TAG-002: nothing was written; the selection stays.
@@ -86,6 +87,8 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
           showMxSnackbar(
             context,
             message: l10n.cardTagLimitReached(fullCardIds.length),
+            // Nothing was written: that is the news (SP2a audit m7).
+            duration: bulkToastDuration(hasNews: true),
           );
           Navigator.of(context).pop(false);
         // SP2a 2.19: every card was already gone; nothing was written.
@@ -96,6 +99,7 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
             message: widget.cardIds.length > 1
                 ? l10n.cardBulkAllGone(widget.cardIds.length)
                 : l10n.tagRejection(TagRejection.notFound),
+            duration: bulkToastDuration(hasNews: widget.cardIds.length > 1),
           );
           Navigator.of(context).pop(false);
         case Rejected(:final reason) when _nameReasons.contains(reason):

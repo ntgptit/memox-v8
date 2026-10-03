@@ -9,8 +9,8 @@ import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Neutral offers a choice and nothing is wrong (a draft kept for the person).
-/// Warning is a refusal or a limit, and nothing was lost. Danger means an
-/// operation failed.
+/// Warning is a refusal or a limit, and nothing was lost. Danger means
+/// something was lost or is at risk.
 enum MxBannerTone { neutral, warning, danger }
 
 /// One in-place message about an operation or an object, with the compact

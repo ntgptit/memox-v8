@@ -13,7 +13,7 @@ touch the study state or history).
 |---|---|---|
 | App bar | `MxAppBar` (content density) | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); trailing compact `MxButton` "Save". |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
-| Draft banner | `CardDraftBannerWidget` (`MxInlineBanner` neutral) | "Unsaved text from earlier" / "Kept on this phone only, not synced. Restore it or discard it."; Discard (outline) and Restore (secondary), above the fields. Shown only when a draft kept for this card differs from the saved card (SP2a R9, 2.14). |
+| Draft banner | `CardDraftBannerWidget` (`MxInlineBanner` neutral) | "Unsaved text from earlier" / "Kept on this phone only, not synced. Restore it or discard it."; Discard (outline) and Restore (secondary), above the fields. Shown only when a draft kept for this card differs from the saved card (SP2a R9, 2.14). The slot eases open and shut (Remove animations: at once); Restore and Discard move focus to the front field and announce "Draft restored" / "Draft discarded" (SP2a audit m1, m2). |
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card. |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
@@ -22,7 +22,7 @@ touch the study state or history).
 | Footer | `CardEditorFooterWidget` | Cancel + "Save changes" / "Retry save"; danger banner after a failed save. |
 | Move to Trash dialog | `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxSheetActions`) | "Move this card to Trash?", a front/back preview card, "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected."; the confirm spins while it moves (FE-B1 D15). |
 | Discard dialog | `CardDiscardDialogWidget` | "Discard changes?" / "You edited {parts}. Leaving now keeps the card as it was saved.", naming what changed; Keep editing / Discard (ruling P4a-L5). |
-| Card-gone banner | `MxInlineBanner` (danger) above the form | "This card was deleted." / "Your text is kept on this phone."; Save is off (caption "This card can't be saved now."), the flag and the More card go, the form and its text stay and the draft is kept; leaving asks nothing (SP2a 2.17). |
+| Card-gone banner | `MxInlineBanner` (danger) above the form | "This card was moved to Trash or deleted." / "Your text is kept on this phone."; Save is off (caption "This card can't be saved now."), the flag and the More card go, the form and its text stay and the draft is kept; leaving asks nothing (SP2a 2.17). |
 | Stale banner | `MxInlineBanner` (warning) | "Couldn't refresh this card." / "Your text is kept on this phone, and you can still save."; shown when reading the card fails after the form opened. |
 | Changed-elsewhere dialog | `CardChangedDialogWidget` (`MxDialog`, `MxSheetActions`) | "This card changed on another device" / "Use theirs to reload the newer version and drop your edits. Keep mine to save over it."; Use theirs (outline) and Keep mine (primary). Opens when Save finds another `updated_at` than the one the editor opened with (SP2a 2.18). |
 | Gone state | `CardGoneWidget` (`MxEmptyState`) | Only when the card is gone before the form ever opened: "This card is no longer here" … (FE-B1 D11). |
@@ -74,6 +74,6 @@ Every state above is built.
 - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card as it was saved." (parts: "the term", "the meaning", "the example", "the hint", "the pronunciation", "the flag", "the tags", joined "a, b and c") · "Keep editing" · "Discard".
 - Gone: "This card is no longer here" · "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash." · "Back to deck" · "Open Trash".
 - Draft: "Unsaved text from earlier" · "Kept on this phone only, not synced. Restore it or discard it." · "Restore" · "Discard".
-- Card gone banner: "This card was deleted." · "Your text is kept on this phone." · "This card can't be saved now." · stale: "Couldn't refresh this card." · "Your text is kept on this phone, and you can still save."
+- Card gone banner: "This card was moved to Trash or deleted." · "Your text is kept on this phone." · "This card can't be saved now." · stale: "Couldn't refresh this card." · "Your text is kept on this phone, and you can still save."
 - Changed elsewhere: "This card changed on another device" · "Use theirs to reload the newer version and drop your edits. Keep mine to save over it." · "Use theirs" · "Keep mine".
 - Load error: "Couldn't load this card" · "Nothing was lost. Try again in a moment." · "Retry".

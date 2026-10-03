@@ -60,6 +60,8 @@ class ImportResultWidget extends StatelessWidget {
           if (summary.kind != ImportSummaryKind.none) ...[
             const SizedBox(height: AppSpacing.gutter),
             _Counts(summary: summary),
+            // It acts on the counts above, so it sits with them, and a full
+            // step apart from what follows (SP2a audit m3).
             if (summary.written > 0 && onUndo != null) ...[
               const SizedBox(height: AppSpacing.grouped),
               Align(
@@ -71,6 +73,7 @@ class ImportResultWidget extends StatelessWidget {
                   onPressed: onUndo,
                 ),
               ),
+              const SizedBox(height: AppSpacing.section),
             ],
           ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),

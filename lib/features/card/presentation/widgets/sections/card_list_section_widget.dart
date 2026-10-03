@@ -176,12 +176,16 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
                   : l10n.cardUnflaggedToast(value.done.length),
               value.skipped.length,
             ),
+            duration: bulkToastDuration(hasNews: value.skipped.isNotEmpty),
           );
         case Rejected(:final reason):
           if (reason == CardRejection.notFound) _prune(cardIds);
           showMxSnackbar(
             context,
             message: l10n.cardBulkRejection(reason, cardIds.length),
+            duration: bulkToastDuration(
+              hasNews: isBulkAllGone(reason, cardIds.length),
+            ),
           );
       }
     } on Failure {

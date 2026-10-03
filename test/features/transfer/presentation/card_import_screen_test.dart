@@ -16,6 +16,7 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -85,6 +86,20 @@ void main() {
     await tapLabel(tester, enL10n.importPreviewAction);
 
     expect(find.text(enL10n.importProblemPreviewTitle), findsOneWidget);
+    // Nothing was lost, so it is a warning, as every retriable read is
+    // (SP2a audit M2).
+    expect(
+      tester
+          .widget<MxInlineBanner>(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is MxInlineBanner &&
+                  widget.title == enL10n.importProblemPreviewTitle,
+            ),
+          )
+          .tone,
+      MxBannerTone.warning,
+    );
     final preview = tester.widget<MxButton>(
       find.widgetWithText(MxButton, enL10n.importPreviewAction),
     );
@@ -192,6 +207,27 @@ void main() {
     expect(find.text(enL10n.importHeaderToggle), findsOneWidget);
   });
 
+  libraryTest('the mapping note says columns were mapped only while the first '
+      'row is a header (SP2a audit m5)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await pumpImport(
+      tester,
+      env,
+      deck.id,
+      file: csvFile('front,back\nmul,water\n'),
+    );
+    await tapLabel(tester, enL10n.importSourceFile);
+    await tapLabel(tester, enL10n.importReadAction);
+    expect(find.text(enL10n.importMappingNote), findsOneWidget);
+
+    await tapLabel(tester, enL10n.importHeaderToggle);
+    expect(find.text(enL10n.importMappingNote), findsNothing);
+
+    await tapLabel(tester, enL10n.importHeaderToggle);
+    expect(find.text(enL10n.importMappingNote), findsOneWidget);
+  });
+
   libraryTest('a file over the cap says how to split it (SP2a 2.23)', (
     tester,
     env,
@@ -218,6 +254,10 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(enL10n.importChooseAnother), findsOneWidget);
+    // The banner says nothing was read; the footer gives the next step only
+    // (SP2a audit m4).
+    expect(find.text(enL10n.importCaptionProblemTooLarge), findsOneWidget);
+    expect(find.text(enL10n.importCaptionProblemFile), findsNothing);
   });
 
   libraryTest('a Latin-1 file is refused at step 1 with guidance (E1)', (

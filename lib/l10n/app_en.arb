@@ -1006,6 +1006,14 @@
   "@cardDraftRestore": {
     "description": "Banner action: puts the kept draft back into the form. Its partner is cardDiscard."
   },
+  "cardDraftRestoredAnnounce": "Draft restored",
+  "@cardDraftRestoredAnnounce": {
+    "description": "Screen-reader announcement after Restore on the kept-draft banner; the banner and its focused button are gone and the fields changed."
+  },
+  "cardDraftDiscardedAnnounce": "Draft discarded",
+  "@cardDraftDiscardedAnnounce": {
+    "description": "Screen-reader announcement after Discard on the kept-draft banner."
+  },
   "cardGoneTitle": "This card is no longer here",
   "@cardGoneTitle": {
     "description": "Editor state when the card was deleted meanwhile."
@@ -1014,7 +1022,7 @@
   "@cardGoneBody": {
     "description": "Editor state when the card went to the Trash meanwhile (FE-B1 D11, kit 09)."
   },
-  "cardEditorGoneTitle": "This card was deleted.",
+  "cardEditorGoneTitle": "This card was moved to Trash or deleted.",
   "@cardEditorGoneTitle": {
     "description": "Danger banner above the card editor when the card went away while it was open (SP2a 2.17)."
   },
@@ -3795,6 +3803,10 @@
   "importCaptionProblemFile": "Nothing was read. Choose another file to continue.",
   "@importCaptionProblemFile": {
     "description": "Import commit bar, step 1, the file could not be read (kit 11 badEncoding)."
+  },
+  "importCaptionProblemTooLarge": "Split the file, then choose it again.",
+  "@importCaptionProblemTooLarge": {
+    "description": "Import commit bar, step 1, the file is over the size or row cap: the next step only, since the banner above already says nothing was read."
   },
   "importCaptionProblemPaste": "Nothing was read. Edit the text to continue.",
   "@importCaptionProblemPaste": {

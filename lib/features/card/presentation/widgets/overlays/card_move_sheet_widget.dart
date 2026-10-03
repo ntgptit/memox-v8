@@ -87,6 +87,15 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
             widget.cardIds.length,
           ),
         },
+        duration: bulkToastDuration(
+          hasNews: switch (outcome) {
+            Ok(:final value) => value.skipped.isNotEmpty,
+            Rejected(:final reason) => isBulkAllGone(
+              reason,
+              widget.cardIds.length,
+            ),
+          },
+        ),
       );
       Navigator.of(context).pop(hasMoved);
     } on Failure catch (failure) {

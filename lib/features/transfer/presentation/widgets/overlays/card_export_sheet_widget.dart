@@ -47,6 +47,7 @@ Future<Set<String>> showCardExportSheet(
         l10n.exportHandedOver(scope.cardCount - skipped.length),
         skipped.length,
       ),
+      duration: bulkToastDuration(hasNews: skipped.isNotEmpty),
     );
   }
   return skipped;
