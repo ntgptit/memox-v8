@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -56,7 +57,7 @@ final class _HeldFlags implements CardRepository {
   void release() => held?.complete();
 
   @override
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
@@ -66,7 +67,7 @@ final class _HeldFlags implements CardRepository {
       throw const UnknownDatabaseFailure(cause: 'locked');
     }
     await (held = Completer<void>()).future;
-    return const Ok(null);
+    return const Ok(BulkOutcome(done: {}));
   }
 
   @override

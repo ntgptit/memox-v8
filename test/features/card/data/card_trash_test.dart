@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -46,7 +47,7 @@ void main() {
   Future<List<String>> delete(Set<String> cardIds) async =>
       ((await cards.deleteCards(
         cardIds: cardIds,
-      )) as Ok<List<String>, CardRejection>).value;
+      )) as Ok<BulkOutcome, CardRejection>).value.batchIds;
 
   Future<String?> batchOf(String cardId) async =>
       (await db
@@ -121,29 +122,31 @@ void main() {
     expect(await contentOf('card_schedule'), schedulesBefore);
   });
 
-  test('a card that is gone or already in the Trash refuses the whole set as '
-      'notFound, and nothing is written; an empty set writes nothing '
-      '(UC-CARD-001 A2)', () async {
+  test('a card that is gone or already in the Trash is skipped and the rest '
+      'go; when none is left the set is notFound; an empty set writes nothing '
+      '(UC-CARD-001 A2, SP2a 2.19)', () async {
     final root = await decks.root('Korean');
     final lesson = await decks.sub(root.id, 'Lesson');
     await insertCard(db, id: 'c1', deckId: lesson.id);
     await insertCard(db, id: 'c2', deckId: lesson.id);
     await delete({'c2'});
-    final before = await totalChanges(db);
 
-    for (final cardIds in [
-      {'c1', 'missing'},
-      {'c1', 'c2'},
-    ]) {
-      expect(
-        await cards.deleteCards(cardIds: cardIds),
-        isA<Rejected<List<String>, CardRejection>>().having(
-          (rejected) => rejected.reason,
-          'reason',
-          CardRejection.notFound,
-        ),
-      );
-    }
+    final outcome = (await cards.deleteCards(
+      cardIds: {'c1', 'c2', 'missing'},
+    ) as Ok<BulkOutcome, CardRejection>).value;
+    expect(outcome.done, {'c1'});
+    expect(outcome.skipped, {'c2', 'missing'});
+    expect(await batchOf('c1'), outcome.batchIds.single);
+
+    final before = await totalChanges(db);
+    expect(
+      await cards.deleteCards(cardIds: {'c1', 'c2', 'missing'}),
+      isA<Rejected<BulkOutcome, CardRejection>>().having(
+        (rejected) => rejected.reason,
+        'reason',
+        CardRejection.notFound,
+      ),
+    );
     expect(await delete({}), isEmpty);
     expect(await totalChanges(db), before);
   });

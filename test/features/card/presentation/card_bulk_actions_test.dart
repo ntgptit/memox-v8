@@ -1,6 +1,12 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
+import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -76,6 +82,20 @@ Future<void> _bulk(WidgetTester tester, String label) async {
 Finder _inDialog(String text) =>
     find.descendant(of: find.byType(MxDialog), matching: find.text(text));
 
+/// Every id was gone when the write ran: the repository writes nothing and
+/// answers `notFound` (SP2a 2.19).
+final class _AllGoneCards implements CardRepository {
+  @override
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
+    required Set<String> cardIds,
+    required bool isFlagged,
+    DateTime? now,
+  }) async => const Rejected(CardRejection.notFound);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   libraryTest(
     'Export hands the selection over and keeps it (UC-TRANSFER-002 A1)',
@@ -121,6 +141,28 @@ void main() {
     );
     expect(find.text(_en.cardFlaggedToast(2)), findsOneWidget);
     expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Flag when every selected card is already gone says so, writes '
+      'nothing and does not throw (SP2a 2.19)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(ids.words),
+      overrides: [
+        setCardsFlaggedUseCaseProvider.overrideWithValue(
+          SetCardsFlaggedUseCase(_AllGoneCards()),
+        ),
+      ],
+    );
+    await _select(tester, ['annyeong', 'gamsa']);
+    await _bulk(tester, _en.cardFlag);
+    await _bulk(tester, _en.cardFlagSet);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text(_en.cardRejectionNotFound), findsOneWidget);
+    expect(find.text(_en.cardFlaggedToast(2)), findsNothing);
   });
 
   libraryTest('Remove flag clears it, never toggles (P3-L4)', (

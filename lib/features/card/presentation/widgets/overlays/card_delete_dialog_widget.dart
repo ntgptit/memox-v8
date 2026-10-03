@@ -74,10 +74,10 @@ class _CardDeleteDialogWidgetState
           .deleteCards(cardIds: widget.cardIds);
       if (!mounted) return;
       switch (outcome) {
-        case Ok(value: final batchIds):
+        case Ok(:final value):
           showCardsTrashedSnackbar(
             context,
-            batchIds: batchIds,
+            batchIds: value.batchIds,
             front: widget.preview?.front,
             onOpenTrash: widget.onOpenTrash,
           );

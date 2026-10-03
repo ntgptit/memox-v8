@@ -50,7 +50,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
   app bar để vào chế độ chọn. Thanh hành động ngữ cảnh hiện số đã chọn và các
   thao tác hàng loạt: Move, Add tag, Flag, Remove flag, Delete. **Select all**
   chọn toàn bộ tập kết quả theo filter và search hiện tại, không chỉ phần đã
-  tải (BR-CARD-012). Mỗi thao tác là all-or-nothing (BR-CARD-011).
+  tải (BR-CARD-012). Mỗi thao tác chạy trong một transaction: thẻ vi phạm luật làm cả lô rollback, thẻ đã không còn bị bỏ qua (BR-CARD-011).
 - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các ô.
 - **A7 — Cờ:** người dùng bật hoặc bỏ cờ của một thẻ (BR-CARD-009).
 - **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag trùng tên đã fold, tạo
@@ -72,6 +72,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
 state.
 - **E7 — Tag không hợp lệ, hoặc thẻ đã đủ 10 tag:** lỗi có kiểu; tag của thẻ giữ
   nguyên (BR-TAG-001, BR-TAG-002).
+- **E8 — Một thẻ trong lô đã không còn:** thẻ đó bị bỏ qua, các thẻ còn lại được ghi; thông báo nêu số thẻ đã bỏ qua và selection được dọn id đó; không còn thẻ nào thì lỗi `notFound` (BR-CARD-011).
 
 ## UI
 

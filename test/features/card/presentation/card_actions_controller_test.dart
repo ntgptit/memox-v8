@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -114,7 +115,10 @@ void main() {
       await seed();
       final outcome = await actions().deleteCards(cardIds: {'a', 'c'});
 
-      expect((outcome as Ok<List<String>, CardRejection>).value, hasLength(2));
+      expect(
+        (outcome as Ok<BulkOutcome, CardRejection>).value.batchIds,
+        hasLength(2),
+      );
       expect(
         await count(
           'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart' hide CardDraft;
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -235,7 +236,7 @@ void main() {
 
       final result = await cards.deleteCards(cardIds: {a.id, b.id});
 
-      expect(result, isA<Ok<List<String>, CardRejection>>());
+      expect(result, isA<Ok<BulkOutcome, CardRejection>>());
       expect(
         (
           await count('card'),
@@ -248,16 +249,36 @@ void main() {
       expect(await contentTypeOf(verbs.id), DeckContentType.card);
     });
 
-    test('one missing card refuses the whole batch', () async {
+    test('a card already gone or in the Trash is skipped; the rest go to the '
+        'Trash a batch each (SP2a 2.19)', () async {
       final a = await cards.card(nouns.id);
-      final before = await totalChanges(db);
+      final b = await cards.card(nouns.id);
+      final trashed = await cards.card(nouns.id);
+      await trashCardRow(db, trashed.id);
 
-      expect(
-        _reason(await cards.deleteCards(cardIds: {a.id, 'missing'})),
-        CardRejection.notFound,
+      final result = await cards.deleteCards(
+        cardIds: {a.id, 'missing', b.id, trashed.id},
       );
-      expect(await totalChanges(db), before);
+
+      final outcome = (result as Ok<BulkOutcome, CardRejection>).value;
+      expect(outcome.done, {a.id, b.id});
+      expect(outcome.skipped, {'missing', trashed.id});
+      expect(outcome.batchIds, hasLength(2));
+      expect(await count('delete_batches'), 3, reason: 'two new, one fixture');
     });
+
+    test(
+      'when no card is left the batch is notFound, writing nothing',
+      () async {
+        final before = await totalChanges(db);
+
+        expect(
+          _reason(await cards.deleteCards(cardIds: {'missing', 'gone'})),
+          CardRejection.notFound,
+        );
+        expect(await totalChanges(db), before);
+      },
+    );
   });
 
   group('moveCards (BR-CARD-010)', () {
@@ -323,12 +344,34 @@ void main() {
         CardRejection.crossRootMove,
         reason: 'refused even though both roots run eight_box at generation 1',
       );
-      expect(
-        await refusal({a.id, 'missing'}, verbs.id),
-        CardRejection.notFound,
-      );
       expect(await totalChanges(db), before);
     });
+
+    test(
+      'a card already gone is skipped; the others move (SP2a 2.19)',
+      () async {
+        final a = await cards.card(nouns.id);
+
+        final result = await cards.moveCards(
+          cardIds: {a.id, 'missing'},
+          targetDeckId: verbs.id,
+          now: _later,
+        );
+
+        final outcome = (result as Ok<BulkOutcome, CardRejection>).value;
+        expect(outcome.done, {a.id});
+        expect(outcome.skipped, {'missing'});
+        expect((await cardRow(a.id))['deck_id'], verbs.id);
+        final before = await totalChanges(db);
+        expect(
+          _reason(
+            await cards.moveCards(cardIds: {'missing'}, targetDeckId: verbs.id),
+          ),
+          CardRejection.notFound,
+        );
+        expect(await totalChanges(db), before);
+      },
+    );
   });
 
   group('setFlagged (BR-CARD-011)', () {
@@ -377,16 +420,49 @@ void main() {
       },
     );
 
-    test('one missing card refuses the whole batch', () async {
+    test(
+      'a card already gone is skipped; the rest are flagged (SP2a 2.19)',
+      () async {
+        final a = await cards.card(nouns.id);
+
+        final result = await cards.setFlagged(
+          cardIds: {a.id, 'missing'},
+          isFlagged: true,
+        );
+
+        final outcome = (result as Ok<BulkOutcome, CardRejection>).value;
+        expect(outcome.done, {a.id});
+        expect(outcome.skipped, {'missing'});
+        expect((await cardRow(a.id))['is_flagged'], 1);
+        final before = await totalChanges(db);
+        expect(
+          _reason(
+            await cards.setFlagged(cardIds: {'missing'}, isFlagged: true),
+          ),
+          CardRejection.notFound,
+        );
+        expect(await totalChanges(db), before);
+      },
+    );
+
+    test('when every selected id is gone nothing is written and the outcome '
+        'says all of them were skipped (SP2a 2.19, Review Focus)', () async {
       final a = await cards.card(nouns.id);
+      await trashCardRow(db, a.id);
       final before = await totalChanges(db);
 
-      expect(
-        _reason(
-          await cards.setFlagged(cardIds: {a.id, 'missing'}, isFlagged: true),
+      final results = [
+        await cards.deleteCards(cardIds: {a.id, 'missing'}),
+        await cards.moveCards(
+          cardIds: {a.id, 'missing'},
+          targetDeckId: verbs.id,
         ),
-        CardRejection.notFound,
-      );
+        await cards.setFlagged(cardIds: {a.id, 'missing'}, isFlagged: true),
+      ];
+
+      for (final result in results) {
+        expect(_reason(result), CardRejection.notFound);
+      }
       expect(await totalChanges(db), before);
     });
   });
@@ -399,7 +475,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {}),
-        isA<Ok<List<String>, CardRejection>>(),
+        isA<Ok<BulkOutcome, CardRejection>>(),
       );
       expect(
         await cards.moveCards(cardIds: {}, targetDeckId: empty.id),
@@ -494,7 +570,7 @@ void main() {
 
       expect(
         await cards.deleteCards(cardIds: {cardId}),
-        isA<Ok<List<String>, CardRejection>>(),
+        isA<Ok<BulkOutcome, CardRejection>>(),
       );
       expect(await deckRow(trashed.id), before);
     });

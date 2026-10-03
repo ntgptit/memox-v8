@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -61,7 +62,7 @@ void main() {
     clock = clock.add(const Duration(minutes: 1));
     return ((await cards.deleteCards(
       cardIds: cardIds,
-    )) as Ok<List<String>, CardRejection>).value;
+    )) as Ok<BulkOutcome, CardRejection>).value.batchIds;
   }
 
   Future<List<String>> lines() async => [

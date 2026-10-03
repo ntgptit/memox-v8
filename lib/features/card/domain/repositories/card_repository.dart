@@ -1,3 +1,4 @@
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -12,9 +13,12 @@ import 'package:memox/features/card/domain/models/review_history_model.dart';
 /// exists for ADR-010's reason: domain stays framework-free and tests
 /// substitute a fake.
 ///
-/// A batch takes a set of card ids and is all or nothing in one transaction:
-/// one card the rules refuse refuses the batch, and nothing is written
-/// (BR-CARD-011). An empty set writes nothing and answers `Ok`.
+/// A batch takes a set of card ids and works in one transaction. The ids that
+/// still exist are written and the ones already gone are skipped, answered as
+/// a [BulkOutcome]; when none exists the batch is `notFound`. A card the
+/// rules refuse (a move target that does not take it) refuses the whole
+/// batch, and nothing is written (BR-CARD-011). An empty set writes nothing
+/// and answers `Ok`.
 abstract interface class CardRepository {
   /// UC-CARD-001: the card, its schedule row (BR-CARD-004) and its tags, and
   /// the deck becomes a deck of cards when it held nothing (BR-DECK-008).
@@ -36,10 +40,11 @@ abstract interface class CardRepository {
   });
 
   /// UC-CARD-001 A2: each card goes to the Trash as a batch of its own, all
-  /// at one time, and the batch ids come back in the order of [cardIds]
-  /// (BR-TRASH-001). A deck left with no active card is unset again
-  /// (BR-TRASH-005); the sessions they touch end (BR-TRASH-004).
-  Future<Outcome<List<String>, CardRejection>> deleteCards({
+  /// at one time, and the batch ids come back in `BulkOutcome.batchIds`, in
+  /// the order of the cards done (BR-TRASH-001). A deck left with no active
+  /// card is unset again (BR-TRASH-005); the sessions they touch end
+  /// (BR-TRASH-004).
+  Future<Outcome<BulkOutcome, CardRejection>> deleteCards({
     required Set<String> cardIds,
     DateTime? now,
   });
@@ -62,14 +67,14 @@ abstract interface class CardRepository {
   });
 
   /// BR-CARD-010: only `deck_id` and `updated_at` change.
-  Future<Outcome<void, CardRejection>> moveCards({
+  Future<Outcome<BulkOutcome, CardRejection>> moveCards({
     required Set<String> cardIds,
     required String targetDeckId,
     DateTime? now,
   });
 
   /// An explicit value for every card, never a toggle (BR-CARD-011).
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
