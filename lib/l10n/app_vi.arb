@@ -1110,6 +1110,7 @@
   "studyEndOtherBody": "Các câu đã trả lời được giữ lại; phần còn lại của vòng đó sẽ bị bỏ.",
   "studyEndOtherKeep": "Giữ phiên đó",
   "studyEndOtherConfirm": "Kết thúc và bắt đầu",
+  "studyStopFailed": "Không dừng được phiên. Các câu đã trả lời vẫn được giữ; hãy thử lại.",
   "cardCaptionAddMissing": "Điền trường còn thiếu để lưu.",
   "cardDiscardEditedBody": "Bạn đã sửa {fields}. Rời đi bây giờ sẽ giữ thẻ như lần lưu trước.",
   "cardEditedPair": "{first} và {last}",

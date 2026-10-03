@@ -141,11 +141,16 @@ class StudySessionController extends _$StudySessionController {
 
   /// ✕ and system Back: the session ends as `user_exit`; its turns stay
   /// (A3, BR-STUDY-014, BR-STUDY-019). The stream then shows the summary.
-  Future<void> abandon() async {
+  /// Answers false when the write failed and the session stays open, so the
+  /// screen can say so (2.08); a refusal (the session already ended, or is
+  /// gone) is the stream's to show and answers true.
+  Future<bool> abandon() async {
     try {
       await ref.read(abandonStudySessionUseCaseProvider)(sessionId: sessionId);
+      return true;
     } on Failure {
       // The session stays open; the next start closes it (BR-STUDY-072).
+      return false;
     }
   }
 

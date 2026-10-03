@@ -373,6 +373,9 @@ final class LockableSessions implements StudySessionRepository {
   final StudySessionRepository _inner;
   var isLocked = false;
 
+  /// While set, [abandonSession] fails as a broken write does (SP2a 2.08).
+  var isAbandonFailing = false;
+
   @override
   Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
@@ -436,7 +439,10 @@ final class LockableSessions implements StudySessionRepository {
   Future<Outcome<void, StudyRejection>> abandonSession({
     required String sessionId,
     DateTime? now,
-  }) => _inner.abandonSession(sessionId: sessionId, now: now);
+  }) async {
+    if (isAbandonFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.abandonSession(sessionId: sessionId, now: now);
+  }
 
   @override
   Future<Outcome<void, StudyRejection>> resumeSession({

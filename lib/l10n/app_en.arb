@@ -5841,6 +5841,10 @@
   "@studyEndOtherConfirm": {
     "description": "Screen 14 (SP2a 2.01): ends the other deck's session and starts this one."
   },
+  "studyStopFailed": "Couldn't stop the session. Your answers are kept; try again.",
+  "@studyStopFailed": {
+    "description": "Session screen (SP2a 2.08): toast when the Stop write failed and the session stays open."
+  },
   "cardCaptionAddMissing": "Add the missing field to enable save.",
   "@cardCaptionAddMissing": {
     "description": "Card edit footer caption when a required field is empty (kit 09)."

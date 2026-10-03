@@ -307,4 +307,18 @@ void main() {
     expect((await servedOf(id)).isHintShown, isTrue);
     expect(container.read(studySessionControllerProvider(id)).isBusy, isFalse);
   });
+
+  test('abandon answers true once the session ended, false when the write '
+      'failed and the session stays open (2.08)', () async {
+    final id = await browsing(['a', 'b']);
+    final controller = await controllerOf(id);
+
+    sessions.isAbandonFailing = true;
+    expect(await controller.abandon(), isFalse);
+    expect((await sessionOf(db, id)).read<String>('status'), 'in_progress');
+
+    sessions.isAbandonFailing = false;
+    expect(await controller.abandon(), isTrue);
+    expect((await sessionOf(db, id)).read<String>('status'), 'abandoned');
+  });
 }

@@ -67,6 +67,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// A leave runs once, whatever the stream emits after it.
   var _hasLeft = false;
 
+  /// A leave that arrived while this route was covered (the exit dialog is a
+  /// route): remembered, and run when the dialog's future completes (2.07).
+  (String, String?)? _pendingLeave;
+
+  /// The exit dialog is open: ✕ and Back do nothing meanwhile (2.08).
+  var _isConfirming = false;
+
   /// The last view of the open session that served a card: a held turn is
   /// drawn in it even after its answer ended the session or stalled the
   /// round (spec D5).
@@ -85,12 +92,34 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   }
 
   /// The ✕ and system Back ask first (spec D8, owner ruling 2026-09-27);
-  /// Stop abandons, Keep studying changes nothing.
+  /// Stop abandons, Keep studying changes nothing. One dialog at a time
+  /// (2.08).
   void _abandon() => unawaited(_confirmAbandon());
 
   Future<void> _confirmAbandon() async {
-    if (!await showStudyExitDialog(context)) return;
-    await _controller.abandon();
+    if (_isConfirming) return;
+    _isConfirming = true;
+    final bool shouldStop;
+    try {
+      shouldStop = await showStudyExitDialog(context);
+    } finally {
+      _isConfirming = false;
+    }
+    if (!mounted) return;
+    // The deck went, or the session was reset, while the dialog was up: the
+    // leave the listener could not run runs now, and there is nothing to
+    // stop (2.07).
+    final pending = _pendingLeave;
+    if (pending != null) {
+      _pendingLeave = null;
+      _leave(pending.$1, pending.$2);
+      return;
+    }
+    if (!shouldStop) return;
+    final didStop = await _controller.abandon();
+    if (!didStop && mounted) {
+      showMxSnackbar(context, message: context.l10n.studyStopFailed);
+    }
   }
 
   void _advance(StudyItem item) =>
@@ -200,7 +229,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   }
 
   void _leave(String message, String? deckId) {
-    if (_hasLeft || !(ModalRoute.of(context)?.isCurrent ?? false)) return;
+    if (_hasLeft) return;
+    // Under the exit dialog the route is not current: keep the leave for
+    // when it closes (2.07).
+    if (!(ModalRoute.of(context)?.isCurrent ?? false)) {
+      _pendingLeave = (message, deckId);
+      return;
+    }
     _hasLeft = true;
     showMxSnackbar(context, message: message);
     widget.onLeave(deckId);

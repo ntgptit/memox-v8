@@ -363,6 +363,84 @@ void main() {
     await tester.pumpAndSettle();
     expect(reads, before + 1);
   });
+
+  libraryTest('a deck lost while the exit dialog is open leaves when the '
+      'dialog closes, once, with a message (2.07)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    final left = <String?>[];
+    await _pumpScreen(tester, env, id, onLeave: left.add);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    final session = await sessionOf(env.db, id);
+    await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
+    await tester.pumpAndSettle();
+    // The dialog is a route over this one: the leave waits for it.
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    expect(left, isEmpty);
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pumpAndSettle();
+
+    expect(left, [null]);
+    expect(find.text(_en.studyEntryDeckGone), findsOneWidget);
+  });
+
+  libraryTest('a Stop confirmed after the deck was lost leaves and writes no '
+      'abandon (2.07)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    // An abandon that was written would fail and show the Stop toast.
+    env.sessions.isAbandonFailing = true;
+    final left = <String?>[];
+    await _pumpScreen(tester, env, id, onLeave: left.add);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    final session = await sessionOf(env.db, id);
+    await env.decks.deleteDeck(deckId: session.read<String>('deck_id'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(_en.studyExitStop));
+    await tester.pumpAndSettle();
+
+    expect(left, [null]);
+    expect(find.text(_en.studyStopFailed), findsNothing);
+  });
+
+  libraryTest('a Stop that fails says so in a toast and the session stays '
+      'open (2.08)', (tester, env) async {
+    final id = await _session(env, ['a', 'b']);
+    env.sessions.isAbandonFailing = true;
+    await _pumpScreen(tester, env, id);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyExitStop));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyStopFailed), findsOneWidget);
+    expect((await sessionOf(env.db, id)).read<String>('status'), 'in_progress');
+    expect(find.byType(MxStudyTopBar), findsOneWidget);
+  });
+
+  libraryTest('✕ twice opens one exit dialog, never two (2.08)', (
+    tester,
+    env,
+  ) async {
+    final id = await _session(env, ['a', 'b']);
+    await _pumpScreen(tester, env, id);
+    final close = find.byTooltip(_en.studySessionClose);
+
+    await tester.tap(close);
+    await tester.tap(close, warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pumpAndSettle();
+    // A second dialog would still be there under the first.
+    expect(find.text(_en.studyExitTitle), findsNothing);
+  });
 }
 
 StudySessionScreen _screen(String id) => StudySessionScreen(
