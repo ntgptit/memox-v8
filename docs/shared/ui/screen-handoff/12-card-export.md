@@ -66,4 +66,4 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 - Note: "Six columns: front, back, example, hint, pronunciation, tags. No schedule, no history — this is content, not a backup."
 - Actions: "Cancel" · "Export {n} cards" · "Preparing…" · "Try again" · "Close".
 - Problems: "Couldn’t prepare the file" · "Couldn’t hand the file over" · "No app on this device can receive a file" · "A selected card is no longer in this deck" · "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again." · "There is nothing to export".
-- Toast: "Handed {n} cards to the system." · "{k} were already gone." ("1 was already gone.").
+- Toast: "Handed {n} cards to the system." · "{k} were already gone." ("1 was already gone."): "Handed 3 cards to the system. 1 was already gone." with a single period between.

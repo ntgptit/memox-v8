@@ -22,6 +22,33 @@ void main() {
     );
   });
 
+  test('a message that ends in a period does not double it', () {
+    expect(
+      en.bulkToast(en.exportHandedOver(3), 1),
+      'Handed 3 cards to the system. 1 was already gone.',
+    );
+    expect(
+      vi.bulkToast(vi.exportHandedOver(3), 2),
+      'Đã giao 3 thẻ cho hệ thống. 2 thẻ đã không còn.',
+    );
+  });
+
+  test('no bulk message, in either language, joins its note with ".."', () {
+    for (final l10n in [en, vi]) {
+      for (final message in [
+        l10n.cardMovedToast(2, 'Verbs'),
+        l10n.cardFlaggedToast(2),
+        l10n.cardTaggedToast(2, 'greetings'),
+        l10n.cardsTrashedToast(2),
+        l10n.exportHandedOver(2),
+        l10n.importUndoneToast(2),
+      ]) {
+        expect(l10n.bulkToast(message, 1), isNot(contains('..')));
+        expect(l10n.bulkToast(message, 3), isNot(contains('..')));
+      }
+    }
+  });
+
   test('the Vietnamese copy carries the same count', () {
     expect(
       vi.bulkToast('Đã chuyển 2 thẻ vào Verbs', 3),
