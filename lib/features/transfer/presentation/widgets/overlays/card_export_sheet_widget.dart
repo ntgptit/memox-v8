@@ -25,21 +25,21 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// Opens the export sheet over [scope] (kit 12, UC-TRANSFER-002) and, once
 /// the share sheet took the file, says so without naming where it went
 /// (BR-TRANSFER-014, ruling E2). Completes with the ids the file left out
-/// (empty when none), or an empty set when nothing was handed over; the toast
-/// says how many were skipped (SP2a 2.19).
+/// (empty when none); the toast says how many were skipped. When every
+/// selected card turned out to be gone the sheet reports them however it is
+/// dismissed, and no toast is shown (SP2a 2.19).
 Future<Set<String>> showCardExportSheet(
   BuildContext context,
   CardExportScope scope,
 ) async {
+  Set<String>? staleIds;
   final skipped = await showMxBottomSheet<Set<String>>(
     context,
-    builder: (_) => CardExportSheetWidget(scope: scope),
+    builder: (_) =>
+        CardExportSheetWidget(scope: scope, onStale: (ids) => staleIds = ids),
   );
-  if (skipped == null) return const {};
-  // Every selected card was gone: nothing was exported, only the selection is
-  // pruned (SP2a 2.19).
-  final isAllGone = skipped.isNotEmpty && skipped.length == scope.cardCount;
-  if (context.mounted && !isAllGone) {
+  if (skipped == null) return staleIds ?? const {};
+  if (context.mounted) {
     final l10n = context.l10n;
     showMxSnackbar(
       context,
@@ -85,9 +85,13 @@ Future<void> showDeckExportSheet(
 /// Kit 12: the fixed scope, the three formats, what the file holds, and one
 /// action. It closes itself once the file is handed over.
 class CardExportSheetWidget extends ConsumerWidget {
-  const CardExportSheetWidget({super.key, required this.scope});
+  const CardExportSheetWidget({super.key, required this.scope, this.onStale});
 
   final CardExportScope scope;
+
+  /// Called with the selected ids once every one proved gone, so the caller
+  /// can drop them whichever way the sheet is dismissed (SP2a 2.19).
+  final void Function(Set<String> ids)? onStale;
 
   CardExportController _sheet(WidgetRef ref) =>
       ref.read(cardExportControllerProvider(scope).notifier);
@@ -97,6 +101,9 @@ class CardExportSheetWidget extends ConsumerWidget {
     final provider = cardExportControllerProvider(scope);
     ref.listen(provider, (_, next) {
       if (next.isHandedOver) Navigator.of(context).pop(next.skipped);
+      if (next.problem == CardExportProblem.staleSelection) {
+        onStale?.call(scope.cardIds ?? const {});
+      }
     });
     final state = ref.watch(provider);
     final problem = state.problem;
@@ -271,18 +278,13 @@ class _Actions extends StatelessWidget {
     void close() => Navigator.of(context).pop();
     final problem = state.problem;
     if (problem != null && problem.isFinal) {
-      // A stale selection hands its ids back so the caller drops them (SP2a
-      // 2.19); the other final problems leave the selection alone.
-      void closeFinal() => Navigator.of(
-        context,
-      ).pop(problem == CardExportProblem.staleSelection ? scope.cardIds : null);
       return MxSheetActions.custom(
         isInSheet: true,
         children: [
           Expanded(
             child: MxButton(
               label: l10n.exportClose,
-              onPressed: closeFinal,
+              onPressed: close,
               isBlock: true,
             ),
           ),

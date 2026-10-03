@@ -133,47 +133,54 @@ void main() {
     },
   );
 
-  libraryTest('Export of cards that are all gone prunes them, so the selection '
-      'ends (SP2a 2.19)', (tester, env) async {
-    final ids = await _seed(env);
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(
-        body: Builder(
-          // As the router wires it (_exportSelection).
-          builder: (context) => CardListSectionWidget(
-            deckId: ids.words,
-            algorithm: 'Eight boxes',
-            onAddCard: () {},
-            onOpenCard: (_) {},
-            onExport: (selected) async {
-              final skipped = await showCardExportSheet(
-                context,
-                CardExportScope.selection(deckId: ids.words, ids: selected),
-              );
-              ProviderScope.containerOf(
-                context,
-                listen: false,
-              ).read(cardSelectionProvider(ids.words).notifier).prune(skipped);
-            },
+  for (final (how, dismiss) in <(String, Future<void> Function(WidgetTester))>[
+    ('Close', (tester) => _bulk(tester, _en.exportClose)),
+    ('Back', (tester) => tester.binding.handlePopRoute()),
+    ('a scrim tap', (tester) => tester.tapAt(const Offset(20, 20))),
+  ]) {
+    libraryTest('Export of cards that are all gone prunes them whichever way '
+        'the sheet is dismissed: $how (SP2a 2.19)', (tester, env) async {
+      final ids = await _seed(env);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: Builder(
+            // As the router wires it (_exportSelection).
+            builder: (context) => CardListSectionWidget(
+              deckId: ids.words,
+              algorithm: 'Eight boxes',
+              onAddCard: () {},
+              onOpenCard: (_) {},
+              onExport: (selected) async {
+                final skipped = await showCardExportSheet(
+                  context,
+                  CardExportScope.selection(deckId: ids.words, ids: selected),
+                );
+                ProviderScope.containerOf(context, listen: false)
+                    .read(cardSelectionProvider(ids.words).notifier)
+                    .prune(skipped);
+              },
+            ),
           ),
         ),
-      ),
-    );
-    await _select(tester, ['annyeong', 'mul']);
-    await env.db.customStatement(
-      "DELETE FROM card WHERE id IN ('new1', 'flag1')",
-    );
+      );
+      await _select(tester, ['annyeong', 'mul']);
+      await env.db.customStatement(
+        "DELETE FROM card WHERE id IN ('new1', 'flag1')",
+      );
 
-    await _bulk(tester, _en.cardExport);
-    await _bulk(tester, _en.exportAction(2));
-    expect(find.text(_en.exportStaleTitle), findsOneWidget);
-    await _bulk(tester, _en.exportClose);
+      await _bulk(tester, _en.cardExport);
+      await _bulk(tester, _en.exportAction(2));
+      expect(find.text(_en.exportStaleTitle), findsOneWidget);
+      await dismiss(tester);
+      await tester.pumpAndSettle();
 
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
-    expect(find.text(_en.cardExport), findsNothing);
-  });
+      expect(find.text(_en.exportStaleTitle), findsNothing);
+      expect(find.byType(MxSelectionCheckbox), findsNothing);
+      expect(find.text(_en.cardExport), findsNothing);
+    });
+  }
 
   libraryTest('Flag sets the flag on every selected card', (tester, env) async {
     final ids = await _seed(env);
