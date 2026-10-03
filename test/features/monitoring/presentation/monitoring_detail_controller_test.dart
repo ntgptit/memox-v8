@@ -194,6 +194,24 @@ void main() {
     );
   });
 
+  // SP2b 2.39: the server answers FORBIDDEN once the role is gone.
+  test('a lost admin role ends the page as not-an-admin, with no failed-change '
+      'notice to retry (2.39)', () async {
+    repository.servers['a'] = record('a');
+    await open(server);
+    repository.statusError = const NotAdminFailure(cause: 'FORBIDDEN');
+
+    await container.read(server.notifier).setStatus(LogStatus.fixed);
+
+    final state = container.read(server);
+    expect(
+      (state.content as MonitoringDetailFailed).failure,
+      MonitoringLoadFailure.notAdmin,
+    );
+    expect(state.notice, isNull);
+    expect(state.changing, isNull);
+  });
+
   test('a second change waits for the first', () async {
     repository.servers['a'] = record('a');
     await open(server);
