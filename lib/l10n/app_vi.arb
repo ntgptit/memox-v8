@@ -899,6 +899,8 @@
   "progressFooter": "Chỉ đọc · đặt lại không đổi gì ở đây",
   "progressErrorTitle": "Không tổng hợp được tiến độ",
   "progressErrorBody": "Lịch sử học vẫn an toàn trên thiết bị này. Hãy thử lại sau giây lát.",
+  "progressStaleTitle": "Chưa cập nhật được tiến độ",
+  "progressStaleBody": "Đây là số liệu của lần đọc gần nhất. Lịch sử học vẫn an toàn trên thiết bị này.",
   "progressLoading": "Đang tải tiến độ",
   "studyHomeNoDecksTitle": "Chưa có gì để học",
   "studyHomeNoDecksBody": "Thư viện đang trống. Hãy sao chép một bộ thẻ mẫu để có sẵn nội dung, hoặc tạo bộ thẻ trong Thư viện.",

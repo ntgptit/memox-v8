@@ -4732,6 +4732,14 @@
   "@progressErrorBody": {
     "description": "Screen handoff 22 (FE-A9): the error state's body."
   },
+  "progressStaleTitle": "Couldn't refresh your progress",
+  "@progressStaleTitle": {
+    "description": "Screen handoff 22 (SP2a 2.50): warning banner title when a refresh failed after figures were read."
+  },
+  "progressStaleBody": "These are the figures last read. Your study history is safe on this device.",
+  "@progressStaleBody": {
+    "description": "Screen handoff 22 (SP2a 2.50): the banner's message; local-first."
+  },
   "progressLoading": "Loading your progress",
   "@progressLoading": {
     "description": "Screen handoff 22 (FE-A9): what TalkBack reads while the screen loads."

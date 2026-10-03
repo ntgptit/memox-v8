@@ -11,6 +11,7 @@ import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_level_list_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_range_widget.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_stale_banner_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -43,12 +44,28 @@ class DeckProgressScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final read = ref.watch(deckProgressProvider(deckId));
-    final level = switch (read) {
-      AsyncError() => null,
-      AsyncValue(value: final DeckProgressLevel level) => level,
+    // The last level read stays through a failed refresh (2.50).
+    final level = switch (read.value) {
+      final DeckProgressLevel level => level,
       _ => null,
     };
     final Widget body = switch (read) {
+      _ when level != null => MxScreenScroll(
+        children: [
+          if (read.hasError)
+            ProgressStaleBannerWidget(
+              onRetry: () => ref.invalidate(deckProgressProvider(deckId)),
+              isRetrying: read.isLoading,
+            ),
+          const ProgressRangeWidget(),
+          const SizedBox(height: AppSpacing.gutter),
+          ProgressLevelListWidget(
+            level: level.level,
+            isDeckLevel: true,
+            onOpenDeck: onOpenDeck,
+          ),
+        ],
+      ),
       AsyncError(:final error, :final isLoading) => MxScreenScroll(
         children: [
           MxErrorState(
@@ -61,17 +78,6 @@ class DeckProgressScreen extends ConsumerWidget {
             retryLabel: l10n.commonRetry,
             onRetry: () => ref.invalidate(deckProgressProvider(deckId)),
             isRetrying: isLoading,
-          ),
-        ],
-      ),
-      _ when level != null => MxScreenScroll(
-        children: [
-          const ProgressRangeWidget(),
-          const SizedBox(height: AppSpacing.gutter),
-          ProgressLevelListWidget(
-            level: level.level,
-            isDeckLevel: true,
-            onOpenDeck: onOpenDeck,
           ),
         ],
       ),

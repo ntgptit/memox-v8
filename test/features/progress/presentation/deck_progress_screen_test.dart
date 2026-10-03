@@ -6,11 +6,14 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';
+import 'package:memox/features/progress/presentation/providers/watch_deck_progress_use_case_provider.dart';
 import 'package:memox/features/progress/presentation/screens/deck_progress_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
 import '../../../support/deck_fixtures.dart';
@@ -218,5 +221,43 @@ void main() {
     expect(find.text(_en.progressErrorTitle), findsOneWidget);
     expect(find.text(_en.failureBusy), findsOneWidget);
     expect(find.textContaining('/data/'), findsNothing);
+  });
+
+  libraryTest('a failed refresh keeps the deck level last read and shows the '
+      'warning banner with Retry (2.50)', (tester, env) async {
+    final korean = await studiedDeck(
+      env,
+      'Korean',
+      days: [(daysAgo: 0, learning: 1, reviewing: 2)],
+    );
+    await env.decks.sub(korean, 'Grammar');
+    var reads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(korean, _Taps()),
+      overrides: [
+        deckProgressProvider(korean).overrideWith((ref) {
+          reads++;
+          return snapshotThenError(
+            ref,
+            ref.watch(watchDeckProgressUseCaseProvider)(korean),
+          );
+        }),
+      ],
+    );
+    await _settle(tester);
+
+    expect(find.text(_en.progressWholeDeck), findsOneWidget);
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(
+      find.widgetWithText(MxInlineBanner, _en.progressStaleTitle),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+    expect(reads, 2);
+    expect(find.text(_en.progressWholeDeck), findsOneWidget);
   });
 }

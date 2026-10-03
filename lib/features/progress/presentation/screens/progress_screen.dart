@@ -10,6 +10,7 @@ import 'package:memox/features/progress/domain/models/progress_overview_model.da
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_level_list_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_range_widget.dart';
+import 'package:memox/features/progress/presentation/widgets/sections/progress_stale_banner_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_streak_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_today_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -36,8 +37,18 @@ class ProgressScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    // Once shown, a new snapshot only replaces the numbers (FE-A9 D8).
-    final children = switch (ref.watch(progressProvider)) {
+    final read = ref.watch(progressProvider);
+    // Once shown, a new snapshot only replaces the numbers (FE-A9 D8); a
+    // failed refresh keeps them and says so (2.50).
+    final children = switch (read) {
+      AsyncValue(:final value?) => [
+        if (read.hasError)
+          ProgressStaleBannerWidget(
+            onRetry: () => ref.invalidate(progressProvider),
+            isRetrying: read.isLoading,
+          ),
+        ..._loaded(context, value),
+      ],
       AsyncError(:final error, :final isLoading) => [
         MxErrorState(
           // A local read failed, not the network (critique 2026-09-30).
@@ -51,7 +62,6 @@ class ProgressScreen extends ConsumerWidget {
           isRetrying: isLoading,
         ),
       ],
-      AsyncValue(:final value?) => _loaded(context, value),
       _ => [ProgressSkeletonWidget(semanticLabel: l10n.progressLoading)],
     };
     return MxAppShell(

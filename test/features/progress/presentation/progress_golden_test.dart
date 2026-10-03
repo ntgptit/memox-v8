@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
+import 'package:memox/features/progress/presentation/providers/watch_progress_use_case_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -137,6 +138,26 @@ void main() {
         overrides: [
           progressProvider.overrideWith(
             (ref) => Stream<Progress>.error(StateError('read failed')),
+          ),
+        ],
+      );
+    });
+
+    libraryTest('progress, stale after a failed refresh, $theme', (
+      tester,
+      env,
+    ) async {
+      await progressLibrary(env);
+      await shoot(
+        tester,
+        env,
+        'stale',
+        overrides: [
+          progressProvider.overrideWith(
+            (ref) => snapshotThenError(
+              ref,
+              ref.watch(watchProgressUseCaseProvider)(),
+            ),
           ),
         ],
       );
