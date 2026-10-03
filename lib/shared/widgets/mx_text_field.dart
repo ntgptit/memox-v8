@@ -272,6 +272,10 @@ class MxTextField extends StatelessWidget {
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,
+      // A typed study answer is the person's own: the keyboard must not
+      // suggest it, nor correct it (2.13).
+      autocorrect: !isBare,
+      enableSuggestions: !isBare,
       maxLines: geometry.isMultiline ? null : 1,
       // A term wraps but is one line of meaning: Enter fires the action.
       keyboardType: switch (variant) {

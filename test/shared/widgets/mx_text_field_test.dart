@@ -396,4 +396,20 @@ void main() {
     expect(controller.text, '123456');
     expect(MxTextField.codeLength, 6);
   });
+
+  testWidgets('study turns off autocorrect and suggestions, so the keyboard '
+      'neither reveals nor changes the answer; every other variant keeps '
+      'them (2.13)', (tester) async {
+    for (final variant in MxTextFieldVariant.values) {
+      await pumpMx(
+        tester,
+        SizedBox(width: 300, child: MxTextField(variant: variant)),
+      );
+      final field = tester.widget<TextField>(find.byType(TextField));
+      final isStudy = variant == MxTextFieldVariant.study;
+
+      expect(field.autocorrect, !isStudy, reason: variant.name);
+      expect(field.enableSuggestions, !isStudy, reason: variant.name);
+    }
+  });
 }
