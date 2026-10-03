@@ -158,16 +158,30 @@ final class CardRepositoryImpl implements CardRepository {
 
   @override
   Future<Outcome<void, CardRejection>> undoCardDeletion({
-    required String batchId,
+    required Set<String> batchIds,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      final card = await _dao.itemOf(batchId);
-      if (card == null) return const Rejected(CardRejection.notFound);
+      if (batchIds.isEmpty) return const Ok(null);
       // Back into its own deck with its own updated_at: an Undo is not a
-      // move (trash spec D9).
-      return _restoreInto(card.deckId, {batchId: card}, at: at);
+      // move (trash spec D9). Grouped by deck so each target is checked once
+      // and a refusal leaves every card where it is.
+      final byDeck = <String, Map<String, CardRow>>{};
+      for (final batchId in batchIds) {
+        final card = await _dao.itemOf(batchId);
+        if (card == null) return const Rejected(CardRejection.notFound);
+        (byDeck[card.deckId] ??= {})[batchId] = card;
+      }
+      for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
+        if (await _restoreRefusal(deckId, cards) case final reason?) {
+          return Rejected(reason);
+        }
+      }
+      for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
+        await _writeRestore(deckId, cards, at: at);
+      }
+      return const Ok(null);
     });
   }
 
@@ -418,24 +432,44 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? updatedAt,
     required DateTime at,
   }) async {
+    if (await _restoreRefusal(deckId, cards) case final reason?) {
+      return Rejected(reason);
+    }
+    await _writeRestore(deckId, cards, updatedAt: updatedAt, at: at);
+    return const Ok(null);
+  }
+
+  /// Why [cards] cannot go back into [deckId], or null when it takes them
+  /// (BR-TRASH-006). Reads only.
+  Future<CardRejection?> _restoreRefusal(
+    String deckId,
+    Map<String, CardRow> cards,
+  ) async {
     final target = await _dao.deckRow(deckId);
     if (target == null) {
-      return Rejected(
-        await _dao.isDeckInTrash(deckId)
-            ? CardRejection.targetInTrash
-            : CardRejection.targetNotFound,
-      );
+      return await _dao.isDeckInTrash(deckId)
+          ? CardRejection.targetInTrash
+          : CardRejection.targetNotFound;
     }
-    final targetContentType = DeckContentType.values.byName(target.contentType);
     final rule = CardEntity.checkTarget(
       targetRootId: target.rootId,
       targetIsRoot: target.parentId == null,
-      targetContentType: targetContentType,
+      targetContentType: DeckContentType.values.byName(target.contentType),
       sourceRootIds: await _dao.rootIdsOf({
         for (final card in cards.values) card.deckId,
       }),
     );
-    if (rule case Rejected(:final reason)) return Rejected(reason);
+    if (rule case Rejected(:final reason)) return reason;
+    return null;
+  }
+
+  /// The writes of a restore that [_restoreRefusal] accepted.
+  Future<void> _writeRestore(
+    String deckId,
+    Map<String, CardRow> cards, {
+    DateTime? updatedAt,
+    required DateTime at,
+  }) async {
     for (final MapEntry(key: batchId, value: card) in cards.entries) {
       await _dao.restoreFromBatch(
         batchId,
@@ -444,10 +478,10 @@ final class CardRepositoryImpl implements CardRepository {
         updatedAt: updatedAt,
       );
     }
-    if (targetContentType == DeckContentType.unset) {
+    final target = (await _dao.deckRow(deckId))!;
+    if (target.contentType == DeckContentType.unset.name) {
       await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
     }
-    return const Ok(null);
   }
 
   /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).

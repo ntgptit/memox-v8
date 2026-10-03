@@ -13,9 +13,10 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Says cards went to the Trash (FE-B1 D3, D4). One card, named by its
-/// [front] when the caller has it, gets Undo for 8 seconds; several get
-/// [onOpenTrash] instead (BR-TRASH-008), as a refused Undo does. [skipped] is
-/// how many of the selected cards were already gone (SP2a 2.19).
+/// [front] when the caller has it, or several: Undo for 8 seconds puts them
+/// all back (BR-TRASH-008, SP2a 2.20). [skipped] is how many of the selected
+/// cards were already gone (SP2a 2.19). [onOpenTrash] rides on a refused
+/// Undo's toast.
 ///
 /// The toast outlives the dialog and often the screen that showed it, so it
 /// lives on the root navigator and Undo reads the app's container, not a
@@ -29,39 +30,33 @@ void showCardsTrashedSnackbar(
 }) {
   final host = Navigator.of(context, rootNavigator: true).context;
   final l10n = context.l10n;
-  if (batchIds case [final batchId]) {
-    final container = ProviderScope.containerOf(context, listen: false);
-    showMxSnackbar(
-      host,
-      message: front == null
-          ? l10n.bulkToast(l10n.cardsTrashedToast(1), skipped)
-          : l10n.cardTrashedToast(front),
-      actionLabel: l10n.commonUndo,
-      duration: AppDurations.undoWindow,
-      onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
-    );
-    return;
-  }
+  final container = ProviderScope.containerOf(context, listen: false);
+  final message = switch (batchIds) {
+    [_] when front != null => l10n.cardTrashedToast(front),
+    _ => l10n.bulkToast(l10n.cardsTrashedToast(batchIds.length), skipped),
+  };
   showMxSnackbar(
     host,
-    message: l10n.bulkToast(l10n.cardsTrashedToast(batchIds.length), skipped),
-    actionLabel: onOpenTrash == null ? null : l10n.commonOpenTrash,
-    onAction: onOpenTrash,
+    message: message,
+    actionLabel: l10n.commonUndo,
+    duration: AppDurations.undoWindow,
+    onAction: () =>
+        unawaited(_undo(host, container, batchIds.toSet(), onOpenTrash)),
   );
 }
 
-/// The card goes back into its deck; a refusal says why and leaves it in
+/// The cards go back into their decks; a refusal says why and leaves them in
 /// the Trash (UC-TRASH-001 A1, E3).
 Future<void> _undo(
   BuildContext host,
   ProviderContainer container,
-  String batchId,
+  Set<String> batchIds,
   VoidCallback? onOpenTrash,
 ) async {
   try {
     final outcome = await container
         .read(cardActionsControllerProvider.notifier)
-        .undoCardDeletion(batchId: batchId);
+        .undoCardDeletion(batchIds: batchIds);
     if (outcome case Rejected(:final reason) when host.mounted) {
       final l10n = host.l10n;
       showMxSnackbar(

@@ -306,7 +306,7 @@ Kịch bản kiểm thử tích hợp truy vết về feature này (theo cột "
 |---|---|---|
 | 1 | Chọn Delete từ thanh hành động | Hộp xác nhận nêu **số lượng** và hậu quả mất lịch sử học; Huỷ là mặc định |
 | 2 | Chọn Huỷ | Không card nào bị xoá; selection còn nguyên |
-| 3 | Xác nhận xoá | Cả lô biến mất cùng lúc; selection được xoá; thông báo nêu số lượng |
+| 3 | Xác nhận xoá | Cả lô biến mất cùng lúc; selection được xoá; thông báo nêu số lượng và có Undo |
 | 4 | Chạy một bulk action mà một thẻ vi phạm luật (đích bị từ chối, tag chạm trần) | **Không** thẻ nào được ghi; selection giữ nguyên để thử lại |
 | 5 | Chạy một bulk action khi một thẻ đã bị xoá ở nơi khác | Thẻ đó bị bỏ qua, các thẻ còn lại được ghi; thông báo nêu số thẻ đã bỏ qua |
 | 6 | Restart app | Kết quả bước 3 và bước 5 vẫn còn, kết quả bước 4 vẫn chưa từng xảy ra |

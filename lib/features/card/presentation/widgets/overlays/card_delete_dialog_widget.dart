@@ -42,8 +42,9 @@ Future<bool> showDeleteCardsDialog(
     ) ??
     false;
 
-/// The confirm is not destructive, since the Trash keeps the cards for 30
-/// days, and it spins while they move (FE-B1 D15).
+/// The confirm names how many cards move; it is not destructive, since the
+/// Trash keeps the cards for 30 days, and it spins while they move (FE-B1 D15,
+/// SP2a 2.20).
 class CardDeleteDialogWidget extends ConsumerStatefulWidget {
   const CardDeleteDialogWidget({
     super.key,
@@ -123,7 +124,7 @@ class _CardDeleteDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.cardMoveToTrash,
+        confirmLabel: l10n.cardMoveToTrashCount(count),
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
         onConfirm: _isDeleting ? null : _delete,

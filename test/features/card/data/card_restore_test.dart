@@ -219,7 +219,7 @@ void main() {
       expect(await contentTypeOf(lesson.id), DeckContentType.unset);
 
       expect(
-        await cards.undoCardDeletion(batchId: batchId),
+        await cards.undoCardDeletion(batchIds: {batchId}),
         isA<Ok<void, CardRejection>>(),
       );
 
@@ -241,15 +241,15 @@ void main() {
       final before = await totalChanges(db);
 
       expect(
-        await cards.undoCardDeletion(batchId: first),
+        await cards.undoCardDeletion(batchIds: {first}),
         _refused(CardRejection.targetInTrash),
       );
       expect(
-        await cards.undoCardDeletion(batchId: second),
+        await cards.undoCardDeletion(batchIds: {second}),
         _refused(CardRejection.targetHoldsDecks),
       );
       expect(
-        await cards.undoCardDeletion(batchId: 'missing'),
+        await cards.undoCardDeletion(batchIds: {'missing'}),
         _refused(CardRejection.notFound),
       );
       expect(await totalChanges(db), before);
@@ -263,17 +263,65 @@ void main() {
       await insertCard(db, id: 'c2', deckId: lesson.id);
       final [undone] = await delete({'c1'});
       final [restored] = await delete({'c2'});
-      await cards.undoCardDeletion(batchId: undone);
+      await cards.undoCardDeletion(batchIds: {undone});
       await cards.restoreCards(batchIds: {restored}, deckId: lesson.id);
       final before = await totalChanges(db);
 
       for (final batchId in [undone, restored]) {
         expect(
-          await cards.undoCardDeletion(batchId: batchId),
+          await cards.undoCardDeletion(batchIds: {batchId}),
           _refused(CardRejection.notFound),
         );
       }
       expect(await totalChanges(db), before);
+    });
+
+    test('several cards go back at once, each into its own deck with its '
+        'updated_at kept (SP2a 2.20)', () async {
+      final root = await decks.root('Korean');
+      final lesson = await decks.sub(root.id, 'Lesson');
+      final other = await decks.sub(root.id, 'Other');
+      await insertCard(db, id: 'c1', deckId: lesson.id);
+      await insertCard(db, id: 'c2', deckId: lesson.id);
+      await insertCard(db, id: 'c3', deckId: other.id);
+      final updatedAt = (await placeOf('c1')).$3;
+      final batchIds = await delete({'c1', 'c2', 'c3'});
+
+      expect(
+        await cards.undoCardDeletion(batchIds: batchIds.toSet()),
+        isA<Ok<void, CardRejection>>(),
+      );
+
+      expect(await placeOf('c1'), (lesson.id, null, updatedAt));
+      expect(await placeOf('c2'), (lesson.id, null, updatedAt));
+      expect(await placeOf('c3'), (other.id, null, updatedAt));
+      expect(
+        (await db
+                .customSelect('SELECT COUNT(*) AS n FROM delete_batches')
+                .getSingle())
+            .read<int>('n'),
+        0,
+      );
+      expect(await contentTypeOf(lesson.id), DeckContentType.card);
+    });
+
+    test('one card whose deck no longer takes it refuses all of them, '
+        'writing nothing (SP2a 2.20)', () async {
+      final root = await decks.root('Korean');
+      final gone = await decks.sub(root.id, 'Gone');
+      final lesson = await decks.sub(root.id, 'Lesson');
+      await insertCard(db, id: 'c1', deckId: lesson.id);
+      await insertCard(db, id: 'c2', deckId: gone.id);
+      final batchIds = await delete({'c1', 'c2'});
+      await deleteDeck(gone.id);
+      final before = await totalChanges(db);
+
+      expect(
+        await cards.undoCardDeletion(batchIds: batchIds.toSet()),
+        _refused(CardRejection.targetInTrash),
+      );
+      expect(await totalChanges(db), before);
+      expect((await placeOf('c1')).$2, isNotNull);
     });
   });
 }

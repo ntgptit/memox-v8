@@ -135,6 +135,7 @@
   "cardDeleteTitle": "{count, plural, other{Chuyển {count} thẻ vào Thùng rác?}}",
   "cardDeleteNote": "{count, plural, other{Khôi phục được từ Thùng rác trong 30 ngày, cùng lịch ôn và lịch sử. Các thẻ khác không bị ảnh hưởng.}}",
   "cardMoveToTrash": "Chuyển vào Thùng rác",
+  "cardMoveToTrashCount": "{count, plural, =1{Chuyển vào Thùng rác} other{Chuyển {count} thẻ vào Thùng rác}}",
   "cardTrashedToast": "Đã chuyển “{front}” vào Thùng rác",
   "cardsTrashedToast": "{count, plural, other{Đã chuyển {count} thẻ vào Thùng rác}}",
   "cardUndoRefused": "Không thể hoàn tác. {reason} Hãy khôi phục từ Thùng rác và chọn một bộ thẻ.",

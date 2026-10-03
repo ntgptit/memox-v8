@@ -65,8 +65,8 @@ class CardActionsController extends _$CardActionsController {
   }) => ref.read(deleteCardsUseCaseProvider)(cardIds: cardIds);
 
   Future<Outcome<void, CardRejection>> undoCardDeletion({
-    required String batchId,
-  }) => ref.read(undoCardDeletionUseCaseProvider)(batchId: batchId);
+    required Set<String> batchIds,
+  }) => ref.read(undoCardDeletionUseCaseProvider)(batchIds: batchIds);
 
   Future<Outcome<CardEntity, CardRejection>> createCard({
     required String deckId,

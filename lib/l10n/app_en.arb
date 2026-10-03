@@ -661,6 +661,15 @@
   "@cardMoveToTrash": {
     "description": "The Move to Trash dialog's confirm (kit 07, 09)."
   },
+  "cardMoveToTrashCount": "{count, plural, =1{Move to Trash} other{Move {count} cards to Trash}}",
+  "@cardMoveToTrashCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "The Move to Trash dialog's confirm when it names how many cards move (SP2a 2.20); one card keeps the short form."
+  },
   "cardTrashedToast": "“{front}” moved to Trash",
   "@cardTrashedToast": {
     "placeholders": {

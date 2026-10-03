@@ -59,10 +59,12 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
-  /// BR-TRASH-008: the card of [batchId] goes back into its deck with its
-  /// `updated_at` kept; refused, typed, when that deck no longer takes it.
+  /// BR-TRASH-008: the cards of [batchIds], the batches one delete wrote, go
+  /// back each into its own deck with its `updated_at` kept; all or none. It
+  /// is refused, typed, when any of those decks no longer takes its card, and
+  /// `notFound` when a batch is gone (SP2a 2.20).
   Future<Outcome<void, CardRejection>> undoCardDeletion({
-    required String batchId,
+    required Set<String> batchIds,
     DateTime? now,
   });
 

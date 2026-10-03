@@ -331,8 +331,11 @@ void main() {
     expect(find.text(_en.cardMovedToast(2, 'Verbs')), findsOneWidget);
   });
 
-  libraryTest('Trash asks with the count; Cancel keeps the selection; '
-      'several cards get no Undo (FE-B1 D4)', (tester, env) async {
+  libraryTest('Trash asks with the count on its button; Cancel keeps the '
+      'selection; Undo of several puts them all back (SP2a 2.20)', (
+    tester,
+    env,
+  ) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));
     await _select(tester, ['annyeong', 'gamsa']);
@@ -340,6 +343,7 @@ void main() {
 
     expect(find.text(_en.cardDeleteTitle(2)), findsOneWidget);
     expect(find.text(_en.cardDeleteNote(2)), findsOneWidget);
+    expect(_inDialog(_en.cardMoveToTrashCount(2)), findsOneWidget);
     await tester.tap(_inDialog(_en.commonCancel));
     await tester.pumpAndSettle();
     expect(
@@ -350,11 +354,44 @@ void main() {
     );
 
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.cardMoveToTrashCount(2)));
     await tester.pumpAndSettle();
     expect(await _activeCount(env), 2);
     expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
-    expect(find.text(_en.commonUndo), findsNothing);
+    expect(find.text(_en.commonUndo), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+    expect(await _activeCount(env), 4);
+    expect(find.text('annyeong'), findsOneWidget);
+    expect(find.text('gamsa'), findsOneWidget);
+  });
+
+  libraryTest('a refused Undo of several leaves them all in the Trash '
+      '(UC-TRASH-001 E3, SP2a 2.20)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrashCount(2)));
+    await tester.pumpAndSettle();
+    await env.decks.deleteDeck(deckId: ids.words);
+
+    await tester.tap(find.text(_en.commonUndo));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.cardUndoRefused(_en.cardRejectionTargetInTrash)),
+      findsOneWidget,
+    );
+    expect(
+      await _count(
+        env,
+        "SELECT COUNT(*) AS n FROM card WHERE id IN ('new1', 'due1') "
+        'AND delete_batch_id IS NULL',
+      ),
+      0,
+    );
   });
 
   libraryTest('one card shows its text; Undo puts it back (UC-TRASH-001 '
@@ -496,7 +533,7 @@ void main() {
     await env.cards.deleteCards(cardIds: {'due1'});
     await tester.pumpAndSettle();
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.cardMoveToTrashCount(2)));
     await tester.pumpAndSettle();
 
     expect(
@@ -543,7 +580,7 @@ void main() {
       'prunes the selection (SP2a 2.19)', (tester, env) async {
     await selectThenLoseBoth(tester, env);
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.cardMoveToTrashCount(2)));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.cardBulkAllGone(2)), findsOneWidget);

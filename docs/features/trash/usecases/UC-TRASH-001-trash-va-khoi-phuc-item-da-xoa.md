@@ -47,6 +47,7 @@ dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi 
 **Alternative flows:**
 - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống
   đảo ngược đúng batch đó về **vị trí cũ**, không hỏi target (BR-TRASH-008).
+  Với xoá nhiều card, Undo đảo ngược mọi batch của thao tác đó hoặc không batch nào.
 - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động
   hiện `Restore` và `Delete permanently` cho tập đang chọn. Chọn một card làm
   mọi hàng deck không chọn được và ngược lại; UI nói rõ vì sao (BR-TRASH-011).

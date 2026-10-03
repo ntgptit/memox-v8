@@ -140,7 +140,7 @@ void main() {
           (deleted as Ok<BulkOutcome, CardRejection>).value.batchIds;
 
       expect(
-        await UndoCardDeletionUseCase(cards)(batchId: batchId),
+        await UndoCardDeletionUseCase(cards)(batchIds: {batchId}),
         isA<Ok<void, CardRejection>>(),
       );
       expect(await cards.watchDetail('c1').first, isNotNull);
