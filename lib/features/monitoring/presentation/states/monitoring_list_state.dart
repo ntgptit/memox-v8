@@ -24,20 +24,43 @@ final class MonitoringListLoaded extends MonitoringListContent {
     required this.items,
     required this.next,
     this.more = MonitoringMore.idle,
+    this.refreshFailure,
   });
 
   final List<LogSummaryEntity> items;
   final LogCursor? next;
   final MonitoringMore more;
 
-  MonitoringListLoaded withMore(MonitoringMore value) =>
-      MonitoringListLoaded(items: items, next: next, more: value);
+  /// The last pull to refresh failed and [items] are from the load before
+  /// it (SP2b 2.38); null when the rows are current.
+  final MonitoringLoadFailure? refreshFailure;
+
+  MonitoringListLoaded withMore(MonitoringMore value) => MonitoringListLoaded(
+    items: items,
+    next: next,
+    more: value,
+    refreshFailure: refreshFailure,
+  );
 
   MonitoringListLoaded withItems(List<LogSummaryEntity> value) =>
-      MonitoringListLoaded(items: value, next: next, more: more);
+      MonitoringListLoaded(
+        items: value,
+        next: next,
+        more: more,
+        refreshFailure: refreshFailure,
+      );
+
+  MonitoringListLoaded withRefreshFailure(MonitoringLoadFailure? value) =>
+      MonitoringListLoaded(
+        items: items,
+        next: next,
+        more: more,
+        refreshFailure: value,
+      );
 }
 
-/// The first page failed; no stale row is shown.
+/// The first page failed, or a refresh found the admin role gone; no stale
+/// row is shown.
 final class MonitoringListFailed extends MonitoringListContent {
   const MonitoringListFailed(this.failure);
 

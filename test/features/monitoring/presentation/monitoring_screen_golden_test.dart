@@ -1,6 +1,8 @@
 @Tags(['golden'])
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -190,6 +192,33 @@ void main() {
         act: () async {
           repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
           await _settle(tester);
+        },
+      );
+    });
+
+    // SP2b 2.38: a pull to refresh failed; the rows stay under a warning.
+    libraryTest('monitoring, list refresh failed, $theme', (tester, env) async {
+      final repository = FakeMonitoringRepository();
+      await golden(
+        tester,
+        env,
+        'list_refresh_failed',
+        repository,
+        act: () async {
+          repository.lastQuery.answer(_openPage());
+          await _settle(tester);
+          unawaited(
+            ProviderScope.containerOf(
+              tester.element(find.byType(MonitoringScreen)),
+            ).read(monitoringListControllerProvider.notifier).refresh(),
+          );
+          await tester.pump();
+          repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
+          await _settle(tester);
+          expect(
+            find.textContaining("Couldn't refresh the list"),
+            findsOneWidget,
+          );
         },
       );
     });

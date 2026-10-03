@@ -1295,6 +1295,7 @@
   "monitoringCountLogsMore": "{count}+ nhật ký",
   "monitoringNoMore": "Hết nhật ký",
   "monitoringLoadMoreFailed": "Chưa tải thêm được nhật ký.",
+  "monitoringRefreshFailed": "Không làm mới được danh sách. Các dòng bên dưới là lần tải trước.",
   "monitoringEmptyTitle": "Không có vấn đề nào đang mở",
   "monitoringEmptyBody": "Cảnh báo và lỗi sẽ hiện ở đây.",
   "monitoringNoMatchTitle": "Không có gì khớp",

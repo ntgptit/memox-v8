@@ -178,6 +178,18 @@ class _Rows extends ConsumerWidget {
         child: MxScreenScroll(
           children: [
             const SizedBox(height: AppSpacing.control),
+            if (loaded.refreshFailure != null)
+              MxInlineBanner(
+                tone: MxBannerTone.warning,
+                message: l10n.monitoringRefreshFailed,
+                actions: [
+                  MxButton(
+                    label: l10n.commonRetry,
+                    size: MxButtonSize.compact,
+                    onPressed: () => unawaited(controller.refresh()),
+                  ),
+                ],
+              ),
             MxListSectionHeader(label: header),
             for (final (index, log) in loaded.items.indexed)
               LogRowWidget(

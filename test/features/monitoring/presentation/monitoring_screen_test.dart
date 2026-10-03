@@ -291,6 +291,56 @@ void main() {
     expect(repository.lastQuery.after, isNull);
   });
 
+  libraryTest('a pull to refresh that fails keeps the rows under a warning '
+      'with Retry, which asks again (SP2b 2.38)', (tester, env) async {
+    final repository = FakeMonitoringRepository();
+    await pumpMonitoring(tester, env, repository);
+    repository.lastQuery.answer(pageOf(2));
+    await settleMonitoring(tester);
+
+    await tester.fling(find.byType(ListView), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(repository.queries, hasLength(2));
+    repository.lastQuery.fail(const OfflineFailure(cause: 'x'));
+    await tester.pumpAndSettle();
+
+    const warning =
+        "Couldn't refresh the list. The rows below are from the last time it loaded.";
+    expect(find.text(warning), findsOneWidget);
+    expect(find.text('2 LOGS'), findsOneWidget);
+    expect(find.text('message of r0'), findsOneWidget);
+    expect(find.byType(MxErrorState), findsNothing);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    expect(repository.queries, hasLength(3));
+    expect(find.text(warning), findsNothing);
+    repository.lastQuery.answer(pageOf(1, prefix: 'n'));
+    await tester.pumpAndSettle();
+    expect(find.text('message of n0'), findsOneWidget);
+    expect(find.text(warning), findsNothing);
+  });
+
+  libraryTest('a lost admin role on refresh replaces the rows (SP2b 2.38)', (
+    tester,
+    env,
+  ) async {
+    final repository = FakeMonitoringRepository();
+    await pumpMonitoring(tester, env, repository);
+    repository.lastQuery.answer(pageOf(2));
+    await settleMonitoring(tester);
+
+    await tester.fling(find.byType(ListView), const Offset(0, 400), 1000);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    repository.lastQuery.fail(const NotAdminFailure(cause: 'x'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Only an admin can see this'), findsOneWidget);
+    expect(find.text('message of r0'), findsNothing);
+  });
+
   libraryTest('the search asks once the field has been still for 400 ms', (
     tester,
     env,

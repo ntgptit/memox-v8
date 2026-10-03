@@ -84,6 +84,11 @@ class MonitoringListController extends _$MonitoringListController {
     _debounce?.cancel();
     _pendingSearch = null;
     if (filter != state.filter) state = MonitoringListState(filter: filter);
+    // The last refresh's warning goes at once, as a retry's failure does; it
+    // comes back if this one fails too (SP2b 2.38).
+    if (_loaded case final shown? when shown.refreshFailure != null) {
+      _show(shown.withRefreshFailure(null));
+    }
     return _loadFirst();
   }
 
@@ -110,6 +115,7 @@ class MonitoringListController extends _$MonitoringListController {
         content: MonitoringListLoaded(
           items: [...latest.items, ...page.items],
           next: page.next,
+          refreshFailure: latest.refreshFailure,
         ),
       );
     } on Object {
@@ -158,7 +164,19 @@ class MonitoringListController extends _$MonitoringListController {
       );
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
-      _show(MonitoringListFailed(MonitoringLoadFailure.of(error)));
+      final failure = MonitoringLoadFailure.of(error);
+      final shown = _loaded;
+      // A pull to refresh that fails keeps the rows (SP2b 2.38). A new filter
+      // cleared them first, an empty list has none to keep, and a lost admin
+      // role must not leave logs on screen.
+      if (shown != null &&
+          shown.items.isNotEmpty &&
+          failure != MonitoringLoadFailure.notAdmin) {
+        // A page that was loading is dropped by the generation guard.
+        _show(shown.withMore(MonitoringMore.idle).withRefreshFailure(failure));
+        return;
+      }
+      _show(MonitoringListFailed(failure));
     }
   }
 }

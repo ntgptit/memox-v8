@@ -6801,6 +6801,10 @@
   "@monitoringLoadMoreFailed": {
     "description": "Screen 28: the end of the list when the next page failed."
   },
+  "monitoringRefreshFailed": "Couldn't refresh the list. The rows below are from the last time it loaded.",
+  "@monitoringRefreshFailed": {
+    "description": "Screen 28 (SP2b 2.38): the warning banner above the rows when a pull to refresh failed and the rows were kept; its action is Retry."
+  },
   "monitoringEmptyTitle": "No open problems",
   "@monitoringEmptyTitle": {
     "description": "Screen 28: the Server tab with the default filter and no row."
