@@ -104,6 +104,75 @@ void main() {
       deckId: other.id,
     )) as Ok<String, DeckRejection>).value;
     clock.current = clock.current.add(trashRetention);
-    expect((await PurgeExpiredTrashUseCase(trash, clock)()).purged, {last});
+    expect(
+      (await PurgeExpiredTrashUseCase(
+        trash,
+        clock,
+        () async => clock.now(),
+      )()).purged,
+      {last},
+    );
   });
+
+  // R10 (BR-TRASH-009): the auto-purge runs on the earlier of the device clock
+  // and the server time seen at the last sync, and not at all without one.
+  Future<DateTime> deleteWordsDeck() async {
+    final korean = await decks.root('Korean');
+    final words = await decks.sub(korean.id, 'Words');
+    await decks.deleteDeck(deckId: words.id);
+    return clock.now();
+  }
+
+  for (final (label, deviceAfter, serverAfter, isPurged)
+      in <(String, Duration, Duration?, bool)>[
+        ('never synced', trashRetention, null, false),
+        (
+          'a device clock on the server time',
+          trashRetention,
+          trashRetention,
+          true,
+        ),
+        (
+          'a device clock 60 days ahead of a server that says 10 days',
+          const Duration(days: 70),
+          const Duration(days: 10),
+          false,
+        ),
+        (
+          'a device clock 60 days ahead of a server that says 30 days',
+          const Duration(days: 90),
+          trashRetention,
+          true,
+        ),
+        (
+          'a server ahead of a device that says 29 days',
+          const Duration(days: 29),
+          const Duration(days: 60),
+          false,
+        ),
+        (
+          'a server ahead of a device that says 30 days',
+          trashRetention,
+          const Duration(days: 60),
+          true,
+        ),
+      ]) {
+    test('the auto-purge with $label (R10)', () async {
+      final deletedAt = await deleteWordsDeck();
+      clock.current = deletedAt.add(deviceAfter);
+      final seen = serverAfter == null ? null : deletedAt.add(serverAfter);
+
+      final report = await PurgeExpiredTrashUseCase(
+        trash,
+        clock,
+        () async => seen,
+      )();
+
+      expect(report.purged, isPurged ? hasLength(1) : isEmpty);
+      expect(
+        await WatchTrashUseCase(trash)().first,
+        hasLength(isPurged ? 0 : 1),
+      );
+    });
+  }
 }
