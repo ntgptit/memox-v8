@@ -46,6 +46,8 @@ class MxDeckPickerSheet extends StatelessWidget {
     required this.onDismiss,
     required this.emptyTitle,
     this.emptyBody,
+    this.isHeld = false,
+    this.banner,
   });
 
   final String title;
@@ -60,18 +62,28 @@ class MxDeckPickerSheet extends StatelessWidget {
   final String emptyTitle;
   final String? emptyBody;
 
+  /// A write behind a candidate is running: Back, a scrim tap and a drag are
+  /// refused and the dismiss button is off, so its result reaches the screen
+  /// (SP2b 2.26).
+  final bool isHeld;
+
+  /// A notice under the rule, such as a failure the person retries by
+  /// choosing again (SP2b 2.27). The caller builds it and owns its copy.
+  final Widget? banner;
+
   @override
   Widget build(BuildContext context) {
     final isEmpty = candidates.isEmpty;
     return MxBottomSheet(
-      header: _PickerHead(title: title, rule: rule),
+      isHeld: isHeld,
+      header: _PickerHead(title: title, rule: rule, banner: banner),
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [
           Expanded(
             child: MxButton(
               label: dismissLabel,
-              onPressed: onDismiss,
+              onPressed: isHeld ? null : onDismiss,
               tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
               isBlock: true,
             ),
@@ -141,10 +153,11 @@ class MxDeckPickerLoadingSheet extends StatelessWidget {
 
 /// The picker's head: the title and, when known, the rule under it.
 class _PickerHead extends StatelessWidget {
-  const _PickerHead({required this.title, this.rule});
+  const _PickerHead({required this.title, this.rule, this.banner});
 
   final String title;
   final String? rule;
+  final Widget? banner;
 
   /// Ruling O11: the title → rule gap is UNSPECIFIED.
   static const double _ruleGap = 4;
@@ -166,6 +179,11 @@ class _PickerHead extends StatelessWidget {
         children: [
           Text(title, style: styles.compactTitle),
           if (rule case final text?) Text(text, style: styles.noteText),
+          if (banner case final notice?)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.control),
+              child: notice,
+            ),
         ],
       ),
     );
