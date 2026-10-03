@@ -1,6 +1,9 @@
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/account/presentation/controllers/code_controller.dart';
+import 'package:memox/features/account/presentation/providers/last_code_sent_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -40,11 +43,26 @@ class SignInController extends _$SignInController {
       );
       return SignInOutcome.failed;
     }
-    return _run(
+    final sent = ref.read(lastCodeSentProvider.notifier);
+    final clock = ref.read(dayClockProvider);
+    // The same address inside the resend wait: the code on its way is still
+    // the one to enter, so the code step reopens and nothing is sent (2.41).
+    final left = sent.waitLeft(
+      purpose,
+      address,
+      clock.now(),
+      CodeController.resendWait,
+    );
+    if (left != null && left > Duration.zero) return SignInOutcome.codeSent;
+    final outcome = await _run(
       SignInTask.email,
       (accounts) => accounts.requestCode(address, confirmedLoss: confirmedLoss),
       done: SignInOutcome.codeSent,
     );
+    if (outcome == SignInOutcome.codeSent) {
+      sent.record(purpose, address, clock.now());
+    }
+    return outcome;
   }
 
   Future<SignInOutcome> _run(

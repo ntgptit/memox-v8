@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/account/presentation/providers/last_code_sent_provider.dart';
 import 'package:memox/features/account/presentation/states/code_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,8 +25,21 @@ class CodeController extends _$CodeController {
   @override
   CodeState build(String email, SignInPurpose purpose) {
     ref.onDispose(() => _timer?.cancel());
-    _startWait();
-    return const CodeState(resendIn: resendWait);
+    // Read, not watched: a send recorded while this step is open must not
+    // rebuild it. A code sent a moment ago keeps its wait across leaving and
+    // coming back (2.41); one this run did not record starts a fresh minute.
+    final wait =
+        ref
+            .read(lastCodeSentProvider.notifier)
+            .waitLeft(
+              purpose,
+              email,
+              ref.read(dayClockProvider).now(),
+              resendWait,
+            ) ??
+        resendWait;
+    if (wait > Duration.zero) _startWait();
+    return CodeState(resendIn: wait);
   }
 
   /// True when the code signed in.
@@ -63,6 +78,10 @@ class CodeController extends _$CodeController {
   Future<ResendOutcome> resend({bool confirmedLoss = false}) async {
     final accounts = ref.read(accountCoordinatorProvider);
     if (accounts == null || !state.canResend) return ResendOutcome.refused;
+    // Captured before the await: the step may be left while the code is on
+    // its way, and the send still has to be remembered.
+    final sent = ref.read(lastCodeSentProvider.notifier);
+    final clock = ref.read(dayClockProvider);
     state = const CodeState(isResending: true);
     SignInProblem? problem;
     try {
@@ -81,14 +100,19 @@ class CodeController extends _$CodeController {
       problem = SignInProblem.failed; // The account moved on meanwhile.
     }
     final isSent = problem == null;
+    // A rate limit means the server saw a send within the minute: wait that
+    // long again instead of offering a Resend that is sure to be refused
+    // (2.44).
+    final isWaiting = isSent || problem == SignInProblem.rateLimited;
+    if (isWaiting) sent.record(purpose, email, clock.now());
     final outcome = isSent ? ResendOutcome.sent : ResendOutcome.refused;
     if (!ref.mounted) return outcome;
     state = CodeState(
       isVerifying: state.isVerifying,
       problem: problem,
-      resendIn: isSent ? resendWait : Duration.zero,
+      resendIn: isWaiting ? resendWait : Duration.zero,
     );
-    if (isSent) _startWait();
+    if (isWaiting) _startWait();
     return outcome;
   }
 

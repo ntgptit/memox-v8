@@ -2,22 +2,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/account/presentation/controllers/code_controller.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
+import '../../../support/fake_day_clock.dart';
 
 void main() {
   late AuthWorld world;
   late ProviderContainer container;
   final provider = signInControllerProvider(SignInPurpose.link);
 
+  late FakeDayClock clock;
+
   setUp(() async {
+    clock = FakeDayClock(DateTime(2026, 10, 3, 9));
     world = AuthWorld();
     await readyAnonymous(world);
-    container = ProviderContainer(overrides: accountOverrides(world));
+    container = ProviderContainer(
+      overrides: [
+        ...accountOverrides(world),
+        dayClockProvider.overrideWithValue(clock),
+      ],
+    );
     container.listen(provider, (_, _) {});
   });
   tearDown(() async {
@@ -100,6 +111,61 @@ void main() {
 
     expect(await controller().continueWithGoogle(), SignInOutcome.none);
     expect(state().problem, isNull);
+  });
+
+  group('a code already on its way (2.41)', () {
+    test('the same address inside the wait reopens the code step without '
+        'sending, whatever its case or spaces', () async {
+      expect(
+        await controller().sendCode('a@example.com'),
+        SignInOutcome.codeSent,
+      );
+      world.server.sentCodes.clear();
+      clock.current = clock.current.add(const Duration(seconds: 30));
+
+      expect(
+        await controller().sendCode('  A@Example.com '),
+        SignInOutcome.codeSent,
+      );
+
+      expect(world.server.sentCodes, isEmpty);
+      expect(state().isRunning, isFalse);
+    });
+
+    test('another address sends, and so does the same one once the wait is '
+        'over', () async {
+      await controller().sendCode('a@example.com');
+      world.server.sentCodes.clear();
+
+      expect(
+        await controller().sendCode('a@example.org'),
+        SignInOutcome.codeSent,
+      );
+      expect(world.server.sentCodes.keys, ['a@example.org']);
+
+      world.server.sentCodes.clear();
+      clock.current = clock.current.add(CodeController.resendWait);
+      expect(
+        await controller().sendCode('a@example.org'),
+        SignInOutcome.codeSent,
+      );
+      expect(world.server.sentCodes.keys, ['a@example.org']);
+    });
+
+    test('a refused send is not recorded: the next press asks the server '
+        'again', () async {
+      world.gateway.failNextRequest = const RateLimitedFailure();
+      expect(
+        await controller().sendCode('a@example.com'),
+        SignInOutcome.failed,
+      );
+
+      expect(
+        await controller().sendCode('a@example.com'),
+        SignInOutcome.codeSent,
+      );
+      expect(world.server.sentCodes.keys, ['a@example.com']);
+    });
   });
 
   test('a Google failure is marked as Google\'s', () async {
