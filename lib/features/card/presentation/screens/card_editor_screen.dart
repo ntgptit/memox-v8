@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/providers/card_detail_provider.dart';
+import 'package:memox/features/card/presentation/states/card_editor_source_state.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_form_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -51,7 +53,9 @@ class CardEditorScreen extends StatelessWidget {
         onOpenTrash: onOpenTrash,
       );
     }
+    // Keyed so the loader's remembered card never outlives a change of card.
     return _EditLoader(
+      key: ValueKey(cardId),
       cardId: cardId!,
       deckContext: deckContext,
       onOpenTrash: onOpenTrash,
@@ -59,9 +63,12 @@ class CardEditorScreen extends StatelessWidget {
   }
 }
 
-/// The card to edit while it loads, fails or is gone (ruling P4a-L4).
-class _EditLoader extends ConsumerWidget {
+/// The card to edit while it loads, fails or is gone (ruling P4a-L4). Once
+/// the form has opened it stays: a card that goes away later is shown on the
+/// form, never in place of it, so typed text is not thrown away (SP2a 2.17).
+class _EditLoader extends ConsumerStatefulWidget {
   const _EditLoader({
+    super.key,
     required this.cardId,
     required this.deckContext,
     this.onOpenTrash,
@@ -71,12 +78,20 @@ class _EditLoader extends ConsumerWidget {
   final Widget Function(String deckId, String currentLabel) deckContext;
   final VoidCallback? onOpenTrash;
 
+  @override
+  ConsumerState<_EditLoader> createState() => _EditLoaderState();
+}
+
+class _EditLoaderState extends ConsumerState<_EditLoader> {
   static const int _skeletonRows = 4;
 
+  /// The card as the form opened with it.
+  CardDetail? _opened;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final provider = cardDetailProvider(cardId);
+    final provider = cardDetailProvider(widget.cardId);
     void back() => unawaited(Navigator.of(context).maybePop());
     final bar = MxAppBar(
       title: l10n.cardEditTitle,
@@ -87,21 +102,32 @@ class _EditLoader extends ConsumerWidget {
         onPressed: back,
       ),
     );
-    return switch (ref.watch(provider)) {
-      AsyncData(value: Ok(:final value)) => CardEditorFormWidget(
-        key: ValueKey(cardId),
-        deckId: value.card.deckId,
-        detail: value,
-        deckContext: deckContext,
-        onOpenTrash: onOpenTrash,
-      ),
+    final value = ref.watch(provider);
+    if (value case AsyncData(value: Ok(value: final detail))) {
+      _opened ??= detail;
+    }
+    if (_opened case final opened?) {
+      return CardEditorFormWidget(
+        key: ValueKey(widget.cardId),
+        deckId: opened.card.deckId,
+        detail: opened,
+        source: switch (value) {
+          AsyncError() => CardEditorSource.unreadable,
+          AsyncData(value: Rejected()) => CardEditorSource.gone,
+          _ => CardEditorSource.present,
+        },
+        deckContext: widget.deckContext,
+        onOpenTrash: widget.onOpenTrash,
+      );
+    }
+    return switch (value) {
       AsyncData(value: Rejected()) => MxAppShell(
         appBar: bar,
         body: CardGoneWidget(
           title: l10n.cardGoneTitle,
           body: l10n.cardGoneBody,
           onBack: back,
-          onOpenTrash: onOpenTrash,
+          onOpenTrash: widget.onOpenTrash,
         ),
       ),
       AsyncError(:final isLoading) => MxAppShell(
@@ -123,7 +149,7 @@ class _EditLoader extends ConsumerWidget {
         body: MxScreenScroll(
           children: [
             MxSkeletonList(
-              semanticLabel: context.l10n.commonLoading,
+              semanticLabel: l10n.commonLoading,
               rows: _skeletonRows,
             ),
           ],

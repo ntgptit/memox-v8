@@ -971,6 +971,26 @@
   "@cardGoneBody": {
     "description": "Editor state when the card went to the Trash meanwhile (FE-B1 D11, kit 09)."
   },
+  "cardEditorGoneTitle": "This card was deleted.",
+  "@cardEditorGoneTitle": {
+    "description": "Danger banner above the card editor when the card went away while it was open (SP2a 2.17)."
+  },
+  "cardEditorGoneBody": "Your text is kept on this phone.",
+  "@cardEditorGoneBody": {
+    "description": "Danger banner body: the typed text is in the device-local draft."
+  },
+  "cardEditorStaleTitle": "Couldn't refresh this card.",
+  "@cardEditorStaleTitle": {
+    "description": "Warning banner above the card editor when reading the card failed after it opened."
+  },
+  "cardEditorStaleBody": "Your text is kept on this phone, and you can still save.",
+  "@cardEditorStaleBody": {
+    "description": "Warning banner body: nothing typed was lost."
+  },
+  "cardCaptionGone": "This card can't be saved now.",
+  "@cardCaptionGone": {
+    "description": "Card edit footer caption once the card is gone."
+  },
   "cardDeckGoneTitle": "This deck is no longer here",
   "@cardDeckGoneTitle": {
     "description": "Editor state when the deck was deleted meanwhile."

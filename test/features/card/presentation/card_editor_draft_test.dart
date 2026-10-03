@@ -2,15 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/data/repositories/card_draft_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/edit_card_use_case.dart';
+import 'package:memox/features/card/domain/usecases/watch_card_detail_use_case.dart';
 import 'package:memox/features/card/presentation/providers/edit_card_use_case_provider.dart';
+import 'package:memox/features/card/presentation/providers/watch_card_detail_use_case_provider.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -75,6 +79,19 @@ final class _HeldEdits implements CardRepository {
     if (then != null) return then!();
     return _cards.editCard(cardId: cardId, draft: draft, now: now);
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// A card detail the test feeds by hand.
+final class _ScriptedDetail implements CardRepository {
+  _ScriptedDetail(this._stream);
+
+  final Stream<CardDetail?> _stream;
+
+  @override
+  Stream<CardDetail?> watchDetail(String cardId) => _stream;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -432,7 +449,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(_en.cardGoneTitle), findsOneWidget);
+    expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
     expect(
       tester
           .widget<MxIconButton>(
@@ -468,5 +485,82 @@ void main() {
           .onPressed,
       isNotNull,
     );
+  });
+
+  libraryTest('a deleted card: a danger banner, Save off, the draft kept, '
+      'leaving asks nothing (2.17)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'changed');
+    await env.cards.deleteCards(cardIds: {card.id});
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
+    expect(find.text(_en.cardEditorGoneBody), findsOneWidget);
+    expect(_text(tester, 1), 'changed');
+    expect(
+      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges)).onPressed,
+      isNull,
+    );
+    // Written at once, not after the pause.
+    expect(
+      (await _drafts(env).read(CardDraftKey.edit(card.id)))?.back,
+      'changed',
+    );
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text(_en.cardDiscardTitle), findsNothing);
+  });
+
+  libraryTest('a read error after the form opened keeps it, with a warning '
+      'that never says deleted (2.17)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    // The real card, then whatever the test adds: the Drift stream is torn
+    // down with the tree, as in the app.
+    late final StreamSubscription<CardDetail?> real;
+    late final StreamController<CardDetail?> source;
+    source = StreamController<CardDetail?>(
+      onListen: () => real = env.cards
+          .watchDetail(card.id)
+          .listen((detail) => source.add(detail)),
+      onCancel: () => real.cancel(),
+    );
+    addTearDown(source.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _edit(card.id),
+      overrides: [
+        watchCardDetailUseCaseProvider.overrideWithValue(
+          WatchCardDetailUseCase(_ScriptedDetail(source.stream)),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(_field(1), 'changed');
+
+    source.addError(const UnknownDatabaseFailure(cause: '/data/memox.sqlite'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text(_en.cardEditorStaleTitle), findsOneWidget);
+    expect(find.text(_en.cardEditorGoneTitle), findsNothing);
+    expect(_text(tester, 1), 'changed');
+    expect(
+      tester.widget<MxButton>(_footerSave(_en.cardSaveChanges)).onPressed,
+      isNotNull,
+    );
+    expect(find.textContaining('sqlite'), findsNothing);
   });
 }

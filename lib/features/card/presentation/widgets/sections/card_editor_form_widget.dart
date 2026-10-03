@@ -14,6 +14,7 @@ import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/controllers/card_draft_controller.dart';
+import 'package:memox/features/card/presentation/states/card_editor_source_state.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_draft_banner_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
@@ -46,6 +47,7 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
     required this.deckId,
     required this.deckContext,
     this.detail,
+    this.source = CardEditorSource.present,
     this.onOpenTrash,
   });
 
@@ -55,6 +57,9 @@ class CardEditorFormWidget extends ConsumerStatefulWidget {
 
   /// The card to edit; null creates.
   final CardDetail? detail;
+
+  /// Whether the card under edit is still there (SP2a 2.17).
+  final CardEditorSource source;
 
   /// Opens the Trash from the gone state and a refused Undo (FE-B1).
   final VoidCallback? onOpenTrash;
@@ -98,6 +103,16 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   bool get _isCreating => widget.detail == null;
 
+  /// A new card's deck went away on Save: nothing is left to write to, so the
+  /// page says so. (An edited card that goes away keeps the form; see
+  /// [_isCardGone].)
+  bool get _isDeckGone => _isCreating && _isGone;
+
+  /// The card under edit was deleted, from outside or found missing on Save:
+  /// the form stays with its text, Save is off and the draft is kept.
+  bool get _isCardGone =>
+      !_isCreating && (_isGone || widget.source == CardEditorSource.gone);
+
   List<TextEditingController> get _controllers => [
     _front,
     _back,
@@ -114,6 +129,16 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       controller.addListener(_keepDraft);
     }
     unawaited(_offerKeptDraft());
+  }
+
+  @override
+  void didUpdateWidget(CardEditorFormWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The card went away while it was open: what is on screen is written now.
+    if (oldWidget.source != widget.source &&
+        widget.source == CardEditorSource.gone) {
+      _keepNow();
+    }
   }
 
   @override
@@ -200,6 +225,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   String _caption(AppLocalizations l10n, Map<_Field, String?> errors) {
     if (_isSaving) return l10n.cardCaptionSaving;
+    if (_isCardGone) return l10n.cardCaptionGone;
     if (_deckRejects) return l10n.cardCaptionDeckRejects;
     if (errors.values.any((error) => error != null)) {
       // Kit 09: an edit that lost a required side asks for it by name.
@@ -220,6 +246,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       _draft().check() is Ok &&
           !_isSaving &&
           !_deckRejects &&
+          !_isCardGone &&
           (_isCreating || _isDirty)
       ? () => unawaited(_save())
       : null;
@@ -328,6 +355,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
           _deckRejects = true;
         });
       case Rejected(reason: CardRejection.notFound):
+        _keepNow();
         setState(() {
           _isSaving = false;
           _isGone = true;
@@ -402,14 +430,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       // A refused deck leaves without asking: its text is already in the
       // draft. A save in flight holds Back (SP2a 2.15, 2.16).
       canPop:
-          !_isSaving && (_isLeaving || _isGone || _deckRejects || !_isDirty),
+          !_isSaving &&
+          (_isLeaving || _isGone || _deckRejects || _isCardGone || !_isDirty),
       onPopInvokedWithResult: (didPop, _) {
         if (didPop || _isSaving) return;
         unawaited(_confirmLeave());
       },
       child: MxAppShell(
         appBar: _appBar(l10n),
-        footer: _isGone
+        footer: _isDeckGone
             ? null
             : CardEditorFooterWidget(
                 caption: _caption(l10n, errors),
@@ -421,12 +450,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
                 onCancel: _isSaving ? null : _close,
                 onSave: _onSave,
               ),
-        body: _isGone
+        body: _isDeckGone
             ? CardGoneWidget(
-                title: _isCreating
-                    ? l10n.cardDeckGoneTitle
-                    : l10n.cardGoneTitle,
-                body: _isCreating ? l10n.cardDeckGoneBody : l10n.cardGoneBody,
+                title: l10n.cardDeckGoneTitle,
+                body: l10n.cardDeckGoneBody,
                 onBack: _leave,
                 onOpenTrash: widget.onOpenTrash,
               )
@@ -459,7 +486,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     ),
     actions: [
       // Ruling P4a-L6: the flag toggles here, in edit only.
-      if (!_isCreating && !_isGone)
+      if (!_isCreating && !_isCardGone)
         // One node: the button and its toggled state.
         MergeSemantics(
           child: Semantics(
@@ -488,6 +515,18 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         tone: MxBannerTone.warning,
         title: l10n.cardDeckRejectsTitle,
         message: l10n.cardDeckRejectsBody,
+      ),
+    if (_isCardGone)
+      MxInlineBanner(
+        tone: MxBannerTone.danger,
+        title: l10n.cardEditorGoneTitle,
+        message: l10n.cardEditorGoneBody,
+      )
+    else if (widget.source == CardEditorSource.unreadable)
+      MxInlineBanner(
+        tone: MxBannerTone.warning,
+        title: l10n.cardEditorStaleTitle,
+        message: l10n.cardEditorStaleBody,
       ),
     if (widget.detail case final detail?)
       CardEditSummaryWidget(detail: detail, onOpenDetails: _close),
@@ -531,7 +570,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       onPendingChanged: (isPending) =>
           setState(() => _hasPendingTag = isPending),
     ),
-    if (_card case final card?)
+    if (_card case final card? when !_isCardGone)
       CardTrashSectionWidget(card: card, onOpenTrash: widget.onOpenTrash),
   ];
 
