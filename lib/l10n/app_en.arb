@@ -5298,6 +5298,22 @@
   "@studyOptionsSaved": {
     "description": "Screen handoff 15 (FE-A3 plan 2): toast after a save."
   },
+  "studyOptionsDiscardTitle": "Discard your changes?",
+  "@studyOptionsDiscardTitle": {
+    "description": "Screen 15 (SP2a 2.06): the confirm title when Back is pressed with unsaved edits."
+  },
+  "studyOptionsDiscardBody": "Leaving now keeps the options as they were saved.",
+  "@studyOptionsDiscardBody": {
+    "description": "Screen 15 (SP2a 2.06): the confirm body; names what Back keeps."
+  },
+  "studyOptionsKeepEditing": "Keep editing",
+  "@studyOptionsKeepEditing": {
+    "description": "Screen 15 (SP2a 2.06): stays on the screen with the draft."
+  },
+  "studyOptionsDiscard": "Discard changes",
+  "@studyOptionsDiscard": {
+    "description": "Screen 15 (SP2a 2.06): drops the draft and leaves; names the loss."
+  },
   "starterTitle": "Starter decks",
   "@starterTitle": {
     "description": "Screen 03: the app bar title."

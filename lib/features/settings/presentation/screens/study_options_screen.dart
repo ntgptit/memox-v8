@@ -8,6 +8,7 @@ import 'package:memox/features/settings/presentation/controllers/study_options_c
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/study_options_provider.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
+import 'package:memox/features/settings/presentation/widgets/overlays/study_options_discard_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/study_options_footer_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/study_options_form_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -50,7 +51,8 @@ class StudyOptionsScreen extends ConsumerWidget {
       },
     );
     final draft = ref.watch(studyOptionsControllerProvider(deckId));
-    final appDefaults = ref.watch(appSettingsProvider).value?.studyDefaults;
+    final settings = ref.watch(appSettingsProvider);
+    final appDefaults = settings.value?.studyDefaults;
     final options = ref.watch(studyOptionsProvider(deckId));
     final loaded = switch ((options, appDefaults)) {
       (AsyncData(value: Ok(:final value)), final defaults?) => (
@@ -59,60 +61,86 @@ class StudyOptionsScreen extends ConsumerWidget {
       ),
       _ => null,
     };
-    return MxAppShell(
-      appBar: MxAppBar(
-        title: l10n.deckStudyOptions,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          breadcrumb,
-          Expanded(
-            child: switch (options) {
-              _ when loaded != null => StudyOptionsFormWidget(
-                deckId: deckId,
-                stored: loaded.$1,
-                form: loaded.$2,
-                rootName: loaded.$1.rootDeckName,
-              ),
-              AsyncData(value: Rejected()) => _gone(context),
-              AsyncError(:final isLoading) => MxScreenScroll(
-                children: [
-                  MxErrorState(
-                    title: l10n.settingsLoadErrorTitle,
-                    body: l10n.libraryLoadErrorBody,
-                    retryLabel: l10n.commonRetry,
-                    onRetry: () => ref.invalidate(studyOptionsProvider(deckId)),
-                    isRetrying: isLoading,
-                  ),
-                ],
-              ),
-              _ => MxScreenScroll(
-                children: [
-                  MxSkeletonList(
-                    semanticLabel: l10n.commonLoading,
-                    rows: _skeletonRows,
-                  ),
-                ],
-              ),
-            },
-          ),
-        ],
-      ),
-      footer: switch (loaded) {
-        (_, final StudyOptionsForm form) => StudyOptionsFooterWidget(
-          deckId: deckId,
-          form: form,
-        ),
-        null => null,
+    // What Save has not written: Back asks before it drops it (2.06).
+    final isDirty = switch (loaded) {
+      (_, final StudyOptionsForm form) =>
+        draft.hasEdits && (form.isChanged || form.isCardLimitInvalid),
+      null => false,
+    };
+    return PopScope(
+      canPop: !isDirty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) unawaited(_confirmDiscard(context));
       },
+      child: MxAppShell(
+        appBar: MxAppBar(
+          title: l10n.deckStudyOptions,
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: () => unawaited(Navigator.of(context).maybePop()),
+          ),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            breadcrumb,
+            Expanded(
+              child: switch (options) {
+                _ when loaded != null => StudyOptionsFormWidget(
+                  deckId: deckId,
+                  stored: loaded.$1,
+                  form: loaded.$2,
+                  rootName: loaded.$1.rootDeckName,
+                ),
+                AsyncData(value: Rejected()) => _gone(context),
+                // Either read failing leaves no form to draw: one error with
+                // one Retry for both (2.05).
+                _ when options is AsyncError || settings is AsyncError =>
+                  MxScreenScroll(
+                    children: [
+                      MxErrorState(
+                        title: l10n.settingsLoadErrorTitle,
+                        body: l10n.libraryLoadErrorBody,
+                        retryLabel: l10n.commonRetry,
+                        onRetry: () {
+                          ref.invalidate(studyOptionsProvider(deckId));
+                          ref.invalidate(appSettingsProvider);
+                        },
+                        isRetrying: options.isLoading || settings.isLoading,
+                      ),
+                    ],
+                  ),
+                _ => MxScreenScroll(
+                  children: [
+                    MxSkeletonList(
+                      semanticLabel: l10n.commonLoading,
+                      rows: _skeletonRows,
+                    ),
+                  ],
+                ),
+              },
+            ),
+          ],
+        ),
+        footer: switch (loaded) {
+          (_, final StudyOptionsForm form) => StudyOptionsFooterWidget(
+            deckId: deckId,
+            form: form,
+          ),
+          null => null,
+        },
+      ),
     );
+  }
+
+  /// Back with edits: discard or keep editing (2.06). A confirmed discard
+  /// pops the route directly; the guard holds only `maybePop` and system
+  /// Back.
+  Future<void> _confirmDiscard(BuildContext context) async {
+    if (!await showStudyOptionsDiscardDialog(context)) return;
+    if (context.mounted) Navigator.of(context).pop();
   }
 
   /// The deck went to the Trash or no longer exists (spec §6).

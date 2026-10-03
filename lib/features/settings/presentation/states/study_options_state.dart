@@ -32,6 +32,14 @@ final class StudyOptionsState {
 
   bool get isSaving => save == StudyOptionsSave.saving;
 
+  /// Something was changed and not saved: a toggle, a limit (a typed one
+  /// outside 1–200 included) or an order. Leaving drops it (2.06).
+  bool get hasEdits =>
+      isUsingAppDefaults != null ||
+      cardLimit != null ||
+      isCardLimitInvalid ||
+      newCardOrder != null;
+
   /// The draft after an edit. A failed save stays in view until a save
   /// lands: the banner states the deck's stored values, still true while
   /// the person edits (critique 2026-09-30 part 3d-2, E13).

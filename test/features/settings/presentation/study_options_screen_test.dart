@@ -10,9 +10,12 @@ import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
+import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
+import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/study_options_provider.dart';
+import 'package:memox/features/settings/presentation/providers/watch_study_options_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -296,5 +299,103 @@ void main() {
     await tester.pumpAndSettle();
     expect(banner, findsNothing);
     expect(find.text(_en.cardRetrySave), findsNothing);
+  });
+
+  libraryTest('a failed read of the app defaults shows the error instead of '
+      'an endless skeleton; Retry reads both again (2.05)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    var settingsReads = 0;
+    var optionsReads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(ids.subId),
+      overrides: [
+        appSettingsProvider.overrideWith((ref) {
+          settingsReads++;
+          return Stream<AppSettingsEntity>.error(
+            FlakySettingsRepository.failure,
+          );
+        }),
+        studyOptionsProvider(ids.subId).overrideWith((ref) {
+          optionsReads++;
+          return ref.watch(watchStudyOptionsUseCaseProvider)(deckId: ids.subId);
+        }),
+      ],
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.byType(MxSkeletonList), findsNothing);
+    expect(find.text(_en.cardSave), findsNothing);
+
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pump();
+    await tester.pump();
+
+    expect((settingsReads, optionsReads), (2, 2));
+  });
+
+  libraryTest('Back with an edited draft asks first: Keep editing stays with '
+      'the draft, Discard changes leaves (2.06)', (tester, env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreenPushed(tester, env, _screen(ids.subId));
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.pump();
+
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.pumpAndSettle();
+    expect(find.text(_en.studyOptionsDiscardTitle), findsOneWidget);
+
+    await tester.tap(find.text(_en.studyOptionsKeepEditing));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyOptionsScreen), findsOneWidget);
+    expect(tester.widget<MxStepper>(find.byType(MxStepper)).value, 21);
+
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.studyOptionsDiscard));
+    await tester.pumpAndSettle();
+    expect(find.byType(StudyOptionsScreen), findsNothing);
+  });
+
+  libraryTest('Back with nothing edited leaves at once (2.06)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreenPushed(tester, env, _screen(ids.subId));
+
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyOptionsDiscardTitle), findsNothing);
+    expect(find.byType(StudyOptionsScreen), findsNothing);
+  });
+
+  libraryTest('Back after a save that landed leaves at once (2.06)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreenPushed(tester, env, _screen(ids.subId));
+    await tester.tap(find.byType(MxToggle));
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.settingsMoreCards));
+    await tester.pump();
+    await tester.tap(find.text(_en.cardSave));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.studyOptionsDiscardTitle), findsNothing);
+    expect(find.byType(StudyOptionsScreen), findsNothing);
   });
 }
