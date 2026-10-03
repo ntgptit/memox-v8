@@ -41,6 +41,19 @@ final class AndroidReminderPlatformRepositoryImpl
   }
 
   @override
+  Future<ReminderPermission> notificationPermission() async {
+    try {
+      final enabled = await _plugins.notificationsEnabled();
+      // Null: the platform cannot say, which is not a refusal.
+      return enabled == false
+          ? ReminderPermission.denied
+          : ReminderPermission.granted;
+    } on Object {
+      return ReminderPermission.granted;
+    }
+  }
+
+  @override
   Future<Outcome<void, ReminderRejection>> schedule({
     required DateTime at,
   }) async {

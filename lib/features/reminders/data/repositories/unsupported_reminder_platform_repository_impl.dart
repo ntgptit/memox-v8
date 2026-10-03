@@ -20,6 +20,12 @@ final class UnsupportedReminderPlatformRepositoryImpl
   Future<ReminderPermission> requestPermission() async =>
       ReminderPermission.denied;
 
+  /// Nothing is delivered here, so nothing is blocked: the unavailable row
+  /// says it all (BR-REMINDER-012).
+  @override
+  Future<ReminderPermission> notificationPermission() async =>
+      ReminderPermission.granted;
+
   @override
   Future<Outcome<void, ReminderRejection>> schedule({
     required DateTime at,

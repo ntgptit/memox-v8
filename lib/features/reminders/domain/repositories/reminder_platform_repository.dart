@@ -22,6 +22,12 @@ abstract interface class ReminderPlatformRepository {
   /// where no permission exists; a failure to ask is `denied`.
   Future<ReminderPermission> requestPermission();
 
+  /// Reads the notification permission and never asks for it (BR-REMINDER-011,
+  /// amended by SP2b 2.34): `denied` only when the platform says the app's
+  /// notifications are blocked. What it cannot tell, or fails to read, is
+  /// `granted`, so an unknown never shows a false warning.
+  Future<ReminderPermission> notificationPermission();
+
   /// One inexact reminder at [at], replacing the pending one, so that at most
   /// one is ever pending (BR-REMINDER-009, BR-REMINDER-010). A refusal is
   /// `couldNotSchedule`.

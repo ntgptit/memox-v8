@@ -19,6 +19,7 @@ final class _FakePlugins implements ReminderPluginsDataSource {
   /// The calls that throw on their own, whatever [fails] says.
   final failing = <String>{};
   bool? permission = true;
+  bool? enabled = true;
   final calls = <String>[];
   final shown = <String>[];
 
@@ -34,6 +35,9 @@ final class _FakePlugins implements ReminderPluginsDataSource {
   @override
   Future<bool?> requestNotificationPermission() =>
       _call('permission', permission);
+
+  @override
+  Future<bool?> notificationsEnabled() => _call('enabled', enabled);
 
   @override
   Future<bool> scheduleAlarm(DateTime at) => _call('schedule $at', !refuses);
@@ -211,6 +215,40 @@ void main() {
       expect(
         await platform.show(digest: digest, language: LanguageChoice.en),
         _rejected(ReminderRejection.couldNotShow),
+      );
+    });
+  });
+
+  group('notificationPermission (BR-REMINDER-011, SP2b 2.34)', () {
+    test('allowed reads granted and asks nothing', () async {
+      expect(
+        await platform.notificationPermission(),
+        ReminderPermission.granted,
+      );
+      expect(plugins.calls, ['enabled']);
+    });
+
+    test('blocked reads denied', () async {
+      plugins.enabled = false;
+      expect(
+        await platform.notificationPermission(),
+        ReminderPermission.denied,
+      );
+    });
+
+    test('a platform that cannot say, and a throw, read granted: an unknown '
+        'never shows a false warning', () async {
+      plugins.enabled = null;
+      expect(
+        await platform.notificationPermission(),
+        ReminderPermission.granted,
+      );
+      plugins
+        ..enabled = false
+        ..fails = true;
+      expect(
+        await platform.notificationPermission(),
+        ReminderPermission.granted,
       );
     });
   });

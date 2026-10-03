@@ -11,6 +11,7 @@ import 'package:memox/features/settings/domain/models/language_choice_model.dart
 enum PlatformCall {
   capability,
   requestPermission,
+  notificationPermission,
   schedule,
   cancel,
   show,
@@ -37,6 +38,11 @@ final class FakeReminderPlatform implements ReminderPlatformRepository {
   /// Holds requestPermission until completed, to see the busy state.
   Completer<void>? permissionHold;
 
+  /// What the system's notification state reads when it differs from
+  /// [permission]: a fresh Android 13 install reads blocked until the person
+  /// allows. Null follows [permission]; a request settles it.
+  ReminderPermission? notifications;
+
   /// Every call, in order.
   final List<PlatformCall> calls = [];
 
@@ -59,7 +65,14 @@ final class FakeReminderPlatform implements ReminderPlatformRepository {
   Future<ReminderPermission> requestPermission() async {
     if (permissionHold case final gate?) await gate.future;
     calls.add(PlatformCall.requestPermission);
+    notifications = null;
     return permission;
+  }
+
+  @override
+  Future<ReminderPermission> notificationPermission() async {
+    calls.add(PlatformCall.notificationPermission);
+    return notifications ?? permission;
   }
 
   @override

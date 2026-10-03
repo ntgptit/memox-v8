@@ -23,6 +23,9 @@ void main() {
       '(BR-REMINDER-012, UC-REMINDER-001 E2)', () async {
     expect(await platform.capability(), ReminderCapability.unsupported);
     expect(await platform.requestPermission(), ReminderPermission.denied);
+    // Nothing is blocked where nothing is delivered: the unavailable row
+    // says it all, and a warning here would be false.
+    expect(await platform.notificationPermission(), ReminderPermission.granted);
   });
 
   test('every other call is refused with its reason, never thrown '
