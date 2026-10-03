@@ -635,6 +635,16 @@ Những ghi chú một lần người dùng đã tắt trên máy này (critique
 `server_version`; đổi máy thì ghi chú hiện lại một lần. Đọc và ghi qua
 `DismissedNoteStore` (`lib/core/notes/`).
 
+## `card_draft` (schema 13)
+
+Thẻ đang soạn dở trên máy này (SP2a, R9): `draft_key` (khoá chính: `create:<deckId>`
+hoặc `edit:<cardId>`), `front`, `back`, `extras` (JSON: example, hint, pronunciation,
+isFlagged), `tags` (JSON: mảng tên tag) và `updated_at` (UTC). Bảng chỉ ở trên thiết bị:
+không trigger sync, không `server_version`, không bao giờ ghi vào log. Bản nháp bị xoá
+khi thẻ được lưu, khi người dùng bỏ thay đổi, hoặc khi form giống hệt thẻ gốc; bản nào
+quá 30 ngày thì bị dọn ở lần ghi sau; `LocalDataReset` xoá hết. Đọc và ghi qua
+`CardDraftRepository` (`lib/features/card/`).
+
 ## Bất biến — phải kiểm tra được bằng query
 
 Mỗi query dưới đây **phải luôn trả về 0 dòng**. Chúng là đặc tả cho phần kiểm tra

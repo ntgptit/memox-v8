@@ -5,11 +5,11 @@ import 'package:memox/core/database/tables/sync_keys.dart';
 /// spec §4, #27, #41). One transaction, and not gated (R3 lets it write).
 ///
 /// The capture triggers are silenced with `applying_remote`, so the deletes
-/// queue nothing. Cards go first: their schedules, tag links, reviews and
-/// study rows go with them by cascade, and reviews cannot be deleted while
-/// their card exists. The synced settings go back to `settings.drift`'s
-/// defaults while the triggers are still silent. Then sync's keys (all but
-/// the device id), the outbox and the refusals.
+/// queue nothing. The card drafts go with the cards. Cards go first: their
+/// schedules, tag links, reviews and study rows go with them by cascade, and
+/// reviews cannot be deleted while their card exists. The synced settings go
+/// back to `settings.drift`'s defaults while the triggers are still silent. Then
+/// sync's keys (all but the device id), the outbox and the refusals.
 ///
 /// Kept: the transition record, the welcome flag, the reminder columns, the
 /// device id and the log database.
@@ -26,7 +26,13 @@ class LocalDataReset {
         'INSERT OR REPLACE INTO sync_state (name, value) VALUES (?, ?)',
         [syncApplyingRemoteKey, '1'],
       );
-      for (final table in ['card', 'deck', 'delete_batches', 'tags']) {
+      for (final table in [
+        'card',
+        'deck',
+        'delete_batches',
+        'tags',
+        'card_draft',
+      ]) {
         await _db.customStatement('DELETE FROM $table');
       }
       await _db.customStatement(
@@ -48,6 +54,7 @@ class LocalDataReset {
       _db.deck,
       _db.deleteBatches,
       _db.tags,
+      _db.cardDraft,
       _db.cardTags,
       _db.cardSchedule,
       _db.reviewLog,

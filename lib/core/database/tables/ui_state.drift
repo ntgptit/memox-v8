@@ -6,3 +6,17 @@ CREATE TABLE dismissed_note (
   note_key TEXT NOT NULL PRIMARY KEY,
   dismissed_at DATETIME NOT NULL
 ) AS DismissedNote;
+
+-- The card being written, kept on this device so a killed process, a refused
+-- save or a card deleted elsewhere loses no text (SP2a R9). draft_key is
+-- `create:<deckId>` or `edit:<cardId>`; extras is JSON (example, hint,
+-- pronunciation, isFlagged) and tags a JSON array of names. Never synced:
+-- no sync trigger and no server_version.
+CREATE TABLE card_draft (
+  draft_key TEXT NOT NULL PRIMARY KEY,
+  front TEXT NOT NULL,
+  back TEXT NOT NULL,
+  extras TEXT NOT NULL,
+  tags TEXT NOT NULL,
+  updated_at DATETIME NOT NULL
+) AS CardDraftRow;

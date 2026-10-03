@@ -25,6 +25,7 @@ Future<void> _seed(AppDatabase db) async {
     "INSERT INTO sync_rejection (entity_type, entity_id, code, rejected_at) VALUES ('deck', 'R', 'CONFLICT', 0)",
     "INSERT OR REPLACE INTO sync_state (name, value) VALUES ('since', '42'), ('device_id', 'dev-1'), ('last_success_at', '9')",
     "INSERT INTO account_transition (id, op_id, kind, stage, created_at, updated_at) VALUES (1, 'op', 'signOut', 'signedOut', 0, 0)",
+    "INSERT INTO card_draft (draft_key, front, back, extras, tags, updated_at) VALUES ('create:C', 'f', 'b', '{}', '[]', 0)",
   ]) {
     await db.customStatement(sql);
   }
@@ -49,6 +50,7 @@ void main() {
       'delete_batches',
       'sync_outbox',
       'sync_rejection',
+      'card_draft',
     ]) {
       expect(await _count(db, table), 0, reason: table);
     }
