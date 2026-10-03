@@ -414,6 +414,22 @@ Asked with `AskUserQuestion` at that sub-project's brainstorm:
 - **V6 Duplicate-term hint** on manual create (H; 08). Decided in SP3.
 - **V7 Escape from a stuck account layer** (H; 30). Decided 2026-10-03: R11.
 
+Decided 2026-10-03 by the owner (`AskUserQuestion`), before SP2b:
+
+- **V1:** keep the terms and add a one-line definition where each first appears on a
+  screen (SP3/SP4).
+- **V2:** Study home gains one action that opens the deck with the most overdue cards,
+  in the existing row order; sessions stay per deck (SP4).
+- **V3:** no change; the Guess hold stays 1200 ms or until a tap (SP4 closes it).
+- **V4:** no change; the Recall turn stays 20 seconds (BR-STUDY-031; SP4 closes it).
+- **V5:** search falls back to accent-insensitive matches listed after the exact ones
+  (amend BR-SEARCH-002); the Fill judge keeps accents and states the rule before the
+  first answer (SP3/SP4).
+- **V6:** manual create shows a non-blocking "Already in this deck" note under the front
+  field; saving is still allowed (SP3).
+- **Approval mode:** each of SP2b, SP3, SP4 and SP5 presents its spec and plan together
+  for one approval; goldens and the PR are approved as before.
+
 ## 8. Testing and the gate
 
 - Each sub-project follows TDD for behaviour: a failing widget or unit test first.
