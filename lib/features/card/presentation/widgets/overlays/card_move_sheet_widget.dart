@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_move_target_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/providers/card_move_targets_provider.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_deck_path_label_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -17,16 +19,21 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Picks the deck the cards of [cardIds] move to (UC-CARD-001 A5).
-/// Completes true once the move landed.
+/// Completes true once the move landed. [onAllGone] runs when every card was
+/// already gone (SP2a 2.19).
 Future<bool> showCardMoveSheet(
   BuildContext context, {
   required String sourceDeckId,
   required Set<String> cardIds,
+  VoidCallback? onAllGone,
 }) async =>
     await showMxBottomSheet<bool>(
       context,
-      builder: (_) =>
-          CardMoveSheetWidget(sourceDeckId: sourceDeckId, cardIds: cardIds),
+      builder: (_) => CardMoveSheetWidget(
+        sourceDeckId: sourceDeckId,
+        cardIds: cardIds,
+        onAllGone: onAllGone,
+      ),
     ) ??
     false;
 
@@ -37,10 +44,12 @@ class CardMoveSheetWidget extends ConsumerStatefulWidget {
     super.key,
     required this.sourceDeckId,
     required this.cardIds,
+    this.onAllGone,
   });
 
   final String sourceDeckId;
   final Set<String> cardIds;
+  final VoidCallback? onAllGone;
 
   @override
   ConsumerState<CardMoveSheetWidget> createState() =>
@@ -63,11 +72,20 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
       if (!mounted) return;
       final l10n = context.l10n;
       final hasMoved = outcome is Ok;
+      if (outcome case Rejected(reason: CardRejection.notFound)) {
+        widget.onAllGone?.call();
+      }
       showMxSnackbar(
         context,
         message: switch (outcome) {
-          Ok() => l10n.cardMovedToast(widget.cardIds.length, target.name),
-          Rejected(:final reason) => l10n.cardRejection(reason),
+          Ok(:final value) => l10n.bulkToast(
+            l10n.cardMovedToast(value.done.length, target.name),
+            value.skipped.length,
+          ),
+          Rejected(:final reason) => l10n.cardBulkRejection(
+            reason,
+            widget.cardIds.length,
+          ),
         },
       );
       Navigator.of(context).pop(hasMoved);

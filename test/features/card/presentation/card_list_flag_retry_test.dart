@@ -67,7 +67,7 @@ final class _HeldFlags implements CardRepository {
       throw const UnknownDatabaseFailure(cause: 'locked');
     }
     await (held = Completer<void>()).future;
-    return const Ok(BulkOutcome(done: {}));
+    return Ok(BulkOutcome(done: cardIds));
   }
 
   @override

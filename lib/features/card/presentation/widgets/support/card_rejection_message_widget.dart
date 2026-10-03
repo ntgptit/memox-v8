@@ -20,4 +20,11 @@ extension CardRejectionMessage on AppLocalizations {
     CardRejection.targetInTrash => cardRejectionTargetInTrash,
     CardRejection.changedElsewhere => cardRejectionChangedElsewhere,
   };
+
+  /// A bulk action's refusal over [count] cards: when every one was already
+  /// gone it says how many, instead of the one-card copy (SP2a 2.19).
+  String cardBulkRejection(CardRejection reason, int count) =>
+      reason == CardRejection.notFound && count > 1
+      ? cardBulkAllGone(count)
+      : cardRejection(reason);
 }

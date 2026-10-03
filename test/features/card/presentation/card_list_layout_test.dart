@@ -97,7 +97,7 @@ final class _FlakyFlags implements CardRepository {
     if (isFailing) {
       return Future.error(const UnknownDatabaseFailure(cause: 'locked'));
     }
-    return Future.value(const Ok(BulkOutcome(done: {})));
+    return Future.value(Ok(BulkOutcome(done: cardIds)));
   }
 
   @override

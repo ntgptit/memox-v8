@@ -15,5 +15,8 @@ class CardSelection extends _$CardSelection {
 
   void selectAll(Set<String> cardIds) => state = {...cardIds};
 
+  /// Drops cards that are gone, so the bulk bar stops offering them.
+  void prune(Set<String> cardIds) => state = state.difference(cardIds);
+
   void clear() => state = const {};
 }

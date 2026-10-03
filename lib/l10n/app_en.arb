@@ -618,6 +618,27 @@
     },
     "description": "Snackbar after a move; deck is the target's name."
   },
+  "cardBulkWithSkipped": "{message}. {count, plural, =1{1 was already gone.} other{{count} were already gone.}}",
+  "@cardBulkWithSkipped": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "A bulk action's toast plus how many of the selected cards were already gone when it ran (SP2a 2.19); message is the toast without that part."
+  },
+  "cardBulkAllGone": "{count, plural, =1{The selected card is already gone. Nothing changed.} other{The {count} selected cards are already gone. Nothing changed.}}",
+  "@cardBulkAllGone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar when a bulk action ran and every selected card was already gone, so nothing was written (SP2a 2.19)."
+  },
   "cardDeleteTitle": "{count, plural, =1{Move this card to Trash?} other{Move {count} cards to Trash?}}",
   "@cardDeleteTitle": {
     "placeholders": {

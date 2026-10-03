@@ -9,6 +9,7 @@ import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.d
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
@@ -161,8 +162,9 @@ void main() {
     await _bulk(tester, _en.cardFlagSet);
 
     expect(tester.takeException(), isNull);
-    expect(find.text(_en.cardRejectionNotFound), findsOneWidget);
+    expect(find.text(_en.cardBulkAllGone(2)), findsOneWidget);
     expect(find.text(_en.cardFlaggedToast(2)), findsNothing);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
   });
 
   libraryTest('Remove flag clears it, never toggles (P3-L4)', (
@@ -364,6 +366,135 @@ void main() {
 
     expect(find.byType(MxSpinner), findsOneWidget);
     await tester.pumpAndSettle();
+  });
+
+  libraryTest('Move skips a card that went meanwhile and says so (SP2a 2.19)', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'due1'});
+    await tester.pumpAndSettle();
+    await _bulk(tester, _en.cardMove);
+    await tester.tap(find.text('Korean › Verbs'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.bulkToast(_en.cardMovedToast(1, 'Verbs'), 1)),
+      findsOneWidget,
+    );
+    expect(
+      await _count(env, 'SELECT COUNT(*) AS n FROM card WHERE deck_id = ?', [
+        ids.verbs,
+      ]),
+      2,
+    );
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Flag skips a card that went meanwhile and says so', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'due1'});
+    await tester.pumpAndSettle();
+    await _bulk(tester, _en.cardFlag);
+    await _bulk(tester, _en.cardFlagSet);
+
+    expect(
+      find.text(_en.bulkToast(_en.cardFlaggedToast(1), 1)),
+      findsOneWidget,
+    );
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Tag skips a card that went meanwhile and says so', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'due1'});
+    await tester.pumpAndSettle();
+    await _bulk(tester, _en.cardTag);
+    await tester.enterText(find.byType(EditableText).last, 'greetings');
+    await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.bulkToast(_en.cardTaggedToast(1, 'greetings'), 1)),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('Trash skips a card that went meanwhile and says so', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'due1'});
+    await tester.pumpAndSettle();
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(_en.bulkToast(_en.cardsTrashedToast(1), 1)),
+      findsOneWidget,
+    );
+    expect(await _activeCount(env), 2);
+  });
+
+  /// Both selected cards go behind the screen's back; the action then
+  /// refuses as a whole (SP2a 2.19), says how many, and prunes them.
+  Future<void> selectThenLoseBoth(WidgetTester tester, LibraryEnv env) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong', 'gamsa']);
+    await env.cards.deleteCards(cardIds: {'new1', 'due1'});
+    await tester.pumpAndSettle();
+  }
+
+  libraryTest('Move when every selected card went meanwhile says so and '
+      'prunes the selection (SP2a 2.19)', (tester, env) async {
+    await selectThenLoseBoth(tester, env);
+    await _bulk(tester, _en.cardMove);
+    await tester.tap(find.text('Korean › Verbs'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardBulkAllGone(2)), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Tag when every selected card went meanwhile says so and '
+      'prunes the selection (SP2a 2.19)', (tester, env) async {
+    await selectThenLoseBoth(tester, env);
+    await _bulk(tester, _en.cardTag);
+    await tester.enterText(find.byType(EditableText).last, 'greetings');
+    await tester.tap(_inDialog(_en.cardTagConfirm));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardBulkAllGone(2)), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
+  });
+
+  libraryTest('Trash when every selected card went meanwhile says so and '
+      'prunes the selection (SP2a 2.19)', (tester, env) async {
+    await selectThenLoseBoth(tester, env);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardBulkAllGone(2)), findsOneWidget);
+    expect(find.byType(MxSelectionCheckbox), findsNothing);
   });
 
   libraryTest('the bulk bar meets the target guidelines', (tester, env) async {

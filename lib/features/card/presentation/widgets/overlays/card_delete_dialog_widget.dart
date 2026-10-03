@@ -5,6 +5,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_trashed_snackbar_widget.dart';
@@ -21,12 +22,14 @@ typedef CardTrashPreview = ({String front, String back});
 
 /// Asks before the cards of [cardIds] move to the Trash with their history
 /// (IT-ORG-014, FE-B1). A single card shows [preview] when the caller has
-/// it. Completes true once they have, and the toast is up.
+/// it. Completes true once they have, and the toast is up. [onAllGone] runs
+/// when every card was already gone (SP2a 2.19).
 Future<bool> showDeleteCardsDialog(
   BuildContext context, {
   required Set<String> cardIds,
   CardTrashPreview? preview,
   VoidCallback? onOpenTrash,
+  VoidCallback? onAllGone,
 }) async =>
     await showMxDialog<bool>(
       context,
@@ -34,6 +37,7 @@ Future<bool> showDeleteCardsDialog(
         cardIds: cardIds,
         preview: cardIds.length == 1 ? preview : null,
         onOpenTrash: onOpenTrash,
+        onAllGone: onAllGone,
       ),
     ) ??
     false;
@@ -46,6 +50,7 @@ class CardDeleteDialogWidget extends ConsumerStatefulWidget {
     required this.cardIds,
     this.preview,
     this.onOpenTrash,
+    this.onAllGone,
   });
 
   final Set<String> cardIds;
@@ -53,6 +58,7 @@ class CardDeleteDialogWidget extends ConsumerStatefulWidget {
 
   /// Rides on the toast of several cards and on a refused Undo (FE-B1).
   final VoidCallback? onOpenTrash;
+  final VoidCallback? onAllGone;
 
   @override
   ConsumerState<CardDeleteDialogWidget> createState() =>
@@ -80,9 +86,17 @@ class _CardDeleteDialogWidgetState
             batchIds: value.batchIds,
             front: widget.preview?.front,
             onOpenTrash: widget.onOpenTrash,
+            skipped: value.skipped.length,
           );
         case Rejected(:final reason):
-          showMxSnackbar(context, message: context.l10n.cardRejection(reason));
+          if (reason == CardRejection.notFound) widget.onAllGone?.call();
+          showMxSnackbar(
+            context,
+            message: context.l10n.cardBulkRejection(
+              reason,
+              widget.cardIds.length,
+            ),
+          );
       }
       Navigator.of(context).pop(outcome is Ok);
     } on Failure catch (failure) {

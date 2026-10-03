@@ -130,6 +130,8 @@
   "cardMoveEmptyTitle": "Không có nơi để chuyển",
   "cardMoveEmptyBody": "Không có bộ thẻ nào khác ở đây chứa được thẻ.",
   "cardMovedToast": "Đã chuyển {count} thẻ vào {deck}",
+  "cardBulkWithSkipped": "{message}. {count, plural, other{{count} thẻ đã không còn.}}",
+  "cardBulkAllGone": "{count, plural, other{{count} thẻ đã chọn đều đã không còn. Chưa có gì thay đổi.}}",
   "cardDeleteTitle": "{count, plural, other{Chuyển {count} thẻ vào Thùng rác?}}",
   "cardDeleteNote": "{count, plural, other{Khôi phục được từ Thùng rác trong 30 ngày, cùng lịch ôn và lịch sử. Các thẻ khác không bị ảnh hưởng.}}",
   "cardMoveToTrash": "Chuyển vào Thùng rác",
