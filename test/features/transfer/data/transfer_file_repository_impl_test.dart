@@ -1,37 +1,12 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
-import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
-import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 
-const _files = TransferFileRepositoryImpl();
-
-Uint8List _utf8(String text) => Uint8List.fromList(utf8.encode(text));
-
-Future<SourceTable> _table(TransferSource source, {int? sheetIndex}) async {
-  final result = await _files.read(source, sheetIndex: sheetIndex);
-  return (result as Ok<SourceTable, TransferRejection>).value;
-}
-
-Future<TransferRejection> _refusal(TransferSource source) async {
-  final result = await _files.read(source);
-  return (result as Rejected<SourceTable, TransferRejection>).reason;
-}
-
-Future<Uint8List> _written(
-  List<List<String>> rows,
-  TransferFormat format,
-) async {
-  final result = await _files.write(rows, format);
-  return (result as Ok<Uint8List, TransferRejection>).value;
-}
+import 'transfer_file_harness.dart';
 
 Uint8List _workbook(Map<String, List<List<CellValue?>>> sheets) {
   final workbook = Excel.createExcel();
@@ -51,9 +26,11 @@ void main() {
     test(
       'quotes, delimiters and line breaks inside a cell, CRLF and a BOM',
       () async {
-        final table = await _table(
+        final table = await tableOf(
           FileSource(
-            bytes: _utf8('﻿front,back\r\n"a,b","c\nd"\r\n"say ""hi""",e\r\n'),
+            bytes: utf8Bytes(
+              '﻿front,back\r\n"a,b","c\nd"\r\n"say ""hi""",e\r\n',
+            ),
             format: TransferFormat.csv,
           ),
         );
@@ -67,9 +44,9 @@ void main() {
     );
 
     test('a blank line stays a row, so row numbers match the file', () async {
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('front,back\n\na,b\n'),
+          bytes: utf8Bytes('front,back\n\na,b\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -82,9 +59,9 @@ void main() {
     });
 
     test('TSV splits on tabs only', () async {
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('front\tback\na, b\tc'),
+          bytes: utf8Bytes('front\tback\na, b\tc'),
           format: TransferFormat.tsv,
         ),
       );
@@ -108,7 +85,7 @@ void main() {
 
         for (final bytes in [utf16, latin1, utf16NoBom]) {
           expect(
-            await _refusal(
+            await refusalOf(
               FileSource(bytes: bytes, format: TransferFormat.csv),
             ),
             TransferRejection.badEncoding,
@@ -119,9 +96,9 @@ void main() {
 
     test('a .csv file whose records each hold ";" as often is split on ";", as '
         'Excel saves CSV where the decimal mark is a comma (D9)', () async {
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('front;back\r\nmenu;thực đơn\r\n'),
+          bytes: utf8Bytes('front;back\r\nmenu;thực đơn\r\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -136,15 +113,15 @@ void main() {
       'a headerless ";" file whose first row holds a comma in a cell stays '
       '";", and a "," file whose first row holds ";" in a cell stays "," (D9)',
       () async {
-        final semicolons = await _table(
+        final semicolons = await tableOf(
           FileSource(
-            bytes: _utf8('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'),
+            bytes: utf8Bytes('tip;tiền boa, phí phục vụ\nbill;hóa đơn\n'),
             format: TransferFormat.csv,
           ),
         );
-        final commas = await _table(
+        final commas = await tableOf(
           FileSource(
-            bytes: _utf8('tip,a;b\nbill,c\n'),
+            bytes: utf8Bytes('tip,a;b\nbill,c\n'),
             format: TransferFormat.csv,
           ),
         );
@@ -162,9 +139,9 @@ void main() {
 
     test('a record also ends at a lone CR, as Excel for Mac writes CSV '
         '(D9)', () async {
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('tip;tiền boa, phí phục vụ\rbill;hóa đơn\r'),
+          bytes: utf8Bytes('tip;tiền boa, phí phục vụ\rbill;hóa đơn\r'),
           format: TransferFormat.csv,
         ),
       );
@@ -178,15 +155,15 @@ void main() {
     test('a file whose rows hold different numbers of delimiters splits on the '
         'one its first row holds: ";" when it holds ";" and no ",", else "," '
         '(D9)', () async {
-      final semicolons = await _table(
+      final semicolons = await tableOf(
         FileSource(
-          bytes: _utf8('front;back;tags\nmenu;thực đơn\n'),
+          bytes: utf8Bytes('front;back;tags\nmenu;thực đơn\n'),
           format: TransferFormat.csv,
         ),
       );
-      final commas = await _table(
+      final commas = await tableOf(
         FileSource(
-          bytes: _utf8('front,back,tags\nmenu,thực đơn\n'),
+          bytes: utf8Bytes('front,back,tags\nmenu,thực đơn\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -202,9 +179,9 @@ void main() {
     });
 
     test('a .csv file never splits on tab (D9)', () async {
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('a\tb,c\nd\te,f\n'),
+          bytes: utf8Bytes('a\tb,c\nd\te,f\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -217,15 +194,15 @@ void main() {
 
     test('a delimiter inside quotes does not count, nor after an escaped '
         'quote inside them (D9)', () async {
-      final quoted = await _table(
+      final quoted = await tableOf(
         FileSource(
-          bytes: _utf8('"a,b";c\n"d,e";f\n'),
+          bytes: utf8Bytes('"a,b";c\n"d,e";f\n'),
           format: TransferFormat.csv,
         ),
       );
-      final escaped = await _table(
+      final escaped = await tableOf(
         FileSource(
-          bytes: _utf8('"nói ""chào"", cười";a\n"hỏi ""ai"", đáp";b\n'),
+          bytes: utf8Bytes('"nói ""chào"", cười";a\n"hỏi ""ai"", đáp";b\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -243,9 +220,9 @@ void main() {
     test('a quote closes its cell, for the vote as for the parser, only '
         'before a delimiter, a line end or the end of the text (D9)', () async {
       // The quote after "5" is text: the cell runs on to the quote before ";".
-      final table = await _table(
+      final table = await tableOf(
         FileSource(
-          bytes: _utf8('"5" screen,x";a\n"7" phone,y";b\n'),
+          bytes: utf8Bytes('"5" screen,x";a\n"7" phone,y";b\n'),
           format: TransferFormat.csv,
         ),
       );
@@ -259,8 +236,8 @@ void main() {
     test(
       'the delimiter is judged on the first 20 records that hold text (D9)',
       () async {
-        Future<List<List<String>>> rows(String text) async => (await _table(
-          FileSource(bytes: _utf8(text), format: TransferFormat.csv),
+        Future<List<List<String>>> rows(String text) async => (await tableOf(
+          FileSource(bytes: utf8Bytes(text), format: TransferFormat.csv),
         )).rows;
 
         // The 20th record counts: without it both ";" and "," would be steady.
@@ -279,21 +256,21 @@ void main() {
 
     test('pasted text is tab-separated when its first record that holds text '
         'has a tab outside quotes (A1)', () async {
-      expect((await _table(const PastedSource('a\tb,c\nd\te'))).rows, [
+      expect((await tableOf(const PastedSource('a\tb,c\nd\te'))).rows, [
         ['a', 'b,c'],
         ['d', 'e'],
       ]);
-      expect((await _table(const PastedSource('\na\tb,c\nd\te'))).rows, [
+      expect((await tableOf(const PastedSource('\na\tb,c\nd\te'))).rows, [
         [''],
         ['a', 'b,c'],
         ['d', 'e'],
       ]);
       // A spreadsheet copies a cell that holds a line break in quotes.
-      expect((await _table(const PastedSource('"a\nb"\tc\nd\te'))).rows, [
+      expect((await tableOf(const PastedSource('"a\nb"\tc\nd\te'))).rows, [
         ['a\nb', 'c'],
         ['d', 'e'],
       ]);
-      expect((await _table(const PastedSource('a,b\nc,d'))).rows.last, [
+      expect((await tableOf(const PastedSource('a,b\nc,d'))).rows.last, [
         'c',
         'd',
       ]);
@@ -302,7 +279,7 @@ void main() {
     test(
       'pasted text without a tab reads as a .csv file, ";" included (A1)',
       () async {
-        expect((await _table(const PastedSource('a;b\nc;d'))).rows, [
+        expect((await tableOf(const PastedSource('a;b\nc;d'))).rows, [
           ['a', 'b'],
           ['c', 'd'],
         ]);
@@ -311,11 +288,11 @@ void main() {
 
     test('a source with nothing in it is empty (E2)', () async {
       expect(
-        await _refusal(const PastedSource(' \n , \n')),
+        await refusalOf(const PastedSource(' \n , \n')),
         TransferRejection.emptySource,
       );
       expect(
-        await _refusal(
+        await refusalOf(
           FileSource(bytes: Uint8List(0), format: TransferFormat.csv),
         ),
         TransferRejection.emptySource,
@@ -336,14 +313,14 @@ void main() {
         ],
       });
 
-      final table = await _table(
+      final table = await tableOf(
         FileSource(bytes: bytes, format: TransferFormat.xlsx),
       );
       expect(table.sheetNames, ['Notes', 'Vocab', 'Other']);
       expect(table.sheetIndex, 1);
       expect(table.rows.last, ['menu', 'thực đơn']);
 
-      final other = await _table(
+      final other = await tableOf(
         FileSource(bytes: bytes, format: TransferFormat.xlsx),
         sheetIndex: 2,
       );
@@ -365,7 +342,7 @@ void main() {
         ],
       });
 
-      final table = await _table(
+      final table = await tableOf(
         FileSource(bytes: bytes, format: TransferFormat.xlsx),
       );
       expect(table.rows.single, ['7', '2', '2.5', '2026-09-01', '']);
@@ -373,124 +350,13 @@ void main() {
 
     test('bytes that are not a workbook are unreadable (E1)', () async {
       expect(
-        await _refusal(
-          FileSource(bytes: _utf8('front,back'), format: TransferFormat.xlsx),
-        ),
-        TransferRejection.unreadableFile,
-      );
-    });
-  });
-
-  group('writing (BR-TRANSFER-010, BR-TRANSFER-012)', () {
-    const rows = [
-      ['front', 'back', 'example', 'hint', 'pronunciation', 'tags'],
-      ['=1+1', '001', '', '', '', r'a\;b;c'],
-      ['say "hi"', 'x,y\nz', '', '', '', ''],
-    ];
-
-    test('CSV and TSV start with a BOM, and read back as written', () async {
-      for (final format in [TransferFormat.csv, TransferFormat.tsv]) {
-        final bytes = await _written(rows, format);
-
-        expect(bytes.sublist(0, 3), [0xEF, 0xBB, 0xBF]);
-        expect(
-          (await _table(FileSource(bytes: bytes, format: format))).rows,
-          rows,
-        );
-      }
-    });
-
-    test('the same rows give the same CSV bytes', () async {
-      expect(
-        await _written(rows, TransferFormat.csv),
-        await _written(rows, TransferFormat.csv),
-      );
-    });
-
-    test('XLSX writes text cells: no formula, no number, and reads back as written', () async {
-      final bytes = await _written(rows, TransferFormat.xlsx);
-      final sheet = Excel.decodeBytes(bytes).tables.values.single;
-
-      expect(sheet.rows[1][0]!.value, isA<TextCellValue>());
-      expect(sheet.rows[1][1]!.value, isA<TextCellValue>());
-      expect(
-        (await _table(FileSource(bytes: bytes, format: TransferFormat.xlsx)))
-            .rows,
-        rows,
-      );
-    });
-  });
-
-  group('size caps (SP2a 2.23)', () {
-    test('a file over 5 MB is refused before it is decoded', () async {
-      // Not UTF-8: decoding would answer badEncoding, so the cap came first.
-      final bytes = Uint8List(TransferLimits.maxBytes + 1)
-        ..fillRange(0, 4, 0xFF);
-
-      expect(
-        await _refusal(FileSource(bytes: bytes, format: TransferFormat.csv)),
-        TransferRejection.tooLarge,
-      );
-      expect(
-        await _refusal(FileSource(bytes: bytes, format: TransferFormat.xlsx)),
-        TransferRejection.tooLarge,
-      );
-    });
-
-    test('exactly 5 MB is read; one byte more is refused', () async {
-      // One row whose size is the cap, so only the byte gate is in play.
-      Uint8List sized(int length) =>
-          Uint8List.fromList(utf8.encode('a,${'x' * (length - 2)}'));
-
-      final table = await _table(
-        FileSource(
-          bytes: sized(TransferLimits.maxBytes),
-          format: TransferFormat.csv,
-        ),
-      );
-      expect(table.rows, hasLength(1));
-      expect(
-        await _refusal(
+        await refusalOf(
           FileSource(
-            bytes: sized(TransferLimits.maxBytes + 1),
-            format: TransferFormat.csv,
+            bytes: utf8Bytes('front,back'),
+            format: TransferFormat.xlsx,
           ),
         ),
-        TransferRejection.tooLarge,
-      );
-    });
-
-    test('a paste is counted in UTF-8 bytes, as a file is: exactly 5 MB is '
-        'read; one byte more is refused', () async {
-      // Two bytes per "é": the paste is under the cap in UTF-16 units and
-      // over it in bytes.
-      final atCap = 'a,${'é' * ((TransferLimits.maxBytes - 2) ~/ 2)}';
-      expect(utf8.encode(atCap), hasLength(TransferLimits.maxBytes));
-
-      expect((await _table(PastedSource(atCap))).rows, hasLength(1));
-      expect(
-        await _refusal(PastedSource('${atCap}x')),
-        TransferRejection.tooLarge,
-      );
-      // Over in bytes while its length in UTF-16 units is at most the cap.
-      final multibyte = 'a,${'ế' * (TransferLimits.maxBytes ~/ 3 + 1)}';
-      expect(multibyte.length, lessThan(TransferLimits.maxBytes));
-      expect(
-        await _refusal(PastedSource(multibyte)),
-        TransferRejection.tooLarge,
-      );
-    });
-
-    test('a table over 20,000 rows is refused; 20,000 rows are read', () async {
-      String rows(int count) => List.filled(count, 'a,b').join('\n');
-
-      expect(
-        await _refusal(PastedSource(rows(TransferLimits.maxRows + 1))),
-        TransferRejection.tooLarge,
-      );
-      expect(
-        (await _table(PastedSource(rows(TransferLimits.maxRows)))).rows,
-        hasLength(TransferLimits.maxRows),
+        TransferRejection.unreadableFile,
       );
     });
   });

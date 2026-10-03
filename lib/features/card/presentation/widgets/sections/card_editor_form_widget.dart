@@ -470,7 +470,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     card: _card,
     source: widget.source,
     isCardGone: _isCardGone,
-    deckRejects: _deckRejects,
+    isDeckRejecting: _deckRejects,
     hasOffer: _offer != null,
     onRestoreOffer: _restoreOffer,
     onDiscardOffer: _discardOffer,

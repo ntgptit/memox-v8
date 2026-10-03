@@ -53,7 +53,7 @@ Future<void> _otherDeviceSaves(LibraryEnv env, String cardId) =>
     env.cards.editCard(
       cardId: cardId,
       draft: const CardDraft(front: 'bap', back: 'theirs'),
-      now: DateTime.now().add(const Duration(days: 1)),
+      now: libraryToday.add(const Duration(days: 1)),
     );
 
 void main() {

@@ -8,6 +8,7 @@ import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
 import 'package:memox/features/card/data/mappers/card_mapper.dart';
+import 'package:memox/features/card/data/repositories/card_restore_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
@@ -36,6 +37,7 @@ final class CardRepositoryImpl implements CardRepository {
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
        _detailDao = CardDetailDao(_db),
+       _restore = CardRestoreRepositoryImpl(CardDao(_db)),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
@@ -44,6 +46,7 @@ final class CardRepositoryImpl implements CardRepository {
   final CardDao _dao;
   final CardListDao _listDao;
   final CardDetailDao _detailDao;
+  final CardRestoreRepositoryImpl _restore;
   final DateTime Function() _now;
 
   @override
@@ -174,12 +177,12 @@ final class CardRepositoryImpl implements CardRepository {
         (byDeck[card.deckId] ??= {})[batchId] = card;
       }
       for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
-        if (await _restoreRefusal(deckId, cards) case final reason?) {
+        if (await _restore.refusal(deckId, cards) case final reason?) {
           return Rejected(reason);
         }
       }
       for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
-        await _writeRestore(deckId, cards, at: at);
+        await _restore.write(deckId, cards, at: at);
       }
       return const Ok(null);
     });
@@ -432,56 +435,11 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? updatedAt,
     required DateTime at,
   }) async {
-    if (await _restoreRefusal(deckId, cards) case final reason?) {
+    if (await _restore.refusal(deckId, cards) case final reason?) {
       return Rejected(reason);
     }
-    await _writeRestore(deckId, cards, updatedAt: updatedAt, at: at);
+    await _restore.write(deckId, cards, updatedAt: updatedAt, at: at);
     return const Ok(null);
-  }
-
-  /// Why [cards] cannot go back into [deckId], or null when it takes them
-  /// (BR-TRASH-006). Reads only.
-  Future<CardRejection?> _restoreRefusal(
-    String deckId,
-    Map<String, CardRow> cards,
-  ) async {
-    final target = await _dao.deckRow(deckId);
-    if (target == null) {
-      return await _dao.isDeckInTrash(deckId)
-          ? CardRejection.targetInTrash
-          : CardRejection.targetNotFound;
-    }
-    final rule = CardEntity.checkTarget(
-      targetRootId: target.rootId,
-      targetIsRoot: target.parentId == null,
-      targetContentType: DeckContentType.values.byName(target.contentType),
-      sourceRootIds: await _dao.rootIdsOf({
-        for (final card in cards.values) card.deckId,
-      }),
-    );
-    if (rule case Rejected(:final reason)) return reason;
-    return null;
-  }
-
-  /// The writes of a restore that [_restoreRefusal] accepted.
-  Future<void> _writeRestore(
-    String deckId,
-    Map<String, CardRow> cards, {
-    DateTime? updatedAt,
-    required DateTime at,
-  }) async {
-    for (final MapEntry(key: batchId, value: card) in cards.entries) {
-      await _dao.restoreFromBatch(
-        batchId,
-        card.id,
-        deckId: deckId,
-        updatedAt: updatedAt,
-      );
-    }
-    final target = (await _dao.deckRow(deckId))!;
-    if (target.contentType == DeckContentType.unset.name) {
-      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-    }
   }
 
   /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).

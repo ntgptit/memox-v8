@@ -234,7 +234,7 @@ void main() {
         await env.cards.editCard(
           cardId: card.id,
           draft: const CardDraft(front: 'gamsahamnida', back: 'thanks'),
-          now: DateTime.now().add(const Duration(days: 1)),
+          now: libraryToday.add(const Duration(days: 1)),
         );
         await tester.pump();
         await tester.pump();

@@ -33,7 +33,7 @@ class CardEditorBodyWidget extends StatelessWidget {
     required this.card,
     required this.source,
     required this.isCardGone,
-    required this.deckRejects,
+    required this.isDeckRejecting,
     required this.hasOffer,
     required this.onRestoreOffer,
     required this.onDiscardOffer,
@@ -73,7 +73,7 @@ class CardEditorBodyWidget extends StatelessWidget {
   final CardEntity? card;
   final CardEditorSource source;
   final bool isCardGone;
-  final bool deckRejects;
+  final bool isDeckRejecting;
 
   /// Whether a draft kept from an earlier session is on offer.
   final bool hasOffer;
@@ -143,7 +143,7 @@ class CardEditorBodyWidget extends StatelessWidget {
           onRestore: onRestoreOffer,
           onDiscard: onDiscardOffer,
         ),
-      if (deckRejects)
+      if (isDeckRejecting)
         MxInlineBanner(
           tone: MxBannerTone.warning,
           title: l10n.cardDeckRejectsTitle,

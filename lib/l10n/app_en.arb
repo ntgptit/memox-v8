@@ -3852,10 +3852,7 @@
   "importProblemTooLargeBody": "Split it into files of up to {rows} rows or {megabytes} MB. Nothing was read.",
   "@importProblemTooLargeBody": {
     "placeholders": {
-      "rows": {
-        "type": "int",
-        "format": "decimalPattern"
-      },
+      "rows": { "type": "int", "format": "decimalPattern" },
       "megabytes": {
         "type": "int"
       }
