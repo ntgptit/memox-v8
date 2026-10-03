@@ -38,6 +38,36 @@
 #     dart run build_runner build --delete-conflicting-outputs &&
 #     bash .claude/skills/flutter-workflow/scripts/run_goldens.sh --update'
 #
+# **On Docker Desktop for Windows** (Git Bash, a WSL2 VM with capped memory),
+# three things decide whether a run takes a few minutes or half an hour:
+# - Copy the tree in with `docker cp`. A bind mount of `D:\...` is slow across
+#   the VM boundary, and in the SP2a run of 2026-10-03 the container died once
+#   the tests started.
+# - Keep packages in a named volume (`memox-pub-cache`), so `pub get` does not
+#   download everything again for every new container.
+# - Cap processes to the VM's memory with `MEMOX_TEST_BUNDLES=<n>`. It caps the
+#   bundles of a comparison and the files of `--update`. Use run_goldens.sh
+#   rather than `flutter test -j 1 <files>`: that ran the 40 golden files one by
+#   one, twice, and still crawled.
+#
+#   git ls-files | tar -cf src.tar -T -
+#   MSYS_NO_PATHCONV=1 docker create --name memox-golden \
+#     -v memox-pub-cache:/root/.pub-cache -e MEMOX_TEST_BUNDLES=2 \
+#     memox-golden:3.47.5 bash -lc '
+#       mkdir /w && cd /w && tar -xf /src.tar && git init -q && git add -A &&
+#       git -c user.email=g@x -c user.name=g commit -qm snap &&
+#       flutter pub get && dart run build_runner build --delete-conflicting-outputs &&
+#       bash .claude/skills/flutter-workflow/scripts/run_goldens.sh --update; rc=$?
+#       git status --porcelain --untracked-files=all -- "test/**/goldens/*.png" |
+#         cut -c4- | tar -cf /pngs.tar -T -; exit $rc'
+#   MSYS_NO_PATHCONV=1 docker cp src.tar memox-golden:/src.tar
+#   docker start -a memox-golden     # streams progress; exits with the run's code
+#   MSYS_NO_PATHCONV=1 docker cp memox-golden:/pngs.tar - | tar -xOf - | tar -xf -
+#   docker rm memox-golden
+#
+# `docker start -a` blocks until the run ends and shows it as it goes, so no
+# `sleep`/`docker inspect` polling loop is needed. Drop `--update` to compare.
+#
 # `TZ=UTC` is not optional: `card_detail` renders review timestamps through
 # `toLocal()`, so without it the PNGs carry the machine's timezone. The image
 # sets it as a default, and the command restates it so a reader of either does

@@ -8,6 +8,8 @@
 #   --update   rewrite the committed pictures (`--update-goldens`) instead of
 #              comparing against them. Never on Windows (CLAUDE.md).
 #   --report   where the JSON report goes; CI counts the goldens from it.
+#   MEMOX_TEST_BUNDLES=<n>  at most n processes: n bundles for a comparison,
+#           n files at a time for --update (a memory-limited Docker VM sets it)
 #   MEMOX_TEST_BUNDLES=0  compare file by file, as before 2026-10-02.
 #
 # **Why it is a script.** `flutter test --tags golden` compiles and starts
@@ -59,7 +61,14 @@ REPORT="${REPORT:-$RUN_DIR/golden-report.jsonl}"
 RC_FILE="$RUN_DIR/rc"
 trap '[[ "$(cat "$RC_FILE" 2>/dev/null || echo 0)" == "0" ]] && rm -rf "${REPO_ROOT:?}/${RUN_DIR:?}"' EXIT
 
-JOBS="$("$PY" -c 'import os; print(max(1, min(os.cpu_count() or 1, 8)))')"
+# Processes for a file-by-file run: MEMOX_TEST_BUNDLES when it names a count,
+# so the cap a small machine sets for the bundles holds for --update too;
+# otherwise one per core, at most eight, like the bundles.
+if [[ "${MEMOX_TEST_BUNDLES:-}" =~ ^[1-9][0-9]*$ ]]; then
+  JOBS="$MEMOX_TEST_BUNDLES"
+else
+  JOBS="$("$PY" -c 'import os; print(max(1, min(os.cpu_count() or 1, 8)))')"
+fi
 
 if [[ $UPDATE -eq 1 || "${MEMOX_TEST_BUNDLES:-}" == "0" ]]; then
   if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --list test)"; then
