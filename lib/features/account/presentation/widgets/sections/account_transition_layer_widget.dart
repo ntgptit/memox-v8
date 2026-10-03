@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
@@ -19,6 +20,7 @@ import 'package:memox/features/account/presentation/widgets/support/account_labe
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -188,11 +190,13 @@ class _Progress extends ConsumerWidget {
     final isStopped = error != null || view.isStuck;
     final step = accountStepText(l10n, accountStepOf(view.transition));
     // Centred in the page, the one thing on it (account UI spec §6); it
-    // scrolls when it outgrows the screen.
-    return CustomScrollView(
-      slivers: [
-        SliverFillRemaining(
-          hasScrollBody: false,
+    // scrolls when it outgrows the screen. A scroll view with a minimum
+    // height, not SliverFillRemaining: the action pair measures its width in
+    // a LayoutBuilder, which has no intrinsic height to fill with.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.gutter),
             child: Column(
@@ -208,11 +212,31 @@ class _Progress extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.gutter),
-                  MxButton(
-                    label: l10n.commonRetry,
-                    isBlock: true,
-                    onPressed: () => unawaited(_retry(ref)),
-                  ),
+                  if (view.isStuck)
+                    // R11: nothing here can be fixed by retrying alone, and
+                    // the move resumes on the next launch, so the way out of
+                    // the app sits beside Retry. It changes no data.
+                    MxActionPair(
+                      leading: MxButton(
+                        label: l10n.accountCloseApp,
+                        tone: MxButtonTone.outline,
+                        isBlock: true,
+                        isSingleLine: true,
+                        onPressed: () => unawaited(SystemNavigator.pop()),
+                      ),
+                      trailing: MxButton(
+                        label: l10n.commonRetry,
+                        isBlock: true,
+                        isSingleLine: true,
+                        onPressed: () => unawaited(_retry(ref)),
+                      ),
+                    )
+                  else
+                    MxButton(
+                      label: l10n.commonRetry,
+                      isBlock: true,
+                      onPressed: () => unawaited(_retry(ref)),
+                    ),
                   if (_isSignOutStoppedOffline(error)) ...[
                     const SizedBox(height: AppSpacing.grouped),
                     const _SignOutNow(),
@@ -244,7 +268,7 @@ class _Progress extends ConsumerWidget {
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 

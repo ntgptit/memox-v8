@@ -237,6 +237,11 @@ void main() {
           name,
           overrides: [authStateOf(state), ...extra],
           hasMark: name == 'layer_target',
+          before: name == 'layer_stuck'
+              ? () async {
+                  expect(find.text(_en.accountCloseApp), findsOneWidget);
+                }
+              : null,
         );
       });
     }

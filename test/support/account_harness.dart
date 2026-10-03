@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
@@ -44,6 +45,26 @@ List<Override> accountOverrides(AuthWorld world) => [
   syncControlProvider.overrideWithValue(world.sync),
   networkStatusProvider.overrideWithValue(world.network),
 ];
+
+/// The platform's "close the app" calls (`SystemNavigator.pop`), recorded
+/// instead of sent. The mock is removed when the test ends.
+List<MethodCall> watchAppCloses(WidgetTester tester) {
+  final closes = <MethodCall>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'SystemNavigator.pop') closes.add(call);
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return closes;
+}
 
 /// [world]'s anonymous user attached to [email] through a code.
 Future<void> linkEmail(

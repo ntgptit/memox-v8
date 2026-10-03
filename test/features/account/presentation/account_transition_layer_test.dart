@@ -311,10 +311,12 @@ void main() {
     expect(find.text(_en.commonCancel), findsNothing);
   });
 
-  libraryTest('stuck says the data is safe and offers only Retry', (
+  libraryTest('stuck says the data is safe and the move resumes on the next '
+      'launch; Close MemoX leaves the app, Retry stays (R11)', (
     tester,
     env,
   ) async {
+    final closes = watchAppCloses(tester);
     await pumpLibraryScreen(
       tester,
       env,
@@ -337,6 +339,36 @@ void main() {
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
+    // Close leads, Retry trails: side by side, Close first.
+    expect(
+      tester.getCenter(find.text(_en.accountCloseApp)).dx,
+      lessThan(tester.getCenter(find.text(_en.commonRetry)).dx),
+    );
+
+    await tester.tap(find.text(_en.accountCloseApp));
+    await tester.pump();
+    expect(closes, hasLength(1));
+  });
+
+  libraryTest('a non-stuck stop keeps Retry alone', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(TransitionKind.switchAccount, TransitionStage.claimed),
+            error: const OfflineFailure(cause: 'test'),
+          ),
+        ),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.text(_en.accountLayerOffline), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+    expect(find.text(_en.accountCloseApp), findsNothing);
   });
 
   libraryTest('running, it names the step and says closing loses nothing', (
