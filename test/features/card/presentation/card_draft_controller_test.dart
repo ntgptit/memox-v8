@@ -15,6 +15,7 @@ final class _FakeDrafts implements CardDraftRepository {
   final calls = <String>[];
   Duration saveTime = Duration.zero;
   Failure? failure;
+  Object? crash;
 
   @override
   Future<CardDraft?> read(String key) async {
@@ -26,6 +27,7 @@ final class _FakeDrafts implements CardDraftRepository {
   @override
   Future<void> save(String key, CardDraft draft) async {
     calls.add('save $key ${draft.front}');
+    if (crash case final crash?) throw crash;
     if (saveTime > Duration.zero) await Future<void>.delayed(saveTime);
     if (failure case final failure?) throw failure;
     stored[key] = draft;
@@ -178,6 +180,50 @@ void main() {
       );
       async.elapse(CardDraftController.pause);
       async.flushMicrotasks();
+      expect(drafts.stored[_key]!.front, 'ab');
+    });
+  });
+
+  test('any error, not only a Failure, leaves the chain alive', () {
+    fakeAsync((async) {
+      final controller = build();
+      drafts.crash = StateError('not a Failure');
+      controller.schedule(
+        const CardDraft(front: 'a', back: ''),
+        saved: _empty,
+      );
+      async.elapse(CardDraftController.pause);
+      async.flushMicrotasks();
+
+      drafts.crash = null;
+      controller.schedule(
+        const CardDraft(front: 'ab', back: ''),
+        saved: _empty,
+      );
+      async.elapse(CardDraftController.pause);
+      async.flushMicrotasks();
+      expect(drafts.stored[_key]!.front, 'ab');
+    });
+  });
+
+  test('save then save with the first in flight: the latest text wins', () {
+    fakeAsync((async) {
+      final controller = build();
+      drafts.saveTime = const Duration(milliseconds: 100);
+      controller.schedule(
+        const CardDraft(front: 'a', back: ''),
+        saved: _empty,
+      );
+      async.elapse(CardDraftController.pause);
+      controller.schedule(
+        const CardDraft(front: 'ab', back: ''),
+        saved: _empty,
+      );
+      async.elapse(CardDraftController.pause);
+
+      async.elapse(const Duration(seconds: 1));
+      async.flushMicrotasks();
+      expect(drafts.calls, ['save $_key a', 'save $_key ab']);
       expect(drafts.stored[_key]!.front, 'ab');
     });
   });

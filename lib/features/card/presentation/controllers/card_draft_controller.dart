@@ -45,7 +45,9 @@ final class CardDraftController {
     _timer = Timer(delay, _write);
   }
 
-  /// Writes what waits, now; completes when every queued write is done.
+  /// Writes what waits, now; completes when every queued write is done. The
+  /// owner calls it, unawaited, from its dispose, so a kill inside [pause]
+  /// loses at most that window.
   Future<void> flush() {
     _timer?.cancel();
     _write();
@@ -77,8 +79,9 @@ final class CardDraftController {
     _writes = _writes.then((_) async {
       try {
         await write();
-      } on Failure {
-        // The draft is a convenience: a failed write never interrupts typing.
+      } catch (_) {
+        // The draft is a convenience: a failed write, of any kind, never
+        // interrupts typing and never breaks the chain for the next one.
       }
     });
   }

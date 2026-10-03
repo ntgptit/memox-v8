@@ -951,6 +951,18 @@
   "@cardDeckRejectsBody": {
     "description": "Warning banner body when the deck refuses cards."
   },
+  "cardDraftTitle": "Unsaved text from earlier",
+  "@cardDraftTitle": {
+    "description": "Neutral banner title above the card editor when a draft kept on this device is offered back (SP2a R9)."
+  },
+  "cardDraftBody": "Kept on this phone only, not synced. Restore it or discard it.",
+  "@cardDraftBody": {
+    "description": "Neutral banner body offering the kept draft back."
+  },
+  "cardDraftRestore": "Restore",
+  "@cardDraftRestore": {
+    "description": "Banner action: puts the kept draft back into the form. Its partner is cardDiscard."
+  },
   "cardGoneTitle": "This card is no longer here",
   "@cardGoneTitle": {
     "description": "Editor state when the card was deleted meanwhile."

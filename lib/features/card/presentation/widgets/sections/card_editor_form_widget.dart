@@ -7,11 +7,15 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/card/di/card_draft_repository_provider.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
+import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
+import 'package:memox/features/card/presentation/controllers/card_draft_controller.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_draft_banner_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_edit_summary_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
@@ -73,7 +77,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   ];
   late var _isFlagged = _card?.isFlagged ?? false;
   late var _isDetailsOpen = !_isCreating;
-  late var _saved = _draft();
+  late CardDraft _saved;
   final _touched = <_Field>{};
   var _isSaving = false;
   var _hasFailed = false;
@@ -82,6 +86,15 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   var _isLeaving = false;
   var _hasPendingTag = false;
   final _tagEditor = GlobalKey<CardTagEditorWidgetState>();
+  late final _drafts = CardDraftController(
+    repository: ref.read(cardDraftRepositoryProvider),
+    key: _isCreating
+        ? CardDraftKey.create(widget.deckId)
+        : CardDraftKey.edit(_card!.id),
+  );
+
+  /// A draft kept from an earlier session, on offer above the fields (R9).
+  CardDraft? _offer;
 
   bool get _isCreating => widget.detail == null;
 
@@ -94,7 +107,20 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _saved = _draft();
+    for (final controller in _controllers) {
+      controller.addListener(_keepDraft);
+    }
+    unawaited(_offerKeptDraft());
+  }
+
+  @override
   void dispose() {
+    // What waits for the pause is written now: leaving mid-pause loses
+    // nothing.
+    unawaited(_drafts.flush());
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -115,17 +141,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     tagNames: _tags,
   );
 
-  bool get _isDirty {
-    final draft = _draft();
-    return _hasPendingTag ||
-        draft.front != _saved.front ||
-        draft.back != _saved.back ||
-        draft.example != _saved.example ||
-        draft.hint != _saved.hint ||
-        draft.pronunciation != _saved.pronunciation ||
-        draft.isFlagged != _saved.isFlagged ||
-        !listEquals(draft.tagNames, _saved.tagNames);
-  }
+  bool get _isDirty => _hasPendingTag || !_draft().sameContentAs(_saved);
 
   /// What differs from the saved card, named for the discard dialog (kit 09),
   /// by the same comparisons as [_isDirty].
@@ -210,6 +226,52 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   void _touch(_Field field) => setState(() => _touched.add(field));
 
+  /// The draft kept for this form, offered back when it differs from what the
+  /// form shows now; a draft equal to it is dropped (R9).
+  Future<void> _offerKeptDraft() async {
+    final kept = await _drafts.read();
+    if (kept == null) return;
+    if (kept.sameContentAs(_saved)) {
+      unawaited(_drafts.clear());
+      return;
+    }
+    if (mounted) setState(() => _offer = kept);
+  }
+
+  /// Every change goes to the draft once typing pauses. While an earlier
+  /// draft is on offer it stays as it is until the person answers it.
+  void _keepDraft() {
+    if (_offer != null) return;
+    _drafts.schedule(_draft(), saved: _saved);
+  }
+
+  void _restoreOffer() {
+    final draft = _offer;
+    if (draft == null) return;
+    // _offer is still set while the controllers change, so the listeners
+    // write nothing: the kept draft is already what is on screen.
+    _front.text = draft.front;
+    _back.text = draft.back;
+    _example.text = draft.example ?? '';
+    _hint.text = draft.hint ?? '';
+    _pronunciation.text = draft.pronunciation ?? '';
+    setState(() {
+      _tags = [...draft.tagNames];
+      _isFlagged = draft.isFlagged;
+      _isDetailsOpen =
+          _isDetailsOpen ||
+          draft.example != null ||
+          draft.hint != null ||
+          draft.pronunciation != null;
+      _offer = null;
+    });
+  }
+
+  void _discardOffer() {
+    setState(() => _offer = null);
+    unawaited(_drafts.clear());
+  }
+
   Future<void> _save() async {
     if (_isSaving) return;
     // The tag still in its field is part of the card (critique 2026-09-30
@@ -245,6 +307,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         showMxSnackbar(context, message: l10n.cardAddedToast);
       case Ok():
         _saved = draft;
+        unawaited(_drafts.clear());
         _leave();
       case Rejected(reason: CardRejection.notACardContainer):
         setState(() {
@@ -271,7 +334,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       _touched.clear();
       _isSaving = false;
       _saved = _draft();
+      _offer = null;
     });
+    // The cleared controllers armed a write; clearing cancels it.
+    unawaited(_drafts.clear());
     _frontFocus.requestFocus();
   }
 
@@ -292,7 +358,9 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       isNew: _isCreating,
       edited: _isCreating ? const [] : _editedParts(context.l10n),
     );
-    if (discard && mounted) _leave();
+    if (!discard || !mounted) return;
+    unawaited(_drafts.clear());
+    _leave();
   }
 
   void _close() => unawaited(Navigator.of(context).maybePop());
@@ -369,7 +437,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
               semanticLabel: _isFlagged
                   ? l10n.cardFlagClear
                   : l10n.cardFlagLabel,
-              onPressed: () => setState(() => _isFlagged = !_isFlagged),
+              onPressed: () {
+                setState(() => _isFlagged = !_isFlagged);
+                _keepDraft();
+              },
             ),
           ),
         ),
@@ -378,6 +449,8 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   List<Widget> _fields(AppLocalizations l10n, Map<_Field, String?> errors) => [
     const SizedBox(height: AppSpacing.control),
+    if (_offer != null)
+      CardDraftBannerWidget(onRestore: _restoreOffer, onDiscard: _discardOffer),
     if (_deckRejects)
       MxInlineBanner(
         tone: MxBannerTone.warning,
@@ -419,7 +492,10 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     CardTagEditorWidget(
       key: _tagEditor,
       tags: _tags,
-      onChanged: (tags) => setState(() => _tags = tags),
+      onChanged: (tags) {
+        setState(() => _tags = tags);
+        _keepDraft();
+      },
       onPendingChanged: (isPending) =>
           setState(() => _hasPendingTag = isPending),
     ),
