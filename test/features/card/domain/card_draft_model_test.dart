@@ -116,4 +116,79 @@ void main() {
       },
     );
   });
+
+  group('sameContentAs', () {
+    const base = CardDraft(
+      front: 'f',
+      back: 'b',
+      example: 'e',
+      isFlagged: true,
+      tagNames: ['x', 'y'],
+    );
+
+    test('the same text, flag and tags in the same order', () {
+      const same = CardDraft(
+        front: 'f',
+        back: 'b',
+        example: 'e',
+        isFlagged: true,
+        tagNames: ['x', 'y'],
+      );
+      expect(base.sameContentAs(same), isTrue);
+    });
+
+    test('any difference counts', () {
+      const others = [
+        CardDraft(
+          front: 'F',
+          back: 'b',
+          example: 'e',
+          isFlagged: true,
+          tagNames: ['x', 'y'],
+        ),
+        CardDraft(
+          front: 'f',
+          back: 'B',
+          example: 'e',
+          isFlagged: true,
+          tagNames: ['x', 'y'],
+        ),
+        CardDraft(front: 'f', back: 'b', isFlagged: true, tagNames: ['x', 'y']),
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          example: 'e',
+          hint: 'h',
+          isFlagged: true,
+          tagNames: ['x', 'y'],
+        ),
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          example: 'e',
+          pronunciation: 'p',
+          isFlagged: true,
+          tagNames: ['x', 'y'],
+        ),
+        CardDraft(front: 'f', back: 'b', example: 'e', tagNames: ['x', 'y']),
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          example: 'e',
+          isFlagged: true,
+          tagNames: ['y', 'x'],
+        ),
+        CardDraft(
+          front: 'f',
+          back: 'b',
+          example: 'e',
+          isFlagged: true,
+          tagNames: ['x'],
+        ),
+      ];
+      for (final other in others) {
+        expect(base.sameContentAs(other), isFalse);
+      }
+    });
+  });
 }

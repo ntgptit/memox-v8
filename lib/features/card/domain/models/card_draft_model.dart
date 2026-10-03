@@ -1,4 +1,5 @@
 import 'package:characters/characters.dart';
+import 'package:collection/collection.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
@@ -78,6 +79,18 @@ final class CardDraft {
     }
     return const Ok(null);
   }
+
+  /// Whether [other] is the same card as typed: the same text, flag and tag
+  /// names, in the same order. The draft kept on the device is dropped when
+  /// it equals the form it would restore.
+  bool sameContentAs(CardDraft other) =>
+      front == other.front &&
+      back == other.back &&
+      example == other.example &&
+      hint == other.hint &&
+      pronunciation == other.pronunciation &&
+      isFlagged == other.isFlagged &&
+      const ListEquality<String>().equals(tagNames, other.tagNames);
 
   static Outcome<void, CardRejection> _checkSide(
     String side,
