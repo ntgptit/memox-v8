@@ -6809,10 +6809,6 @@
   "@monitoringRefreshFailed": {
     "description": "Screen 28 (SP2b 2.38): the warning banner above the rows when a pull to refresh failed and the rows were kept; its action is Retry."
   },
-  "monitoringRefreshOffline": "No connection. The rows below are from the last time the list loaded.",
-  "@monitoringRefreshOffline": {
-    "description": "Screen 28 (SP2b audit M1): the neutral banner above the rows when a pull to refresh failed because the device is offline and the rows were kept; its action is Retry."
-  },
   "monitoringEmptyTitle": "No open problems",
   "@monitoringEmptyTitle": {
     "description": "Screen 28: the Server tab with the default filter and no row."

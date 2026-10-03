@@ -170,10 +170,15 @@ rules are what SP3–SP5 apply. Owner calls deferred to a later sub-project are 
 19. **`DESIGN.md` rules** that SP3–SP5 apply. They are added under Do's and Don'ts and
     the named rules:
     - **Dynamic Color:** not used. The authored Tokyo palette is the identity.
-    - **Offline is neutral:** no connection is an `MxNote` (neutral). Warning amber means
+    - **Offline is neutral (amended, owner 2026-10-03: see below):** no connection is an `MxNote` (neutral). Warning amber means
       a refusal or a limit where nothing was lost; danger means a loss. This covers the Sync tile on
       23, Users offline on 33, the transition layer on 30, and the off-may-show banner
       on 24.
+      > **Owner note 2026-10-03:** this rule was read as "remove the warning from a
+      > failure notice". It does not say that. A failure or refusal that asks the person
+      > to retry or wait, "no connection" included, keeps `warning`; `danger` is only for
+      > a loss; neutral is only for a note or an offer that is not a failure. DESIGN.md
+      > holds the current rule; SP2b's neutral offline banners were reverted.
     - **A note says something new:** a note or banner states what the screen does not
       already show, and does not precede the decision it explains.
     - **A destructive confirm names the loss:** "Lose changes and continue", never

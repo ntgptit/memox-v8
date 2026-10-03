@@ -310,7 +310,7 @@ void main() {
   });
 
   libraryTest('a pull to refresh that fails offline keeps the rows under a '
-      'neutral banner with Retry; Retry is busy until the answer lands '
+      'warning with Retry; Retry is busy until the answer lands '
       '(SP2b 2.38, audit M1, m7)', (tester, env) async {
     final repository = FakeMonitoringRepository();
     await pumpMonitoring(tester, env, repository);
@@ -325,10 +325,9 @@ void main() {
     await tester.pumpAndSettle();
 
     const warning =
-        'No connection. The rows below are from the last time the list '
-        'loaded.';
+        "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded.";
     expect(find.text(warning), findsOneWidget);
-    expect(_banner(tester).tone, MxBannerTone.neutral);
+    expect(_banner(tester).tone, MxBannerTone.warning);
     expect(find.text('2 LOGS'), findsOneWidget);
     expect(find.text('message of r0'), findsOneWidget);
     expect(find.byType(MxErrorState), findsNothing);
@@ -352,23 +351,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('message of n0'), findsOneWidget);
     expect(find.text(warning), findsNothing);
-  });
-
-  libraryTest('a refresh that fails for another reason keeps the warning tone '
-      'and its copy (audit M1)', (tester, env) async {
-    final repository = FakeMonitoringRepository();
-    await pumpMonitoring(tester, env, repository);
-    repository.lastQuery.answer(pageOf(2));
-    await settleMonitoring(tester);
-
-    await tester.fling(find.byType(ListView), const Offset(0, 400), 1000);
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    repository.lastQuery.fail(const ServerFailure(cause: 'x'));
-    await tester.pumpAndSettle();
-
-    expect(find.textContaining("Couldn't refresh the list"), findsOneWidget);
-    expect(_banner(tester).tone, MxBannerTone.warning);
   });
 
   libraryTest('a lost admin role on refresh replaces the rows (SP2b 2.38)', (

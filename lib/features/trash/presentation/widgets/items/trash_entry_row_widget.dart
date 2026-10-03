@@ -168,7 +168,7 @@ class _Lines extends StatelessWidget {
   final String timeLeft;
 
   /// The purge is waiting for a sync: its label is a sentence, so it takes
-  /// its own line and leaves the name its width.
+  /// its own line in warning ink and leaves the name its width.
   final bool isAwaitingSync;
   final bool isExpiringSoon;
   final String meta;
@@ -225,7 +225,11 @@ class _Lines extends StatelessWidget {
             timeLeft,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: styles.rowDescription,
+            // It warns of a permanent deletion, so it keeps the countdown's
+            // warning ink (owner 2026-10-03).
+            style: styles.rowDescription.copyWith(
+              color: context.derivedColors.warningInk,
+            ),
           ),
       ],
     );

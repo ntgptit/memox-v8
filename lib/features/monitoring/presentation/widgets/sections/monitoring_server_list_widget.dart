@@ -187,15 +187,10 @@ class _Rows extends ConsumerWidget {
         child: MxScreenScroll(
           children: [
             const SizedBox(height: AppSpacing.control),
-            if (loaded.refreshFailure case final failure?)
-              // Offline is neutral: nothing refused and nothing wrong.
+            if (loaded.refreshFailure != null)
               MxInlineBanner(
-                tone: failure == MonitoringLoadFailure.offline
-                    ? MxBannerTone.neutral
-                    : MxBannerTone.warning,
-                message: failure == MonitoringLoadFailure.offline
-                    ? l10n.monitoringRefreshOffline
-                    : l10n.monitoringRefreshFailed,
+                tone: MxBannerTone.warning,
+                message: l10n.monitoringRefreshFailed,
                 actions: [
                   MxButton(
                     label: l10n.commonRetry,

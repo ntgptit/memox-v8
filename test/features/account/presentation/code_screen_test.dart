@@ -271,10 +271,10 @@ void main() {
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       '123456',
     );
-    // Offline is neutral: nothing was refused (audit M1).
+    // Offline warns too: a failure that asks the person to retry (owner).
     expect(
       tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
-      MxBannerTone.neutral,
+      MxBannerTone.warning,
     );
     expect(signIns, 0);
 

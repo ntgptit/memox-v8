@@ -289,7 +289,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountSignOutStoppedOffline), findsOneWidget);
-    expect(_bannerTone(tester), MxBannerTone.neutral, reason: 'offline');
+    expect(_bannerTone(tester), MxBannerTone.warning, reason: 'offline warns');
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
@@ -344,8 +344,7 @@ void main() {
       "Your decks are kept. This move can't finish on this phone. Close "
       'MemoX and report the problem; the log has the details.',
     );
-    // Stuck is a refusal to go on, not a lost connection: warning, and one
-    // live region, the banner's own (audit M1, m8).
+    // Stuck warns, with one live region: the banner's own (audit m8).
     expect(_bannerTone(tester), MxBannerTone.warning);
     expect(
       find.ancestor(
@@ -387,7 +386,7 @@ void main() {
     await tester.pump();
 
     expect(find.text(_en.accountLayerOffline), findsOneWidget);
-    expect(_bannerTone(tester), MxBannerTone.neutral, reason: 'offline');
+    expect(_bannerTone(tester), MxBannerTone.warning, reason: 'offline warns');
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.accountCloseApp), findsNothing);
   });

@@ -205,10 +205,7 @@ class _Progress extends ConsumerWidget {
               children: [
                 if (isStopped) ...[
                   MxInlineBanner(
-                    // Offline is neutral; a refusal or a stuck state warns.
-                    tone: error is OfflineFailure && !view.isStuck
-                        ? MxBannerTone.neutral
-                        : MxBannerTone.warning,
+                    tone: MxBannerTone.warning,
                     message: _stoppedMessage(l10n, error),
                   ),
                   const SizedBox(height: AppSpacing.gutter),

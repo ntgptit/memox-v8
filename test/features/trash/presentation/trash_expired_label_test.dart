@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -19,7 +20,7 @@ const _ahead = Duration(days: 60);
 
 void main() {
   libraryTest('a device clock 60 days ahead of the last server time keeps the '
-      'expired rows and says they go after the next sync, in neutral ink', (
+      'expired rows and says they go after the next sync, in warning ink', (
     tester,
     env,
   ) async {
@@ -36,9 +37,13 @@ void main() {
     expect(
       find.widgetWithText(MxBadge, _en.trashAwaitingSync),
       findsNothing,
-      reason: 'neutral ink, not the warning pill',
+      reason: 'its own line, not the countdown pill',
     );
     expect(find.text(_en.trashHoursLeft(1)), findsNothing);
+
+    final label = tester.widget<Text>(find.text(_en.trashAwaitingSync).first);
+    final context = tester.element(find.text(_en.trashAwaitingSync).first);
+    expect(label.style?.color, context.derivedColors.warningInk);
   });
 
   libraryTest('a device that never synced says the same for an expired row', (
