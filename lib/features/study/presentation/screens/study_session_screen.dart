@@ -114,7 +114,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       shouldStop = await showStudyExitDialog(context);
     } finally {
       _isConfirming = false;
-      _overlayOpen.value = false;
+      if (mounted) _overlayOpen.value = false;
     }
     if (!mounted) return;
     // The deck went, or the session was reset, while the dialog was up: the
@@ -430,6 +430,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       item: item,
       result: turn.held?.result,
       isBusy: turn.isBusy,
+      hasWriteFailed: turn.hasWriteFailed,
       overlayOpen: _overlayOpen,
       onReveal: (ms) => unawaited(_controller.revealRecall(item, ms)),
       onSaveTime: (ms) => unawaited(_controller.saveRecallTime(item, ms)),

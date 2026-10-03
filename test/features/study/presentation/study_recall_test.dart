@@ -424,7 +424,7 @@ void main() {
     await tester.tap(find.text(_en.studyRecallShowMeaning));
     await _settle(tester);
     // The failure lands after the write starts (the fixture's timer).
-    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pump(Duration.zero);
     await _settle(tester);
 
     expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
@@ -438,5 +438,50 @@ void main() {
 
     expect(find.text(_en.studyRevealFailedTitle), findsNothing);
     expect(find.text('apple'), findsOneWidget);
+  });
+
+  libraryTest('a reveal that fails before any frame still leaves the button '
+      'working behind the banner (2.12)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions
+      ..isRevealFailing = true
+      ..isRevealFailingAtOnce = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
+    env.sessions.isRevealFailing = false;
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsNothing);
+    expect(find.text('apple'), findsOneWidget);
+  });
+
+  libraryTest('a reveal that fails under the exit dialog resumes the clock '
+      'once, when the dialog closes (2.12, 2.11)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions.isRevealFailing = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    // The failure lands while the dialog is up: the clock stays stopped.
+    await tester.pump(Duration.zero);
+    await _settle(tester);
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('15s / 20s'), findsOneWidget);
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('14s / 20s'), findsOneWidget);
   });
 }

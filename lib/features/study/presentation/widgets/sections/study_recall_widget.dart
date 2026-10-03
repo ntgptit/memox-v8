@@ -37,6 +37,7 @@ class StudyRecallWidget extends StatefulWidget {
     required this.item,
     required this.result,
     required this.isBusy,
+    required this.hasWriteFailed,
     required this.onReveal,
     required this.onSaveTime,
     required this.onAnswer,
@@ -50,6 +51,10 @@ class StudyRecallWidget extends StatefulWidget {
   /// The timed-out turn's committed result, held on screen (spec D5).
   final TurnResult? result;
   final bool isBusy;
+
+  /// The reveal was refused or failed (2.12): the turn counts down again and
+  /// Show the meaning is tappable, whether or not a busy frame was seen.
+  final bool hasWriteFailed;
 
   /// Show the meaning, with the time left.
   final ValueChanged<int> onReveal;
@@ -119,15 +124,13 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
       widget.overlayOpen.addListener(_onOverlay);
     }
     if (oldWidget.result == null && widget.result != null) _announceTimeout();
-    // A reveal the database refused: the turn counts down again.
+    // A reveal that was refused or failed: the turn counts down again. Under
+    // an open overlay it stays stopped and the overlay's close resumes it.
     final isRefused =
-        oldWidget.isBusy &&
-        !widget.isBusy &&
-        _isStopped &&
-        !widget.item.isRevealed;
+        widget.hasWriteFailed && _isStopped && !widget.item.isRevealed;
     if (isRefused) {
       _isStopped = false;
-      unawaited(_clock.reverse());
+      if (!widget.overlayOpen.value) unawaited(_clock.reverse());
     }
   }
 

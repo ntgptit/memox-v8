@@ -379,6 +379,10 @@ final class LockableSessions implements StudySessionRepository {
   /// While set, [revealRecallAnswer] fails as a broken write does (SP2a 2.12).
   var isRevealFailing = false;
 
+  /// With [isRevealFailing], the failure lands before any frame (a gate shut
+  /// at the start of the write) instead of after the screen saw it busy.
+  var isRevealFailingAtOnce = false;
+
   @override
   Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
@@ -411,7 +415,7 @@ final class LockableSessions implements StudySessionRepository {
     // Found after the write starts, as a real failure is: the screen sees it
     // busy first.
     if (isRevealFailing) {
-      await Future<void>.delayed(Duration.zero);
+      if (!isRevealFailingAtOnce) await Future<void>.delayed(Duration.zero);
       throw const UnknownDatabaseFailure(cause: 'test');
     }
     return _inner.revealRecallAnswer(
