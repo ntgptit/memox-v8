@@ -226,6 +226,10 @@ the tag. That is the same per-file cost as §1.1, paid 529 times for 40 files.
     themselves, so rewriting pictures takes no shortcut;
   - the exit code is `flutter test`'s, `test_report.py` prints a `--tags golden` re-run line, and
     a failed run keeps its bundles.
+  - `MEMOX_TEST_BUNDLES=<n>` caps both modes: n bundles for a comparison, n files at a time for
+    `--update` (added 2026-10-03, after a memory-capped Docker VM on Windows forced a hand-written
+    `flutter test -j 1` run). `golden.Dockerfile` records the Windows recipe: `docker cp` instead of
+    a bind mount, a named volume for the pub cache, and `docker start -a` instead of polling.
 - CI's `goldens` job runs `run_goldens.sh --report golden-report.jsonl`, and
   `count_golden_tests.py` reads that report unchanged. The `setUpAll` entries are hidden events
   and are not counted: the bundled run counts 489, the same as before.

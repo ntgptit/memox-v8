@@ -432,6 +432,12 @@ class RunGoldensTest(_ScriptCase):
         self.assertTrue(files)
         self.assertTrue(all(arg.startswith("test/") and arg.endswith("_golden_test.dart") for arg in files))
 
+    def test_bundles_also_cap_the_processes_of_an_update(self) -> None:
+        """A memory-limited Docker VM caps the run with MEMOX_TEST_BUNDLES;
+        the file-by-file update must obey it too, not the host's core count."""
+        _, argv = self._run("--update", env_extra={"MEMOX_TEST_BUNDLES": "2"})
+        self.assertEqual(argv[argv.index("-j") + 1], "2")
+
     def test_the_report_goes_where_the_caller_counts_it(self) -> None:
         report = Path(tempfile.mkdtemp()) / "golden-report.jsonl"
         self.addCleanup(shutil.rmtree, report.parent, True)
