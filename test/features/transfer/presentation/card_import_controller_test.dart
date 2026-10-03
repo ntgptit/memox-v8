@@ -12,6 +12,7 @@ import 'package:memox/features/card/data/repositories/card_transfer_repository_i
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 import 'package:memox/features/card/domain/models/card_import_result_model.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
@@ -21,10 +22,17 @@ import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
+import 'package:memox/features/transfer/domain/models/source_table_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
+import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 import 'package:memox/features/transfer/domain/usecases/commit_import_use_case.dart';
+import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/domain/usecases/read_import_source_use_case.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_import_controller.dart';
 import 'package:memox/features/transfer/presentation/providers/commit_import_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
+import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
+import 'package:memox/features/transfer/presentation/providers/read_import_source_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -68,6 +76,28 @@ final class _BrokenImport implements CardTransferRepository {
       now: now,
     );
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Throws on the duplicate read, the way a locked database does.
+final class _BrokenDeckRead implements CardTransferRepository {
+  @override
+  Future<Set<CardFoldedPair>> foldedPairs(String deckId) async =>
+      throw const UnknownDatabaseFailure(cause: 'locked');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Throws on the read, as a codec or an isolate that died does.
+final class _ExplodingFiles implements TransferFileRepository {
+  @override
+  Future<Outcome<SourceTable, TransferRejection>> read(
+    TransferSource source, {
+    int? sheetIndex,
+  }) async => throw StateError('codec exploded');
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -364,6 +394,55 @@ void main() {
         c.read(cardImportControllerProvider(leaf.id)),
         isA<CardImportDone>(),
       );
+    },
+  );
+
+  test('a preview whose deck read throws sets a typed problem and frees the '
+      'wizard (SP2a 2.22)', () async {
+    final c = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        importFilePickerProvider.overrideWithValue(() async => picked),
+        previewImportUseCaseProvider.overrideWithValue(
+          PreviewImportUseCase(_BrokenDeckRead()),
+        ),
+      ],
+    );
+    addTearDown(c.dispose);
+    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+    await wizard.chooseFile();
+    await wizard.readSource();
+
+    await wizard.previewRows();
+
+    expect(draftOf(c).step, CardImportStep.columns);
+    expect(draftOf(c).problem, TransferRejection.previewFailed);
+    expect(draftOf(c).isBusy, isFalse);
+  });
+
+  test(
+    'a read that throws is unreadable, not a stuck spinner (SP2a 2.22)',
+    () async {
+      final c = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          importFilePickerProvider.overrideWithValue(() async => picked),
+          readImportSourceUseCaseProvider.overrideWithValue(
+            ReadImportSourceUseCase(_ExplodingFiles()),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+      await wizard.chooseFile();
+
+      await wizard.readSource();
+
+      expect(draftOf(c).step, CardImportStep.source);
+      expect(draftOf(c).problem, TransferRejection.unreadableFile);
+      expect(draftOf(c).isBusy, isFalse);
     },
   );
 

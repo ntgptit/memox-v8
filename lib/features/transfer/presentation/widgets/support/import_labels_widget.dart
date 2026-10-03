@@ -58,6 +58,10 @@ extension ImportLabels on AppLocalizations {
           title: importProblemEmptyTitle,
           body: importProblemEmptyBody,
         ),
+        TransferRejection.previewFailed => (
+          title: importProblemPreviewTitle,
+          body: importProblemPreviewBody,
+        ),
         _ => (
           title: importProblemUnreadableTitle,
           body: importProblemUnreadableBody,

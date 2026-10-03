@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -74,6 +76,16 @@ class ImportMappingSectionWidget extends StatelessWidget {
               ),
           ],
         ),
+        // The deck could not be read for the preview: nothing was lost, and
+        // Preview rows is live again (SP2a 2.22).
+        if (draft.problem == TransferRejection.previewFailed) ...[
+          MxInlineBanner(
+            tone: MxBannerTone.danger,
+            title: l10n.importProblem(TransferRejection.previewFailed).title,
+            message: l10n.importProblem(TransferRejection.previewFailed).body,
+          ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
         if (!draft.mapping.isComplete) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,

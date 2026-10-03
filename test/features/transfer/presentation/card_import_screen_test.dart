@@ -3,6 +3,15 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
+import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
+import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
+import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/presentation/providers/preview_import_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
@@ -59,7 +68,73 @@ Future<void> _tap(WidgetTester tester, String label) async {
   await tester.pumpAndSettle();
 }
 
+/// Throws on the duplicate read until [isBroken] turns false.
+final class _FlakyDeckRead implements CardTransferRepository {
+  _FlakyDeckRead(this._inner);
+
+  final CardTransferRepository _inner;
+  var isBroken = true;
+
+  @override
+  Future<Set<CardFoldedPair>> foldedPairs(String deckId) async {
+    if (isBroken) throw const UnknownDatabaseFailure(cause: 'locked');
+    return _inner.foldedPairs(deckId);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
+  libraryTest('a preview that cannot read the deck says so and Preview rows '
+      'tries again (SP2a 2.22)', (tester, env) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    final flaky = _FlakyDeckRead(
+      CardTransferRepositoryImpl(
+        env.db,
+        CardRepositoryImpl(
+          env.db,
+          ScheduleRepositoryImpl(env.db),
+          TagRepositoryImpl(env.db),
+        ),
+      ),
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      CardImportScreen(
+        deckId: deck.id,
+        deckContext: _context,
+        onClose: () {},
+        onViewCards: () {},
+      ),
+      overrides: [
+        importFilePickerProvider.overrideWithValue(
+          () async => _file('front,back\nmul,water\n'),
+        ),
+        previewImportUseCaseProvider.overrideWithValue(
+          PreviewImportUseCase(flaky),
+        ),
+      ],
+    );
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+    await _tap(tester, _en.importPreviewAction);
+
+    expect(find.text(_en.importProblemPreviewTitle), findsOneWidget);
+    final preview = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.importPreviewAction),
+    );
+    expect(preview.isLoading, isFalse);
+    expect(preview.onPressed, isNotNull);
+
+    flaky.isBroken = false;
+    await _tap(tester, _en.importPreviewAction);
+    expect(find.text(_en.importBadgeReady(1)), findsOneWidget);
+    expect(find.text(_en.importProblemPreviewTitle), findsNothing);
+  });
+
   libraryTest('a file becomes cards through the four steps (IT-CARD-014)', (
     tester,
     env,

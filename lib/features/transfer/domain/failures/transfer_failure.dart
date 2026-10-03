@@ -20,6 +20,11 @@ enum TransferRejection {
   /// written.
   nothingToImport,
 
+  /// UC-TRANSFER-001 step 5 (SP2a 2.22): the deck's cards could not be read
+  /// to mark the duplicates. Nothing was written; Preview rows can be tried
+  /// again.
+  previewFailed,
+
   /// BR-TRANSFER-001, UC-TRANSFER-001 E4: the deck is gone, is a root, or
   /// holds sub-decks.
   targetRejected,

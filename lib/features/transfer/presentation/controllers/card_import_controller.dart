@@ -2,6 +2,8 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
+import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
+import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 import 'package:memox/features/transfer/presentation/providers/commit_import_use_case_provider.dart';
@@ -92,10 +94,22 @@ class CardImportController extends _$CardImportController {
     final source = draft?.source;
     if (draft == null || source == null || draft.isBusy) return;
     state = draft.copyWith(isBusy: true, isProblemCleared: true);
-    final result = await ref.read(readImportSourceUseCaseProvider)(
-      source,
-      sheetIndex: sheetIndex,
-    );
+    final Outcome<SourceTable, TransferRejection> result;
+    try {
+      result = await ref.read(readImportSourceUseCaseProvider)(
+        source,
+        sheetIndex: sheetIndex,
+      );
+    } on Object {
+      // Whatever the codec or the isolate threw, the person sees one typed
+      // reason and nothing of the file (BR-TRANSFER-006, SP2a 2.22).
+      if (!ref.mounted) return;
+      state = draft.copyWith(
+        isBusy: false,
+        problem: TransferRejection.unreadableFile,
+      );
+      return;
+    }
     if (!ref.mounted) return;
     state = switch (result) {
       Ok(:final value) => CardImportDraft(
@@ -138,12 +152,24 @@ class CardImportController extends _$CardImportController {
     final table = draft?.table;
     if (draft == null || table == null || draft.isBusy) return;
     state = draft.copyWith(isBusy: true, isProblemCleared: true);
-    final result = await ref.read(previewImportUseCaseProvider)(
-      deckId: deckId,
-      table: table,
-      mapping: draft.mapping,
-      hasHeaderRow: draft.hasHeaderRow,
-    );
+    final Outcome<ImportPreview, TransferRejection> result;
+    try {
+      result = await ref.read(previewImportUseCaseProvider)(
+        deckId: deckId,
+        table: table,
+        mapping: draft.mapping,
+        hasHeaderRow: draft.hasHeaderRow,
+      );
+    } on Object {
+      // The deck could not be read: the step stays, and so does its work
+      // (SP2a 2.22).
+      if (!ref.mounted) return;
+      state = draft.copyWith(
+        isBusy: false,
+        problem: TransferRejection.previewFailed,
+      );
+      return;
+    }
     if (!ref.mounted) return;
     state = switch (result) {
       Ok(:final value) => draft.copyWith(

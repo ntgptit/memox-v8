@@ -3845,6 +3845,14 @@
   "@importProblemEmptyBody": {
     "description": "Import problem: an empty source."
   },
+  "importProblemPreviewTitle": "Couldn't check this deck",
+  "@importProblemPreviewTitle": {
+    "description": "Import step 2: the deck's cards could not be read for the preview (SP2a 2.22)."
+  },
+  "importProblemPreviewBody": "Nothing was imported and your mapping is kept. Choose Preview rows to try again.",
+  "@importProblemPreviewBody": {
+    "description": "Import step 2: what to do after a failed preview."
+  },
   "importChooseAnother": "Choose another file",
   "@importChooseAnother": {
     "description": "Import problem: pick a file again."
